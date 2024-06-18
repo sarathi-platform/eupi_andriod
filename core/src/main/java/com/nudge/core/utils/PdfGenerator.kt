@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import com.nudge.core.model.CoreAppDetails
 import com.wwdablu.soumya.simplypdf.SimplyPdf
 import com.wwdablu.soumya.simplypdf.SimplyPdfDocument
 import com.wwdablu.soumya.simplypdf.composers.properties.TableProperties
@@ -23,27 +24,33 @@ object PdfGenerator {
 
     private val margins: UInt = 20u
     private val marginBottom: UInt = 40u
-    private const val serialNumberCellWidth = 50
-    private const val dataCellWidth = 125
-
-    suspend fun generatePdf(pdfModels: List<PdfModel>, context: Context) {
+    private val blackColor = "#000000"
+    private val greyColor = "#222E50"
+    suspend fun generatePdf(pdfModels: List<PdfModel>): String {
         val mSerialNumberCellWidth = 50
         val mDataCellWidth = 150
+        val outputFile = getPdfPath(
+            CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,
+            "Digital Form e"
+        )
+        val simplyPdfDocument = getSimplePdfDocument(
+            CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,
+            outputFile
+        )
 
-        val simplyPdfDocument = getSimplePdfDocument(context, "Digital Form E")
-
-        pdfModels.forEach { pdfModel ->
-            simplyPdfDocument.text.write(
-                text = pdfModel.pdfLeftTitle,
-                properties = getTitleTextProperties(Layout.Alignment.ALIGN_NORMAL)
-            )
+        pdfModels.forEachIndexed { index, pdfModel ->
             simplyPdfDocument.text.write(
                 text = pdfModel.pdfCenterTitle,
                 properties = getTitleTextProperties(Layout.Alignment.ALIGN_CENTER)
             )
             simplyPdfDocument.text.write(
+                text = pdfModel.pdfLeftTitle,
+                properties = getTitleTextProperties(Layout.Alignment.ALIGN_NORMAL)
+            )
+
+            simplyPdfDocument.text.write(
                 text = pdfModel.pdfRightTitle,
-                properties = getTitleTextProperties(Layout.Alignment.ALIGN_OPPOSITE)
+                properties = getTitleTextProperties(Layout.Alignment.ALIGN_NORMAL)
             )
             simplyPdfDocument.insertEmptyLines(1)
 
@@ -61,7 +68,7 @@ object PdfGenerator {
                     TextCell(
                         text = header,
                         getTextPropertiesForCell(),
-                        width = if (index == 1) mSerialNumberCellWidth else mDataCellWidth
+                        width = if (index == 0) mSerialNumberCellWidth else mDataCellWidth
                     )
                 )
 
@@ -77,7 +84,7 @@ object PdfGenerator {
                             TextCell(
                                 text = text,
                                 properties = getTextPropertiesForCell(),
-                                width = if (index == 1) mSerialNumberCellWidth else mDataCellWidth
+                                width = if (index == 0) mSerialNumberCellWidth else mDataCellWidth
                             )
                         )
 
@@ -90,25 +97,29 @@ object PdfGenerator {
             }
 
             simplyPdfDocument.table.draw(dataRow, TableProperties().apply {
-                borderColor = "#000000"
+                borderColor = blackColor
                 borderWidth = 1
                 drawBorder = true
             })
             simplyPdfDocument.insertEmptyLines(1)
-            simplyPdfDocument.newPage()
+            if (index < pdfModels.size - 1) {
+                simplyPdfDocument.newPage()
+            }
 
         }
         simplyPdfDocument.finish()
+
+        return outputFile.path
 
     }
 
 
     private fun getSimplePdfDocument(
         context: Context,
-        fileName: String,
+        outputFile: File,
     ): SimplyPdfDocument {
         return SimplyPdf.with(
-            context, getPdfPath(context = context, formName = fileName)
+            context, outputFile
         )
             .colorMode(DocumentInfo.ColorMode.COLOR)
             .paperSize(PrintAttributes.MediaSize.ISO_A4)
@@ -139,7 +150,7 @@ object PdfGenerator {
     private fun getTextPropertiesForCell(): TextProperties {
         return TextProperties().apply {
             textSize = 12
-            textColor = "#000000"
+            textColor = blackColor
             typeface = Typeface.DEFAULT
             alignment = Layout.Alignment.ALIGN_CENTER
         }
@@ -148,7 +159,7 @@ object PdfGenerator {
     private fun getTitleTextProperties(textAlignment: Layout.Alignment): TextProperties {
         return TextProperties().apply {
             textSize = 13
-            textColor = "#000000"
+            textColor = blackColor
             typeface = Typeface.DEFAULT_BOLD
             alignment = textAlignment
 
@@ -158,20 +169,11 @@ object PdfGenerator {
     private fun getSubTitleTextProperties(): TextProperties {
         return TextProperties().apply {
             textSize = 14
-            textColor = "#000000"
+            textColor = greyColor
             typeface = Typeface.DEFAULT
             alignment = Layout.Alignment.ALIGN_CENTER
 
         }
     }
 
-    private fun getContentTextProperties(): TextProperties {
-        return TextProperties().apply {
-            textSize = 12
-            textColor = "#000000"
-            typeface = Typeface.DEFAULT
-            alignment = Layout.Alignment.ALIGN_NORMAL
-
-        }
-    }
 }

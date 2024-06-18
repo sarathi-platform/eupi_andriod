@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.brownDark
@@ -69,6 +70,7 @@ import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
+import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
@@ -117,7 +119,7 @@ fun DisbursementFormSummaryScreen(
                             .weight(1.0f)
                             .height(dimen_56_dp)
                             .clickable {
-
+                                viewModel.generateFormE(false, {})
                             }
                             .border(width = dimen_1_dp, color = borderGrey)
                             .background(white),
@@ -141,6 +143,12 @@ fun DisbursementFormSummaryScreen(
                             .padding(start = dimen_10_dp)
                             .weight(1.0f)
                             .clickable {
+                                viewModel.generateFormE(true, { filepath ->
+                                    navigateToPdfViewerScreen(
+                                        navController = navController,
+                                        filePath = getFileNameFromURL(filepath)
+                                    )
+                                })
 
                             }
                             .height(dimen_56_dp)
@@ -219,16 +227,16 @@ fun DisbursementFormSummaryScreen(
                         item {
                             FormMainSummaryCard(
                                 maxCustomHeight = maxHeight,
-                        formDisburesmentMap = it,
-                        viewmodel = viewModel
-                    )
+                                formDisburesmentMap = it,
+                                viewmodel = viewModel
+                            )
+                        }
+                    }
+
+
                 }
             }
-
-
         }
-    }
-}
     )
 
 }

@@ -124,10 +124,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             val selectedValue = getSelectedValue(survey.optionItems)
             when (survey.tagId) {
                 SurveyCardTag.SURVEY_TAG_DATE.tag -> subTitle1 = selectedValue
-                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> {
-                    subTitle2 = selectedValue
-                    totalSubmittedAmount = totalSubmittedAmount + selectedValue.toInt()
-                }
+                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> subTitle2 = selectedValue
+
                 SurveyCardTag.SURVEY_TAG_NATURE.tag -> subTitle3 = selectedValue
                 SurveyCardTag.SURVEY_TAG_MODE.tag -> subTitle4 = selectedValue
                 SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
@@ -208,7 +206,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             isButtonEnable.value =
-                sanctionedAmount == totalSubmittedAmount && !isActivityCompleted.value
+                sanctionedAmount == getTotalSubmittedAmount() && !isActivityCompleted.value
         }
     }
 
@@ -223,7 +221,14 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
 
     }
+
     fun getTotalSubmittedAmount(): Int {
+        taskList.value.entries.forEach {
+            totalSubmittedAmount =
+                it.value.filter { it.tagId == SurveyCardTag.SURVEY_TAG_AMOUNT.tag }
+                    .sumOf { getSelectedValue(it.optionItems).toInt() } ?: 0
+
+        }
         return totalSubmittedAmount
     }
 }
