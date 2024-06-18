@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.UUID
 import java.util.logging.Level
 
 fun Long.toDate(
@@ -75,6 +76,7 @@ fun Long.toTimeDateString(): String {
     val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
+
 fun Long.toDateString(): String {
     val dateTime = Date(this)
     val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -737,4 +739,8 @@ fun <T> checkStringNullOrEmpty(value: T?): String {
         is String -> value.ifEmpty { BLANK_STRING }
         else -> BLANK_STRING
     }
+}
+
+fun generateUUID(): String {
+    return UUID.randomUUID().toString()
 }

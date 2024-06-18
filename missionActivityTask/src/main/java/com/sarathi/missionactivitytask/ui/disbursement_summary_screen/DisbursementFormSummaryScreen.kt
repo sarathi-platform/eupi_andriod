@@ -173,7 +173,7 @@ fun DisbursementFormSummaryScreen(
                         isActive = true,
                         isArrowRequired = false,
                         onClick = {
-                            navigateToAddImageScreen(navController)
+                            navigateToAddImageScreen(navController = navController)
                         }
                     )
                 }

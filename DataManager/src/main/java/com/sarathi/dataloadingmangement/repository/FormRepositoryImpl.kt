@@ -49,4 +49,11 @@ class FormRepositoryImpl @Inject constructor(
             isFormGenerated = false
         )
     }
+
+    override suspend fun updateFormData(isFormGenerated: Boolean) {
+        return formDao.updateFormData(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            isFormGenerated = isFormGenerated
+        )
+    }
 }

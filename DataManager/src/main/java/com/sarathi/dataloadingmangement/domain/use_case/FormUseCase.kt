@@ -49,5 +49,10 @@ class FormUseCase @Inject constructor(
         return downloaderManager.getFilePathUri(filePath)
     }
 
+    suspend fun updateFormData(
+        isFormGenerated: Boolean
+    ) {
+        repository.updateFormData(isFormGenerated)
+    }
 
 }

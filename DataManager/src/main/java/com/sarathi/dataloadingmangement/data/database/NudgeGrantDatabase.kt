@@ -21,6 +21,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.DocumentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
@@ -46,6 +47,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.DocumentEntity
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
@@ -90,6 +92,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         GrantConfigEntity::class,
         FormEntity::class,
         FormUiConfigEntity::class,
+        DocumentEntity::class,
         SurveyLanguageAttributeEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -106,7 +109,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
     ValuesDtoConverter::class,
     DateConverter::class
 
-    )
+)
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun missionDao(): MissionDao
@@ -116,6 +119,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun languageDao(): LanguageDao
     abstract fun activityConfigDao(): ActivityConfigDao
     abstract fun formEDao(): FormDao
+    abstract fun documentDao(): DocumentDao
     abstract fun activityLanguageAttributeDao(): ActivityLanguageAttributeDao
     abstract fun activityLanguageDao(): ActivityLanguageDao
     abstract fun attributeValueReferenceDao(): AttributeValueReferenceDao
