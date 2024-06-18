@@ -31,6 +31,7 @@ import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
@@ -47,6 +48,7 @@ import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
@@ -115,6 +117,10 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideFormEDao(db: NudgeGrantDatabase) = db.formEDao()
+
+    @Provides
+    @Singleton
+    fun provideDocumentDao(db: NudgeGrantDatabase) = db.documentDao()
 
     @Provides
     @Singleton
@@ -363,6 +369,15 @@ class DataLoadingModule {
         downloaderManager: DownloaderManager,
     ): FormUseCase {
         return FormUseCase(repository = repository, downloaderManager = downloaderManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentUseCase(
+        repository: DocumentRepositoryImpl,
+        downloaderManager: DownloaderManager,
+    ): DocumentUseCase {
+        return DocumentUseCase(repository = repository, downloaderManager = downloaderManager)
     }
 
     @Provides

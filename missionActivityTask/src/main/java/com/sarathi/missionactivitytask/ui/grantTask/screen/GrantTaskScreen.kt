@@ -76,7 +76,7 @@ fun GrantTaskScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
+                    .padding(dimen_10_dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -92,20 +92,13 @@ fun GrantTaskScreen(
                         })
                     Spacer(modifier = Modifier.width(10.dp))
                     ButtonPositive(modifier = Modifier.weight(0.4f),
-                        buttonTitle = "Generate Form E",
+                        buttonTitle = stringResource(id = R.string.generate_form_e),
                         isActive = true,
                         isArrowRequired = false,
                         onClick = {
                             navigateToDisbursmentSummaryScreen(navController)
                         })
                 }
-//                ButtonPositive(buttonTitle = stringResource(R.string.complete_activity),
-//                    isActive = viewModel.isButtonEnable.value,
-//                    isArrowRequired = false,
-//                    onClick = {
-//                        viewModel.markActivityCompleteStatus()
-//                        navController.popBackStack()
-//                    })
             }
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->

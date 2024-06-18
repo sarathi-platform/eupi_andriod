@@ -21,5 +21,9 @@ interface IFormRepository {
     suspend fun getFormSummaryData(): List<FormEntity>
 
 
+    suspend fun updateFormData(
+        isFormGenerated: Boolean
+    )
+
 
 }

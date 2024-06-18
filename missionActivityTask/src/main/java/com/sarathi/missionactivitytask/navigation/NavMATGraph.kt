@@ -369,6 +369,7 @@ fun NavGraphBuilder.MatNavigation(
         }
         composable(route = MATHomeScreens.AddImageScreen.route) {
             AddImageScreen(
+                viewModel = hiltViewModel(),
                 navController = navController
             )
         }
