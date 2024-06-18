@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.defaultTextStyle
+import com.nudge.core.ui.events.theme.dimen_100_dp
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_1_dp
@@ -58,7 +59,7 @@ fun CollapsibleCard(
             defaultElevation = dimen_30_dp
         ), modifier = Modifier
             .fillMaxWidth()
-            .padding(dimen_16_dp)
+            .padding(bottom = dimen_100_dp, start = dimen_16_dp, end = dimen_16_dp)
             .background(Color.Transparent)
     ) {
 
@@ -78,12 +79,12 @@ fun CollapsibleCard(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(blueDark)
-                    .padding(dimen_10_dp)
                     .clickable(enabled = isEditable) {
                         onClick()
-                    },
+                    }
+                    .fillMaxWidth()
+                    .background(blueDark)
+                    .padding(dimen_10_dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
 

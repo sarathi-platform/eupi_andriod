@@ -72,12 +72,10 @@ fun DisbursementSummaryScreen(
                     isActive = viewModel.isButtonEnable.value,
                     isLeftArrow = false,
                     onClick = {
-
                         viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen("cdkkdsj")
+                        onNavigateSuccessScreen("")
                     }
                 )
-
             }
         },
         onContentUI = { paddingValues ->
@@ -86,16 +84,13 @@ fun DisbursementSummaryScreen(
                     ?: BLANK_STRING,
                 summaryCount = viewModel.taskList.value.entries.size,
                 onClick = {
-
                     onNavigateSurveyScreen(
                         viewModel.createReferenceId(),
                         activityConfigId,
                         viewModel.grantConfigUi.value.grantId,
-                        viewModel.grantConfigUi.value.grantType
-                            ?: BLANK_STRING,
+                        viewModel.grantConfigUi.value.grantType,
                         sanctionedAmount,
                         viewModel.getTotalSubmittedAmount()
-
                     )
                 },
                 isEditable = !viewModel.isActivityCompleted.value,
@@ -141,7 +136,7 @@ fun DisbursementSummaryScreen(
                                     Divider(
                                         modifier = Modifier.padding(vertical = dimen_5_dp),
                                         color = black1,
-                                        thickness = 1.dp
+                                        thickness = 0.5.dp
                                     )
                                 }
 
