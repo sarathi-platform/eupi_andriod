@@ -40,6 +40,7 @@ class ContentDownloaderUseCase @Inject constructor(
                     downloaderManager.downloadItem(url = it)
 
                 }
+
             } catch (ex: Exception) {
                 Log.e("ContentDownloader", "downloadItem exception", ex)
             }

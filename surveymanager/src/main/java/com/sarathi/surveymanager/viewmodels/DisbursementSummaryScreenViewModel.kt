@@ -51,7 +51,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
     var isActivityCompleted = mutableStateOf(false)
-
+    private var sanctionedAmount: Int = 0
+    private var totalSubmittedAmount = 0
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -93,13 +94,19 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
 
     fun setPreviousScreenData(
-        surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, activityConfigId: Int
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        subjectType: String,
+        activityConfigId: Int,
+        sanctionedAmount: Int
     ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
         this.taskId = taskId
         this.subjectType = subjectType
         this.activityConfigId = activityConfigId
+        this.sanctionedAmount = sanctionedAmount
     }
 
     fun createReferenceId(): String {
@@ -116,7 +123,10 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             val selectedValue = getSelectedValue(survey.optionItems)
             when (survey.tagId) {
                 SurveyCardTag.SURVEY_TAG_DATE.tag -> subTitle1 = selectedValue
-                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> subTitle2 = selectedValue
+                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> {
+                    subTitle2 = selectedValue
+                    totalSubmittedAmount = totalSubmittedAmount + selectedValue.toInt()
+                }
                 SurveyCardTag.SURVEY_TAG_NATURE.tag -> subTitle3 = selectedValue
                 SurveyCardTag.SURVEY_TAG_MODE.tag -> subTitle4 = selectedValue
                 SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
@@ -196,7 +206,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value = taskList.value.isNotEmpty() && !isActivityCompleted.value
+            isButtonEnable.value =
+                sanctionedAmount == totalSubmittedAmount && !isActivityCompleted.value
         }
     }
 
@@ -211,5 +222,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
 
     }
-
+    fun getTotalSubmittedAmount(): Int {
+        return totalSubmittedAmount
+    }
 }

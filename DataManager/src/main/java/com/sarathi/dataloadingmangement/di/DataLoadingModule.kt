@@ -279,13 +279,16 @@ class DataLoadingModule {
         contentDao: ContentDao,
         apiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
-        contentConfigDao: ContentConfigDao
+        contentConfigDao: ContentConfigDao,
+        uiConfigDao: UiConfigDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
             contentDao = contentDao,
             coreSharedPrefs = coreSharedPrefs,
-            contentConfigDao = contentConfigDao
+            contentConfigDao = contentConfigDao,
+            uiConfigDao = uiConfigDao
+
         )
     }
 
@@ -326,7 +329,7 @@ class DataLoadingModule {
             contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
-            attributeValueReferenceDao = attributeValueReferenceDao
+            attributeValueReferenceDao = attributeValueReferenceDao,
         )
     }
 

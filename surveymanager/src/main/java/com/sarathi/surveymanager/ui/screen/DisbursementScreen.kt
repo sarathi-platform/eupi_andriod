@@ -32,12 +32,20 @@ fun DisbursementSummaryScreen(
     subjectType: String,
     subjectName: String,
     activityConfigId: Int,
-    onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int, grantId: Int, grantType: String) -> Unit,
+    sanctionedAmount: Int,
+    onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int, grantId: Int, grantType: String, sanctionedAmount: Int, totalSubmittedAmount: Int) -> Unit,
     onNavigateSuccessScreen: (mag: String) -> Unit
 ) {
 
     LaunchedEffect(key1 = true) {
-        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType, activityConfigId)
+        viewModel.setPreviousScreenData(
+            surveyId,
+            sectionId,
+            taskId,
+            subjectType,
+            activityConfigId,
+            sanctionedAmount
+        )
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     ToolBarWithMenuComponent(
@@ -61,6 +69,7 @@ fun DisbursementSummaryScreen(
                     isActive = viewModel.isButtonEnable.value,
                     isLeftArrow = false,
                     onClick = {
+
                         viewModel.saveButtonClicked()
                         onNavigateSuccessScreen("cdkkdsj")
                     }
@@ -74,12 +83,16 @@ fun DisbursementSummaryScreen(
                     ?: BLANK_STRING,
                 summaryCount = viewModel.taskList.value.entries.size,
                 onClick = {
+
                     onNavigateSurveyScreen(
                         viewModel.createReferenceId(),
                         activityConfigId,
                         viewModel.grantConfigUi.value.grantId,
                         viewModel.grantConfigUi.value.grantType
-                            ?: BLANK_STRING
+                            ?: BLANK_STRING,
+                        sanctionedAmount,
+                        viewModel.getTotalSubmittedAmount()
+
                     )
                 },
                 isEditable = !viewModel.isActivityCompleted.value,
@@ -102,7 +115,9 @@ fun DisbursementSummaryScreen(
                                             activityConfigId,
                                             viewModel.grantConfigUi.value.grantId,
                                             viewModel.grantConfigUi.value.grantType
-                                                ?: BLANK_STRING
+                                                ?: BLANK_STRING,
+                                            sanctionedAmount,
+                                            viewModel.getTotalSubmittedAmount()
                                         )
                                     },
                                     onDeleteSurvey = {
