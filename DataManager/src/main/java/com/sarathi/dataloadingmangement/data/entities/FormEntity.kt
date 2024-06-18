@@ -3,10 +3,14 @@ package com.sarathi.dataloadingmangement.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.toDate
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.FORM_TABLE_NAME
+import java.util.Date
 
 @Entity(tableName = FORM_TABLE_NAME)
 data class FormEntity(
@@ -17,6 +21,8 @@ data class FormEntity(
     var id: Int = 0,
     var taskid: Int,
     var subjectid: Int,
+    @TypeConverters(DateConverter::class)
+    val createdDate: Date = System.currentTimeMillis().toDate(),
     var formGenerateDate: String,
     var subjectType: String,
     var formType: String,
@@ -51,6 +57,7 @@ data class FormEntity(
                 formGenerateDate = BLANK_STRING,
                 isFormGenerated = false,
                 localReferenceId = referenceId,
+                createdDate = System.currentTimeMillis().toDate()
             )
         }
 
