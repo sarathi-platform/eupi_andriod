@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -33,17 +32,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,7 +46,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -62,30 +56,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_14_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
 import com.sarathi.missionactivitytask.ui.components.ContentWithImage
+import com.sarathi.missionactivitytask.ui.components.CustomDateRangePickerBottomSheetComponent
 import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.ImageProperties
+import com.sarathi.missionactivitytask.ui.components.SheetHeight
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.ui.components.rememberCustomDateRangePickerSheetState
+import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerBottomSheetProperties
+import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerProperties
 import com.sarathi.smallgroupmodule.R
-import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
 import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceEditScreen
+import com.sarathi.smallgroupmodule.ui.commonUi.CustomDialogComponent
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel.SmallGroupAttendanceHistoryViewModel
 import com.sarathi.smallgroupmodule.ui.theme.dateRangeFieldColor
@@ -97,6 +96,7 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_24_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_2_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_48_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_56_dp
+import com.sarathi.smallgroupmodule.ui.theme.dimen_80_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.ui.theme.green
 import com.sarathi.smallgroupmodule.ui.theme.mediumBoldTextStyle
@@ -105,7 +105,6 @@ import com.sarathi.smallgroupmodule.ui.theme.otpBorderColor
 import com.sarathi.smallgroupmodule.ui.theme.redOffline
 import com.sarathi.smallgroupmodule.ui.theme.searchFieldBg
 import com.sarathi.smallgroupmodule.ui.theme.smallTextStyleMediumWeight
-import com.sarathi.smallgroupmodule.ui.theme.smallTextStyleWithNormalWeight
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
 import com.sarathi.smallgroupmodule.ui.theme.uncheckedTrackColor
@@ -134,19 +133,20 @@ fun SmallGroupAttendanceHistoryScreen(
 
     }
 
-    val state = rememberDateRangePickerState()
+    val sheetState = rememberCustomDateRangePickerSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
 
-    val showRangePickerDialog = remember {
-        mutableStateOf(false)
-    }
+    val sheetProperties = rememberDateRangePickerBottomSheetProperties(
+        sheetState = sheetState,
+        modifier = Modifier,
+        sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp),
+        sheetBackgroundColor = searchFieldBg,
+    )
 
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val dateRangePickerProperties = rememberDateRangePickerProperties()
 
-    val sheetState =
-        androidx.compose.material.rememberModalBottomSheetState(
-            initialValue = ModalBottomSheetValue.Hidden,
-            skipHalfExpanded = true
-        )
     val scope = rememberCoroutineScope()
 
     val outerState = rememberLazyListState()
@@ -157,64 +157,54 @@ fun SmallGroupAttendanceHistoryScreen(
         }
     }
 
-    ModalBottomSheetLayout(
-        modifier = Modifier,
-        sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp),
-        sheetState = sheetState,
-        sheetBackgroundColor = searchFieldBg,
-        sheetContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(screenHeight - dimen_56_dp)
-                    .padding(top = dimen_14_dp)
-                    .background(searchFieldBg)
-            ) {
-                DateRangePicker(
-                    state = state, showModeToggle = false, colors = DatePickerDefaults.colors(
-                        containerColor = searchFieldBg,
-                        todayDateBorderColor = blueDark,
-                        dayInSelectionRangeContainerColor = blueDark.copy(0.5f),
-                        selectedDayContainerColor = blueDark,
-                        selectedDayContentColor = white
-                    ), dateValidator = { selectedDate ->
-                        selectedDate < System.currentTimeMillis()
-                    })
+    if (smallGroupAttendanceHistoryViewModel.alertDialogState.value.isDialogVisible) {
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .wrapContentWidth()
-                        .padding(end = dimen_10_dp, bottom = dimen_10_dp)
-                ) {
-                    Button(
-                        modifier = Modifier,
-                        onClick = {
-                            smallGroupAttendanceHistoryViewModel
-                                .onEvent(
-                                    CommonEvents.UpdateDateRange(
-                                        state.selectedStartDateMillis,
-                                        state.selectedEndDateMillis
-                                    )
-                                )
-                            smallGroupAttendanceHistoryViewModel
-                                .onEvent(
-                                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
-                                )
-                            scope.launch {
-                                sheetState.hide()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = blueDark
-                        )
-                    ) {
-                        Text(text = "Ok", color = white, style = smallTextStyleWithNormalWeight)
-                    }
-                }
+        CustomDialogComponent(
+            title = "Are you sure!",
+            message = "You want to delete small group attendance?",
+            positiveButtonTitle = stringResource(id = R.string.yes),
+            negativeButtonTitle = stringResource(id = R.string.no),
+            onPositiveButtonClick = {
+                smallGroupAttendanceHistoryViewModel.onEvent(SmallGroupAttendanceEvent.DeleteAttendanceForDateEvent {
 
+                    smallGroupAttendanceHistoryViewModel.onEvent(SmallGroupAttendanceEvent.TerminateDeleteForDateEvent)
+                    smallGroupAttendanceHistoryViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+
+                })
+            },
+            onNegativeButtonClick = {
+                smallGroupAttendanceHistoryViewModel.onEvent(SmallGroupAttendanceEvent.TerminateDeleteForDateEvent)
+                smallGroupAttendanceHistoryViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
             }
-        }) {
+        )
+
+    }
+
+
+    /**
+     *Not required as no bottom UI present for this screen
+     **/
+    CustomDateRangePickerBottomSheetComponent(
+        customDateRangePickerBottomSheetProperties = sheetProperties,
+        dateRangePickerProperties = dateRangePickerProperties,
+        sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
+        onSheetConfirmButtonClicked = {
+            smallGroupAttendanceHistoryViewModel
+                .onEvent(
+                    CommonEvents.UpdateDateRange(
+                        dateRangePickerProperties.state.selectedStartDateMillis,
+                        dateRangePickerProperties.state.selectedEndDateMillis
+                    )
+                )
+            smallGroupAttendanceHistoryViewModel
+                .onEvent(
+                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
+                )
+            scope.launch {
+                sheetState.hide()
+            }
+        }
+    ) {
         ToolBarWithMenuComponent(
             title = smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupName,
             modifier = Modifier,
@@ -222,9 +212,27 @@ fun SmallGroupAttendanceHistoryScreen(
             onSearchValueChange = {},
             isDataAvailable = true,
             onBottomUI = {
-                /**
-                 *Not required as no bottom UI present for this screen
-                 **/
+                BottomAppBar(
+                    modifier = Modifier.height(dimen_80_dp),
+                    containerColor = white
+                ) {
+
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(dimen_10_dp)
+                    ) {
+                        ButtonPositiveComponent(
+                            buttonTitle = "Take Attendance",
+                            isActive = true,
+                            isArrowRequired = true,
+                            onClick = {
+                                navController.navigate("$SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE/$smallGroupId")
+                            }
+                        )
+                    }
+
+                }
             },
             onSettingClick = {},
             onContentUI = { paddingValues, b, function ->
@@ -267,15 +275,6 @@ fun SmallGroupAttendanceHistoryScreen(
                                         .fillMaxWidth()
                                         .padding(top = dimen_16_dp),
                                 ) {
-                                    ButtonPositiveComponent(
-                                        buttonTitle = "Take Attendance",
-                                        isActive = true,
-                                        isArrowRequired = true,
-                                        onClick = {
-                                            navController.navigate("$SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE/$smallGroupId")
-                                        }
-                                    )
-                                    CustomVerticalSpacer()
 
                                     Row(
                                         Modifier
@@ -326,51 +325,6 @@ fun SmallGroupAttendanceHistoryScreen(
                                             },
                                             onValueChange = {}
                                         )
-
-                                        /*CustomHorizontalSpacer()
-
-                                        OutlinedTextField(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .background(white)
-                                                .weight(1f)
-                                                .clickable {
-                                                    scope.launch {
-                                                        sheetState.show()
-                                                    }
-                                                },
-                                            value = smallGroupAttendanceHistoryViewModel.dateRangeFilter.value.second.getDate(),
-                                            enabled = true,
-                                            readOnly = true,
-                                            textStyle = defaultTextStyle,
-                                            singleLine = true,
-                                            colors = OutlinedTextFieldDefaults.colors(
-                                                focusedTextColor = textColorDark,
-                                                unfocusedBorderColor = dateRangeFieldColor,
-                                                focusedBorderColor = dateRangeFieldColor,
-                                                unfocusedContainerColor = white,
-                                                focusedContainerColor = white,
-                                            ),
-                                            label = {
-                                                Text(text = "To", color = otpBorderColor)
-                                            },
-                                            placeholder = {
-                                                Text(text = "To", color = otpBorderColor)
-                                            },
-                                            trailingIcon = {
-                                                IconButton(onClick = {
-                                                    scope.launch {
-                                                        sheetState.show()
-                                                    }
-                                                }) {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.calendar),
-                                                        contentDescription = "End Date"
-                                                    )
-                                                }
-                                            },
-                                            onValueChange = {}
-                                        )*/
                                     }
 
                                 }
@@ -388,13 +342,24 @@ fun SmallGroupAttendanceHistoryScreen(
                                 item {
                                     AttendanceSummaryCard(
                                         maxCustomHeight = maxHeight,
-                                        subjectAttendanceHistoryStateMappingByDate = it
-                                    ) {
-                                        navController.navigateToAttendanceEditScreen(
-                                            smallGroupId,
-                                            it.key
-                                        )
-                                    }
+                                        subjectAttendanceHistoryStateMappingByDate = it,
+                                        onDeleteClicked = {
+                                            smallGroupAttendanceHistoryViewModel.onEvent(
+                                                SmallGroupAttendanceEvent.InitiateDeleteForDateEvent(
+                                                    Pair(smallGroupId, it.key)
+                                                )
+                                            )
+                                            smallGroupAttendanceHistoryViewModel.onEvent(
+                                                DialogEvents.ShowDialogEvent(true)
+                                            )
+                                        },
+                                        onEditClicked = {
+                                            navController.navigateToAttendanceEditScreen(
+                                                smallGroupId,
+                                                it.key
+                                            )
+                                        }
+                                    )
                                 }
                             }
 
@@ -413,8 +378,8 @@ fun SmallGroupAttendanceHistoryScreen(
 
             }
         )
-    }
 
+    }
 }
 
 @Composable
@@ -471,7 +436,8 @@ fun AttendanceSummaryCard(
     innerState: LazyListState = rememberLazyListState(),
     maxCustomHeight: Dp,
     subjectAttendanceHistoryStateMappingByDate: Map.Entry<Long, List<SubjectAttendanceHistoryState>>,
-    onEditClicked: () -> Unit
+    onEditClicked: () -> Unit,
+    onDeleteClicked: () -> Unit
 ) {
     val totalSubjectsCount: MutableState<Int> =
         remember(subjectAttendanceHistoryStateMappingByDate.value.map { it.attendance }) {
@@ -495,6 +461,7 @@ fun AttendanceSummaryCard(
             }
         }
 
+    val isExpanded = remember { mutableStateOf(false) }
 
     BasicCardView(
         colors = CardDefaults.cardColors(
@@ -509,7 +476,8 @@ fun AttendanceSummaryCard(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimen_24_dp)
-                    .padding(top = dimen_8_dp), horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(top = dimen_8_dp), horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
@@ -518,18 +486,14 @@ fun AttendanceSummaryCard(
                     style = mediumBoldTextStyle
                 )
 
-                TextWithIconComponent(
-                    iconProperties = IconProperties(
-                        painterResource(id = R.drawable.didi_icon),
-                        contentDescription = null,
-                        tint = textColorDark
-                    ), textProperties = TextProperties(
-                        text = "${counts.value.first}/${counts.value.second}",
-                        style = defaultTextStyle,
-                        color = textColorDark
+                IconButton(onClick = {
+                    isExpanded.value = !isExpanded.value
+                }) {
+                    Icon(
+                        imageVector = if (isExpanded.value) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = "Expand Button"
                     )
-                )
-
+                }
 
             }
             Box(
@@ -546,35 +510,40 @@ fun AttendanceSummaryCard(
                 )
             }
 
-            Spacer(
-                modifier = Modifier
+            Box(
+                Modifier
                     .fillMaxWidth()
-                    .height(dimen_8_dp)
-            )
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                thickness = dimen_1_dp,
-                color = uncheckedTrackColor
-            )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(dimen_8_dp)
-            )
+                    .padding(horizontal = dimen_24_dp)
+            ) {
+                TextWithIconComponent(
+                    modifier = modifier.align(Alignment.CenterStart),
+                    iconProperties = IconProperties(
+                        painterResource(id = R.drawable.didi_icon),
+                        contentDescription = null,
+                        tint = textColorDark
+                    ), textProperties = TextProperties(
+                        text = "Total - ${counts.value.first}/${counts.value.second}",
+                        style = defaultTextStyle,
+                        color = textColorDark
+                    )
+                )
+            }
 
-            val isExpanded = remember { mutableStateOf(false) }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimen_8_dp)
+            )
 
 
             HistorySummaryCard(
-                modifier = Modifier.padding(horizontal = dimen_10_dp),
+                modifier = Modifier,
                 outerState = outerState,
                 innerState = innerState,
                 maxCustomHeight = maxCustomHeight,
                 subjectAttendanceHistoryStateList = subjectAttendanceHistoryStateMappingByDate.value,
                 isExpanded = isExpanded.value
             )
-
 
             Spacer(
                 modifier = Modifier
@@ -629,21 +598,20 @@ fun AttendanceSummaryCard(
                         .padding(horizontal = dimen_10_dp)
                         .weight(1f),
                     onClick = {
-                        if (subjectAttendanceHistoryStateMappingByDate.value.size > HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE) {
-                            isExpanded.value = !isExpanded.value
-                        }
+                        onDeleteClicked()
                     }) {
 
                     TextWithIconComponent(
                         modifier = Modifier,
                         iconProperties = IconProperties(
-                            if (isExpanded.value) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                            painterResource(id = R.drawable.ic_delete_icon),
                             contentDescription = null,
+                            tint = redOffline,
                             modifier = Modifier.absolutePadding(top = dimen_2_dp)
                         ), textProperties = TextProperties(
-                            text = if (isExpanded.value) "See Less" else "See More",
+                            text = "Delete",
                             style = defaultTextStyle,
-                            color = textColorDark
+                            color = redOffline
                         )
                     )
                 }
@@ -673,30 +641,35 @@ fun HistorySummaryCard(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = 0.dp, maxCustomHeight)
     ) {
         Column {
-            LazyColumn {
-                itemsIndexed(
-                    subjectAttendanceHistoryStateList.take(
-                        HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE
-                    )
-                ) { index, subjectAttendanceHistoryState ->
-                    HistorySummaryCardItem(subjectAttendanceHistoryState = subjectAttendanceHistoryState)
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically()
             ) {
                 LazyColumn {
+                    item {
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            thickness = dimen_1_dp,
+                            color = uncheckedTrackColor
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_8_dp)
+                        )
+                    }
                     itemsIndexed(
                         subjectAttendanceHistoryStateList
-                            .drop(HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE)
                     ) { index, subjectAttendanceHistoryState ->
-                        HistorySummaryCardItem(subjectAttendanceHistoryState = subjectAttendanceHistoryState)
+                        HistorySummaryCardItem(
+                            modifier = modifier,
+                            subjectAttendanceHistoryState = subjectAttendanceHistoryState
+                        )
                     }
                 }
             }
@@ -707,10 +680,12 @@ fun HistorySummaryCard(
 
 @Composable
 fun HistorySummaryCardItem(
+    modifier: Modifier,
     subjectAttendanceHistoryState: SubjectAttendanceHistoryState
 ) {
 
     ContentWithImage(
+        modifier = modifier.padding(horizontal = dimen_10_dp),
         imageProperties = ImageProperties(
             path = BLANK_STRING,
             contentDescription = "Didi Image"

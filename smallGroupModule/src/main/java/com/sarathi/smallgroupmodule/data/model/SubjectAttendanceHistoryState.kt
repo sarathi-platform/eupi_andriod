@@ -8,3 +8,23 @@ data class SubjectAttendanceHistoryState(
     val attendance: Boolean,
     val date: Long
 )
+
+
+fun SubjectAttendanceHistoryState.convertToSubjectAttendanceState(): SubjectAttendanceState {
+    return SubjectAttendanceState(
+        subjectId = this.subjectId,
+        attendance = this.attendance,
+        date = this.date
+    )
+}
+
+fun List<SubjectAttendanceHistoryState>?.convertToSubjectAttendanceStateList(): List<SubjectAttendanceState> {
+    this?.let {
+        val subjectAttendanceStateList = ArrayList<SubjectAttendanceState>()
+        this.forEach { historyState ->
+            subjectAttendanceStateList.add(historyState.convertToSubjectAttendanceState())
+        }
+        return subjectAttendanceStateList
+    } ?: return emptyList()
+
+}

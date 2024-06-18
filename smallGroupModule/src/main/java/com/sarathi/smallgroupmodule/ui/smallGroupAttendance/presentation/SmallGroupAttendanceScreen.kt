@@ -14,17 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -34,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.events.CommonEvents
@@ -43,6 +39,7 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveWithLoaderComponent
 import com.sarathi.missionactivitytask.ui.components.ContentWithImage
+import com.sarathi.missionactivitytask.ui.components.CustomDatePickerComponent
 import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.ImageProperties
@@ -51,6 +48,9 @@ import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewCompone
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.ui.components.rememberCustomDatePickerDialogProperties
+import com.sarathi.missionactivitytask.ui.components.rememberCustomDatePickerState
+import com.sarathi.missionactivitytask.ui.components.rememberDatePickerProperties
 import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.navigation.navigateToHistoryScreenFromAttendance
 import com.sarathi.smallgroupmodule.ui.commonUi.CustomDialogComponent
@@ -67,7 +67,6 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_80_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.ui.theme.mediumTextStyle
 import com.sarathi.smallgroupmodule.ui.theme.progressIndicatorColor
-import com.sarathi.smallgroupmodule.ui.theme.searchFieldBg
 import com.sarathi.smallgroupmodule.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.smallgroupmodule.ui.theme.stepIconCompleted
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
@@ -104,15 +103,24 @@ fun SmallGroupAttendanceScreen(
     }
 
     val datePickerState =
-        rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
+        rememberCustomDatePickerState()
+
+    val datePickerProperties = rememberDatePickerProperties(
+        state = datePickerState,
+        dateValidator = { selectedDate ->
+            smallGroupAttendanceScreenViewModel.dateValidator(selectedDate)
+        }
+    )
+
+    val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
 
     if (smallGroupAttendanceScreenViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
             title = "Are you sure!",
             message = "Do you want to mark all absent",
-            positiveButtonTitle = "Yes",
-            negativeButtonTitle = "No",
+            positiveButtonTitle = stringResource(id = R.string.yes),
+            negativeButtonTitle = stringResource(id = R.string.no),
             onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
@@ -224,37 +232,28 @@ fun SmallGroupAttendanceScreen(
                     )
                     .padding(horizontal = dimen_10_dp)
             ) {
-                if (showDatePickerDialog.value) {
 
-                    DatePickerDialog(
-                        colors = DatePickerDefaults.colors(
-                            containerColor = searchFieldBg
-                        ),
-                        onDismissRequest = { showDatePickerDialog.value = false },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    smallGroupAttendanceScreenViewModel.selectedDate.value =
-                                        datePickerState.selectedDateMillis!!
-                                    showDatePickerDialog.value = false
-                                },
-                                content = { Text("Ok") }
-                            )
-                        }) {
-                        DatePicker(
-                            state = datePickerState,
-                            dateValidator = { selectedDate ->
-                                smallGroupAttendanceScreenViewModel.dateValidator(selectedDate)
-                            }
-                        )
+                CustomDatePickerComponent(
+                    datePickerProperties = datePickerProperties,
+                    datePickerDialogProperties = datePickerDialogProperties,
+                    onDismissRequest = {
+                        datePickerDialogProperties.hide()
+                    },
+                    onConfirmButtonClicked = {
+                        smallGroupAttendanceScreenViewModel.selectedDate.value =
+                            datePickerState.selectedDateMillis!!
+                        datePickerDialogProperties.hide()
+                        showDatePickerDialog.value = false
                     }
-                }
+                )
 
                 SearchWithFilterViewComponent(
                     placeholderString = "Search Didi",
                     showFilter = false,
                     onFilterSelected = {
-
+                        /**
+                         * Not required as not filter available for this screen.
+                         **/
                     },
                     onSearchValueChange = { searchQuery ->
                         smallGroupAttendanceScreenViewModel.onEvent(
@@ -282,6 +281,7 @@ fun SmallGroupAttendanceScreen(
                             .background(white)
                             .weight(0.7f)
                             .clickable {
+                                datePickerDialogProperties.show()
                                 showDatePickerDialog.value = true
                             }
                     ) {

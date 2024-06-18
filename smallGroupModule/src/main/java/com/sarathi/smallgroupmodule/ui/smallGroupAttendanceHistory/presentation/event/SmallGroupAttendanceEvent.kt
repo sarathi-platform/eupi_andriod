@@ -24,4 +24,11 @@ sealed class SmallGroupAttendanceEvent {
         val selectedDate: Long
     )
 
+    data class DeleteAttendanceForDateEvent(val onSuccess: () -> Unit) : SmallGroupAttendanceEvent()
+
+    data class InitiateDeleteForDateEvent(val deleteHistoryForDateState: Pair<Int, Long>) :
+        SmallGroupAttendanceEvent()
+
+    object TerminateDeleteForDateEvent : SmallGroupAttendanceEvent()
+
 }

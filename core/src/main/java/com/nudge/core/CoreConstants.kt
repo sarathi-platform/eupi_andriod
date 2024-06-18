@@ -61,6 +61,7 @@ const val DEFAULT_DATE_RANGE_DURATION: Long = 30
 
 const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
+const val ATTENDANCE_DELETED = "Deleted"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),

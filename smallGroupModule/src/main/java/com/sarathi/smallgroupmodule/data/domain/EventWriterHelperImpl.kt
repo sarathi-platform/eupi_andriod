@@ -1,6 +1,7 @@
 package com.sarathi.smallgroupmodule.data.domain
 
 import android.net.Uri
+import com.nudge.core.ATTENDANCE_DELETED
 import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.Core
@@ -12,6 +13,8 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventName.DELETE_SUBJECT_ATTENDANCE_EVENT
+import com.nudge.core.enums.EventName.SAVE_SUBJECT_ATTENDANCE_EVENT
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.enums.PayloadType
@@ -58,7 +61,7 @@ class EventWriterHelperImpl @Inject constructor(
             return Events.getEmptyEvent()
 
         when (eventName) {
-            EventName.SAVE_SUBJECT_ATTENDANCE_EVENT -> {
+            SAVE_SUBJECT_ATTENDANCE_EVENT, DELETE_SUBJECT_ATTENDANCE_EVENT -> {
                 val requestPayload = (eventItem as SaveAttendanceEventDto)
 
                 var event = Events(
@@ -191,7 +194,39 @@ class EventWriterHelperImpl @Inject constructor(
 
         return createEvent(
             saveAttendanceEventDto,
-            EventName.SAVE_SUBJECT_ATTENDANCE_EVENT,
+            SAVE_SUBJECT_ATTENDANCE_EVENT,
+            EventType.STATEFUL
+        )
+
+    }
+
+    suspend fun createDeleteAttendanceEvent(
+        subjectEntity: SubjectEntity,
+        smallGroupSubTabUiModel: SmallGroupSubTabUiModel,
+        date: Long
+    ): Events {
+
+        val payloadData =
+            PayloadData(
+                date = date.getDate(pattern = "yyyy-MM-dd"),
+                id = smallGroupSubTabUiModel.smallGroupId.toString(),
+                value = ATTENDANCE_DELETED
+            )
+
+
+        val saveAttendanceEventDto = SaveAttendanceEventDto(
+            dateCreated = System.currentTimeMillis(),
+            languageId = coreSharedPrefs.getSelectedLanguageId(),
+            subjectId = subjectEntity.subjectId.value(),
+            subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
+            tagId = ATTENDANCE_TAG_ID,
+            payloadType = PayloadType.PAYLOAD_TYPE_ATTENDANCE.payloadType,
+            payloadData = payloadData
+        )
+
+        return createEvent(
+            saveAttendanceEventDto,
+            DELETE_SUBJECT_ATTENDANCE_EVENT,
             EventType.STATEFUL
         )
 
