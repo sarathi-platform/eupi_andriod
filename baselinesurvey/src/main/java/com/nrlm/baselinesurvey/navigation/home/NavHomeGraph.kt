@@ -260,6 +260,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
 
         }
 
+//        composable("didi_tab_screen") {
+//            DidiTabScreen()
+//        }
+
         composable(route = HomeScreens.DIDI_SCREEN.route) {
             SurveyeeListScreen(
                 viewModel = hiltViewModel(),

@@ -22,11 +22,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.borderGrey
-import com.nudge.core.ui.events.theme.buttonTextStyle
-import com.nudge.core.ui.events.theme.placeholderGrey
-import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight
-import com.nudge.core.ui.events.theme.textColorDark
+import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
 

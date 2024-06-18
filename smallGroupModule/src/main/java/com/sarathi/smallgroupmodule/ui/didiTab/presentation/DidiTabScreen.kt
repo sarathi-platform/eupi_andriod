@@ -1,0 +1,153 @@
+package com.sarathi.smallgroupmodule.ui.didiTab.presentation
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.nudge.core.ui.events.CommonEvents
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
+import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
+import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.smallgroupmodule.SmallGroupCore
+import com.sarathi.smallgroupmodule.ui.TabItem
+import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
+import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
+import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
+import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
+import com.sarathi.dataloadingmangement.R as DataLoadingRes
+import com.sarathi.smallgroupmodule.R as Res
+
+@Composable
+fun DidiTabScreen(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    didiTabViewModel: DidiTabViewModel = hiltViewModel(),
+    onSettingClicked: () -> Unit
+) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+
+        didiTabViewModel.onEvent(InitDataEvent.InitDataState)
+
+    }
+
+    val isSearchActive = remember {
+        mutableStateOf(false)
+    }
+
+    val didiList = didiTabViewModel.filteredDidiList
+
+    val tabs = listOf("Didi", "Small Group")
+
+
+    ToolBarWithMenuComponent(
+        title = stringResource(id = DataLoadingRes.string.app_name),
+        modifier = Modifier,
+        isSearch = true,
+        iconResId = Res.drawable.ic_sarathi_logo,
+        onBackIconClick = { /*TODO*/ },
+        isDataAvailable = didiList.value.isNotEmpty() || isSearchActive.value,
+        onSearchValueChange = {
+
+        },
+        onBottomUI = {
+            /**
+             *Not required as no bottom UI present for this screen
+             **/
+        },
+        onSettingClick = {
+            onSettingClicked()
+        },
+        onContentUI = { paddingValues, b, function ->
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = dimen_16_dp)
+                    .padding(top = dimen_16_dp),
+                verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+            ) {
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+
+                    tabs.forEachIndexed { index, tab ->
+
+                        val count = getCount(index, didiTabViewModel)
+                        TabItem(
+                            isSelected = SmallGroupCore.tabIndex.value == index,
+                            onClick = {
+                                SmallGroupCore.tabIndex.value = index
+                            },
+                            text = "$tab ($count)"
+                        )
+                    }
+
+                }
+
+                Column {
+                    SearchWithFilterViewComponent(
+                        placeholderString = when (SmallGroupCore.tabIndex.value) {
+                            0 -> "Search by didis"
+                            1 -> "Search by small groups"
+                            else -> "Search by didis"
+                        },
+                        showFilter = false,
+                        onFilterSelected = {
+
+                        },
+                        onSearchValueChange = { searchQuery ->
+                            isSearchActive.value = searchQuery.isNotEmpty()
+                            didiTabViewModel.onEvent(
+                                CommonEvents.SearchValueChangedEvent(
+                                    searchQuery,
+                                    (SmallGroupCore.tabIndex.value as Int)
+                                )
+                            )
+                        }
+                    )
+                    CustomVerticalSpacer()
+                    when (SmallGroupCore.tabIndex.value) {
+                        0 -> {
+                            DidiSubTab(
+                                didiTabViewModel = didiTabViewModel,
+                                didiList = didiList.value
+                            )
+                        }
+
+                        1 -> SmallGroupSubTab(
+                            didiTabViewModel = didiTabViewModel,
+                            smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
+                            navHostController = navHostController
+                        )
+                    }
+                }
+
+
+            }
+        }
+    )
+
+}
+
+fun getCount(tabIndex: Int, didiTabViewModel: DidiTabViewModel): Int {
+    return when (tabIndex) {
+        0 -> didiTabViewModel.totalCount.value
+        1 -> didiTabViewModel.totalSmallGroupCount.value
+        else -> {
+            0
+        }
+    }
+}

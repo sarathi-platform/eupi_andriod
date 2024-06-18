@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import com.nudge.core.ui.events.theme.greenOnline
-import com.nudge.core.ui.events.theme.trackLinearColor
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.trackLinearColor
 
 
 @Composable

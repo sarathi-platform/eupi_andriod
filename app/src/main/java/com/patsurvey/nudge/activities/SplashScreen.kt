@@ -62,9 +62,9 @@ fun SplashScreen(
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
-                viewModel.showLoader.value=true
+                viewModel.showLoader.value = true
                 delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value=false
+                viewModel.showLoader.value = false
                 if (viewModel.getLoggedInUserType() == UPCM_USER) {
                     navController.popBackStack()
                     navController.navigate(
@@ -99,7 +99,10 @@ fun SplashScreen(
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
-                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true")
+                    NudgeLogger.d(
+                        "SplashScreen",
+                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true"
+                    )
                     if (viewModel.getLoggedInUserType() == UPCM_USER) {
                         navController.popBackStack()
                         navController.navigate(

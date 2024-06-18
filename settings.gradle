@@ -19,3 +19,5 @@ include ':missionActivityTask'
 include ':ContentManager'
 include ':DataManager'
 include ':surveymanager'
+include ':smallGroupModule'
+

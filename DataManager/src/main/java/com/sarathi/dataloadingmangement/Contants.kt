@@ -37,3 +37,7 @@ const val DISBURSED_AMOUNT_TAG = "86"
 const val NO_OF_POOR_DIDI_TAG = "85"
 const val NATURE = "NATURE"
 const val DIDI_IMAGE_ATTRIBUTE = "didiImage"
+
+
+const val SUBJECT_TABLE = "subject_table"
+const val SMALL_GROUP_DIDI_MAPPING_TABLE = "small_group_didi_mapping_table"

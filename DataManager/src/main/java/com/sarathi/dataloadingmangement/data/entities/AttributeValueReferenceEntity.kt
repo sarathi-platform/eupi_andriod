@@ -19,6 +19,7 @@ data class AttributeValueReferenceEntity(
     var userId: String? = BLANK_STRING,
     var key: String,
     var value: String,
+    val valueType: String,
     var parentReferenceId: Long
 
 ) {
@@ -26,13 +27,14 @@ data class AttributeValueReferenceEntity(
         fun getAttributeValueReferenceEntity(
             userId: String?,
             parentReferenceId: Long,
-            taskData: TaskData
+            taskData: TaskData,
+            valueType: String = BLANK_STRING
         ): AttributeValueReferenceEntity {
 
             return AttributeValueReferenceEntity(
                 id = 0, userId = userId, parentReferenceId = parentReferenceId,
-                key = taskData.key, value = taskData.value ?: BLANK_STRING
-
+                key = taskData.key, value = taskData.value ?: BLANK_STRING,
+                valueType = valueType
             )
 
         }

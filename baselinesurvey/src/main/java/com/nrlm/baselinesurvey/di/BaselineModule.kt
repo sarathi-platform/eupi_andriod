@@ -788,11 +788,13 @@ object BaselineModule {
 
     @Singleton
     @Provides
-    fun provideExportImportUseCase(repository: ExportImportRepository):ExportImportUseCase{
+    fun provideExportImportUseCase(repository: ExportImportRepository): ExportImportUseCase {
         return ExportImportUseCase(
             getExportOptionListUseCase = GetExportOptionListUseCase(repository),
             clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
             getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
         )
     }
+
+
 }

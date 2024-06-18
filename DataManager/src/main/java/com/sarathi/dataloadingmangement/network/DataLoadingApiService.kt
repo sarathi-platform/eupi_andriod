@@ -6,10 +6,15 @@ import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
+import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
+import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
+import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
+import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
@@ -20,7 +25,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface DataLoadingApiService {
-    @POST(SUB_PATH_GET_MISSION)
+    @POST(SUB_PATH_GET_MISSION_V2)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ProgrameResponse>>
 
@@ -44,4 +49,15 @@ interface DataLoadingApiService {
     @POST(SUBPATH_SURVEY_ANSWERS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
+
+    @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
+    suspend fun getSmallGroupBeneficiaryMapping(@Body smallGroupApiRequest: SmallGroupApiRequest): ApiResponseModel<List<SmallGroupMappingResponseModel>>
+
+    @GET(SUBPATH_GET_DIDI_LIST)
+    suspend fun getDidisFromNetwork(@Query("userId") userId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
+    @POST(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK)
+    suspend fun getAttendanceHistoryFromNetwork(@Body attendanceHistoryRequest: AttendanceHistoryRequest): ApiResponseModel<List<AttendanceHistoryResponse>>
+
+
 }

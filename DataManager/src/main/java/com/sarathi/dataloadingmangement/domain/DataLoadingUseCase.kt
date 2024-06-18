@@ -4,6 +4,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetw
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailsUseCase
 
 
 data class DataLoadingUseCase(

@@ -9,6 +9,11 @@ interface CorePrefRepo {
     fun setImageBackupFileName(fileName: String)
     fun isFileExported(): Boolean
     fun setFileExported(isExported: Boolean)
+
+    fun getUserId(): String
+
+    fun saveUserId(userId: String)
+
     fun setMobileNo(mobileNo: String)
     fun getMobileNo(): String
     fun getUserType(): String
@@ -16,15 +21,36 @@ interface CorePrefRepo {
     fun getUniqueUserIdentifier(): String
     fun getAppLanguage(): String?
     fun saveAppLanguage(code: String?)
-    fun savePref(key: String, value: String)
-    fun savePref(key: String, value: Int)
-    fun savePref(key: String, value: Boolean)
-    fun getPref(key: String, defaultValue: Int): Int
-    fun getPref(key: String, defaultValue: String): String
-    fun getPref(key: String, defaultValue: Boolean): Boolean
-    fun getUserId(): String
     fun setUserId(userId: String)
+
+    fun getSelectedLanguageId(): Int
+
+    fun getSelectedLanguageCode(): String
+
+    fun savePref(key: String, value: String)
+
+    fun savePref(key: String, value: Int)
+
+    fun savePref(key: String, value: Boolean)
+
+    fun savePref(key: String, value: Long)
+
+    fun savePref(key: String, value: Float)
+
+    fun getPref(key: String, defaultValue: Int): Int
+
+    fun getPref(key: String, defaultValue: String): String
+
+    fun getPref(key: String, defaultValue: Boolean): Boolean
+
     fun setDataLoaded(isDataLoaded: Boolean)
+
     fun isDataLoaded(): Boolean
+
+    fun getPref(key: String, defaultValue: Long): Long
+
+    fun getPref(key: String, defaultValue: Float): Float
+
+    fun getUserNameInInt(): Int
 
 }

@@ -27,9 +27,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.showCustomToast
-import com.nudge.core.ui.events.theme.dimen_16_dp
-import com.nudge.core.ui.events.theme.dimen_56_dp
-import com.nudge.core.ui.events.theme.dimen_8_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.QuestionType

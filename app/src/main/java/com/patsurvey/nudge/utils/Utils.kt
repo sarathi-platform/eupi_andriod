@@ -193,6 +193,7 @@ fun getStepStatusFromOrdinal(status: Int): String {
         }
     }
 }
+
 fun Context.findActivity(): ComponentActivity? = when (this) {
     is ComponentActivity -> this
     is ContextWrapper -> baseContext.findActivity()

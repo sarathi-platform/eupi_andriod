@@ -9,6 +9,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.syncmanager.SyncManager
@@ -45,6 +46,7 @@ class MyApplication : Application(), androidx.work.Configuration.Provider {
     private fun init() {
         instance = this
         NudgeCore.initEventObserver(syncManager)
+        Core().init(instance.applicationContext)
     }
 
     override fun onCreate() {

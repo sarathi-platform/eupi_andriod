@@ -26,9 +26,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.defaultTextStyle
-import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.SurveyStatusEnum

@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.UI_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
+
 @Entity(tableName = UI_CONFIG_TABLE_NAME)
 data class UiConfigEntity(
     @PrimaryKey(autoGenerate = true)

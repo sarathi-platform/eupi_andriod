@@ -29,12 +29,14 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
@@ -52,11 +54,13 @@ import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 
 const val NUDGE_GRANT_DATABASE_VERSION = 1
 
@@ -83,7 +87,9 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         ProgrammeEntity::class,
         SurveyAnswerEntity::class,
         GrantConfigEntity::class,
-        SurveyLanguageAttributeEntity::class
+        SurveyLanguageAttributeEntity::class,
+        SubjectEntity::class,
+        SmallGroupDidiMappingEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -126,6 +132,10 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun grantConfigDao(): GrantConfigDao
     abstract fun surveyLanguageAttributeDao(): SurveyLanguageAttributeDao
 
+
+    abstract fun subjectEntityDao(): SubjectEntityDao
+
+    abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
 
     class NudgeDatabaseCallback : Callback()
 

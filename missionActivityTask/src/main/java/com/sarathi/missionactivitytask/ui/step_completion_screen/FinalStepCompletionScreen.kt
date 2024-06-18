@@ -23,8 +23,8 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.nudge.core.ui.events.theme.largeTextStyle
-import com.nudge.core.ui.events.theme.textColorDark
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FINAL_STEP_COMPLETION_DELAY
 import kotlinx.coroutines.delay

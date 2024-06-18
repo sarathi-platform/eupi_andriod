@@ -10,7 +10,8 @@ import com.nudge.core.eventswriter.entities.ImageEventWriter
 const val BLANK_STRING = ""
 const val DEFAULT_ID = 0
 const val NO_SECTION = "NO_SECTION"
-const val DEFAULT_LANGUAGE_CODE = "en"
+const val NO_TOLA_TITLE = "NO TOLA"
+
 
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
@@ -46,6 +47,21 @@ const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
 const val EXCEL_TYPE = "text/csv"
 const val REGENERATE_PREFIX = "regenerate_"
+
+const val SUCCESS = "SUCCESS"
+const val FAIL = "FAIL"
+
+const val SUCCESS_CODE = "200"
+
+const val DEFAULT_LANGUAGE_CODE = "en"
+const val DEFAULT_LANGUAGE_ID = 2
+
+const val ATTENDANCE_TAG_ID = 94
+const val DEFAULT_DATE_RANGE_DURATION: Long = 30
+
+const val ATTENDANCE_PRESENT = "Present"
+const val ATTENDANCE_ABSENT = "Absent"
+const val ATTENDANCE_DELETED = "Deleted"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
