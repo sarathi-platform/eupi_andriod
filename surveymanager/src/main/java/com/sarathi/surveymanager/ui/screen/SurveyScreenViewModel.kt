@@ -160,7 +160,7 @@ class SurveyScreenViewModel @Inject constructor(
             if (questionUiModel.tagId.toString() == DISBURSED_AMOUNT_TAG) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {
+                if (sanctionAmount != 0 && disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {
                     isButtonEnable.value = false
                     return
                 }

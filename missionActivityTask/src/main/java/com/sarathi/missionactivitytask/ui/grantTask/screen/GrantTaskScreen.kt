@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -212,7 +213,8 @@ private fun TaskRowView(
                     subjectType = it.subject,
                     subjectName = subjectName,
                     activityConfigId = it.activityConfigId,
-                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt(),
+                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                        ?: DEFAULT_ID,
                 )
             }
         },
@@ -236,11 +238,11 @@ private fun TaskRowView(
         primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
         secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
         status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
-
         subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
         subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
         subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
+        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
+        formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name]
     )
 }
 

@@ -210,9 +210,17 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value =
-                sanctionedAmount == getTotalSubmittedAmount() && !isActivityCompleted.value && isAllFormGeneratedDisburement()
-            isAddDisbursementButtonEnable.value = sanctionedAmount != getTotalSubmittedAmount()
+            isButtonEnable.value = isDoneButtonEnable()
+            isAddDisbursementButtonEnable.value =
+                sanctionedAmount == 0 || sanctionedAmount != getTotalSubmittedAmount()
+        }
+    }
+
+    private fun isDoneButtonEnable(): Boolean {
+        if (sanctionedAmount == 0) {
+            return !isActivityCompleted.value && taskList.value.isNotEmpty()
+        } else {
+            return sanctionedAmount == getTotalSubmittedAmount() && !isActivityCompleted.value && isAllFormGeneratedDisburement()
         }
     }
 
@@ -229,6 +237,10 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     }
 
     fun getTotalSubmittedAmount(): Int {
+        if (sanctionedAmount == 0) {
+            return 0
+
+        }
         totalSubmittedAmount = 0
         taskList.value.entries.forEach {
             totalSubmittedAmount +=
@@ -252,7 +264,6 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         return true
 
     }
-
 
 
 }

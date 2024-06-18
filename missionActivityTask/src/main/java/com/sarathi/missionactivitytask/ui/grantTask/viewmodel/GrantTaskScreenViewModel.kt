@@ -97,17 +97,19 @@ class GrantTaskScreenViewModel @Inject constructor(
             taskUiModel.forEachIndexed { index, it ->
                 if (index == 0) {
                     searchLabel.value = getUiComponentValues(
-                        it.taskId,
-                        it.status.toString(),
-                        it.subjectId,
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        subjectId = it.subjectId,
+                        formGeneratedCount = it.formGeneratedCount,
                         componentType = ComponentEnum.Search.name
                     )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
                         ?: BLANK_STRING
 
                     if ((getUiComponentValues(
-                            it.taskId,
-                            it.status.toString(),
-                            it.subjectId,
+                            taskId = it.taskId,
+                            taskStatus = it.status.toString(),
+                            subjectId = it.subjectId,
+                            formGeneratedCount = it.formGeneratedCount,
                             componentType = ComponentEnum.Card.name
                         )[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
@@ -117,9 +119,10 @@ class GrantTaskScreenViewModel @Inject constructor(
                 }
                 _taskList.value[it.taskId] =
                     getUiComponentValues(
-                        it.taskId,
-                        it.status.toString(),
-                        it.subjectId,
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        subjectId = it.subjectId,
+                        formGeneratedCount = it.formGeneratedCount,
                         componentType = ComponentEnum.Card.name
                     )
             }
@@ -139,12 +142,19 @@ class GrantTaskScreenViewModel @Inject constructor(
     private suspend fun getUiComponentValues(
         taskId: Int,
         taskStatus: String,
+        formGeneratedCount: Int = 0,
         subjectId: Int,
         componentType: String
     ): HashMap<String, GrantTaskCardModel> {
         val cardAttributesWithValue = HashMap<String, GrantTaskCardModel>()
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
             GrantTaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name] =
+            GrantTaskCardModel(
+                value = formGeneratedCount.toString(),
+                label = BLANK_STRING,
+                icon = null
+            )
         val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
             missionId = missionId, activityId = activityId
         )
