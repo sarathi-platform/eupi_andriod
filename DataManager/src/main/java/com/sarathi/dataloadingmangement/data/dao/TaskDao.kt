@@ -33,7 +33,7 @@ interface TaskDao {
     @Query("UPDATE $TASK_TABLE_NAME set isActive = 0 where userId=:userId and activityId=:activityId and missionId = :missionId ")
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
-    @Query("SELECT taskId,subjectId, status FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
+    @Query("SELECT taskId,subjectId, status FROM $TASK_TABLE_NAME  where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
     suspend fun getActiveTask(
         userId: String,
         missionId: Int,

@@ -30,7 +30,9 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
@@ -43,7 +45,8 @@ fun DisbursementCard(
     subTitle4: String = BLANK_STRING,
     subTitle5: String = BLANK_STRING,
     onEditSurvey: () -> Unit,
-    onDeleteSurvey: () -> Unit
+    onDeleteSurvey: () -> Unit,
+    isFormgenerated: Boolean
 
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -82,6 +85,19 @@ fun DisbursementCard(
                 TextRow(text1 = stringResource(R.string.no_of_didi_s), text2 = subTitle5)
             }
         }
+        if (isFormgenerated) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_green_file),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = dimen_4_dp)
+                        .align(Alignment.CenterVertically),
+                )
+                Text("Fom E Generated", color = greenOnline, style = mediumTextStyle)
+
+            }
+        } else {
         Row {
             Row(
                 modifier = Modifier
@@ -144,8 +160,10 @@ fun DisbursementCard(
                 )
             }
         }
+        }
     }
 }
+
 
 @Composable
 private fun TextRow(text1: String, text2: String) {

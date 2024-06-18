@@ -41,10 +41,13 @@ class FormUseCase @Inject constructor(
         )
     }
 
-    suspend fun getFormSummaryData(): List<FormEntity> {
-        return repository.getFormSummaryData()
+    suspend fun getFormSummaryData(activityId: Int): List<FormEntity> {
+        return repository.getAllFormSummaryData(activityId)
     }
 
+    suspend fun getNonGeneratedFormSummaryData(activityId: Int): List<FormEntity> {
+        return repository.getNonGeneratedFormSummaryData(activityId)
+    }
     fun getFilePathUri(filePath: String): Uri? {
         return downloaderManager.getFilePathUri(filePath)
     }

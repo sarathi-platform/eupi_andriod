@@ -93,7 +93,7 @@ fun GrantTaskScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     ButtonPositive(modifier = Modifier.weight(0.4f),
                         buttonTitle = stringResource(id = R.string.generate_form_e),
-                        isActive = true,
+                        isActive = viewModel.isGenerateFormButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
                             navigateToDisbursmentSummaryScreen(navController)

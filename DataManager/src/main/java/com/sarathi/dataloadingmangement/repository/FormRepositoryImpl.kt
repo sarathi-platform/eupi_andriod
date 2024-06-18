@@ -43,12 +43,22 @@ class FormRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getFormSummaryData(): List<FormEntity> {
+    override suspend fun getNonGeneratedFormSummaryData(activityId: Int): List<FormEntity> {
         return formDao.getFormSummaryData(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            isFormGenerated = false
+            isFormGenerated = false,
+            activityId = activityId
         )
     }
+
+    override suspend fun getAllFormSummaryData(activityId: Int): List<FormEntity> {
+        return formDao.getAllFormSummaryData(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId
+        )
+    }
+
+
 
     override suspend fun updateFormData(isFormGenerated: Boolean) {
         return formDao.updateFormData(

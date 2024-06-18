@@ -72,7 +72,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     }
 
     private suspend fun getFormData(): List<DisbursementFormSummaryUiModel> {
-        val fromData = formUseCase.getFormSummaryData()
+//@Todo pass activity Id here
+        val fromData = formUseCase.getFormSummaryData(activityId = 2)
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
             val _data = getFormAttributeDate(form)

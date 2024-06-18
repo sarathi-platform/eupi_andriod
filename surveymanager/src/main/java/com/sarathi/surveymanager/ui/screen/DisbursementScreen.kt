@@ -95,7 +95,7 @@ fun DisbursementSummaryScreen(
 
                     )
                 },
-                isEditable = !viewModel.isActivityCompleted.value,
+                isEditable = viewModel.isAddDisbursementButtonEnable.value,
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
                         LazyColumn {
@@ -109,6 +109,7 @@ fun DisbursementSummaryScreen(
                                     subTitle3 = surveyData.subTittle3,
                                     subTitle4 = surveyData.subTittle4,
                                     subTitle5 = surveyData.subTittle5,
+                                    isFormgenerated = surveyData.isFormGenerated,
                                     onEditSurvey = {
                                         onNavigateSurveyScreen(
                                             surveyData.referenceId,

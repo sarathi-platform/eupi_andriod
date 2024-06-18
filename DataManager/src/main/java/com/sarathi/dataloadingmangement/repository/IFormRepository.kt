@@ -18,7 +18,8 @@ interface IFormRepository {
         taskId: Int
     ): Int
 
-    suspend fun getFormSummaryData(): List<FormEntity>
+    suspend fun getNonGeneratedFormSummaryData(activityId: Int): List<FormEntity>
+    suspend fun getAllFormSummaryData(activityId: Int): List<FormEntity>
 
 
     suspend fun updateFormData(
