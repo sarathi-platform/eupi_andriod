@@ -13,6 +13,8 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,10 +60,15 @@ import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
+import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
+import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.component.ButtonPositive
 import kotlinx.coroutines.launch
 
 
@@ -83,11 +90,30 @@ fun DisbursementFormSummaryScreen(
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
 
-
-
-
-
-    BoxWithConstraints(
+    ToolBarWithMenuComponent(
+        title = "Disbursement summary",
+        modifier = Modifier,
+        onBackIconClick = { navController.popBackStack() },
+        onSearchValueChange = {},
+        onBottomUI = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                ButtonPositive(
+                    buttonTitle = "Attach physical form E",
+                    isActive = true,
+                    isArrowRequired = false,
+                    onClick = {
+                        navigateToAddImageScreen(navController)
+                    }
+                )
+            }
+        },
+        onSettingClick = {},
+        onContentUI = {
+            BoxWithConstraints(
         modifier = Modifier
             .scrollable(
                 state = rememberScrollableState {
@@ -133,7 +159,8 @@ fun DisbursementFormSummaryScreen(
 
         }
     }
-
+}
+}
 
 }
 

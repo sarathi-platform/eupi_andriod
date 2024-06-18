@@ -13,6 +13,7 @@ import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
@@ -40,8 +41,8 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.ui.add_image_screen.screen.AddImageScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
@@ -351,38 +352,16 @@ fun NavGraphBuilder.MatNavigation(
                 viewModel = hiltViewModel()
             )
         }
+
+        composable(route = MATHomeScreens.AddImageScreen.route) {
+            AddImageScreen(
+                navController = navController
+            )
+        }
     }
 }
 
 
-sealed class MATHomeScreens(val route: String) {
-    object MissionScreen : MATHomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
-    object ActivityScreen :
-        MATHomeScreens(route = "$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_MISSION_NAME}")
-
-    object GrantTaskScreen :
-        MATHomeScreens(route = "$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_ACTIVITY_ID}/{$ARG_ACTIVITY_NAME}")
-
-    object ContentDetailScreen :
-        MATHomeScreens(route = "$CONTENT_DETAIL_SCREEN_ROUTE_NAME/{$ARG_MAT_ID}/{$ARG_CONTENT_SCREEN_CATEGORY}")
-
-    object MediaPlayerScreen :
-        MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
-
-    object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_GRANT_ID}/{$ARG_GRANT_TYPE}/{$ARG_SANCTIONED_AMOUNT}/{$ARG_TOTAL_SUBMITTED_AMOUNT}")
-
-    object DisbursementSurveyScreen :
-        MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_SANCTIONED_AMOUNT}")
-
-    object ActivityCompletionScreen :
-        MATHomeScreens(route = "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_MASSAGE}")
-
-    object FinalStepCompletionScreen : MATHomeScreens(route = MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
-    object DisbursmentSummaryScreen : MATHomeScreens(route = DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME)
-
-
-}
 
 fun navigateToContentDetailScreen(
     navController: NavController,
@@ -447,6 +426,10 @@ fun navigateToMediaPlayerScreen(
 
 fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName")
+}
+
+fun navigateToAddImageScreen(navController: NavController) {
+    navController.navigate(ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToTaskScreen(
