@@ -96,7 +96,8 @@ fun CollapsibleCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(white)
+                        .background(white),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
                         modifier = Modifier
@@ -130,7 +131,6 @@ fun CollapsibleCard(
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(top = dimen_16_dp)
                         .background(white)
                 ) {
                     onContentUI()

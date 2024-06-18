@@ -28,8 +28,8 @@ import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_40_dp
 import com.nudge.core.ui.events.theme.dimen_4_dp
+import com.nudge.core.ui.events.theme.dimen_50_dp
 import com.nudge.core.ui.events.theme.dimen_5_dp
 import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.white
@@ -46,7 +46,11 @@ fun DisbursementCard(
     onDeleteSurvey: () -> Unit
 
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimen_10_dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,8 +89,9 @@ fun DisbursementCard(
         Row {
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
+                    .weight(0.4f)
+                    .height(dimen_50_dp)
+                    .padding(dimen_5_dp)
                     .clickable { onEditSurvey() }
                     .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
@@ -115,8 +120,9 @@ fun DisbursementCard(
             }
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
+                    .weight(0.4f)
+                    .height(dimen_50_dp)
+                    .padding(dimen_5_dp)
                     .clickable { onDeleteSurvey() }
                     .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
