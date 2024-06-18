@@ -10,4 +10,6 @@
     <string name="view">View</string>
     <string name="continue_text">Continue</string>
     <string name="not_available">Not Available</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
 </resources>
