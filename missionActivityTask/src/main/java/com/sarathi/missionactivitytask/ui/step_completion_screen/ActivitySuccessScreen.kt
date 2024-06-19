@@ -91,8 +91,7 @@ fun ActivitySuccessScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                     Column(modifier = modifier.padding(horizontal = 10.dp)) {
                         Text(
-                            text = "Receipt of funds added successfully for \n" +
-                                    "Ganbari Sikla VO.",
+                            text = message,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),

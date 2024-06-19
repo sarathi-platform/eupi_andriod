@@ -31,10 +31,10 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
 
     object DisbursmentSummaryScreen :
-        MATHomeScreens(route = MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME)
+        MATHomeScreens(route = "${MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}")
 
     object AddImageScreen :
-        MATHomeScreens(route = MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME)
+        MATHomeScreens(route = "${MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}")
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
 

@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,7 @@ import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyColor
-import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
 
@@ -98,7 +99,11 @@ fun DisbursementCard(
                         .padding(end = dimen_4_dp)
                         .align(Alignment.CenterVertically),
                 )
-                Text("Fom E Generated", color = greenOnline, style = mediumTextStyle)
+                Text(
+                    LocalContext.current.getString(R.string.form_e_generated),
+                    color = greenOnline,
+                    style = newMediumTextStyle
+                )
 
             }
         } else {

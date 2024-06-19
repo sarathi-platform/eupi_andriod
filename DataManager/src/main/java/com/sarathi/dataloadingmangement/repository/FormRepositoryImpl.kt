@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toDate
 import com.nudge.core.toDateInMMDDYYFormat
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
@@ -18,19 +19,20 @@ class FormRepositoryImpl @Inject constructor(
         activityId: Int,
         referenceId: String,
         subjectType: String
-    ) {
-        formDao.insertFormData(
-            FormEntity.getFormEntity(
-                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                taskId = taskId,
-                surveyId = surveyId,
-                subjectId = subjectId,
-                subjectType = subjectType,
-                missionId = missionId,
-                activityId = activityId,
-                referenceId = referenceId
-            )
+    ): FormEntity {
+        val formEntity = FormEntity.getFormEntity(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            taskId = taskId,
+            surveyId = surveyId,
+            subjectId = subjectId,
+            subjectType = subjectType,
+            missionId = missionId,
+            activityId = activityId,
+            referenceId = referenceId
         )
+        formDao.insertFormData(formEntity)
+        return formEntity
+
     }
 
     override suspend fun deleteForm(
@@ -60,11 +62,16 @@ class FormRepositoryImpl @Inject constructor(
     }
 
 
-
-    override suspend fun updateFormData(isFormGenerated: Boolean) {
+    override suspend fun updateFormData(
+        isFormGenerated: Boolean,
+        localReferenceId: String,
+        generatedDate: String
+    ) {
         return formDao.updateFormData(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            isFormGenerated = isFormGenerated
+            isFormGenerated = isFormGenerated,
+            localReferenceId = localReferenceId,
+            generatedDate = generatedDate
         )
     }
 
