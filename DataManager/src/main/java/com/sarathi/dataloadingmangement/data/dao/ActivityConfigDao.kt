@@ -24,6 +24,9 @@ interface ActivityConfigDao {
     @Query("Select  DISTINCT surveyId from $ACTIVITY_CONFIG_TABLE_NAME")
     fun getSurveyIds(): List<Int>
 
+    @Query("Select  * from $ACTIVITY_CONFIG_TABLE_NAME")
+    fun getActivityConfigUiModel(): List<ActivityConfigEntity>?
+
     @Query("Delete from activity_config_table where activityId=:activityId and userId=:userId")
     fun deleteActivityConfig(activityId: Int, userId: String)
 }

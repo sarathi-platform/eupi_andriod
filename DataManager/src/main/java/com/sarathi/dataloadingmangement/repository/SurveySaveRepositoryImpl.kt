@@ -7,7 +7,6 @@ import com.sarathi.dataloadingmangement.NO_OF_POOR_DIDI_TAG
 import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import javax.inject.Inject
@@ -112,7 +111,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
 
     override suspend fun getSurveyAnswerImageKeys(
         questionType: String,
-    ): List<OptionsUiModel>? {
+    ): List<SurveyAnswerEntity>? {
         return surveyAnswersDao.getSurveyAnswerImageKeys(
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
             questionType = questionType

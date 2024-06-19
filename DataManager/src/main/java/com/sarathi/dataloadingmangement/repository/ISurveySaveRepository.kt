@@ -1,6 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 
@@ -35,5 +35,5 @@ interface ISurveySaveRepository {
 
     suspend fun getSurveyAnswerImageKeys(
         questionType: String
-    ): List<OptionsUiModel>?
+    ): List<SurveyAnswerEntity>?
 }

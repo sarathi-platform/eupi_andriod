@@ -13,6 +13,9 @@ interface FormDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertForm(formEntity: FormEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllFormDetail(formEntity: List<FormEntity>)
+
 
     @Query("select count(*) from form_table where userId =:userId and subjectId=:subjectId and taskid=:taskId  and localReferenceId=:localReferenceId")
     fun getFormData(

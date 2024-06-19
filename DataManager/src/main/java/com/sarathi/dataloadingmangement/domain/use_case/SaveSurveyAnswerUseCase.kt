@@ -1,6 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
@@ -68,7 +68,7 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
 
     suspend fun getSurveyAnswerImageKeys(
         questionType: String,
-    ): List<OptionsUiModel>? {
+    ): List<SurveyAnswerEntity>? {
         return repository.getSurveyAnswerImageKeys(questionType = questionType)
     }
 }

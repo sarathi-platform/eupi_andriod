@@ -56,20 +56,22 @@ class ContentRepositoryImpl @Inject constructor(
                 )
             )
         }
-        val optionsUiModels = surveyAnswersDao.getSurveyAnswerImageKeys(
+        val surveyyAnswers = surveyAnswersDao.getSurveyAnswerImageKeys(
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
             questionType = QuestionType.MultiImage.name
         )
-        optionsUiModels?.forEach { optionsUiModel ->
-            val imageKeys =
-                checkStringNullOrEmpty(optionsUiModel.selectedValue).split(DELEGATE_COMM)
-            imageKeys.forEach { key ->
-                contentRequests.add(
-                    ContentRequest(
-                        languageCode = DEFAULT_LANGUAGE_CODE,
-                        contentKey = key
+        surveyyAnswers?.forEach { survey ->
+            survey.optionItems.forEach { optionsUiModel ->
+                val imageKeys =
+                    checkStringNullOrEmpty(optionsUiModel.selectedValue).split(DELEGATE_COMM)
+                imageKeys.forEach { key ->
+                    contentRequests.add(
+                        ContentRequest(
+                            languageCode = DEFAULT_LANGUAGE_CODE,
+                            contentKey = key
+                        )
                     )
-                )
+                }
             }
 
         }

@@ -3,7 +3,6 @@ package com.sarathi.missionactivitytask.ui.add_image_screen.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,11 +44,14 @@ fun AddImageScreen(
         containerColor = white,
         topBar = {},
         bottomBar = {
-            BottomAppBar(backgroundColor = white) {
+            BottomAppBar(
+                backgroundColor = white, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimen_10_dp),
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),
