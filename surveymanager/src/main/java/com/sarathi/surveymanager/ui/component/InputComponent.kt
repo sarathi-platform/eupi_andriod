@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -52,6 +53,7 @@ fun InputComponent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .height(dimen_100_dp)
             .padding(horizontal = 2.dp)
     ) {
         if (title?.isNotBlank() == true) {

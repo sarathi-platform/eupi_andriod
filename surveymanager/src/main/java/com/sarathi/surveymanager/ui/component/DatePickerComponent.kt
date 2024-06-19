@@ -3,9 +3,13 @@ package com.sarathi.surveymanager.ui.component
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -20,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -47,54 +52,73 @@ fun DatePickerComponent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
+            .padding(vertical = dimen_10_dp)
     ) {
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
-        TextField(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(white, shape = RoundedCornerShape(8.dp))
-                .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp))
-                .padding(8.dp),
-            value = text,
-            readOnly = true,
-            onValueChange = { text = it },
-            placeholder = {
-                Text(
-                    hintText,
-                    style = buttonTextStyle.copy(color = placeholderGrey)
-                )
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    val calendar = Calendar.getInstance()
-                    val year = calendar[Calendar.YEAR]
-                    val month = calendar[Calendar.MONTH]
-                    val day = calendar[Calendar.DAY_OF_MONTH]
-                    DatePickerDialog(
-                        context,
-                        R.style.my_dialog_theme,
-                        { _, selectedYear, selectedMonth, selectedDay ->
-                            text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                            onAnswerSelection(text)
-                        }, year, month, day
-                    ).show()
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Calendar Icon",
-                        tint = placeholderGrey
+                .background(Color.Transparent),
+            contentAlignment = Alignment.Center
+        ) {
+            TextField(
+                value = text,
+                readOnly = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(white, shape = RoundedCornerShape(8.dp))
+                    .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp))
+                    .padding(8.dp),
+                onValueChange = { text = it },
+                placeholder = {
+                    Text(
+                        text = hintText,
+                        style = buttonTextStyle.copy(
+                            color = placeholderGrey
+                        ),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentHeight(align = Alignment.CenterVertically)
                     )
-                }
-            },
-            enabled = isEditable,
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.White, // Background color
-                focusedIndicatorColor = Color.Transparent, // No underline when focused
-                unfocusedIndicatorColor = Color.Transparent // No underline when not focused
-            ),
-        )
+                },
+                trailingIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Calendar Icon",
+                            tint = placeholderGrey
+                        )
+                    }
+                },
+                enabled = isEditable,
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    .clickable {
+                        val calendar = Calendar.getInstance()
+                        val year = calendar[Calendar.YEAR]
+                        val month = calendar[Calendar.MONTH]
+                        val day = calendar[Calendar.DAY_OF_MONTH]
+                        DatePickerDialog(
+                            context,
+                            R.style.my_dialog_theme,
+                            { _, selectedYear, selectedMonth, selectedDay ->
+                                text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                                onAnswerSelection(text)
+                            }, year, month, day
+                        ).show()
+                    },
+            )
+        }
+
     }
 }
