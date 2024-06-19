@@ -39,7 +39,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val formUseCase: FormUseCase
+    private val formUseCase: FormUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
 ) : BaseViewModel() {
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
