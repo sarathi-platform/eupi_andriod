@@ -1,12 +1,19 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
+import android.text.TextUtils
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.getFileNameFromURL
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.uriFromFile
+import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import java.io.File
 import javax.inject.Inject
 
 class SurveyAnswerEventWriterUseCase @Inject constructor(
@@ -19,12 +26,11 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         subjectType: String,
         referenceId: String,
         taskLocalId: String,
-        uriList: List<Uri>?,
         grantId: Int,
         grantType: String,
         taskId: Int
     ) {
-
+        val uriList = ArrayList<Uri>()
         val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
             questionUiModels,
             subjectId,
@@ -39,7 +45,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerMoneyJournalEventDto,
             EventName.MONEY_JOURNAL_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            uriList
+            listOf()
         )
         questionUiModels.forEach { questionUiModel ->
             val saveAnswerEventDto = repository.writeSaveAnswerEvent(
@@ -52,6 +58,24 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 grantType,
                 taskId
             )
+            if (questionUiModel.type == QuestionType.MultiImage.name) {
+                questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {
+
+                    if (!TextUtils.isEmpty(it)) {
+                        CoreAppDetails.getApplicationDetails()?.activity?.applicationContext?.let { it1 ->
+                            getImageUri(
+                                context = it1,
+                                fileName = getFileNameFromURL(it)
+                            )?.let { it1 ->
+                                uriList.add(
+                                    it1
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             writeEventInFile(
                 saveAnswerEventDto,
                 EventName.GRANT_SAVE_RESPONSE_EVENT,

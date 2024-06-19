@@ -81,7 +81,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
             list.add(
                 DisbursementFormSummaryUiModel(
                     subjectType = form.subjectType,
-                    date = form.createdDate.formatTo("dd/MM/yyyy"),
+                    date = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_7_FORM.name]
+                        ?: BLANK_STRING,
                     noOfDidi = 1,
                     subjectName = _data[GrantTaskFormSlots.GRANT_TASK_TITLE_FORM.name]
                         ?: BLANK_STRING,

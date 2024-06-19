@@ -90,7 +90,10 @@ fun AddImageScreen(
                         Orientation.Vertical,
                     )
                 ) {
-                    AddImageComponent(maxCustomHeight = maxHeight) { selectedValue, isDeleted ->
+                    AddImageComponent(
+                        maxCustomHeight = maxHeight,
+                        fileNamePrefix = viewModel.getPrefixFileName(),
+                    ) { selectedValue, isDeleted ->
                         saveMultiImage(
                             filePath = selectedValue,
                             isDeleted = isDeleted,

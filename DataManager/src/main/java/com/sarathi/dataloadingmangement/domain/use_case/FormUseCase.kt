@@ -19,7 +19,7 @@ class FormUseCase @Inject constructor(
         activityId: Int,
         referenceId: String,
         subjectType: String
-    ) {
+    ): FormEntity {
         return repository.saveFromToDB(
             subjectId = subjectId,
             taskId = taskId,
@@ -53,9 +53,11 @@ class FormUseCase @Inject constructor(
     }
 
     suspend fun updateFormData(
-        isFormGenerated: Boolean
+        isFormGenerated: Boolean,
+        localReferenceId: String,
+        generatedDate: String,
     ) {
-        repository.updateFormData(isFormGenerated)
+        repository.updateFormData(isFormGenerated, localReferenceId, generatedDate)
     }
 
     fun getFormEFileName(): String {
