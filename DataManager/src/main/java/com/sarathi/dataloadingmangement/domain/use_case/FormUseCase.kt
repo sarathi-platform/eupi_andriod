@@ -14,7 +14,7 @@ class FormUseCase @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val downloaderManager: DownloaderManager
 ) {
-    private suspend fun callFormDetailApi(formDetailRequest: FormDetailRequest): Boolean {
+    private suspend fun getFormDetailFromApi(formDetailRequest: FormDetailRequest): Boolean {
         val formEntities = mutableListOf<FormEntity>()
         val apiResponse = repository.getFromDetailFromNetwork(
             activityId = formDetailRequest.activityId,
@@ -29,7 +29,7 @@ class FormUseCase @Inject constructor(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             taskId = form.taskId,
                             referenceId = form.localReferenceId,
-                            subjectType = "",
+                            subjectType = form.subjectType,
                             surveyId = form.surveyId,
                             missionId = 1,
                             activityId = form.activityId,
@@ -49,7 +49,7 @@ class FormUseCase @Inject constructor(
     suspend fun invoke(): Boolean {
         try {
             repository.getActivityConfigUiModel()?.forEach { config ->
-                callFormDetailApi(
+                getFormDetailFromApi(
                     FormDetailRequest(
                         activityId = config.activityId,
                         surveyId = config.surveyId,

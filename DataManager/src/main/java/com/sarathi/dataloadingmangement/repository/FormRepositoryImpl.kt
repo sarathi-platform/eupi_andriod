@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.toDate
 import com.nudge.core.toDateInMMDDYYFormat
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
@@ -105,6 +104,6 @@ class FormRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>? {
-        return activityConfigDao.getActivityConfigUiModel()
+        return activityConfigDao.getActivityConfigUiModel(userId = coreSharedPrefs.getUniqueUserIdentifier())
     }
 }

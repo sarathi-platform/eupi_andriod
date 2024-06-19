@@ -20,4 +20,6 @@ data class FormDetailResponseModel(
     val formGenerated: Boolean,
     @SerializedName("localReferenceId")
     val localReferenceId: String,
+    @SerializedName("subjectType")
+    val subjectType: String,
 )
