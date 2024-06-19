@@ -23,5 +23,6 @@
     <string name="amount_limit_message">Amount is greater than sanctioned amount : %1$d</string>
     <string name="summary">Summary</string>
     <string name="form_e_generated">Form E generated</string>
+    <string name="done">Done</string>
 
 </resources>
