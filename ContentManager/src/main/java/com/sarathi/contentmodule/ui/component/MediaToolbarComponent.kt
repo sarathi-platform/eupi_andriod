@@ -39,7 +39,7 @@ fun MediaToolbarComponent(
         modifier = modifier
     ) {
         IconButton(
-            onClick = { onBackIconClick() },
+            onClick = onBackIconClick ,
             modifier = Modifier
         ) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")

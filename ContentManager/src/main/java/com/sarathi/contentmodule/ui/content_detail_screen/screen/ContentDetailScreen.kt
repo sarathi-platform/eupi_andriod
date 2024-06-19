@@ -56,6 +56,7 @@ import com.nudge.core.ui.events.theme.dimen_5_dp
 import com.nudge.core.ui.events.theme.mediumTextStyle
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.component.ButtonPositive
 import com.sarathi.contentmodule.ui.component.SearchWithFilterViewComponent
@@ -65,6 +66,7 @@ import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -263,7 +265,7 @@ private fun ContentRowView(
         contentTitle = item.contentName,
         contentValue = item.contentValue,
         onClick = {
-            if (viewModel.isFilePathExists(item.contentValue)) {
+            if (viewModel.isFilePathExists(item.contentValue) || item.contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
                 onNavigateToMediaScreen(
                     item.contentType,
                     item.contentKey,
