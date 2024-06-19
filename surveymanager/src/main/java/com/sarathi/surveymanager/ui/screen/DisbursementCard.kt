@@ -31,7 +31,9 @@ import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
 
