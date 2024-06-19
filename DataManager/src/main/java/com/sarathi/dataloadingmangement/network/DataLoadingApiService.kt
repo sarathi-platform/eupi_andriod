@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseMode
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
+import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -44,4 +45,12 @@ interface DataLoadingApiService {
     @POST(SUBPATH_SURVEY_ANSWERS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
+
+    @GET(SUBPATH_GET_FORM_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getFormDetail(
+        @Query("activityId") activityId: Int,
+        @Query("surveyId") surveyId: Int,
+        @Query("formType") formType: String
+    ): ApiResponseModel<List<FormDetailResponseModel>>
 }

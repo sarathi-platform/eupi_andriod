@@ -109,6 +109,15 @@ class SurveySaveRepositoryImpl @Inject constructor(
         return result.joinToString(",")
     }
 
+    override suspend fun getSurveyAnswerImageKeys(
+        questionType: String,
+    ): List<SurveyAnswerEntity>? {
+        return surveyAnswersDao.getSurveyAnswerImageKeys(
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            questionType = questionType
+        )
+    }
+
     override fun getUserIdentifier(): String {
         return coreSharedPrefs.getUniqueUserIdentifier()
     }

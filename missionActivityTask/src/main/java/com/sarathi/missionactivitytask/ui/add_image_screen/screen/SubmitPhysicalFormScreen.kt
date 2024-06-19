@@ -3,7 +3,6 @@ package com.sarathi.missionactivitytask.ui.add_image_screen.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -36,20 +36,25 @@ import com.sarathi.surveymanager.ui.screen.listToCommaSeparatedString
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AddImageScreen(
+fun SubmitPhysicalFormScreen(
     navController: NavController = rememberNavController(),
-    viewModel: AddImageViewModel
+    viewModel: SubmitPhysicalFormScreenViewModel,
+    activityId: Int
 ) {
     val outerState = rememberLazyListState()
+    val context = LocalContext.current
     Scaffold(modifier = Modifier.fillMaxWidth(),
         containerColor = white,
         topBar = {},
         bottomBar = {
-            BottomAppBar(backgroundColor = white) {
+            BottomAppBar(
+                backgroundColor = white, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimen_10_dp),
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),
@@ -65,10 +70,10 @@ fun AddImageScreen(
                         isArrowRequired = false,
                         onClick = {
                             viewModel.saveMultiImage()
-                            viewModel.updateFromTable()
+                            viewModel.updateFromTable(activityId = activityId)
                             navigateToActivityCompletionScreen(
                                 navController,
-                                "Completed Disbursement to 4 Didis of Ganbari Sikla (VO)"
+                                context.getString(R.string.form_e_submitted_successfully)
                             )
                         })
                 }
@@ -90,7 +95,10 @@ fun AddImageScreen(
                         Orientation.Vertical,
                     )
                 ) {
-                    AddImageComponent(maxCustomHeight = maxHeight) { selectedValue, isDeleted ->
+                    AddImageComponent(
+                        maxCustomHeight = maxHeight,
+                        fileNamePrefix = viewModel.getPrefixFileName(),
+                    ) { selectedValue, isDeleted ->
                         saveMultiImage(
                             filePath = selectedValue,
                             isDeleted = isDeleted,

@@ -4,10 +4,12 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -37,7 +39,9 @@ class SurveyScreenViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val fromEUseCase: FormUseCase
+    private val fromEUseCase: FormUseCase,
+    private val formEventWriterUseCase: FormEventWriterUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
@@ -103,7 +107,10 @@ class SurveyScreenViewModel @Inject constructor(
                     taskId = taskId,
                     referenceId = referenceId
                 )
-                fromEUseCase.saveFormEData(
+
+            }
+            if (sanctionAmount != 0) {
+                val formEntity = fromEUseCase.saveFormEData(
                     subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                     taskId = taskId,
                     surveyId = surveyId,
@@ -112,6 +119,11 @@ class SurveyScreenViewModel @Inject constructor(
                     subjectType = subjectType,
                     referenceId = referenceId
                 )
+                formEventWriterUseCase.writeFormEvent(
+                    surveyName = questionUiModel.value.firstOrNull()?.surveyName ?: BLANK_STRING,
+                    formEntity = formEntity,
+
+                    )
             }
             if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
@@ -144,7 +156,6 @@ class SurveyScreenViewModel @Inject constructor(
                 subjectType = subjectType,
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
-                uriList = listOf(),
                 grantId = grantID,
                 grantType = granType,
                 taskId = taskId
@@ -217,5 +228,9 @@ class SurveyScreenViewModel @Inject constructor(
         checkButtonValidation()
 
 
+    }
+
+    fun getPrefixFileName(question: QuestionUiModel): String {
+        return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
     }
 }

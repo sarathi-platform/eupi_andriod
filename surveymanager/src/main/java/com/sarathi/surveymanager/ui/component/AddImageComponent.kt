@@ -73,6 +73,7 @@ fun AddImageComponent(
     title: String = BLANK_STRING,
     isEditable: Boolean = true,
     filePaths: List<String> = listOf(),
+    fileNamePrefix:String,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 
 
@@ -118,7 +119,7 @@ fun AddImageComponent(
                         Modifier
                             .clickable(enabled = isEditable) {
                                 currentImageUri = getImageUri(
-                                    context, "${
+                                    context, "${fileNamePrefix}${
                                         System.currentTimeMillis()
                                     }.jpg"
                                 )

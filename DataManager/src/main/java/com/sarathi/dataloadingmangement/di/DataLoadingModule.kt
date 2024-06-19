@@ -31,6 +31,7 @@ import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
@@ -40,6 +41,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNet
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -48,12 +50,16 @@ import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
+import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.IFormEventRepository
 import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
@@ -297,14 +303,16 @@ class DataLoadingModule {
         apiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
-        uiConfigDao: UiConfigDao
+        uiConfigDao: UiConfigDao,
+        surveyAnswersDao: SurveyAnswersDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
             contentDao = contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
-            uiConfigDao = uiConfigDao
+            uiConfigDao = uiConfigDao,
+            surveyAnswersDao = surveyAnswersDao
 
         )
     }
@@ -331,6 +339,44 @@ class DataLoadingModule {
             sharedPrefs = sharedPrefs,
             apiInterface = apiService,
             languageDao = languageDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentEventRepository(
+        coreSharedPrefs: CoreSharedPrefs
+    ): IDocumentEventRepository {
+        return DocumentEventRepositoryImpl(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentEventWriterUsecase(
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl,
+        documentEventRepository: DocumentEventRepositoryImpl,
+    ): DocumentEventWriterUseCase {
+        return DocumentEventWriterUseCase(
+            repository = documentEventRepository, eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormEventRepository(
+    ): IFormEventRepository {
+        return FormEventRepositoryImpl(
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormEventWriterUsecase(
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl,
+        formEventRepository: FormEventRepositoryImpl,
+    ): FormEventWriterUseCase {
+        return FormEventWriterUseCase(
+            repository = formEventRepository, eventWriterRepositoryImpl
         )
     }
 
@@ -367,8 +413,13 @@ class DataLoadingModule {
     fun provideFormUseCase(
         repository: FormRepositoryImpl,
         downloaderManager: DownloaderManager,
+        coreSharedPrefs: CoreSharedPrefs
     ): FormUseCase {
-        return FormUseCase(repository = repository, downloaderManager = downloaderManager)
+        return FormUseCase(
+            repository = repository,
+            downloaderManager = downloaderManager,
+            coreSharedPrefs = coreSharedPrefs
+        )
     }
 
     @Provides
@@ -393,7 +444,8 @@ class DataLoadingModule {
         surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        formUseCase: FormUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -411,7 +463,8 @@ class DataLoadingModule {
             fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            formUseCase = formUseCase
         )
     }
 

@@ -11,6 +11,7 @@ enum class GrantTaskFormSlots(val type: String) {
     GRANT_TASK_SUBTITLE_4_FORM(type = "text"),
     GRANT_TASK_SUBTITLE_5_FORM(type = "text"),
     GRANT_TASK_SUBTITLE_6_FORM(type = "text"),
+    GRANT_TASK_SUBTITLE_7_FORM(type = "text"),
     GRANT_TASK_PRIMARY_BUTTON_FORM(type = "text"),
     GRANT_TASK_SECONDARY_BUTTON_FORM(type = "text"),
     GRANT_TASK_IMAGE_FORM(type = "image"),

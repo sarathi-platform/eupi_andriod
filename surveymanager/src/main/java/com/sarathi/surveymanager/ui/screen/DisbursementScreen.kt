@@ -73,7 +73,7 @@ fun DisbursementSummaryScreen(
                     isLeftArrow = false,
                     onClick = {
                         viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen("")
+                        onNavigateSuccessScreen("Activity is Completed")
                     }
                 )
             }
