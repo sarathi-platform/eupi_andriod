@@ -1292,7 +1292,7 @@ fun IncrementDecrementView(modifier: Modifier,
                 }
             }
         }
-            HtmlText(
+            de.charlex.compose.material.HtmlText(
                 text = optionText,
                 modifier = Modifier,
                 style = TextStyle(

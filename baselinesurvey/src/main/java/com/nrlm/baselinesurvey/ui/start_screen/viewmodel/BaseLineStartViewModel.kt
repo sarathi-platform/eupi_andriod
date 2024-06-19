@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -15,9 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
@@ -42,9 +40,11 @@ import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
+import com.nudge.core.model.CoreAppDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -113,6 +113,7 @@ class BaseLineStartViewModel @Inject constructor(
             directory,
             "${didi.didiId}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
         )
+        Log.d("TAG", "getFileName: ${filePath}")
         return filePath
     }
 
@@ -126,7 +127,7 @@ class BaseLineStartViewModel @Inject constructor(
                 photoUri.value = tempUri
                 handleImageCapture(
                     photoPath = imagePath,
-                    context = (event.context as MainActivity),
+                    context = event.context,
                     didiEntity.value,
                 )
             }
@@ -245,7 +246,7 @@ class BaseLineStartViewModel @Inject constructor(
         locationCoordinates: LocationCoordinates,
         didiEntity: SurveyeeEntity
     ) {
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+        job = BaselineCore.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             BaselineLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
 
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
@@ -271,7 +272,7 @@ class BaseLineStartViewModel @Inject constructor(
         sectionId: Int,
         surveyId: Int,
         isFromImageFail: Boolean,
-        localContext: Context
+        localContext: Activity
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedLanguage = startSurveyScreenUserCase.getSectionUseCase.getSelectedLanguage()

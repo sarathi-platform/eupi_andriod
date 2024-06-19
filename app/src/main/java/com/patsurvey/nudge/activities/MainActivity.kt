@@ -35,6 +35,9 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
+import com.nudge.core.Core
+import com.nudge.core.model.CoreAppDetails
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -43,7 +46,7 @@ import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
-import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
+import com.patsurvey.nudge.navigation.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger

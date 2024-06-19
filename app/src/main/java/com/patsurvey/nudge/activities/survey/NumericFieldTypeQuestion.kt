@@ -109,7 +109,8 @@ fun NumericFieldTypeQuestion(
                 .align(Alignment.TopCenter)
         ) {
             val (questionBox, optionBox, submitBox) = createRefs()
-            HtmlText(
+//            HtmlText(
+            Text(
                 modifier = Modifier
                     .border(
                         BorderStroke(1.dp, lightGray2),

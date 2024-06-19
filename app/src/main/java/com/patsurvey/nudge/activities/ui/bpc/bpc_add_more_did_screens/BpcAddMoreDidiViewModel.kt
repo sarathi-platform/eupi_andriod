@@ -13,6 +13,7 @@ import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +55,9 @@ class BpcAddMoreDidiViewModel @Inject constructor(
         villageId = prefRepo.getSelectedVillage().id
 //        fetchDidiFromDb()
     }
+   fun getStateId():Int{
+       return prefRepo.getStateId()
+   }
 
     fun fetchDidiFromDb() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

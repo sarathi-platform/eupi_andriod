@@ -27,6 +27,10 @@ class ConfigViewModel @Inject constructor(
     fun isLoggedIn(): Boolean {
         return configRepository.getAccessToken()?.isNotEmpty() == true
     }
+
+    fun getUserType(): String? {
+        return configRepository.getUserType()
+    }
     val showLoader = mutableStateOf(false)
 
     fun fetchLanguageDetails(callBack: (imageList: List<String>) -> Unit) {

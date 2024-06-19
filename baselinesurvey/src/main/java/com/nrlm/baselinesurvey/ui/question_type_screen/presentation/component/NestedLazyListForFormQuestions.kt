@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -144,7 +143,8 @@ fun NestedLazyListForFormQuestions(
                             .filter {
                                 it
                                     .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.FormWithNone.name
-                            }.filter { it.showQuestion } ?: emptyList()
+                            }.filter { it.showQuestion }.sortedBy { it.optionItemEntity?.order }
+                            ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
@@ -281,24 +281,23 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
                             QuestionType.InputNumberEditText.name -> {
-                                Log.d(
-                                    "TAG",
-                                    "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}"
-                                )
+
+                                val responseValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                    formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue
+                                        ?: BLANK_STRING
+                                else
+                                    viewModel.storeCacheForResponse.getResponseForOptionId(
+                                        optionId = option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING
 
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    resetResponse = responseValue == BLANK_STRING,
+                                    defaultValue = responseValue,
                                     isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)

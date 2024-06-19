@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -82,6 +84,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
@@ -116,6 +120,7 @@ import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -1092,18 +1097,17 @@ fun findImageLocationFromPath(uri: String): List<String> {
     return ArrayList()
 }
 
-fun findStepNameForSelectedLanguage(context: Context, stepId: Int): String {
-    return when (stepId) {
-        40 -> context.getString(R.string.step_transect_walk)
-        41 -> context.getString(R.string.step_social_mapping)
-        43 -> context.getString(R.string.step_pat_survey)
-        44 -> context.getString(R.string.step_vo_endorsement)
-        45 -> context.getString(R.string.step_bpc_verification)
-        46 -> context.getString(R.string.step_participatory_wealth_ranking)
-        else -> {
-            BLANK_STRING
-        }
-    }
+fun findStepNameForSelectedLanguage(context: Context,stepId:Int,stateId:Int):String{
+   return when(stepId){
+       40-> context.getString(R.string.step_transect_walk)
+       41-> context.getString(R.string.step_social_mapping)
+       43-> context.getString(R.string.step_pat_survey)
+       44-> getVoNameForState(context,stateId,R.plurals.step_vo_endorsement)
+       45-> context.getString(R.string.step_bpc_verification)
+       46-> context.getString(R.string.step_participatory_wealth_ranking)
+       else -> {
+           BLANK_STRING}
+   }
 }
 
 fun onlyNumberField(value: String): Boolean {
@@ -1181,11 +1185,9 @@ fun ShowLoadingDialog(
                         )
                     }
 
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(15.dp)
-                    )
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(15.dp))
 
                 }
             }
@@ -1494,3 +1496,39 @@ fun isFilePathExists(context: Context, filePath: String): Boolean {
     val fileName = getFileNameFromURL(filePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
 }
+
+fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String,) {
+    if(fileUriList?.isNotEmpty() == true){
+        try {
+            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            shareIntent.setType(type)
+            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+            val chooserIntent = Intent.createChooser(shareIntent, title)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+                val resInfoList: List<ResolveInfo> =
+                    BaselineCore.getAppContext().packageManager
+                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    BaselineCore.getAppContext().grantUriPermission(
+                        packageName,
+                        fileUriList[0],
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+            }else{
+                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
+            }
+            BaselineCore.startExternalApp(chooserIntent)
+        }catch (ex:Exception){
+            BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
+        }
+    }
+
+}
+
+
+

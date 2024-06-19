@@ -10,7 +10,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_ROLE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.SUCCESS
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
@@ -18,17 +18,18 @@ import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+import com.nudge.core.ENGLISH_LANGUAGE_CODE
 import com.nudge.core.toDate
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
-    private val prefRepo: PrefRepo,
-    private val apiService: ApiService,
+    private val prefBSRepo: PrefBSRepo,
+    private val baseLineApiService: BaseLineApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
     private val activityTaskDao: ActivityTaskDao,
@@ -43,10 +44,6 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         val didiList = mutableListOf<SurveyeeEntity>()
         //TODO FIx logic here
         getActivityTasks(missionId = missionId, activityId).forEach { task ->
-            /*if (task.activityName.equals("Conduct Hamlet Survey", true)){
-                val mDidiList = surveyeeEntityDao.getAllDidis()
-                didiList.addAll(mDidiList.filter { it.cohortId == task.didiId }.distinctBy { it.cohortId })
-            } else {*/
             if (surveyeeEntityDao.isDidiExist(task.didiId)) {
                 didiList.add(
                     surveyeeEntityDao.getDidi(task.didiId).copy(
@@ -56,7 +53,6 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                     )
                 )
             }
-//            }
         }
         return didiList
     }
@@ -70,19 +66,20 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         try {
             val localLanguageList = languageListDao.getAllLanguages()
             val userViewApiRequest = createMultiLanguageVillageRequest(localLanguageList)
-            val userApiResponse = apiService.userAndVillageListAPI(languageId = userViewApiRequest)
+            val userApiResponse =
+                baseLineApiService.userAndVillageListAPI(languageId = userViewApiRequest)
             if (userApiResponse.status.equals(SUCCESS, true)) {
                 userApiResponse.data?.let {
-                    prefRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
-                    prefRepo.savePref(PREF_KEY_NAME, it.name ?: "")
-                    prefRepo.savePref(PREF_KEY_EMAIL, it.email ?: "")
-                    prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
-                    prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
-                    prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
-                    prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
+                    prefBSRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
+                    prefBSRepo.savePref(PREF_KEY_NAME, it.name ?: "")
+                    prefBSRepo.savePref(PREF_KEY_EMAIL, it.email ?: "")
+                    prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
+                    prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
+                    prefBSRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
+                    prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                 }
                 val apiResponse = userApiResponse.data?.username?.toInt()
-                    ?.let { apiService.getDidisFromNetwork(userId = it) }
+                    ?.let { baseLineApiService.getDidisFromNetwork(userId = it) }
                 if (apiResponse?.status?.equals(SUCCESS, false) == true) {
                     if (apiResponse?.data?.didiList != null) {
                         surveyeeEntityDao.deleteSurveyees(getBaseLineUserId())
@@ -212,9 +209,12 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
+    override fun getAppLanguage(): String {
+        return prefBSRepo.getAppLanguage()?:ENGLISH_LANGUAGE_CODE
+    }
 
 
 }

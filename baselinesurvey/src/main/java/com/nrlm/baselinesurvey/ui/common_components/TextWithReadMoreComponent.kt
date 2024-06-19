@@ -40,6 +40,7 @@ fun TextWithReadMoreComponent(
         TextWithReadMore(
             text = contentData,
             textStyle = textStyle,
+            textColor = color,
             maxLines = maxLines,
             onClickReadMore = { showDialog = true })
 
@@ -59,7 +60,11 @@ fun TextWithReadMoreComponent(
 
 @Composable
 fun TextWithReadMore(
-    text: String, textStyle: TextStyle, maxLines: Int, onClickReadMore: () -> Unit
+    text: String,
+    textStyle: TextStyle,
+    textColor: Color,
+    maxLines: Int,
+    onClickReadMore: () -> Unit
 ) {
     var expand by remember { mutableStateOf(false) }
 
@@ -68,6 +73,7 @@ fun TextWithReadMore(
         Text(
             text = text,
             fontSize = 16.sp,
+            color = textColor,
             lineHeight = 24.sp,
             maxLines = if (expand) Int.MAX_VALUE else maxLines,
             overflow = TextOverflow.Ellipsis,

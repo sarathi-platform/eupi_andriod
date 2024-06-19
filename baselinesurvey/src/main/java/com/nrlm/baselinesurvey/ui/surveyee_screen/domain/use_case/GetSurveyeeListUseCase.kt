@@ -14,4 +14,8 @@ class GetSurveyeeListUseCase(
         return repository.getSurveyeeListFromNetwork()
     }
 
+    fun getAppLanguage():String{
+        return repository.getAppLanguage()
+    }
+
 }

@@ -36,10 +36,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ACTIVITY_HAMLET_SURVEY
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.ENGLISH_LANGUAGE_CODE
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -117,7 +118,7 @@ fun AllSurveyeeListTab(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            if (!activityName.equals("Conduct Hamlet Survey")) stringResource(R.string.didi_list_empty_state) else stringResource(
+                            if (!activityName.equals(ACTIVITY_HAMLET_SURVEY)) stringResource(R.string.didi_list_empty_state) else stringResource(
                                 R.string.empty_task_message
                             ),
                             modifier = Modifier.fillMaxWidth(),
@@ -161,7 +162,7 @@ fun AllSurveyeeListTab(
                         }
                         item {
                             SearchWithFilterViewComponent(
-                                placeholderString = if (!activityName.equals("Conduct Hamlet Survey")) stringResource(
+                                placeholderString = if (!activityName.equals(ACTIVITY_HAMLET_SURVEY)) stringResource(
                                     id = R.string.search_didis
                                 ) else stringResource(
                                     R.string.search_hamlet
@@ -186,7 +187,7 @@ fun AllSurveyeeListTab(
                                         SearchEvent.PerformSearch(
                                             queryTerm,
                                             viewModel.isFilterAppliedState.value.isFilterApplied,
-                                            if (!activityName.equals("Conduct Hamlet Survey")) DIDI_LIST else ALL_TAB
+                                            if (!activityName.equals(ACTIVITY_HAMLET_SURVEY)) DIDI_LIST else ALL_TAB
                                         )
                                     )
                                 }
@@ -235,7 +236,7 @@ fun AllSurveyeeListTab(
                         if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
                             itemsIndexed(items = surveyeeList) { index, item ->
                                 var primaryButtonText =
-                                    if ((context as MainActivity).currentLanguage.language.equals("en")) stringResource(
+                                    if (viewModel.getAppLanguage().equals(ENGLISH_LANGUAGE_CODE)) stringResource(
                                         R.string.start
                                     ) + activityName.split(
                                         " "
@@ -303,7 +304,7 @@ fun AllSurveyeeListTab(
                         } else {
                             itemsIndexed(items = surveyeeListWithTolaFilter.keys.toList()) { index, key ->
                                 var primaryButtonText =
-                                    if ((context as MainActivity).currentLanguage.language.equals("en")) stringResource(
+                                    if (viewModel.getAppLanguage().equals(ENGLISH_LANGUAGE_CODE)) stringResource(
                                         R.string.start
                                     ) + activityName.split(
                                         " "

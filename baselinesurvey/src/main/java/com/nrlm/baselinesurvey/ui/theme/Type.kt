@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,7 +36,8 @@ val veryLargeTextStyle = TextStyle(
 val largeTextStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,
-    fontSize = 20.sp
+    fontSize = 20.sp,
+    color = Color.Black
 )
 
 val mediumTextStyle = TextStyle(
@@ -70,6 +72,7 @@ val smallTextStyle = TextStyle(
 val smallTextStyleWithNormalWeight = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.Normal,
+    color = Color.Black,
     fontSize = 14.sp
 )
 

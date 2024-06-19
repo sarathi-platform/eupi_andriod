@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +65,7 @@ fun RadioButtonTypeQuestion(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
              }) {
-                HtmlText(
+                de.charlex.compose.material.HtmlText(
                     modifier = Modifier
                         .border(
                             BorderStroke(1.dp, lightGray2),

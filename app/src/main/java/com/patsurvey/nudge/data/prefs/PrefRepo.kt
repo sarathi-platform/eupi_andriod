@@ -4,6 +4,7 @@ import com.patsurvey.nudge.database.VillageEntity
 
 
 interface PrefRepo {
+   fun getStateId():Int
    fun getAppLanguage():String?
    fun saveAppLanguage(code: String?)
 
@@ -88,5 +89,7 @@ interface PrefRepo {
     fun getISSyncEnabled(): Boolean
    fun getPreviousUserMobile(): String
    fun setPreviousUserMobile(mobileNumber: String)
-    fun getLoggedInUserType(): String
+
+   fun setDataSyncStatus(status: Boolean)
+   fun getLoggedInUserType():String
 }

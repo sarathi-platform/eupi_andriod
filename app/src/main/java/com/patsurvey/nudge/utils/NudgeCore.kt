@@ -5,12 +5,18 @@ import android.content.Intent
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import javax.inject.Inject
 
 object NudgeCore {
 
     private val TAG = NudgeCore::class.java.simpleName
 
     private var eventObserver: EventObserverInterface? = null
+
+    fun getVoNameForState(context:Context, stateId :Int,value: Int,formatArgs:Int?=null): String {
+      return  context.resources.getQuantityString(value,if (stateId == BENGAL_STATE_ID)BENGAL_STRING_VALUE else BENGAL_STRING_VALUE_OTHER,formatArgs)
+    }
 
 
     fun initEventObserver(syncManager: SyncManager) {
@@ -40,7 +46,8 @@ object NudgeCore {
         }
     }
 
-    fun getAppSystemService(name: String): Any? = MyApplication.applicationContext()?.getSystemService(name)
+    fun getAppSystemService(name: String): Any? =
+        MyApplication.applicationContext()?.getSystemService(name)
 
     private var isOnline: Boolean = false
 

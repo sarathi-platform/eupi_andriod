@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -10,13 +11,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponentWithText
 import com.nrlm.baselinesurvey.ui.common_components.ShowCustomDialog
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.DataLoadingScreenViewModel
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 
 @Composable
 fun DataLoadingScreenComponent(
@@ -61,7 +62,7 @@ fun DataLoadingScreenComponent(
                 onNegativeButtonClick = {
                     viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                     viewModel.logout()
-                    navController.navigate(Graph.LOGOUT_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                 },
                 onPositiveButtonClick = {
                     viewModel.onEvent(DialogEvents.ShowDialogEvent(false))

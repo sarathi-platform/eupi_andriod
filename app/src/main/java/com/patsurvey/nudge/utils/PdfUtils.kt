@@ -7,10 +7,12 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.wwdablu.soumya.simplypdf.SimplyPdf
 import com.wwdablu.soumya.simplypdf.SimplyPdfDocument
 import com.wwdablu.soumya.simplypdf.composers.properties.TableProperties
@@ -43,6 +45,7 @@ object PdfUtils {
 
     suspend fun getFormAPdf(
         context: Context,
+        stateId: Int,
         villageEntity: VillageEntity,
         didiDetailList: List<DidiEntity>,
         casteList: List<CasteEntity>,
@@ -53,7 +56,7 @@ object PdfUtils {
         val mDataCellWidth = 150
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
+            getSimplePdfDocument(context,stateId, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
 
 
         //  simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
@@ -63,7 +66,7 @@ object PdfUtils {
         )
 
         simplyPdfDocument.text.write(
-            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            "Village Name: ${villageEntity.name} \t ${getVoNameForState(context,stateId, R.plurals.vo_name)} : ${villageEntity.federationName}",
             contentTextProperties
         )
         simplyPdfDocument.text.write(
@@ -218,6 +221,7 @@ object PdfUtils {
 
     suspend fun getFormAPdfForBpc(
         context: Context,
+        stateId: Int,
         villageEntity: VillageEntity,
         didiDetailList: List<PoorDidiEntity>,
         casteList: List<CasteEntity>,
@@ -228,7 +232,7 @@ object PdfUtils {
         val mDataCellWidth = 150
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
+            getSimplePdfDocument(context, stateId, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
 
 
         //  simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
@@ -238,7 +242,7 @@ object PdfUtils {
         )
 
         simplyPdfDocument.text.write(
-            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            "Village Name: ${villageEntity.name} \t ${getVoNameForState(context,stateId, R.plurals.vo_name)} : ${villageEntity.federationName}",
             contentTextProperties
         )
         simplyPdfDocument.text.write(
@@ -393,6 +397,7 @@ object PdfUtils {
 
     suspend fun getFormBPdf(
         context: Context,
+        stateId:Int,
         villageEntity: VillageEntity,
         didiDetailList: List<DidiEntity>,
         casteList: List<CasteEntity>,
@@ -400,7 +405,7 @@ object PdfUtils {
     ): Boolean {
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, villageEntity, FORM_B_PDF_NAME, "Digital Form B")
+            getSimplePdfDocument(context,stateId, villageEntity, FORM_B_PDF_NAME, "Digital Form B")
 
         // simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
 
@@ -410,7 +415,7 @@ object PdfUtils {
         )
 
         simplyPdfDocument.text.write(
-            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            "Village Name: ${villageEntity.name} \t ${getVoNameForState(context,stateId, R.plurals.vo_name)} : ${villageEntity.federationName}",
             contentTextProperties
         )
 
@@ -498,6 +503,7 @@ object PdfUtils {
 
     suspend fun getFormBPdfForBpc(
         context: Context,
+        stateId: Int,
         villageEntity: VillageEntity,
         didiDetailList: List<PoorDidiEntity>,
         casteList: List<CasteEntity>,
@@ -505,7 +511,7 @@ object PdfUtils {
     ): Boolean {
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, villageEntity, FORM_B_PDF_NAME, "Digital Form B")
+            getSimplePdfDocument(context, stateId , villageEntity, FORM_B_PDF_NAME, "Digital Form B")
 
         // simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
 
@@ -515,7 +521,7 @@ object PdfUtils {
         )
 
         simplyPdfDocument.text.write(
-            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            "Village Name: ${villageEntity.name} \t ${getVoNameForState(context,stateId, R.plurals.vo_name)} : ${villageEntity.federationName}",
             contentTextProperties
         )
 
@@ -603,6 +609,7 @@ object PdfUtils {
 
     suspend fun getFormCPdf(
         context: Context,
+        stateId: Int,
         villageEntity: VillageEntity,
         didiDetailList: List<DidiEntity>,
         casteList: List<CasteEntity>,
@@ -610,7 +617,7 @@ object PdfUtils {
     ): Boolean {
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
+            getSimplePdfDocument(context,stateId, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
 
         // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
 
@@ -620,7 +627,7 @@ object PdfUtils {
         )
 
         simplyPdfDocument.text.write(
-            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            "Village Name: ${villageEntity.name} \t ${getVoNameForState(context,stateId, R.plurals.vo_name)} : ${villageEntity.federationName}",
             contentTextProperties
         )
 
@@ -709,6 +716,7 @@ object PdfUtils {
 
     suspend fun getFormCPdfForBpc(
         context: Context,
+        stateId: Int,
         villageEntity: VillageEntity,
         didiDetailList: List<PoorDidiEntity>,
         casteList: List<CasteEntity>,
@@ -716,7 +724,7 @@ object PdfUtils {
     ): Boolean {
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
+            getSimplePdfDocument(context, stateId , villageEntity, FORM_C_PDF_NAME, "Digital Form C")
 
         // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
 
@@ -726,7 +734,7 @@ object PdfUtils {
         )
 
         simplyPdfDocument.text.write(
-            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            "Village Name: ${villageEntity.name} \t ${getVoNameForState(context,stateId, R.plurals.vo_name)} : ${villageEntity.federationName}",
             contentTextProperties
         )
 
@@ -815,6 +823,7 @@ object PdfUtils {
 
     private fun getSimplePdfDocument(
         context: Context,
+        stateId: Int,
         villageEntity: VillageEntity,
         fileName: String,
         headerText: String

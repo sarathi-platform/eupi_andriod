@@ -22,6 +22,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.WealthRank
@@ -70,7 +71,9 @@ class WealthRankingViewModel @Inject constructor(
         villageId = prefRepo.getSelectedVillage().id
         fetchDidisFromDB()
     }
-
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
     fun fetchDidisFromDB() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

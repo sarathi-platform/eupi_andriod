@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -81,6 +80,7 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -289,6 +289,31 @@ fun FormWithNoneTypeQuestionComponent(
                                                 .fillMaxWidth()
                                                 .height(dimen_10_dp)
                                         )
+                                        if (contests?.isNotEmpty() == true) {
+                                            Divider(
+                                                thickness = dimen_1_dp,
+                                                color = lightGray2,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                            ExpandableDescriptionContentComponent(
+                                                questionDetailExpanded,
+                                                questionIndex,
+                                                contents = contests,
+                                                subTitle = BLANK_STRING,
+                                                imageClickListener = { imageTypeDescriptionContent ->
+                                                    onMediaTypeDescriptionAction(
+                                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                                        imageTypeDescriptionContent
+                                                    )
+                                                },
+                                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                                    onMediaTypeDescriptionAction(
+                                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                                        videoTypeDescriptionContent
+                                                    )
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -465,31 +490,6 @@ fun FormWithNoneTypeQuestionComponent(
                                                     .fillMaxWidth()
                                                     .padding(bottom = 10.dp)
                                             )
-                                            if (contests?.isNotEmpty() == true) {
-                                                Divider(
-                                                    thickness = dimen_1_dp,
-                                                    color = lightGray2,
-                                                    modifier = Modifier.fillMaxWidth()
-                                                )
-                                                ExpandableDescriptionContentComponent(
-                                                    questionDetailExpanded,
-                                                    questionIndex,
-                                                    contents = contests,
-                                                    subTitle = BLANK_STRING,
-                                                    imageClickListener = { imageTypeDescriptionContent ->
-                                                        onMediaTypeDescriptionAction(
-                                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                                            imageTypeDescriptionContent
-                                                        )
-                                                    },
-                                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                                        onMediaTypeDescriptionAction(
-                                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                                            videoTypeDescriptionContent
-                                                        )
-                                                    }
-                                                )
-                                            }
                                         }
                                     }
                                 }

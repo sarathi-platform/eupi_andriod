@@ -49,8 +49,8 @@ import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
-import com.patsurvey.nudge.navigation.home.PatScreens
+import com.patsurvey.nudge.navigation.selection.BpcDidiListScreens
+import com.patsurvey.nudge.navigation.selection.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox

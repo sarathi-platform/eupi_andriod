@@ -32,6 +32,10 @@ class OtpVerificationRepository @Inject constructor(
         prefRepo.saveAccessToken(token)
     }
 
+    fun saveLoggedInUserType(userType:String){
+        prefRepo.savePref(PREF_KEY_TYPE_NAME,userType)
+    }
+
     fun setIsUserBPC(typeName: String) {
         if (typeName.equals(BPC_USER_TYPE, true)) {
             prefRepo.setIsUserBPC(true)

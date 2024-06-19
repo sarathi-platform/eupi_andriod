@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.di
 
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.data.prefs.SharedPrefs
 import dagger.Binds
 import dagger.Module
@@ -13,5 +13,5 @@ abstract class StorageModule {
     @Binds
     abstract fun providesPreferences(
         sharedPref: SharedPrefs
-    ): PrefRepo
+    ): PrefBSRepo
 }

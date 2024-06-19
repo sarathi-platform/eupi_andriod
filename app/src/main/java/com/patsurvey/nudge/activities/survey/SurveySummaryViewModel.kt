@@ -40,6 +40,7 @@ import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -99,6 +100,9 @@ class SurveySummaryViewModel @Inject constructor(
             fetchDidisFromDB()
         }
         setVillage(repository.prefRepo.getSelectedVillage().id)
+    }
+    fun getStateId():Int{
+        return repository.prefRepo.getStateId()
     }
 
      fun fetchDidisForBpcFromDB() {

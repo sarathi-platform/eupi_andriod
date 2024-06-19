@@ -403,7 +403,8 @@ suspend fun exportAllOldImages(
     appContext: Context,
     applicationID: String,
     mobileNo: String,
-    userName: String,
+    userName:String,
+    moduleName: String,
     timeInMillSec: String
 ): Uri? {
     try {
@@ -414,7 +415,7 @@ suspend fun exportAllOldImages(
         val zipFileDirectory = appContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
 
-        val zipFileName = "${userName}_${mobileNo}_Sarathi_Image_${System.currentTimeMillis()}.zip"
+        val zipFileName = "${userName}_${mobileNo}_${SARATHI}_Image_${moduleName}_${System.currentTimeMillis()}.zip"
 
         val zipFileUri = uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
 
@@ -451,6 +452,7 @@ fun exportOldData(
     mobileNo: String,
     databaseName: String,
     userName: String,
+    moduleName:String,
     onExportSuccess: (zipUri: Uri) -> Unit
 ) {
     CoroutineScope(Dispatchers.IO).launch {
@@ -464,8 +466,7 @@ fun exportOldData(
             dbUri?.let {
                 fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
             }
-            val zipFileName =
-                "${userName}_${mobileNo}_Sarathi_Database_${System.currentTimeMillis()}.zip"
+            val zipFileName = "${userName}_${mobileNo}_${SARATHI}_Database_${moduleName}_${System.currentTimeMillis()}.zip"
             val zipFileUri =
                 uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
 
@@ -501,6 +502,7 @@ fun exportLogFile(
     applicationID: String,
     mobileNo: String,
     userName: String,
+    moduleName: String,
     onExportSuccess: (zipUri: Uri) -> Unit
 ) {
 
@@ -515,7 +517,7 @@ fun exportLogFile(
 
         }
         val zipFileName =
-            "${userName}_${mobileNo}_Sarathi_Log_File_${System.currentTimeMillis()}.zip"
+            "${userName}_${mobileNo}_${SARATHI}_Log_File_${moduleName}_${System.currentTimeMillis()}.zip"
 
         val zipFileUri =
             uriFromFile(appContext, File(logDir, zipFileName), applicationID)
@@ -768,6 +770,10 @@ fun String.getDateTimeInMillis(): Long {
         val date = dateFormat.parse(this)
         date?.time ?: 0L
     }
+}
+
+fun moduleNameAccToLoggedInUser(loggedInUser:String):String{
+    return if(loggedInUser == UPCM_USER) BASELINE else SELECTION
 }
 
 fun String.getDateInMillis(): Long {

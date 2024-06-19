@@ -38,4 +38,6 @@ interface SurveyeeListScreenRepository {
 
     fun getBaseLineUserId(): String
 
+    fun getAppLanguage():String
+
 }

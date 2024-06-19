@@ -96,6 +96,7 @@ fun DialogComponent(
                         ButtonPositive(
                             buttonTitle = stringResource(id = R.string.yes_text),
                             isArrowRequired = false,
+                            isActive = true,
                             modifier = Modifier.weight(1f)
                         ) {
                             positiveButtonClicked()
