@@ -28,10 +28,10 @@ import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_40_dp
 import com.nudge.core.ui.events.theme.dimen_4_dp
+import com.nudge.core.ui.events.theme.dimen_50_dp
+import com.nudge.core.ui.events.theme.dimen_5_dp
 import com.nudge.core.ui.events.theme.greyColor
-import com.nudge.core.ui.events.theme.quesOptionTextStyle
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.surveymanager.R
 
@@ -46,7 +46,11 @@ fun DisbursementCard(
     onDeleteSurvey: () -> Unit
 
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimen_10_dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -85,8 +89,9 @@ fun DisbursementCard(
         Row {
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
+                    .weight(0.4f)
+                    .height(dimen_50_dp)
+                    .padding(dimen_5_dp)
                     .clickable { onEditSurvey() }
                     .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
@@ -115,8 +120,9 @@ fun DisbursementCard(
             }
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
+                    .weight(0.4f)
+                    .height(dimen_50_dp)
+                    .padding(dimen_5_dp)
                     .clickable { onDeleteSurvey() }
                     .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
@@ -154,7 +160,11 @@ private fun TextRow(text1: String, text2: String) {
         horizontalArrangement = Arrangement.Center
     ) {
         if (text1.isNotBlank()) {
-            Text(text = text1, style = quesOptionTextStyle.copy(color = greyColor))
+            Text(
+                modifier = Modifier.padding(end = dimen_5_dp),
+                text = text1,
+                style = defaultTextStyle.copy(color = greyColor)
+            )
         }
         if (text2.isNotBlank()) {
             Text(text = text2, style = defaultTextStyle.copy(color = black1))
