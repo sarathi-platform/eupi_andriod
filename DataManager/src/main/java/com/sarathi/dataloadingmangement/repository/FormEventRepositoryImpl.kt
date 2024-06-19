@@ -16,7 +16,8 @@ class FormEventRepositoryImpl @Inject constructor() : IFormEventRepository {
             localReferenceId = formEntity.localReferenceId,
             taskId = formEntity.taskid,
             formGenerated = formEntity.isFormGenerated,
-            generatedDate = formEntity.formGenerateDate
+            generatedDate = formEntity.formGenerateDate,
+            subjectType = formEntity.subjectType
         )
     }
 }

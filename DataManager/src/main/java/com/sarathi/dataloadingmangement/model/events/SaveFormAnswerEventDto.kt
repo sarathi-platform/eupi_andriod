@@ -9,6 +9,8 @@ data class SaveFormAnswerEventDto(
     val formType: String,
     @SerializedName("subjectId")
     val subjectId: Int,
+    @SerializedName("subjectType")
+    val subjectType: String,
     @SerializedName("surveyId")
     val surveyId: Int,
     @SerializedName("taskId")
@@ -19,4 +21,5 @@ data class SaveFormAnswerEventDto(
     val formGenerated: Boolean,
     @SerializedName("localReferenceId")
     val localReferenceId: String,
-)
+
+    )

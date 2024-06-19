@@ -128,7 +128,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             }
             getGrantConfig()
 
-            _filterList.value.putAll(_taskList.value)
+            _filterList.value = _taskList.value
 
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }

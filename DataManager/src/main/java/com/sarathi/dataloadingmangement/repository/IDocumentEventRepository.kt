@@ -7,7 +7,8 @@ interface IDocumentEventRepository {
     fun getSaveDocumentEventDto(
         generatedDate: String,
         documentType: String,
-        documentName: String
+        documentName: String,
+        activityId: Int,
     ): SaveDocumentEventDto
 
 }

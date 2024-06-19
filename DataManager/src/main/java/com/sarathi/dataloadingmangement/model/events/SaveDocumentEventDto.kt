@@ -12,5 +12,10 @@ data class SaveDocumentEventDto(
     @SerializedName("doerType")
     var doerType: String,
     @SerializedName("documentName")
-    var documentName: String
-)
+    var documentName: String,
+    @SerializedName("activityId")
+    var activityId: Int,
+    @SerializedName("documentId")
+    var documentId: String,
+
+    )

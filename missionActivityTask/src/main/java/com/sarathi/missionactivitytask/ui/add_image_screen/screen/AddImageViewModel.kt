@@ -3,7 +3,6 @@ package com.sarathi.missionactivitytask.ui.add_image_screen.screen
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.generateUUID
-import com.nudge.core.getFileNameFromURL
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.sarathi.contentmodule.download_manager.FileType
@@ -29,7 +28,7 @@ class AddImageViewModel @Inject constructor(
 ) : BaseViewModel() {
     val documentValues = mutableStateOf<ArrayList<DocumentUiModel>>(arrayListOf())
     val isButtonEnable = mutableStateOf<Boolean>(false)
-
+    val activityId = 2
     override fun <T> onEvent(event: T) {
     }
 
@@ -51,7 +50,7 @@ class AddImageViewModel @Inject constructor(
     fun updateFromTable() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val formGeneratedDate = System.currentTimeMillis().toDate().toString()
-            formUseCase.getNonGeneratedFormSummaryData(activityId = 2).forEach {
+            formUseCase.getNonGeneratedFormSummaryData(activityId = activityId).forEach {
                 it.isFormGenerated = true
                 it.formGenerateDate = formGeneratedDate
                 formEventWriterUseCase.writeFormEvent(BLANK_STRING, formEntity = it)
@@ -65,7 +64,8 @@ class AddImageViewModel @Inject constructor(
                 documentEventWriterUseCase.writeSaveDocumentEvent(
                     generatedDate = formGeneratedDate,
                     documentType = FileType.IMAGE.name,
-                    documentName = it.filePath
+                    documentName = it.filePath,
+                    activityId = activityId
                 )
 
             }
