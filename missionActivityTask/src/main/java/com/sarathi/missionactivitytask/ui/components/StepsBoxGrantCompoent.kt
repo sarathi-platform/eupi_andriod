@@ -38,18 +38,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.nudge.core.ui.events.theme.black100Percent
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.greenLight
-import com.nudge.core.ui.events.theme.greenOnline
-import com.nudge.core.ui.events.theme.greyBorderColor
-import com.nudge.core.ui.events.theme.largeTextStyle
-import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight2
-import com.nudge.core.ui.events.theme.smallerTextStyleNormalWeight
-import com.nudge.core.ui.events.theme.stepIconCompleted
-import com.nudge.core.ui.events.theme.stepIconEnableColor
-import com.nudge.core.ui.events.theme.textColorDark
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.black100Percent
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.greenLight
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
+import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.core.ui.theme.stepIconCompleted
+import com.nudge.core.ui.theme.stepIconEnableColor
+import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
 
 

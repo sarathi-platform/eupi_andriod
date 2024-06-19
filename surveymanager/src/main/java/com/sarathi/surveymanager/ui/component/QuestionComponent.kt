@@ -13,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.events.theme.NotoSans
-import com.nudge.core.ui.events.theme.red
-import com.nudge.core.ui.events.theme.textColorDark
+import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.red
+import com.nudge.core.ui.theme.textColorDark
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

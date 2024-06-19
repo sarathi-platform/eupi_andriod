@@ -32,13 +32,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.borderGrey
-import com.nudge.core.ui.events.theme.newMediumTextStyle
-import com.nudge.core.ui.events.theme.placeholderGrey
-import com.nudge.core.ui.events.theme.smallTextStyle
-import com.nudge.core.ui.events.theme.textColorDark
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 

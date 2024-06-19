@@ -8,10 +8,10 @@ import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
-import com.sarathi.dataloadingmangement.model.StatusReferenceType
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
+import com.sarathi.dataloadingmangement.util.constants.StatusReferenceType
 import javax.inject.Inject
 
 class MATStatusEventRepositoryImpl @Inject constructor(

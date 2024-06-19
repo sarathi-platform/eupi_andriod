@@ -56,9 +56,53 @@ class SurveySaveRepositoryImpl @Inject constructor(
             surveyAnswerEntities.forEach { surveyAnswerEntity ->
 
                 surveyAnswerEntity?.optionItems?.forEach {
-                    result.add(it.selectedValue ?: BLANK_STRING)
+                    if (it.isSelected == true) {
+                        if (it.selectedValue?.isNotBlank() == true) {
+                            result.add(it.selectedValue ?: BLANK_STRING)
+                        } else {
+                            result.add(it.description ?: BLANK_STRING)
+                        }
+                    }
                 }
 
+            }
+        }
+        return result.joinToString(",")
+    }
+
+    override suspend fun getSurveyAnswerForFormTag(
+        taskId: Int,
+        subjectId: Int,
+        tagId: String,
+        referenceId: String
+    ): String {
+        val result = ArrayList<String>()
+
+        val surveyAnswerEntity = surveyAnswersDao.getSurveyAnswerForFormTag(
+            taskId = taskId,
+            subjectId = subjectId,
+            referenceId = referenceId,
+            tagId = tagId.toInt(),
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+            var totalAmount = 0
+            surveyAnswerEntity?.optionItems?.forEach {
+                totalAmount += it.selectedValue?.toInt() ?: 0
+            }
+
+
+            result.add(totalAmount.toString())
+        } else {
+
+            surveyAnswerEntity?.optionItems?.forEach {
+                if (it.isSelected == true) {
+                    if (it.selectedValue?.isNotBlank() == true) {
+                        result.add(it.selectedValue ?: BLANK_STRING)
+                    } else {
+                        result.add(it.description ?: BLANK_STRING)
+                    }
+                }
             }
         }
         return result.joinToString(",")

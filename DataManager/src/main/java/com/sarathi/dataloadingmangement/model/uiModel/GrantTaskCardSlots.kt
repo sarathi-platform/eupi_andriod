@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.grantTask.model
+package com.sarathi.dataloadingmangement.model.uiModel
 
 enum class GrantTaskCardSlots(val type: String) {
     GRANT_TASK_TITLE(type = "text"),

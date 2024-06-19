@@ -35,13 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.events.theme.NotoSans
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.borderGrey
-import com.nudge.core.ui.events.theme.placeholderGrey
-import com.nudge.core.ui.events.theme.roundedCornerRadiusDefault
-import com.nudge.core.ui.events.theme.textColorDark
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 

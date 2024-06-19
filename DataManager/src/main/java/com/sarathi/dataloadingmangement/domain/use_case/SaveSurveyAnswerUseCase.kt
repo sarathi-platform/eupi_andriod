@@ -23,6 +23,20 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         return repository.getSurveyAnswerForTag(taskId, subjectId, tagId)
     }
 
+    suspend fun getAnswerForFormTag(
+        taskId: Int,
+        subjectId: Int,
+        tagId: String,
+        referenceId: String
+    ): String {
+        return repository.getSurveyAnswerForFormTag(
+            taskId = taskId,
+            subjectId = subjectId,
+            tagId = tagId,
+            referenceId = referenceId
+        )
+    }
+
     suspend fun getAllSaveAnswer(
         surveyId: Int,
         taskId: Int,

@@ -29,11 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.events.theme.buttonTextStyle
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.greyColor
-import com.nudge.core.ui.events.theme.placeholderGrey
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.R
 import java.util.Calendar
