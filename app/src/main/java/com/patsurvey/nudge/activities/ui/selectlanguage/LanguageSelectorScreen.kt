@@ -7,16 +7,6 @@ import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,14 +49,6 @@ import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
-import com.patsurvey.nudge.navigation.home.SettingScreens
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
-import com.patsurvey.nudge.utils.PageFrom
-import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable

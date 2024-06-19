@@ -55,8 +55,4 @@ class OtpVerificationRepository @Inject constructor(
     fun getMobileNumber(): String?{
        return prefRepo.getMobileNumber();
     }
-    fun saveLoggedInUserType(userType: String) {
-        coreSharedPrefs.setUserType(userType)
-        prefRepo.savePref(PREF_KEY_TYPE_NAME, userType)
-    }
 }

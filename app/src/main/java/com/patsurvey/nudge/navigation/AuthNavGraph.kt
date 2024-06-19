@@ -122,6 +122,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 //   logoutGraph(navController =navController)
 }
 
+/*
 sealed class AuthScreen(val route: String) {
     object START_SCREEN : AuthScreen(route = "start_screen")
     object LANGUAGE_SCREEN : AuthScreen(route = "language_screen")
@@ -135,4 +136,5 @@ sealed class AuthScreen(val route: String) {
     object VIDEO_PLAYER_SCREEN : AuthScreen(route = "video_player_screen/{$ARG_VIDEO_ID}")
     object MatDataLoadingScreen : AuthScreen(route = "mat_data_loading_screen")
 }
+*/
 

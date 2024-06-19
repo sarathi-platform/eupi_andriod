@@ -404,8 +404,7 @@ suspend fun exportAllOldImages(
     applicationID: String,
     mobileNo: String,
     userName:String,
-    moduleName: String,
-    timeInMillSec: String
+    moduleName: String
 ): Uri? {
     try {
 

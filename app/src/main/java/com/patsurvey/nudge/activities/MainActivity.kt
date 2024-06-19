@@ -35,9 +35,6 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
-import com.nudge.core.Core
-import com.nudge.core.model.CoreAppDetails
-import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme

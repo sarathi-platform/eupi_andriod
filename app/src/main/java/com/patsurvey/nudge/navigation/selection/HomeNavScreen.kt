@@ -23,20 +23,19 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.nrlm.baselinesurvey.navigation.BottomNavigationBar
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
 import com.patsurvey.nudge.activities.ui.theme.smallestTextStyle
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.baseline.BSNavHomeGraph
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BottomNavItem
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.UPCM_USER
+import com.sarathi.missionactivitytask.navigation.MATHomeScreens
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -59,7 +58,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
         screenList = listOf(
             BottomNavItem(
                 stringResource(R.string.mission),
-                    HomeScreens.Home_SCREEN.route,
+                MATHomeScreens.MissionScreen.route,
                 painterResource(R.drawable.ic_mission_icon)
             ),
             BottomNavItem(

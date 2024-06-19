@@ -29,7 +29,6 @@ import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
-import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
@@ -90,11 +89,14 @@ import com.sarathi.smallgroupmodule.ui.didiTab.presentation.DidiTabScreen
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
-        route = NudgeNavigationGraph.HOME,
+        route = NudgeNavigationGraph.HOME_SUB_GRAPH,
         startDestination = HomeScreens.PROGRESS_SEL_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SEL_SCREEN.route) {
-            HomeUserScreen(navController = navController, prefRepo = prefRepo)
+//            HomeNavScreen(prefRepo = prefRepo)
+            HomeUserScreen(navController = navController, prefRepo = prefRepo) {
+
+            }
         }
 
         composable(route = HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
@@ -164,10 +166,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
 }
 
 fun NavHostController.navigateToSettingScreen() {
-    this.navigate(Graph.SETTING_GRAPH)
+    this.navigate(NudgeNavigationGraph.SETTING_GRAPH)
 }
 
-sealed class HomeScreens(val route: String) {
+/*sealed class HomeScreens(val route: String) {
     object PROGRESS_SCREEN : HomeScreens(route = "progress_screen")
 
     object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
@@ -177,7 +179,7 @@ sealed class HomeScreens(val route: String) {
     object DIDI_TAB_SCREEN : HomeScreens("didi_tab_screen")
 
     object VILLAGE_SELECTION_SCREEN : HomeScreens(route = "home_village_selection_screen")
-}
+}*/
 
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(

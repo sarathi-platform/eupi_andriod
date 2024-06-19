@@ -65,14 +65,6 @@ import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.UPCM_USER
-import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.home.LogoutScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.OTP_LENGTH
-import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
-import com.patsurvey.nudge.utils.SEC_30_STRING
-import com.patsurvey.nudge.utils.UPCM_USER
 import java.text.SimpleDateFormat
 import java.util.Date
 
