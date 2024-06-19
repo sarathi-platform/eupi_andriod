@@ -159,7 +159,7 @@ fun SmallGroupAttendanceScreen(
         onBackIconClick = { navHostController.navigateUp() },
         onSearchValueChange = {},
         isSearch = true,
-        isDataAvailable = true,
+        isDataAvailable = smallGroupAttendanceScreenViewModel.smallGroupDetails.value.smallGroupId == 0,
         onBottomUI = {
             BottomAppBar(
                 modifier = Modifier.height(dimen_80_dp),

@@ -41,7 +41,8 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 fun GrantMissionScreen(
     navController: NavController = rememberNavController(),
     viewModel: MissionScreenViewModel = hiltViewModel(),
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    onNavigationToActivity: (isBaselineMission: Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -117,6 +118,12 @@ fun GrantMissionScreen(
                                 needToShowProgressBar = true,
                                 primaryButtonText = "Start",
                                 onPrimaryClick = {
+                                    onNavigationToActivity(
+                                        mission.description.contains(
+                                            "Baseline",
+                                            true
+                                        )
+                                    ) //TODO handle navigation to activity based on mission.
                                     navigateToActivityScreen(
                                         navController,
                                         missionName = mission.description,

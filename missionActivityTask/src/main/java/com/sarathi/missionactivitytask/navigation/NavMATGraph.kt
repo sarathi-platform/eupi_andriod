@@ -63,7 +63,9 @@ fun NavGraphBuilder.MatNavigation(
             GrantMissionScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick
-            )
+            ) {
+
+            }
         }
         composable(
             route = MATHomeScreens.ActivityScreen.route, arguments = listOf(

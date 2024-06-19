@@ -1,8 +1,12 @@
 package com.sarathi.dataloadingmangement.repository
 
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.R
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
@@ -41,6 +45,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
+import java.lang.reflect.Type
 import javax.inject.Inject
 
 class MissionRepositoryImpl @Inject constructor(
@@ -63,7 +68,17 @@ class MissionRepositoryImpl @Inject constructor(
     override suspend fun fetchMissionDataFromServer(
     ): ApiResponseModel<List<ProgrameResponse>> {
         val missionRequest = MissionRequest(stateId = 31)
-        return apiInterface.getMissions(missionRequest)
+        var surveyResponseModel: ApiResponseModel<List<ProgrameResponse>>? = null
+        val testSurvey =
+            CoreAppDetails.getContext()?.resources?.openRawResource(R.raw.mission_response).use {
+                val type: Type =
+                    object : TypeToken<ApiResponseModel<List<ProgrameResponse>>>() {}.type
+                surveyResponseModel =
+                    Gson().fromJson<ApiResponseModel<List<ProgrameResponse>>>(it?.reader(), type)
+
+//                    Gson().fromJson(it?.reader(), ApiResponseModel<List<ProgrameResponse>>::class.java)
+            }
+        return surveyResponseModel!!/*apiInterface.getMissions(missionRequest)*/
     }
 
     override suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int) {

@@ -24,7 +24,8 @@ enum class QuestionType {
     HrsMinPicker,
     YrsMonthPicker,
     Image,
-    FormWithNone;
+    FormWithNone,
+    AutoCalculation;
 
     companion object {
         fun getQuestionTypeFromName(name: String): QuestionType? {

@@ -61,6 +61,7 @@ import com.nrlm.baselinesurvey.navigation.home.navigateToFormQuestionSummaryScre
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.DidiInfoCard
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
@@ -375,6 +376,12 @@ fun NestedLazyList(
                         items = mQuestionEntity.sortedBy { it.questionEntity?.order }
                     ) { index, question ->
                         when (question?.questionEntity?.type) {
+                            QuestionType.AutoCalculation.name -> {
+                                CalculationResultComponent(
+
+                                )
+                            }
+
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
                                     if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()

@@ -210,7 +210,7 @@ fun SmallGroupAttendanceHistoryScreen(
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
-            isDataAvailable = true,
+            isDataAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty() && smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupId == 0,
             onBottomUI = {
                 BottomAppBar(
                     modifier = Modifier.height(dimen_80_dp),

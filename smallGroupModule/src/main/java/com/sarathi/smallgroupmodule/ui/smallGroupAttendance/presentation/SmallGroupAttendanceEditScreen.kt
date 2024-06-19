@@ -116,7 +116,7 @@ fun SmallGroupAttendanceEditScreen(
         onBackIconClick = { navHostController.popBackStack() },
         onSearchValueChange = {},
         isSearch = true,
-        isDataAvailable = true,
+        isDataAvailable = smallGroupAttendanceEditScreenViewModel.smallGroupDetails.value.smallGroupId == 0,
         onBottomUI = {
             BottomAppBar(
                 modifier = Modifier.height(dimen_80_dp),

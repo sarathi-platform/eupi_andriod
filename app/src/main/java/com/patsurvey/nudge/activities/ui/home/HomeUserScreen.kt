@@ -25,7 +25,9 @@ fun HomeUserScreen(
             navController = navController,
             viewModel = hiltViewModel(),
             onSettingClick = onSettingIconClick
-        )
+        ) {
+
+        }
     } else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(
