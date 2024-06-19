@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.SmallGroupCore
 import com.sarathi.smallgroupmodule.ui.TabItem
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
@@ -49,12 +51,11 @@ fun DidiTabScreen(
 
     val didiList = didiTabViewModel.filteredDidiList
 
-    val tabs = listOf("Didi", "Small Group")
-
+    val tabs = listOf(DidiSubTabsEnum.DidiTab, DidiSubTabsEnum.SmallGroupTab)
 
     ToolBarWithMenuComponent(
         title = stringResource(id = DataLoadingRes.string.app_name),
-        modifier = Modifier,
+        modifier = modifier,
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
@@ -86,12 +87,13 @@ fun DidiTabScreen(
                     tabs.forEachIndexed { index, tab ->
 
                         val count = getCount(index, didiTabViewModel)
+                        val tabName = getTabName(context, tab)
                         TabItem(
                             isSelected = SmallGroupCore.tabIndex.value == index,
                             onClick = {
                                 SmallGroupCore.tabIndex.value = index
                             },
-                            text = "$tab ($count)"
+                            text = "$tabName ($count)"
                         )
                     }
 
@@ -100,8 +102,8 @@ fun DidiTabScreen(
                 Column {
                     SearchWithFilterViewComponent(
                         placeholderString = when (SmallGroupCore.tabIndex.value) {
-                            0 -> "Search by didis"
-                            1 -> "Search by small groups"
+                            DidiSubTabsEnum.DidiTab.id -> "Search by didis"
+                            DidiSubTabsEnum.SmallGroupTab.id -> "Search by small groups"
                             else -> "Search by didis"
                         },
                         showFilter = false,
@@ -120,14 +122,14 @@ fun DidiTabScreen(
                     )
                     CustomVerticalSpacer()
                     when (SmallGroupCore.tabIndex.value) {
-                        0 -> {
+                        DidiSubTabsEnum.DidiTab.id -> {
                             DidiSubTab(
                                 didiTabViewModel = didiTabViewModel,
                                 didiList = didiList.value
                             )
                         }
 
-                        1 -> SmallGroupSubTab(
+                        DidiSubTabsEnum.SmallGroupTab.id -> SmallGroupSubTab(
                             didiTabViewModel = didiTabViewModel,
                             smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
                             navHostController = navHostController
@@ -142,12 +144,25 @@ fun DidiTabScreen(
 
 }
 
+fun getTabName(context: Context, tab: DidiSubTabsEnum): String {
+    return when (tab) {
+        DidiSubTabsEnum.DidiTab -> context.getString(R.string.didi_sub_tab_title)
+        DidiSubTabsEnum.SmallGroupTab -> context.getString(R.string.small_group_sub_tab_title)
+    }
+}
+
 fun getCount(tabIndex: Int, didiTabViewModel: DidiTabViewModel): Int {
     return when (tabIndex) {
-        0 -> didiTabViewModel.totalCount.value
-        1 -> didiTabViewModel.totalSmallGroupCount.value
+        DidiSubTabsEnum.DidiTab.id -> didiTabViewModel.totalCount.value
+        DidiSubTabsEnum.SmallGroupTab.id -> didiTabViewModel.totalSmallGroupCount.value
         else -> {
             0
         }
     }
+}
+
+enum class DidiSubTabsEnum(val id: Int) {
+    DidiTab(0),
+    SmallGroupTab(1)
+
 }

@@ -160,8 +160,8 @@ fun SmallGroupAttendanceHistoryScreen(
     if (smallGroupAttendanceHistoryViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title = "Are you sure!",
-            message = "You want to delete small group attendance?",
+            title = stringResource(R.string.confirmation_alert_dialog_title),
+            message = stringResource(R.string.delete_attendance_confirmation_msg),
             positiveButtonTitle = stringResource(id = R.string.yes),
             negativeButtonTitle = stringResource(id = R.string.no),
             onPositiveButtonClick = {
@@ -223,7 +223,7 @@ fun SmallGroupAttendanceHistoryScreen(
                             .padding(dimen_10_dp)
                     ) {
                         ButtonPositiveComponent(
-                            buttonTitle = "Take Attendance",
+                            buttonTitle = stringResource(R.string.take_attendance_button_text),
                             isActive = true,
                             isArrowRequired = true,
                             onClick = {
@@ -305,10 +305,16 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 focusedContainerColor = white,
                                             ),
                                             label = {
-                                                Text(text = "From - To", color = otpBorderColor)
+                                                Text(
+                                                    text = stringResource(R.string.date_range_picker_label_text),
+                                                    color = otpBorderColor
+                                                )
                                             },
                                             placeholder = {
-                                                Text(text = "From - To", color = otpBorderColor)
+                                                Text(
+                                                    text = stringResource(R.string.date_range_picker_label_text),
+                                                    color = otpBorderColor
+                                                )
                                             },
                                             trailingIcon = {
                                                 IconButton(onClick = {
@@ -332,7 +338,7 @@ fun SmallGroupAttendanceHistoryScreen(
 
                             item {
                                 Text(
-                                    text = "Attendance History: ",
+                                    text = stringResource(R.string.attendance_history_header_text),
                                     style = defaultTextStyle,
                                     color = textColorDark
                                 )
@@ -407,17 +413,20 @@ fun EmptyHistoryView(
                 horizontalArrangement = Arrangement.Center,
                 iconProperties = IconProperties(
                     painterResource(id = R.drawable.didi_icon),
-                    contentDescription = "",
+                    contentDescription = null,
                     blueDark,
                 ), textProperties = TextProperties(
-                    text = "Total Didis - ${smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount}",
+                    text = stringResource(
+                        R.string.total_didis_label_text,
+                        smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount
+                    ),
                     color = blueDark,
                     style = defaultTextStyle
                 )
             )
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
             ButtonPositiveComponent(
-                buttonTitle = "Take Attendance",
+                buttonTitle = stringResource(id = R.string.take_attendance_button_text),
                 isActive = true,
                 isArrowRequired = true,
                 onClick = {
@@ -501,7 +510,10 @@ fun AttendanceSummaryCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Attendance - ${attendancePercentage.value}%",
+                    text = stringResource(
+                        R.string.attendance_percentage_text,
+                        attendancePercentage.value
+                    ),
                     style = defaultTextStyle,
                     color = green,
                     modifier = Modifier
@@ -522,7 +534,11 @@ fun AttendanceSummaryCard(
                         contentDescription = null,
                         tint = textColorDark
                     ), textProperties = TextProperties(
-                        text = "Total - ${counts.value.first}/${counts.value.second}",
+                        text = stringResource(
+                            R.string.total_count_text,
+                            counts.value.first,
+                            counts.value.second
+                        ),
                         style = defaultTextStyle,
                         color = textColorDark
                     )
@@ -579,7 +595,7 @@ fun AttendanceSummaryCard(
                             modifier = Modifier
                         ),
                         textProperties = TextProperties(
-                            text = "Edit",
+                            text = stringResource(R.string.edit_button_text),
                             style = defaultTextStyle,
                             color = textColorDark
                         )
@@ -609,7 +625,7 @@ fun AttendanceSummaryCard(
                             tint = redOffline,
                             modifier = Modifier.absolutePadding(top = dimen_2_dp)
                         ), textProperties = TextProperties(
-                            text = "Delete",
+                            text = stringResource(R.string.delete_button_text),
                             style = defaultTextStyle,
                             color = redOffline
                         )

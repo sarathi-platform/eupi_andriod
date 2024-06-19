@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
@@ -89,7 +90,7 @@ fun SmallGroupAttendanceEditScreen(
     }
 
     val datePickerState =
-        rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
+        rememberDatePickerState(initialSelectedDateMillis = getCurrentTimeInMillis())
 
     if (smallGroupAttendanceEditScreenViewModel.alertDialogState.value.isDialogVisible) {
 

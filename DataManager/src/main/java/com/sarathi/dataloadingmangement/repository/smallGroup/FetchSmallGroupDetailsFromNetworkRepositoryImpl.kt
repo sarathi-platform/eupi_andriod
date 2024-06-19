@@ -2,7 +2,9 @@ package com.sarathi.dataloadingmangement.repository.smallGroup
 
 import android.util.Log
 import com.nudge.core.SUCCESS_CODE
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
@@ -33,7 +35,12 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
 
             }
         } catch (ex: Exception) {
-            Log.e(TAG, "fetchSmallGroupDetails -> exception = ${ex.message}", ex)
+            CoreLogger.e(
+                CoreAppDetails.getContext()!!,
+                TAG,
+                "fetchSmallGroupDetails -> exception = ${ex.message}",
+                ex
+            )
         }
 
 

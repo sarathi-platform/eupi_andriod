@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.enums.EventType
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
@@ -36,7 +37,7 @@ class SmallGroupAttendanceEditScreenViewModel @Inject constructor(
     val subjectList: State<List<SubjectEntity>> get() = _subjectList
 
     val selectedDate =
-        mutableStateOf(System.currentTimeMillis())
+        mutableStateOf(getCurrentTimeInMillis())
 
     private val _smallGroupAttendanceEntityState: MutableState<MutableList<SmallGroupAttendanceEntityState>> =
         mutableStateOf(
