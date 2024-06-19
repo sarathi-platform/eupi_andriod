@@ -76,7 +76,7 @@ fun ContentDetailScreen(
     queLazyState: LazyListState = rememberLazyListState(),
     matId: Int,
     contentType: Int,
-    onNavigateToMediaScreen: (fileType: String, key: String) -> Unit
+    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -256,7 +256,7 @@ fun ContentDetailScreen(
 private fun ContentRowView(
     item: Content,
     viewModel: ContentDetailViewModel,
-    onNavigateToMediaScreen: (fileType: String, key: String) -> Unit,
+    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit,
     context: Context
 ) {
     BasicContentComponent(contentType = item.contentType,
@@ -266,7 +266,8 @@ private fun ContentRowView(
             if (viewModel.isFilePathExists(item.contentValue)) {
                 onNavigateToMediaScreen(
                     item.contentType,
-                    item.contentKey
+                    item.contentKey,
+                    item.contentName
                 )
             } else {
                 Toast.makeText(

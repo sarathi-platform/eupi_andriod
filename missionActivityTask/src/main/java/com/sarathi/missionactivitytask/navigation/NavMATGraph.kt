@@ -19,6 +19,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TITLE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
@@ -124,6 +125,11 @@ fun NavGraphBuilder.MatNavigation(
                 name = ARG_CONTENT_TYPE
             ) {
                 type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_CONTENT_TITLE
+            ) {
+                type = NavType.StringType
             }
         )
         ) {
@@ -135,6 +141,9 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: BLANK_STRING,
                 key = it.arguments?.getString(
                     ARG_CONTENT_KEY
+                ) ?: BLANK_STRING,
+                contentTitle = it.arguments?.getString(
+                    ARG_CONTENT_TITLE
                 ) ?: BLANK_STRING
             )
         }
@@ -154,11 +163,12 @@ fun NavGraphBuilder.MatNavigation(
         )) {
             ContentDetailScreen(
                 navController = navController, viewModel = hiltViewModel(),
-                onNavigateToMediaScreen = { fileType, key ->
+                onNavigateToMediaScreen = { fileType, key, title ->
                     navigateToMediaPlayerScreen(
                         navController = navController,
                         contentKey = key,
-                        contentType = fileType
+                        contentType = fileType,
+                        contentTitle = title
                     )
 
                 }, matId = it.arguments?.getInt(
@@ -360,7 +370,7 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "$CONTENT_DETAIL_SCREEN_ROUTE_NAME/{$ARG_MAT_ID}/{$ARG_CONTENT_SCREEN_CATEGORY}")
 
     object MediaPlayerScreen :
-        MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
+        MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}/{$ARG_CONTENT_TITLE}")
 
     object SurveyScreen :
         MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_GRANT_ID}/{$ARG_GRANT_TYPE}/{$ARG_SANCTIONED_AMOUNT}/{$ARG_TOTAL_SUBMITTED_AMOUNT}")
@@ -425,9 +435,10 @@ fun navigateToFinalStepCompletionScreen(navController: NavController) {
 fun navigateToMediaPlayerScreen(
     navController: NavController,
     contentKey: String,
-    contentType: String
+    contentType: String,
+    contentTitle: String
 ) {
-    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/${contentKey}/${contentType}")
+    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/${contentKey}/${contentType}/${contentTitle}")
 }
 
 fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {

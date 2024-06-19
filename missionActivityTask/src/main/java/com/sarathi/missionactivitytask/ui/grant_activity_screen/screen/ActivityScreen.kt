@@ -69,9 +69,9 @@ fun ActivityScreen(
                     missionId = missionId,
                     activities = viewModel.activityList.value,
                     navController = navController
-                ) { contentValue, contentKey, contentType ->
+                ) { contentValue, contentKey, contentType, contentTitle ->
                     if (viewModel.isFilePathExists(contentValue)) {
-                        navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                        navigateToMediaPlayerScreen(navController, contentKey, contentType, contentTitle)
                     } else {
                         Toast.makeText(
                             context,
