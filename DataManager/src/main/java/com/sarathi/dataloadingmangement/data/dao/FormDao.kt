@@ -42,10 +42,17 @@ interface FormDao {
         taskId: Int
     ): Int
 
-    @Query("select * from form_table where userId =:userId and isFormGenerated=:isFormGenerated order by createdDate DESC")
+    @Query("select * from form_table where userId =:userId and isFormGenerated=:isFormGenerated and activityId=:activityId order by createdDate DESC")
     suspend fun getFormSummaryData(
         userId: String,
+        activityId: Int,
         isFormGenerated: Boolean
+    ): List<FormEntity>
+
+    @Query("select * from form_table where userId =:userId and activityId=:activityId order by createdDate DESC")
+    suspend fun getAllFormSummaryData(
+        userId: String,
+        activityId: Int,
     ): List<FormEntity>
 
     @Query("Update  form_table  set isFormGenerated=:isFormGenerated where userId =:userId")
@@ -53,4 +60,5 @@ interface FormDao {
         userId: String,
         isFormGenerated: Boolean
     )
+
 }

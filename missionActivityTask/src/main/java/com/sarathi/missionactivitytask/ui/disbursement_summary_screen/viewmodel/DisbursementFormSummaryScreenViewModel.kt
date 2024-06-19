@@ -4,7 +4,15 @@ import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.PDF_MIME_TYPE
+import com.nudge.core.PDF_TYPE
 import com.nudge.core.formatTo
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.openShareSheet
+import com.nudge.core.saveFileToDownload
+import com.nudge.core.uriFromFile
+import com.nudge.core.utils.PdfGenerator
+import com.nudge.core.utils.PdfModel
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
@@ -22,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,7 +72,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     }
 
     private suspend fun getFormData(): List<DisbursementFormSummaryUiModel> {
-        val fromData = formUseCase.getFormSummaryData()
+//@Todo pass activity Id here
+        val fromData = formUseCase.getFormSummaryData(activityId = 2)
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
             val _data = getFormAttributeDate(form)
@@ -87,6 +97,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                     didiImage = _data[GrantTaskFormSlots.GRANT_TASK_IMAGE_FORM.name]
                         ?: BLANK_STRING,
                     voName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_3_FORM.name]
+                        ?: BLANK_STRING,
+                    dadaName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_FORM.name]
                         ?: BLANK_STRING,
                 )
             )
@@ -147,5 +159,78 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         return formUseCase.getFilePathUri(filePath)
     }
 
+    fun generateFormE(isDownload: Boolean, callBack: (filepath: String) -> Unit) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val pdfModels = ArrayList<PdfModel>()
+            formList.value.forEach {
+                pdfModels.add(
+                    PdfModel(
+                        pdfLeftTitle = "VO Name: ${it.key.second}",
+                        pdfCenterTitle = "FORMAT E",
+                        pdfDescription = "Format to be used by the Village Organization/Nodal SHG for writing the meeting minute register\u2028during distribution of Immediate Assistance Grant amount to the poorest families",
+                        pdfRightTitle = "Date: ${it.key.first}",
+                        tableHeaders = getTableHeader(),
+                        rows = getDidiWiseDetail(it.value),
+                        pageNo = 1
+
+                    )
+                )
+
+            }
+
+
+            val filePath = PdfGenerator.generatePdf(pdfModels, formUseCase.getFormEFileName())
+            val fileUri = uriFromFile(
+                CoreAppDetails.getApplicationDetails()?.activity?.applicationContext,
+                File(filePath),
+                CoreAppDetails.getApplicationDetails()?.applicationID ?: BLANK_STRING
+            )
+            if (isDownload) {
+                saveFileToDownload(
+                    fileUri, PDF_MIME_TYPE,
+                    CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!
+                )
+                withContext(Dispatchers.Main) {
+                    callBack(filePath)
+                }
+
+
+            } else {
+                val fileUriList = ArrayList<Uri>()
+                fileUriList.add(fileUri)
+                openShareSheet(
+                    fileUriList = fileUriList, "Form E", PDF_TYPE,
+                    CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!
+                )
+            }
+        }
+    }
+
+    fun getDidiWiseDetail(disbursementFormSummaryUiModel: List<DisbursementFormSummaryUiModel>): List<List<String>> {
+        val rowList = ArrayList<List<String>>()
+        disbursementFormSummaryUiModel.forEachIndexed { index, it ->
+            val row = ArrayList<String>()
+            row.add("${index + 1}")
+            row.add(it.subjectName)
+            row.add(it.dadaName)
+            row.add(it.villageName)
+            row.add(it.mode)
+            row.add(it.amount)
+            rowList.add(row)
+        }
+        return rowList
+    }
+
+    fun getTableHeader(): List<String> {
+        return listOf(
+            "S.No",
+            "Name of Didi",
+            "Name of husband/father",
+            "Village/Hamlet Name",
+            "Grant Received (Mode)",
+            "Value of grant received"
+        )
+    }
 }
 
