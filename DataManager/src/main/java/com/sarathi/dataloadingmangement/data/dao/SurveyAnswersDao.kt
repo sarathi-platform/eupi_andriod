@@ -10,6 +10,7 @@ import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 
 
 @Dao
@@ -35,13 +36,26 @@ interface SurveyAnswersDao {
         referenceId: String
     ): Int
 
-    @Query("select * from ques_answer_table where userId =:userId and taskId=:taskId and sectionId=:sectionId and surveyId=:surveyId")
+    @Query(
+        "select ques_answer_table.subjectId\n" +
+                ",ques_answer_table.taskId,\n" +
+                "ques_answer_table.referenceId,\n" +
+                "ques_answer_table.sectionId,\n" +
+                "ques_answer_table.surveyId,\n" +
+                "ques_answer_table.tagId,\n" +
+                "ques_answer_table.optionItems,\n" +
+                "ques_answer_table.questionSummary,\n" +
+                "ques_answer_table.questionType,\n" +
+                "form_table.isFormGenerated\n" +
+                " from ques_answer_table " +
+                "left join form_table on ques_answer_table.referenceId =form_table.localReferenceId  where ques_answer_table.userId =:userId and ques_answer_table.taskId=:taskId and ques_answer_table.sectionId=:sectionId and ques_answer_table.surveyId=:surveyId"
+    )
     fun getSurveyAnswersForSummary(
         userId: String,
         taskId: Int,
         sectionId: Int,
         surveyId: Int
-    ): List<SurveyAnswerEntity>
+    ): List<SurveyAnswerFormSummaryUiModel>
 
     @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId and referenceId=:referenceId")
     fun updateAnswer(
@@ -99,6 +113,21 @@ interface SurveyAnswersDao {
         subjectId: Int,
         tagId: Int,
         uniqueUserIdentifier: String
-    ): SurveyAnswerEntity?
+    ): List<SurveyAnswerEntity>
+
+    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId and tagId =:tagId and referenceId=:referenceId")
+    fun getSurveyAnswerForFormTag(
+        taskId: Int,
+        subjectId: Int,
+        tagId: Int,
+        referenceId: String,
+        uniqueUserIdentifier: String
+    ): SurveyAnswerEntity
+
+    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and questionType=:questionType")
+    fun getSurveyAnswerImageKeys(
+        questionType: String,
+        uniqueUserIdentifier: String
+    ): List<SurveyAnswerEntity>?
 
 }

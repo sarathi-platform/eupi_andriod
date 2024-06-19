@@ -110,7 +110,7 @@ fun ToolBarWithMenuComponent(
                 .padding(top = 75.dp),
             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
-            if (!dataAvailableState.value) {
+            if (dataAvailableState.value) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -23,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
@@ -38,6 +42,7 @@ fun InputComponent(
     hintText: String = BLANK_STRING,
     isMandatory: Boolean = true,
     isEditable: Boolean = true,
+    hintMessage: String = BLANK_STRING,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
@@ -98,6 +103,9 @@ fun InputComponent(
                 textColor = textColorDark
             ),
         )
+        if (hintMessage.isNotBlank()) {
+            Text(hintMessage, style = smallTextStyleMediumWeight, color = textColorDark)
+        }
 
     }
 }

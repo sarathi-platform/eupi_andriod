@@ -20,14 +20,17 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
+import com.sarathi.dataloadingmangement.model.events.SaveDocumentEventDto
 import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.sarathi.dataloadingmangement.model.events.SaveFormAnswerEventDto
 
 class EventWriterRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -57,7 +60,10 @@ class EventWriterRepositoryImpl @Inject constructor(
                 requestPayload = (eventItem as SaveAnswerMoneyJorunalEventDto).json()
 
             }
+            EventName.GRANT_DELETE_RESPONSE_EVENT -> {
+                requestPayload = (eventItem as DeleteAnswerEventDto).json()
 
+            }
 
             EventName.TASKS_STATUS_EVENT -> {
                 requestPayload = (eventItem as UpdateTaskStatusEventDto).json()
@@ -69,6 +75,15 @@ class EventWriterRepositoryImpl @Inject constructor(
 
             EventName.MISSIONS_STATUS_EVENT -> {
                 requestPayload = (eventItem as UpdateMissionStatusEventDto).json()
+
+            }
+            EventName.UPDATE_FORM_DETAILS_EVENT -> {
+                requestPayload = (eventItem as SaveFormAnswerEventDto).json()
+
+            }
+
+            EventName.UPLOAD_DOCUMENT_EVENT -> {
+                requestPayload = (eventItem as SaveDocumentEventDto).json()
 
             }
 

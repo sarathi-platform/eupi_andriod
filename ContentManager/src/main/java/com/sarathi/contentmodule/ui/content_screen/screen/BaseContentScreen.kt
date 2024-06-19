@@ -18,7 +18,7 @@ fun BaseContentScreen(
     matId: Int,
     contentScreenCategory: Int,
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
-    onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean) -> Unit
+    onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean, contentTitle: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -38,7 +38,8 @@ fun BaseContentScreen(
                             item.contentValue,
                             item.contentKey,
                             item.contentType,
-                            index == CONTENT_THRESHOLD_VALUE
+                            index == CONTENT_THRESHOLD_VALUE,
+                            item.contentName
                         )
                     }
                 )

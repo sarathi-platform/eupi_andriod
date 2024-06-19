@@ -5,5 +5,6 @@ enum class FileType {
     VIDEO,
     PDF,
     FILE,
-    AUDIO
+    AUDIO,
+    TEXT
 }

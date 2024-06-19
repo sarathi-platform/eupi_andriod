@@ -2,12 +2,13 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.QuestionType
+import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventOptionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import javax.inject.Inject
 
 class SurveyAnswerEventRepositoryImpl @Inject constructor(
@@ -71,6 +72,32 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
 
         )
 
+    }
+
+    override suspend fun writeDeleteSaveAnswerEvent(
+        surveyID: Int,
+        sectionId: Int,
+        subjectId: Int,
+        subjectType: String,
+        refrenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String,
+        taskId: Int
+    ): DeleteAnswerEventDto {
+        return DeleteAnswerEventDto(
+            surveyId = surveyID,
+            dateCreated = System.currentTimeMillis(),
+            languageId = coreSharedPrefs.getAppLanguage(),
+            subjectId = subjectId,
+            subjectType = subjectType,
+            sectionId = sectionId,
+            referenceId = refrenceId,
+            localTaskId = taskLocalId ?: BLANK_STRING,
+            grantId = grantId,
+            grantType = grantType,
+            taskId = taskId
+        )
     }
 
 

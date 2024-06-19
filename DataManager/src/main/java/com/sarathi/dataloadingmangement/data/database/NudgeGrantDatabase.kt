@@ -4,6 +4,7 @@ package com.sarathi.dataloadingmangement.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.nudge.core.database.converters.DateConverter
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
@@ -20,6 +21,9 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.DocumentDao
+import com.sarathi.dataloadingmangement.data.dao.FormDao
+import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
@@ -45,6 +49,9 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.DocumentEntity
+import com.sarathi.dataloadingmangement.data.entities.FormEntity
+import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
@@ -87,6 +94,9 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         ProgrammeEntity::class,
         SurveyAnswerEntity::class,
         GrantConfigEntity::class,
+        FormEntity::class,
+        FormUiConfigEntity::class,
+        DocumentEntity::class,
         SurveyLanguageAttributeEntity::class,
         SubjectEntity::class,
         SmallGroupDidiMappingEntity::class
@@ -103,6 +113,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
     ContentListConverter::class,
     ContentMapConverter::class,
     ValuesDtoConverter::class,
+    DateConverter::class
 
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
@@ -113,6 +124,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun contentDao(): ContentDao
     abstract fun languageDao(): LanguageDao
     abstract fun activityConfigDao(): ActivityConfigDao
+    abstract fun formEDao(): FormDao
+    abstract fun documentDao(): DocumentDao
     abstract fun activityLanguageAttributeDao(): ActivityLanguageAttributeDao
     abstract fun activityLanguageDao(): ActivityLanguageDao
     abstract fun attributeValueReferenceDao(): AttributeValueReferenceDao
@@ -121,6 +134,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun subjectAttributeDao(): SubjectAttributeDao
     abstract fun taskAttributeDao(): TaskAttributeDao
     abstract fun uiConfigDao(): UiConfigDao
+    abstract fun formUiConfigDao(): FormUiConfigDao
     abstract fun surveyEntityDao(): SurveyEntityDao
 
     abstract fun sectionEntityDao(): SectionEntityDao
