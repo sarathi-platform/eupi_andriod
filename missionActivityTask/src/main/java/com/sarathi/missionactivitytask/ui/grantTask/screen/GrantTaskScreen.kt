@@ -111,9 +111,14 @@ fun GrantTaskScreen(
             Column {
                 BaseContentScreen(
                     matId = activityId, contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
-                ) { contentValue, contentKey, contentType, isLimitContentData ->
+                ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
                     if (!isLimitContentData) {
-                        navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                        navigateToMediaPlayerScreen(
+                            navController = navController,
+                            contentKey = contentKey,
+                            contentType = contentType,
+                            contentTitle = contentTitle,
+                        )
                     } else {
                         navigateToContentDetailScreen(
                             navController,

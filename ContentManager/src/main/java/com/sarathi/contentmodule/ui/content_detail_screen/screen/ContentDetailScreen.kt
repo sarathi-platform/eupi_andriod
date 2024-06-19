@@ -56,6 +56,7 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.component.ButtonPositive
 import com.sarathi.contentmodule.ui.component.SearchWithFilterViewComponent
@@ -65,6 +66,7 @@ import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -76,7 +78,7 @@ fun ContentDetailScreen(
     queLazyState: LazyListState = rememberLazyListState(),
     matId: Int,
     contentType: Int,
-    onNavigateToMediaScreen: (fileType: String, key: String) -> Unit
+    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -256,17 +258,18 @@ fun ContentDetailScreen(
 private fun ContentRowView(
     item: Content,
     viewModel: ContentDetailViewModel,
-    onNavigateToMediaScreen: (fileType: String, key: String) -> Unit,
+    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit,
     context: Context
 ) {
     BasicContentComponent(contentType = item.contentType,
         contentTitle = item.contentName,
         contentValue = item.contentValue,
         onClick = {
-            if (viewModel.isFilePathExists(item.contentValue)) {
+            if (viewModel.isFilePathExists(item.contentValue) || item.contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
                 onNavigateToMediaScreen(
                     item.contentType,
-                    item.contentKey
+                    item.contentKey,
+                    item.contentName
                 )
             } else {
                 Toast.makeText(

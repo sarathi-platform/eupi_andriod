@@ -135,6 +135,11 @@ fun ContentData(contentType: String) {
                 painterResource(id = R.drawable.ic_file_place_holder_icon)
             Image(painter = painter, contentDescription = null)
         }
+
+        FileType.TEXT.name -> {
+            val painter: Painter = painterResource(id = R.drawable.baseline_text_fields_24)
+            Image(painter = painter, contentDescription = null)
+        }
     }
 }
 

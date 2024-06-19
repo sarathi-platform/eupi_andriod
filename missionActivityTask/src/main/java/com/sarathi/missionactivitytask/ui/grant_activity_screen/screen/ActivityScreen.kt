@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -21,6 +22,7 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel.Activi
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import java.util.Locale
 
 @Composable
 fun ActivityScreen(
@@ -69,9 +71,15 @@ fun ActivityScreen(
                     missionId = missionId,
                     activities = viewModel.activityList.value,
                     navController = navController
-                ) { contentValue, contentKey, contentType ->
-                    if (viewModel.isFilePathExists(contentValue)) {
-                        navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                ) { contentValue, contentKey, contentType, contentTitle ->
+
+                    if (viewModel.isFilePathExists(contentValue) || contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
+                        navigateToMediaPlayerScreen(
+                            navController = navController,
+                            contentKey = contentKey,
+                            contentType = contentType,
+                            contentTitle = contentTitle
+                        )
                     } else {
                         Toast.makeText(
                             context,

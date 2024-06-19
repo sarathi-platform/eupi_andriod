@@ -1,3 +1,4 @@
+
 package com.sarathi.missionactivitytask.navigation
 
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TITLE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_PATH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
@@ -131,6 +133,11 @@ fun NavGraphBuilder.MatNavigation(
                 name = ARG_CONTENT_TYPE
             ) {
                 type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_CONTENT_TITLE
+            ) {
+                type = NavType.StringType
             }
         )
         ) {
@@ -142,6 +149,9 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: BLANK_STRING,
                 key = it.arguments?.getString(
                     ARG_CONTENT_KEY
+                ) ?: BLANK_STRING,
+                contentTitle = it.arguments?.getString(
+                    ARG_CONTENT_TITLE
                 ) ?: BLANK_STRING
             )
         }
@@ -161,11 +171,12 @@ fun NavGraphBuilder.MatNavigation(
         )) {
             ContentDetailScreen(
                 navController = navController, viewModel = hiltViewModel(),
-                onNavigateToMediaScreen = { fileType, key ->
+                onNavigateToMediaScreen = { fileType, key, contentTitle ->
                     navigateToMediaPlayerScreen(
                         navController = navController,
                         contentKey = key,
-                        contentType = fileType
+                        contentType = fileType,
+                        contentTitle = contentTitle
                     )
 
                 }, matId = it.arguments?.getInt(
@@ -447,9 +458,10 @@ fun navigateToPdfViewerScreen(navController: NavController, filePath: String) {
 fun navigateToMediaPlayerScreen(
     navController: NavController,
     contentKey: String,
-    contentType: String
+    contentType: String,
+    contentTitle: String
 ) {
-    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/${contentKey}/${contentType}")
+    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/$contentKey/$contentType/$contentTitle")
 }
 
 fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
@@ -468,10 +480,3 @@ fun navigateToTaskScreen(
 ) {
     navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }
-
-
-
-
-
-
-
