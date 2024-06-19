@@ -180,7 +180,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
             }
 
 
-            val filePath = PdfGenerator.generatePdf(pdfModels)
+            val filePath = PdfGenerator.generatePdf(pdfModels, formUseCase.getFormEFileName())
             val fileUri = uriFromFile(
                 CoreAppDetails.getApplicationDetails()?.activity?.applicationContext,
                 File(filePath),
@@ -225,7 +225,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     fun getTableHeader(): List<String> {
         return listOf(
             "S.No",
-            "Name of ultra poor sister",
+            "Name of Didi",
             "Name of husband/father",
             "Village/Hamlet Name",
             "Grant Received (Mode)",

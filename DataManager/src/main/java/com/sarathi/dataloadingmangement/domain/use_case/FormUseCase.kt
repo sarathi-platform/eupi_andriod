@@ -58,4 +58,8 @@ class FormUseCase @Inject constructor(
         repository.updateFormData(isFormGenerated)
     }
 
+    fun getFormEFileName(): String {
+        return repository.getFormEFileName()
+    }
+
 }

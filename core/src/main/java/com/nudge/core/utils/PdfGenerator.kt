@@ -26,12 +26,12 @@ object PdfGenerator {
     private val marginBottom: UInt = 40u
     private val blackColor = "#000000"
     private val greyColor = "#222E50"
-    suspend fun generatePdf(pdfModels: List<PdfModel>): String {
+    suspend fun generatePdf(pdfModels: List<PdfModel>, fileName: String): String {
         val mSerialNumberCellWidth = 50
         val mDataCellWidth = 150
         val outputFile = getPdfPath(
             CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,
-            "Digital Form e"
+            fileName
         )
         val simplyPdfDocument = getSimplePdfDocument(
             CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,

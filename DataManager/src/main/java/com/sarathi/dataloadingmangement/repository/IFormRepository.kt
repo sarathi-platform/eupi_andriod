@@ -26,5 +26,7 @@ interface IFormRepository {
         isFormGenerated: Boolean
     )
 
+    fun getFormEFileName(): String
+
 
 }

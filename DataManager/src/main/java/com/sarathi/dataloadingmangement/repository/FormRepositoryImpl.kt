@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toDateInMMDDYYFormat
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import javax.inject.Inject
@@ -65,5 +66,11 @@ class FormRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             isFormGenerated = isFormGenerated
         )
+    }
+
+    override fun getFormEFileName(): String {
+        return "${coreSharedPrefs.getMobileNo()}_FORM_E_${
+            System.currentTimeMillis().toDateInMMDDYYFormat()
+        }"
     }
 }
