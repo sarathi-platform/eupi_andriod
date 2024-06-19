@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -14,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.theme.black1
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -69,12 +72,10 @@ fun DisbursementSummaryScreen(
                     isActive = viewModel.isButtonEnable.value,
                     isLeftArrow = false,
                     onClick = {
-
                         viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen("cdkkdsj")
+                        onNavigateSuccessScreen("")
                     }
                 )
-
             }
         },
         onContentUI = { paddingValues ->
@@ -83,22 +84,26 @@ fun DisbursementSummaryScreen(
                     ?: BLANK_STRING,
                 summaryCount = viewModel.taskList.value.entries.size,
                 onClick = {
-
                     onNavigateSurveyScreen(
                         viewModel.createReferenceId(),
                         activityConfigId,
                         viewModel.grantConfigUi.value.grantId,
-                        viewModel.grantConfigUi.value.grantType
-                            ?: BLANK_STRING,
+                        viewModel.grantConfigUi.value.grantType,
                         sanctionedAmount,
                         viewModel.getTotalSubmittedAmount()
-
                     )
                 },
                 isEditable = viewModel.isAddDisbursementButtonEnable.value,
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
                         LazyColumn {
+                            item {
+                                Divider(
+                                    modifier = Modifier.padding(vertical = dimen_5_dp),
+                                    color = black1,
+                                    thickness = 0.5.dp
+                                )
+                            }
                             itemsIndexed(
                                 items = viewModel.taskList.value.entries.toList()
                             ) { index, task ->
@@ -123,11 +128,19 @@ fun DisbursementSummaryScreen(
                                     },
                                     onDeleteSurvey = {
                                         if (!viewModel.isActivityCompleted.value) {
-                                        viewModel.showDialog.value =
-                                            Pair(true, surveyData.referenceId)
+                                            viewModel.showDialog.value =
+                                                Pair(true, surveyData.referenceId)
                                         }
                                     }
                                 )
+                                if (index != viewModel.taskList.value.entries.size - 1) {
+                                    Divider(
+                                        modifier = Modifier.padding(vertical = dimen_5_dp),
+                                        color = black1,
+                                        thickness = 0.5.dp
+                                    )
+                                }
+
                             }
                         }
                         if (viewModel.showDialog.value.first) {

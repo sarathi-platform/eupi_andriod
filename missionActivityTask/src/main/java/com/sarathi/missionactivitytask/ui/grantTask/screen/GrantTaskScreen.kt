@@ -2,7 +2,6 @@ package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,13 +74,13 @@ fun GrantTaskScreen(
 
         },
         onBottomUI = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp)
+            BottomAppBar(
+                backgroundColor = white
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_10_dp),
                 ) {
                     ButtonPositive(
                         modifier = Modifier.weight(0.4f),

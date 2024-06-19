@@ -26,10 +26,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -47,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.getFileNameFromURL
@@ -57,13 +60,16 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.lightBg
 import com.nudge.core.ui.theme.greyLightColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
@@ -104,38 +110,40 @@ fun DisbursementFormSummaryScreen(
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
         onBottomUI = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp)
-            ) {
-                Row(
+            BottomAppBar(backgroundColor = white, modifier = Modifier.height(150.dp)) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dimen_10_dp)
+                        .padding(horizontal = dimen_10_dp)
                 ) {
                     Row(
                         modifier = Modifier
-                            .weight(1.0f)
-                            .height(dimen_56_dp)
-                            .clickable {
-                                viewModel.generateFormE(false, {})
-                            }
-                            .border(width = dimen_1_dp, color = borderGrey)
-                            .background(white),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                            .fillMaxWidth()
+                            .padding(vertical = dimen_10_dp)
                     ) {
-                        Image(
-                            painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_share_icon),
-                            contentDescription = "Negative Button",
-                            modifier = Modifier.padding(horizontal = dimen_2_dp),
-                            colorFilter = ColorFilter.tint(blueDark)
-                        )
-                        Text(
-                            stringResource(com.sarathi.missionactivitytask.R.string.share),
-                            style = defaultTextStyle
-                        )
+                        Row(
+                            modifier = Modifier
+                                .weight(1.0f)
+                                .height(dimen_56_dp)
+                                .clickable {
+                                    viewModel.generateFormE(false, {})
+
+                                }
+                                .border(width = dimen_1_dp, color = borderGrey)
+                                .background(white),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_share_icon),
+                                contentDescription = "Negative Button",
+                                modifier = Modifier.padding(horizontal = dimen_2_dp),
+                                colorFilter = ColorFilter.tint(blueDark)
+                            )
+                            Text(
+                                stringResource(com.sarathi.missionactivitytask.R.string.share),
+                                style = defaultTextStyle
+                            )
 
                     }
                     Row(
@@ -150,42 +158,44 @@ fun DisbursementFormSummaryScreen(
                                     )
                                 })
 
-                            }
-                            .height(dimen_56_dp)
-                            .border(width = dimen_1_dp, color = borderGrey)
-                            .background(white),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                                }
+                                .height(dimen_56_dp)
+                                .border(width = dimen_1_dp, color = borderGrey)
+                                .background(white),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
 
+                        ) {
+                            Image(
+                                painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_download_icon),
+                                contentDescription = "Negative Button",
+                                modifier = Modifier.padding(horizontal = dimen_2_dp),
+                                colorFilter = ColorFilter.tint(blueDark)
+                            )
+                            Text(
+                                stringResource(com.sarathi.missionactivitytask.R.string.download),
+                                style = defaultTextStyle
+                            )
+
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
                     ) {
-                        Image(
-                            painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_download_icon),
-                            contentDescription = "Negative Button",
-                            modifier = Modifier.padding(horizontal = dimen_2_dp),
-                            colorFilter = ColorFilter.tint(blueDark)
+                        ButtonPositive(
+                            buttonTitle = "Attach physical form E",
+                            isActive = true,
+                            isArrowRequired = false,
+                            onClick = {
+                                navigateToAddImageScreen(navController = navController)
+                            }
                         )
-                        Text(
-                            stringResource(com.sarathi.missionactivitytask.R.string.download),
-                            style = defaultTextStyle
-                        )
-
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                ) {
-                    ButtonPositive(
-                        buttonTitle = "Attach physical form E",
-                        isActive = true,
-                        isArrowRequired = false,
-                        onClick = {
-                            navigateToAddImageScreen(navController = navController)
-                        }
-                    )
-                }
             }
+
 
         },
         onSettingClick = {},
@@ -221,8 +231,6 @@ fun DisbursementFormSummaryScreen(
                         .padding(horizontal = dimen_16_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
-
-
                     viewModel.formList.value.forEach {
                         item {
                             FormMainSummaryCard(
@@ -240,22 +248,6 @@ fun DisbursementFormSummaryScreen(
     )
 
 }
-
-
-@Composable
-private fun MakeTextRow(text1: String, text2: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(dimen_6_dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text1, style = quesOptionTextStyle)
-        Text(text2, style = smallTextStyle)
-    }
-}
-
 
 @Composable
 private fun MakeDisburesementRow(
@@ -297,11 +289,37 @@ private fun MakeDisburesementRow(
 
         }
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            MakeTextRow(
-                text1 = "Mode: ${disbursementFormSummaryUiModel.mode}",
-                text2 = "Nature: ${disbursementFormSummaryUiModel.nature}"
-            )
-            MakeTextRow(text1 = "Amount: ₹${disbursementFormSummaryUiModel.amount}", text2 = "")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_6_dp)
+            ) {
+                Row(modifier = Modifier.weight(1.0f)) {
+                    Text("Mode:", style = quesOptionTextStyle)
+                    Text(
+                        modifier = Modifier.padding(horizontal = dimen_3_dp),
+                        text = disbursementFormSummaryUiModel.mode,
+                        style = smallTextStyle
+                    )
+                }
+                Spacer(modifier = Modifier.width(dimen_20_dp))
+                Row(modifier = Modifier.weight(1.0f)) {
+                    Text("Nature:", style = quesOptionTextStyle)
+                    Text(
+                        modifier = Modifier.padding(horizontal = dimen_3_dp),
+                        text = disbursementFormSummaryUiModel.nature,
+                        style = smallTextStyle
+                    )
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text("Amount:", style = quesOptionTextStyle)
+                Text(
+                    modifier = Modifier.padding(horizontal = dimen_3_dp),
+                    text = disbursementFormSummaryUiModel.amount,
+                    style = smallTextStyle
+                )
+            }
         }
 
     }
@@ -325,13 +343,12 @@ fun FormMainSummaryCard(
             containerColor = white
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = dimen_5_dp
+            defaultElevation = dimen_10_dp
         ),
-        modifier = Modifier.padding(5.dp)
+        modifier = Modifier.padding(dimen_5_dp)
     ) {
 
-        Column(modifier = Modifier.background(greyLightColor)) {
-
+        Column(modifier = Modifier.background(lightBg)) {
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -340,7 +357,10 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Text(formDisburesmentMap.key.second, style = quesOptionTextStyle)
+                Text(
+                    formDisburesmentMap.key.second,
+                    style = defaultTextStyle.copy(fontSize = 16.sp)
+                )
                 Text(
                     formDisburesmentMap.key.first, style = defaultTextStyle
                 )
@@ -355,7 +375,7 @@ fun FormMainSummaryCard(
             ) {
 
                 Text(
-                    "CSG Disburesed", style = defaultTextStyle
+                    "CSG Disburesed", style = quesOptionTextStyle
                 )
                 Text(
                     " ${formDisburesmentMap.value.sumOf { it.amount.toInt() }}",
@@ -371,9 +391,8 @@ fun FormMainSummaryCard(
                     .padding(top = dimen_8_dp), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
-                    "Number of didis", style = defaultTextStyle
+                    "Number of didis", style = quesOptionTextStyle
                 )
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
@@ -399,14 +418,6 @@ fun FormMainSummaryCard(
                 disburesmentList = formDisburesmentMap.value,
                 viewmodel = viewmodel
             )
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(dimen_8_dp)
-            )
-
-
         }
 
     }
@@ -432,7 +443,7 @@ fun HistorySummaryCard(
             )
             .heightIn(min = 0.dp, maxCustomHeight)
     ) {
-        Column {
+        Column(modifier = Modifier.background(white)) {
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn() + expandVertically(),
