@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AddImageViewModel @Inject constructor(
+class SubmitPhysicalFormScreenViewModel @Inject constructor(
     private val documentUseCase: DocumentUseCase,
     private val formUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
@@ -28,7 +28,6 @@ class AddImageViewModel @Inject constructor(
 ) : BaseViewModel() {
     val documentValues = mutableStateOf<ArrayList<DocumentUiModel>>(arrayListOf())
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    val activityId = 2
     override fun <T> onEvent(event: T) {
     }
 
@@ -47,7 +46,7 @@ class AddImageViewModel @Inject constructor(
         isButtonEnable.value = documentValues.value.isNotEmpty()
     }
 
-    fun updateFromTable() {
+    fun updateFromTable(activityId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val formGeneratedDate = System.currentTimeMillis().toDate().toString()
             formUseCase.getNonGeneratedFormSummaryData(activityId = activityId).forEach {

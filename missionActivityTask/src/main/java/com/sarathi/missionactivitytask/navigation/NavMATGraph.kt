@@ -46,7 +46,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
-import com.sarathi.missionactivitytask.ui.add_image_screen.screen.AddImageScreen
+import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysicalFormScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
@@ -350,10 +350,15 @@ fun NavGraphBuilder.MatNavigation(
             FinalStepCompletionScreen(navController = navController) {
             }
         }
-        composable(route = MATHomeScreens.DisbursmentSummaryScreen.route) {
+        composable(route = MATHomeScreens.DisbursmentSummaryScreen.route, arguments = listOf(
+            navArgument(name = ARG_ACTIVITY_ID) {
+                type = NavType.IntType
+            }
+        )) {
             DisbursementFormSummaryScreen(
                 navController = navController,
-                viewModel = hiltViewModel()
+                viewModel = hiltViewModel(),
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0
             )
         }
         composable(route = MATHomeScreens.PdfViewerScreen.route, arguments = listOf(
@@ -367,10 +372,15 @@ fun NavGraphBuilder.MatNavigation(
                 navController = navController
             )
         }
-        composable(route = MATHomeScreens.AddImageScreen.route) {
-            AddImageScreen(
+        composable(route = MATHomeScreens.AddImageScreen.route, arguments = listOf(
+            navArgument(ARG_ACTIVITY_ID) {
+                type = NavType.IntType
+            }
+        )) {
+            SubmitPhysicalFormScreen(
                 viewModel = hiltViewModel(),
-                navController = navController
+                navController = navController,
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0
             )
         }
     }
@@ -387,9 +397,9 @@ fun navigateToContentDetailScreen(
 }
 
 fun navigateToDisbursmentSummaryScreen(
-    navController: NavController
+    navController: NavController, activityId: Int
 ) {
-    navController.navigate(DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME)
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId")
 }
 
 fun navigateToSurveyScreen(
@@ -446,8 +456,8 @@ fun navigateToActivityScreen(navController: NavController, missionId: Int, missi
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName")
 }
 
-fun navigateToAddImageScreen(navController: NavController) {
-    navController.navigate(ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME)
+fun navigateToAddImageScreen(navController: NavController, activityId: Int) {
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId")
 }
 
 fun navigateToTaskScreen(

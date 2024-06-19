@@ -98,7 +98,10 @@ fun GrantTaskScreen(
                         isActive = viewModel.isGenerateFormButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
-                            navigateToDisbursmentSummaryScreen(navController)
+                            navigateToDisbursmentSummaryScreen(
+                                navController = navController,
+                                activityId = activityId
+                            )
                         })
                 }
             }

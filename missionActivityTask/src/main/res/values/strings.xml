@@ -16,4 +16,5 @@
     <string name="go_back">Go Back</string>
     <string name="submit_form_e">Submit Form E</string>
     <string name="attach_physical_form_e_signed_sealed"><![CDATA[Attach Physical Form E (Signed & Sealed)]]></string>
+    <string name="form_e_submitted_successfully">Form E submitted successfully</string>
 </resources>

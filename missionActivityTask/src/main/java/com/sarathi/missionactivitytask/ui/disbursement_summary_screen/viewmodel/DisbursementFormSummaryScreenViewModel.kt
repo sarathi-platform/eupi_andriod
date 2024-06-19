@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.PDF_MIME_TYPE
 import com.nudge.core.PDF_TYPE
-import com.nudge.core.formatTo
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
 import com.nudge.core.saveFileToDownload
@@ -50,8 +49,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDataState -> {
-                initDisbursementSummaryScreen()
+            is InitDataEvent.InitDisbursmentScreenState -> {
+                initDisbursementSummaryScreen(event.activityId)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -62,18 +61,17 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         }
     }
 
-    private fun initDisbursementSummaryScreen() {
+    private fun initDisbursementSummaryScreen(activityId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _formList.value = getFormData().groupBy { Pair(it.date, it.voName) }
+            _formList.value = getFormData(activityId).groupBy { Pair(it.date, it.voName) }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    private suspend fun getFormData(): List<DisbursementFormSummaryUiModel> {
-//@Todo pass activity Id here
-        val fromData = formUseCase.getFormSummaryData(activityId = 2)
+    private suspend fun getFormData(activityId: Int): List<DisbursementFormSummaryUiModel> {
+        val fromData = formUseCase.getFormSummaryData(activityId = activityId)
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
             val _data = getFormAttributeDate(form)
