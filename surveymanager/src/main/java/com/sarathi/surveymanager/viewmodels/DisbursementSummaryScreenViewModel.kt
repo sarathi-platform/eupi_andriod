@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -17,6 +16,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyUIModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyCardTag
@@ -42,8 +42,9 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
 ) : BaseViewModel() {
-    private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
-    val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
+    private val _taskList =
+        mutableStateOf<Map<String, List<SurveyAnswerFormSummaryUiModel>>>(hashMapOf())
+    val taskList: State<Map<String, List<SurveyAnswerFormSummaryUiModel>>> get() = _taskList
 
     private var surveyId: Int = 0
     private var sectionId: Int = 0
@@ -55,6 +56,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
     var isActivityCompleted = mutableStateOf(false)
+    var isAddDisbursementButtonEnable = mutableStateOf(true)
     private var sanctionedAmount: Int = 0
     private var totalSubmittedAmount = 0
 
@@ -116,20 +118,20 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         return UUID.randomUUID().toString()
     }
 
-    fun getSurveyUIModel(surveyList: List<SurveyAnswerEntity>): SurveyUIModel {
+    fun getSurveyUIModel(surveyList: List<SurveyAnswerFormSummaryUiModel>): SurveyUIModel {
         var subTitle1 = BLANK_STRING
         var subTitle2 = BLANK_STRING
         var subTitle3 = BLANK_STRING
         var subTitle4 = BLANK_STRING
         var subTitle5 = BLANK_STRING
+        var isFormGenerated: Boolean = false
         surveyList.forEach { survey ->
+            isFormGenerated = survey.isFormGenerated
             val selectedValue = getSelectedValue(survey.optionItems)
             when (survey.tagId) {
                 SurveyCardTag.SURVEY_TAG_DATE.tag -> subTitle1 = selectedValue
-                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> {
-                    subTitle2 = selectedValue
-                    totalSubmittedAmount = totalSubmittedAmount + selectedValue.toInt()
-                }
+                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> subTitle2 = selectedValue
+
                 SurveyCardTag.SURVEY_TAG_NATURE.tag -> subTitle3 = selectedValue
                 SurveyCardTag.SURVEY_TAG_MODE.tag -> subTitle4 = selectedValue
                 SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
@@ -144,6 +146,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             subTittle3 = subTitle3,
             subTittle4 = subTitle4,
             subTittle5 = subTitle5,
+            isFormGenerated = isFormGenerated
         )
     }
 
@@ -224,8 +227,17 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value =
-                sanctionedAmount == totalSubmittedAmount && !isActivityCompleted.value
+            isButtonEnable.value = isDoneButtonEnable()
+            isAddDisbursementButtonEnable.value =
+                sanctionedAmount == 0 || sanctionedAmount != getTotalSubmittedAmount()
+        }
+    }
+
+    private fun isDoneButtonEnable(): Boolean {
+        if (sanctionedAmount == 0) {
+            return !isActivityCompleted.value && taskList.value.isNotEmpty()
+        } else {
+            return sanctionedAmount == getTotalSubmittedAmount() && !isActivityCompleted.value && isAllFormGeneratedDisburement()
         }
     }
 
@@ -240,7 +252,35 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
 
     }
+
     fun getTotalSubmittedAmount(): Int {
+        if (sanctionedAmount == 0) {
+            return 0
+
+        }
+        totalSubmittedAmount = 0
+        taskList.value.entries.forEach {
+            totalSubmittedAmount +=
+                it.value.filter { it.tagId == SurveyCardTag.SURVEY_TAG_AMOUNT.tag }
+                    .sumOf { getSelectedValue(it.optionItems).toInt() } ?: 0
+
+        }
         return totalSubmittedAmount
     }
+
+    fun isAllFormGeneratedDisburement(): Boolean {
+        taskList.value.entries.forEach {
+            it.value.forEach {
+                if (!it.isFormGenerated) {
+                    return false
+                }
+            }
+
+
+        }
+        return true
+
+    }
+
+
 }

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.brownDark
@@ -69,11 +70,13 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.lightBg
+import com.nudge.core.ui.theme.greyLightColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
+import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
@@ -123,6 +126,7 @@ fun DisbursementFormSummaryScreen(
                                 .weight(1.0f)
                                 .height(dimen_56_dp)
                                 .clickable {
+                                    viewModel.generateFormE(false, {})
 
                                 }
                                 .border(width = dimen_1_dp, color = borderGrey)
@@ -141,12 +145,18 @@ fun DisbursementFormSummaryScreen(
                                 style = defaultTextStyle
                             )
 
-                        }
-                        Row(
-                            modifier = Modifier
-                                .padding(start = dimen_10_dp)
-                                .weight(1.0f)
-                                .clickable {
+                    }
+                    Row(
+                        modifier = Modifier
+                            .padding(start = dimen_10_dp)
+                            .weight(1.0f)
+                            .clickable {
+                                viewModel.generateFormE(true, { filepath ->
+                                    navigateToPdfViewerScreen(
+                                        navController = navController,
+                                        filePath = getFileNameFromURL(filepath)
+                                    )
+                                })
 
                                 }
                                 .height(dimen_56_dp)
@@ -354,6 +364,7 @@ fun FormMainSummaryCard(
                 Text(
                     formDisburesmentMap.key.first, style = defaultTextStyle
                 )
+
             }
             Row(
                 Modifier
@@ -362,6 +373,7 @@ fun FormMainSummaryCard(
                     .padding(top = dimen_8_dp), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Text(
                     "CSG Disburesed", style = quesOptionTextStyle
                 )
@@ -369,6 +381,8 @@ fun FormMainSummaryCard(
                     " ${formDisburesmentMap.value.sumOf { it.amount.toInt() }}",
                     style = quesOptionTextStyle
                 )
+
+
             }
             Row(
                 Modifier
@@ -384,13 +398,17 @@ fun FormMainSummaryCard(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
                     style = quesOptionTextStyle
                 )
+
+
             }
+
 
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimen_8_dp)
             )
+
 
             HistorySummaryCard(
                 modifier = Modifier,

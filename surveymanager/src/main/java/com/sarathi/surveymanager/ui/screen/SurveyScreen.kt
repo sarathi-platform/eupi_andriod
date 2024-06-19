@@ -106,7 +106,7 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                        if (viewModel.totalSubmittedAmount <= sanctionedAmount) {
+                        if (sanctionedAmount == 0 || viewModel.totalSubmittedAmount <= sanctionedAmount) {
                             viewModel.saveButtonClicked()
                             navController.popBackStack()
                         } else {
@@ -157,7 +157,8 @@ fun SurveyScreen(
                                 InputComponent(
                                     hintMessage = getSanctionedAmountMessage(
                                         question,
-                                        sanctionedAmount - totalSubmittedAmount
+                                        sanctionedAmount = sanctionedAmount,
+                                        remainingAmount = sanctionedAmount - totalSubmittedAmount
                                     ),
                                     isMandatory = question.isMandatory,
                                     isEditable = viewModel.isActivityNotCompleted.value,
@@ -256,8 +257,12 @@ fun SurveyScreen(
 }
 
 @Composable
-fun getSanctionedAmountMessage(question: QuestionUiModel, remainingAmount: Int): String {
-    if (question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
+fun getSanctionedAmountMessage(
+    question: QuestionUiModel,
+    sanctionedAmount: Int,
+    remainingAmount: Int
+): String {
+    if (sanctionedAmount != 0 && question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
         return LocalContext.current.getString(R.string.amount_limit, remainingAmount)
     }
     return BLANK_STRING

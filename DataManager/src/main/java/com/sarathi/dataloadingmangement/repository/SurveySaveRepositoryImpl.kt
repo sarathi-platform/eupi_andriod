@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import javax.inject.Inject
 
 class SurveySaveRepositoryImpl @Inject constructor(
@@ -116,7 +117,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         surveyId: Int,
         taskId: Int,
         sectionId: Int
-    ): List<SurveyAnswerEntity> {
+    ): List<SurveyAnswerFormSummaryUiModel> {
         return surveyAnswersDao.getSurveyAnswersForSummary(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             sectionId = sectionId,
