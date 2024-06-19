@@ -2,7 +2,8 @@ package com.sarathi.missionactivitytask.ui.grantTask.domain.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
-import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
+import com.sarathi.dataloadingmangement.repository.IUiConfigRepository
 import com.sarathi.missionactivitytask.domain.repository.BaseRepository
 import javax.inject.Inject
 
@@ -16,11 +17,12 @@ class GetActivityUiConfigRepositoryImpl @Inject constructor(
     override suspend fun getActivityUiConfig(
         missionId: Int,
         activityId: Int
-    ): List<UiConfigEntity> {
+    ): List<UiConfigModel> {
         return activityConfigDao.getActivityUiConfig(
             missionId,
             activityId,
-            coreSharedPrefs.getUniqueUserIdentifier()
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            coreSharedPrefs.getAppLanguage()
         )
     }
 

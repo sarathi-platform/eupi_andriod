@@ -17,8 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.nudge.core.ui.events.theme.brownDark
-import com.nudge.core.ui.events.theme.yellowBg
+import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.yellowBg
 
 @Composable
 fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: Uri) {

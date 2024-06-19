@@ -7,20 +7,21 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyUIModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.dataloadingmangement.util.constants.SurveyCardTag
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
-import com.sarathi.surveymanager.ui.screen.model.SurveyCardTag
-import com.sarathi.surveymanager.ui.screen.model.SurveyUIModel
 import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase,
+    private val formUseCase: FormUseCase
 ) : BaseViewModel() {
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
@@ -51,7 +53,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
     var isActivityCompleted = mutableStateOf(false)
-
+    private var sanctionedAmount: Int = 0
+    private var totalSubmittedAmount = 0
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -91,15 +94,20 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     }
 
 
-
     fun setPreviousScreenData(
-        surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, activityConfigId: Int
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        subjectType: String,
+        activityConfigId: Int,
+        sanctionedAmount: Int
     ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
         this.taskId = taskId
         this.subjectType = subjectType
         this.activityConfigId = activityConfigId
+        this.sanctionedAmount = sanctionedAmount
     }
 
     fun createReferenceId(): String {
@@ -116,7 +124,10 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             val selectedValue = getSelectedValue(survey.optionItems)
             when (survey.tagId) {
                 SurveyCardTag.SURVEY_TAG_DATE.tag -> subTitle1 = selectedValue
-                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> subTitle2 = selectedValue
+                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> {
+                    subTitle2 = selectedValue
+                    totalSubmittedAmount = totalSubmittedAmount + selectedValue.toInt()
+                }
                 SurveyCardTag.SURVEY_TAG_NATURE.tag -> subTitle3 = selectedValue
                 SurveyCardTag.SURVEY_TAG_MODE.tag -> subTitle4 = selectedValue
                 SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
@@ -160,7 +171,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             if (deleteCount > 0) {
                 onDeleteSuccess(deleteCount)
             }
-
+            formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)
         }
     }
 
@@ -196,7 +207,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value = taskList.value.isNotEmpty() && !isActivityCompleted.value
+            isButtonEnable.value =
+                sanctionedAmount == totalSubmittedAmount && !isActivityCompleted.value
         }
     }
 
@@ -211,5 +223,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
 
     }
-
+    fun getTotalSubmittedAmount(): Int {
+        return totalSubmittedAmount
+    }
 }

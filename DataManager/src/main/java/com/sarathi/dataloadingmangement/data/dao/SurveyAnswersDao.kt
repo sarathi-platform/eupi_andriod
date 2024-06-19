@@ -99,6 +99,15 @@ interface SurveyAnswersDao {
         subjectId: Int,
         tagId: Int,
         uniqueUserIdentifier: String
-    ): SurveyAnswerEntity?
+    ): List<SurveyAnswerEntity>
+
+    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId and tagId =:tagId and referenceId=:referenceId")
+    fun getSurveyAnswerForFormTag(
+        taskId: Int,
+        subjectId: Int,
+        tagId: Int,
+        referenceId: String,
+        uniqueUserIdentifier: String
+    ): SurveyAnswerEntity
 
 }

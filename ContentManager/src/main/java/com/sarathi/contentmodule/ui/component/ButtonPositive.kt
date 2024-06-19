@@ -27,11 +27,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.events.theme.NotoSans
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.greyBorder
-import com.nudge.core.ui.events.theme.languageItemActiveBg
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.greyBorder
+import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.white
 
 
 @Composable

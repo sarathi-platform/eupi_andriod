@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
@@ -30,6 +31,7 @@ import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
@@ -38,6 +40,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNet
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
@@ -45,7 +48,9 @@ import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
@@ -111,6 +116,14 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideFormEDao(db: NudgeGrantDatabase) = db.formEDao()
+
+    @Provides
+    @Singleton
+    fun provideDocumentDao(db: NudgeGrantDatabase) = db.documentDao()
+
+    @Provides
+    @Singleton
     fun provideActivityLanguageAttributeDao(db: NudgeGrantDatabase) =
         db.activityLanguageAttributeDao()
 
@@ -146,6 +159,10 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideUiConfigDao(db: NudgeGrantDatabase) = db.uiConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideFormUiConfigDao(db: NudgeGrantDatabase) = db.formUiConfigDao()
 
     @Provides
     @Singleton
@@ -251,7 +268,8 @@ class DataLoadingModule {
         uiConfigDao: UiConfigDao,
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
-        grantConfigDao: GrantConfigDao
+        grantConfigDao: GrantConfigDao,
+        formUiConfigDao: FormUiConfigDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -267,9 +285,8 @@ class DataLoadingModule {
             contentConfigDao = contentConfigDao,
             missionLanguageAttributeDao = missionLanguageAttributeDao,
             sharedPrefs = sharedPrefs,
-            grantConfigDao = grantConfigDao
-
-
+            grantConfigDao = grantConfigDao,
+            formUiConfigDao = formUiConfigDao
         )
     }
 
@@ -279,13 +296,16 @@ class DataLoadingModule {
         contentDao: ContentDao,
         apiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
-        contentConfigDao: ContentConfigDao
+        contentConfigDao: ContentConfigDao,
+        uiConfigDao: UiConfigDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
             contentDao = contentDao,
             coreSharedPrefs = coreSharedPrefs,
-            contentConfigDao = contentConfigDao
+            contentConfigDao = contentConfigDao,
+            uiConfigDao = uiConfigDao
+
         )
     }
 
@@ -326,7 +346,7 @@ class DataLoadingModule {
             contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
-            attributeValueReferenceDao = attributeValueReferenceDao
+            attributeValueReferenceDao = attributeValueReferenceDao,
         )
     }
 
@@ -340,6 +360,24 @@ class DataLoadingModule {
         return ContentUseCase(
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormUseCase(
+        repository: FormRepositoryImpl,
+        downloaderManager: DownloaderManager,
+    ): FormUseCase {
+        return FormUseCase(repository = repository, downloaderManager = downloaderManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentUseCase(
+        repository: DocumentRepositoryImpl,
+        downloaderManager: DownloaderManager,
+    ): DocumentUseCase {
+        return DocumentUseCase(repository = repository, downloaderManager = downloaderManager)
     }
 
     @Provides

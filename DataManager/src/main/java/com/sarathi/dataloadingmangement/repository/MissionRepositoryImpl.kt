@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
+import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
@@ -21,6 +22,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributes
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
@@ -33,6 +35,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
 import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
+import com.sarathi.dataloadingmangement.model.mat.response.FormConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.GrantConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
@@ -51,6 +54,7 @@ class MissionRepositoryImpl @Inject constructor(
     val missionActivityDao: ActivityDao,
     val activityConfigDao: ActivityConfigDao,
     val uiConfigDao: UiConfigDao,
+    val formUiConfigDao: FormUiConfigDao,
     val activityLanguageDao: ActivityLanguageDao,
     val taskDao: TaskDao,
     val programmeDao: ProgrammeDao,
@@ -194,7 +198,14 @@ class MissionRepositoryImpl @Inject constructor(
                             missionActivityModel.activityConfig.surveyId,
                             activityConfigId
                         )
+
+
                     }
+                    deleteFormConfig()
+                    it.formConfig?.let { it1 ->
+                        saveFormUiConfig(it1)
+                    }
+
                 }
                 deleteActivityUiConfig(activityId = missionActivityModel.id, missionId = missionId)
                 saveActivityUiConfig(
@@ -228,6 +239,12 @@ class MissionRepositoryImpl @Inject constructor(
         grantConfigDao.deleteGrantConfig(
             activityConfigId,
             userId = sharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    private fun deleteFormConfig() {
+        formUiConfigDao.deleteActivityFormUiConfig(
+            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
         )
     }
 
@@ -298,6 +315,17 @@ class MissionRepositoryImpl @Inject constructor(
                 sharedPrefs.getUniqueUserIdentifier()
             )
         )
+    }
+
+    private fun saveFormUiConfig(uiConfig: List<FormConfigResponse?>) {
+        uiConfig.forEach { attribute ->
+            formUiConfigDao.insertFormUiConfig(
+                FormUiConfigEntity.getFormUiConfigEntity(
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    attributes = attribute
+                )
+            )
+        }
     }
 
     private fun saveActivityUiConfig(

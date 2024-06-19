@@ -63,10 +63,8 @@ class ActivityScreenViewModel @Inject constructor(
         return fetchContentUseCase.isFilePathExists(filePath)
     }
 
-    private fun checkButtonValidation() {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value = getActivityUseCase.isAllActivityCompleted(missionId = missionId)
-        }
+    private suspend fun checkButtonValidation() {
+        isButtonEnable.value = getActivityUseCase.isAllActivityCompleted(missionId = missionId)
     }
 
     fun markMissionCompleteStatus() {
