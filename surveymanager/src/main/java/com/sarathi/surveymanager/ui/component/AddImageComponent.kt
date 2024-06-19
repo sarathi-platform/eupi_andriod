@@ -10,6 +10,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -47,14 +49,15 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.ui.events.theme.borderGreyLight
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.dimen_24_dp
-import com.nudge.core.ui.events.theme.dimen_30_dp
-import com.nudge.core.ui.events.theme.dimen_5_dp
-import com.nudge.core.ui.events.theme.largeTextStyle
-import com.nudge.core.ui.events.theme.redDark
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_30_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.redDark
+import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.R
@@ -96,6 +99,11 @@ fun AddImageComponent(
 
         BoxWithConstraints(
             modifier = Modifier
+                .scrollable(
+                    state = outerState,
+                    Orientation.Vertical,
+                )
+                .heightIn(min = dimen_100_dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
                 state = innerState,

@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
@@ -14,14 +15,14 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyUIModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.dataloadingmangement.util.constants.SurveyCardTag
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
-import com.sarathi.surveymanager.ui.screen.model.SurveyCardTag
-import com.sarathi.surveymanager.ui.screen.model.SurveyUIModel
 import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -37,8 +38,9 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
+    private val formUseCase: FormUseCase
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
@@ -92,7 +94,6 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             isActivityCompleted()
         }
     }
-
 
 
     fun setPreviousScreenData(
@@ -187,8 +188,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 )
                 onDeleteSuccess(deleteCount)
             }
-
-
+            formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)
         }
     }
 

@@ -19,14 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.dimen_100_dp
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.dimen_16_dp
-import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_2_dp
-import com.nudge.core.ui.events.theme.lightGray2
-import com.nudge.core.ui.events.theme.smallerTextStyle
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable

@@ -39,21 +39,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.events.theme.NotoSans
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.borderGreyLight
-import com.nudge.core.ui.events.theme.buttonTextStyle
-import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_2_dp
-import com.nudge.core.ui.events.theme.greyBorder
-import com.nudge.core.ui.events.theme.greyColor
-import com.nudge.core.ui.events.theme.languageItemActiveBg
-import com.nudge.core.ui.events.theme.lightGray2
-import com.nudge.core.ui.events.theme.roundedCornerRadiusDefault
-import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight
-import com.nudge.core.ui.events.theme.smallTextStyleNormalWeight
-import com.nudge.core.ui.events.theme.smallerTextStyle
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.greyBorder
+import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight
+import com.nudge.core.ui.theme.smallTextStyleNormalWeight
+import com.nudge.core.ui.theme.smallerTextStyle
+import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
 
 @Composable

@@ -10,10 +10,12 @@ object MissionActivityConstants {
     const val MEDIA_PLAYER_SCREEN_ROUTE_NAME = "media_player_screen"
     const val SURVEY_SCREEN_ROUTE_NAME = "survey_screen"
     const val GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME = "grant_survey_summary_screen"
+    const val ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME = "add_image_screen_screen"
 
     const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
     const val ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME = "activity_completion_screen"
     const val MISSION_FINAL_STEP_SCREEN_ROUTE_NAME = "mission_final_step_screen"
+    const val DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME = "disbursment_summary_screen"
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"
     const val ARG_MISSION_NAME = "mission_name"

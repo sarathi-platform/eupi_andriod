@@ -27,5 +27,7 @@ data class ActivityConfig(
     @SerializedName("validations")
     val validations: List<Any>,
     @SerializedName("grantConfig")
-    val grantConfig: List<GrantConfigResponse>?
+    val grantConfig: List<GrantConfigResponse>?,
+    @SerializedName("formConfig")
+    val formConfig: List<FormConfigResponse?>,
 )

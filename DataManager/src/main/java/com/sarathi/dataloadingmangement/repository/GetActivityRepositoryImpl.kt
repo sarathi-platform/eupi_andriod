@@ -3,8 +3,8 @@ package com.sarathi.dataloadingmangement.repository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
 

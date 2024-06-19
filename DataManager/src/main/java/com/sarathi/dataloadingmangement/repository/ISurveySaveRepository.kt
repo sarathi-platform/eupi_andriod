@@ -25,4 +25,10 @@ interface ISurveySaveRepository {
         referenceId: String,
         taskId: Int
     ): Int
+    suspend fun getSurveyAnswerForFormTag(
+        taskId: Int,
+        subjectId: Int,
+        tagId: String,
+        referenceId: String
+    ): String
 }

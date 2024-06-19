@@ -2,8 +2,8 @@ package com.sarathi.missionactivitytask.utils
 
 import androidx.compose.ui.graphics.Color
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.greenOnline
-import com.nudge.core.ui.events.theme.mediumRankColor
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.mediumRankColor
 
 fun statusColor(status: String): Color = when (status) {
     StatusEnum.Active.name -> Color.Green

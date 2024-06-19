@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
+import com.nudge.core.capitalizeFirstLetter
 import com.sarathi.contentmodule.download_manager.FileType
+import com.sarathi.contentmodule.ui.component.ToolBarWithMenuComponent
 import java.io.File
 
 @Composable
@@ -37,39 +39,48 @@ fun MediaScreen(
     LaunchedEffect(key1 = true) {
         viewModel.initData(key)
     }
-    Surface(
+    ToolBarWithMenuComponent(
+        title = key.capitalizeFirstLetter(),
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        if (viewModel.contentUrl.value.isNotEmpty()) {
-            val filePathUri = viewModel.getFilePathUri(viewModel.contentUrl.value)
-            filePathUri?.let {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+        onBackIconClick = { navController.popBackStack() },
+        onSearchValueChange = {},
+        onBottomUI = { /*TODO*/ },
+        onSettingClick = {},
+        onContentUI = {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                if (viewModel.contentUrl.value.isNotEmpty()) {
+                    val filePathUri = viewModel.getFilePathUri(viewModel.contentUrl.value)
+                    filePathUri?.let {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
-                    when (fileType.toUpperCase()) {
-                        FileType.VIDEO.name,
-                        FileType.AUDIO.name -> {
-                            VideoPlayer(uri = filePathUri)
-                        }
+                            when (fileType.toUpperCase()) {
+                                FileType.VIDEO.name,
+                                FileType.AUDIO.name -> {
+                                    VideoPlayer(uri = filePathUri)
+                                }
 
-                        FileType.IMAGE.name -> {
-                            ImageViewer(uri = filePathUri)
-                        }
+                                FileType.IMAGE.name -> {
+                                    ImageViewer(uri = filePathUri)
+                                }
 
-                        FileType.FILE.name -> {
-                            viewModel.getFilePath(viewModel.contentUrl.value)
-                                ?.let { it1 -> PdfViewer(it1) }
+                                FileType.FILE.name -> {
+                                    viewModel.getFilePath(viewModel.contentUrl.value)
+                                        ?.let { it1 -> PdfViewer(it1) }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-    }
-
+    )
 }
 
 @Composable
@@ -131,3 +142,8 @@ fun PdfViewer(pdfFile: File) {
         }
     )
 }
+
+
+
+
+
