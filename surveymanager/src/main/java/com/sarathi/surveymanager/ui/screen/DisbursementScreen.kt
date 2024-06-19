@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.black1
-import com.nudge.core.ui.events.theme.dimen_5_dp
+import com.nudge.core.ui.theme.black1
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.textColorDark
