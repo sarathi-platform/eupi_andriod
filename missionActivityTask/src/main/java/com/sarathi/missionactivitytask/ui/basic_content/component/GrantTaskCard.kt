@@ -36,25 +36,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.brownDark
-import com.nudge.core.ui.events.theme.defaultTextStyle
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.dimen_12_dp
-import com.nudge.core.ui.events.theme.dimen_16_dp
-import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_20_dp
-import com.nudge.core.ui.events.theme.dimen_30_dp
-import com.nudge.core.ui.events.theme.dimen_5_dp
-import com.nudge.core.ui.events.theme.dimen_6_dp
-import com.nudge.core.ui.events.theme.greenOnline
-import com.nudge.core.ui.events.theme.greyBorderColor
-import com.nudge.core.ui.events.theme.languageItemActiveBg
-import com.nudge.core.ui.events.theme.mediumTextStyle
-import com.nudge.core.ui.events.theme.newMediumTextStyle
-import com.nudge.core.ui.events.theme.smallerTextStyleNormalWeight
-import com.nudge.core.ui.events.theme.unmatchedOrangeColor
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_12_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_30_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.core.ui.theme.unmatchedOrangeColor
+import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
@@ -76,6 +76,7 @@ fun GrantTaskCard(
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
+    formGeneratedCount: GrantTaskCardModel?,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember {
@@ -132,13 +133,28 @@ fun GrantTaskCard(
                         tint = greenOnline,
                     )
                 } else if (status?.value == StatusEnum.INPROGRESS.name) {
-                    Text(
-                        text = stringResource(id = R.string.in_progress),
-                        style = defaultTextStyle,
-                        modifier = Modifier
-                            .padding(horizontal = dimen_5_dp),
-                        color = unmatchedOrangeColor
-                    )
+                    if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
+                            "0"
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.in_progress),
+                            style = defaultTextStyle,
+                            modifier = Modifier
+                                .padding(horizontal = dimen_5_dp),
+                            color = unmatchedOrangeColor
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_green_file),
+                            contentDescription = "Green Icon",
+                            tint = greenOnline,
+                            modifier = Modifier.size(22.dp)
+                        )
+
+                    }
+
+
                 }
             }
             Row(
@@ -250,7 +266,7 @@ private fun SubContainerView(taskCard: GrantTaskCardModel?) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (taskCard?.icon != null) {
-            ImageViewer(taskCard.icon)
+            ImageViewer(taskCard.icon!!)
             Spacer(modifier = Modifier.width(6.dp))
 
         }

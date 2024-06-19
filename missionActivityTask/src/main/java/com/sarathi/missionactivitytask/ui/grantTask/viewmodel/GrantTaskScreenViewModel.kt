@@ -9,21 +9,22 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
+import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
-import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
-import com.sarathi.missionactivitytask.ui.grantTask.model.UiConfigAttributeType
-import com.sarathi.missionactivitytask.utils.ComponentEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -45,7 +46,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase,
+    private val formUseCase: FormUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -62,6 +64,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     var isGroupByEnable = mutableStateOf(false)
     var isFilerEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
+    var isGenerateFormButtonEnable = mutableStateOf(false)
+
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
 
@@ -89,20 +93,23 @@ class GrantTaskScreenViewModel @Inject constructor(
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             getSurveyDetail()
             isActivityCompleted()
+            isGenerateFormButtonEnable()
             taskUiModel.forEachIndexed { index, it ->
                 if (index == 0) {
                     searchLabel.value = getUiComponentValues(
-                        it.taskId,
-                        it.status.toString(),
-                        it.subjectId,
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        subjectId = it.subjectId,
+                        formGeneratedCount = it.formGeneratedCount,
                         componentType = ComponentEnum.Search.name
                     )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
                         ?: BLANK_STRING
 
                     if ((getUiComponentValues(
-                            it.taskId,
-                            it.status.toString(),
-                            it.subjectId,
+                            taskId = it.taskId,
+                            taskStatus = it.status.toString(),
+                            subjectId = it.subjectId,
+                            formGeneratedCount = it.formGeneratedCount,
                             componentType = ComponentEnum.Card.name
                         )[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
@@ -112,9 +119,10 @@ class GrantTaskScreenViewModel @Inject constructor(
                 }
                 _taskList.value[it.taskId] =
                     getUiComponentValues(
-                        it.taskId,
-                        it.status.toString(),
-                        it.subjectId,
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        subjectId = it.subjectId,
+                        formGeneratedCount = it.formGeneratedCount,
                         componentType = ComponentEnum.Card.name
                     )
             }
@@ -134,12 +142,19 @@ class GrantTaskScreenViewModel @Inject constructor(
     private suspend fun getUiComponentValues(
         taskId: Int,
         taskStatus: String,
+        formGeneratedCount: Int = 0,
         subjectId: Int,
         componentType: String
     ): HashMap<String, GrantTaskCardModel> {
         val cardAttributesWithValue = HashMap<String, GrantTaskCardModel>()
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
             GrantTaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name] =
+            GrantTaskCardModel(
+                value = formGeneratedCount.toString(),
+                label = BLANK_STRING,
+                icon = null
+            )
         val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
             missionId = missionId, activityId = activityId
         )
@@ -160,11 +175,11 @@ class GrantTaskScreenViewModel @Inject constructor(
 
                 UiConfigAttributeType.TAG.name -> getGrantTaskCardModel(
                     activityUiConfig = cardAttribute, value = surveyAnswerUseCase.getAnswerForTag(
-                    taskId,
-                    subjectId,
-                    getTaskAttributeValue(
-                        cardAttribute.value, taskId
-                    )
+                        taskId,
+                        subjectId,
+                        getTaskAttributeValue(
+                            cardAttribute.value, taskId
+                        )
                     )
                 )
 
@@ -302,4 +317,11 @@ class GrantTaskScreenViewModel @Inject constructor(
         )
 
     }
+
+    private suspend fun isGenerateFormButtonEnable() {
+        isGenerateFormButtonEnable.value =
+            formUseCase.getNonGeneratedFormSummaryData(activityId).isNotEmpty()
+
+    }
+
 }

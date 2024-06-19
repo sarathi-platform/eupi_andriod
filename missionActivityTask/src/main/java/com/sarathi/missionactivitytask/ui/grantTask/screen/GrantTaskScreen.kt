@@ -2,7 +2,6 @@ package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,22 +27,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.defaultTextStyle
-import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.DEFAULT_ID
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
+import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -71,18 +75,32 @@ fun GrantTaskScreen(
 
         },
         onBottomUI = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
+            BottomAppBar(
+                backgroundColor = white
             ) {
-                ButtonPositive(buttonTitle = stringResource(R.string.complete_activity),
-                    isActive = viewModel.isButtonEnable.value,
-                    isArrowRequired = false,
-                    onClick = {
-                        viewModel.markActivityCompleteStatus()
-                        navController.popBackStack()
-                    })
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_10_dp),
+                ) {
+                    ButtonPositive(
+                        modifier = Modifier.weight(0.4f),
+                        buttonTitle = stringResource(R.string.complete_activity),
+                        isActive = viewModel.isButtonEnable.value,
+                        isArrowRequired = false,
+                        onClick = {
+                            viewModel.markActivityCompleteStatus()
+                            navController.popBackStack()
+                        })
+                    Spacer(modifier = Modifier.width(10.dp))
+                    ButtonPositive(modifier = Modifier.weight(0.4f),
+                        buttonTitle = stringResource(id = R.string.generate_form_e),
+                        isActive = viewModel.isGenerateFormButtonEnable.value,
+                        isArrowRequired = false,
+                        onClick = {
+                            navigateToDisbursmentSummaryScreen(navController)
+                        })
+                }
             }
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
@@ -201,7 +219,8 @@ private fun TaskRowView(
                     subjectType = it.subject,
                     subjectName = subjectName,
                     activityConfigId = it.activityConfigId,
-                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt(),
+                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                        ?: DEFAULT_ID,
                 )
             }
         },
@@ -225,11 +244,11 @@ private fun TaskRowView(
         primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
         secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
         status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
-
         subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
         subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
         subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
+        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
+        formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name]
     )
 }
 

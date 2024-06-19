@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.domain.repository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
+import com.sarathi.dataloadingmangement.repository.IUiConfigRepository
 import com.sarathi.missionactivitytask.domain.repository.BaseRepository
 import javax.inject.Inject
 

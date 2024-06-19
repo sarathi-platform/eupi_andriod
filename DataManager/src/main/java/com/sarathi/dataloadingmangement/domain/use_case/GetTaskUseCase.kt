@@ -1,9 +1,9 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.repository.GetTaskRepositoryImpl
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
 class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTaskRepositoryImpl) {

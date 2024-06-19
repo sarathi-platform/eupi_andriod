@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.NotoSans
-import com.nudge.core.ui.events.theme.black100Percent
-import com.nudge.core.ui.events.theme.greyBorder
-import com.nudge.core.ui.events.theme.mediumTextStyle
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.black100Percent
+import com.nudge.core.ui.theme.greyBorder
+import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.white
 
 
 @Composable

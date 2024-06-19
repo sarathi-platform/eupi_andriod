@@ -1,0 +1,25 @@
+package com.sarathi.dataloadingmangement.data.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
+
+
+@Dao
+interface FormUiConfigDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertFormUiConfig(uiConfigEntity: FormUiConfigEntity)
+
+    @Query("select * from form_ui_config_table where userId=:uniqueUserIdentifier")
+    fun getActivityFormUiConfig(
+        uniqueUserIdentifier: String
+    ): List<FormUiConfigEntity>
+
+    @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier")
+    fun deleteActivityFormUiConfig(
+        uniqueUserIdentifier: String
+    )
+
+}

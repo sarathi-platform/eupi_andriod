@@ -33,9 +33,9 @@ fun ActivityScreen(
     onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
+        viewModel.setMissionDetail(missionId)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
-        viewModel.setMissionDetail(missionId)
     }
     val context = LocalContext.current
     ToolBarWithMenuComponent(

@@ -5,6 +5,9 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -43,6 +46,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.UUID
 import java.util.logging.Level
 
 fun Long.toDate(
@@ -73,6 +77,12 @@ fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()
 fun Long.toTimeDateString(): String {
     val dateTime = Date(this)
     val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
+    return format.format(dateTime)
+}
+
+fun Long.toDateString(): String {
+    val dateTime = Date(this)
+    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
 
@@ -539,10 +549,14 @@ fun exportLogFile(
     }
 }
 
-fun uriFromFile(context: Context, file: File, applicationID: String): Uri {
+fun uriFromFile(context: Context?, file: File, applicationID: String): Uri {
     try {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, "$applicationID.provider", file)
+            if (context != null) {
+                FileProvider.getUriForFile(context, "$applicationID.provider", file)
+            } else {
+                return Uri.EMPTY
+            }
         } else {
             Uri.fromFile(file)
         }
@@ -725,3 +739,126 @@ fun showCustomToast(
 fun String.capitalizeFirstLetter(): String {
     return this.lowercase().replaceFirstChar { it.uppercase() }
 }
+
+fun <T> checkStringNullOrEmpty(value: T?): String {
+    return when (value) {
+        null -> BLANK_STRING
+        is String -> value.ifEmpty { BLANK_STRING }
+        else -> BLANK_STRING
+    }
+}
+
+fun generateUUID(): String {
+    return UUID.randomUUID().toString()
+}
+
+fun openShareSheet(fileUriList: ArrayList<Uri>, title: String, type: String, context: Context) {
+    if (fileUriList.isNotEmpty()) {
+        try {
+
+
+            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            shareIntent.setType(type)
+            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+            val chooserIntent = Intent.createChooser(shareIntent, title)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+                val resInfoList: List<ResolveInfo> =
+                    context.packageManager
+                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    context.grantUriPermission(
+                        packageName,
+                        fileUriList[0],
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+            } else {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+            }
+            startExternalApp(chooserIntent, context)
+        } catch (ex: Exception) {
+            CoreLogger.d(context, "ImportDbFile", "Import completed")
+        }
+    }
+}
+
+fun startExternalApp(intent: Intent, context: Context) {
+    try {
+        CoreLogger.d(context, "ImportDbFile", "Import completed")
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    } catch (ex: Exception) {
+        CoreLogger.d(context, "ImportDbFile", "Import completed")
+    }
+}
+
+fun saveFileToDownload(sourceUri: Uri, mimeType: String, context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
+        values.put(
+            MediaStore.Downloads.RELATIVE_PATH,
+            Environment.DIRECTORY_DOWNLOADS + SARATHI_DIRECTORY_NAME
+        )
+        values.put(
+            MediaStore.Downloads.DISPLAY_NAME,
+            getFileNameFromURL(sourceUri.path.toString())
+        )
+
+        val resolver = context.contentResolver
+
+        // Using the External Content URI for images
+        val fileUri: Uri
+        fileUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        } else {
+            MediaStore.Downloads.EXTERNAL_CONTENT_URI
+        }
+        val uri = resolver.insert(fileUri, values)
+        try {
+            if (uri != null) {
+                resolver.openOutputStream(uri).use { outputStream ->
+                    copyUriToAnotherLocation(
+                        context.contentResolver,
+                        sourceUri,
+                        destinationUri = uri
+                    )
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    } else {
+        val fileDirectory = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+            SARATHI_DIRECTORY_NAME
+        )
+        if (!fileDirectory.exists()) {
+            fileDirectory.mkdirs()
+        }
+        val filePath = File(
+            fileDirectory,
+            getFileNameFromURL(sourceUri.path.toString())
+        )
+        val destURi = filePath.toUri()
+        val resolver = context.contentResolver
+        try {
+            resolver.openOutputStream(destURi).use { outputStream ->
+                copyUriToAnotherLocation(
+                    context.contentResolver,
+                    sourceUri,
+                    destinationUri = destURi
+                )
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+    }
+}
+
+
+
