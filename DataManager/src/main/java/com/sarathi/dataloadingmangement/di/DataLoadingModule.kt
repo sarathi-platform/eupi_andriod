@@ -303,14 +303,16 @@ class DataLoadingModule {
         apiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
-        uiConfigDao: UiConfigDao
+        uiConfigDao: UiConfigDao,
+        surveyAnswersDao: SurveyAnswersDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
             contentDao = contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
-            uiConfigDao = uiConfigDao
+            uiConfigDao = uiConfigDao,
+            surveyAnswersDao = surveyAnswersDao
 
         )
     }
@@ -411,8 +413,13 @@ class DataLoadingModule {
     fun provideFormUseCase(
         repository: FormRepositoryImpl,
         downloaderManager: DownloaderManager,
+        coreSharedPrefs: CoreSharedPrefs
     ): FormUseCase {
-        return FormUseCase(repository = repository, downloaderManager = downloaderManager)
+        return FormUseCase(
+            repository = repository,
+            downloaderManager = downloaderManager,
+            coreSharedPrefs = coreSharedPrefs
+        )
     }
 
     @Provides
@@ -437,7 +444,8 @@ class DataLoadingModule {
         surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        formUseCase: FormUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -455,7 +463,8 @@ class DataLoadingModule {
             fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            formUseCase = formUseCase
         )
     }
 

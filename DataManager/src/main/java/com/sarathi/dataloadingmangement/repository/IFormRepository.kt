@@ -1,8 +1,17 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.model.ApiResponseModel
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
+import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
 
 interface IFormRepository {
+    suspend fun getFromDetailFromNetwork(
+        activityId: Int,
+        surveyId: Int,
+        fromType: String
+    ): ApiResponseModel<List<FormDetailResponseModel>>
+
     suspend fun saveFromToDB(
         subjectId: Int,
         taskId: Int,
@@ -30,5 +39,7 @@ interface IFormRepository {
 
     fun getFormEFileName(): String
 
+    suspend fun saveAllFormDetails(formDetails: List<FormEntity>)
+    suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>?
 
 }
