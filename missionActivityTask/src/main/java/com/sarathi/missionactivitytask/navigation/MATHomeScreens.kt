@@ -35,6 +35,8 @@ sealed class MATHomeScreens(val route: String) {
 
     object AddImageScreen :
         MATHomeScreens(route = MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME)
+    object PdfViewerScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
 
 
 }

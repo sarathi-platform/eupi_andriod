@@ -6,6 +6,7 @@ data class DisbursementFormSummaryUiModel(
     var noOfDidi: Int,
     var subjectName: String,
     var villageName: String,
+    var dadaName: String,
     var mode: String,
     var nature: String,
     var amount: String,

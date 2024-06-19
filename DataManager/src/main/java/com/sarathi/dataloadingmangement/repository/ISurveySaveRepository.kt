@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
-import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 
 interface ISurveySaveRepository {
     suspend fun saveSurveyAnswer(
@@ -17,7 +17,7 @@ interface ISurveySaveRepository {
         surveyId: Int,
         taskId: Int,
         sectionId: Int
-    ): List<SurveyAnswerEntity>
+    ): List<SurveyAnswerFormSummaryUiModel>
 
     suspend fun deleteSurveyAnswer(
         sectionId: Int,

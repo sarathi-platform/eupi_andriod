@@ -6,5 +6,6 @@ data class SurveyUIModel(
     var subTittle2: String,
     var subTittle3: String,
     var subTittle4: String,
-    var subTittle5: String
+    var subTittle5: String,
+    val isFormGenerated: Boolean
 ) {}

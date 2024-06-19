@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.navigation
 
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -10,6 +11,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.media.MediaScreen
+import com.sarathi.contentmodule.media.PdfViewer
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
@@ -21,6 +23,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_PATH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
@@ -41,6 +44,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.add_image_screen.screen.AddImageScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
@@ -352,7 +356,17 @@ fun NavGraphBuilder.MatNavigation(
                 viewModel = hiltViewModel()
             )
         }
-
+        composable(route = MATHomeScreens.PdfViewerScreen.route, arguments = listOf(
+            navArgument(ARG_FORM_PATH) {
+                type = NavType.StringType
+            }
+        )) {
+            PdfViewer(
+                filePath = it.arguments?.getString(ARG_FORM_PATH) ?: BLANK_STRING,
+                modifier = Modifier,
+                navController = navController
+            )
+        }
         composable(route = MATHomeScreens.AddImageScreen.route) {
             AddImageScreen(
                 viewModel = hiltViewModel(),
@@ -415,6 +429,9 @@ fun navigateToActivityCompletionScreen(navController: NavController, activityMsg
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {
     navController.navigate(MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
+}
+fun navigateToPdfViewerScreen(navController: NavController, filePath: String) {
+    navController.navigate("$PDF_VIEWER_SCREEN_ROUTE_NAME/$filePath")
 }
 
 fun navigateToMediaPlayerScreen(

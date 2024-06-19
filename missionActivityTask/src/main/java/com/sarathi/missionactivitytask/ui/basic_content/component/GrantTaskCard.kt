@@ -76,6 +76,7 @@ fun GrantTaskCard(
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
+    formGeneratedCount: GrantTaskCardModel?,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember {
@@ -132,13 +133,28 @@ fun GrantTaskCard(
                         tint = greenOnline,
                     )
                 } else if (status?.value == StatusEnum.INPROGRESS.name) {
-                    Text(
-                        text = stringResource(id = R.string.in_progress),
-                        style = defaultTextStyle,
-                        modifier = Modifier
-                            .padding(horizontal = dimen_5_dp),
-                        color = unmatchedOrangeColor
-                    )
+                    if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
+                            "0"
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.in_progress),
+                            style = defaultTextStyle,
+                            modifier = Modifier
+                                .padding(horizontal = dimen_5_dp),
+                            color = unmatchedOrangeColor
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_green_file),
+                            contentDescription = "Green Icon",
+                            tint = greenOnline,
+                            modifier = Modifier.size(22.dp)
+                        )
+
+                    }
+
+
                 }
             }
             Row(
