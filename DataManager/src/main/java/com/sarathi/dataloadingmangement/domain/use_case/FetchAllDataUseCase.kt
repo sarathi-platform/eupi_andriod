@@ -30,8 +30,8 @@ class FetchAllDataUseCase @Inject constructor(
             fetchMissionDataUseCase.invoke()
             fetchSurveyDataFromNetworkUseCase.invoke()
             fetchContentDataFromNetworkUseCase.invoke()
-            formUseCase.invoke()
             if (!isRefresh) {
+                formUseCase.invoke()
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
             }
             coreSharedPrefs.setDataLoaded(true)

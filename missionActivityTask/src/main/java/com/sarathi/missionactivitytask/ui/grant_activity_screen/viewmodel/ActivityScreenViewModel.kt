@@ -27,6 +27,7 @@ class ActivityScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
+    var isMissionCompleted: Boolean = false
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
@@ -55,8 +56,9 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
 
-    fun setMissionDetail(missionId: Int) {
+    fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean) {
         this.missionId = missionId
+        this.isMissionCompleted = isMissionCompleted
     }
 
     fun isFilePathExists(filePath: String): Boolean {
@@ -64,7 +66,8 @@ class ActivityScreenViewModel @Inject constructor(
     }
 
     private suspend fun checkButtonValidation() {
-        isButtonEnable.value = getActivityUseCase.isAllActivityCompleted(missionId = missionId)
+        isButtonEnable.value =
+            !isMissionCompleted && getActivityUseCase.isAllActivityCompleted(missionId = missionId)
     }
 
     fun markMissionCompleteStatus() {
