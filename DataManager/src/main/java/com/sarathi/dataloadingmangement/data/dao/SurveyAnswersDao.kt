@@ -124,4 +124,10 @@ interface SurveyAnswersDao {
         uniqueUserIdentifier: String
     ): SurveyAnswerEntity
 
+    @Query("select optionItems from ques_answer_table where userId =:uniqueUserIdentifier and questionType=:questionType")
+    fun getSurveyAnswerImageKeys(
+        questionType: String,
+        uniqueUserIdentifier: String
+    ): List<OptionsUiModel>?
+
 }
