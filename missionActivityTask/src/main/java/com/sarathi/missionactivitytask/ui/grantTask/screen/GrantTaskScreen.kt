@@ -111,10 +111,10 @@ fun GrantTaskScreen(
                 ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
                     if (!isLimitContentData) {
                         navigateToMediaPlayerScreen(
-                            navController,
-                            contentKey,
-                            contentType,
-                            contentTitle,
+                            navController = navController,
+                            contentKey = contentKey,
+                            contentType = contentType,
+                            contentTitle = contentTitle,
                         )
                     } else {
                         navigateToContentDetailScreen(

@@ -74,7 +74,12 @@ fun ActivityScreen(
                 ) { contentValue, contentKey, contentType, contentTitle ->
 
                     if (viewModel.isFilePathExists(contentValue) || contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
-                        navigateToMediaPlayerScreen(navController, contentKey, contentType, contentTitle)
+                        navigateToMediaPlayerScreen(
+                            navController = navController,
+                            contentKey = contentKey,
+                            contentType = contentType,
+                            contentTitle = contentTitle
+                        )
                     } else {
                         Toast.makeText(
                             context,

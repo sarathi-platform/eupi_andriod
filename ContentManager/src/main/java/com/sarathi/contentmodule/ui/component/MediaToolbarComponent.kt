@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.events.theme.largeTextStyle
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import com.nudge.core.ui.theme.largeTextStyle
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.media.getActivity
 

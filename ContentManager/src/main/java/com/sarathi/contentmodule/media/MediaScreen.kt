@@ -45,8 +45,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
-import com.nudge.core.ui.events.theme.defaultTextStyle
-import com.nudge.core.ui.events.theme.textColorDark
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.ui.component.MediaToolbarComponent
 import java.io.File
@@ -153,22 +153,27 @@ fun VideoPlayer(uri: Uri, onPlayerViewClick: () -> Unit) {
         }
     }
 
-    DisposableEffect(
-        AndroidView(factory = {
-            PlayerView(context).apply {
-                player = exoPlayer
-                useController = true // Optional: Hides the default ExoPlayer UI controls
-                setOnClickListener {
-                    onPlayerViewClick()
-                    useController = true
-                    exoPlayer.playWhenReady = !exoPlayer.playWhenReady
-                }
-            }
-        })
-    ) {
+    DisposableEffect(exoPlayer) {
         onDispose {
             exoPlayer.release()
         }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AndroidView(factory = {
+            PlayerView(context).apply {
+                player = exoPlayer
+                setOnClickListener {
+                    onPlayerViewClick()
+                    exoPlayer.playWhenReady = !exoPlayer.playWhenReady
+                }
+
+            }
+        })
     }
 }
 

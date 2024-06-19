@@ -1,3 +1,4 @@
+
 package com.sarathi.missionactivitytask.navigation
 
 import androidx.compose.ui.Modifier
@@ -170,12 +171,12 @@ fun NavGraphBuilder.MatNavigation(
         )) {
             ContentDetailScreen(
                 navController = navController, viewModel = hiltViewModel(),
-                onNavigateToMediaScreen = { fileType, key, title ->
+                onNavigateToMediaScreen = { fileType, key, contentTitle ->
                     navigateToMediaPlayerScreen(
                         navController = navController,
                         contentKey = key,
                         contentType = fileType,
-                        contentTitle = title
+                        contentTitle = contentTitle
                     )
 
                 }, matId = it.arguments?.getInt(
@@ -387,24 +388,6 @@ fun NavGraphBuilder.MatNavigation(
 }
 
 
-sealed class MATHomeScreens(val route: String) {
-    object MissionScreen : MATHomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
-    object ActivityScreen :
-        MATHomeScreens(route = "$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_MISSION_NAME}")
-
-    object GrantTaskScreen :
-        MATHomeScreens(route = "$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_ACTIVITY_ID}/{$ARG_ACTIVITY_NAME}")
-
-    object ContentDetailScreen :
-        MATHomeScreens(route = "$CONTENT_DETAIL_SCREEN_ROUTE_NAME/{$ARG_MAT_ID}/{$ARG_CONTENT_SCREEN_CATEGORY}")
-
-    object MediaPlayerScreen :
-        MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}/{$ARG_CONTENT_TITLE}")
-
-    object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_GRANT_ID}/{$ARG_GRANT_TYPE}/{$ARG_SANCTIONED_AMOUNT}/{$ARG_TOTAL_SUBMITTED_AMOUNT}")
-
-
 
 fun navigateToContentDetailScreen(
     navController: NavController,
@@ -468,7 +451,7 @@ fun navigateToMediaPlayerScreen(
     contentType: String,
     contentTitle: String
 ) {
-    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/${contentKey}/${contentType}/${contentTitle}")
+    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/$contentKey/$contentType/$contentTitle")
 }
 
 fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
@@ -487,10 +470,3 @@ fun navigateToTaskScreen(
 ) {
     navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }
-
-
-
-
-
-
-

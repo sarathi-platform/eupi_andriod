@@ -70,7 +70,6 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.lightBg
-import com.nudge.core.ui.theme.greyLightColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white

@@ -5,7 +5,6 @@ object MissionActivityConstants {
     const val ARG_CONTENT_KEY = "content_key"
     const val ARG_CONTENT_TYPE = "content_type"
     const val ARG_CONTENT_TITLE = "content_title"
-    const val ARG_CONTENT_VALUE = "content_value"
     const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
     const val ACTIVITY_SCREEN_SCREEN_ROUTE_NAME = "activity_screen"
     const val GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME = "grant_task_screen"
