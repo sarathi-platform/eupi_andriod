@@ -58,9 +58,11 @@ interface FormDao {
         activityId: Int,
     ): List<FormEntity>
 
-    @Query("Update  form_table  set isFormGenerated=:isFormGenerated where userId =:userId")
+    @Query("Update  form_table  set isFormGenerated=:isFormGenerated , formGenerateDate=:generatedDate where userId =:userId and localReferenceId=:localReferenceId")
     suspend fun updateFormData(
         userId: String,
+        generatedDate: String,
+        localReferenceId: String,
         isFormGenerated: Boolean
     )
 

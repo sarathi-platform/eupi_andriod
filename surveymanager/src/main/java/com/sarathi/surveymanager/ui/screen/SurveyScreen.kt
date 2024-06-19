@@ -190,6 +190,7 @@ fun SurveyScreen(
 
                             QuestionType.MultiImage.name -> {
                                 AddImageComponent(
+                                    fileNamePrefix = viewModel.getPrefixFileName(question),
                                     filePaths = commaSeparatedStringToList(
                                         question.options?.firstOrNull()?.selectedValue
                                             ?: BLANK_STRING

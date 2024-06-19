@@ -20,7 +20,7 @@ interface IFormRepository {
         activityId: Int,
         referenceId: String,
         subjectType: String
-    )
+    ): FormEntity
 
     suspend fun deleteForm(
         referenceId: String,
@@ -32,7 +32,9 @@ interface IFormRepository {
 
 
     suspend fun updateFormData(
-        isFormGenerated: Boolean
+        isFormGenerated: Boolean,
+        localReferenceId: String,
+        generatedDate: String
     )
 
     fun getFormEFileName(): String

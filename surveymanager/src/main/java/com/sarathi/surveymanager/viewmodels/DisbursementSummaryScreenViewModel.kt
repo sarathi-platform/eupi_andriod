@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -38,7 +39,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val formUseCase: FormUseCase
+    private val formUseCase: FormUseCase,
+    private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
 ) : BaseViewModel() {
     private val _taskList =
         mutableStateOf<Map<String, List<SurveyAnswerFormSummaryUiModel>>>(hashMapOf())
@@ -172,6 +174,21 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 referenceId = referenceId,
             )
             if (deleteCount > 0) {
+                surveyAnswerEventWriterUseCase.deleteDisbursementOrReceiptOfFundEvent(
+
+                    surveyID = surveyId,
+                    sectionId = sectionId,
+                    surveyName = "",
+                    grantId = grantConfigUi.value.grantId,
+                    grantType = grantConfigUi.value.grantType,
+                    referenceId = referenceId,
+                    taskId = taskEntity?.taskId ?: DEFAULT_ID,
+                    uriList = emptyList(),
+                    taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    subjectType = subjectType
+
+                )
                 onDeleteSuccess(deleteCount)
             }
             formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)

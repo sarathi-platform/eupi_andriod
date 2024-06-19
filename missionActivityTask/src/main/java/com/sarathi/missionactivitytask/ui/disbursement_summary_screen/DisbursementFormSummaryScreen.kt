@@ -70,7 +70,6 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.lightBg
-import com.nudge.core.ui.theme.greyLightColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
@@ -89,7 +88,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun DisbursementFormSummaryScreen(
     navController: NavController = rememberNavController(),
-    viewModel: DisbursementFormSummaryScreenViewModel
+    viewModel: DisbursementFormSummaryScreenViewModel,
+    activityId: Int
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -101,7 +101,7 @@ fun DisbursementFormSummaryScreen(
     }
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.onEvent(InitDataEvent.InitDataState)
+        viewModel.onEvent(InitDataEvent.InitDisbursmentScreenState(activityId = activityId))
     }
 
     ToolBarWithMenuComponent(
@@ -158,10 +158,10 @@ fun DisbursementFormSummaryScreen(
                                     )
                                 })
 
-                                }
-                                .height(dimen_56_dp)
-                                .border(width = dimen_1_dp, color = borderGrey)
-                                .background(white),
+                            }
+                            .height(dimen_56_dp)
+                            .border(width = dimen_1_dp, color = borderGrey)
+                            .background(white),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
 
@@ -189,7 +189,10 @@ fun DisbursementFormSummaryScreen(
                             isActive = true,
                             isArrowRequired = false,
                             onClick = {
-                                navigateToAddImageScreen(navController = navController)
+                                navigateToAddImageScreen(
+                                    navController = navController,
+                                    activityId = activityId
+                                )
                             }
                         )
                     }

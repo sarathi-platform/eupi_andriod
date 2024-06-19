@@ -54,7 +54,6 @@ fun InputComponent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(dimen_100_dp)
             .padding(horizontal = 2.dp)
     ) {
         if (title?.isNotBlank() == true) {
@@ -105,7 +104,7 @@ fun InputComponent(
             ),
         )
         if (hintMessage.isNotBlank()) {
-            Text(hintMessage, style = smallTextStyleMediumWeight, color = Color.Gray)
+            Text(hintMessage, style = smallTextStyleMediumWeight, color = textColorDark)
         }
 
     }
