@@ -89,6 +89,9 @@ class GrantTaskScreenViewModel @Inject constructor(
 
     private fun initTaskScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            _taskList.value.clear()
+            _filterList.value.clear()
+            taskList.value.clear()
             val taskUiModel =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             getSurveyDetail()

@@ -29,6 +29,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
@@ -81,6 +82,9 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_MISSION_NAME) {
                     type = NavType.StringType
+                },
+                navArgument(name = ARG_MISSION_COMPLETED) {
+                    type = NavType.BoolType
                 })
         ) {
             ActivityScreen(
@@ -92,6 +96,9 @@ fun NavGraphBuilder.MatNavigation(
                 missionName = it.arguments?.getString(
                     ARG_MISSION_NAME
                 ) ?: BLANK_STRING,
+                isMissionCompleted = it.arguments?.getBoolean(
+                    ARG_MISSION_COMPLETED
+                ) ?: false,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -464,8 +471,13 @@ fun navigateToMediaPlayerScreen(
     navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/$contentKey/$contentType/$contentTitle")
 }
 
-fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
-    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName")
+fun navigateToActivityScreen(
+    navController: NavController,
+    missionId: Int,
+    missionName: String,
+    isMissionCompleted: Boolean
+) {
+    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted")
 }
 
 fun navigateToAddImageScreen(navController: NavController, activityId: Int) {

@@ -6,6 +6,7 @@ import com.nudge.core.generateUUID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.sarathi.contentmodule.download_manager.FileType
+import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
@@ -59,11 +60,11 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
                     localReferenceId = it.localReferenceId
                 )
             }
-            documentValues.value.forEach {
+            documentValues.value.firstOrNull()?.filePath?.split(DELEGATE_COMM)?.forEach {
                 documentEventWriterUseCase.writeSaveDocumentEvent(
                     generatedDate = formGeneratedDate,
                     documentType = FileType.IMAGE.name,
-                    documentName = it.filePath,
+                    documentName = it,
                     activityId = activityId
                 )
 
