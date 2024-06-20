@@ -31,6 +31,7 @@ class FetchAllDataUseCase @Inject constructor(
             fetchSurveyDataFromNetworkUseCase.invoke()
             fetchContentDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
+                formUseCase.invoke()
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
             }

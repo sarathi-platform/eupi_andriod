@@ -30,10 +30,11 @@ fun ActivityScreen(
     viewModel: ActivityScreenViewModel = hiltViewModel(),
     missionId: Int,
     missionName: String,
+    isMissionCompleted: Boolean,
     onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.setMissionDetail(missionId)
+        viewModel.setMissionDetail(missionId, isMissionCompleted)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
@@ -44,6 +45,7 @@ fun ActivityScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = false,
+        onRetry = {},
         isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.activityList.value.isEmpty(),
         onSearchValueChange = {
 

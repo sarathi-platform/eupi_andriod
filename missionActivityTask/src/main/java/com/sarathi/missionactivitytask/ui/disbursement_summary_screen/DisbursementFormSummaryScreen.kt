@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -109,8 +108,14 @@ fun DisbursementFormSummaryScreen(
         modifier = Modifier,
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
+        onRetry = {},
         onBottomUI = {
-            BottomAppBar(backgroundColor = white, modifier = Modifier.height(150.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
+                    .background(white)
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -144,24 +149,22 @@ fun DisbursementFormSummaryScreen(
                                 stringResource(com.sarathi.missionactivitytask.R.string.share),
                                 style = defaultTextStyle
                             )
-
-                    }
-                    Row(
-                        modifier = Modifier
-                            .padding(start = dimen_10_dp)
-                            .weight(1.0f)
-                            .clickable {
-                                viewModel.generateFormE(true, { filepath ->
-                                    navigateToPdfViewerScreen(
-                                        navController = navController,
-                                        filePath = getFileNameFromURL(filepath)
-                                    )
-                                })
-
-                            }
-                            .height(dimen_56_dp)
-                            .border(width = dimen_1_dp, color = borderGrey)
-                            .background(white),
+                        }
+                        Row(
+                            modifier = Modifier
+                                .padding(start = dimen_10_dp)
+                                .weight(1.0f)
+                                .clickable {
+                                    viewModel.generateFormE(true) { filepath ->
+                                        navigateToPdfViewerScreen(
+                                            navController = navController,
+                                            filePath = getFileNameFromURL(filepath)
+                                        )
+                                    }
+                                }
+                                .height(dimen_56_dp)
+                                .border(width = dimen_1_dp, color = borderGrey)
+                                .background(white),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
 
@@ -231,7 +234,7 @@ fun DisbursementFormSummaryScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = dimen_16_dp),
+                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = 150.dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
                     viewModel.formList.value.forEach {

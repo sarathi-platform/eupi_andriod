@@ -17,4 +17,7 @@
     <string name="submit_form_e">Submit Form E</string>
     <string name="attach_physical_form_e_signed_sealed"><![CDATA[Attach Physical Form E (Signed & Sealed)]]></string>
     <string name="form_e_submitted_successfully">Form E submitted successfully</string>
+    <string name="activity_completed_unable_to_edit">you can\'t edit as activity is completed</string>
+    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
+
 </resources>

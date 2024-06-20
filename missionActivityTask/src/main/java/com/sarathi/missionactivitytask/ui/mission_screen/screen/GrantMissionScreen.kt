@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
 import com.nudge.core.ui.theme.blueDark
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
@@ -47,11 +48,14 @@ fun GrantMissionScreen(
     val pullRefreshState = rememberPullRefreshState(
         viewModel.loaderState.value.isLoaderVisible,
         {
-            viewModel.refreshData()
             if (isOnline(context)) {
                 viewModel.refreshData()
             } else {
-                Toast.makeText(context, "retry fail", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again),
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
         })
@@ -76,6 +80,9 @@ fun GrantMissionScreen(
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
         onBottomUI = {
+        },
+        onRetry = {
+            viewModel.refreshData()
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (isSearch) {
@@ -110,7 +117,6 @@ fun GrantMissionScreen(
                             BasicMissionCard(
                                 status = mission.missionStatus ?: BLANK_STRING,
                                 countStatusText = "Activities Completed",
-                                topHeaderText = "Due by 28 May",
                                 totalCount = mission.activityCount,
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,
@@ -120,7 +126,8 @@ fun GrantMissionScreen(
                                     navigateToActivityScreen(
                                         navController,
                                         missionName = mission.description,
-                                        missionId = mission.missionId
+                                        missionId = mission.missionId,
+                                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
                                     )
                                 }
                             )

@@ -47,7 +47,8 @@ fun ToolBarWithMenuComponent(
     isDataAvailable: Boolean = false,
     onBottomUI: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues, Boolean, (String) -> Unit) -> Unit,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    onRetry: () -> Unit
 ) {
     val dataAvailableState = mutableStateOf(isDataAvailable)
 
@@ -129,6 +130,7 @@ fun ToolBarWithMenuComponent(
                         isActive = true,
                         isArrowRequired = false,
                         onClick = {
+                            onRetry()
                         })
                 }
             } else {

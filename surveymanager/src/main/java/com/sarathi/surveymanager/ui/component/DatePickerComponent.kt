@@ -104,7 +104,7 @@ fun DatePickerComponent(
                 modifier = Modifier
                     .matchParentSize()
                     .background(Color.Transparent)
-                    .clickable {
+                    .clickable(enabled = isEditable) {
                         val calendar = Calendar.getInstance()
                         val year = calendar[Calendar.YEAR]
                         val month = calendar[Calendar.MONTH]
