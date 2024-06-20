@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
@@ -21,19 +22,17 @@ class FormUseCase @Inject constructor(
             surveyId = formDetailRequest.surveyId,
             fromType = formDetailRequest.formType
         )
-        if (apiResponse.status.equals(SUCCESS_CODE, true)) {
+        if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
+                SUCCESS,
+                true
+            )
+        ) {
             apiResponse.data?.let { formDetail ->
                 formDetail.forEach { form ->
                     formEntities.add(
                         FormEntity.getFormEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            taskId = form.taskId,
-                            referenceId = form.localReferenceId,
-                            subjectType = form.subjectType,
-                            surveyId = form.surveyId,
-                            missionId = 1,
-                            activityId = form.activityId,
-                            subjectId = form.subjectId
+                            formDetailResponse = form
                         )
                     )
                 }
