@@ -4,18 +4,21 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -35,7 +38,10 @@ class SurveyScreenViewModel @Inject constructor(
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val getActivityUseCase: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase,
+    private val fromEUseCase: FormUseCase,
+    private val formEventWriterUseCase: FormEventWriterUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
@@ -103,6 +109,22 @@ class SurveyScreenViewModel @Inject constructor(
                 )
 
             }
+            if (sanctionAmount != 0) {
+                val formEntity = fromEUseCase.saveFormEData(
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    taskId = taskId,
+                    surveyId = surveyId,
+                    missionId = taskEntity?.missionId ?: -1,
+                    activityId = taskEntity?.activityId ?: -1,
+                    subjectType = subjectType,
+                    referenceId = referenceId
+                )
+                formEventWriterUseCase.writeFormEvent(
+                    surveyName = questionUiModel.value.firstOrNull()?.surveyName ?: BLANK_STRING,
+                    formEntity = formEntity,
+
+                    )
+            }
             if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
                     taskId = taskId
@@ -134,7 +156,6 @@ class SurveyScreenViewModel @Inject constructor(
                 subjectType = subjectType,
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
-                uriList = listOf(),
                 grantId = grantID,
                 grantType = granType,
                 taskId = taskId
@@ -150,7 +171,7 @@ class SurveyScreenViewModel @Inject constructor(
             if (questionUiModel.tagId.toString() == DISBURSED_AMOUNT_TAG) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {
+                if (sanctionAmount != 0 && disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {
                     isButtonEnable.value = false
                     return
                 }
@@ -207,5 +228,9 @@ class SurveyScreenViewModel @Inject constructor(
         checkButtonValidation()
 
 
+    }
+
+    fun getPrefixFileName(question: QuestionUiModel): String {
+        return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
     }
 }

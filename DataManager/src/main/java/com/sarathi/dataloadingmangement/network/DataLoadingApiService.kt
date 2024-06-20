@@ -17,6 +17,7 @@ import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
+import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -25,7 +26,7 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface DataLoadingApiService {
-    @POST(SUB_PATH_GET_MISSION_V2)
+    @POST(SUB_PATH_GET_MISSION)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ProgrameResponse>>
 
@@ -49,6 +50,14 @@ interface DataLoadingApiService {
     @POST(SUBPATH_SURVEY_ANSWERS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
+
+    @GET(SUBPATH_GET_FORM_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getFormDetail(
+        @Query("activityId") activityId: Int,
+        @Query("surveyId") surveyId: Int,
+        @Query("formType") formType: String
+    ): ApiResponseModel<List<FormDetailResponseModel>>
 
     @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
     suspend fun getSmallGroupBeneficiaryMapping(@Body smallGroupApiRequest: SmallGroupApiRequest): ApiResponseModel<List<SmallGroupMappingResponseModel>>

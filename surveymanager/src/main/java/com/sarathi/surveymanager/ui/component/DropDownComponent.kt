@@ -85,7 +85,6 @@ fun <T> DropDownComponent(
                     LaunchedEffect(interactionSource) {
                         interactionSource.interactions.collect {
                             if (it is PressInteraction.Release) {
-                                // works like onClick
                                 onExpandedChange(expanded)
                             }
                         }

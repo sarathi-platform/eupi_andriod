@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,10 +29,12 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyColor
-import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
 
@@ -43,10 +46,15 @@ fun DisbursementCard(
     subTitle4: String = BLANK_STRING,
     subTitle5: String = BLANK_STRING,
     onEditSurvey: () -> Unit,
-    onDeleteSurvey: () -> Unit
+    onDeleteSurvey: () -> Unit,
+    isFormgenerated: Boolean
 
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimen_10_dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,11 +90,29 @@ fun DisbursementCard(
                 TextRow(text1 = stringResource(R.string.no_of_didi_s), text2 = subTitle5)
             }
         }
+        if (isFormgenerated) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_green_file),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = dimen_4_dp)
+                        .align(Alignment.CenterVertically),
+                )
+                Text(
+                    LocalContext.current.getString(R.string.form_e_generated),
+                    color = greenOnline,
+                    style = newMediumTextStyle
+                )
+
+            }
+        } else {
         Row {
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
+                    .weight(0.4f)
+                    .height(dimen_50_dp)
+                    .padding(dimen_5_dp)
                     .clickable { onEditSurvey() }
                     .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
@@ -115,8 +141,9 @@ fun DisbursementCard(
             }
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
+                    .weight(0.4f)
+                    .height(dimen_50_dp)
+                    .padding(dimen_5_dp)
                     .clickable { onDeleteSurvey() }
                     .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
@@ -144,8 +171,10 @@ fun DisbursementCard(
                 )
             }
         }
+        }
     }
 }
+
 
 @Composable
 private fun TextRow(text1: String, text2: String) {
@@ -154,7 +183,11 @@ private fun TextRow(text1: String, text2: String) {
         horizontalArrangement = Arrangement.Center
     ) {
         if (text1.isNotBlank()) {
-            Text(text = text1, style = quesOptionTextStyle.copy(color = greyColor))
+            Text(
+                modifier = Modifier.padding(end = dimen_5_dp),
+                text = text1,
+                style = defaultTextStyle.copy(color = greyColor)
+            )
         }
         if (text2.isNotBlank()) {
             Text(text = text2, style = defaultTextStyle.copy(color = black1))

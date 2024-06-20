@@ -15,6 +15,7 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchLanguageUseCase: FetchLanguageUseCase,
     val fetchUserDetailUseCase: FetchUserDetailUseCase,
     val fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
+    val formUseCase: FormUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -30,7 +31,9 @@ class FetchAllDataUseCase @Inject constructor(
             fetchSurveyDataFromNetworkUseCase.invoke()
             fetchContentDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
+                formUseCase.invoke()
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
+                formUseCase.invoke()
             }
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)

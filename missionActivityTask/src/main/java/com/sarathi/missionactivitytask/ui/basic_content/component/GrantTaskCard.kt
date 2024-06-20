@@ -30,12 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -75,7 +77,9 @@ fun GrantTaskCard(
     status: GrantTaskCardModel?,
     imagePath: Uri?,
     modifier: Modifier = Modifier,
+    isActivityCompleted: Boolean,
     isHamletIcon: Boolean = false,
+    formGeneratedCount: GrantTaskCardModel?,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember {
@@ -132,13 +136,28 @@ fun GrantTaskCard(
                         tint = greenOnline,
                     )
                 } else if (status?.value == StatusEnum.INPROGRESS.name) {
-                    Text(
-                        text = stringResource(id = R.string.in_progress),
-                        style = defaultTextStyle,
-                        modifier = Modifier
-                            .padding(horizontal = dimen_5_dp),
-                        color = unmatchedOrangeColor
-                    )
+                    if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
+                            "0"
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.in_progress),
+                            style = defaultTextStyle,
+                            modifier = Modifier
+                                .padding(horizontal = dimen_5_dp),
+                            color = unmatchedOrangeColor
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_green_file),
+                            contentDescription = "Green Icon",
+                            tint = greenOnline,
+                            modifier = Modifier.size(22.dp)
+                        )
+
+                    }
+
+
                 }
             }
             Row(
@@ -185,7 +204,8 @@ fun GrantTaskCard(
                         onNotAvailable,
                         primaryButtonText?.value ?: BLANK_STRING,
                         onPrimaryButtonClick,
-                        title?.value ?: BLANK_STRING
+                        title?.value ?: BLANK_STRING,
+                        isActivityCompleted
                     )
                 }
             } else {
@@ -233,7 +253,8 @@ fun GrantTaskCard(
                             onNotAvailable,
                             primaryButtonText = stringResource(R.string.continue_text),
                             onPrimaryButtonClick,
-                            title?.value ?: BLANK_STRING
+                            title?.value ?: BLANK_STRING,
+                            isActivityCompleted
                         )
                     }
                 }
@@ -250,7 +271,7 @@ private fun SubContainerView(taskCard: GrantTaskCardModel?) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (taskCard?.icon != null) {
-            ImageViewer(taskCard.icon)
+            ImageViewer(taskCard.icon!!)
             Spacer(modifier = Modifier.width(6.dp))
 
         }
@@ -291,15 +312,24 @@ private fun PrimarySecondaryButtonView(
     onNotAvailable: () -> Unit,
     primaryButtonText: String,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
-    title: String
+    title: String,
+    isActivityCompleted: Boolean
 ) {
+    val context = LocalContext.current
     if (secondaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = secondaryButtonText,
             isIcon = false,
             onClick = {
+                if (!isActivityCompleted) {
                 taskMarkedNotAvailable.value = true
                 onNotAvailable()
+                } else {
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.activity_completed_unable_to_edit)
+                    )
+                }
             },
             color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
                 containerColor = blueDark,

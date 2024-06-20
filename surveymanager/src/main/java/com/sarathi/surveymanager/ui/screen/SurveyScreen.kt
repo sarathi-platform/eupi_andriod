@@ -32,10 +32,10 @@ import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
-import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
@@ -106,7 +106,7 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                        if (viewModel.totalSubmittedAmount <= sanctionedAmount) {
+                        if (sanctionedAmount == 0 || viewModel.totalSubmittedAmount <= sanctionedAmount) {
                             viewModel.saveButtonClicked()
                             navController.popBackStack()
                         } else {
@@ -157,7 +157,8 @@ fun SurveyScreen(
                                 InputComponent(
                                     hintMessage = getSanctionedAmountMessage(
                                         question,
-                                        sanctionedAmount - totalSubmittedAmount
+                                        sanctionedAmount = sanctionedAmount,
+                                        remainingAmount = sanctionedAmount - totalSubmittedAmount
                                     ),
                                     isMandatory = question.isMandatory,
                                     isEditable = viewModel.isActivityNotCompleted.value,
@@ -189,6 +190,7 @@ fun SurveyScreen(
 
                             QuestionType.MultiImage.name -> {
                                 AddImageComponent(
+                                    fileNamePrefix = viewModel.getPrefixFileName(question),
                                     filePaths = commaSeparatedStringToList(
                                         question.options?.firstOrNull()?.selectedValue
                                             ?: BLANK_STRING
@@ -256,8 +258,12 @@ fun SurveyScreen(
 }
 
 @Composable
-fun getSanctionedAmountMessage(question: QuestionUiModel, remainingAmount: Int): String {
-    if (question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
+fun getSanctionedAmountMessage(
+    question: QuestionUiModel,
+    sanctionedAmount: Int,
+    remainingAmount: Int
+): String {
+    if (sanctionedAmount != 0 && question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
         return LocalContext.current.getString(R.string.amount_limit, remainingAmount)
     }
     return BLANK_STRING

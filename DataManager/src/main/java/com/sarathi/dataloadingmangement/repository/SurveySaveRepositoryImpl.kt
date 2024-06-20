@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import javax.inject.Inject
 
 class SurveySaveRepositoryImpl @Inject constructor(
@@ -56,12 +57,65 @@ class SurveySaveRepositoryImpl @Inject constructor(
             surveyAnswerEntities.forEach { surveyAnswerEntity ->
 
                 surveyAnswerEntity?.optionItems?.forEach {
-                    result.add(it.selectedValue ?: BLANK_STRING)
+                    if (it.isSelected == true) {
+                        if (it.selectedValue?.isNotBlank() == true) {
+                            result.add(it.selectedValue ?: BLANK_STRING)
+                        } else {
+                            result.add(it.description ?: BLANK_STRING)
+                        }
+                    }
                 }
 
             }
         }
         return result.joinToString(",")
+    }
+
+    override suspend fun getSurveyAnswerForFormTag(
+        taskId: Int,
+        subjectId: Int,
+        tagId: String,
+        referenceId: String
+    ): String {
+        val result = ArrayList<String>()
+
+        val surveyAnswerEntity = surveyAnswersDao.getSurveyAnswerForFormTag(
+            taskId = taskId,
+            subjectId = subjectId,
+            referenceId = referenceId,
+            tagId = tagId.toInt(),
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+            var totalAmount = 0
+            surveyAnswerEntity?.optionItems?.forEach {
+                totalAmount += it.selectedValue?.toInt() ?: 0
+            }
+
+
+            result.add(totalAmount.toString())
+        } else {
+
+            surveyAnswerEntity?.optionItems?.forEach {
+                if (it.isSelected == true) {
+                    if (it.selectedValue?.isNotBlank() == true) {
+                        result.add(it.selectedValue ?: BLANK_STRING)
+                    } else {
+                        result.add(it.description ?: BLANK_STRING)
+                    }
+                }
+            }
+        }
+        return result.joinToString(",")
+    }
+
+    override suspend fun getSurveyAnswerImageKeys(
+        questionType: String,
+    ): List<SurveyAnswerEntity>? {
+        return surveyAnswersDao.getSurveyAnswerImageKeys(
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            questionType = questionType
+        )
     }
 
     override fun getUserIdentifier(): String {
@@ -72,7 +126,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         surveyId: Int,
         taskId: Int,
         sectionId: Int
-    ): List<SurveyAnswerEntity> {
+    ): List<SurveyAnswerFormSummaryUiModel> {
         return surveyAnswersDao.getSurveyAnswersForSummary(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             sectionId = sectionId,

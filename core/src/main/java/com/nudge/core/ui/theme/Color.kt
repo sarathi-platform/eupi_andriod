@@ -125,6 +125,7 @@ val greyTransparentColor = Color(0xc6c5b9)
 val greyLightColor = Color(0xFFDCDCDC)
 val greyColor = Color(0xFFA3A5AB)
 val liteRed = Color(0xFFFCF3E2)
+val liteBgColor = Color(0xF7F7F7)
 
 val searchSectionTitleColor = Color(0xFF7D7572)
 
@@ -132,4 +133,7 @@ val summaryCardViewBlue = Color(0xFF325DF6)
 val trackLinearColor = Color(0xFFD1D5DE)
 val greyBorder = Color(0xFF707070)
 val blue = Color(0xFF205EFF)
+val lightBg = Color(0xFFF7F7F7)
+
+
 

@@ -10,8 +10,8 @@ import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 
 
 const val missionActivityTaskDto =

@@ -33,7 +33,12 @@ interface TaskDao {
     @Query("UPDATE $TASK_TABLE_NAME set isActive = 0 where userId=:userId and activityId=:activityId and missionId = :missionId ")
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
-    @Query("SELECT taskId,subjectId, status FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
+    @Query(
+        "SELECT task_table.taskId,task_table.subjectId, task_table.status,\n" +
+                "SUM(CASE WHEN form_table.isFormGenerated  =1 THEN 1 ELSE 0 END) AS formGeneratedCount\n" +
+                " FROM task_table left join form_table on task_table.taskId= form_table.taskid\n" +
+                " where task_table.missionId=:missionId  and task_table.activityId = :activityId and task_table.userId=:userId and isActive=1 group by task_table.taskId"
+    )
     suspend fun getActiveTask(
         userId: String,
         missionId: Int,
