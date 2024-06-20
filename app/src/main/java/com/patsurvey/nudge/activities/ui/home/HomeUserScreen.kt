@@ -5,13 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.UPCM_USER
-import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
 
 @Composable
 fun HomeUserScreen(
@@ -20,16 +20,16 @@ fun HomeUserScreen(
     prefRepo: PrefRepo,
     onSettingIconClick: () -> Unit
 ) {
-    if(prefRepo.getLoggedInUserType().equals(UPCM_USER)){
-        GrantMissionScreen(
-            navController = navController,
-            viewModel = hiltViewModel(),
-            onSettingClick = onSettingIconClick
-        ) {
-
-        }
+    if(prefRepo.getLoggedInUserType().equals(UPCM_USER)) {
+//        GrantMissionScreen(
+//            navController = navController,
+//            viewModel = hiltViewModel(),
+//            onSettingClick = onSettingIconClick
+//        ) {
+//
+//        }
         //TODO Remove after test
-//        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(

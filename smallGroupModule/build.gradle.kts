@@ -53,6 +53,7 @@ dependencies {
     implementation(project(":CommunicationModule"))
     implementation(project(":missionActivityTask"))
     implementation(project(":DataManager"))
+    implementation(project(":navigationManager"))
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")

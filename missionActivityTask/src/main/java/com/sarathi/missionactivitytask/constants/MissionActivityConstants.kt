@@ -1,7 +1,7 @@
 package com.sarathi.missionactivitytask.constants
 
 object MissionActivityConstants {
-    const val MAT_GRAPH = "mat_graph"
+
     const val ARG_CONTENT_KEY = "content_key"
     const val ARG_CONTENT_TYPE = "content_type"
     const val ARG_CONTENT_TITLE = "content_title"

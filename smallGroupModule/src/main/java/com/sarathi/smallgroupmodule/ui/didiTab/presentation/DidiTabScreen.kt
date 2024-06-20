@@ -71,6 +71,7 @@ fun DidiTabScreen(
         onSettingClick = {
             onSettingClicked()
         },
+        onRetry = {},
         onContentUI = { paddingValues, b, function ->
             Column(
                 modifier = Modifier

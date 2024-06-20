@@ -57,7 +57,6 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScre
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.baseline.BSNavHomeGraph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
@@ -155,7 +154,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController = navController, prefRepo)
         bpcDidiListNavGraph(navController = navController)
-        BSNavHomeGraph(navController)
+//        BSNavHomeGraph(navController)
         MatNavigation(
             navController = navController,
             onSettingIconClick = { navController.navigateToSettingScreen() })

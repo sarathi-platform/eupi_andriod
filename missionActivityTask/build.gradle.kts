@@ -92,6 +92,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation(project(":core"))
     implementation(project(":surveymanager"))
+    implementation(project(":navigationManager"))
 
     //Coil
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")

@@ -118,6 +118,7 @@ fun SmallGroupAttendanceEditScreen(
         onSearchValueChange = {},
         isSearch = true,
         isDataAvailable = smallGroupAttendanceEditScreenViewModel.smallGroupDetails.value.smallGroupId == 0,
+        onRetry = {},
         onBottomUI = {
             BottomAppBar(
                 modifier = Modifier.height(dimen_80_dp),

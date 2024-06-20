@@ -56,15 +56,23 @@ object NudgeNavigationGraph {
     val DETAILS =
         "details_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_STEP_INDEX.value}}"
     val ADD_DIDI = "add_didi_graph/{${NavigationParams.ARG_DIDI_DETAILS_ID.value}}"
-    val SOCIAL_MAPPING = "social_mapping_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
-    val WEALTH_RANKING = "wealth_ranking/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
-    val PAT_SCREENS = "pat_screens/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val SOCIAL_MAPPING =
+        "social_mapping_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val WEALTH_RANKING =
+        "wealth_ranking/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val PAT_SCREENS =
+        "pat_screens/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
     val SETTING_GRAPH = "setting_graph"
     val LOGOUT_GRAPH = "logout_graph"
-    val VO_ENDORSEMENT_GRAPH = "vo_endorsement_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_IS_STEP_COMPLETE.value}}"
-    val BPC_GRAPH = "bpc_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
-     val MISSION_SUMMARY_GRAPH =
+    val VO_ENDORSEMENT_GRAPH =
+        "vo_endorsement_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_IS_STEP_COMPLETE.value}}"
+    val BPC_GRAPH =
+        "bpc_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val MISSION_SUMMARY_GRAPH =
         "mission_summary_graph/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}"
+    val MAT_GRAPH = "mat_graph"
+    val SMALL_GROUP_GRAPH = "small_group_graph"
+
 }
 
 /**

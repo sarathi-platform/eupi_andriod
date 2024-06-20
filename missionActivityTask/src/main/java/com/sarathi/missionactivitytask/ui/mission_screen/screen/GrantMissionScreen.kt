@@ -26,9 +26,8 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
 import com.nudge.core.ui.theme.blueDark
-import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.navigation.navigateToActivityScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -43,7 +42,7 @@ fun GrantMissionScreen(
     navController: NavController = rememberNavController(),
     viewModel: MissionScreenViewModel = hiltViewModel(),
     onSettingClick: () -> Unit,
-    onNavigationToActivity: (isBaselineMission: Boolean) -> Unit
+    onNavigationToActivity: (isBaselineMission: Boolean, mission: MissionUiModel) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -128,14 +127,15 @@ fun GrantMissionScreen(
                                         mission.description.contains(
                                             "Baseline",
                                             true
-                                        )
+                                        ),
+                                        mission
                                     ) //TODO handle navigation to activity based on mission.
-                                    navigateToActivityScreen(
+                                    /*navigateToActivityScreen(
                                         navController,
                                         missionName = mission.description,
                                         missionId = mission.missionId,
                                         isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
-                                    )
+                                    )*/
                                 }
                             )
                         }

@@ -11,9 +11,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.media.PdfViewer
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME
@@ -44,7 +46,6 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
@@ -73,8 +74,17 @@ fun NavGraphBuilder.MatNavigation(
             GrantMissionScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick
-            ) {
+            ) { isBaselineMission, mission ->
+                if (isBaselineMission) {
 
+                } else {
+                    navigateToActivityScreen(
+                        navController,
+                        missionName = mission.description,
+                        missionId = mission.missionId,
+                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
+                    )
+                }
             }
         }
         composable(
