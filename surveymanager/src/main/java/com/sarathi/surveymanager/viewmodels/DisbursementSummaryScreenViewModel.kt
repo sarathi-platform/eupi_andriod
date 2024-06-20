@@ -229,7 +229,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             isButtonEnable.value = isDoneButtonEnable()
             isAddDisbursementButtonEnable.value =
-                sanctionedAmount == 0 || sanctionedAmount != getTotalSubmittedAmount()
+                (sanctionedAmount == 0 && !isActivityCompleted.value) || (sanctionedAmount != getTotalSubmittedAmount() && !isActivityCompleted.value)
         }
     }
 
