@@ -3974,12 +3974,6 @@ class VillageSelectionRepository @Inject constructor(
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
                                 prefRepo.savePref(PREF_KEY_TYPE_STATE_ID,  it.villageList?.get(0)?.stateId?:4)
-
-                                /*if (localVillageList.isNotEmpty()) {
-                                    _villagList.emit(localVillageList)
-                                } else {
-                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
-                                }*/
                                 userAndVillageDetailsModel = if (localVillageList.isNotEmpty()) {
                                     UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
                                 } else {
