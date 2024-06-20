@@ -59,7 +59,7 @@ fun DidiTabScreen(
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
-        isDataAvailable = didiList.value.isNotEmpty() || isSearchActive.value,
+        isDataNotAvailable = didiList.value.isEmpty() && !isSearchActive.value,
         onSearchValueChange = {
 
         },

@@ -45,13 +45,13 @@ fun ToolBarWithMenuComponent(
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
-    isDataAvailable: Boolean = false,
+    isDataNotAvailable: Boolean = false,
     onBottomUI: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues, Boolean, (String) -> Unit) -> Unit,
     onSettingClick: () -> Unit,
     onRetry: () -> Unit
 ) {
-    val dataAvailableState = mutableStateOf(isDataAvailable)
+    val dataNotAvailableState = mutableStateOf(isDataNotAvailable)
 
     Scaffold(
         modifier = modifier,
@@ -111,7 +111,7 @@ fun ToolBarWithMenuComponent(
                 .padding(top = 75.dp),
             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
-            if (!dataAvailableState.value) {
+            if (dataNotAvailableState.value) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

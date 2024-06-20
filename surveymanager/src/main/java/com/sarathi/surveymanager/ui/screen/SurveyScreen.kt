@@ -91,7 +91,7 @@ fun SurveyScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = false,
-        isDataAvailable = viewModel.questionUiModel.value.isEmpty(),
+        isDataNotAvailable = viewModel.questionUiModel.value.isEmpty(),
         onSearchValueChange = {
 
         },
