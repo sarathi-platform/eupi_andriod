@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.SMALL_GROUP_DIDI_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
@@ -64,8 +66,20 @@ interface SmallGroupDidiMappingDao {
     @Transaction
     suspend fun getAllMappingForUserByDate(userId: String): List<SmallGroupSubTabUiModel> {
 
-        val lastEntryDate = getLastEntryDateForUser(userId)
-        return getAllMappingForUserForUiByDate(userId, lastEntryDate)
+        return try {
+            val lastEntryDate = getLastEntryDateForUser(userId)
+            getAllMappingForUserForUiByDate(userId, lastEntryDate)
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                CoreAppDetails.getContext()!!,
+                "SmallGroupDidiMappingDao",
+                "getAllMappingForUserByDate exception: ${ex.message}",
+                ex,
+                true
+            )
+            emptyList()
+        }
+
 
     }
 
@@ -75,8 +89,19 @@ interface SmallGroupDidiMappingDao {
         smallGroupId: Int
     ): SmallGroupSubTabUiModel {
 
-        val lastEntryDate = getLastEntryDateForUser(userId)
-        return getAllMappingForUserForUiByDateAndSmallGroupId(userId, smallGroupId, lastEntryDate)
+        return try {
+            val lastEntryDate = getLastEntryDateForUser(userId)
+            getAllMappingForUserForUiByDateAndSmallGroupId(userId, smallGroupId, lastEntryDate)
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                CoreAppDetails.getContext()!!,
+                "SmallGroupDidiMappingDao",
+                "getAllMappingForUserByDateAndSmallGroupId exception: ${ex.message}",
+                ex,
+                true
+            )
+            SmallGroupSubTabUiModel.getEmptyModel()
+        }
 
     }
 
@@ -86,14 +111,24 @@ interface SmallGroupDidiMappingDao {
         smallGroupId: Int
     ): List<SmallGroupDidiMappingEntity> {
 
-        val lastEntryDate = getLastEntryDateForUser(userId)
-        return getAllMappingForSmallGroup(
-            userId = userId,
-            smallGroupId = smallGroupId,
-            lastEntryDate = lastEntryDate
-        )
+        return try {
+            val lastEntryDate = getLastEntryDateForUser(userId)
+            getAllMappingForSmallGroup(
+                userId = userId,
+                smallGroupId = smallGroupId,
+                lastEntryDate = lastEntryDate
+            )
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                CoreAppDetails.getContext()!!,
+                "SmallGroupDidiMappingDao",
+                "getAllLatestMappingForSmallGroup exception: ${ex.message}",
+                ex,
+                true
+            )
+            emptyList()
+        }
 
     }
-
 
 }

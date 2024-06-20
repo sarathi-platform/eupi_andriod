@@ -355,7 +355,7 @@ fun NavGraphBuilder.MatNavigation(
                 onNavigateBack = {
                     navController.popBackStack(
                         MATHomeScreens.GrantTaskScreen.route,
-                        inclusive = false
+                        inclusive = true
                     )
                 },
                 navController = navController, message = it.arguments?.getString(

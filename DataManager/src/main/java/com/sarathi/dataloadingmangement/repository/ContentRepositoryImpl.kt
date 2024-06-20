@@ -4,6 +4,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.checkStringNullOrEmpty
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
@@ -68,7 +69,7 @@ class ContentRepositoryImpl @Inject constructor(
                     contentRequests.add(
                         ContentRequest(
                             languageCode = DEFAULT_LANGUAGE_CODE,
-                            contentKey = key
+                            contentKey = key.split(".").firstOrNull() ?: BLANK_STRING
                         )
                     )
                 }

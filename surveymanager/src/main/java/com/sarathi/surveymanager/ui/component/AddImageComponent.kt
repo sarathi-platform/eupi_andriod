@@ -124,7 +124,7 @@ fun AddImageComponent(
                                 currentImageUri = getImageUri(
                                     context, "${fileNamePrefix}${
                                         System.currentTimeMillis()
-                                    }.jpg"
+                                    }.png"
                                 )
 
                                 cameraLauncher.launch(
