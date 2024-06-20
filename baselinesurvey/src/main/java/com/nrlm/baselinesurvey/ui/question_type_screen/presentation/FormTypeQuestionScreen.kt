@@ -53,6 +53,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nrlm.baselinesurvey.BANNER
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
 import com.nrlm.baselinesurvey.R
@@ -271,26 +272,32 @@ fun FormTypeQuestionScreen(
                         scope.launch {
                              contentVallue.value =    viewModel.getContentData(
                                 contentList,
-                                 "banner"
+                                 BANNER
                                  )
                             }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 20.dp)
-                                .background(
-                                    lightBlue, shape = RoundedCornerShape(6.dp)
+                        if (contentVallue?.value?.contentValue == BANNER) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 20.dp)
+                                    .background(
+                                        lightBlue, shape = RoundedCornerShape(6.dp)
+                                    )
+                                    .border(
+                                        border = ButtonDefaults.outlinedBorder,
+                                        shape = RoundedCornerShape(6.dp)
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = contentVallue?.value?.contentValue ?: "",
+                                    color = Color.Red,
+                                    modifier = Modifier
+                                        .padding(16.dp)
                                 )
-                                .border(
-                                    border = ButtonDefaults.outlinedBorder,
-                                    shape = RoundedCornerShape(6.dp)
-                                ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(text = contentVallue?.value?.contentValue?:"", color = Color.Red, modifier = Modifier
-                                .padding(16.dp))
-                            Spacer(modifier = Modifier.size(dimen_24_dp))
+                                Spacer(modifier = Modifier.size(dimen_24_dp))
+                            }
                         }
                         NestedLazyListForFormQuestions(
                             viewModel = viewModel,
