@@ -63,7 +63,8 @@ fun SurveyScreen(
     grantId: Int,
     grantType: String,
     sanctionedAmount: Int,
-    totalSubmittedAmount: Int
+    totalSubmittedAmount: Int,
+    onSettingClick: () -> Unit
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -253,7 +254,7 @@ fun SurveyScreen(
                 }
             }
         },
-        onSettingClick = {}
+        onSettingClick = onSettingClick
     )
 }
 

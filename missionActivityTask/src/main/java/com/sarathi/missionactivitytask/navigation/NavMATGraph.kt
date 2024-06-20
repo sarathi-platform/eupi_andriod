@@ -234,6 +234,7 @@ fun NavGraphBuilder.MatNavigation(
         ) {
             SurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
+                onSettingClick = onSettingIconClick,
                 taskId = it.arguments?.getInt(
                     ARG_TASK_ID
                 ) ?: 0,
