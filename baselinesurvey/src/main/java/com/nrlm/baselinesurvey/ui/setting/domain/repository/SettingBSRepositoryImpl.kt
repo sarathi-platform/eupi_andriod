@@ -32,7 +32,7 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
         )
         coreSharedPrefs.setImageBackupFileName(
             getDefaultImageBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefRepo.getMobileNumber() ?: BLANK_STRING
             )
         )
         coreSharedPrefs.setFileExported(false)

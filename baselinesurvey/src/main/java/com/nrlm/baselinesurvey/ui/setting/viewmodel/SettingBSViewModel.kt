@@ -171,7 +171,6 @@ class SettingBSViewModel @Inject constructor(
                 val zipFileName =
                     "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_${System.currentTimeMillis()}"
 
-                if (fileUriList.isNotEmpty()) {
                     val zipLogDbFileUri = compression.compressData(
                         BaselineCore.getAppContext(),
                         zipFileName,
@@ -188,7 +187,7 @@ class SettingBSViewModel @Inject constructor(
                                 file = it.toFile()))
                         }
                     }
-                }
+
 
                 BaselineLogger.d("SettingBSViewModel", " Share Dialog Open ${fileUriList.json()}" )
                 openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
