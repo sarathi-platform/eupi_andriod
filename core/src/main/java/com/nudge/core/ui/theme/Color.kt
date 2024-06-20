@@ -11,6 +11,8 @@ val textColorDark = Color(0xFF271914)
 val textColorDark80 = Color(0xCC271914)
 val textColorBlueLight = Color(0x80271914)
 val languageItemActiveBg = Color(0xFFF7F7F7)
+val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
+
 
 val greenLight = Color(0xFFF4FFFC)
 val green = Color(0xFF46989A)

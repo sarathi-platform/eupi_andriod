@@ -30,13 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.black1
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_100_dp
-import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 import com.sarathi.contentmodule.download_manager.FileType

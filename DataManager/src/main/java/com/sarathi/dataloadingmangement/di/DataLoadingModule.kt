@@ -22,11 +22,13 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
@@ -46,6 +48,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
@@ -80,6 +85,12 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -102,7 +113,8 @@ class DataLoadingModule {
     @Singleton
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
-            .fallbackToDestructiveMigration().build()
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
@@ -165,6 +177,16 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideUiConfigDao(db: NudgeGrantDatabase) = db.uiConfigDao()
+
+
+    @Provides
+    @Singleton
+    fun providesSubjectEntityDao(db: NudgeGrantDatabase) = db.subjectEntityDao()
+
+    @Provides
+    @Singleton
+    fun providesSmallGroupDidiMappingDao(db: NudgeGrantDatabase) = db.smallGroupDidiMappingDao()
+
 
     @Provides
     @Singleton
@@ -627,4 +649,76 @@ class DataLoadingModule {
 
         )
     }
+
+    @Provides
+    @Singleton
+    fun fetchDidiDetailsFromNetworkRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        dataLoadingApiService: DataLoadingApiService,
+        subjectEntityDao: SubjectEntityDao
+    ): FetchDidiDetailsFromNetworkRepository {
+        return FetchDidiDetailsFromNetworkRepositoryImpl(
+            coreSharedPrefs, dataLoadingApiService,
+            subjectEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsFromNetworkUseCase(
+        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository
+    ): FetchDidiDetailsFromNetworkUseCase {
+        return FetchDidiDetailsFromNetworkUseCase(fetchDidiDetailsFromNetworkRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupDetailsFromNetworkRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        dataLoadingApiService: DataLoadingApiService,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+    ): FetchSmallGroupDetailsFromNetworkRepository {
+        return FetchSmallGroupDetailsFromNetworkRepositoryImpl(
+            coreSharedPrefs,
+            dataLoadingApiService,
+            smallGroupDidiMappingDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupFromNetworkUseCase(
+        fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
+    ): FetchSmallGroupFromNetworkUseCase {
+        return FetchSmallGroupFromNetworkUseCase(fetchSmallGroupDetailsFromNetworkRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupAttendanceHistoryFromNetworkUseCase(
+        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository
+    ): FetchSmallGroupAttendanceHistoryFromNetworkUseCase {
+        return FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
+            fetchSmallGroupAttendanceHistoryFromNetworkRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupAttendanceHistoryFromNetworkRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        dataLoadingApiService: DataLoadingApiService,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): FetchSmallGroupAttendanceHistoryFromNetworkRepository {
+        return FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            dataLoadingApiService = dataLoadingApiService,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
+        )
+    }
+
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -20,15 +21,22 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
         const val PREF_MOBILE_NO_NAME = "mobileNo"
         const val PREF_USER_TYPE = "userType"
-        const val PREF_KEY_LANGUAGE_CODE = "language_code"
-        const val PREF_STATE_ID = "stateId"
-        const val PREF_KEY_USER_NAME = "key_user_name"
+
         const val PREF_KEY_NAME = "key_name"
         const val PREF_KEY_EMAIL = "key_email"
         const val PREF_KEY_IDENTITY_NUMBER = "key_identity_number"
         const val PREF_KEY_PROFILE_IMAGE = "profile_image"
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
+        const val PREF_STATE_ID = "stateId"
+
+        const val PREF_KEY_USER_NAME = "key_user_name"
+
+        //        const val PREF_USER_TYPE = "pref_user_type"
+        const val PREF_MOBILE_NUMBER = "pref_mobile_number"
+        const val PREF_KEY_LANGUAGE_CODE = "language_code"
+        const val PREF_KEY_LANGUAGE_ID = "language_id"
+
         const val PREF_CASTE_LIST = "caste_list"
         const val PREF_KEY_USER_ID = "user_id"
         const val PREF_KEY_DATA_LOADED = "is_data_loaded"
@@ -125,6 +133,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
             ?: BLANK_STRING
     }
 
+    override fun saveUserId(userId: String) {
+        prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
+    }
+
     override fun setUserId(userId: String) {
         prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
     }
@@ -137,12 +149,25 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return getPref(PREF_KEY_DATA_LOADED, false)
     }
 
+    override fun getSelectedLanguageCode(): String {
+        return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
+            ?: DEFAULT_LANGUAGE_CODE
+    }
+
+    override fun getSelectedLanguageId(): Int {
+        return prefs.getInt(PREF_KEY_LANGUAGE_ID, DEFAULT_LANGUAGE_ID) ?: 2
+    }
+
     fun setUserName(userName: String) {
         savePref(PREF_KEY_USER_NAME, userName)
     }
 
     fun getUserName(): String {
         return getPref(PREF_KEY_USER_NAME, BLANK_STRING)
+    }
+
+    override fun getUserNameInInt(): Int {
+        return getPref(PREF_KEY_USER_NAME, BLANK_STRING).toInt()
     }
 
     fun setUserEmail(email: String) {
@@ -181,6 +206,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         prefs.edit().putBoolean(key, value).apply()
     }
 
+    override fun savePref(key: String, value: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override fun savePref(key: String, value: Float) {
+        TODO("Not yet implemented")
+    }
+
     override fun getPref(key: String, defaultValue: Int): Int {
         return prefs.getInt(key, defaultValue)
     }
@@ -191,6 +224,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun getPref(key: String, defaultValue: Boolean): Boolean {
         return prefs.getBoolean(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Long): Long {
+        return prefs.getLong(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Float): Float {
+        return prefs.getFloat(key, defaultValue)
     }
 
 }

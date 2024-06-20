@@ -40,12 +40,14 @@ fun BottomNavigationBar(navController: NavHostController) {
             stringResource(R.string.mission),
             "home_screen",
             painterResource(R.drawable.ic_mission_icon)
-        )/*,
+        ),
+
+        //TODO temp code remove after MAT is merged.
         BottomNavItem(
-            stringResource(R.string.task),
-            "mission_screen",
-            painterResource(R.drawable.ic_bottom_task_icon)
-        )*/
+            stringResource(R.string.didi),
+            "didi_tab_screen",
+            painterResource(R.drawable.didi_icon)
+        )
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

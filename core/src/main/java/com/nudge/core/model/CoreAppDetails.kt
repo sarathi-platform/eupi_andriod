@@ -15,6 +15,8 @@ object CoreAppDetails {
         return mApplicationDetails
     }
 
+    fun getContext() = mApplicationDetails?.activity?.applicationContext
+
     data class ApplicationDetails(
         val packageName: String,
         val applicationID: String,

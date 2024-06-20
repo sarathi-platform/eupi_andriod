@@ -47,8 +47,10 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     GRANT_SAVE_RESPONSE_EVENT(30, topicName = "SAVE_RESPONSE_EVENT"),
     GRANT_DELETE_RESPONSE_EVENT(31, topicName = "SAVE_RESPONSE_EVENT"),
     UPDATE_FORM_DETAILS_EVENT(32, topicName = "GRANT_ACTIVITY_TOPIC"),
-    UPLOAD_DOCUMENT_EVENT(33, topicName = "DOCUMENT_TOPIC")
-
+    UPLOAD_DOCUMENT_EVENT(33, topicName = "DOCUMENT_TOPIC"),
+    SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC"),
+    DELETE_SUBJECT_ATTENDANCE_EVENT(35, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC")
+    ;
 }
 
 fun String.getTopicFromName(): String {

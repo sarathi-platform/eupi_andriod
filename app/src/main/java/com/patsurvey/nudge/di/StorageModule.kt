@@ -14,8 +14,8 @@ import dagger.hilt.components.SingletonComponent
 abstract class StorageModule {
     @Binds
     abstract fun providesPreferences(
-        sharedPref:SharedPrefs
-    ):PrefRepo
+        sharedPref: SharedPrefs
+    ): PrefRepo
 
     @Binds
     abstract fun providesCoreSharedPreferences(

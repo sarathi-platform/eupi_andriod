@@ -6,10 +6,15 @@ import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
+import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
+import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
+import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
+import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
@@ -53,4 +58,15 @@ interface DataLoadingApiService {
         @Query("surveyId") surveyId: Int,
         @Query("formType") formType: String
     ): ApiResponseModel<List<FormDetailResponseModel>>
+
+    @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
+    suspend fun getSmallGroupBeneficiaryMapping(@Body smallGroupApiRequest: SmallGroupApiRequest): ApiResponseModel<List<SmallGroupMappingResponseModel>>
+
+    @GET(SUBPATH_GET_DIDI_LIST)
+    suspend fun getDidisFromNetwork(@Query("userId") userId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
+    @POST(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK)
+    suspend fun getAttendanceHistoryFromNetwork(@Body attendanceHistoryRequest: AttendanceHistoryRequest): ApiResponseModel<List<AttendanceHistoryResponse>>
+
+
 }

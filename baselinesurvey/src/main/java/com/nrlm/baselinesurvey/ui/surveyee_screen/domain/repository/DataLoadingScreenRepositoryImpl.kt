@@ -410,8 +410,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
-        BaselineLogger.d("User Details        ","Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
-        BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
+        BaselineLogger.d(
+            "User Details        ",
+            "Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)}"
+        )
+        BaselineLogger.d("User Details        ", "User Email: ${userDetailsResponse.email}")
         prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
         prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")

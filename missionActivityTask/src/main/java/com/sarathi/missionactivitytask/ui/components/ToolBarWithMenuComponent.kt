@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -106,7 +107,8 @@ fun ToolBarWithMenuComponent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 75.dp)
+                .padding(top = 75.dp),
+            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
             if (dataAvailableState.value) {
                 Column(

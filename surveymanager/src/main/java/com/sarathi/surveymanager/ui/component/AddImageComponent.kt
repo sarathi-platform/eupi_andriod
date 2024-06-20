@@ -50,6 +50,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_24_dp

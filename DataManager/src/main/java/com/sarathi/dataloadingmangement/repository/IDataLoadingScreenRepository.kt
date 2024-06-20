@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 
 
 interface IDataLoadingScreenRepository {
@@ -34,5 +35,9 @@ interface IDataLoadingScreenRepository {
     suspend fun deleteContentFromDB()
     suspend fun getContentData(): List<Content>
     suspend fun saveProgrammeToDb(programme: ProgrameResponse)
+
+    suspend fun getUserDetailsFromNetwork(languageId: String): ApiResponseModel<UserDetailsResponse>
+
+    fun saveUserDetails(userDetails: UserDetailsResponse)
 
 }

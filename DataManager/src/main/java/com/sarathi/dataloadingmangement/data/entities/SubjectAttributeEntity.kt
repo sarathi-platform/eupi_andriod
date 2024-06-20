@@ -32,10 +32,13 @@ data class SubjectAttributeEntity(
             userId: String?,
             subjectId: Int,
             subjectType: String,
-            attribute: String,
+            attribute: String = BLANK_STRING,
             missionId: Int,
             activityId: Int,
-            taskId: Int
+            date: String = System.currentTimeMillis().toString(),
+            taskId: Int,
+            tagId: Int = 0,
+            tagType: String = BLANK_STRING
         ): SubjectAttributeEntity {
 
             return SubjectAttributeEntity(
@@ -43,13 +46,13 @@ data class SubjectAttributeEntity(
                 userId = userId,
                 subjectId = subjectId,
                 subjectType = subjectType,
-                attribute = "",
+                attribute = attribute,
                 activityId = activityId,
                 missionId = missionId,
                 taskId = taskId,
-                tagId = 0,
-                tagType = "",
-                date = System.currentTimeMillis().toString()
+                tagId = tagId,
+                tagType = tagType,
+                date = date
             )
         }
     }
