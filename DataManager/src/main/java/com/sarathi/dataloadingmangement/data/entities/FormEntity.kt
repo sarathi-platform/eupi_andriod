@@ -10,6 +10,7 @@ import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.toDate
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.FORM_TABLE_NAME
+import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
 import java.util.Date
 
 @Entity(tableName = FORM_TABLE_NAME)
@@ -61,6 +62,26 @@ data class FormEntity(
             )
         }
 
+        fun getFormEntity(
+            userId: String,
+            formDetailResponse: FormDetailResponseModel
+        ): FormEntity {
+            return FormEntity(
+                id = 0,
+                taskid = formDetailResponse.taskId,
+                subjectid = formDetailResponse.subjectId,
+                subjectType = formDetailResponse.subjectType,
+                formType = formDetailResponse.formType,
+                surveyId = formDetailResponse.surveyId,
+                userId = userId,
+                missionId = 1,
+                activityId = formDetailResponse.activityId,
+                formGenerateDate = formDetailResponse.generatedDate,
+                isFormGenerated = formDetailResponse.formGenerated,
+                localReferenceId = formDetailResponse.localReferenceId,
+                createdDate = System.currentTimeMillis().toDate()
+            )
+        }
     }
 
 
