@@ -63,6 +63,7 @@ fun DidiTabScreen(
         onSearchValueChange = {
 
         },
+        onRetry = {},
         onBottomUI = {
             /**
              *Not required as no bottom UI present for this screen

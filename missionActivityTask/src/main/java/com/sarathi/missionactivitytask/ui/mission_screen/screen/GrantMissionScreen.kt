@@ -75,7 +75,7 @@ fun GrantMissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.missionList.value.isEmpty(),
+        isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.missionList.value.isNotEmpty(),
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },

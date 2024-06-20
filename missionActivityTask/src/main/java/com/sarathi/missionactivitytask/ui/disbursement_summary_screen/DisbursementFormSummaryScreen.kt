@@ -108,6 +108,7 @@ fun DisbursementFormSummaryScreen(
         modifier = Modifier,
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
+        isDataAvailable = true,
         onRetry = {},
         onBottomUI = {
             Box(

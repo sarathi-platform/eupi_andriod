@@ -10,7 +10,7 @@ const val SUBPATH_GET_DIDI_LIST = "didi-service/upcm/view"
 
 const val SUBPATH_CONFIG_GET_LANGUAGE = "/read-api/config/language/get"
 const val SUBPATH_USER_VIEW = "/read-api/user/view"
-const val SUBPATH_SURVEY_ANSWERS = "/survey-service/getSurveyAnswers"
+const val SUBPATH_SURVEY_ANSWERS = "/survey-service/v1/getSurveyAnswers"
 const val SUBPATH_GET_FORM_DETAILS = "/didi-service/form/getFormDetails"
 
 

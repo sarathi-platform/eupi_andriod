@@ -70,6 +70,7 @@ fun GrantTaskScreen(
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
+        isDataAvailable = true,
         isSearch = true,
         onSearchValueChange = { queryTerm ->
 

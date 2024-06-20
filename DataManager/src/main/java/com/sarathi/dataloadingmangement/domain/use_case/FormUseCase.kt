@@ -53,7 +53,7 @@ class FormUseCase @Inject constructor(
                     FormDetailRequest(
                         activityId = config.activityId,
                         surveyId = config.surveyId,
-                        formType = "FORM_E"
+                        formType = "Form_E"
                     )
                 )
             }
