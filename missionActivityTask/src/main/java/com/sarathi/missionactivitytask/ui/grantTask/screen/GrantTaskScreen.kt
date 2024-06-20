@@ -74,6 +74,7 @@ fun GrantTaskScreen(
         onSearchValueChange = { queryTerm ->
 
         },
+        onRetry = {},
         onBottomUI = {
             BottomAppBar(
                 backgroundColor = white
