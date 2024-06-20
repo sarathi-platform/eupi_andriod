@@ -2,7 +2,6 @@ package com.nudge.core.model
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 
 object CoreAppDetails {
     @SuppressLint("StaticFieldLeak")
@@ -16,9 +15,7 @@ object CoreAppDetails {
         return mApplicationDetails
     }
 
-    fun getContext(): Context? {
-        return mApplicationDetails?.activity?.applicationContext
-    }
+    fun getContext() = mApplicationDetails?.activity?.applicationContext
 
     data class ApplicationDetails(
         val packageName: String,

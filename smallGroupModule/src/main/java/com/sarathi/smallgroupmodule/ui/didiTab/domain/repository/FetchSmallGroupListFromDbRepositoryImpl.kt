@@ -15,6 +15,5 @@ class FetchSmallGroupListFromDbRepositoryImpl @Inject constructor(
     }
 
     override fun getUniqueUserId() = coreSharedPrefs.getUniqueUserIdentifier()
-    /*"Ultra Poor change maker (UPCM)_6789543210"*/
 
 }

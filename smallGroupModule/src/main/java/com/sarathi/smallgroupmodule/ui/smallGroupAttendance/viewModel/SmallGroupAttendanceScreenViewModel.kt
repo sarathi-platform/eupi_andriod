@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.enums.EventType
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.state.DialogState
@@ -40,7 +41,7 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     val subjectList: State<List<SubjectEntity>> get() = _subjectList
 
     val selectedDate =
-        mutableStateOf(System.currentTimeMillis())
+        mutableStateOf(getCurrentTimeInMillis())
 
     private val _smallGroupAttendanceEntityState: MutableState<MutableList<SmallGroupAttendanceEntityState>> =
         mutableStateOf(
@@ -264,7 +265,7 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
 
 
     fun dateValidator(selectedDate: Long): Boolean {
-        return selectedDate < System.currentTimeMillis()
+        return selectedDate < getCurrentTimeInMillis()
                 && !markedDatesList.contains(selectedDate)
     }
 

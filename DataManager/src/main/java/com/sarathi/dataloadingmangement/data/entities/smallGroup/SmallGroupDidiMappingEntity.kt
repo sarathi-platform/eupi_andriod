@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.data.entities.smallGroup
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nudge.core.getCurrentTimeInMillis
 import com.sarathi.dataloadingmangement.SMALL_GROUP_DIDI_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 
@@ -45,7 +46,7 @@ data class SmallGroupDidiMappingEntity(
                 smallGroupId = smallGroupId,
                 smallGroupName = smallGroupName,
                 didiId = didiId,
-                date = System.currentTimeMillis(),
+                date = getCurrentTimeInMillis(),
                 status = status
             )
 

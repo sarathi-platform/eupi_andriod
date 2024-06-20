@@ -21,6 +21,7 @@ import com.nudge.core.enums.PayloadType
 import com.nudge.core.enums.SubjectType
 import com.nudge.core.eventswriter.EventWriterFactory
 import com.nudge.core.eventswriter.IEventFormatter
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
@@ -71,7 +72,7 @@ class EventWriterHelperImpl @Inject constructor(
                     mobile_number = coreSharedPrefs.getMobileNo() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
                     status = EventSyncStatus.OPEN.name,
-                    modified_date = System.currentTimeMillis().toDate(),
+                    modified_date = getCurrentTimeInMillis().toDate(),
                     result = null,
                     consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
@@ -183,7 +184,7 @@ class EventWriterHelperImpl @Inject constructor(
 
 
         val saveAttendanceEventDto = SaveAttendanceEventDto(
-            dateCreated = System.currentTimeMillis(),
+            dateCreated = getCurrentTimeInMillis(),
             languageId = coreSharedPrefs.getSelectedLanguageId(),
             subjectId = subjectEntity.subjectId.value(),
             subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
@@ -215,7 +216,7 @@ class EventWriterHelperImpl @Inject constructor(
 
 
         val saveAttendanceEventDto = SaveAttendanceEventDto(
-            dateCreated = System.currentTimeMillis(),
+            dateCreated = getCurrentTimeInMillis(),
             languageId = coreSharedPrefs.getSelectedLanguageId(),
             subjectId = subjectEntity.subjectId.value(),
             subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
