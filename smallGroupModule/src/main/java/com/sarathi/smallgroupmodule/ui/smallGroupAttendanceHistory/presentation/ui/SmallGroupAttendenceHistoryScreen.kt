@@ -81,6 +81,7 @@ import com.sarathi.missionactivitytask.ui.components.rememberCustomDateRangePick
 import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerBottomSheetProperties
 import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerProperties
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.PERCENTAGE_SIGN
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
 import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceEditScreen
@@ -510,10 +511,11 @@ fun AttendanceSummaryCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(
+                    text =
+                    stringResource(
                         R.string.attendance_percentage_text,
                         attendancePercentage.value
-                    ),
+                    ) + PERCENTAGE_SIGN,
                     style = defaultTextStyle,
                     color = green,
                     modifier = Modifier

@@ -16,7 +16,6 @@ class FormUseCase @Inject constructor(
     private val downloaderManager: DownloaderManager
 ) {
     private suspend fun getFormDetailFromApi(formDetailRequest: FormDetailRequest): Boolean {
-        val formEntities = mutableListOf<FormEntity>()
         val apiResponse = repository.getFromDetailFromNetwork(
             activityId = formDetailRequest.activityId,
             surveyId = formDetailRequest.surveyId,
@@ -27,6 +26,7 @@ class FormUseCase @Inject constructor(
                 true
             )
         ) {
+            val formEntities = mutableListOf<FormEntity>()
             apiResponse.data?.let { formDetail ->
                 formDetail.forEach { form ->
                     formEntities.add(

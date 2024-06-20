@@ -16,11 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import com.nudge.core.ui.theme.largeTextStyle
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.media.getActivity
@@ -79,12 +79,12 @@ fun MediaToolbarComponent(
                 )
             }
 
-            IconButton(
-                onClick = { onDownloadClick() },
-                modifier = Modifier
-            ) {
-                Icon(painterResource(id = R.drawable.baseline_download_for_offline_24), contentDescription = "Download Button")
-            }
+//            IconButton(
+//                onClick = { onDownloadClick() },
+//                modifier = Modifier
+//            ) {
+//                Icon(painterResource(id = R.drawable.baseline_download_for_offline_24), contentDescription = "Download Button")
+//            }
         }
     }
 }
