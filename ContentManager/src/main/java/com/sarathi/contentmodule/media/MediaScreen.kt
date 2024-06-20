@@ -74,7 +74,9 @@ fun MediaScreen(
                     MediaToolbarComponent(
                         title = contentTitle,
                         modifier = Modifier,
-                        onDownloadClick = {},
+                        onDownloadClick = {
+
+                        },
                         onBackIconClick = {
                             if (activity != null) {
                                 activity.requestedOrientation =

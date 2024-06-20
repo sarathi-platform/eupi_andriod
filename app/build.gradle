@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.22"
+def version = "2.0.25"
 def prodVersion = "2.0.22"
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 26
+        versionCode 29
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
