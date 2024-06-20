@@ -30,12 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -75,6 +77,7 @@ fun GrantTaskCard(
     status: GrantTaskCardModel?,
     imagePath: Uri?,
     modifier: Modifier = Modifier,
+    isActivityCompleted: Boolean,
     isHamletIcon: Boolean = false,
     formGeneratedCount: GrantTaskCardModel?,
     onNotAvailable: () -> Unit,
@@ -201,7 +204,8 @@ fun GrantTaskCard(
                         onNotAvailable,
                         primaryButtonText?.value ?: BLANK_STRING,
                         onPrimaryButtonClick,
-                        title?.value ?: BLANK_STRING
+                        title?.value ?: BLANK_STRING,
+                        isActivityCompleted
                     )
                 }
             } else {
@@ -249,7 +253,8 @@ fun GrantTaskCard(
                             onNotAvailable,
                             primaryButtonText = stringResource(R.string.continue_text),
                             onPrimaryButtonClick,
-                            title?.value ?: BLANK_STRING
+                            title?.value ?: BLANK_STRING,
+                            isActivityCompleted
                         )
                     }
                 }
@@ -307,15 +312,25 @@ private fun PrimarySecondaryButtonView(
     onNotAvailable: () -> Unit,
     primaryButtonText: String,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
-    title: String
+    title: String,
+    isActivityCompleted: Boolean
+
 ) {
+    val context = LocalContext.current
     if (secondaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = secondaryButtonText,
             isIcon = false,
             onClick = {
+                if (!isActivityCompleted) {
                 taskMarkedNotAvailable.value = true
                 onNotAvailable()
+                } else {
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.activity_completed_unable_to_edit)
+                    )
+                }
             },
             color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
                 containerColor = blueDark,
