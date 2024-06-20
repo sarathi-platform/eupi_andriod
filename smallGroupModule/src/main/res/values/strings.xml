@@ -7,7 +7,7 @@
     <string name="date_range_picker_label_text">From - To</string>
     <string name="attendance_history_header_text">"Attendance History: "</string>
     <string name="total_didis_label_text">Total Didis - %1$s</string>
-    <string name="attendance_percentage_text">Attendance - %1$s%</string>
+    <string name="attendance_percentage_text">Attendance - %1$s</string>
     <string name="total_count_text">Total - %1$s/%2$s</string>
     <string name="edit_button_text">Edit</string>
     <string name="delete_button_text">Delete</string>
