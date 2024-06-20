@@ -48,11 +48,14 @@ fun GrantMissionScreen(
     val pullRefreshState = rememberPullRefreshState(
         viewModel.loaderState.value.isLoaderVisible,
         {
-            viewModel.refreshData()
             if (isOnline(context)) {
                 viewModel.refreshData()
             } else {
-                Toast.makeText(context, "retry fail", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again),
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
         })
@@ -77,6 +80,9 @@ fun GrantMissionScreen(
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
         onBottomUI = {
+        },
+        onRetry = {
+            viewModel.refreshData()
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (isSearch) {
