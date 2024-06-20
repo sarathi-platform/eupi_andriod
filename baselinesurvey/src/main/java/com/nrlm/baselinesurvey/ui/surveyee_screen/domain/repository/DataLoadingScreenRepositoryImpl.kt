@@ -69,12 +69,14 @@ import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.toDate
+import com.nudge.core.updateCoreEventFileName
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -420,6 +422,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
         prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
         prefRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        updateCoreEventFileName(
+            context = BaselineCore.getAppContext(),
+            mobileNo = prefRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+        )
     }
 
     override fun getUserId(): Int {

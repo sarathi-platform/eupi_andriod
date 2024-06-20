@@ -24,8 +24,8 @@ import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
-import com.nudge.core.utils.FileUtils
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -656,4 +656,19 @@ fun copyUriToAnotherLocation(
  fun getFirstName(name: String): String {
     return name.trim().split(" ").first()
 
+}
+
+fun updateCoreEventFileName(context: Context,mobileNo: String){
+    val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
+    coreSharedPrefs.setBackupFileName(
+        getDefaultBackUpFileName(
+            mobileNo
+        )
+    )
+    coreSharedPrefs.setImageBackupFileName(
+        getDefaultImageBackUpFileName(
+            mobileNo
+        )
+    )
+    coreSharedPrefs.setFileExported(false)
 }
