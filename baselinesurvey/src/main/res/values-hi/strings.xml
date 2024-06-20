@@ -418,7 +418,7 @@
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
     <string name="voter_card_title_assam">Do you have voter card?</string>
     <string name="not_able_to_load">Not  able to load data please try again..</string>
-    <string name="designation_comparision_and_label">Designation</string>
+    <string name="designation_comparision_and_label">प्रभाव प्रकार</string>
     <string name="didi_info">Didi Info</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
@@ -442,13 +442,13 @@
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Activity Completed - "</string>
-    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="purpose_comparision">आपकी खेती का उद्देश्य क्या है?</string>
     <string name="net_income_label">प्रति वर्ष शुद्ध आय: ₹</string>
     <string name="net_income_comparision">घरेलू आय</string>
-    <string name="hours">Hours</string>
-    <string name="years">Years</string>
-    <string name="minute">Minute</string>
-    <string name="month">Month</string>
+    <string name="hours">घंटे</string>
+    <string name="years">साल</string>
+    <string name="minute">मिनट</string>
+    <string name="month">महीना</string>
     <string name="data_fetching_and_processing">डेटा लाने और संसाधित करने…</string>
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="import_restart_dialog_message">फ़ाइल से डेटा आयात करने के बाद ऐप को पुनरारंभ करना होगा और वर्तमान डेटा खो जाएगा।</string>
