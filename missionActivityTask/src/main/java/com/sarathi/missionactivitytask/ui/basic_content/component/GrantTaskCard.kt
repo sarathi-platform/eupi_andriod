@@ -167,14 +167,8 @@ fun GrantTaskCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (subtitle2?.value?.isNotBlank() == true) {
-                    Text(
-                        text = subtitle2.value,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimen_5_dp),
-                        color = blueDark,
-                        style = newMediumTextStyle
-                    )
+
+                    SubContainerView(subtitle2)
                 }
             }
             Column(
