@@ -8,7 +8,7 @@ import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import javax.inject.Inject
 
 class FetchMissionDataUseCase @Inject constructor(
-    private val repository: IMissionRepository
+    private val repository: IMissionRepository,
 ) {
     suspend fun invoke(): Boolean {
         try {
