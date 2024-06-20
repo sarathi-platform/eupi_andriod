@@ -73,6 +73,7 @@ import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
@@ -381,7 +382,7 @@ fun FormMainSummaryCard(
             ) {
 
                 Text(
-                    "CSG Disburesed", style = quesOptionTextStyle
+                    stringResource(R.string.csg_disbursed), style = quesOptionTextStyle
                 )
                 Text(
                     " ${formDisburesmentMap.value.sumOf { it.amount.toInt() }}",

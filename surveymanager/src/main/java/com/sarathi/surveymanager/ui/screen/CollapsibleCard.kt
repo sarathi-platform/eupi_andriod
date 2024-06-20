@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -38,8 +39,9 @@ import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.R
 
 @SuppressLint("UnrememberedMutableState")
@@ -82,14 +84,15 @@ fun CollapsibleCard(
                         onClick()
                     }
                     .fillMaxWidth()
-                    .background(blueDark)
+                    .background(if (isEditable) blueDark else languageItemActiveBg)
                     .padding(dimen_10_dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
                 Text(
-                    text = title, style = defaultTextStyle.copy(color = white)
+                    text = title,
+                    style = defaultTextStyle.copy(color = if (isEditable) white else greyColor)
                 )
             }
             if (summaryCount > 0) {
