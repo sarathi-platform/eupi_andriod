@@ -210,7 +210,6 @@ fun SmallGroupAttendanceHistoryScreen(
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
-            isDataAvailable = true,
             onRetry = {},
             onBottomUI = {
                 BottomAppBar(

@@ -117,7 +117,6 @@ fun SmallGroupAttendanceEditScreen(
         onBackIconClick = { navHostController.popBackStack() },
         onSearchValueChange = {},
         isSearch = true,
-        isDataAvailable = true,
         onRetry = {},
         onBottomUI = {
             BottomAppBar(

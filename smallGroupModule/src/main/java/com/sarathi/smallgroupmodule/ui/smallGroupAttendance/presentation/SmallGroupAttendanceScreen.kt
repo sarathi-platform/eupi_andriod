@@ -159,7 +159,6 @@ fun SmallGroupAttendanceScreen(
         onBackIconClick = { navHostController.navigateUp() },
         onSearchValueChange = {},
         isSearch = true,
-        isDataAvailable = true,
         onRetry = {},
         onBottomUI = {
             BottomAppBar(
