@@ -275,7 +275,7 @@ fun FormTypeQuestionScreen(
                                  BANNER
                                  )
                             }
-                        if (contentVallue?.value?.contentValue == BANNER) {
+                        if (contentVallue?.value?.contentType == BANNER) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
