@@ -31,6 +31,7 @@ import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -928,4 +929,19 @@ fun saveFileToDownload(sourceUri: Uri, mimeType: String, context: Context) {
 
 fun getCurrentTimeInMillis(): Long {
     return System.currentTimeMillis()
+}
+
+fun updateCoreEventFileName(context: Context,mobileNo: String){
+    val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
+    coreSharedPrefs.setBackupFileName(
+        getDefaultBackUpFileName(
+            mobileNo
+        )
+    )
+    coreSharedPrefs.setImageBackupFileName(
+        getDefaultImageBackUpFileName(
+            mobileNo
+        )
+    )
+    coreSharedPrefs.setFileExported(false)
 }

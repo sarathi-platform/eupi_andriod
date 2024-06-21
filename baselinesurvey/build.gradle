@@ -7,7 +7,7 @@ plugins {
     id 'kotlin-kapt'
 }
 
-def version = "2.0.17"
+def version = "2.0.24"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -15,7 +15,7 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 33
-        versionCode 21
+        versionCode 28
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -106,6 +106,10 @@ android {
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
+}
+
+configurations {
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
 }
 
 dependencies {
