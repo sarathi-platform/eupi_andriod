@@ -430,7 +430,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         prefBSRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
         updateCoreEventFileName(
             context = BaselineCore.getAppContext(),
-            mobileNo = prefRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+            mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
         )
     }
 

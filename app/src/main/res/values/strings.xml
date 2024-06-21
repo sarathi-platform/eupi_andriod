@@ -529,8 +529,8 @@
     </plurals>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
     <string name="change_language">Change Language</string>
-    <string name="sync_data" translatable="false">Data</string>
-    <string name="sync_images" translatable="false">Images</string>
+    <string name="sync_data">Data</string>
+    <string name="sync_images">Images</string>
     <string name="sync_all_data" translatable="false">Sync All Data</string>
     <string name="sync_data_history" translatable="false">Sync Data History</string>
     <string name="sync_image_history" translatable="false">Sync Image History</string>

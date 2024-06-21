@@ -399,6 +399,8 @@
     <string name="this_language_is_not_available_for_selection">এই ভাষা নিৰ্বাচনৰ বাবে উপলব্ধ নহয়</string>
     <string name="change_language">ভাষা সলনি কৰক</string>
     <string name="no_history_available_right_now">বৰ্তমান কোনো ইতিহাস উপলব্ধ নহয়</string>
+    <string name="sync_data">তথ্য</string>
+    <string name="sync_images">চিত্ৰ</string>
 
 
 </resources>

@@ -400,6 +400,8 @@
     <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>
     <string name="change_language">भाषा बदलें</string>
     <string name="no_history_available_right_now">अभी कोई इतिहास उपलब्ध नहीं है</string>
+    <string name="sync_data">डेटा</string>
+    <string name="sync_images">इमेजिस</string>
 
 
 </resources>
