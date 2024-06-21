@@ -17,17 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.nrlm.baselinesurvey.ui.theme.dimen_0_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
-import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
-import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.activities.ui.theme.syncItemCountStyle
-import com.patsurvey.nudge.activities.ui.theme.syncProgressBg
 
 @Composable
 fun EventTypeHistoryCard(
@@ -45,9 +42,9 @@ fun EventTypeHistoryCard(
         ConstraintLayout(
             modifier = Modifier
                 .background(Color.White)
-                .padding(8.dp)
+                .padding(dimen_8_dp)
                 .border(
-                    width = 0.dp,
+                    width = dimen_0_dp,
                     color = Color.Transparent,
                 )
         ) {
@@ -61,25 +58,25 @@ fun EventTypeHistoryCard(
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
                     }
-                    .padding(top = 5.dp, bottom = 5.dp)
+                    .padding(top = dimen_5_dp, bottom = dimen_5_dp)
             )
             LazyColumn(modifier = Modifier.fillMaxWidth().constrainAs(countText){
                 top.linkTo(titleText.bottom)
                 start.linkTo(parent.start)
             }) {
-                itemsIndexed(eventStatusList){ index, item ->
+                itemsIndexed(eventStatusList){ _, item ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "${item.first}",
+                            text = item.first,
                             color = textColorDark,
                             style = smallerTextStyle,
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(5.dp)
+                                .padding(dimen_5_dp)
 
                         )
 
@@ -90,7 +87,7 @@ fun EventTypeHistoryCard(
                             textAlign = TextAlign.End,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(5.dp)
+                                .padding(dimen_5_dp)
 
                         )
                     }
