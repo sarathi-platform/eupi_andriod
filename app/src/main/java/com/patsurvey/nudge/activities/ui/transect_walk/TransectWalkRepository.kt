@@ -460,11 +460,10 @@ class TransectWalkRepository @Inject constructor(
         this.didiDao.deleteDidisForTola(tolaId, activeStatus, needsToPostDeleteStatus)
     }
 
-    fun updateTolaName(id: Int, newName: String) {
+    fun updateTolaNameAndLocation(id: Int, newName: String,tolaList: TolaEntity) {
         this.didiDao.updateTolaName(id, newName)
-        this.tolaDao.updateTolaName(id, newName)
+        this.tolaDao.updateTolaNameAndLocation(id, newName,tolaList.latitude.toString(),tolaList.longitude.toString())
     }
-
     fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int): VillageEntity {
         return this.villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
     }

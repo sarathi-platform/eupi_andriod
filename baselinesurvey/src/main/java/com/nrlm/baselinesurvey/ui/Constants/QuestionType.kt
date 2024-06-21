@@ -53,6 +53,7 @@ enum class QuestionType {
                 YrsMonthPicker.name -> YrsMonthPicker
                 Image.name -> Image
                 FormWithNone.name -> FormWithNone
+                AutoCalculation.name -> AutoCalculation
                 else -> {
                     null
                 }
@@ -66,5 +67,6 @@ enum class QuestionType {
      Options,
      Questions,
      Formula,
-     NoneMarked
+     NoneMarked,
+     Calculation
  }

@@ -13,6 +13,7 @@ const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
 const val POOR_STRING="Poor"
+const val BANNER="banner"
 const val MEDIUM_STRING="Medium"
 const val RICH_STRING="Rich"
 const val KEY_HEADER_AUTH = "authorization"
@@ -311,6 +312,7 @@ const val DELAY_2_SEC: Long = 2000
 const val VALUE_NO = "No"
 
 const val CONDITIONS_DELIMITER = ","
+const val AUTO_CALCULATE_CONDITION_DELIMITER = "-"
 const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
 
 const val ARG_FROM_SECTION_SCREEN = "from_section_screen"

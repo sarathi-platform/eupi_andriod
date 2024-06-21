@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +26,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -39,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -68,11 +73,13 @@ import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEve
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
+import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.h6Bold
+import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -83,7 +90,6 @@ import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.navigateToBaseLineStartScreen
 import com.nudge.navigationmanager.graphs.navigateToFormQuestionSummaryScreen
 import com.nudge.navigationmanager.graphs.navigateToFormTypeQuestionScreen
@@ -375,9 +381,36 @@ fun NestedLazyList(
                     ) { index, question ->
                         when (question?.questionEntity?.type) {
                             QuestionType.AutoCalculation.name -> {
-                                CalculationResultComponent(
 
-                                )
+
+                                Card(
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = defaultCardElevation
+                                    ),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = white
+                                    ),
+                                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(white)
+                                        .then(modifier)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(dimen_16_dp)
+                                            .background(Color.Transparent)
+                                    ) {
+                                        CalculationResultComponent(
+                                            title = question.questionEntity.questionDisplay,
+                                            showQuestion = question.optionItemEntityState.first(),
+                                            defaultValue = questionScreenViewModel.calculatedResult.value[question.questionId!!]
+                                                ?: BLANK_STRING
+                                        )
+                                    }
+                                }
+
                             }
 
                             QuestionType.RadioButton.name -> {
@@ -956,6 +989,7 @@ fun NestedLazyList(
                                                     if (selectedValue != BLANK_STRING) optionItem.copy(
                                                         selectedValue = selectedValue
                                                     ) else optionItem.copy(selectedValue = "0")
+
 
                                                 questionScreenViewModel.saveInputNumberOptionResponse(
                                                     questionId = question.questionId!!,
