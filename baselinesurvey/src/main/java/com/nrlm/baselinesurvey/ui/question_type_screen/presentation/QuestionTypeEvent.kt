@@ -72,6 +72,8 @@ sealed class QuestionTypeEvent {
 
     object UpdateCalculationTypeQuestionValue
 
+    object UpdateAutoCalculateTypeQuestionValue : QuestionTypeEvent()
+
     data class RemoveConditionalQuestionValuesForUnselectedOption(
         val questionConditionsDto: ConditionsDto
     )

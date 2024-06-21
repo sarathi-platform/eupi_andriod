@@ -45,6 +45,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
+import com.nrlm.baselinesurvey.AUTO_CALCULATE_CONDITION_DELIMITER
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.CONDITIONS_DELIMITER
 import com.nrlm.baselinesurvey.DELIMITER_TIME
@@ -1415,12 +1416,45 @@ fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
                     )
                 }
             }else{
-                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             }
             BaselineCore.startExternalApp(chooserIntent)
-        }catch (ex:Exception){
-            BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
+        } catch (ex: Exception) {
+            BaselineLogger.e("ExportImportViewModel", "openShareSheet :${ex.message}", ex)
         }
+    }
+
+}
+
+fun getAutoCalculationConditionConditions(value: String): Pair<Int, String>? {
+    try {
+        val s = value.split(AUTO_CALCULATE_CONDITION_DELIMITER)
+        if (s.isEmpty())
+            return null
+
+        if (s.size > 2)
+            return null
+
+        val questionId = s.first().toInt()
+
+        if (questionId.equals(0))
+            return null
+
+        val comparisonCondition = s.last()
+
+        if (comparisonCondition.trim().isEmpty())
+            return null
+
+        return Pair(questionId, comparisonCondition)
+
+    } catch (ex: Exception) {
+        BaselineLogger.e(
+            "Utils",
+            "getAutoCalculationConditionConditions -> exception: $ex",
+            ex,
+            true
+        )
+        return null
     }
 
 }
