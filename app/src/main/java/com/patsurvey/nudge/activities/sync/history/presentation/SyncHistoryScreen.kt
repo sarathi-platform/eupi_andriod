@@ -1,20 +1,16 @@
 package com.patsurvey.nudge.activities.sync.history.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
@@ -26,15 +22,11 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,6 +42,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,14 +55,13 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_56_dp
 import com.nrlm.baselinesurvey.ui.theme.searchFieldBg
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
-import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dateRangeFieldColor
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
-import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -147,7 +139,11 @@ fun SyncHistoryScreen(
                             }
                                 ?: BLANK_STRING
                             if(viewModel.startDate.value.isNotEmpty() && viewModel.endDate.value.isNotEmpty()){
-                                Log.d("TAG", "SyncHistoryScreen Vaoes: ")
+                                CoreLogger.d(
+                                    context = context,
+                                    "SyncHistoryScreen",
+                                    "Dates: Start Date: ${viewModel.startDate.value} :: End Date: ${viewModel.startDate.value}"
+                                )
                                 viewModel.getAllEventsBetweenDates(
                                     context = context,
                                     startDate = state.selectedStartDateMillis ?: System.currentTimeMillis(),
@@ -162,7 +158,7 @@ fun SyncHistoryScreen(
                             containerColor = blueDark
                         )
                     ) {
-                        Text(text = "Ok", color = white, style = smallTextStyleWithNormalWeight)
+                        Text(text = stringResource(id = R.string.ok_text), color = white, style = smallTextStyleWithNormalWeight)
                     }
                 }
 
@@ -209,10 +205,10 @@ fun SyncHistoryScreen(
                             focusedContainerColor = white,
                         ),
                         label = {
-                            Text(text = "Select Date", color = otpBorderColor)
+                            Text(text = stringResource(id = R.string.select_date), color = otpBorderColor)
                         },
                         placeholder = {
-                            Text(text = "Select Date", color = otpBorderColor)
+                            Text(text = stringResource(id = R.string.select_date), color = otpBorderColor)
                         },
                         trailingIcon = {
                             IconButton(onClick = {
@@ -222,7 +218,7 @@ fun SyncHistoryScreen(
                             }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.calendar),
-                                    contentDescription = "Start Date"
+                                    contentDescription = stringResource(id = R.string.select_date)
                                 )
                             }
 
@@ -231,48 +227,56 @@ fun SyncHistoryScreen(
                     )
                 }
 
-                if(viewModel.countList.value.isNotEmpty()) {
-                    EventTypeHistoryCard(
-                        eventDateTime = if(viewModel.isDateSelected.value) "${viewModel.startDate.value} - ${viewModel.endDate.value}" else BLANK_STRING,
-                        eventStatusList = viewModel.countList.value,
-                        onCardClick = {}
-                    )
-                }else {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                            modifier = Modifier
-                                .padding(vertical = (screenHeight / 4))
-                                .align(
-                                    Alignment.TopCenter
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            androidx.compose.material.Text(
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            fontFamily = NotoSans
-                                        )
-                                    ) {
-                                        append(
-                                            "No History Available Right Now"
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.padding(top = 32.dp)
-                            )
-                        }
-                    }
-
-                }
+                CreateEventUIList(viewModel, screenHeight)
             }
         }
 
     }
 
+}
+
+@Composable
+private fun CreateEventUIList(
+    viewModel: SyncHistoryViewModel,
+    screenHeight: Dp
+) {
+    if (viewModel.countList.value.isNotEmpty()) {
+        EventTypeHistoryCard(
+            eventDateTime = if (viewModel.isDateSelected.value) "${viewModel.startDate.value} - ${viewModel.endDate.value}" else BLANK_STRING,
+            eventStatusList = viewModel.countList.value,
+            onCardClick = {}
+        )
+    } else {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .padding(vertical = (screenHeight / 4))
+                    .align(
+                        Alignment.TopCenter
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                androidx.compose.material.Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = textColorDark,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = NotoSans
+                            )
+                        ) {
+                            append(
+                                stringResource(id = R.string.no_history_available_right_now)
+                            )
+                        }
+                    },
+                    modifier = Modifier.padding(top = 32.dp)
+                )
+            }
+        }
+
+    }
 }
 
 @Preview(showBackground = true)

@@ -64,6 +64,7 @@
     <string name="not_added">লোকেচন যোগ কৰা নাই</string>
     <string name="mark_as_completed">সম্পূৰ্ণ চিহ্ন</string>
     <string name="village_text">গাওঁ</string>
+    <string name="select_date">তাৰিখ নিৰ্ব্বাচন কৰক</string>
     <string name="vo_name">VOৰ নাম</string>
     <string name="total">মুঠ</string>
     <string name="participation_date_wealth_ranking">তাৰিখ</string>
@@ -397,6 +398,7 @@
     <string name="recover_old_data">পুৰণি তথ্য পুনৰুদ্ধাৰ কৰক</string>
     <string name="this_language_is_not_available_for_selection">এই ভাষা নিৰ্বাচনৰ বাবে উপলব্ধ নহয়</string>
     <string name="change_language">ভাষা সলনি কৰক</string>
+    <string name="no_history_available_right_now">বৰ্তমান কোনো ইতিহাস উপলব্ধ নহয়</string>
 
 
 </resources>

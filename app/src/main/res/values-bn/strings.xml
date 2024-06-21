@@ -64,6 +64,7 @@
     <string name="not_added">অবস্থান যোগ করা হয়নি</string>
     <string name="mark_as_completed">সম্পন্ন হিসাবে চিহ্নিত করুন</string>
     <string name="village_text">গ্রাম</string>
+    <string name="select_date">তারিখ নির্বাচন করুন</string>
     <string name="vo_name">গ্রাম সংগঠন (VO) নাম</string>
     <string name="total">মোট</string>
     <string name="participation_date_wealth_ranking">তারিখ</string>
@@ -396,6 +397,7 @@
     <string name="recover_old_data">পুরানো ডেটা পুনরুদ্ধার করুন</string>
     <string name="this_language_is_not_available_for_selection">এই ভাষা নির্বাচনের জন্য উপলব্ধ নয়</string>
     <string name="change_language">ভাষা পরিবর্তন করুন</string>
+    <string name="no_history_available_right_now">কোন ইতিহাস এই মুহূর্তে উপলব্ধ</string>
 
 
 </resources>

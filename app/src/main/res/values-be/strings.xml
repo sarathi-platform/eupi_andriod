@@ -55,6 +55,7 @@
     <string name="not_added">दाजाबदेरनाय जायाखै</string>
     <string name="mark_as_completed">फोजोबनायनि सिन</string>
     <string name="village_text">गामि</string>
+    <string name="select_date">Select Date</string>
     <string name="vo_name">VO नि मुं</string>
     <string name="total">गासै</string>
     <string name="participation_date_wealth_ranking">खालार</string>
@@ -386,5 +387,6 @@
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
     <string name="change_language">भाषा बदलें</string>
+    <string name="no_history_available_right_now">No History Available Right Now</string>
 
 </resources>

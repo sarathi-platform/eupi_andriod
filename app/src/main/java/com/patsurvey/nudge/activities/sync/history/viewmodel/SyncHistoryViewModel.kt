@@ -1,14 +1,11 @@
 package com.patsurvey.nudge.activities.sync.history.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.entities.EventStatusEntity
-import com.nudge.core.json
-import com.nudge.core.model.SettingOptionModel
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.domain.use_case.SyncHistoryUseCase
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -20,14 +17,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncHistoryViewModel @Inject constructor(
-        val syncHistoryUseCase: SyncHistoryUseCase
+        private val syncHistoryUseCase: SyncHistoryUseCase
 ):ViewModel() {
         val startDate = mutableStateOf(BLANK_STRING)
         val endDate = mutableStateOf(BLANK_STRING)
         val isDateSelected = mutableStateOf(false)
-        val _eventList = mutableStateOf<List<EventStatusEntity>>(emptyList())
+        private val _eventList = mutableStateOf<List<EventStatusEntity>>(emptyList())
         val eventList: State<List<EventStatusEntity>> get() = _eventList
-        val _countList = mutableStateOf<List<Pair<String,Int>>>(emptyList())
+        private val _countList = mutableStateOf<List<Pair<String,Int>>>(emptyList())
         val countList: State<List<Pair<String,Int>>> get() = _countList
 
 
@@ -38,7 +35,6 @@ class SyncHistoryViewModel @Inject constructor(
                                         startDate = startDate.toString(),
                                         endDate = endDate.toString()
                                 )
-                        Log.d("TAG", "getAllEventsBetweenDates: ${eventList.value.json()} ")
                         val tempList= arrayListOf<Pair<String,Int>>()
                         val successConsumerCount = eventList.value.filter { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }.size
                         if(successConsumerCount>1){
@@ -70,9 +66,6 @@ class SyncHistoryViewModel @Inject constructor(
                                 tempList.add(Pair(context.getString(R.string.producer_failed_event_count),failedProducerCount))
                         }
                         _countList.value=tempList
-                        Log.d("TAG", "getAllEventsBetweenDates: ${countList.value.json()} ")
-
-
 
                 }
         }
