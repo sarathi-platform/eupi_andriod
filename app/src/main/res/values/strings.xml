@@ -264,9 +264,17 @@
     <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
 
+    <plurals name="total_no_of_ultra_poor">
+        <item quantity="one">Total no. Ultra-Poor families endorsed by CLF:</item>
+        <item quantity="other">Total no. Ultra-Poor families endorsed by VO:</item>
+    </plurals>
+    <plurals name="final_list_of_user">
+        <item quantity="one">Final list of Ultra Poor families endorsed by CLF (Village Organization)</item>
+        <item quantity="other">Final list of Ultra Poor families endorsed by VO (Village Organization)</item>
+    </plurals>
     <plurals name="no_didis_availble_for_vo_endorsement">
-        <item quantity="one">No Didis available for VO Endorsement.</item>
-        <item quantity="other">No Didis available for CLF Endorsement.</item>
+        <item quantity="one">No Didis available for CLF Endorsement.</item>
+        <item quantity="other">No Didis available for VO Endorsement.</item>
     </plurals>
     <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
 
