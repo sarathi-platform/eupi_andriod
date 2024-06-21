@@ -2,7 +2,9 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -10,12 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
@@ -45,6 +47,9 @@ fun ActivityRowCard(
         }
         Spacer(modifier = Modifier.height(20.dp))
         LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimen_16_dp)
         ) {
             itemsIndexed(
                 items = activities

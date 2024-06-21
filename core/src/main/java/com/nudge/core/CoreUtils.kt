@@ -31,6 +31,7 @@ import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +44,7 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -922,4 +924,21 @@ fun saveFileToDownload(sourceUri: Uri, mimeType: String, context: Context) {
 
 fun getCurrentTimeInMillis(): Long {
     return System.currentTimeMillis()
+}
+
+fun formatToIndianRupee(amount: String): String {
+    try {
+        val formatter = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
+        val formattedAmount = formatter.format(amount.toInt())
+        return if (formattedAmount.contains(".00")) {
+            formattedAmount.replace(".00", BLANK_STRING)
+        } else {
+            formattedAmount
+        }
+    } catch (ex: Exception) {
+        CoreAppDetails.getContext()
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+        return amount
+    }
+
 }

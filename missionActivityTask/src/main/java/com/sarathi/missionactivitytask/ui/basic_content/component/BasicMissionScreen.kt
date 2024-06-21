@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +39,7 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
@@ -61,8 +60,7 @@ fun BasicMissionCard(
     prefixIcon: Int = R.drawable.ic_group_icon,
     onPrimaryClick: () -> Unit
 ) {
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = dimen_10_dp),
+    BasicCardView(
         modifier = Modifier
             .clickable {
                 onPrimaryClick()

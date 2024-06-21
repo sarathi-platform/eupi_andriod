@@ -87,7 +87,7 @@ fun SurveyScreen(
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     ToolBarWithMenuComponent(
-        title = "$subjectName (${subjectType})",
+        title = subjectName,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
@@ -156,6 +156,7 @@ fun SurveyScreen(
                         when (question.type) {
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
+                                    maxLength = 7,
                                     hintMessage = getSanctionedAmountMessage(
                                         question,
                                         sanctionedAmount = sanctionedAmount,

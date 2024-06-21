@@ -23,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -87,7 +88,8 @@ fun StepsBoxGrantComponent(
             .then(modifier)
     ) {
         val (step_no, stepBox, divider1, divider2) = createRefs()
-        Box(
+        BasicCardView(
+            colors = CardDefaults.cardColors(containerColor = if (isCompleted) greenLight else white),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(6.dp))
@@ -114,7 +116,6 @@ fun StepsBoxGrantComponent(
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
                 Icon(
-                    // val painter: Painter = painterResource(id = resId)
                     painter = painter,
                     contentDescription = null,
                     tint = if (isCompleted) stepIconCompleted else stepIconEnableColor,

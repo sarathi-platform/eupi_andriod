@@ -26,12 +26,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -46,36 +44,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
-import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.lightBg
+import com.nudge.core.ui.theme.quesOptionSpanStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.smallSpanStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
+import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
@@ -284,46 +285,47 @@ private fun MakeDisburesementRow(
             ) {
                 Text(
                     text = disbursementFormSummaryUiModel.subjectName,
-                    style = defaultTextStyle,
-                    color = brownDark
+                    style = defaultTextStyle.copy(blueDark),
                 )
                 Text(
                     text = disbursementFormSummaryUiModel.villageName,
-                    style = smallTextStyle,
-                    color = brownDark
+                    style = smallTextStyle.copy(blueDark),
                 )
             }
 
         }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimen_5_dp)
+        )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_6_dp)
-            ) {
-                Row(modifier = Modifier.weight(1.0f)) {
-                    Text("Mode:", style = quesOptionTextStyle)
-                    Text(
-                        modifier = Modifier.padding(horizontal = dimen_3_dp),
-                        text = disbursementFormSummaryUiModel.mode,
-                        style = smallTextStyle
-                    )
-                }
-                Spacer(modifier = Modifier.width(dimen_20_dp))
-                Row(modifier = Modifier.weight(1.0f)) {
-                    Text("Nature:", style = quesOptionTextStyle)
-                    Text(
-                        modifier = Modifier.padding(horizontal = dimen_3_dp),
-                        text = disbursementFormSummaryUiModel.nature,
-                        style = smallTextStyle
-                    )
-                }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(text = buildAnnotatedString {
+                    withStyle(quesOptionSpanStyle) {
+                        append("Mode: ")
+                    }
+                    withStyle(smallSpanStyle) {
+                        append(disbursementFormSummaryUiModel.mode)
+                    }
+                })
             }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(text = buildAnnotatedString {
+                    withStyle(quesOptionSpanStyle) {
+                        append("Nature: ")
+                    }
+                    withStyle(smallSpanStyle) {
+                        append(disbursementFormSummaryUiModel.nature)
+                    }
+                })
+            }
+
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text("Amount:", style = quesOptionTextStyle)
                 Text(
                     modifier = Modifier.padding(horizontal = dimen_3_dp),
-                    text = disbursementFormSummaryUiModel.amount,
+                    text = formatToIndianRupee(disbursementFormSummaryUiModel.amount),
                     style = smallTextStyle
                 )
             }
@@ -345,12 +347,9 @@ fun FormMainSummaryCard(
 ) {
 
 
-    Card(
+    BasicCardView(
         colors = CardDefaults.cardColors(
             containerColor = white
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimen_10_dp
         ),
         modifier = Modifier.padding(dimen_5_dp)
     ) {
@@ -385,10 +384,10 @@ fun FormMainSummaryCard(
                     stringResource(R.string.csg_disbursed), style = quesOptionTextStyle
                 )
                 Text(
-                    " ${formDisburesmentMap.value.sumOf { it.amount.toInt() }}",
+                    text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
+                        .toString()),
                     style = quesOptionTextStyle
                 )
-
 
             }
             Row(
@@ -461,8 +460,8 @@ fun HistorySummaryCard(
                         Divider(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            thickness = dimen_1_dp,
-                            color = blueDark
+                            thickness = 0.5.dp,
+                            color = borderGrey
                         )
                         Spacer(
                             modifier = Modifier

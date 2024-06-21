@@ -217,17 +217,20 @@ private fun TaskRowView(
                 }
             }
             viewModel.activityConfigUiModel?.let {
-                navigateToGrantSurveySummaryScreen(
-                    navController,
-                    taskId = task.key,
-                    surveyId = it.surveyId,
-                    sectionId = it.sectionId,
-                    subjectType = it.subject,
-                    subjectName = subjectName,
-                    activityConfigId = it.activityConfigId,
-                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                        ?: DEFAULT_ID,
-                )
+                if (subjectName.isNotBlank()) {
+                    navigateToGrantSurveySummaryScreen(
+                        navController,
+                        taskId = task.key,
+                        surveyId = it.surveyId,
+                        sectionId = it.sectionId,
+                        subjectType = it.subject,
+                        subjectName = subjectName,
+                        activityConfigId = it.activityConfigId,
+                        sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                            ?: DEFAULT_ID,
+                    )
+                }
+
             }
         },
         onNotAvailable = {

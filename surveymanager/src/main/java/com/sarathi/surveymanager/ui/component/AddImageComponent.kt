@@ -10,8 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -43,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -65,7 +62,6 @@ import java.io.File
 
 
 @SuppressLint("UnrememberedMutableState")
-@Preview(showSystemUi = true)
 @Composable
 fun AddImageComponent(
     isMandatory: Boolean = false,
@@ -100,10 +96,6 @@ fun AddImageComponent(
 
         BoxWithConstraints(
             modifier = Modifier
-                .scrollable(
-                    state = outerState,
-                    Orientation.Vertical,
-                )
                 .heightIn(min = dimen_100_dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
