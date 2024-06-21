@@ -157,11 +157,11 @@
 
 <div>
     <ul>
-        <li>2,345 number of properties</li>
-        <li>1,629 number of functions</li>
-        <li>530 number of classes</li>
-        <li>106 number of packages</li>
-        <li>448 number of kt files</li>
+        <li>2,202 number of properties</li>
+        <li>1,502 number of functions</li>
+        <li>492 number of classes</li>
+        <li>93 number of packages</li>
+        <li>422 number of kt files</li>
     </ul>
 </div>
 
@@ -170,25 +170,1357 @@
 
 <div>
     <ul>
-        <li>49,233 lines of code (loc)</li>
-        <li>42,636 source lines of code (sloc)</li>
-        <li>27,924 logical lines of code (lloc)</li>
-        <li>2,805 comment lines of code (cloc)</li>
-        <li>4,568 cyclomatic complexity (mcc)</li>
-        <li>4,979 cognitive complexity</li>
-        <li>0 number of total code smells</li>
+        <li>46,498 lines of code (loc)</li>
+        <li>40,227 source lines of code (sloc)</li>
+        <li>26,374 logical lines of code (lloc)</li>
+        <li>2,814 comment lines of code (cloc)</li>
+        <li>4,326 cyclomatic complexity (mcc)</li>
+        <li>4,831 cognitive complexity</li>
+        <li>105 number of total code smells</li>
         <li>6% comment source ratio</li>
-        <li>163 mcc per 1,000 lloc</li>
-        <li>0 code smells per 1,000 lloc</li>
+        <li>164 mcc per 1,000 lloc</li>
+        <li>3 code smells per 1,000 lloc</li>
     </ul>
 </div>
 
 
 <h2>Findings</h2>
-<div>Total: 0</div>
+<div>Total: 105
+    <h3>TwitterCompose: 3</h3>
+    <details id="ComposableParamOrder" open="open">
+        <summary class="rule-container"><span class="rule">ComposableParamOrder: 3 </span><span
+                class="description">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/twittercompose#composableparamorder">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:69:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [title:String, versionText:String, optionList:List&lt;SettingOptionModel&gt;, expanded: Boolean, onBackClick:()-&gt;Unit, isLoaderVisible:Boolean=false, onItemClick:(Int,SettingOptionModel)-&gt;Unit, isScreenHaveLogoutButton:Boolean=true, onParticularFormClick: (Int) -&gt; Unit, onLogoutClick:()-&gt;Unit] but should be [title:String, versionText:String, optionList:List&lt;SettingOptionModel&gt;, expanded: Boolean, onBackClick:()-&gt;Unit, onItemClick:(Int,SettingOptionModel)-&gt;Unit, onParticularFormClick: (Int) -&gt; Unit, isLoaderVisible:Boolean=false, isScreenHaveLogoutButton:Boolean=true, onLogoutClick:()-&gt;Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  66 </span>import com.nudge.core.model.SettingOptionModel
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>@Composable
+<span class="lineno">  69 </span>fun <span class="error">CommonSettingScreen</span>(
+<span class="lineno">  70 </span>    title:String,
+<span class="lineno">  71 </span>    versionText:String,
+<span class="lineno">  72 </span>    optionList:List&lt;SettingOptionModel&gt;,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:225:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [title: String, subTitle: String, expanded: Boolean, formList: List&lt;String&gt;, showArrow: Boolean = false, onClick: () -&gt; Unit, onParticularFormClick: (Int) -&gt; Unit] but should be [title: String, subTitle: String, expanded: Boolean, formList: List&lt;String&gt;, onClick: () -&gt; Unit, showArrow: Boolean = false, onParticularFormClick: (Int) -&gt; Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno"> 222 </span>    )
+<span class="lineno"> 223 </span>}
+<span class="lineno"> 224 </span>@Composable
+<span class="lineno"> 225 </span>fun <span class="error">CommonSettingCard</span>(
+<span class="lineno"> 226 </span>    title: String,
+<span class="lineno"> 227 </span>    subTitle: String,
+<span class="lineno"> 228 </span>    expanded: Boolean,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:314:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [modifier: Modifier = Modifier, expanded: Boolean, formList: List&lt;String&gt;, onParticularFormClick:(Int)-&gt;Unit] but should be [expanded: Boolean, formList: List&lt;String&gt;, modifier: Modifier = Modifier, onParticularFormClick:(Int)-&gt;Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno"> 311 </span>}
+<span class="lineno"> 312 </span>
+<span class="lineno"> 313 </span>@Composable
+<span class="lineno"> 314 </span>fun <span class="error">ExpandedSettingsList</span>(
+<span class="lineno"> 315 </span>    modifier: Modifier = Modifier,
+<span class="lineno"> 316 </span>    expanded: Boolean,
+<span class="lineno"> 317 </span>    formList: List&lt;String&gt;,
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>complexity: 28</h3>
+    <details id="ComplexCondition" open="open">
+        <summary class="rule-container"><span class="rule">ComplexCondition: 1 </span><span
+                class="description">Complex conditions should be simplified and extracted into well-named methods if necessary.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#complexcondition">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:135:17</span><span
+                    class="message">This condition is too complex (4). Defined complexity threshold for conditions is set to '4'</span>
+                <pre><code><span class="lineno"> 132 </span>
+<span class="lineno"> 133 </span>    fun log(level: Int, tag: String, message: String) {
+<span class="lineno"> 134 </span>        try {
+<span class="lineno"> 135 </span>            if (<span class="error">isInitializing.compareAndSet(false, true) &amp;&amp; !isQuitting &amp;&amp; (syslogThread == null || !syslogThread!!.isAlive)</span>) {
+<span class="lineno"> 136 </span>                Log.i(TAG, &quot;initializing logs...&quot;)
+<span class="lineno"> 137 </span>                syslogFile = File.createTempFile(
+<span class="lineno"> 138 </span>                    FILE_NAME_PREFIX + syslogFileNameTimeStampFormat.format(
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="CyclomaticComplexMethod" open="open">
+        <summary class="rule-container"><span class="rule">CyclomaticComplexMethod: 1 </span><span
+                class="description">Prefer splitting up complex methods into smaller, easier to test methods.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#cyclomaticcomplexmethod">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:244:25</span><span
+                    class="message">The function getSyslogFile appears to be too complex based on Cyclomatic Complexity (complexity: 31). Defined complexity threshold for methods is set to '20'</span>
+                <pre><code><span class="lineno"> 241 </span>        }
+<span class="lineno"> 242 </span>    }
+<span class="lineno"> 243 </span>
+<span class="lineno"> 244 </span>    private suspend fun <span class="error">getSyslogFile</span>(
+<span class="lineno"> 245 </span>        output: File,
+<span class="lineno"> 246 </span>        after: String = &quot;&quot;,
+<span class="lineno"> 247 </span>        logFileNames: ArrayList&lt;String&gt;? = null
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="LongMethod" open="open">
+        <summary class="rule-container"><span class="rule">LongMethod: 7 </span><span
+                class="description">One method should have one responsibility. Long methods tend to handle many things at once. Prefer smaller methods to make them easier to understand.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#longmethod">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:69:5</span><span
+                    class="message">The function CommonSettingScreen is too long (100). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  66 </span>import com.nudge.core.model.SettingOptionModel
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>@Composable
+<span class="lineno">  69 </span>fun <span class="error">CommonSettingScreen</span>(
+<span class="lineno">  70 </span>    title:String,
+<span class="lineno">  71 </span>    versionText:String,
+<span class="lineno">  72 </span>    optionList:List&lt;SettingOptionModel&gt;,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:225:5</span><span
+                    class="message">The function CommonSettingCard is too long (73). The maximum length is 60.</span>
+                <pre><code><span class="lineno"> 222 </span>    )
+<span class="lineno"> 223 </span>}
+<span class="lineno"> 224 </span>@Composable
+<span class="lineno"> 225 </span>fun <span class="error">CommonSettingCard</span>(
+<span class="lineno"> 226 </span>    title: String,
+<span class="lineno"> 227 </span>    subTitle: String,
+<span class="lineno"> 228 </span>    expanded: Boolean,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:314:5</span><span
+                    class="message">The function ExpandedSettingsList is too long (88). The maximum length is 60.</span>
+                <pre><code><span class="lineno"> 311 </span>}
+<span class="lineno"> 312 </span>
+<span class="lineno"> 313 </span>@Composable
+<span class="lineno"> 314 </span>fun <span class="error">ExpandedSettingsList</span>(
+<span class="lineno"> 315 </span>    modifier: Modifier = Modifier,
+<span class="lineno"> 316 </span>    expanded: Boolean,
+<span class="lineno"> 317 </span>    formList: List&lt;String&gt;,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/mission_summary_screen/presentation/MissionSummaryScreen.kt:34:5</span><span
+                    class="message">The function MissionSummaryScreen is too long (88). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  31 </span>
+<span class="lineno">  32 </span>@SuppressLint(&quot;UnusedMaterial3ScaffoldPaddingParameter&quot;)
+<span class="lineno">  33 </span>@Composable
+<span class="lineno">  34 </span>fun <span class="error">MissionSummaryScreen</span>(
+<span class="lineno">  35 </span>    navController: NavController,
+<span class="lineno">  36 </span>    missionId: Int = 0,
+<span class="lineno">  37 </span>    missionName: String,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/FormTypeQuestionScreen.kt:91:5</span><span
+                    class="message">The function FormTypeQuestionScreen is too long (252). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  88 </span>@SuppressLint(&quot;CoroutineCreationDuringComposition&quot;)
+<span class="lineno">  89 </span>@OptIn(ExperimentalMaterialApi::class)
+<span class="lineno">  90 </span>@Composable
+<span class="lineno">  91 </span>fun <span class="error">FormTypeQuestionScreen</span>(
+<span class="lineno">  92 </span>    navController: NavHostController,
+<span class="lineno">  93 </span>    viewModel: QuestionTypeScreenViewModel = hiltViewModel(),
+<span class="lineno">  94 </span>    surveyID: Int = 0,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/section_screen/presentation/SectionListScreen.kt:106:5</span><span
+                    class="message">The function SectionListScreen is too long (336). The maximum length is 60.</span>
+                <pre><code><span class="lineno"> 103 </span>
+<span class="lineno"> 104 </span>@OptIn(ExperimentalMaterialApi::class)
+<span class="lineno"> 105 </span>@Composable
+<span class="lineno"> 106 </span>fun <span class="error">SectionListScreen</span>(
+<span class="lineno"> 107 </span>    navController: NavController,
+<span class="lineno"> 108 </span>    viewModel: SectionListScreenViewModel,
+<span class="lineno"> 109 </span>    modifier: Modifier = Modifier,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:244:25</span><span
+                    class="message">The function getSyslogFile is too long (95). The maximum length is 60.</span>
+                <pre><code><span class="lineno"> 241 </span>        }
+<span class="lineno"> 242 </span>    }
+<span class="lineno"> 243 </span>
+<span class="lineno"> 244 </span>    private suspend fun <span class="error">getSyslogFile</span>(
+<span class="lineno"> 245 </span>        output: File,
+<span class="lineno"> 246 </span>        after: String = &quot;&quot;,
+<span class="lineno"> 247 </span>        logFileNames: ArrayList&lt;String&gt;? = null
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="LongParameterList" open="open">
+        <summary class="rule-container"><span class="rule">LongParameterList: 13 </span><span
+                class="description">The more parameters a function has the more complex it is. Long parameter lists are often used to control complex algorithms and violate the Single Responsibility Principle. Prefer functions with short parameter lists.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#longparameterlist">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/data/domain/EventWriterHelperImpl.kt:76:48</span><span
+                    class="message">The constructor(prefBSRepo: PrefBSRepo, repositoryImpl: EventsWriterRepositoryImpl, eventsDao: EventsDao, eventDependencyDao: EventDependencyDao, surveyEntityDao: SurveyEntityDao, surveyeeEntityDao: SurveyeeEntityDao, questionEntityDao: QuestionEntityDao, optionItemDao: OptionItemDao, taskDao: ActivityTaskDao, activityDao: MissionActivityDao, missionEntityDao: MissionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, baselineDatabase: NudgeBaselineDatabase) has too many parameters. The current threshold is set to 7.</span>
+                <pre><code><span class="lineno">  73 </span>import java.util.UUID
+<span class="lineno">  74 </span>import javax.inject.Inject
+<span class="lineno">  75 </span>
+<span class="lineno">  76 </span>class EventWriterHelperImpl @Inject constructor<span class="error">(</span>
+<span class="lineno">  77 </span><span class="error">    val prefBSRepo: PrefBSRepo,</span>
+<span class="lineno">  78 </span><span class="error">    private val repositoryImpl: EventsWriterRepositoryImpl,</span>
+<span class="lineno">  79 </span><span class="error">    private val eventsDao: EventsDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:270:44</span><span
+                    class="message">The function provideSurveyeeListScreenRepository(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, surveyeeEntityDao: SurveyeeEntityDao, languageListDao: LanguageListDao, activityTaskDao: ActivityTaskDao, missionActivityDao: MissionActivityDao, taskDao: ActivityTaskDao) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 267 </span>
+<span class="lineno"> 268 </span>    @Provides
+<span class="lineno"> 269 </span>    @Singleton
+<span class="lineno"> 270 </span>    fun provideSurveyeeListScreenRepository<span
+                            class="error">(</span>
+<span class="lineno"> 271 </span><span class="error">        prefBSRepo: PrefBSRepo,</span>
+<span class="lineno"> 272 </span><span
+                            class="error">        baseLineApiService: BaseLineApiService,</span>
+<span class="lineno"> 273 </span><span
+                            class="error">        surveyeeEntityDao: SurveyeeEntityDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:316:43</span><span
+                    class="message">The function provideSectionListScreenRepository(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, surveyEntityDao: SurveyEntityDao, sectionEntityDao: SectionEntityDao, questionEntityDao: QuestionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, optionItemDao: OptionItemDao, surveyeeEntityDao: SurveyeeEntityDao, contentDao: ContentDao, taskDao: ActivityTaskDao) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 313 </span>
+<span class="lineno"> 314 </span>    @Provides
+<span class="lineno"> 315 </span>    @Singleton
+<span class="lineno"> 316 </span>    fun provideSectionListScreenRepository<span
+                            class="error">(</span>
+<span class="lineno"> 317 </span><span class="error">        prefBSRepo: PrefBSRepo,</span>
+<span class="lineno"> 318 </span><span
+                            class="error">        baseLineApiService: BaseLineApiService,</span>
+<span class="lineno"> 319 </span><span
+                            class="error">        surveyEntityDao: SurveyEntityDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:362:40</span><span
+                    class="message">The function provideQuestionScreenRepository(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, surveyeeEntityDao: SurveyeeEntityDao, surveyEntityDao: SurveyEntityDao, sectionEntityDao: SectionEntityDao, questionEntityDao: QuestionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, sectionAnswerEntityDao: SectionAnswerEntityDao, optionItemDao: OptionItemDao, formQuestionResponseDao: FormQuestionResponseDao, inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao, contentDao: ContentDao) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 359 </span>
+<span class="lineno"> 360 </span>    @Provides
+<span class="lineno"> 361 </span>    @Singleton
+<span class="lineno"> 362 </span>    fun provideQuestionScreenRepository<span class="error">(</span>
+<span class="lineno"> 363 </span><span class="error">        prefBSRepo: PrefBSRepo,</span>
+<span class="lineno"> 364 </span><span
+                            class="error">        baseLineApiService: BaseLineApiService,</span>
+<span class="lineno"> 365 </span><span
+                            class="error">        surveyeeEntityDao: SurveyeeEntityDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:448:43</span><span
+                    class="message">The function provideDataLoadingScreenRepository(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, languageListDao: LanguageListDao, surveyeeEntityDao: SurveyeeEntityDao, surveyEntityDao: SurveyEntityDao, sectionEntityDao: SectionEntityDao, questionEntityDao: QuestionEntityDao, optionItemDao: OptionItemDao, missionEntityDao: MissionEntityDao, missionActivityDao: MissionActivityDao, activityTaskDao: ActivityTaskDao, contentDao: ContentDao, baselineDatabase: NudgeBaselineDatabase, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, apiStatusDao: ApiStatusDao) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 445 </span>
+<span class="lineno"> 446 </span>    @Provides
+<span class="lineno"> 447 </span>    @Singleton
+<span class="lineno"> 448 </span>    fun provideDataLoadingScreenRepository<span
+                            class="error">(</span>
+<span class="lineno"> 449 </span><span class="error">        prefBSRepo: PrefBSRepo,</span>
+<span class="lineno"> 450 </span><span
+                            class="error">        baseLineApiService: BaseLineApiService,</span>
+<span class="lineno"> 451 </span><span
+                            class="error">        languageListDao: LanguageListDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:677:38</span><span
+                    class="message">The function provideEventsWriterRepository(prefBSRepo: PrefBSRepo, surveyEntityDao: SurveyEntityDao, missionEntityDao: MissionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, eventsDao: EventsDao, eventDependencyDao: EventDependencyDao, nudgeBaselineDatabase: NudgeBaselineDatabase, eventWriterHelper: EventWriterHelperImpl) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 674 </span>
+<span class="lineno"> 675 </span>    @Provides
+<span class="lineno"> 676 </span>    @Singleton
+<span class="lineno"> 677 </span>    fun provideEventsWriterRepository<span class="error">(</span>
+<span class="lineno"> 678 </span><span class="error">        prefBSRepo: PrefBSRepo,</span>
+<span class="lineno"> 679 </span><span
+                            class="error">        surveyEntityDao: SurveyEntityDao,</span>
+<span class="lineno"> 680 </span><span
+                            class="error">        missionEntityDao: MissionEntityDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:699:34</span><span
+                    class="message">The function providesEventWriterHelper(prefBSRepo: PrefBSRepo, repositoryImpl: EventsWriterRepositoryImpl, eventsDao: EventsDao, eventDependencyDao: EventDependencyDao, surveyEntityDao: SurveyEntityDao, surveyeeEntityDao: SurveyeeEntityDao, questionEntityDao: QuestionEntityDao, optionItemDao: OptionItemDao, taskDao: ActivityTaskDao, activityDao: MissionActivityDao, missionEntityDao: MissionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, baselineDatabase: NudgeBaselineDatabase) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 696 </span>
+<span class="lineno"> 697 </span>    @Provides
+<span class="lineno"> 698 </span>    @Singleton
+<span class="lineno"> 699 </span>    fun providesEventWriterHelper<span class="error">(</span>
+<span class="lineno"> 700 </span><span class="error">        prefBSRepo: PrefBSRepo,</span>
+<span class="lineno"> 701 </span><span class="error">        repositoryImpl: EventsWriterRepositoryImpl,</span>
+<span class="lineno"> 702 </span><span class="error">        eventsDao: EventsDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:69:24</span><span
+                    class="message">The function CommonSettingScreen(title: String, versionText: String, optionList: List&lt;SettingOptionModel&gt;, expanded: Boolean, onBackClick: ()-&gt;Unit, isLoaderVisible: Boolean, onItemClick: (Int,SettingOptionModel)-&gt;Unit, isScreenHaveLogoutButton: Boolean, onParticularFormClick: (Int) -&gt; Unit, onLogoutClick: ()-&gt;Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  66 </span>import com.nudge.core.model.SettingOptionModel
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>@Composable
+<span class="lineno">  69 </span>fun CommonSettingScreen<span class="error">(</span>
+<span class="lineno">  70 </span><span class="error">    title:String,</span>
+<span class="lineno">  71 </span><span class="error">    versionText:String,</span>
+<span class="lineno">  72 </span><span
+                            class="error">    optionList:List&lt;SettingOptionModel&gt;,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:225:22</span><span
+                    class="message">The function CommonSettingCard(title: String, subTitle: String, expanded: Boolean, formList: List&lt;String&gt;, showArrow: Boolean, onClick: () -&gt; Unit, onParticularFormClick: (Int) -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 222 </span>    )
+<span class="lineno"> 223 </span>}
+<span class="lineno"> 224 </span>@Composable
+<span class="lineno"> 225 </span>fun CommonSettingCard<span class="error">(</span>
+<span class="lineno"> 226 </span><span class="error">    title: String,</span>
+<span class="lineno"> 227 </span><span class="error">    subTitle: String,</span>
+<span class="lineno"> 228 </span><span class="error">    expanded: Boolean,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_screen/domain/repository/QuestionScreenRepositoryImpl.kt:34:55</span><span
+                    class="message">The constructor(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, surveyeeEntityDao: SurveyeeEntityDao, surveyEntityDao: SurveyEntityDao, sectionEntityDao: SectionEntityDao, questionEntityDao: QuestionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, sectionAnswerEntityDao: SectionAnswerEntityDao, optionItemDao: OptionItemDao, formQuestionResponseDao: FormQuestionResponseDao, inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao, contentDao: ContentDao) has too many parameters. The current threshold is set to 7.</span>
+                <pre><code><span class="lineno">  31 </span>import com.nrlm.baselinesurvey.utils.states.SectionStatus
+<span class="lineno">  32 </span>import javax.inject.Inject
+<span class="lineno">  33 </span>
+<span class="lineno">  34 </span>class QuestionScreenRepositoryImpl @Inject constructor<span
+                            class="error">(</span>
+<span class="lineno">  35 </span><span class="error">    private val prefBSRepo: PrefBSRepo,</span>
+<span class="lineno">  36 </span><span class="error">    private val baseLineApiService: BaseLineApiService,</span>
+<span class="lineno">  37 </span><span class="error">    private val surveyeeEntityDao: SurveyeeEntityDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/section_screen/domain/repository/SectionListScreenRepositoryImpl.kt:22:38</span><span
+                    class="message">The constructor(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, surveyEntityDao: SurveyEntityDao, sectionEntityDao: SectionEntityDao, questionEntityDao: QuestionEntityDao, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, optionItemDao: OptionItemDao, surveyeeEntityDao: SurveyeeEntityDao, contentDao: ContentDao, taskDao: ActivityTaskDao) has too many parameters. The current threshold is set to 7.</span>
+                <pre><code><span class="lineno">  19 </span>import com.nrlm.baselinesurvey.utils.states.SectionStatus
+<span class="lineno">  20 </span>import com.nrlm.baselinesurvey.utils.states.SurveyState
+<span class="lineno">  21 </span>
+<span class="lineno">  22 </span>class SectionListScreenRepositoryImpl<span class="error">(</span>
+<span class="lineno">  23 </span><span class="error">    private val prefBSRepo: PrefBSRepo,</span>
+<span class="lineno">  24 </span><span class="error">    private val baseLineApiService: BaseLineApiService,</span>
+<span class="lineno">  25 </span><span class="error">    private val surveyEntityDao: SurveyEntityDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/surveyee_screen/domain/repository/DataLoadingScreenRepositoryImpl.kt:83:58</span><span
+                    class="message">The constructor(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, languageListDao: LanguageListDao, surveyeeEntityDao: SurveyeeEntityDao, surveyEntityDao: SurveyEntityDao, sectionEntityDao: SectionEntityDao, questionEntityDao: QuestionEntityDao, optionItemDao: OptionItemDao, missionEntityDao: MissionEntityDao, missionActivityDao: MissionActivityDao, activityTaskDao: ActivityTaskDao, contentDao: ContentDao, baselineDatabase: NudgeBaselineDatabase, didiSectionProgressEntityDao: DidiSectionProgressEntityDao, apiStatusDao: ApiStatusDao) has too many parameters. The current threshold is set to 7.</span>
+                <pre><code><span class="lineno">  80 </span>import com.nudge.core.updateCoreEventFileName
+<span class="lineno">  81 </span>import javax.inject.Inject
+<span class="lineno">  82 </span>
+<span class="lineno">  83 </span>class DataLoadingScreenRepositoryImpl @Inject constructor<span
+                            class="error">(</span>
+<span class="lineno">  84 </span><span class="error">    val prefBSRepo: PrefBSRepo,</span>
+<span class="lineno">  85 </span><span
+                            class="error">    val baseLineApiService: BaseLineApiService,</span>
+<span class="lineno">  86 </span><span
+                            class="error">    val languageListDao: LanguageListDao,</span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/surveyee_screen/domain/repository/SurveyeeListScreenRepositoryImpl.kt:34:59</span><span
+                    class="message">The constructor(prefBSRepo: PrefBSRepo, baseLineApiService: BaseLineApiService, surveyeeEntityDao: SurveyeeEntityDao, languageListDao: LanguageListDao, activityTaskDao: ActivityTaskDao, activityDao: MissionActivityDao, taskDao: ActivityTaskDao) has too many parameters. The current threshold is set to 7.</span>
+                <pre><code><span class="lineno">  31 </span>import com.nudge.core.updateCoreEventFileName
+<span class="lineno">  32 </span>import javax.inject.Inject
+<span class="lineno">  33 </span>
+<span class="lineno">  34 </span>class SurveyeeListScreenRepositoryImpl @Inject constructor<span
+                            class="error">(</span>
+<span class="lineno">  35 </span><span class="error">    private val prefBSRepo: PrefBSRepo,</span>
+<span class="lineno">  36 </span><span class="error">    private val baseLineApiService: BaseLineApiService,</span>
+<span class="lineno">  37 </span><span class="error">    private val surveyeeEntityDao: SurveyeeEntityDao,</span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="NestedBlockDepth" open="open">
+        <summary class="rule-container"><span class="rule">NestedBlockDepth: 1 </span><span
+                class="description">Excessive nesting leads to hidden complexity. Prefer extracting code to make it easier to understand.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#nestedblockdepth">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:400:9</span><span
+                    class="message">Function cleanup is nested too deeply.</span>
+                <pre><code><span class="lineno"> 397 </span>        }
+<span class="lineno"> 398 </span>    }*/
+<span class="lineno"> 399 </span>
+<span class="lineno"> 400 </span>    fun <span class="error">cleanup</span>(checkForSize: Boolean) {
+<span class="lineno"> 401 </span>        val context = BaselineCore.getAppContext()
+<span class="lineno"> 402 </span>        try {
+<span class="lineno"> 403 </span>            if (DEBUG) Log.d(TAG, &quot;cleanup checkForSize: $checkForSize&quot;)
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="TooManyFunctions" open="open">
+        <summary class="rule-container"><span class="rule">TooManyFunctions: 5 </span><span
+                class="description">Too many functions inside a/an file/class/object/interface always indicate a violation of the single responsibility principle. Maybe the file/class/object/interface wants to manage too many things at once. Extract functionality which clearly belongs together.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#toomanyfunctions">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/data/prefs/PrefBSRepo.kt:6:11</span><span
+                    class="message">Interface 'PrefBSRepo' with '32' functions detected. Defined threshold inside interfaces is set to '11'</span>
+                <pre><code><span class="lineno">   3 </span>import com.nrlm.baselinesurvey.database.entity.VillageEntity
+<span class="lineno">   4 </span>
+<span class="lineno">   5 </span>
+<span class="lineno">   6 </span>interface <span class="error">PrefBSRepo</span> {
+<span class="lineno">   7 </span>
+<span class="lineno">   8 </span>    fun getLoginStatus(): Boolean
+<span class="lineno">   9 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/data/prefs/SharedPrefs.kt:27:7</span><span
+                    class="message">Class 'SharedPrefs' with '32' functions detected. Defined threshold inside classes is set to '11'</span>
+                <pre><code><span class="lineno">  24 </span>import javax.inject.Singleton
+<span class="lineno">  25 </span>
+<span class="lineno">  26 </span>@Singleton
+<span class="lineno">  27 </span>class <span class="error">SharedPrefs</span> @Inject constructor(@ApplicationContext private val ctx: Context) :PrefBSRepo {
+<span class="lineno">  28 </span>    companion object {
+<span class="lineno">  29 </span>//        const val PREFS_NAME = &quot;secured_nudge_baseline_prefs&quot;
+<span class="lineno">  30 </span>        const val PREFS_NAME = &quot;secured_nudge_prefs&quot;
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:47:11</span><span
+                    class="message">Interface 'BaseLineApiService' with '14' functions detected. Defined threshold inside interfaces is set to '11'</span>
+                <pre><code><span class="lineno">  44 </span>import retrofit2.http.POST
+<span class="lineno">  45 </span>import retrofit2.http.Query
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>interface <span class="error">BaseLineApiService</span> {
+<span class="lineno">  48 </span>
+<span class="lineno">  49 </span>    @GET(SUBPATH_CONFIG_GET_LANGUAGE)
+<span class="lineno">  50 </span>    suspend fun fetchLanguageConfigDetailsFromNetwork() : ApiResponseModel&lt;ConfigResponseModel?&gt;
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/surveyee_screen/domain/repository/SurveyeeListScreenRepository.kt:9:11</span><span
+                    class="message">Interface 'SurveyeeListScreenRepository' with '11' functions detected. Defined threshold inside interfaces is set to '11'</span>
+                <pre><code><span class="lineno">   6 </span>import com.nrlm.baselinesurvey.utils.states.SectionStatus
+<span class="lineno">   7 </span>import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>interface <span class="error">SurveyeeListScreenRepository</span> {
+<span class="lineno">  10 </span>
+<span class="lineno">  11 </span>    suspend fun getSurveyeeList(missionId: Int, activityId: Int): List&lt;SurveyeeEntity&gt;
+<span class="lineno">  12 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/surveyee_screen/domain/repository/SurveyeeListScreenRepositoryImpl.kt:34:7</span><span
+                    class="message">Class 'SurveyeeListScreenRepositoryImpl' with '11' functions detected. Defined threshold inside classes is set to '11'</span>
+                <pre><code><span class="lineno">  31 </span>import com.nudge.core.updateCoreEventFileName
+<span class="lineno">  32 </span>import javax.inject.Inject
+<span class="lineno">  33 </span>
+<span class="lineno">  34 </span>class <span class="error">SurveyeeListScreenRepositoryImpl</span> @Inject constructor(
+<span class="lineno">  35 </span>    private val prefBSRepo: PrefBSRepo,
+<span class="lineno">  36 </span>    private val baseLineApiService: BaseLineApiService,
+<span class="lineno">  37 </span>    private val surveyeeEntityDao: SurveyeeEntityDao,
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>empty-blocks: 3</h3>
+    <details id="EmptyCatchBlock" open="open">
+        <summary class="rule-container"><span class="rule">EmptyCatchBlock: 1 </span><span
+                class="description">Empty catch block detected. Empty catch blocks indicate that an exception is ignored and not handled.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/empty-blocks#emptycatchblock">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:220:33</span><span
+                    class="message">Empty catch block detected. If the exception can be safely ignored, name the exception according to one of the exemptions as per the configuration of this rule.</span>
+                <pre><code><span class="lineno"> 217 </span>            preamble.add(&quot;Build.PRODUCT                  = &quot; + Build.PRODUCT)
+<span class="lineno"> 218 </span>            preamble.add(&quot;Build.getRadioVersion()        = &quot; + Build.getRadioVersion())
+<span class="lineno"> 219 </span>            preamble.add(&quot;Environment                    = &quot; + BuildConfig.FLAVOR)
+<span class="lineno"> 220 </span>        } catch (ex: Exception) <span class="error">{</span>
+<span class="lineno"> 221 </span><span class="error"></span>
+<span class="lineno"> 222 </span><span class="error">        }</span>
+<span class="lineno"> 223 </span>        return preamble
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="EmptyKtFile" open="open">
+        <summary class="rule-container"><span class="rule">EmptyKtFile: 2 </span><span
+                class="description">Empty block of code detected. As they serve no purpose they should be removed.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/empty-blocks#emptyktfile">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/navigation/home/NavHomeGraph.kt:-1:0</span><span
+                    class="message">The empty Kotlin file /Users/anupambhardwaj/StudioProjects/eupi_andriod/baselinesurvey/src/main/java/com/nrlm/baselinesurvey/navigation/home/NavHomeGraph.kt can be removed.</span>
+                <pre><code><span class="lineno">   1 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/setting/domain/repository/SettingBSRepositoryImpl.kt:-1:0</span><span
+                    class="message">The empty Kotlin file /Users/anupambhardwaj/StudioProjects/eupi_andriod/baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/setting/domain/repository/SettingBSRepositoryImpl.kt can be removed.</span>
+                <pre><code><span class="lineno">   1 </span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>exceptions: 15</h3>
+    <details id="SwallowedException" open="open">
+        <summary class="rule-container"><span class="rule">SwallowedException: 1 </span><span
+                class="description">The caught exception is swallowed. The original exception could be lost.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/exceptions#swallowedexception">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:220:18</span><span
+                    class="message">The caught exception is swallowed. The original exception could be lost.</span>
+                <pre><code><span class="lineno"> 217 </span>            preamble.add(&quot;Build.PRODUCT                  = &quot; + Build.PRODUCT)
+<span class="lineno"> 218 </span>            preamble.add(&quot;Build.getRadioVersion()        = &quot; + Build.getRadioVersion())
+<span class="lineno"> 219 </span>            preamble.add(&quot;Environment                    = &quot; + BuildConfig.FLAVOR)
+<span class="lineno"> 220 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 221 </span>
+<span class="lineno"> 222 </span>        }
+<span class="lineno"> 223 </span>        return preamble
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="TooGenericExceptionCaught" open="open">
+        <summary class="rule-container"><span
+                class="rule">TooGenericExceptionCaught: 14 </span><span class="description">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/exceptions#toogenericexceptioncaught">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineCore.kt:76:26</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno">  73 </span>            return scope().launch(coroutineContext) {
+<span class="lineno">  74 </span>                try {
+<span class="lineno">  75 </span>                    func()
+<span class="lineno">  76 </span>                } catch (<span class="error">ex: Throwable</span>) {
+<span class="lineno">  77 </span>                    BaselineLogger.e(tag, &quot;appScopeLaunch $message&quot;, ex, true)
+<span class="lineno">  78 </span>                }
+<span class="lineno">  79 </span>            }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineCore.kt:80:18</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno">  77 </span>                    BaselineLogger.e(tag, &quot;appScopeLaunch $message&quot;, ex, true)
+<span class="lineno">  78 </span>                }
+<span class="lineno">  79 </span>            }
+<span class="lineno">  80 </span>        } catch (<span class="error">ex: Throwable</span>) {
+<span class="lineno">  81 </span>            BaselineLogger.e(tag, message ?: &quot;appScopeLaunch&quot;, ex)
+<span class="lineno">  82 </span>        }
+<span class="lineno">  83 </span>        return null
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:155:38</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 152 </span>                                packet = syslogQueue?.take()
+<span class="lineno"> 153 </span>                                //if (packet instanceof QuitPacket) throw new InterruptedException(packet.message)
+<span class="lineno"> 154 </span>                                if (packet != null) log(packet)
+<span class="lineno"> 155 </span>                            } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 156 </span>                                Log.e(TAG, &quot;log process packet exception&quot;, ex)
+<span class="lineno"> 157 </span>                            }
+<span class="lineno"> 158 </span>                        } while (isRunning)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:159:30</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 156 </span>                                Log.e(TAG, &quot;log process packet exception&quot;, ex)
+<span class="lineno"> 157 </span>                            }
+<span class="lineno"> 158 </span>                        } while (isRunning)
+<span class="lineno"> 159 </span>                    } catch (<span
+                            class="error">ex: Exception</span>) {
+<span class="lineno"> 160 </span>                        Log.e(TAG, &quot;log thread&quot;, ex)
+<span class="lineno"> 161 </span>                    } finally {
+<span class="lineno"> 162 </span>                        if (syslogStream != null) try {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:191:18</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 188 </span>            } else {
+<span class="lineno"> 189 </span>                log(level, tag, message)
+<span class="lineno"> 190 </span>            }
+<span class="lineno"> 191 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 192 </span>            Log.e(TAG, &quot;log&quot;, ex)
+<span class="lineno"> 193 </span>        }
+<span class="lineno"> 194 </span>    }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:220:18</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 217 </span>            preamble.add(&quot;Build.PRODUCT                  = &quot; + Build.PRODUCT)
+<span class="lineno"> 218 </span>            preamble.add(&quot;Build.getRadioVersion()        = &quot; + Build.getRadioVersion())
+<span class="lineno"> 219 </span>            preamble.add(&quot;Environment                    = &quot; + BuildConfig.FLAVOR)
+<span class="lineno"> 220 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 221 </span>
+<span class="lineno"> 222 </span>        }
+<span class="lineno"> 223 </span>        return preamble
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:238:22</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 235 </span>            try {
+<span class="lineno"> 236 </span>                val bytes = &quot;${syslogMessageTimeStampFormat.format(packet.timestamp)} ${packet.tag} ${packet.message}\n&quot;.toByteArray()
+<span class="lineno"> 237 </span>                syslogStream?.write(bytes, 0, bytes.size)
+<span class="lineno"> 238 </span>            } catch (<span class="error">fault: Throwable</span>) {
+<span class="lineno"> 239 </span>                Log.println(packet.level, packet.tag, &quot;${packet.message} exception: $fault&quot;)
+<span class="lineno"> 240 </span>            }
+<span class="lineno"> 241 </span>        }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:330:34</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 327 </span>                                line = buffReader.readLine()
+<span class="lineno"> 328 </span>
+<span class="lineno"> 329 </span>                            }
+<span class="lineno"> 330 </span>                        } catch (<span
+                            class="error">e: Exception</span>) {
+<span class="lineno"> 331 </span>                            e.printStackTrace()
+<span class="lineno"> 332 </span>                        } finally {
+<span class="lineno"> 333 </span>                            try {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:336:38</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 333 </span>                            try {
+<span class="lineno"> 334 </span>                                inputStreamReader.close()
+<span class="lineno"> 335 </span>                                inputStream.close()
+<span class="lineno"> 336 </span>                            } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 337 </span>                                e(TAG, &quot;getSyslogFile close&quot;, ex)
+<span class="lineno"> 338 </span>                            }
+<span class="lineno"> 339 </span>                        }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:345:26</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 342 </span>                            break
+<span class="lineno"> 343 </span>                    }
+<span class="lineno"> 344 </span>                    return@withContext true
+<span class="lineno"> 345 </span>                } catch (<span
+                            class="error">fault: Exception</span>) {
+<span class="lineno"> 346 </span>                    Log.println(Log.ERROR, TAG, fault.toString())
+<span class="lineno"> 347 </span>                }
+<span class="lineno"> 348 </span>            }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:350:18</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 347 </span>                }
+<span class="lineno"> 348 </span>            }
+<span class="lineno"> 349 </span>
+<span class="lineno"> 350 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 351 </span>            e(TAG, &quot;getSyslogFile&quot;, ex)
+<span class="lineno"> 352 </span>        }
+<span class="lineno"> 353 </span>        return@withContext false
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:370:18</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 367 </span>                return null
+<span class="lineno"> 368 </span>            }
+<span class="lineno"> 369 </span>            return logFile
+<span class="lineno"> 370 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 371 </span>            e(TAG, &quot;buildSupportLogAndShare&quot;, ex)
+<span class="lineno"> 372 </span>            withContext(Dispatchers.Main) {
+<span class="lineno"> 373 </span>                onFailed()
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:411:22</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 408 </span>            try {
+<span class="lineno"> 409 </span>                catalog.addAll(logDir.listFiles(stitcherlogFileFilter))
+<span class="lineno"> 410 </span>                catalog.addAll(logDir.listFiles(syslogFileFilter))
+<span class="lineno"> 411 </span>            } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 412 </span>                e(TAG, &quot;cleanup listFiles&quot;, ex)
+<span class="lineno"> 413 </span>            }
+<span class="lineno"> 414 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:443:18</span><span
+                    class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+                <pre><code><span class="lineno"> 440 </span>
+<span class="lineno"> 441 </span>                BaselineLogger.d(TAG, &quot;Logs on Disk: ${formatShortFileSize(context, bytesOfLogFiles - removedBytes)} Cleanup Removed: ${formatShortFileSize(context, removedBytes)}&quot;)
+<span class="lineno"> 442 </span>            }
+<span class="lineno"> 443 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 444 </span>            e(TAG, &quot;cleanup $checkForSize&quot;, ex)
+<span class="lineno"> 445 </span>        }
+<span class="lineno"> 446 </span>    }
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>style: 56</h3>
+    <details id="LoopWithTooManyJumpStatements" open="open">
+        <summary class="rule-container"><span
+                class="rule">LoopWithTooManyJumpStatements: 2 </span><span class="description">The loop contains more than one break or continue statement. The code should be refactored to increase readability.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#loopwithtoomanyjumpstatements">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:266:17</span><span
+                    class="message">The loop contains more than one break or continue statement. The code should be refactored to increase readability.</span>
+                <pre><code><span class="lineno"> 263 </span>                if (logFile.isFile) logFile.delete()
+<span class="lineno"> 264 </span>
+<span class="lineno"> 265 </span>                var total = 0L
+<span class="lineno"> 266 </span>                <span class="error">for</span> (file in catalog) {
+<span class="lineno"> 267 </span>                    val length = file.length()
+<span class="lineno"> 268 </span>                    if (length == 0L) continue // skip empty log files
+<span class="lineno"> 269 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:287:21</span><span
+                    class="message">The loop contains more than one break or continue statement. The code should be refactored to increase readability.</span>
+                <pre><code><span class="lineno"> 284 </span>                    return@withContext false
+<span class="lineno"> 285 </span>                try {
+<span class="lineno"> 286 </span>                    var totalBytes = 0
+<span class="lineno"> 287 </span>                    <span class="error">for</span> (file in logs) {
+<span class="lineno"> 288 </span>                        if (file.length() == 0L)
+<span class="lineno"> 289 </span>                            continue
+<span class="lineno"> 290 </span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="MagicNumber" open="open">
+        <summary class="rule-container"><span class="rule">MagicNumber: 10 </span><span
+                class="description">Report magic numbers. Magic number is a numeric literal that is not defined as a constant and hence it's unclear what the purpose of this number is. It's better to declare such numbers as constants and give them a proper name. By default, -1, 0, 1, and 2 are not considered to be magic numbers.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#magicnumber">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:246:26</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 243 </span>    val arrowRotationDegree by transition.animateFloat({
+<span class="lineno"> 244 </span>        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
+<span class="lineno"> 245 </span>    }, label = &quot;rotationDegreeTransition&quot;) {
+<span class="lineno"> 246 </span>        if (it) 0f else -<span class="error">90f</span>
+<span class="lineno"> 247 </span>    }
+<span class="lineno"> 248 </span>
+<span class="lineno"> 249 </span>    Column(modifier = Modifier
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/common_components/common_setting/CommonSettingScreen.kt:387:57</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 384 </span>                            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
+<span class="lineno"> 385 </span>                            contentDescription = null,
+<span class="lineno"> 386 </span>                            tint = textColorDark,
+<span class="lineno"> 387 </span>                            modifier = Modifier.rotate(-<span
+                            class="error">90f</span>)
+<span class="lineno"> 388 </span>                        )
+<span class="lineno"> 389 </span>                    }
+<span class="lineno"> 390 </span>                    if (index &lt; formList.size - 1)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:97:52</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  94 </span>    private const val FILE_NAME_SUFFIX = &quot;.log&quot;
+<span class="lineno">  95 </span>
+<span class="lineno">  96 </span>    // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
+<span class="lineno">  97 </span>    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) <span
+                            class="error">20L</span> else 10L) *1024*1024 // collect up to 10 MB of log files // 20MB for debug builds
+<span class="lineno">  98 </span>    private const val SUPPORT_LOG_FILE_NAME_PREFIX = &quot;baseline_log_&quot;
+<span class="lineno">  99 </span>    private const val SUPPORT_LOG_FILE_NAME_SUFFIX = &quot;.txt&quot;
+<span class="lineno"> 100 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:97:61</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  94 </span>    private const val FILE_NAME_SUFFIX = &quot;.log&quot;
+<span class="lineno">  95 </span>
+<span class="lineno">  96 </span>    // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
+<span class="lineno">  97 </span>    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else <span
+                            class="error">10L</span>) *1024*1024 // collect up to 10 MB of log files // 20MB for debug builds
+<span class="lineno">  98 </span>    private const val SUPPORT_LOG_FILE_NAME_PREFIX = &quot;baseline_log_&quot;
+<span class="lineno">  99 </span>    private const val SUPPORT_LOG_FILE_NAME_SUFFIX = &quot;.txt&quot;
+<span class="lineno"> 100 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:97:67</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  94 </span>    private const val FILE_NAME_SUFFIX = &quot;.log&quot;
+<span class="lineno">  95 </span>
+<span class="lineno">  96 </span>    // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
+<span class="lineno">  97 </span>    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 10L) *<span
+                            class="error">1024</span>*1024 // collect up to 10 MB of log files // 20MB for debug builds
+<span class="lineno">  98 </span>    private const val SUPPORT_LOG_FILE_NAME_PREFIX = &quot;baseline_log_&quot;
+<span class="lineno">  99 </span>    private const val SUPPORT_LOG_FILE_NAME_SUFFIX = &quot;.txt&quot;
+<span class="lineno"> 100 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:97:72</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  94 </span>    private const val FILE_NAME_SUFFIX = &quot;.log&quot;
+<span class="lineno">  95 </span>
+<span class="lineno">  96 </span>    // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
+<span class="lineno">  97 </span>    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 10L) *1024*<span
+                            class="error">1024</span> // collect up to 10 MB of log files // 20MB for debug builds
+<span class="lineno">  98 </span>    private const val SUPPORT_LOG_FILE_NAME_PREFIX = &quot;baseline_log_&quot;
+<span class="lineno">  99 </span>    private const val SUPPORT_LOG_FILE_NAME_SUFFIX = &quot;.txt&quot;
+<span class="lineno"> 100 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:101:51</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  98 </span>    private const val SUPPORT_LOG_FILE_NAME_PREFIX = &quot;baseline_log_&quot;
+<span class="lineno">  99 </span>    private const val SUPPORT_LOG_FILE_NAME_SUFFIX = &quot;.txt&quot;
+<span class="lineno"> 100 </span>
+<span class="lineno"> 101 </span>    private val LOG_SEPARATOR_DOUBLE = &quot;=&quot;.repeat(<span
+                            class="error">256</span>)
+<span class="lineno"> 102 </span>
+<span class="lineno"> 103 </span>    private var isInitializing = AtomicBoolean()
+<span class="lineno"> 104 </span>    private var isRunning = false
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:130:42</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 127 </span>
+<span class="lineno"> 128 </span>    init {
+<span class="lineno"> 129 </span>        tagDevice = &quot;${Build.SERIAL} ${Build.MODEL}&quot;
+<span class="lineno"> 130 </span>        syslogQueue = ArrayBlockingQueue(<span
+                            class="error">8192</span>)
+<span class="lineno"> 131 </span>    }
+<span class="lineno"> 132 </span>
+<span class="lineno"> 133 </span>    fun log(level: Int, tag: String, message: String) {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:168:75</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 165 </span>                        } finally {
+<span class="lineno"> 166 </span>                            syslogStream = null
+<span class="lineno"> 167 </span>                        }
+<span class="lineno"> 168 </span>                        if (syslogFile != null &amp;&amp; syslogFile!!.length() &lt; <span
+                            class="error">32</span>) try {
+<span class="lineno"> 169 </span>                            syslogFile?.delete()
+<span class="lineno"> 170 </span>                        } catch (ignore: Exception) {
+<span class="lineno"> 171 </span>                        } finally {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:187:69</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 184 </span>            }
+<span class="lineno"> 185 </span>
+<span class="lineno"> 186 </span>            if (!isQuitting &amp;&amp; syslogQueue != null &amp;&amp; !Thread.currentThread().isInterrupted) {
+<span class="lineno"> 187 </span>                syslogQueue?.offer(EchoPacket(level, tag, message), <span
+                            class="error">1234L</span>, TimeUnit.MILLISECONDS)
+<span class="lineno"> 188 </span>            } else {
+<span class="lineno"> 189 </span>                log(level, tag, message)
+<span class="lineno"> 190 </span>            }
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="MaxLineLength" open="open">
+        <summary class="rule-container"><span class="rule">MaxLineLength: 34 </span><span
+                class="description">Line detected, which is longer than the defined maximum line length in the code style.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#maxlinelength">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/RepositoryModule.kt:14:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  11 </span>    /*@Singleton
+<span class="lineno">  12 </span>    @Provides
+<span class="lineno">  13 </span>    fun provideConfigRepository(
+<span class="lineno">  14 </span><span class="error">        baseLineApiService: BaseLineApiService, languageListDao: LanguageListDao, bpcScorePercentageDao: BpcScorePercentageDao, prefRepo: PrefRepo</span>
+<span class="lineno">  15 </span>    ): ConfigRepository {
+<span class="lineno">  16 </span>        return ConfigRepository(baseLineApiService, languageListDao,bpcScorePercentageDao,prefRepo)
+<span class="lineno">  17 </span>    }*/
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:71:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  68 </span>
+<span class="lineno">  69 </span>    @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
+<span class="lineno">  70 </span>//    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+<span class="lineno">  71 </span><span class="error">//    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel&lt;List&lt;SurveyResponseModel&gt;&gt;</span>
+<span class="lineno">  72 </span>        suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel&lt;SurveyResponseModel&gt;
+<span class="lineno">  73 </span>
+<span class="lineno">  74 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:72:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  69 </span>    @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
+<span class="lineno">  70 </span>//    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+<span class="lineno">  71 </span>//    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel&lt;List&lt;SurveyResponseModel&gt;&gt;
+<span class="lineno">  72 </span><span class="error">        suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel&lt;SurveyResponseModel&gt;</span>
+<span class="lineno">  73 </span>
+<span class="lineno">  74 </span>
+<span class="lineno">  75 </span>    @POST(SUBPATH_SAVE_SURVEY_ANSWES)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:77:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  74 </span>
+<span class="lineno">  75 </span>    @POST(SUBPATH_SAVE_SURVEY_ANSWES)
+<span class="lineno">  76 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+<span class="lineno">  77 </span><span class="error">    suspend fun saveAnswersToServer(@Body saveSurveyRequest: List&lt;SaveSurveyRequestModel&gt;): ApiResponseModel&lt;List&lt;TransactionResponse&gt;&gt;</span>
+<span class="lineno">  78 </span>
+<span class="lineno">  79 </span>    @POST(SUBPATH_GET_SAVED_SURVEY)
+<span class="lineno">  80 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:81:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  78 </span>
+<span class="lineno">  79 </span>    @POST(SUBPATH_GET_SAVED_SURVEY)
+<span class="lineno">  80 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+<span class="lineno">  81 </span><span class="error">    suspend fun fetchSavedSurveyAnswersFromServer(@Body savedSurveyAnswersRequest: FetchSavedSurveyAnswersRequest): ApiResponseModel&lt;List&lt;SavedSurveyAnswersResponse&gt;&gt;</span>
+<span class="lineno">  82 </span>
+<span class="lineno">  83 </span>    @POST(SUBPATH_GET_MISSION)
+<span class="lineno">  84 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:92:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  89 </span>
+<span class="lineno">  90 </span>    @POST(GET_SECTION_STATUS)
+<span class="lineno">  91 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+<span class="lineno">  92 </span><span class="error">    suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel&lt;List&lt;SectionStatusResponseModel&gt;&gt;</span>
+<span class="lineno">  93 </span>
+<span class="lineno">  94 </span>    @POST(SUBPATH_LOGOUT)
+<span class="lineno">  95 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/network/interfaces/BaseLineApiService.kt:103:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 100 </span>
+<span class="lineno"> 101 </span>    @POST(SUBPATH_SURVEY_ANSWERS)
+<span class="lineno"> 102 </span>    @Headers(&quot;$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE&quot;)
+<span class="lineno"> 103 </span><span class="error">    suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel&lt;List&lt;QuestionAnswerResponseModel&gt;&gt;</span>
+<span class="lineno"> 104 </span>}
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/language/presentation/LanguageScreenComponent.kt:180:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 177 </span>                        }
+<span class="lineno"> 178 </span>//                        if (viewModel.isLanguageVillageAvailable.value) {
+<span class="lineno"> 179 </span>////                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
+<span class="lineno"> 180 </span><span class="error">////                                languagesState.languageList[languagesState.selectedLanguageId].langCode ?: DEFAULT_LANGUAGE_CODE</span>
+<span class="lineno"> 181 </span>////                            ))
+<span class="lineno"> 182 </span>//                        } else {
+<span class="lineno"> 183 </span>////                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_screen/presentation/questionComponent/NestedLazyList.kt:408:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 405 </span>                                        CalculationResultComponent(
+<span class="lineno"> 406 </span>                                            title = question.questionEntity.questionDisplay,
+<span class="lineno"> 407 </span>                                            showQuestion = question.optionItemEntityState.first(),
+<span class="lineno"> 408 </span><span class="error">                                            defaultValue = questionScreenViewModel.calculatedResult.value[question.questionId!!]</span>
+<span class="lineno"> 409 </span>                                                ?: BLANK_STRING
+<span class="lineno"> 410 </span>                                        )
+<span class="lineno"> 411 </span>                                    }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_screen/presentation/questionComponent/NestedLazyList.kt:746:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 743 </span>                                        } else {
+<span class="lineno"> 744 </span>                                            BaselineCore.setReferenceId(BLANK_STRING)
+<span class="lineno"> 745 </span>                                            navController.navigateToFormTypeQuestionScreen(
+<span class="lineno"> 746 </span><span class="error">                                                questionDisplay = question.questionEntity.questionDisplay?: BLANK_STRING,</span>
+<span class="lineno"> 747 </span>                                                questionId = question.questionId?:0,
+<span class="lineno"> 748 </span>                                                surveyId = sectionDetails.surveyId,
+<span class="lineno"> 749 </span>                                                sectionId = sectionDetails.sectionId,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_screen/presentation/questionComponent/NestedLazyList.kt:890:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 887 </span>//                                            BaselineCore.setReferenceId(questionScreenViewModel.getReferenceIdForFormWithNoneQuestion())
+<span class="lineno"> 888 </span>                                            navController.navigateToFormTypeQuestionScreen(
+<span class="lineno"> 889 </span>                                                questionId = question.questionId ?:0,
+<span class="lineno"> 890 </span><span class="error">                                                questionDisplay = question.questionEntity.questionDisplay ?: BLANK_STRING,</span>
+<span class="lineno"> 891 </span>                                                surveyId = sectionDetails.surveyId,
+<span class="lineno"> 892 </span>                                                sectionId = sectionDetails.sectionId,
+<span class="lineno"> 893 </span>                                                surveyeeId =  surveyeeId
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/FormTypeQuestionScreen.kt:268:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 265 </span>                    if (!viewModel.loaderState.value.isLoaderVisible) {
+<span class="lineno"> 266 </span>/*flatten() -- used for remove one list*/
+<span class="lineno"> 267 </span>                        val tempList = viewModel.updatedOptionList.toList()
+<span class="lineno"> 268 </span><span class="error">                        var contentList: List&lt;ContentList&gt; = tempList.map{ it.optionItemEntity?.contentEntities!! }.flatten()</span>
+<span class="lineno"> 269 </span>                        var contentVallue:MutableState&lt;ContentList?&gt; = remember {
+<span class="lineno"> 270 </span>                            mutableStateOf(null)
+<span class="lineno"> 271 </span>                        }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:172:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 169 </span>                                    option.optionItemEntity?.display,
+<span class="lineno"> 170 </span>                                    option.optionItemEntity.selectedValue ?: &quot;Select&quot;,
+<span class="lineno"> 171 </span>                                    showQuestionState = option,
+<span class="lineno"> 172 </span><span class="error">                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),</span>
+<span class="lineno"> 173 </span>                                    sources = option.optionItemEntity.values,
+<span class="lineno"> 174 </span>                                    isEditAllowed = isEditAllowed,
+<span class="lineno"> 175 </span>                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:198:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 195 </span>                                        optionId = option.optionId ?: -1
+<span class="lineno"> 196 </span>                                    )?.selectedValue ?: BLANK_STRING*/,
+<span class="lineno"> 197 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 198 </span><span class="error">                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })</span>
+<span class="lineno"> 199 </span>                                    }
+<span class="lineno"> 200 </span>                                ) { value -&gt;
+<span class="lineno"> 201 </span>                                    questionTypeScreenViewModel.onEvent(
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:250:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 247 </span>                                    title = option.optionItemEntity.display,
+<span class="lineno"> 248 </span>                                    sources = option.optionItemEntity.values,
+<span class="lineno"> 249 </span>                                    showQuestionState = option,
+<span class="lineno"> 250 </span><span class="error">                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),</span>
+<span class="lineno"> 251 </span>                                    selectOptionText = mOption,
+<span class="lineno"> 252 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 253 </span>                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:253:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 250 </span>                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
+<span class="lineno"> 251 </span>                                    selectOptionText = mOption,
+<span class="lineno"> 252 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 253 </span><span class="error">                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })</span>
+<span class="lineno"> 254 </span>                                    }
+<span class="lineno"> 255 </span>                                ) { value -&gt;
+<span class="lineno"> 256 </span>                                    val valueIds = option.optionItemEntity.values?.filter {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:299:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 296 </span>                                EditTextWithTitleComponent(
+<span class="lineno"> 297 </span>                                    option.optionItemEntity.display,
+<span class="lineno"> 298 </span>                                    showQuestion = option,
+<span class="lineno"> 299 </span><span class="error">                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),</span>
+<span class="lineno"> 300 </span>                                    resetResponse = responseValue == BLANK_STRING,
+<span class="lineno"> 301 </span>                                    defaultValue = responseValue,
+<span class="lineno"> 302 </span>                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:304:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 301 </span>                                    defaultValue = responseValue,
+<span class="lineno"> 302 </span>                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
+<span class="lineno"> 303 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 304 </span><span class="error">                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })</span>
+<span class="lineno"> 305 </span>                                    }
+<span class="lineno"> 306 </span>                                ) { value -&gt;
+<span class="lineno"> 307 </span>                                    questionTypeScreenViewModel.formTypeOption.let { it1 -&gt;
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:343:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 340 </span>                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+<span class="lineno"> 341 </span>                                            optionId = option.optionId ?: -1
+<span class="lineno"> 342 </span>                                        )?.selectedValue ?: BLANK_STRING,
+<span class="lineno"> 343 </span><span class="error">                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),</span>
+<span class="lineno"> 344 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 345 </span>                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
+<span class="lineno"> 346 </span>                                    },
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:345:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 342 </span>                                        )?.selectedValue ?: BLANK_STRING,
+<span class="lineno"> 343 </span>                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
+<span class="lineno"> 344 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 345 </span><span class="error">                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })</span>
+<span class="lineno"> 346 </span>                                    },
+<span class="lineno"> 347 </span>                                    onAnswerSelection = { selectedValue -&gt;
+<span class="lineno"> 348 </span>                                        questionTypeScreenViewModel.formTypeOption.let { formTypeOption -&gt;
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:367:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 364 </span>                            QuestionType.Toggle.name -&gt; {
+<span class="lineno"> 365 </span>                                RadioOptionTypeComponent(
+<span class="lineno"> 366 </span>                                    optionItemEntityState = option,
+<span class="lineno"> 367 </span><span class="error">                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),</span>
+<span class="lineno"> 368 </span>                                    selectedValue = if (viewModel.tempRefId.value != BLANK_STRING)
+<span class="lineno"> 369 </span>                                        formQuestionResponseEntity.value.getResponseForOptionId(
+<span class="lineno"> 370 </span>                                            option.optionId ?: -1
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_type_screen/presentation/component/NestedLazyListForFormQuestions.kt:378:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 375 </span>                                            optionId = option.optionId ?: -1
+<span class="lineno"> 376 </span>                                        )?.selectedValue ?: BLANK_STRING,
+<span class="lineno"> 377 </span>                                    onInfoButtonClicked = {
+<span class="lineno"> 378 </span><span class="error">                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })</span>
+<span class="lineno"> 379 </span>                                    },
+<span class="lineno"> 380 </span>                                    onOptionSelected = { selectedValue, selectedOptionId -&gt;
+<span class="lineno"> 381 </span>                                        questionTypeScreenViewModel.onEvent(
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/section_screen/presentation/SectionListScreen.kt:330:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 327 </span>
+<span class="lineno"> 328 </span>        if (!loaderState.isLoaderVisible) {
+<span class="lineno"> 329 </span>            if (sectionsList.size == 1 &amp;&amp; sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
+<span class="lineno"> 330 </span><span class="error">                navController.navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId)</span>
+<span class="lineno"> 331 </span>            } else {
+<span class="lineno"> 332 </span>                ModelBottomSheetDescriptionContentComponent(
+<span class="lineno"> 333 </span>                    modifier = Modifier
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/section_screen/presentation/SectionListScreen.kt:392:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 389 </span>
+<span class="lineno"> 390 </span>                        item {
+<span class="lineno"> 391 </span>                            ComplexSearchComponent {
+<span class="lineno"> 392 </span><span class="error">                                navController.navigateToSearchScreen(surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)</span>
+<span class="lineno"> 393 </span>                            }
+<span class="lineno"> 394 </span>                        }
+<span class="lineno"> 395 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineCore.kt:71:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  68 </span>    }
+<span class="lineno">  69 </span>
+<span class="lineno">  70 </span>
+<span class="lineno">  71 </span><span class="error">    fun appScopeLaunch(coroutineContext: CoroutineContext = Dispatchers.Default, tag: String = TAG, message: String? = &quot;appScopeLaunch&quot;, func: suspend () -&gt; Unit): Job? {</span>
+<span class="lineno">  72 </span>        try {
+<span class="lineno">  73 </span>            return scope().launch(coroutineContext) {
+<span class="lineno">  74 </span>                try {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:97:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  94 </span>    private const val FILE_NAME_SUFFIX = &quot;.log&quot;
+<span class="lineno">  95 </span>
+<span class="lineno">  96 </span>    // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
+<span class="lineno">  97 </span><span class="error">    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 10L) *1024*1024 // collect up to 10 MB of log files // 20MB for debug builds</span>
+<span class="lineno">  98 </span>    private const val SUPPORT_LOG_FILE_NAME_PREFIX = &quot;baseline_log_&quot;
+<span class="lineno">  99 </span>    private const val SUPPORT_LOG_FILE_NAME_SUFFIX = &quot;.txt&quot;
+<span class="lineno"> 100 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:135:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 132 </span>
+<span class="lineno"> 133 </span>    fun log(level: Int, tag: String, message: String) {
+<span class="lineno"> 134 </span>        try {
+<span class="lineno"> 135 </span><span class="error">            if (isInitializing.compareAndSet(false, true) &amp;&amp; !isQuitting &amp;&amp; (syslogThread == null || !syslogThread!!.isAlive)) {</span>
+<span class="lineno"> 136 </span>                Log.i(TAG, &quot;initializing logs...&quot;)
+<span class="lineno"> 137 </span>                syslogFile = File.createTempFile(
+<span class="lineno"> 138 </span>                    FILE_NAME_PREFIX + syslogFileNameTimeStampFormat.format(
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:140:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 137 </span>                syslogFile = File.createTempFile(
+<span class="lineno"> 138 </span>                    FILE_NAME_PREFIX + syslogFileNameTimeStampFormat.format(
+<span class="lineno"> 139 </span>                        Date()
+<span class="lineno"> 140 </span><span class="error">                    ), FILE_NAME_SUFFIX, BaselineCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)</span>
+<span class="lineno"> 141 </span>                )
+<span class="lineno"> 142 </span>                syslogStream = FileOutputStream(syslogFile!!, true)
+<span class="lineno"> 143 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:236:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 233 </span>    private fun log(packet: EchoPacket) {
+<span class="lineno"> 234 </span>        synchronized(TAG) {
+<span class="lineno"> 235 </span>            try {
+<span class="lineno"> 236 </span><span class="error">                val bytes = &quot;${syslogMessageTimeStampFormat.format(packet.timestamp)} ${packet.tag} ${packet.message}\n&quot;.toByteArray()</span>
+<span class="lineno"> 237 </span>                syslogStream?.write(bytes, 0, bytes.size)
+<span class="lineno"> 238 </span>            } catch (fault: Throwable) {
+<span class="lineno"> 239 </span>                Log.println(packet.level, packet.tag, &quot;${packet.message} exception: $fault&quot;)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:300:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 297 </span>                        val buffReader = BufferedReader(inputStreamReader)
+<span class="lineno"> 298 </span>                        try {
+<span class="lineno"> 299 </span>                            var bytesToSkipAtStartOfLogFile = file.length() - (SUPPORT_LOG_SIZE_MAX - totalBytes)
+<span class="lineno"> 300 </span><span class="error">                            if (bytesToSkipAtStartOfLogFile &gt; 0) { //For a long log file just log the preamble and then the end of the log file.</span>
+<span class="lineno"> 301 </span>                                val preamble = getPreamble()
+<span class="lineno"> 302 </span>                                for(log in preamble) {
+<span class="lineno"> 303 </span>                                    val preambleLog = &quot;$log\n&quot;
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:429:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 426 </span>                        val length = logFile.length()
+<span class="lineno"> 427 </span>                        bytesOfLogFiles += length
+<span class="lineno"> 428 </span>                        if (fileIndex++ &lt; 2) continue
+<span class="lineno"> 429 </span><span class="error">                        //delete oldest files where the newer files total &gt; SUPPORT_LOG_SIZE_MAX, except for the current file</span>
+<span class="lineno"> 430 </span>                        if (logFile.name.contains(SUPPORT_LOG_FILE_NAME_PREFIX) ||
+<span class="lineno"> 431 </span>                            (bytesOfLogFiles &gt; SUPPORT_LOG_SIZE_MAX &amp;&amp; !TextUtils.equals(syslogFile?.name, logFile.name))) {
+<span class="lineno"> 432 </span>
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:431:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 428 </span>                        if (fileIndex++ &lt; 2) continue
+<span class="lineno"> 429 </span>                        //delete oldest files where the newer files total &gt; SUPPORT_LOG_SIZE_MAX, except for the current file
+<span class="lineno"> 430 </span>                        if (logFile.name.contains(SUPPORT_LOG_FILE_NAME_PREFIX) ||
+<span class="lineno"> 431 </span><span class="error">                            (bytesOfLogFiles &gt; SUPPORT_LOG_SIZE_MAX &amp;&amp; !TextUtils.equals(syslogFile?.name, logFile.name))) {</span>
+<span class="lineno"> 432 </span>
+<span class="lineno"> 433 </span>                            logFile.delete()
+<span class="lineno"> 434 </span>                            // Added logging for deleting log files
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:435:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 432 </span>
+<span class="lineno"> 433 </span>                            logFile.delete()
+<span class="lineno"> 434 </span>                            // Added logging for deleting log files
+<span class="lineno"> 435 </span><span class="error">                            if (DEBUG) BaselineLogger.d(TAG, &quot;Deleted logfile ${logFile.name} of size ${formatShortFileSize(context, length)}&quot;)</span>
+<span class="lineno"> 436 </span>                            removedBytes += length
+<span class="lineno"> 437 </span>                        }
+<span class="lineno"> 438 </span>                    }
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:441:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 438 </span>                    }
+<span class="lineno"> 439 </span>                }
+<span class="lineno"> 440 </span>
+<span class="lineno"> 441 </span><span class="error">                BaselineLogger.d(TAG, &quot;Logs on Disk: ${formatShortFileSize(context, bytesOfLogFiles - removedBytes)} Cleanup Removed: ${formatShortFileSize(context, removedBytes)}&quot;)</span>
+<span class="lineno"> 442 </span>            }
+<span class="lineno"> 443 </span>        } catch (ex: Exception) {
+<span class="lineno"> 444 </span>            e(TAG, &quot;cleanup $checkForSize&quot;, ex)
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="MayBeConst" open="open">
+        <summary class="rule-container"><span class="rule">MayBeConst: 1 </span><span
+                class="description">Usage of `vals` that can be `const val` detected.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#maybeconst">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/AppConstants.kt:208:5</span><span
+                    class="message">COMMON_ERROR_MSG can be a `const val`.</span>
+                <pre><code><span class="lineno"> 205 </span>val GENERIC_ERROR_MSG =
+<span class="lineno"> 206 </span>    &quot;Oops! An error has occurred on our server. Please check internet connection and try to playback again!&quot;
+<span class="lineno"> 207 </span>const val NETWORK_ERROR_MSG = &quot;Make sure that Wi-Fi or mobile data is turned on, then try again.&quot;
+<span class="lineno"> 208 </span>val <span class="error">COMMON_ERROR_MSG</span> =
+<span class="lineno"> 209 </span>    &quot;Something Went Wrong&quot;
+<span class="lineno"> 210 </span>const val COMMON_ERROR_TITLE = &quot;Something Went Wrong&quot;
+<span class="lineno"> 211 </span>const val TIMEOUT_ERROR_MSG = &quot;Your request timed out. Please try again in some time.&quot;
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="ReturnCount" open="open">
+        <summary class="rule-container"><span class="rule">ReturnCount: 3 </span><span
+                class="description">Restrict the number of return statements in methods.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#returncount">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_screen/viewmodel/QuestionScreenViewModel.kt:1370:17</span><span
+                    class="message">Function getSelectedValuesForQuestion has 3 return statements which exceeds the limit of 2.</span>
+                <pre><code><span class="lineno">1367 </span>        return selectedValues.map { it.inputValue }.joinToString(&quot;+&quot;)
+<span class="lineno">1368 </span>    }
+<span class="lineno">1369 </span>
+<span class="lineno">1370 </span>    private fun <span
+                            class="error">getSelectedValuesForQuestion</span>(
+<span class="lineno">1371 </span>        questionId: Int?,
+<span class="lineno">1372 </span>        options: List&lt;OptionItemEntityState&gt;
+<span class="lineno">1373 </span>    ): List&lt;InputTypeQuestionAnswerEntity&gt; {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/BaselineLogger.kt:356:17</span><span
+                    class="message">Function buildLogFile has 3 return statements which exceeds the limit of 2.</span>
+                <pre><code><span class="lineno"> 353 </span>        return@withContext false
+<span class="lineno"> 354 </span>    }
+<span class="lineno"> 355 </span>
+<span class="lineno"> 356 </span>    suspend fun <span class="error">buildLogFile</span>(appContext: Context,onFailed:()-&gt;Unit): File? {
+<span class="lineno"> 357 </span>        try {
+<span class="lineno"> 358 </span>
+<span class="lineno"> 359 </span>            val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/utils/Utils.kt:1429:5</span><span
+                    class="message">Function getAutoCalculationConditionConditions has 6 return statements which exceeds the limit of 2.</span>
+                <pre><code><span class="lineno">1426 </span>
+<span class="lineno">1427 </span>}
+<span class="lineno">1428 </span>
+<span class="lineno">1429 </span>fun <span
+                            class="error">getAutoCalculationConditionConditions</span>(value: String): Pair&lt;Int, String&gt;? {
+<span class="lineno">1430 </span>    try {
+<span class="lineno">1431 </span>        val s = value.split(AUTO_CALCULATE_CONDITION_DELIMITER)
+<span class="lineno">1432 </span>        if (s.isEmpty())
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="UnusedParameter" open="open">
+        <summary class="rule-container"><span class="rule">UnusedParameter: 3 </span><span
+                class="description">Function parameter is unused and should be removed.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#unusedparameter">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/di/BaselineModule.kt:223:9</span><span
+                    class="message">Function parameter `baseLineApiService` is unused.</span>
+                <pre><code><span class="lineno"> 220 </span>    @Singleton
+<span class="lineno"> 221 </span>    fun provideLanguageScreenRepository(
+<span class="lineno"> 222 </span>        prefBSRepo: PrefBSRepo,
+<span class="lineno"> 223 </span>        <span class="error">baseLineApiService</span>: BaseLineApiService,
+<span class="lineno"> 224 </span>        languageListDao: LanguageListDao,
+<span class="lineno"> 225 </span>        villageListDao: VillageListDao
+<span class="lineno"> 226 </span>    ): LanguageScreenRepository {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/auth/presentation/LoginScreenComponent.kt:62:5</span><span
+                    class="message">Function parameter `navController` is unused.</span>
+                <pre><code><span class="lineno">  59 </span>@OptIn(ExperimentalMaterial3Api::class)
+<span class="lineno">  60 </span>@Composable
+<span class="lineno">  61 </span>fun LoginScreenComponent(
+<span class="lineno">  62 </span>    <span class="error">navController</span>: NavController,
+<span class="lineno">  63 </span>    viewModel: LoginScreenViewModel,
+<span class="lineno">  64 </span>    modifier: Modifier = Modifier
+<span class="lineno">  65 </span>) {
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/splash/presentaion/SplashScreenComponent.kt:42:5</span><span
+                    class="message">Function parameter `navController` is unused.</span>
+                <pre><code><span class="lineno">  39 </span>
+<span class="lineno">  40 </span>@Composable
+<span class="lineno">  41 </span>fun SplashScreenComponent(
+<span class="lineno">  42 </span>    <span class="error">navController</span>: NavController,
+<span class="lineno">  43 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  44 </span>    viewModel: SplashScreenViewModel
+<span class="lineno">  45 </span>) {
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="UnusedPrivateProperty" open="open">
+        <summary class="rule-container"><span class="rule">UnusedPrivateProperty: 3 </span><span
+                class="description">Property is unused and should be removed.</span></summary>
+        <a href="https://detekt.dev/docs/rules/style#unusedprivateproperty">Documentation</a>
+        <ul>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/question_screen/domain/repository/QuestionScreenRepositoryImpl.kt:36:17</span><span
+                    class="message">Private property `baseLineApiService` is unused.</span>
+                <pre><code><span class="lineno">  33 </span>
+<span class="lineno">  34 </span>class QuestionScreenRepositoryImpl @Inject constructor(
+<span class="lineno">  35 </span>    private val prefBSRepo: PrefBSRepo,
+<span class="lineno">  36 </span>    private val <span class="error">baseLineApiService</span>: BaseLineApiService,
+<span class="lineno">  37 </span>    private val surveyeeEntityDao: SurveyeeEntityDao,
+<span class="lineno">  38 </span>    private val surveyEntityDao: SurveyEntityDao,
+<span class="lineno">  39 </span>    private val sectionEntityDao: SectionEntityDao,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/section_screen/domain/repository/SectionListScreenRepositoryImpl.kt:24:17</span><span
+                    class="message">Private property `baseLineApiService` is unused.</span>
+                <pre><code><span class="lineno">  21 </span>
+<span class="lineno">  22 </span>class SectionListScreenRepositoryImpl(
+<span class="lineno">  23 </span>    private val prefBSRepo: PrefBSRepo,
+<span class="lineno">  24 </span>    private val <span class="error">baseLineApiService</span>: BaseLineApiService,
+<span class="lineno">  25 </span>    private val surveyEntityDao: SurveyEntityDao,
+<span class="lineno">  26 </span>    private val sectionEntityDao: SectionEntityDao,
+<span class="lineno">  27 </span>    private val questionEntityDao: QuestionEntityDao,
+</code></pre>
+            </li>
+            <li><span class="location">baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/surveyee_screen/presentation/AllSurveyeeListTab.kt:84:9</span><span
+                    class="message">Private property `context` is unused.</span>
+                <pre><code><span class="lineno">  81 </span>    activityDate: String,
+<span class="lineno">  82 </span>    activityId: Int,
+<span class="lineno">  83 </span>) {
+<span class="lineno">  84 </span>    val <span class="error">context</span> = LocalContext.current
+<span class="lineno">  85 </span>
+<span class="lineno">  86 </span>    val surveyeeList = viewModel.filteredSurveyeeListState.value
+<span class="lineno">  87 </span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+</div>
 
 
-generated with <a href="https://detekt.dev/">detekt version 1.23.3</a> on 2024-06-13 09:54:08 UTC.
+generated with <a href="https://detekt.dev/">detekt version 1.23.3</a> on 2024-06-21 09:39:48 UTC.
 
 </body>
 </html>

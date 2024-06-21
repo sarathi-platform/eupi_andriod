@@ -20,7 +20,6 @@ import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -83,7 +82,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                     prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                     updateCoreEventFileName(
                         context = BaselineCore.getAppContext(),
-                        mobileNo = prefRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+                        mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)
+                            ?: BLANK_STRING
                     )
                 }
                 val apiResponse = userApiResponse.data?.username?.toInt()
