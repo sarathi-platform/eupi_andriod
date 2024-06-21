@@ -268,10 +268,10 @@
             },
             {
               "id": 2,
-              "name": "Conduct Baseline Survey",
+              "name": "Conduct Hamlet Survey",
               "startOffset": 0,
               "endOffset": 5,
-              "activityStatus": "COMPLETED",
+              "activityStatus": "INPROGRESS",
               "actualStartDate": "12 Jun 2024",
               "actualEndDate": "12 Jun 2024",
               "activityConfig": {
