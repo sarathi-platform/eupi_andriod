@@ -13,11 +13,13 @@ class DocumentUseCase @Inject constructor(
 
     suspend fun saveDocumentToDB(
         referenceId: String,
-        documentValue: String
+        documentValue: String,
+        activityId: Int
     ) {
         return repository.saveDocumentToDB(
             referenceId = referenceId,
-            documentValue = documentValue
+            documentValue = documentValue,
+            activityId
         )
     }
 
