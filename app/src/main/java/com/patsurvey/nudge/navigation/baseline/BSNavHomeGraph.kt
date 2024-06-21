@@ -14,7 +14,6 @@ import com.nrlm.baselinesurvey.ARG_COMPLETION_MESSAGE
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_FROM_SCREEN
 import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
-import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
@@ -56,15 +55,12 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             },
             navArgument(name = ARG_MISSION_NAME) {
                 type = NavType.StringType
-            }, navArgument(name = ARG_MISSION_DATE) {
-                type = NavType.StringType
             }
         )) {
             MissionSummaryScreen(
                 navController = navController, missionId = it.arguments?.getInt(
                     ARG_MISSION_ID
-                ) ?: 0, missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: "",
-                missionDate = it.arguments?.getString(ARG_MISSION_DATE) ?: ""
+                ) ?: 0, missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: ""
             )
         }
 

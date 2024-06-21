@@ -14,11 +14,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.core.model.MissionUiModel
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -57,6 +59,7 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScre
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.navigation.baseline.BSNavHomeGraph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
@@ -154,10 +157,14 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController = navController, prefRepo)
         bpcDidiListNavGraph(navController = navController)
-//        BSNavHomeGraph(navController)
+        BSNavHomeGraph(navController)
         MatNavigation(
             navController = navController,
-            onSettingIconClick = { navController.navigateToSettingScreen() })
+            onSettingIconClick = { navController.navigateToSettingScreen() },
+            onNavigateToBaselineMission = { mission: MissionUiModel ->
+                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
+            }
+        )
         SmallGroupNavigation(
             navController = navController,
             onSettingIconClick = { navController.navigateToSettingScreen() })

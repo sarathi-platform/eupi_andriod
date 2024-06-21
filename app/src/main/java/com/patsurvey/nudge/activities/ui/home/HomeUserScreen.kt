@@ -29,6 +29,7 @@ fun HomeUserScreen(
 //
 //        }
         //TODO Remove after test
+
         DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
         if (prefRepo.isUserBPC()) {

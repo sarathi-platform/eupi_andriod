@@ -102,7 +102,7 @@ fun NavController.navigateToFormTypeQuestionScreen(
 }
 
 fun NavController.navigateBackToMissionScreen() {
-    this.popBackStack(HomeScreens.Home_SCREEN.route, false)
+    this.popBackStack(HomeScreens.MISSION_SCREEN.route, false)
 }
 fun NavController.navigateBackToSurveyeeListScreen() {
     this.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
@@ -178,7 +178,7 @@ sealed class HomeScreens(val route: String) {
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object BS_DIDI_DETAILS_SCREEN : HomeScreens(route = BASELINE_DIDI_DETAILS_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
-        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_MISSION_DATE.value}}")
+        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}")
 
     object Final_StepComplitionScreen :
         HomeScreens(route = "$Final_Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
