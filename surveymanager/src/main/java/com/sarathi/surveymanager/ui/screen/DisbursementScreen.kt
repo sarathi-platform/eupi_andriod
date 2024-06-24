@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.toInMillisec
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -107,7 +108,11 @@ fun DisbursementSummaryScreen(
                         onContentUI = {
                             if (viewModel.taskList.value.isNotEmpty()) {
                                 Column {
-                                    viewModel.taskList.value.entries.toList()
+                                    viewModel.taskList.value.entries.toList().sortedByDescending {
+                                        viewModel.getSurveyUIModel(it.value).subTittle1.toInMillisec(
+                                            format = "dd MMM, yyyy"
+                                        )
+                                    }
                                         .forEachIndexed { index, task ->
                                             val surveyData = viewModel.getSurveyUIModel(task.value)
                                             DisbursementCard(

@@ -98,7 +98,12 @@ fun Long.toDateInMonthString(): String {
     val format = SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
-
+fun String.toInMillisec(format: String): Long {
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val date = dateFormat.parse(this)
+    val millis = date?.time
+    return millis ?: 0
+}
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 
 fun String.getSizeInLong() = this.toByteArray().size.toLong()
@@ -948,19 +953,5 @@ fun formatToIndianRupee(amount: String): String {
 
 }
 
-fun convertDate(inputDate: String): String? {
-    if (inputDate.isEmpty()) {
-        return BLANK_STRING
-    }
-    try {
-        val inputFormat = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
-        val date = inputFormat.parse(inputDate)
-        return date?.let { outputFormat.format(it) }
-    } catch (ex: Exception) {
-        CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "convertDate:${ex.message}", ex, true) }
-        return inputDate
-    }
 
-}
+

@@ -49,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.BLANK_STRING
-import com.nudge.core.convertDate
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.theme.blueDark
@@ -380,7 +378,7 @@ fun FormMainSummaryCard(
                     style = defaultTextStyle.copy(fontSize = 16.sp, color = blueDark)
                 )
                 Text(
-                    convertDate(formDisburesmentMap.key.first) ?: BLANK_STRING,
+                    formDisburesmentMap.key.first,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
 

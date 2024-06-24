@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.convertDate
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -71,7 +70,7 @@ fun DisbursementCard(
             ) {
                 TextRow(
                     text1 = stringResource(R.string.date),
-                    text2 = convertDate(subTitle1) ?: BLANK_STRING
+                    text2 = subTitle1 ?: BLANK_STRING
                 )
                 TextRow(
                     text1 = stringResource(R.string.amount),

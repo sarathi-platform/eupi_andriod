@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.formatTo
 import com.nudge.core.showCustomToast
@@ -182,8 +183,8 @@ fun SurveyScreen(
                                 var selectedValue =
                                     question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING
                                 if (TextUtils.isEmpty(selectedValue)) {
-                                    selectedValue = Date().formatTo(dateFormat = "dd MMM, yyyy")
-                                    question.options?.firstOrNull()?.selectedValue = selectedValue
+                                    selectedValue = Date().formatTo(dateFormat = DD_MMM_YYYY_FORMAT)
+                                    saveInputTypeAnswer(selectedValue, question, viewModel)
                                 }
                                 DatePickerComponent(
                                     isMandatory = question.isMandatory,
@@ -229,7 +230,7 @@ fun SurveyScreen(
                                         question.options?.forEach { option ->
                                             option.isSelected = selectedValue.id == option.optionId
                                         }
-
+                                        viewModel.checkButtonValidation()
                                     }
                                 )
                             }
@@ -252,7 +253,7 @@ fun SurveyScreen(
 
 
                                         }
-
+                                        viewModel.checkButtonValidation()
                                     }
                                 )
                             }

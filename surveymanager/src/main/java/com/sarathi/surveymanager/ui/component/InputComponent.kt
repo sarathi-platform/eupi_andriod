@@ -28,8 +28,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
-import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
@@ -82,7 +82,7 @@ fun InputComponent(
             placeholder = {
                 androidx.compose.material3.Text(
                     text = hintText,
-                    style = smallerTextStyle.copy(
+                    style = smallTextStyle.copy(
                         color = placeholderGrey
                     ),
                     modifier = Modifier
