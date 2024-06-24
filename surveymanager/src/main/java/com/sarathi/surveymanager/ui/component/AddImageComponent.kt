@@ -99,7 +99,11 @@ fun AddImageComponent(
     }
     Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
-            QuestionComponent(title = title, isRequiredField = isMandatory)
+            QuestionComponent(
+                title = title,
+                isRequiredField = isMandatory,
+                subTitle = "Signed & Sealed Physical Format D"
+            )
         }
 
         BoxWithConstraints(
@@ -130,7 +134,7 @@ fun AddImageComponent(
                             }
                             .background(white)
                             .dottedBorder(
-                                dotSpacing = 32f,
+                                dotSpacing = 16f,
                                 dotRadius = 6f,
                                 dotColor = dotedBorderColor
                             ),

@@ -33,7 +33,6 @@ fun ActivityRowCard(
         ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
             if (!isLimitContentData) {
                 onContentData(contentValue, contentKey, contentType, contentTitle)
-//                navigateToMediaPlayerScreen(navController, contentKey, contentType, contentTitle)
             } else {
                 navigateToContentDetailScreen(
                     navController,
