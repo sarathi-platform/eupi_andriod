@@ -151,4 +151,8 @@ interface ActivityDao {
     @Query("Select * from activity_table where userId=:userId and activityId=:activityId and missionId=:missionId")
     suspend fun getActivity(userId: String, missionId: Int, activityId: Int): ActivityEntity?
 
+    @Query("Select * from activity_table where userId=:userId and isActive=1 ")
+    suspend fun getAllActivityForUser(userId: String): List<ActivityEntity>
+
+
 }

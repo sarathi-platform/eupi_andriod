@@ -41,3 +41,5 @@ const val NO_OF_POOR_DIDI_TAG = "85"
 const val NATURE = "NATURE"
 const val DIDI_IMAGE_ATTRIBUTE = "didiImage"
 const val DELEGATE_COMM = ","
+const val DELEGATE_DOT = "."
+
