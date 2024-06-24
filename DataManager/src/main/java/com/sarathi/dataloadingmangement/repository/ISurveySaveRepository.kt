@@ -9,7 +9,9 @@ interface ISurveySaveRepository {
         question: QuestionUiModel,
         subjectId: Int,
         taskId: Int,
-        referenceId: String
+        referenceId: String,
+        grantId: Int,
+        grantType: String
     )
 
     fun getSurveyAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String

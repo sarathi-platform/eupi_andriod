@@ -31,7 +31,7 @@ interface MissionDao {
 //    fun insertMission(mission: MissionEntity)
 
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
-    fun deleteMissions(userId: String)
+    fun deleteMissionsForUser(userId: String)
 
     @Query(
         "select mission_table.missionId, mission_language_table.description,  mission_table.status as missionStatus , \n" +
@@ -71,6 +71,11 @@ interface MissionDao {
         userId: String,
         missionId: Int
     ): MissionEntity
+
+    @Query("Select * from mission_table where  userId=:userId and isActive=1")
+    suspend fun getAllMissionForUser(
+        userId: String,
+    ): List<MissionEntity>
 
     @Query("UPDATE mission_table set actualStartDate = :actualStartDate where userId=:userId and missionId = :missionId  and isActive=1")
     fun updateMissionActualStartDate(

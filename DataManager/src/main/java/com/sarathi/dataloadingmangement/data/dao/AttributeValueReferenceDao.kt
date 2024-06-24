@@ -38,4 +38,6 @@ interface AttributeValueReferenceDao {
     @Query("DELETE from $ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME where parentReferenceId in (:parentRefIds)")
     fun removeAttendanceAttributeFromReferenceTable(parentRefIds: List<Int>)
 
+    @Query("Delete from attribute_value_reference_table where userId=:userId")
+    fun deleteAttributeValueReferenceForUser(userId: String)
 }

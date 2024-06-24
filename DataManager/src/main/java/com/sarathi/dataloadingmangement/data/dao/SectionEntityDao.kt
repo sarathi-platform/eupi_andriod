@@ -40,4 +40,8 @@ interface SectionEntityDao {
         userId: String,
     ): List<SectionEntity>
 
+    @Query("Delete from $SECTION_TABLE where userId=:userId ")
+    fun deleteSurveySectionsForUser(
+        userId: String,
+    )
 }

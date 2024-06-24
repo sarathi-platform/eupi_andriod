@@ -422,7 +422,8 @@ fun SettingScreen(
                                     }
                                 }
                                 9 -> {
-                                    filePicker.launch("*/*")
+                                    viewModel.regenerateEventFile("Regenerated Event")
+                                    //filePicker.launch("*/*")
                                 }
 
                                 else -> {

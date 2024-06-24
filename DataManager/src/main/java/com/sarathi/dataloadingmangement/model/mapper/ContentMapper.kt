@@ -6,7 +6,8 @@ import com.sarathi.dataloadingmangement.network.response.ContentResponse
 
 object ContentMapper {
     fun getContent(
-        contentResponse: ContentResponse
+        contentResponse: ContentResponse,
+        userId: String
     ): Content {
         return Content(
             contentKey = contentResponse.contentKey,
@@ -17,7 +18,8 @@ object ContentMapper {
             languageCode = contentResponse.languageCode,
             isDownload = 1,
             thumbUrl = contentResponse.thumbnail ?: BLANK_STRING,
-            id = 0
+            id = 0,
+            userId = userId
         )
     }
 }
