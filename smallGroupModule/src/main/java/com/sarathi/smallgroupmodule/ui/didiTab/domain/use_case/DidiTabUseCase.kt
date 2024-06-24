@@ -36,7 +36,7 @@ class DidiTabUseCase @Inject constructor(
                 smallGroupList.forEach {
                     fetchSmallGroupAttendanceHistoryFromNetwork(it.smallGroupId)
                 }
-                coreSharedPrefs.setDataLoaded(true)
+                coreSharedPrefs.setDidiTabDataLoaded(true)
                 withContext(CoreDispatchers.mainDispatcher) {
                     onComplete(true, BLANK_STRING)
                 }

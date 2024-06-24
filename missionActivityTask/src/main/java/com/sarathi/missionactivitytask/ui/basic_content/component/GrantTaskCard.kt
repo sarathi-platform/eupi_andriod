@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -89,8 +88,7 @@ fun GrantTaskCard(
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(dimen_16_dp)
-            .clip(RoundedCornerShape(dimen_6_dp))
+            .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
                 color = if (status?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,

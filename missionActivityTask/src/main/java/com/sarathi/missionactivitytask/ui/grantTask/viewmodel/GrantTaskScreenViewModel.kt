@@ -95,7 +95,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
         val taskUiModel =
-                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             getSurveyDetail()
             isActivityCompleted()
             isGenerateFormButtonEnable()

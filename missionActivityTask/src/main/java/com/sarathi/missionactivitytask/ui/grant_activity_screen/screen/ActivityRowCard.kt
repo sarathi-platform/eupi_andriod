@@ -10,12 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
+import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
 @Composable
@@ -67,8 +69,9 @@ fun ActivityRowCard(
                         activityName = activity.description
                     )
                 }
-
-
+            }
+            item {
+                CustomVerticalSpacer(size = dimen_20_dp)
             }
         }
     }

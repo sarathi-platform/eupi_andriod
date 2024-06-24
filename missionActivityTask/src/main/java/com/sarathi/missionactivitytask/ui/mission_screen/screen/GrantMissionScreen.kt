@@ -141,6 +141,9 @@ fun GrantMissionScreen(
                             )
                             CustomVerticalSpacer()
                         }
+                        item {
+                            CustomVerticalSpacer()
+                        }
                     }
                 }
             }

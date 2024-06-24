@@ -8,7 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.sarathi.contentmodule.constants.Constants.CONTENT_THRESHOLD_VALUE
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.content_screen.viewmodel.BaseContentScreenViewModel
@@ -28,11 +28,11 @@ fun BaseContentScreen(
     }
     if (viewModel.contentList.value.isNotEmpty()) {
         LazyRow(
-            modifier = Modifier.padding(
-                top = dimen_10_dp,
-                start = dimen_20_dp,
-                end = dimen_20_dp
-            )
+            modifier = Modifier
+                .padding(
+                    top = dimen_10_dp,
+                )
+                .padding(horizontal = dimen_16_dp)
         ) {
             itemsIndexed(viewModel.contentList.value.take(4)) { index, item ->
                 BasicContentComponent(

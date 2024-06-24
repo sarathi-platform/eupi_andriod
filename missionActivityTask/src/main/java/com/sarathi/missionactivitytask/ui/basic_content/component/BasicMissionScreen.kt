@@ -65,7 +65,7 @@ fun BasicMissionCard(
                 onPrimaryClick()
             }
             .fillMaxWidth()
-            .padding(dimen_16_dp)
+            .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
                 color = statusColor(status),
