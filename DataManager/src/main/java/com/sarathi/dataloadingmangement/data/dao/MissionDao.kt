@@ -41,7 +41,7 @@ interface MissionDao {
                 "\n" +
                 "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
                 "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
-                " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId"
+                " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId and activity_table.userId=:userId and mission_language_table.userId=:userId "
     )
     fun getMissions(
         userId: String,

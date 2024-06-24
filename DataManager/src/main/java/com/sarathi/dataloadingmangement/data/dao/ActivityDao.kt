@@ -42,7 +42,7 @@ interface ActivityDao {
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
                 "left join task_table on activity_table.activityId = task_table.activityId \n" +
-                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 and activity_table.userId =:userId and activity_table.missionId=:missionId group by task_table.activityId "
+                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 and activity_table.userId =:userId and activity_table.missionId=:missionId  and activity_language_attribute_table.userId=:userId and task_table.userId=:userId  group by task_table.activityId "
     )
     suspend fun getActivities(
         userId: String,
