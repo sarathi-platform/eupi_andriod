@@ -102,7 +102,8 @@ fun NavController.navigateToFormTypeQuestionScreen(
 }
 
 fun NavController.navigateBackToMissionScreen() {
-    this.popBackStack(HomeScreens.MISSION_SCREEN.route, false)
+    this.navigateUp()
+    this.navigateUp()
 }
 fun NavController.navigateBackToSurveyeeListScreen() {
     this.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)

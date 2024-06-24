@@ -25,7 +25,6 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummar
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
 import com.nudge.navigationmanager.graphs.navigateToSurveyListWithParamsScreen
 
 
@@ -68,7 +67,8 @@ fun MissionSummaryScreen(
                                 status = SectionStatus.COMPLETED
                             )
                         )
-                        navController.navigateBackToMissionScreen()
+                        navController.navigateUp()
+//                        navController.navigateBackToMissionScreen()
                     }
                 }
             }

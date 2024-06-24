@@ -37,7 +37,6 @@ import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
-import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
 
 
 fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
@@ -264,7 +263,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigateBackToMissionScreen()
+                navController.navigateUp()
+                navController.navigateUp()
+                navController.navigateUp()
+//                navController.navigateBackToMissionScreen()
             }
         }
 
