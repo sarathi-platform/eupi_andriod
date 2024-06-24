@@ -107,7 +107,7 @@ fun ContentDetailScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_sarathi_logo),
                         contentDescription = "Back Button",
-                        tint = Color.Black
+                        tint = blueDark
                     )
                 }
             }

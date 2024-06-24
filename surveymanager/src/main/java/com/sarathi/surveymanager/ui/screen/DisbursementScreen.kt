@@ -73,7 +73,12 @@ fun DisbursementSummaryScreen(
                     isLeftArrow = true,
                     onClick = {
                         viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen("Activity is Completed")
+                        onNavigateSuccessScreen(
+                            "${
+                                viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
+                                    ?: BLANK_STRING
+                            } for ${subjectName}"
+                        )
                     }
                 )
             }

@@ -44,8 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,18 +59,16 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
-import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.lightBg
-import com.nudge.core.ui.theme.quesOptionSpanStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
-import com.nudge.core.ui.theme.smallSpanStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
+import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
@@ -172,7 +168,7 @@ fun DisbursementFormSummaryScreen(
 
                         ) {
                             Image(
-                                painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_download_icon),
+                                painter = painterResource(id = R.drawable.ic_download_icon),
                                 contentDescription = "Negative Button",
                                 modifier = Modifier.padding(horizontal = dimen_2_dp),
                                 colorFilter = ColorFilter.tint(blueDark)
@@ -300,39 +296,46 @@ private fun MakeDisburesementRow(
                 .height(dimen_5_dp)
         )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(text = buildAnnotatedString {
-                    withStyle(quesOptionSpanStyle) {
-                        append("Mode: ")
-                    }
-                    withStyle(smallSpanStyle) {
-                        append(disbursementFormSummaryUiModel.mode)
-                    }
-                })
-            }
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(text = buildAnnotatedString {
-                    withStyle(quesOptionSpanStyle) {
-                        append("Nature: ")
-                    }
-                    withStyle(smallSpanStyle) {
-                        append(disbursementFormSummaryUiModel.nature)
-                    }
-                })
-            }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text("Amount:", style = quesOptionTextStyle)
-                Text(
-                    modifier = Modifier.padding(horizontal = dimen_3_dp),
-                    text = formatToIndianRupee(disbursementFormSummaryUiModel.amount),
-                    style = smallTextStyle
-                )
-            }
+            TextRow(text1 = "Mode: ", text2 = disbursementFormSummaryUiModel.mode)
+            TextRow(
+                text1 = "Nature: ",
+                text2 = disbursementFormSummaryUiModel.nature,
+                isReadMode = true
+            )
+            TextRow(
+                text1 = "Amount: ",
+                text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
+            )
         }
 
     }
 
+}
+
+@Composable
+private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
+    Row(
+        verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        if (text1.isNotBlank()) {
+            Text(
+                modifier = Modifier.padding(end = dimen_5_dp),
+                text = text1,
+                style = quesOptionTextStyle.copy(color = blueDark)
+            )
+        }
+        if (text2.isNotBlank()) {
+            if (isReadMode) {
+                TextWithReadMoreComponent(title = text1, contentData = text2)
+            } else {
+                Text(
+                    text = text2,
+                    style = defaultTextStyle.copy(color = blueDark)
+                )
+            }
+        }
+    }
 }
 
 @SuppressLint("RememberReturnType")
@@ -365,10 +368,10 @@ fun FormMainSummaryCard(
 
                 Text(
                     formDisburesmentMap.key.second,
-                    style = defaultTextStyle.copy(fontSize = 16.sp)
+                    style = defaultTextStyle.copy(fontSize = 16.sp, color = blueDark)
                 )
                 Text(
-                    formDisburesmentMap.key.first, style = defaultTextStyle
+                    formDisburesmentMap.key.first, style = defaultTextStyle.copy(color = blueDark)
                 )
 
             }
@@ -381,12 +384,14 @@ fun FormMainSummaryCard(
             ) {
 
                 Text(
-                    stringResource(R.string.csg_disbursed), style = quesOptionTextStyle
+                    stringResource(R.string.csg_disbursed), style = quesOptionTextStyle.copy(
+                        blueDark
+                    )
                 )
                 Text(
                     text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
                         .toString()),
-                    style = quesOptionTextStyle
+                    style = quesOptionTextStyle.copy(blueDark)
                 )
 
             }
@@ -398,13 +403,12 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Number of didis", style = quesOptionTextStyle
+                    "Didis", style = quesOptionTextStyle.copy(color = blueDark)
                 )
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
-                    style = quesOptionTextStyle
+                    style = quesOptionTextStyle.copy(color = blueDark)
                 )
-
 
             }
 

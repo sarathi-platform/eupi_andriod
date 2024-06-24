@@ -32,23 +32,32 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.nudge.core.ui.theme.black100Percent
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.dividerColor
 import com.nudge.core.ui.theme.greenLight
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
-import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.stepIconCompleted
-import com.nudge.core.ui.theme.stepIconEnableColor
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
@@ -80,23 +89,23 @@ fun StepsBoxGrantComponent(
     ConstraintLayout(
         modifier = Modifier
             .background(Color.White)
-            .padding(5.dp)
+            .padding(top = dimen_5_dp)
             .border(
                 width = 0.dp,
                 color = Color.Transparent,
             )
             .then(modifier)
     ) {
-        val (step_no, stepBox, divider1, divider2) = createRefs()
+        val (step_no, stepBox, divider1, divider2, divider3) = createRefs()
         BasicCardView(
             colors = CardDefaults.cardColors(containerColor = if (isCompleted) greenLight else white),
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(6.dp))
+                .clip(RoundedCornerShape(dimen_6_dp))
                 .border(
-                    width = 1.dp,
+                    width = dimen_1_dp,
                     color = if (isCompleted) greenOnline else greyBorderColor,
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(dimen_6_dp)
                 )
                 .background(if (isCompleted) greenLight else white)
                 .clickable {
@@ -111,14 +120,14 @@ fun StepsBoxGrantComponent(
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 10.dp)
-                    .padding(end = 16.dp, start = 8.dp),
+                    .padding(top = dimen_8_dp, bottom = dimen_10_dp)
+                    .padding(end = dimen_16_dp, start = dimen_8_dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
                 Icon(
                     painter = painter,
                     contentDescription = null,
-                    tint = if (isCompleted) stepIconCompleted else stepIconEnableColor,
+                    tint = if (isCompleted) stepIconCompleted else blueDark,
                     modifier = Modifier
                         .constrainAs(iconContainer) {
                             start.linkTo(parent.start)
@@ -127,8 +136,8 @@ fun StepsBoxGrantComponent(
                         }
                         .size(48.dp)
                         .padding(
-                            top = if (isCompleted) 0.dp else 6.dp,
-                            start = if (isCompleted) 0.dp else 4.dp
+                            top = if (isCompleted) 0.dp else dimen_6_dp,
+                            start = if (isCompleted) 0.dp else dimen_4_dp
                         )
                 )
 
@@ -149,12 +158,12 @@ fun StepsBoxGrantComponent(
                         text = boxTitle,
                         modifier = Modifier
                             .padding(
-                                top = 10.dp,
-                                end = 10.dp
+                                top = dimen_10_dp,
+                                end = dimen_10_dp
                             )
                             .fillMaxWidth(),
                         softWrap = true,
-                        color = if (isCompleted) greenOnline else black100Percent,
+                        color = if (isCompleted) greenOnline else blueDark,
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
@@ -163,17 +172,16 @@ fun StepsBoxGrantComponent(
                     LinearProgressBarComponent(
                         progress = curPercentage.value
                     )
-                    if (subTitle != "") {
+                    if (subTitle != BLANK_STRING) {
                         Text(
                             text = subTitle,
-                            color = if (isCompleted) greenOnline else black100Percent,
+                            color = if (isCompleted) greenOnline else blueDark,
                             modifier = Modifier
                                 .fillMaxWidth(),
                             softWrap = true,
                             textAlign = TextAlign.Start,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
-                            fontWeight = FontWeight.Medium,
                             style = smallTextStyleMediumWeight2
                         )
                     }
@@ -186,7 +194,7 @@ fun StepsBoxGrantComponent(
                             top.linkTo(textContainer.top)
                             end.linkTo(parent.end)
                         }
-                        .size(40.dp)
+                        .size(dimen_40_dp)
                 ) {
                     onclick(index)
                 }
@@ -199,7 +207,7 @@ fun StepsBoxGrantComponent(
                 contentDescription = null,
                 modifier = modifier
                     .border(
-                        width = 2.dp,
+                        width = dimen_2_dp,
                         color = Color.Transparent,
                         shape = CircleShape
 
@@ -207,7 +215,7 @@ fun StepsBoxGrantComponent(
                     .clip(CircleShape)
                     .background(Color.Transparent)
                     .constrainAs(step_no) {
-                        start.linkTo(parent.start, margin = 16.dp)
+                        start.linkTo(parent.start, margin = dimen_16_dp)
                         top.linkTo(parent.top)
                     }
             )
@@ -216,22 +224,22 @@ fun StepsBoxGrantComponent(
                 modifier = Modifier
                     .clip(CircleShape)
                     .border(
-                        width = 1.dp,
-                        color = greyBorderColor,
+                        width = dimen_1_dp,
+                        color = blueDark,
                         shape = CircleShape
                     )
                     .background(Color.White, shape = CircleShape)
-                    .padding(6.dp)
+                    .padding(dimen_6_dp)
                     .constrainAs(step_no) {
-                        start.linkTo(parent.start, margin = 16.dp)
+                        start.linkTo(parent.start, margin = dimen_16_dp)
                         top.linkTo(parent.top)
                     }
             ) {
                 Text(
                     text = "$stepNo",
                     color = textColorDark,
-                    style = smallerTextStyleNormalWeight,
-                    modifier = Modifier.padding(vertical = 2.dp, horizontal = 10.dp)
+                    style = smallerTextStyle.copy(color = blueDark),
+                    modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_10_dp)
 
                 )
             }
@@ -239,27 +247,38 @@ fun StepsBoxGrantComponent(
         }
         if (isDividerVisible) {
             Divider(
-                color = greyBorderColor,
+                color = dividerColor,
                 modifier = Modifier
-                    .height(8.dp)  //fill the max height
-                    .width(1.dp)
+                    .height(dimen_8_dp)
+                    .width(dimen_1_dp)
                     .constrainAs(divider1) {
                         start.linkTo(parent.start, margin = dividerMargins)
                         top.linkTo(stepBox.bottom)
                     }
-                    .padding(vertical = 2.dp)
+                    .padding(vertical = dimen_2_dp)
             )
 
             Divider(
-                color = greyBorderColor,
+                color = dividerColor,
                 modifier = Modifier
-                    .height(8.dp)  //fill the max height
-                    .width(1.dp)
+                    .height(dimen_8_dp)
+                    .width(dimen_1_dp)
                     .constrainAs(divider2) {
                         start.linkTo(parent.start, margin = dividerMargins)
                         top.linkTo(divider1.bottom)
                     }
-                    .padding(vertical = 2.dp)
+                    .padding(vertical = dimen_2_dp)
+            )
+            Divider(
+                color = dividerColor,
+                modifier = Modifier
+                    .height(dimen_8_dp)
+                    .width(dimen_1_dp)
+                    .constrainAs(divider3) {
+                        start.linkTo(parent.start, margin = dividerMargins)
+                        top.linkTo(divider2.bottom)
+                    }
+                    .padding(vertical = dimen_2_dp)
             )
         }
     }
@@ -274,7 +293,7 @@ fun IconButtonForward(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .clip(RoundedCornerShape(100.dp))
+            .clip(RoundedCornerShape(dimen_100_dp))
             .background(blueDark)
             .clickable {
                 onClick()

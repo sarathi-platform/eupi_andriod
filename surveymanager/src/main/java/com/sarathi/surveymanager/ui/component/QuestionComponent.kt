@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.ui.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.textColorDark
 
@@ -21,6 +23,9 @@ import com.nudge.core.ui.theme.textColorDark
 @Composable
 fun QuestionComponent(isRequiredField: Boolean = true, title: String = "") {
     Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimen_2_dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

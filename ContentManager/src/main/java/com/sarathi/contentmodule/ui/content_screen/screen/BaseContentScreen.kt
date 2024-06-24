@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.sarathi.contentmodule.constants.Constants.CONTENT_THRESHOLD_VALUE
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.content_screen.viewmodel.BaseContentScreenViewModel
@@ -25,7 +26,13 @@ fun BaseContentScreen(
         viewModel.onEvent(InitDataEvent.InitContentScreenState(matId, contentScreenCategory))
     }
     if (viewModel.contentList.value.isNotEmpty()) {
-        Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {
+        Row(
+            modifier = Modifier.padding(
+                top = dimen_10_dp,
+                start = dimen_20_dp,
+                end = dimen_20_dp
+            )
+        ) {
             viewModel.contentList.value.forEachIndexed { index, item ->
                 BasicContentComponent(
                     contentType = item.contentType,

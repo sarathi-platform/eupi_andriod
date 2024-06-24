@@ -112,18 +112,14 @@ fun CollapsibleCard(
                         ) {
                             Text(
                                 text = stringResource(R.string.summary),
-                                style = defaultTextStyle,
+                                style = defaultTextStyle.copy(color = blueDark),
                             )
-//                        Text(
-//                            text = " $summaryCount",
-//                            style = defaultTextStyle
-//                        )
                         }
 
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
-                            tint = Color.Black,
+                            tint = blueDark,
                             modifier = Modifier
                                 .size(50.dp)
                                 .padding(dimen_10_dp)

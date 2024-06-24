@@ -31,6 +31,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -147,10 +148,10 @@ fun GrantTaskScreen(
                             )
                         })
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(dimen_10_dp))
                 if (viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value) {
                     LazyColumn(
-                        modifier = Modifier.padding(bottom = 50.dp)
+                        modifier = Modifier.padding(bottom = dimen_50_dp)
                     ) {
                         viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                             item {
@@ -182,7 +183,7 @@ fun GrantTaskScreen(
                     }
                 } else {
                     if (viewModel.filterList.value.isNotEmpty()) {
-                        LazyColumn(modifier = Modifier.padding(bottom = 50.dp)) {
+                        LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                             itemsIndexed(
                                 items = viewModel.filterList.value.entries.toList()
                             ) { _, task ->
@@ -207,13 +208,13 @@ private fun TaskRowView(
         onPrimaryButtonClick = { subjectName ->
             if (!viewModel.isActivityCompleted.value) {
                 if (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name) {
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                    SurveyStatusEnum.INPROGRESS.name
-                viewModel.updateTaskAvailableStatus(
-                    taskId = task.key,
-                    status = SurveyStatusEnum.INPROGRESS.name,
+                    task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
+                        SurveyStatusEnum.INPROGRESS.name
+                    viewModel.updateTaskAvailableStatus(
+                        taskId = task.key,
+                        status = SurveyStatusEnum.INPROGRESS.name,
 
-                    )
+                        )
                 }
             }
             viewModel.activityConfigUiModel?.let {
