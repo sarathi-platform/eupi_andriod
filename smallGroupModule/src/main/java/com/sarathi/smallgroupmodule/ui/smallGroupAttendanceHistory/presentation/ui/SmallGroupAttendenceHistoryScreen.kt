@@ -70,7 +70,6 @@ import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
 import com.sarathi.missionactivitytask.ui.components.ContentWithImage
 import com.sarathi.missionactivitytask.ui.components.CustomDateRangePickerBottomSheetComponent
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.ImageProperties
 import com.sarathi.missionactivitytask.ui.components.SheetHeight
@@ -89,6 +88,7 @@ import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel.SmallGroupAttendanceHistoryViewModel
 import com.sarathi.smallgroupmodule.ui.theme.dateRangeFieldColor
 import com.sarathi.smallgroupmodule.ui.theme.defaultTextStyle
+import com.sarathi.smallgroupmodule.ui.theme.dimen_100_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_1_dp
@@ -120,7 +120,8 @@ fun SmallGroupAttendanceHistoryScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     smallGroupId: Int,
-    smallGroupAttendanceHistoryViewModel: SmallGroupAttendanceHistoryViewModel
+    smallGroupAttendanceHistoryViewModel: SmallGroupAttendanceHistoryViewModel,
+    onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(key1 = Unit) {
@@ -181,9 +182,6 @@ fun SmallGroupAttendanceHistoryScreen(
     }
 
 
-    /**
-     *Not required as no bottom UI present for this screen
-     **/
     CustomDateRangePickerBottomSheetComponent(
         customDateRangePickerBottomSheetProperties = sheetProperties,
         dateRangePickerProperties = dateRangePickerProperties,
@@ -210,32 +208,39 @@ fun SmallGroupAttendanceHistoryScreen(
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
-            isDataAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty() && smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupId == 0,
+            isDataAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
+                    && smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupId == 0,
             onRetry = {},
             onBottomUI = {
-                BottomAppBar(
-                    modifier = Modifier.height(dimen_80_dp),
-                    containerColor = white
+                if (smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isNotEmpty()
+                    && smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupId != 0
                 ) {
-
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(dimen_10_dp)
+                    BottomAppBar(
+                        modifier = Modifier.height(dimen_80_dp),
+                        containerColor = white
                     ) {
-                        ButtonPositiveComponent(
-                            buttonTitle = stringResource(R.string.take_attendance_button_text),
-                            isActive = true,
-                            isArrowRequired = true,
-                            onClick = {
-                                navController.navigate("$SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE/$smallGroupId")
-                            }
-                        )
-                    }
 
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(dimen_10_dp)
+                        ) {
+                            ButtonPositiveComponent(
+                                buttonTitle = stringResource(R.string.take_attendance_button_text),
+                                isActive = true,
+                                isArrowRequired = true,
+                                onClick = {
+                                    navController.navigate("$SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE/$smallGroupId")
+                                }
+                            )
+                        }
+
+                    }
                 }
             },
-            onSettingClick = {},
+            onSettingClick = {
+                onSettingClick()
+            },
             onContentUI = { paddingValues, b, function ->
 
                 if (smallGroupAttendanceHistoryViewModel.isAttendanceAvailable.value) {
@@ -371,7 +376,9 @@ fun SmallGroupAttendanceHistoryScreen(
                             }
 
                             item {
-                                CustomVerticalSpacer()
+                                Spacer(modifier = modifier
+                                    .fillMaxWidth()
+                                    .height(dimen_100_dp))
                             }
 
                         }
@@ -514,7 +521,7 @@ fun AttendanceSummaryCard(
                     text = stringResource(
                         R.string.attendance_percentage_text,
                         attendancePercentage.value
-                    ),
+                    ) + "%",
                     style = defaultTextStyle,
                     color = green,
                     modifier = Modifier

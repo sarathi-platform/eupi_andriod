@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
@@ -148,6 +149,10 @@ fun RowScope.AddItem(
         selected = selected,
         onClick = {
             prefRepo.saveFromPage(ARG_FROM_HOME)
+            if (screen.route.equals(MATHomeScreens.MissionScreen.route)) {
+                // TODO Fix issue where on click of Missions Tab it opens Mission screen from Baseline module.
+                navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
+            }
             navController.navigate(screen.route) {
                 popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true

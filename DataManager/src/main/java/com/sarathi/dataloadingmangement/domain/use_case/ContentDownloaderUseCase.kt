@@ -1,6 +1,8 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.util.Log
+import com.nudge.core.CoreDispatchers
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
@@ -42,7 +44,24 @@ class ContentDownloaderUseCase @Inject constructor(
                 }
 
             } catch (ex: Exception) {
-                Log.e("ContentDownloader", "downloadItem exception", ex)
+                CoreLogger.e(tag = "ContentDownloader", msg = "downloadItem exception", ex = ex)
+            }
+        }
+    }
+
+    suspend fun didiImagesForSmallGroupDownload() {
+        CoreDispatchers.ioCoroutineScope {
+            try {
+                repository.getDidiImageUrlForSmallGroup().forEach {
+                    downloaderManager.downloadItem(url = it)
+                }
+            } catch (ex: Exception) {
+                CoreLogger.e(
+                    tag = "ContentDownloader",
+                    msg = "didiImagesForSmallGroupDownload, exception -> ${ex.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
             }
         }
     }

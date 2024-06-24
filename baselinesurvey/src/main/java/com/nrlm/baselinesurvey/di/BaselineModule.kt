@@ -135,6 +135,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivity
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -272,18 +273,18 @@ object BaselineModule {
         baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
-        activityTaskDao: ActivityTaskDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao
+        matActivityDao: ActivityDao,
+        baselineTaskDao: ActivityTaskDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
             prefBSRepo,
             baseLineApiService,
             surveyeeEntityDao,
             languageListDao,
-            activityTaskDao,
             missionActivityDao,
-            taskDao
+            matActivityDao,
+            baselineTaskDao
         )
     }
 
@@ -709,6 +710,7 @@ object BaselineModule {
         activityDao: MissionActivityDao,
         missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        matActivityDao: ActivityDao,
         baselineDatabase: NudgeBaselineDatabase
     ): EventWriterHelper {
         return EventWriterHelperImpl(
@@ -724,7 +726,8 @@ object BaselineModule {
             activityDao = activityDao,
             missionEntityDao = missionEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao,
-            baselineDatabase = baselineDatabase
+            baselineDatabase = baselineDatabase,
+            matActivityDao = matActivityDao
         )
     }
 

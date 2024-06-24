@@ -1,8 +1,10 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
 import com.sarathi.smallgroupmodule.ui.theme.defaultTextStyle
+import com.sarathi.smallgroupmodule.ui.theme.dimen_100_dp
 
 @Composable
 fun DidiSubTab(
@@ -46,6 +49,11 @@ fun DidiSubTab(
             DidiTabCard(subjectEntity = item) {
 
             }
+        }
+        item {
+            Spacer(modifier = modifier
+                .fillMaxWidth()
+                .height(dimen_100_dp))
         }
 
     }

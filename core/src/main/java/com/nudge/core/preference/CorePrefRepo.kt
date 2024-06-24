@@ -47,6 +47,10 @@ interface CorePrefRepo {
 
     fun isDataLoaded(): Boolean
 
+    fun isDidiTabDataLoaded(): Boolean
+
+    fun setDidiTabDataLoaded(isDataLoaded: Boolean)
+
     fun getPref(key: String, defaultValue: Long): Long
 
     fun getPref(key: String, defaultValue: Float): Float

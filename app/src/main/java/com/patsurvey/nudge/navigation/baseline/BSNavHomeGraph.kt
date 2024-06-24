@@ -207,18 +207,24 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 type = NavType.StringType
             }
         )) {
-            SearchScreens(viewModel = hiltViewModel(), navController = navController, surveyId = it
-                .arguments?.getInt(ARG_SURVEY_ID) ?: -1, surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1, fromScreen = it.arguments?.getString(
-                ARG_FROM_SCREEN) ?: ARG_FROM_SECTION_SCREEN)
+            SearchScreens(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                surveyId = it
+                    .arguments?.getInt(ARG_SURVEY_ID) ?: -1,
+                surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
+                fromScreen = it.arguments?.getString(
+                    ARG_FROM_SCREEN
+                ) ?: ARG_FROM_SECTION_SCREEN
+            )
         }
 
-        composable(route = HomeScreens.Home_SCREEN.route) {
-            MissionScreen(navController = navController, viewModel = hiltViewModel())
-        }
+//        composable(route = HomeScreens.Home_SCREEN.route) {
+//            MissionScreen(navController = navController, viewModel = hiltViewModel())
+//        }
 
         composable(route = HomeScreens.MISSION_SCREEN.route) {
             MissionScreen(navController = navController, viewModel = hiltViewModel())
-
         }
 
         composable(route = HomeScreens.BS_DIDI_DETAILS_SCREEN.route) {

@@ -8,6 +8,7 @@ import android.text.format.Formatter.formatShortFileSize
 import android.util.Log
 import android.util.Log.e
 import com.nudge.core.BuildConfig.DEBUG
+import com.nudge.core.model.CoreAppDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,7 +51,7 @@ object CoreLogger {
     }
 
     fun e(
-        context: Context,
+        context: Context = CoreAppDetails.getContext()!!,
         tag: String,
         msg: String,
         ex: Throwable?,

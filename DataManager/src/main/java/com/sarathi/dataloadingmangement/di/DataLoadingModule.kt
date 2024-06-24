@@ -58,8 +58,8 @@ import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
@@ -408,13 +408,15 @@ class DataLoadingModule {
         contentDao: ContentDao,
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
-        attributeValueReferenceDao: AttributeValueReferenceDao
+        attributeValueReferenceDao: AttributeValueReferenceDao,
+        subjectEntityDao: SubjectEntityDao
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
             contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
             attributeValueReferenceDao = attributeValueReferenceDao,
+            subjectEntityDao = subjectEntityDao
         )
     }
 

@@ -37,7 +37,9 @@ fun NavGraphBuilder.SmallGroupNavigation(
                 smallGroupId = it.arguments?.getInt(
                     ARG_SMALL_GROUP_ID
                 ) ?: 0
-            )
+            ) {
+                onSettingIconClick()
+            }
         }
 
         composable(

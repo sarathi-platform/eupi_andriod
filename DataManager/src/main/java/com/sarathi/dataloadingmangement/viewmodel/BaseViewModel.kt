@@ -33,6 +33,8 @@ abstract class BaseViewModel : ViewModel() {
 
     }
 
+    open fun refreshData() {}
+
     fun loaderState(): LoaderState = loaderState.value
     fun ViewModel.ioViewModelScope(
         start: CoroutineStart = CoroutineStart.DEFAULT,

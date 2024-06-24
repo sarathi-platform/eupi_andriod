@@ -28,6 +28,7 @@ import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
@@ -35,9 +36,9 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val baseLineApiService: BaseLineApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
-    private val activityTaskDao: ActivityTaskDao,
     private val activityDao: MissionActivityDao,
-    private val taskDao: ActivityTaskDao
+    private val matActivityDao: ActivityDao,
+    private val baselineTaskDao: ActivityTaskDao
 ): SurveyeeListScreenRepository {
 
     override suspend fun getSurveyeeList(
@@ -144,7 +145,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         missionId: Int,
         activityId: Int
     ): List<ActivityTaskEntity> {
-        return activityTaskDao.getActivityTask(getBaseLineUserId(), missionId, activityId)
+        return baselineTaskDao.getActivityTask(getBaseLineUserId(), missionId, activityId)
     }
 
     override suspend fun getMissionActivitiesStatusFromDB(
@@ -153,7 +154,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     ) {
         var activities = activityDao.getActivitiesFormIds(getBaseLineUserId(), activityId)
         val tasks =
-            activityTaskDao.getActivityTaskFromIds(getBaseLineUserId(), activities.activityId)
+            baselineTaskDao.getActivityTaskFromIds(getBaseLineUserId(), activities.activityId)
         activityDao.updateActivityStatus(
             getBaseLineUserId(),
             activityId,
@@ -201,6 +202,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 status = status.name,
                 completedDate = System.currentTimeMillis().toDate().toString()
             )
+
         } else {
             activityDao.markActivityStart(
                 userId = getBaseLineUserId(),
@@ -210,6 +212,13 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 actualStartDate = System.currentTimeMillis().toDate().toString()
             )
         }
+        // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
+        matActivityDao.updateActivityStatus(
+            userId = getBaseLineUserId(),
+            activityId = activityId,
+            missionId = missionId,
+            status = status.name
+        )
     }
 
     override suspend fun getActivitiyStatusFromDB(activityId: Int): MissionActivityEntity {

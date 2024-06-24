@@ -16,10 +16,10 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
-import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
@@ -28,9 +28,8 @@ import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.BSLogWriter
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -63,6 +62,7 @@ import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -83,6 +83,7 @@ class ExportImportViewModel @Inject constructor(
     private val optionItemDao: OptionItemDao,
     private val questionEntityDao: QuestionEntityDao,
     private val missionActivityDao: MissionActivityDao,
+    private val activityDao: ActivityDao
 ): BaseViewModel() {
     var mAppContext:Context
 
@@ -462,6 +463,14 @@ fun exportOnlyLogFile(context: Context){
                     activity.activityId,
                     SectionStatus.INPROGRESS.name,
                     System.currentTimeMillis().toDate().toString()
+                )
+
+                // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
+                activityDao.updateActivityStatus(
+                    userId = userId,
+                    activityId = activity.activityId,
+                    missionId = activity.missionId,
+                    status = SectionStatus.INPROGRESS.name
                 )
 
                 val updateTaskStatusEvent =

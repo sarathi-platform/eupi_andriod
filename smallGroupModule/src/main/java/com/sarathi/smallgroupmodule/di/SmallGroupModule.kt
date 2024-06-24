@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
@@ -81,13 +82,16 @@ class SmallGroupModule {
     @Provides
     @Singleton
     fun provideDidiTabUseCase(
+        coreSharedPrefs: CoreSharedPrefs,
         fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository,
         fetchSmallGroupListFromDbRepository: FetchSmallGroupListFromDbRepository,
         fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
         fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository,
-        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository
+        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository,
+        contentDownloaderUseCase: ContentDownloaderUseCase,
     ): DidiTabUseCase {
         return DidiTabUseCase(
+            coreSharedPrefs = coreSharedPrefs,
             fetchDidiDetailsFromDbUseCase = FetchDidiDetailsFromDbUseCase(
                 fetchDidiDetailsFromDbRepository
             ),
@@ -102,7 +106,8 @@ class SmallGroupModule {
             ),
             fetchSmallGroupAttendanceHistoryFromNetworkUseCase = FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
                 fetchSmallGroupAttendanceHistoryFromNetworkRepository
-            )
+            ),
+            contentDownloaderUseCase = contentDownloaderUseCase
         )
     }
 

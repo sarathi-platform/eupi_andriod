@@ -3,18 +3,16 @@ package com.sarathi.smallgroupmodule.ui.didiTab.viewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,7 +45,8 @@ class DidiTabViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                viewModelScope.launch(Dispatchers.IO) {
+                loadAllDataForDidiTab(false)
+                /*viewModelScope.launch(Dispatchers.IO) {
                     didiTabUseCase.fetchDidiDetailsFromNetworkUseCase.invoke()
                     didiTabUseCase.fetchSmallGroupFromNetworkUseCase.invoke()
                     delay(300)
@@ -60,9 +59,8 @@ class DidiTabViewModel @Inject constructor(
                     smallGroupList.value.forEach {
                         fetchSmallGroupAttendanceHistoryFromNetwork(it.smallGroupId)
                     }
-                    _totalDidiCount.value = didiList.value.size
-                    _totalSmallGroupCount.value = smallGroupList.value.size
-                }
+
+                }*/
             }
 
             is CommonEvents.SearchValueChangedEvent -> {
@@ -81,6 +79,36 @@ class DidiTabViewModel @Inject constructor(
                     }
                 }
 
+            }
+        }
+    }
+
+    private fun loadAllDataForDidiTab(isRefresh: Boolean) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        ioViewModelScope {
+            didiTabUseCase.invoke(isRefresh) { isSuccess, successMsg ->
+                if (isSuccess) {
+                    initDidiTab()
+                } else {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            }
+        }
+    }
+
+
+    private fun initDidiTab() {
+        ioViewModelScope {
+            _didiList.value = didiTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
+            _filteredDidiList.value = didiList.value
+            _smallGroupList.value =
+                didiTabUseCase.fetchSmallGroupListsFromDbUseCase.invoke()
+            _filteredSmallGroupList.value = smallGroupList.value
+            delay(100)
+            _totalDidiCount.value = didiList.value.size
+            _totalSmallGroupCount.value = smallGroupList.value.size
+            withContext(mainDispatcher) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
@@ -119,10 +147,8 @@ class DidiTabViewModel @Inject constructor(
         }
     }
 
-    private fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int) {
-        CoroutineScope(ioDispatcher).launch {
-            didiTabUseCase.fetchSmallGroupAttendanceHistoryFromNetworkUseCase.invoke(smallGroupId)
-        }
+    override fun refreshData() {
+        loadAllDataForDidiTab(true)
     }
 
 }

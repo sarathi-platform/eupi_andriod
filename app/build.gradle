@@ -291,6 +291,7 @@ dependencies {
     implementation(project(":navigationManager"))
     implementation(project(":missionActivityTask"))
     implementation(project(":smallGroupModule"))
+    implementation(project(":DataManager"))
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
