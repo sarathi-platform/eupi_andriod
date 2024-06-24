@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class GetFormUiConfigUseCase @Inject constructor(private val formConfigRepositoryImpl: FormConfigRepositoryImpl) {
 
-    suspend fun getFormUiConfig(): List<FormUiConfigEntity> =
-        formConfigRepositoryImpl.getFormUiConfig()
+    suspend fun getFormUiConfig(activityId: Int, missionId: Int): List<FormUiConfigEntity> =
+        formConfigRepositoryImpl.getFormUiConfig(activityId = activityId, missionId = missionId)
 
 }

@@ -10,8 +10,15 @@ class FormConfigRepositoryImpl @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs
 ) : IFormConfigRepository {
 
-    override suspend fun getFormUiConfig(): List<FormUiConfigEntity> {
-        return formUiConfigDao.getActivityFormUiConfig(uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier())
+    override suspend fun getFormUiConfig(
+        activityId: Int,
+        missionId: Int
+    ): List<FormUiConfigEntity> {
+        return formUiConfigDao.getActivityFormUiConfig(
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId,
+            missionId = missionId
+        )
     }
 
 
