@@ -93,7 +93,11 @@ fun Long.toDateString(): String {
     val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
-
+fun Long.toDateInMonthString(): String {
+    val dateTime = Date(this)
+    val format = SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault())
+    return format.format(dateTime)
+}
 
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 

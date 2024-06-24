@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.formatTo
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
@@ -48,6 +49,7 @@ import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeDropDownComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun SurveyScreen(
@@ -176,10 +178,16 @@ fun SurveyScreen(
                             }
 
                             QuestionType.DateType.name -> {
+
+                                var selectedValue =
+                                    question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING
+                                if (TextUtils.isEmpty(selectedValue)) {
+                                    selectedValue = Date().formatTo(dateFormat = "dd MMM, yyyy")
+                                    question.options?.firstOrNull()?.selectedValue = selectedValue
+                                }
                                 DatePickerComponent(
                                     isMandatory = question.isMandatory,
-                                    defaultValue = question.options?.firstOrNull()?.selectedValue
-                                        ?: BLANK_STRING,
+                                    defaultValue = selectedValue,
                                     title = question.questionDisplay,
                                     isEditable = viewModel.isActivityNotCompleted.value,
                                     hintText = question.options?.firstOrNull()?.description
