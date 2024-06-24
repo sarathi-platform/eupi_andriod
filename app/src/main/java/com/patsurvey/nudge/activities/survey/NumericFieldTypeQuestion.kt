@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -47,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -64,9 +62,9 @@ import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.NumericQuestionsErrorEnum
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 import com.patsurvey.nudge.utils.showToast
+import de.charlex.compose.material.HtmlText
 import kotlinx.coroutines.launch
 
 
@@ -109,8 +107,8 @@ fun NumericFieldTypeQuestion(
                 .align(Alignment.TopCenter)
         ) {
             val (questionBox, optionBox, submitBox) = createRefs()
-//            HtmlText(
-            Text(
+            HtmlText(
+//            Text(
                 modifier = Modifier
                     .border(
                         BorderStroke(1.dp, lightGray2),
@@ -141,7 +139,7 @@ fun NumericFieldTypeQuestion(
                     fontSize = 14.sp,
                     color = textColorDark
                 ),
-                //color = textColorDark
+                color = textColorDark
             )
 
             Column(
