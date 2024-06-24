@@ -26,4 +26,8 @@ interface ContentConfigDao {
 
     @Query("Delete from content_config_table where matId=:missionId and contentCategory=:contentCategory and userId=:uniqueUserIdentifier")
     fun deleteContentConfig(missionId: Int, contentCategory: Int, uniqueUserIdentifier: String)
+
+    @Query("Delete from content_config_table where  userId=:uniqueUserIdentifier")
+    fun deleteContentConfigForUser(uniqueUserIdentifier: String)
+
 }

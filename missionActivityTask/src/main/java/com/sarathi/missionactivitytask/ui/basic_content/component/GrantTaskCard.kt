@@ -39,18 +39,20 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.languageItemActiveBg
-import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
@@ -118,11 +120,26 @@ fun GrantTaskCard(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = title?.value ?: BLANK_STRING,
-                        style = mediumTextStyle,
-                        color = blueDark
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        title?.value?.let {
+                            if (it.contains("vo", true)) {
+                                title.icon?.let {
+                                    ImageViewer(it)
+                                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                                }
+                                Spacer(modifier = Modifier.width(dimen_3_dp))
+                            }
+                            Text(
+                                text = title.value,
+                                style = buttonTextStyle,
+                                color = blueDark
+                            )
+                        }
+                    }
                     SubContainerView(subTitle1)
                 }
                 if (status?.value == (StatusEnum.COMPLETED.name)) {
@@ -164,7 +181,6 @@ fun GrantTaskCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (subtitle2?.value?.isNotBlank() == true) {
-
                     SubContainerView(subtitle2)
                 }
             }
@@ -219,7 +235,7 @@ fun GrantTaskCard(
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
                             Text(
-                                text = stringResource(R.string.view),
+                                text = stringResource(R.string.task_view),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp),
                                 color = blueDark,
@@ -261,21 +277,23 @@ private fun SubContainerView(
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (taskCard?.icon != null) {
-            ImageViewer(taskCard.icon!!)
-            Spacer(modifier = Modifier.width(6.dp))
-
+        taskCard?.icon?.let {
+            ImageViewer(it)
+            Spacer(modifier = Modifier.width(dimen_5_dp))
         }
+
         if (!TextUtils.isEmpty(taskCard?.label)) {
-            Text(text = taskCard?.label!!, color = blueDark, style = newMediumTextStyle)
+            Text(
+                text = taskCard?.label!!,
+                color = blueDark,
+                style = newMediumTextStyle
+            )
         }
         if (!TextUtils.isEmpty(taskCard?.value)) {
-
             Text(
                 text = if (isNumberFormattingRequired) formatToIndianRupee(taskCard?.value!!) else taskCard?.value!!,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimen_5_dp),
+                    .padding(horizontal = dimen_1_dp),
                 color = blueDark,
                 style = newMediumTextStyle
             )
@@ -285,12 +303,12 @@ private fun SubContainerView(
 
 @Composable
 fun ImageViewer(uri: Uri) {
-
-
     AsyncImage(
         model = uri,
         contentDescription = "Loaded Image",
-        modifier = Modifier.size(22.dp)
+        modifier = Modifier
+            .size(15.dp)
+            .padding(vertical = dimen_0_dp)
     )
 
 }

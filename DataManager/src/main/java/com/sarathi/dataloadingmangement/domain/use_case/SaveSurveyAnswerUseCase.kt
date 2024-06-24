@@ -10,13 +10,17 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         questionUiModel: QuestionUiModel,
         subjectId: Int,
         taskId: Int,
-        referenceId: String
+        referenceId: String,
+        grantId: Int,
+        grantType: String
     ) {
         return repository.saveSurveyAnswer(
             questionUiModel,
             subjectId,
             taskId,
-            referenceId = referenceId
+            referenceId = referenceId,
+            grantId = grantId,
+            grantType = grantType
         )
     }
 

@@ -16,7 +16,7 @@ interface TaskDao {
     fun insertActivityTask(activities: ActivityTaskEntity)
 
     @Query("DELETE FROM $TASK_TABLE_NAME where userId=:userId ")
-    fun deleteActivityTask(userId: String)
+    fun deleteActivityTaskForUser(userId: String)
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and isActive=1")
     suspend fun getAllActivityTask(userId: String): List<ActivityTaskEntity>

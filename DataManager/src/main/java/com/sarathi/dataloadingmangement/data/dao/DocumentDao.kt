@@ -43,4 +43,8 @@ interface DocumentDao {
         userId: String
     ): List<DocumentEntity>
 
+    @Query("Delete from $DOCUMENT_TABLE_NAME where userId =:userId ")
+    fun deleteDocumentForUser(
+        userId: String,
+    ): Int
 }

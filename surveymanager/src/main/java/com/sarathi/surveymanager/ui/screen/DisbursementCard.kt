@@ -23,8 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.convertDate
 import com.nudge.core.formatToIndianRupee
-import com.nudge.core.ui.theme.black1
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -38,6 +38,7 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.uncheckedTrackColor
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.surveymanager.R
 
 @Composable
@@ -64,29 +65,44 @@ fun DisbursementCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_10_dp),
+                    .padding(top = dimen_10_dp, start = dimen_10_dp, end = dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TextRow(text1 = stringResource(R.string.date), text2 = subTitle1)
+                TextRow(
+                    text1 = stringResource(R.string.date),
+                    text2 = convertDate(subTitle1) ?: BLANK_STRING
+                )
                 TextRow(
                     text1 = stringResource(R.string.amount),
                     text2 = formatToIndianRupee(subTitle2)
                 )
             }
+
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimen_4_dp),
+                thickness = 0.5.dp,
+                color = uncheckedTrackColor
+            )
             if (subTitle3.isNotBlank()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimen_10_dp)
+                        .padding(start = dimen_10_dp, end = dimen_10_dp)
                 ) {
-                    TextRow(text1 = stringResource(R.string.nature), text2 = subTitle3)
+                    TextRow(
+                        text1 = stringResource(R.string.nature),
+                        text2 = subTitle3,
+                        isReadMode = true
+                    )
                 }
             }
             if (subTitle4.isNotBlank()) {
                 Row(
                     modifier = Modifier
-                        .padding(dimen_10_dp)
+                        .padding(start = dimen_10_dp, end = dimen_10_dp)
                 ) {
                     TextRow(text1 = stringResource(R.string.mode), text2 = subTitle4)
                 }
@@ -94,14 +110,16 @@ fun DisbursementCard(
             if (subTitle5.isNotBlank()) {
                 Row(
                     modifier = Modifier
-                        .padding(dimen_10_dp)
+                        .padding(start = dimen_10_dp, end = dimen_10_dp)
                 ) {
                     TextRow(text1 = stringResource(R.string.no_of_didi_s), text2 = subTitle5)
                 }
             }
             if (isFormgenerated) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = dimen_5_dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
@@ -121,7 +139,8 @@ fun DisbursementCard(
             } else {
                 Divider(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(top = dimen_5_dp),
                     thickness = dimen_1_dp,
                     color = uncheckedTrackColor
                 )
@@ -157,7 +176,6 @@ fun DisbursementCard(
                                 color = blueDark,
                             )
                         }
-
                     }
 
                     Divider(
@@ -207,9 +225,9 @@ fun DisbursementCard(
 
 
 @Composable
-private fun TextRow(text1: String, text2: String) {
+private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         if (text1.isNotBlank()) {
@@ -220,7 +238,11 @@ private fun TextRow(text1: String, text2: String) {
             )
         }
         if (text2.isNotBlank()) {
-            Text(text = text2, style = defaultTextStyle.copy(color = black1))
+            if (isReadMode) {
+                TextWithReadMoreComponent(title = text1, contentData = text2)
+            } else {
+                Text(text = text2, style = defaultTextStyle.copy(color = blueDark))
+            }
         }
     }
 }

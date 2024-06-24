@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
@@ -65,10 +67,6 @@ fun <T> DropDownComponent(
     else
         Icons.Filled.KeyboardArrowDown
 
-
-    val showLoader = remember {
-        mutableStateOf(false)
-    }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start
@@ -93,7 +91,7 @@ fun <T> DropDownComponent(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp)
+                .height(dimen_60_dp)
                 .clickable { onExpandedChange(expanded) }
                 .onGloballyPositioned { coordinates ->
                     // This value is used to assign to
@@ -141,7 +139,6 @@ fun <T> DropDownComponent(
                 DropdownMenuItem(onClick = {
                     onItemSelected(item)
                 }) {
-
                     Text(
                         text = title,
                         color = blueDark,

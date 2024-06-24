@@ -9,13 +9,18 @@ class DocumentRepositoryImpl @Inject constructor(
     private val documentDao: DocumentDao,
     private val coreSharedPrefs: CoreSharedPrefs
 ) : IDocumentRepository {
-    override suspend fun saveDocumentToDB(referenceId: String, documentValue: String) {
+    override suspend fun saveDocumentToDB(
+        referenceId: String,
+        documentValue: String,
+        activityId: Int
+    ) {
         documentDao.insertDocumentData(
             DocumentEntity.getDocumentEntity(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 referenceId = referenceId,
                 documentValue = documentValue,
                 documentType = "FORM_E",
+                activityId = activityId
             )
         )
     }

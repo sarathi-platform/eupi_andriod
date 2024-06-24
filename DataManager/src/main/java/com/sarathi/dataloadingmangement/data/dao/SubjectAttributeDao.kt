@@ -79,4 +79,7 @@ interface SubjectAttributeDao {
         }
     }
 
+    @Query("Delete from subject_attribute_table where userId=:userId")
+    fun deleteSubjectAttributes(userId: String)
+
 }

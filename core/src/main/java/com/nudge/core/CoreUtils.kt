@@ -360,7 +360,8 @@ private fun calculateInSampleSize(
     }
     return inSampleSize
 }
- suspend fun exportDbFile(appContext: Context, applicationID: String,databaseName:String): Uri? {
+
+suspend fun exportDbFile(appContext: Context, applicationID: String, databaseName: String): Uri? {
     var backupDB: File? = null
     try {
         val sd = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -943,6 +944,23 @@ fun formatToIndianRupee(amount: String): String {
         CoreAppDetails.getContext()
             ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
         return amount
+    }
+
+}
+
+fun convertDate(inputDate: String): String? {
+    if (inputDate.isEmpty()) {
+        return BLANK_STRING
+    }
+    try {
+        val inputFormat = SimpleDateFormat("dd/M/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+        val date = inputFormat.parse(inputDate)
+        return date?.let { outputFormat.format(it) }
+    } catch (ex: Exception) {
+        CoreAppDetails.getContext()
+            ?.let { CoreLogger.e(it, "CoreUtils", "convertDate:${ex.message}", ex, true) }
+        return inputDate
     }
 
 }

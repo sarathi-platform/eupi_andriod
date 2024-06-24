@@ -100,6 +100,7 @@ val greenBgLight = Color(0xFFFCFFFD)
 val decrementCounterColor = Color(0xFFF0665B)
 val locationIconActiveColor = Color(0xFFDE0101)
 val greyBorderColor = Color(0xFFD5D5D5)
+val dividerColor = Color(0xFF707070)
 val lightGrayTranslucent = Color(0xB2B1B1B1)
 
 val progressIndicatorColor = Color(0xFF222E50)
@@ -135,5 +136,7 @@ val greyBorder = Color(0xFF707070)
 val blue = Color(0xFF205EFF)
 val lightBg = Color(0xFFF7F7F7)
 val uncheckedTrackColor = Color(0xFFC0C6CE)
+val dotedBorderColor = Color(0xFF676767)
+val grayColor = Color(0xFFACACAC)
 
 

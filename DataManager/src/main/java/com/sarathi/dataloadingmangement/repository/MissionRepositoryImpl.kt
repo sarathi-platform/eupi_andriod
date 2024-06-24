@@ -201,9 +201,8 @@ class MissionRepositoryImpl @Inject constructor(
 
 
                     }
-                    deleteFormConfig()
                     it.formConfig?.let { it1 ->
-                        saveFormUiConfig(it1)
+                        saveFormUiConfig(it1, missionId, missionActivityModel.id)
                     }
 
                 }
@@ -242,9 +241,11 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun deleteFormConfig() {
+    private fun deleteFormConfig(activityId: Int, missionId: Int) {
         formUiConfigDao.deleteActivityFormUiConfig(
-            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
+            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId,
+            missionId = missionId
         )
     }
 
@@ -290,8 +291,13 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveProgrammeToDb(programme: ProgrameResponse) {
-        programmeDao.deleteProgramme()
-        programmeDao.insertProgramme(ProgrammeEntity.getProgrammeEntity(programme))
+        programmeDao.deleteProgramme(sharedPrefs.getUniqueUserIdentifier())
+        programmeDao.insertProgramme(
+            ProgrammeEntity.getProgrammeEntity(
+                programme,
+                sharedPrefs.getUniqueUserIdentifier()
+            )
+        )
     }
 
     override suspend fun getAllMission(): List<MissionUiModel> {
@@ -317,12 +323,20 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun saveFormUiConfig(uiConfig: List<FormConfigResponse?>) {
+    private fun saveFormUiConfig(
+        uiConfig: List<FormConfigResponse?>,
+        missionId: Int,
+        activityId: Int
+    ) {
+        deleteFormConfig(activityId, missionId)
+
         uiConfig.forEach { attribute ->
             formUiConfigDao.insertFormUiConfig(
                 FormUiConfigEntity.getFormUiConfigEntity(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    attributes = attribute
+                    attributes = attribute,
+                    activityId = activityId,
+                    missionId = missionId
                 )
             )
         }

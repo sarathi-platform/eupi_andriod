@@ -12,6 +12,7 @@ import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -47,7 +48,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val formUseCase: FormUseCase
+    private val formUseCase: FormUseCase,
+    private val formUiConfigUseCase: GetFormUiConfigUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -65,6 +67,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     var isFilerEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
     var isGenerateFormButtonEnable = mutableStateOf(false)
+    var isGenerateFormButtonVisible = mutableStateOf(false)
 
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
@@ -275,8 +278,6 @@ class GrantTaskScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             if (status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskNotAvailable(taskId = taskId)
-            } else {
-                taskStatusUseCase.markTaskInProgress(taskId = taskId)
             }
             taskStatusUseCase.markActivityInProgress(missionId, activityId)
             taskStatusUseCase.markMissionInProgress(missionId)
@@ -291,8 +292,6 @@ class GrantTaskScreenViewModel @Inject constructor(
                 taskId = taskId,
                 status = status
             )
-
-
         }
     }
 
@@ -321,9 +320,15 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
     private suspend fun isGenerateFormButtonEnable() {
-        isGenerateFormButtonEnable.value =
-            formUseCase.getNonGeneratedFormSummaryData(activityId).isNotEmpty()
+        isGenerateFormButtonVisible.value =
+            formUiConfigUseCase.getFormUiConfig(missionId = missionId, activityId = activityId)
+                .isNotEmpty()
+        if (isGenerateFormButtonVisible.value) {
+            isGenerateFormButtonEnable.value =
+                formUseCase.getNonGeneratedFormSummaryData(activityId).isNotEmpty()
 
+        }
     }
+
 
 }
