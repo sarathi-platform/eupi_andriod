@@ -64,6 +64,7 @@ import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 import com.patsurvey.nudge.utils.showToast
+import de.charlex.compose.material.HtmlText
 import kotlinx.coroutines.launch
 
 
@@ -106,8 +107,8 @@ fun NumericFieldTypeQuestion(
                 .align(Alignment.TopCenter)
         ) {
             val (questionBox, optionBox, submitBox) = createRefs()
-//            HtmlText(
-            Text(
+            HtmlText(
+//            Text(
                 modifier = Modifier
                     .border(
                         BorderStroke(1.dp, lightGray2),
@@ -138,7 +139,7 @@ fun NumericFieldTypeQuestion(
                     fontSize = 14.sp,
                     color = textColorDark
                 ),
-                //color = textColorDark
+                color = textColorDark
             )
 
             Column(

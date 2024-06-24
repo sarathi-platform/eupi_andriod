@@ -94,6 +94,7 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.model.response.OptionsItem
+import de.charlex.compose.material.HtmlText
 import java.io.File
 
 @Composable
@@ -1291,7 +1292,7 @@ fun IncrementDecrementView(modifier: Modifier,
                 }
             }
         }
-            de.charlex.compose.material.HtmlText(
+            HtmlText(
                 text = optionText,
                 modifier = Modifier,
                 style = TextStyle(
@@ -1334,7 +1335,11 @@ fun IncrementDecrementView(modifier: Modifier,
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
                                 findOptionValueCount(optionList, optionValue ?: 1)
-                            val newCurrentCount = incDecValue(0, currentCount, optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE)
+                            val newCurrentCount = incDecValue(
+                                0,
+                                currentCount,
+                                optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE
+                            )
                             val intCnt =
                                 if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
                             if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE) {
