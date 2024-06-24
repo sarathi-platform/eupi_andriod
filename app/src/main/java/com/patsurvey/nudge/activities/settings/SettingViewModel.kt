@@ -866,6 +866,7 @@ class SettingViewModel @Inject constructor(
 
     fun clearAccessToken() {
         prefRepo.saveAccessToken("")
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDataLoaded(false)
         clearEventWriterFileName()
         prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
         prefRepo.saveSettingOpenFrom(0)

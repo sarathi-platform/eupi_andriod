@@ -8,19 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.theme.black1
+import com.nudge.core.toInMillisec
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -61,7 +58,6 @@ fun DisbursementSummaryScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = false,
-        isDataAvailable = false,
         onSearchValueChange = {
 
         },
@@ -72,12 +68,18 @@ fun DisbursementSummaryScreen(
                     .padding(dimen_10_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = stringResource(R.string.done),
+                    buttonTitle = stringResource(R.string.go_back),
                     isActive = viewModel.isButtonEnable.value,
-                    isLeftArrow = false,
+                    isArrowRequired = true,
+                    isLeftArrow = true,
                     onClick = {
                         viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen("Activity is Completed")
+                        onNavigateSuccessScreen(
+                            "${
+                                viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
+                                    ?: BLANK_STRING
+                            } for ${subjectName}"
+                        )
                     }
                 )
             }
@@ -106,12 +108,11 @@ fun DisbursementSummaryScreen(
                         onContentUI = {
                             if (viewModel.taskList.value.isNotEmpty()) {
                                 Column {
-                                    Divider(
-                                        modifier = Modifier.padding(vertical = dimen_5_dp),
-                                        color = black1,
-                                        thickness = 0.5.dp
-                                    )
-                                    viewModel.taskList.value.entries.toList()
+                                    viewModel.taskList.value.entries.toList().sortedByDescending {
+                                        viewModel.getSurveyUIModel(it.value).subTittle1.toInMillisec(
+                                            format = "dd MMM, yyyy"
+                                        )
+                                    }
                                         .forEachIndexed { index, task ->
                                             val surveyData = viewModel.getSurveyUIModel(task.value)
                                             DisbursementCard(
@@ -139,14 +140,13 @@ fun DisbursementSummaryScreen(
                                                     }
                                                 }
                                             )
-                                            if (index != viewModel.taskList.value.entries.size - 1) {
-                                                Divider(
-                                                    modifier = Modifier.padding(vertical = dimen_5_dp),
-                                                    color = black1,
-                                                    thickness = 0.5.dp
-                                                )
-                                            }
-
+                                            Spacer(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(
+                                                        dimen_10_dp
+                                                    )
+                                            )
                                         }
                                 }
                                 if (viewModel.showDialog.value.first) {

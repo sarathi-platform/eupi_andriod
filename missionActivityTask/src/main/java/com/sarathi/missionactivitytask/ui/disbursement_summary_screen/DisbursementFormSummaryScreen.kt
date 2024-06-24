@@ -26,12 +26,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -51,30 +49,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
-import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
-import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.lightBg
-import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
+import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
+import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
@@ -88,7 +87,8 @@ import kotlinx.coroutines.launch
 fun DisbursementFormSummaryScreen(
     navController: NavController = rememberNavController(),
     viewModel: DisbursementFormSummaryScreenViewModel,
-    activityId: Int
+    activityId: Int,
+    missionId: Int
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -100,7 +100,12 @@ fun DisbursementFormSummaryScreen(
     }
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.onEvent(InitDataEvent.InitDisbursmentScreenState(activityId = activityId))
+        viewModel.onEvent(
+            InitDataEvent.InitDisbursmentScreenState(
+                activityId = activityId,
+                missionId = missionId
+            )
+        )
     }
 
     ToolBarWithMenuComponent(
@@ -140,7 +145,7 @@ fun DisbursementFormSummaryScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Image(
-                                painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_share_icon),
+                                painter = painterResource(id = R.drawable.ic_share_icon),
                                 contentDescription = "Negative Button",
                                 modifier = Modifier.padding(horizontal = dimen_2_dp),
                                 colorFilter = ColorFilter.tint(blueDark)
@@ -170,7 +175,7 @@ fun DisbursementFormSummaryScreen(
 
                         ) {
                             Image(
-                                painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_download_icon),
+                                painter = painterResource(id = R.drawable.ic_download_icon),
                                 contentDescription = "Negative Button",
                                 modifier = Modifier.padding(horizontal = dimen_2_dp),
                                 colorFilter = ColorFilter.tint(blueDark)
@@ -283,53 +288,61 @@ private fun MakeDisburesementRow(
             ) {
                 Text(
                     text = disbursementFormSummaryUiModel.subjectName,
-                    style = defaultTextStyle,
-                    color = brownDark
+                    style = defaultTextStyle.copy(blueDark),
                 )
                 Text(
                     text = disbursementFormSummaryUiModel.villageName,
-                    style = smallTextStyle,
-                    color = brownDark
+                    style = smallTextStyle.copy(blueDark),
                 )
             }
 
         }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimen_5_dp)
+        )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_6_dp)
-            ) {
-                Row(modifier = Modifier.weight(1.0f)) {
-                    Text("Mode:", style = quesOptionTextStyle)
-                    Text(
-                        modifier = Modifier.padding(horizontal = dimen_3_dp),
-                        text = disbursementFormSummaryUiModel.mode,
-                        style = smallTextStyle
-                    )
-                }
-                Spacer(modifier = Modifier.width(dimen_20_dp))
-                Row(modifier = Modifier.weight(1.0f)) {
-                    Text("Nature:", style = quesOptionTextStyle)
-                    Text(
-                        modifier = Modifier.padding(horizontal = dimen_3_dp),
-                        text = disbursementFormSummaryUiModel.nature,
-                        style = smallTextStyle
-                    )
-                }
-            }
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text("Amount:", style = quesOptionTextStyle)
-                Text(
-                    modifier = Modifier.padding(horizontal = dimen_3_dp),
-                    text = disbursementFormSummaryUiModel.amount,
-                    style = smallTextStyle
-                )
-            }
+            TextRow(text1 = "Mode: ", text2 = disbursementFormSummaryUiModel.mode)
+            TextRow(
+                text1 = "Nature: ",
+                text2 = disbursementFormSummaryUiModel.nature,
+                isReadMode = true
+            )
+            TextRow(
+                text1 = "Amount: ",
+                text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
+            )
         }
 
     }
 
+}
+
+@Composable
+private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
+    Row(
+        verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        if (text1.isNotBlank()) {
+            Text(
+                modifier = Modifier.padding(end = dimen_5_dp),
+                text = text1,
+                style = newMediumTextStyle.copy(color = greyColor)
+            )
+        }
+        if (text2.isNotBlank()) {
+            if (isReadMode) {
+                TextWithReadMoreComponent(title = text1, contentData = text2)
+            } else {
+                Text(
+                    text = text2,
+                    style = defaultTextStyle.copy(color = blueDark)
+                )
+            }
+        }
+    }
 }
 
 @SuppressLint("RememberReturnType")
@@ -344,12 +357,9 @@ fun FormMainSummaryCard(
 ) {
 
 
-    Card(
+    BasicCardView(
         colors = CardDefaults.cardColors(
             containerColor = white
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimen_10_dp
         ),
         modifier = Modifier.padding(dimen_5_dp)
     ) {
@@ -365,10 +375,11 @@ fun FormMainSummaryCard(
 
                 Text(
                     formDisburesmentMap.key.second,
-                    style = defaultTextStyle.copy(fontSize = 16.sp)
+                    style = defaultTextStyle.copy(fontSize = 16.sp, color = blueDark)
                 )
                 Text(
-                    formDisburesmentMap.key.first, style = defaultTextStyle
+                    formDisburesmentMap.key.first,
+                    style = defaultTextStyle.copy(color = blueDark)
                 )
 
             }
@@ -381,13 +392,15 @@ fun FormMainSummaryCard(
             ) {
 
                 Text(
-                    "CSG Disburesed", style = quesOptionTextStyle
+                    stringResource(R.string.csg_disbursed), style = newMediumTextStyle.copy(
+                        blueDark
+                    )
                 )
                 Text(
-                    " ${formDisburesmentMap.value.sumOf { it.amount.toInt() }}",
-                    style = quesOptionTextStyle
+                    text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
+                        .toString()),
+                    style = defaultTextStyle.copy(color = blueDark)
                 )
-
 
             }
             Row(
@@ -398,13 +411,12 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Number of didis", style = quesOptionTextStyle
+                    "Didis", style = newMediumTextStyle.copy(color = blueDark)
                 )
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
-                    style = quesOptionTextStyle
+                    style = defaultTextStyle.copy(color = blueDark)
                 )
-
 
             }
 
@@ -460,8 +472,8 @@ fun HistorySummaryCard(
                         Divider(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            thickness = dimen_1_dp,
-                            color = blueDark
+                            thickness = 0.5.dp,
+                            color = borderGrey
                         )
                         Spacer(
                             modifier = Modifier

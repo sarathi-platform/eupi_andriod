@@ -13,7 +13,7 @@
     <string name="amount">Amount:</string>
     <string name="nature">Nature:</string>
     <string name="mode">Mode:</string>
-    <string name="no_of_didi_s">No. of Didi:</string>
+    <string name="no_of_didi_s">Didis:</string>
     <string name="edit">Edit</string>
     <string name="add_image">+ Add Image</string>
     <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete?</string>
@@ -24,5 +24,6 @@
     <string name="summary">Summary</string>
     <string name="form_e_generated">Form E generated</string>
     <string name="done">Done</string>
+    <string name="go_back">Go back</string>
 
 </resources>

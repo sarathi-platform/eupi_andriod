@@ -1,9 +1,11 @@
 package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
@@ -12,9 +14,9 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -24,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.borderGrey
-import com.nudge.core.ui.theme.buttonTextStyle
-import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
@@ -62,7 +64,7 @@ fun InputComponent(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp),
+                .height(dimen_60_dp),
             value = txt.value,
             enabled = isEditable,
             onValueChange = {
@@ -77,7 +79,17 @@ fun InputComponent(
                 }
                 onAnswerSelection(txt.value)
             },
-            placeholder = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
+            placeholder = {
+                androidx.compose.material3.Text(
+                    text = hintText,
+                    style = smallTextStyle.copy(
+                        color = placeholderGrey
+                    ),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                )
+            },
             keyboardOptions = if (isOnlyNumber) {
                 KeyboardOptions(
                     imeAction = ImeAction.Done,

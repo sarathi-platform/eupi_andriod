@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -38,6 +40,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
@@ -60,6 +63,7 @@ fun GrantTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setMissionActivityId(missionId, activityId)
@@ -84,26 +88,38 @@ fun GrantTaskScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_10_dp),
                 ) {
+
                     ButtonPositive(
-                        modifier = Modifier.weight(0.4f),
+                        modifier = Modifier.weight(0.5f),
                         buttonTitle = stringResource(R.string.complete_activity),
                         isActive = viewModel.isButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
                             viewModel.markActivityCompleteStatus()
-                            navController.popBackStack()
-                        })
-                    Spacer(modifier = Modifier.width(10.dp))
-                    ButtonPositive(modifier = Modifier.weight(0.4f),
-                        buttonTitle = stringResource(id = R.string.generate_form_e),
-                        isActive = viewModel.isGenerateFormButtonEnable.value,
-                        isArrowRequired = false,
-                        onClick = {
-                            navigateToDisbursmentSummaryScreen(
-                                navController = navController,
-                                activityId = activityId
+
+                            navigateToActivityCompletionScreen(
+                                navController,
+                                context.getString(
+                                    R.string.activity_completion_message,
+                                    activityName
+                                )
                             )
                         })
+
+                    if (viewModel.isGenerateFormButtonVisible.value) {
+                        Spacer(modifier = Modifier.width(10.dp))
+                        ButtonPositive(modifier = Modifier.weight(0.5f),
+                            buttonTitle = stringResource(id = R.string.generate_form_e),
+                            isActive = viewModel.isGenerateFormButtonEnable.value,
+                            isArrowRequired = false,
+                            onClick = {
+                                navigateToDisbursmentSummaryScreen(
+                                    navController = navController,
+                                    activityId = activityId,
+                                    missionId = missionId
+                                )
+                            })
+                    }
                 }
             }
         },
@@ -147,10 +163,10 @@ fun GrantTaskScreen(
                             )
                         })
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(dimen_10_dp))
                 if (viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value) {
                     LazyColumn(
-                        modifier = Modifier.padding(bottom = 50.dp)
+                        modifier = Modifier.padding(bottom = dimen_50_dp)
                     ) {
                         viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                             item {
@@ -182,7 +198,7 @@ fun GrantTaskScreen(
                     }
                 } else {
                     if (viewModel.filterList.value.isNotEmpty()) {
-                        LazyColumn(modifier = Modifier.padding(bottom = 50.dp)) {
+                        LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                             itemsIndexed(
                                 items = viewModel.filterList.value.entries.toList()
                             ) { _, task ->
@@ -207,27 +223,30 @@ private fun TaskRowView(
         onPrimaryButtonClick = { subjectName ->
             if (!viewModel.isActivityCompleted.value) {
                 if (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name) {
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                    SurveyStatusEnum.INPROGRESS.name
-                viewModel.updateTaskAvailableStatus(
-                    taskId = task.key,
-                    status = SurveyStatusEnum.INPROGRESS.name,
+                    task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
+                        SurveyStatusEnum.INPROGRESS.name
+                    viewModel.updateTaskAvailableStatus(
+                        taskId = task.key,
+                        status = SurveyStatusEnum.INPROGRESS.name,
 
-                    )
+                        )
                 }
             }
             viewModel.activityConfigUiModel?.let {
-                navigateToGrantSurveySummaryScreen(
-                    navController,
-                    taskId = task.key,
-                    surveyId = it.surveyId,
-                    sectionId = it.sectionId,
-                    subjectType = it.subject,
-                    subjectName = subjectName,
-                    activityConfigId = it.activityConfigId,
-                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                        ?: DEFAULT_ID,
-                )
+                if (subjectName.isNotBlank()) {
+                    navigateToGrantSurveySummaryScreen(
+                        navController,
+                        taskId = task.key,
+                        surveyId = it.surveyId,
+                        sectionId = it.sectionId,
+                        subjectType = it.subject,
+                        subjectName = subjectName,
+                        activityConfigId = it.activityConfigId,
+                        sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                            ?: DEFAULT_ID,
+                    )
+                }
+
             }
         },
         onNotAvailable = {

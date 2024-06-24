@@ -774,4 +774,5 @@ class DataLoadingModule {
             attributeValueReferenceDao = attributeValueReferenceDao
         )
     }
+
 }

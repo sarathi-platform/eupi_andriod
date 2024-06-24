@@ -4,11 +4,13 @@ import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.PDF_MIME_TYPE
 import com.nudge.core.PDF_TYPE
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
 import com.nudge.core.saveFileToDownload
+import com.nudge.core.toInMillisec
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.PdfGenerator
 import com.nudge.core.utils.PdfModel
@@ -50,7 +52,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDisbursmentScreenState -> {
-                initDisbursementSummaryScreen(event.activityId)
+                initDisbursementSummaryScreen(event.activityId, event.missionId)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -61,20 +63,28 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         }
     }
 
-    private fun initDisbursementSummaryScreen(activityId: Int) {
+    private fun initDisbursementSummaryScreen(activityId: Int, missionId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _formList.value = getFormData(activityId).groupBy { Pair(it.date, it.voName) }
+            _formList.value =
+                getFormData(activityId, missionId).sortedByDescending {
+                    it.date.toInMillisec(
+                        DD_MMM_YYYY_FORMAT
+                    )
+                }.groupBy { Pair(it.date, it.voName) }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    private suspend fun getFormData(activityId: Int): List<DisbursementFormSummaryUiModel> {
+    private suspend fun getFormData(
+        activityId: Int,
+        missionId: Int
+    ): List<DisbursementFormSummaryUiModel> {
         val fromData = formUseCase.getFormSummaryData(activityId = activityId)
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
-            val _data = getFormAttributeDate(form)
+            val _data = getFormAttributeDate(form, activityId, missionId)
 
             list.add(
                 DisbursementFormSummaryUiModel(
@@ -105,12 +115,18 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         return list
     }
 
-    private suspend fun getFormAttributeDate(form: FormEntity): HashMap<String, String> {
+    private suspend fun getFormAttributeDate(
+        form: FormEntity,
+        activityId: Int,
+        missionId: Int
+    ): HashMap<String, String> {
         return getUiComponentValues(
             taskId = form.taskid,
             subjectId = form.subjectid,
             componentType = ComponentEnum.Form.name,
-            referenceId = form.localReferenceId
+            referenceId = form.localReferenceId,
+            missionId = missionId,
+            activityId = activityId
         )
     }
 
@@ -124,10 +140,13 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         taskId: Int,
         subjectId: Int,
         componentType: String,
-        referenceId: String
+        referenceId: String,
+        missionId: Int,
+        activityId: Int
     ): HashMap<String, String> {
         val cardAttributesWithValue = HashMap<String, String>()
-        val activityConfig = getFormUiConfigUseCase.getFormUiConfig()
+        val activityConfig =
+            getFormUiConfigUseCase.getFormUiConfig(activityId = activityId, missionId = missionId)
         val cardConfig = activityConfig.filter { it.componentType.equals(componentType, true) }
         cardConfig.forEach { cardAttribute ->
             cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {

@@ -12,14 +12,19 @@ interface FormUiConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFormUiConfig(uiConfigEntity: FormUiConfigEntity)
 
-    @Query("select * from form_ui_config_table where userId=:uniqueUserIdentifier")
+    @Query("select * from form_ui_config_table where userId=:uniqueUserIdentifier and activityId=:activityId and missionId=:missionId and componentType=:formType")
     fun getActivityFormUiConfig(
-        uniqueUserIdentifier: String
+        uniqueUserIdentifier: String,
+        activityId: Int,
+        missionId: Int,
+        formType: String = "form"
     ): List<FormUiConfigEntity>
 
-    @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier")
+    @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier and activityId=:activityId and missionId=:missionId")
     fun deleteActivityFormUiConfig(
-        uniqueUserIdentifier: String
+        uniqueUserIdentifier: String,
+        activityId: Int,
+        missionId: Int,
     )
 
 }

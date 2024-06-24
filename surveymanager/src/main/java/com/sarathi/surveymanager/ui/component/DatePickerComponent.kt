@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,13 +35,18 @@ import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.R
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,14 +79,14 @@ fun DatePickerComponent(
                 readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(dimen_60_dp)
                     .background(white, shape = RoundedCornerShape(8.dp))
-                    .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp))
-                    .padding(8.dp),
+                    .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp)),
                 onValueChange = { text = it },
                 placeholder = {
                     Text(
                         text = hintText,
-                        style = buttonTextStyle.copy(
+                        style = smallerTextStyle.copy(
                             color = placeholderGrey
                         ),
                         modifier = Modifier
@@ -117,7 +123,12 @@ fun DatePickerComponent(
                             context,
                             R.style.my_dialog_theme,
                             { _, selectedYear, selectedMonth, selectedDay ->
-                                text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                                val calendar = Calendar.getInstance()
+                                calendar.set(selectedYear, selectedMonth, selectedDay)
+                                val dateFormat =
+                                    SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.getDefault())
+                                val formattedDate = dateFormat.format(calendar.time)
+                                text = formattedDate
                                 onAnswerSelection(text)
                             }, year, month, day
                         ).show()

@@ -27,16 +27,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.black1
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.lightGray2
-import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
-import com.nudge.core.ui.theme.textColorDark
-import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 import com.sarathi.contentmodule.download_manager.FileType
@@ -101,12 +100,11 @@ private fun ContentView(
                 Text(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    text = if (contentTitle.length > 15) contentTitle.substring(
+                    text = if (contentTitle.length > 10) contentTitle.substring(
                         0,
-                        15
+                        10
                     ) else contentTitle,
-                    fontSize = 10.sp,
-                    style = smallTextStyleMediumWeight2.copy(color = blueDark)
+                    style = smallTextStyle.copy(color = blueDark)
                 )
             }
         }

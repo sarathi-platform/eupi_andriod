@@ -1,6 +1,7 @@
 package com.nudge.core.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -60,8 +61,18 @@ val quesOptionTextStyle = TextStyle(
     fontWeight = FontWeight.Normal,
     fontSize = 14.sp
 )
+val quesOptionSpanStyle = SpanStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp
+)
 
 val smallTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)
+val smallSpanStyle = SpanStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,
     fontSize = 14.sp
