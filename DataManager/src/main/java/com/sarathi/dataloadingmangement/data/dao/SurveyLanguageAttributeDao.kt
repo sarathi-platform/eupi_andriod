@@ -16,5 +16,7 @@ interface SurveyLanguageAttributeDao {
     @Query(" delete from survey_language_attribute_table where referenceId =:referenceId and referenceType =:referenceType")
     fun deleteSurveyLanguageAttribute(referenceId: Int, referenceType: String)
 
+    @Query(" delete from survey_language_attribute_table where userId =:userId")
+    fun deleteSurveyLanguageAttributeForUser(userId: String)
 
 }

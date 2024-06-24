@@ -86,7 +86,8 @@ import kotlinx.coroutines.launch
 fun DisbursementFormSummaryScreen(
     navController: NavController = rememberNavController(),
     viewModel: DisbursementFormSummaryScreenViewModel,
-    activityId: Int
+    activityId: Int,
+    missionId: Int
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -98,7 +99,12 @@ fun DisbursementFormSummaryScreen(
     }
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.onEvent(InitDataEvent.InitDisbursmentScreenState(activityId = activityId))
+        viewModel.onEvent(
+            InitDataEvent.InitDisbursmentScreenState(
+                activityId = activityId,
+                missionId = missionId
+            )
+        )
     }
 
     ToolBarWithMenuComponent(

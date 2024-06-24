@@ -46,6 +46,7 @@ import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.findImageLocationFromPath
@@ -53,6 +54,7 @@ import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.getPatScoreSaveEvent
 import com.patsurvey.nudge.utils.getPatSummarySaveEventPayload
 import com.patsurvey.nudge.utils.uriFromFile
+import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import java.io.File
 import javax.inject.Inject
 
@@ -67,29 +69,35 @@ class SettingRepository @Inject constructor(
     val answerDao: AnswerDao,
     val questionDao: QuestionListDao,
     val numericAnswerDao: NumericAnswerDao,
+    val regenerateGrantEventUsecase: RegenerateGrantEventUsecase
 ) : BaseRepository() {
 
     suspend fun regenerateAllEvent(coreSharedPrefs: CoreSharedPrefs) {
         try {
 
+            if (prefRepo.getLoggedInUserType() == UPCM_USER) {
+                regenerateGrantEventUsecase.invoke()
+            } else {
 
-            villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2).forEach {
-                coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
-                coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
-                if (prefRepo.isUserBPC()) {
-                    generatePatEvents(it.id)
-                    generateWorkFlowStatusEvent(it.id)
-                    generateDidiImageEvent(it.id)
-                    generateBPCMismatchScoreEvent(it.id)
-                } else {
-                    generateAddTolaEvent(it.id)
-                    generateAddDidiEvent(it.id)
-                    generateWealthRankingEvent(it.id)
-                    generatePatEvents(it.id)
-                    generateVOEvents(it.id)
-                    generateRankingEditEvent(it.id)
-                    generateWorkFlowStatusEvent(it.id)
-                    generateDidiImageEvent(it.id)
+                villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2).forEach {
+                    coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
+                    coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
+
+                    if (prefRepo.isUserBPC()) {
+                        generatePatEvents(it.id)
+                        generateWorkFlowStatusEvent(it.id)
+                        generateDidiImageEvent(it.id)
+                        generateBPCMismatchScoreEvent(it.id)
+                    } else {
+                        generateAddTolaEvent(it.id)
+                        generateAddDidiEvent(it.id)
+                        generateWealthRankingEvent(it.id)
+                        generatePatEvents(it.id)
+                        generateVOEvents(it.id)
+                        generateRankingEditEvent(it.id)
+                        generateWorkFlowStatusEvent(it.id)
+                        generateDidiImageEvent(it.id)
+                    }
                 }
             }
         } catch (exception: Exception) {

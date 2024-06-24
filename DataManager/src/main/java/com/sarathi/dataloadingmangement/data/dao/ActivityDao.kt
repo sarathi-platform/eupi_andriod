@@ -24,7 +24,7 @@ interface ActivityDao {
     fun insertMissionActivity(activities: ActivityEntity)
 
     @Query("DELETE FROM $ACTIVITY_TABLE_NAME where userId=:userId")
-    fun deleteActivities(userId: String)
+    fun deleteActivityForUser(userId: String)
 
     @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = 0 where  userId=:userId and missionId = :missionId")
     fun softDeleteActivity(missionId: Int, userId: String)
@@ -150,5 +150,9 @@ interface ActivityDao {
 
     @Query("Select * from activity_table where userId=:userId and activityId=:activityId and missionId=:missionId")
     suspend fun getActivity(userId: String, missionId: Int, activityId: Int): ActivityEntity?
+
+    @Query("Select * from activity_table where userId=:userId and isActive=1 ")
+    suspend fun getAllActivityForUser(userId: String): List<ActivityEntity>
+
 
 }

@@ -14,6 +14,8 @@ data class QuestionAnswerResponseModel(
     @SerializedName("subjectId") var subjectId: Int = DEFAULT_ID,
     @SerializedName("subjectType") var subjectType: String? = BLANK_STRING,
     @SerializedName("taskId") var taskId: Int = DEFAULT_ID,
+    @SerializedName("grantId") var grantId: Int? = DEFAULT_ID,
+    @SerializedName("grantType") var grantType: String? = BLANK_STRING,
     @SerializedName("sectionId") var sectionId: String = BLANK_STRING,
     @SerializedName("status") var status: String = BLANK_STRING,
     @SerializedName("tag") var tag: String? = BLANK_STRING,

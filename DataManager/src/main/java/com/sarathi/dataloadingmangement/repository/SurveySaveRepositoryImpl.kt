@@ -20,7 +20,9 @@ class SurveySaveRepositoryImpl @Inject constructor(
         question: QuestionUiModel,
         subjectId: Int,
         taskId: Int,
-        referenceId: String
+        referenceId: String,
+        grantId: Int,
+        grantType: String
     ) {
 
         surveyAnswersDao.insertOrModifySurveyAnswer(
@@ -29,7 +31,9 @@ class SurveySaveRepositoryImpl @Inject constructor(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 subjectId = subjectId,
                 referenceId = referenceId,
-                taskId = taskId
+                taskId = taskId,
+                grantId = grantId,
+                grantType = grantType
             )
         )
     }

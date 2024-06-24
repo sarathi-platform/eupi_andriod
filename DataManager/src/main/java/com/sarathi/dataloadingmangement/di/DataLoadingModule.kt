@@ -12,6 +12,8 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.DocumentDao
+import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
@@ -46,6 +48,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
@@ -60,6 +63,7 @@ import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
@@ -78,6 +82,7 @@ import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -275,6 +280,7 @@ class DataLoadingModule {
             fetchSurveyDataFromDB = fetchSurveyDataFromDB,
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
+                coreSharedPrefs = coreSharedPrefs
             )
         )
 
@@ -475,6 +481,7 @@ class DataLoadingModule {
             ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
+                coreSharedPrefs = coreSharedPrefs
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,
@@ -647,6 +654,52 @@ class DataLoadingModule {
             surveyEntityDao = surveyDao,
             grantConfigDao = grantConfigDao
 
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideRegenerateGrantEventRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        activityDao: ActivityDao, missionDao: MissionDao,
+        taskDao: TaskDao,
+        activityConfigDao: ActivityConfigDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        formDao: FormDao,
+        documentDao: DocumentDao
+    ): RegenerateGrantEventRepositoryImpl {
+        return RegenerateGrantEventRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            activityDao = activityDao,
+            missionDao = missionDao,
+            taskDao = taskDao,
+            activityConfigDao = activityConfigDao,
+            surveyAnswersDao = surveyAnswersDao,
+            formDao = formDao,
+            documentDao = documentDao
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideRegenerateGrantEventUseCase(
+        regenerateGrantEventRepositoryImpl: RegenerateGrantEventRepositoryImpl,
+        matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+        fetchDataUseCase: FetchSurveyDataFromDB,
+        surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
+        formEventWriterUseCase: FormEventWriterUseCase,
+        documentEventWriterUseCase: DocumentEventWriterUseCase,
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): RegenerateGrantEventUsecase {
+        return RegenerateGrantEventUsecase(
+            regenerateGrantEventRepositoryImpl = regenerateGrantEventRepositoryImpl,
+            matStatusEventWriterUseCase,
+            fetchDataUseCase,
+            surveyAnswerEventWriterUseCase,
+            formEventWriterUseCase,
+            documentEventWriterUseCase,
+            coreSharedPrefs
         )
     }
 

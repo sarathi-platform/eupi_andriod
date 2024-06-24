@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
@@ -61,6 +63,7 @@ fun GrantTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setMissionActivityId(missionId, activityId)
@@ -85,26 +88,38 @@ fun GrantTaskScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_10_dp),
                 ) {
+
                     ButtonPositive(
-                        modifier = Modifier.weight(0.4f),
+                        modifier = Modifier.weight(0.5f),
                         buttonTitle = stringResource(R.string.complete_activity),
                         isActive = viewModel.isButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
                             viewModel.markActivityCompleteStatus()
-                            navController.popBackStack()
-                        })
-                    Spacer(modifier = Modifier.width(10.dp))
-                    ButtonPositive(modifier = Modifier.weight(0.4f),
-                        buttonTitle = stringResource(id = R.string.generate_form_e),
-                        isActive = viewModel.isGenerateFormButtonEnable.value,
-                        isArrowRequired = false,
-                        onClick = {
-                            navigateToDisbursmentSummaryScreen(
-                                navController = navController,
-                                activityId = activityId
+
+                            navigateToActivityCompletionScreen(
+                                navController,
+                                context.getString(
+                                    R.string.activity_completion_message,
+                                    activityName
+                                )
                             )
                         })
+
+                    if (viewModel.isGenerateFormButtonVisible.value) {
+                        Spacer(modifier = Modifier.width(10.dp))
+                        ButtonPositive(modifier = Modifier.weight(0.5f),
+                            buttonTitle = stringResource(id = R.string.generate_form_e),
+                            isActive = viewModel.isGenerateFormButtonEnable.value,
+                            isArrowRequired = false,
+                            onClick = {
+                                navigateToDisbursmentSummaryScreen(
+                                    navController = navController,
+                                    activityId = activityId,
+                                    missionId = missionId
+                                )
+                            })
+                    }
                 }
             }
         },

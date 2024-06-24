@@ -6,6 +6,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
+import com.sarathi.dataloadingmangement.DELEGATE_DOT
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -34,7 +35,7 @@ class ContentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteContentFromDB() {
-        contentDao.deleteContent()
+        contentDao.deleteContent(coreSharedPrefs.getUniqueUserIdentifier())
     }
 
     override suspend fun getContentData(): List<Content> {
@@ -69,7 +70,7 @@ class ContentRepositoryImpl @Inject constructor(
                     contentRequests.add(
                         ContentRequest(
                             languageCode = DEFAULT_LANGUAGE_CODE,
-                            contentKey = key.split(".").firstOrNull() ?: BLANK_STRING
+                            contentKey = key.split(DELEGATE_DOT).firstOrNull() ?: BLANK_STRING
                         )
                     )
                 }

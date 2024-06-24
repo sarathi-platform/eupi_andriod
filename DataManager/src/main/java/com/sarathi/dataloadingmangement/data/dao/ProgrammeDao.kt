@@ -13,8 +13,8 @@ interface ProgrammeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProgramme(programmeEntity: ProgrammeEntity)
 
-    @Query("Delete from programme_table ")
-    fun deleteProgramme()
+    @Query("Delete from programme_table where userId=:userId ")
+    fun deleteProgramme(userId: String)
 
 
 }

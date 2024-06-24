@@ -79,7 +79,7 @@ class MATStatusEventWriterUseCase(
     }
 
 
-    private suspend fun updateMissionStatus(
+    suspend fun updateMissionStatus(
         missionEntity: MissionEntity,
         surveyName: String
     ) {

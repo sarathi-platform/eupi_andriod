@@ -105,7 +105,9 @@ class SurveyScreenViewModel @Inject constructor(
                     question,
                     taskEntity?.subjectId ?: DEFAULT_ID,
                     taskId = taskId,
-                    referenceId = referenceId
+                    referenceId = referenceId,
+                    grantId = grantID,
+                    grantType = granType
                 )
 
             }

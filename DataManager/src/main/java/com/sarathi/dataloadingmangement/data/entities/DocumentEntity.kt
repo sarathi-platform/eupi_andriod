@@ -18,6 +18,7 @@ data class DocumentEntity(
     @ColumnInfo(name = "id")
     var id: Int = 0,
     var userId: String? = BLANK_STRING,
+    var activityId: Int,
     var generateDate: Date = System.currentTimeMillis().toDate(),
     var documentType: String,
     var documentValue: String,
@@ -29,7 +30,8 @@ data class DocumentEntity(
             userId: String,
             referenceId: String,
             documentType: String,
-            documentValue: String
+            documentValue: String,
+            activityId: Int
         ): DocumentEntity {
             return DocumentEntity(
                 id = 0,
@@ -37,7 +39,8 @@ data class DocumentEntity(
                 userId = userId,
                 documentReferenceId = referenceId,
                 documentValue = documentValue,
-                generateDate = System.currentTimeMillis().toDate()
+                generateDate = System.currentTimeMillis().toDate(),
+                activityId = activityId
             )
         }
 

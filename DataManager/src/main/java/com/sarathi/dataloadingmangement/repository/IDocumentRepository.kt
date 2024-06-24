@@ -3,7 +3,7 @@ package com.sarathi.dataloadingmangement.repository
 import com.sarathi.dataloadingmangement.data.entities.DocumentEntity
 
 interface IDocumentRepository {
-    suspend fun saveDocumentToDB(referenceId: String, documentValue: String)
+    suspend fun saveDocumentToDB(referenceId: String, documentValue: String, activityId: Int)
 
     suspend fun deleteDocument(
         referenceId: String,
