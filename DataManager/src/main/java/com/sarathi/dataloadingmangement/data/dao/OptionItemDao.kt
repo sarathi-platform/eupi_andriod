@@ -72,6 +72,6 @@ interface OptionItemDao {
 
 
     @Query("Delete from $OPTION_TABLE where userId=:userId")
-    fun deleteOptions(userId: String)
+    fun deleteOptionsForUser(userId: String)
 
 }
