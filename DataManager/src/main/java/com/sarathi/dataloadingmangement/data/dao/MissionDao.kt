@@ -31,7 +31,7 @@ interface MissionDao {
 //    fun insertMission(mission: MissionEntity)
 
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
-    fun deleteMissions(userId: String)
+    fun deleteMissionsForUser(userId: String)
 
     @Query(
         "select mission_table.missionId, mission_language_table.description,  mission_table.status as missionStatus , \n" +

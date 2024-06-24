@@ -24,7 +24,7 @@ interface ActivityDao {
     fun insertMissionActivity(activities: ActivityEntity)
 
     @Query("DELETE FROM $ACTIVITY_TABLE_NAME where userId=:userId")
-    fun deleteActivities(userId: String)
+    fun deleteActivityForUser(userId: String)
 
     @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = 0 where  userId=:userId and missionId = :missionId")
     fun softDeleteActivity(missionId: Int, userId: String)

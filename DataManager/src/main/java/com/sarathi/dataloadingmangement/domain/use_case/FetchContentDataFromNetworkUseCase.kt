@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.Content
@@ -10,6 +11,7 @@ import javax.inject.Inject
 
 class FetchContentDataFromNetworkUseCase @Inject constructor(
     private val repository: IContentRepository,
+    private val coreSharedPrefs: CoreSharedPrefs,
 ) {
     suspend fun invoke(): Boolean {
         try {
@@ -24,7 +26,12 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
                 apiContentResponse.data?.let { contentResponse ->
                     repository.deleteContentFromDB()
                     for (content in contentResponse) {
-                        contentEntities.add(ContentMapper.getContent(content))
+                        contentEntities.add(
+                            ContentMapper.getContent(
+                                content,
+                                coreSharedPrefs.getUniqueUserIdentifier()
+                            )
+                        )
                     }
                     repository.saveContentToDB(contentEntities)
                     return true

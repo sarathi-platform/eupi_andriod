@@ -257,6 +257,7 @@ class DataLoadingModule {
             fetchSurveyDataFromDB = fetchSurveyDataFromDB,
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
+                coreSharedPrefs = coreSharedPrefs
             )
         )
 
@@ -457,6 +458,7 @@ class DataLoadingModule {
             ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
+                coreSharedPrefs = coreSharedPrefs
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,

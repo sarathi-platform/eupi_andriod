@@ -33,7 +33,7 @@ interface ContentDao {
     @Query("SELECT count(*) FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys)")
     fun getContentCount(contentKeys: List<String>): Int
 
-    @Query("DELETE FROM $CONTENT_TABLE_NAME")
-    fun deleteContent()
+    @Query("DELETE FROM $CONTENT_TABLE_NAME where userId=:userId")
+    fun deleteContent(userId: String)
 
 }

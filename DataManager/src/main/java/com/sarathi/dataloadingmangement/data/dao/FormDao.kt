@@ -72,4 +72,10 @@ interface FormDao {
     ): List<FormEntity>
 
 
+    @Query("Delete from form_table where userId =:userId ")
+    fun deleteFormForUser(
+        userId: String,
+    ): Int
+
+
 }

@@ -15,5 +15,6 @@ data class Content(
     var languageCode: String,
     var thumbUrl: String,
     var isDownload: Int,
-    var contentName: String
+    var contentName: String,
+    var userId: String
 )

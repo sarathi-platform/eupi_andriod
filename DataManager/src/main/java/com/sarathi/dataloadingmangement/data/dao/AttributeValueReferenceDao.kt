@@ -15,4 +15,7 @@ interface AttributeValueReferenceDao {
 
     @Query("select value from attribute_value_reference_table where `key`=:attributeKey and userId=:userId")
     fun getAttributeValue(attributeKey: String, userId: String): List<String>
+
+    @Query("Delete from attribute_value_reference_table where userId=:userId")
+    fun deleteAttributeValueReferenceForUser(userId: String)
 }

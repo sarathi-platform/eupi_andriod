@@ -28,6 +28,6 @@ interface SurveyEntityDao {
     fun deleteSurvey(userId: String, surveyId: Int)
 
     @Query("Delete from $SURVEY_TABLE where userId=:userId")
-    fun deleteAllSurvey(userId: String)
+    fun deleteAllSurveyForUser(userId: String)
 
 }

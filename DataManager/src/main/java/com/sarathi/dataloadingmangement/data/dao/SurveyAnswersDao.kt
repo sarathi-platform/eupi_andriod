@@ -134,4 +134,8 @@ interface SurveyAnswersDao {
     fun getAllSurveyAnswerForUser(
         uniqueUserIdentifier: String
     ): List<SurveyAnswerEntity>
+    @Query("Delete from ques_answer_table where userId =:userId ")
+    fun deleteSurveyAnswerForUser(
+        userId: String,
+    ): Int
 }

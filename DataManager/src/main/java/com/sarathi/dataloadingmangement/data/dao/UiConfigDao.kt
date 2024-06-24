@@ -31,4 +31,9 @@ interface UiConfigDao {
     @Query("select icon from ui_config_table where icon <> ''")
     fun getAllIconsKey(): List<String>
 
+
+    @Query("Delete from  ui_config_table where  userId=:uniqueUserIdentifier")
+    fun deleteActivityUiConfigForUser(
+        uniqueUserIdentifier: String
+    )
 }
