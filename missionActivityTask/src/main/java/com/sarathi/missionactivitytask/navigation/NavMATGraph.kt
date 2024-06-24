@@ -394,12 +394,16 @@ fun NavGraphBuilder.MatNavigation(
         composable(route = MATHomeScreens.DisbursmentSummaryScreen.route, arguments = listOf(
             navArgument(name = ARG_ACTIVITY_ID) {
                 type = NavType.IntType
+            },
+            navArgument(name = ARG_MISSION_ID) {
+                type = NavType.IntType
             }
         )) {
             DisbursementFormSummaryScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0
             )
         }
         composable(route = MATHomeScreens.PdfViewerScreen.route, arguments = listOf(
@@ -438,9 +442,9 @@ fun navigateToContentDetailScreen(
 }
 
 fun navigateToDisbursmentSummaryScreen(
-    navController: NavController, activityId: Int
+    navController: NavController, activityId: Int, missionId: Int
 ) {
-    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId")
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId")
 }
 
 fun navigateToSurveyScreen(
