@@ -1,26 +1,36 @@
 package com.sarathi.missionactivitytask.ui.components
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetDefaults
+import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerFormatter
+import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerDefaults
 import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -29,7 +39,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.searchFieldBg
+import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -58,16 +70,17 @@ fun CustomDateRangePickerBottomSheetComponent(
         }
     }
 
-    Scaffold {
+    /*Scaffold {
         val a = it.calculateBottomPadding()
         content()
-    }
+    }*/
 
     //TDOO Fix the crash for bottom sheet.
-    /*ModalBottomSheetLayout(
+    ModalBottomSheetLayout(
         modifier = customDateRangePickerBottomSheetProperties.modifier,
         sheetShape = customDateRangePickerBottomSheetProperties.sheetShape,
         sheetState = customDateRangePickerBottomSheetProperties.sheetState,
+        sheetGesturesEnabled = true,
         sheetElevation = customDateRangePickerBottomSheetProperties.sheetElevation,
         sheetBackgroundColor = customDateRangePickerBottomSheetProperties.sheetBackgroundColor,
         sheetContentColor = customDateRangePickerBottomSheetProperties.sheetContentColor,
@@ -114,7 +127,7 @@ fun CustomDateRangePickerBottomSheetComponent(
         }
     ) {
         content()
-    }*/
+    }
 
 }
 

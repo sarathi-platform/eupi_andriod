@@ -56,6 +56,8 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
+private const val TAG = "CoreUtils"
+
 fun Long.toDate(
     dateFormat: Long = System.currentTimeMillis(),
     timeZone: TimeZone = TimeZone.getTimeZone("UTC")
@@ -385,6 +387,21 @@ suspend fun exportDbFile(appContext: Context, applicationID: String, databaseNam
 
 }
 
+suspend fun exportDbFiles(
+    appContext: Context,
+    applicationID: String,
+    databaseNames: List<String>
+): List<Pair<String, Uri?>> {
+    val uriList = ArrayList<Pair<String, Uri?>>()
+    databaseNames.forEach { dbName ->
+        val uri = exportDbFile(appContext, applicationID, dbName)
+        uri?.let {
+            uriList.add(Pair(dbName, it))
+        }
+    }
+    return uriList
+}
+
 fun getAllFilesInDirectory(
     appContext: Context,
     directoryPath: String?,
@@ -500,10 +517,64 @@ fun exportOldData(
             onExportSuccess(zipFileUri)
 
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            CoreLogger.e(
+                tag = TAG,
+                msg = "exportOldData: exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
         }
     }
 
+}
+
+fun exportDatabase(
+    appContext: Context,
+    applicationID: String,
+    mobileNo: String,
+    databaseName: List<String>,
+    userName: String,
+    moduleName: String,
+    onExportSuccess: (zipUri: Uri) -> Unit
+) {
+    CoreDispatchers.ioCoroutineScope {
+        try {
+
+            val dbUrisList = exportDbFiles(appContext, applicationID, databaseName)
+            val zipFileDirectory = appContext
+                .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+
+            val zipFileName =
+                "${userName}_${mobileNo}_${SARATHI}_Database_${moduleName}_${System.currentTimeMillis()}.zip"
+            val zipFileUri =
+                uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
+
+            ZipManager.zip(
+                dbUrisList,
+                zipFileUri,
+                appContext
+            )
+            delay(100)
+            if (dbUrisList.map { it.second }.all { it != null }) {
+                copyZipFile(
+                    appContext,
+                    zipFileUri,
+                    zipFileName,
+                    mobileNo,
+                    userName
+                )
+            }
+            onExportSuccess(zipFileUri)
+
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = TAG,
+                msg = "exportDatabase: exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
+        }
+    }
 
 }
 

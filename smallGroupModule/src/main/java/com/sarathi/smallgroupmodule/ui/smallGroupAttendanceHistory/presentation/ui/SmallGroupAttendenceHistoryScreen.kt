@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -303,6 +304,19 @@ fun SmallGroupAttendanceHistoryScreen(
                                             readOnly = true,
                                             textStyle = defaultTextStyle,
                                             singleLine = true,
+                                            interactionSource = remember {
+                                                MutableInteractionSource()
+                                            }.also { interactionSource ->
+                                                LaunchedEffect(key1 = interactionSource) {
+                                                    interactionSource.interactions.collect {
+                                                        if (it is PressInteraction.Release) {
+                                                            scope.launch {
+                                                                sheetState.show()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             colors = OutlinedTextFieldDefaults.colors(
                                                 focusedTextColor = textColorDark,
                                                 unfocusedBorderColor = dateRangeFieldColor,

@@ -41,7 +41,9 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 fun BasicCardView(
     modifier: Modifier = Modifier,
     cardShape: Shape = RoundedCornerShape(roundedCornerRadiusDefault),
-    colors: CardColors = CardDefaults.cardColors(),
+    colors: CardColors = CardDefaults.cardColors(
+        containerColor = white
+    ),
     cardElevation: CardElevation = CardDefaults.cardElevation(
         defaultElevation = defaultCardElevation
     ),

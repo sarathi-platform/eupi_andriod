@@ -29,6 +29,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
+import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
@@ -138,6 +139,7 @@ fun GrantMissionScreen(
                                     )*/
                                 }
                             )
+                            CustomVerticalSpacer()
                         }
                     }
                 }
