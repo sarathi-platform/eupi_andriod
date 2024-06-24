@@ -1,7 +1,8 @@
 package com.sarathi.contentmodule.ui.content_screen.screen
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -26,14 +27,14 @@ fun BaseContentScreen(
         viewModel.onEvent(InitDataEvent.InitContentScreenState(matId, contentScreenCategory))
     }
     if (viewModel.contentList.value.isNotEmpty()) {
-        Row(
+        LazyRow(
             modifier = Modifier.padding(
                 top = dimen_10_dp,
                 start = dimen_20_dp,
                 end = dimen_20_dp
             )
         ) {
-            viewModel.contentList.value.forEachIndexed { index, item ->
+            itemsIndexed(viewModel.contentList.value.take(4)) { index, item ->
                 BasicContentComponent(
                     contentType = item.contentType,
                     contentTitle = item.contentName,

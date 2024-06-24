@@ -137,5 +137,6 @@ val blue = Color(0xFF205EFF)
 val lightBg = Color(0xFFF7F7F7)
 val uncheckedTrackColor = Color(0xFFC0C6CE)
 val dotedBorderColor = Color(0xFF676767)
+val grayColor = Color(0xFFACACAC)
 
 

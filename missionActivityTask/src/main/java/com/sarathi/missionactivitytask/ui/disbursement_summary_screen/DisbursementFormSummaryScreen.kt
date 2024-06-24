@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.convertDate
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.theme.blueDark
@@ -63,8 +65,9 @@ import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.lightBg
-import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
@@ -144,7 +147,7 @@ fun DisbursementFormSummaryScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Image(
-                                painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_share_icon),
+                                painter = painterResource(id = R.drawable.ic_share_icon),
                                 contentDescription = "Negative Button",
                                 modifier = Modifier.padding(horizontal = dimen_2_dp),
                                 colorFilter = ColorFilter.tint(blueDark)
@@ -328,7 +331,7 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
             Text(
                 modifier = Modifier.padding(end = dimen_5_dp),
                 text = text1,
-                style = quesOptionTextStyle.copy(color = blueDark)
+                style = newMediumTextStyle.copy(color = greyColor)
             )
         }
         if (text2.isNotBlank()) {
@@ -377,7 +380,8 @@ fun FormMainSummaryCard(
                     style = defaultTextStyle.copy(fontSize = 16.sp, color = blueDark)
                 )
                 Text(
-                    formDisburesmentMap.key.first, style = defaultTextStyle.copy(color = blueDark)
+                    convertDate(formDisburesmentMap.key.first) ?: BLANK_STRING,
+                    style = defaultTextStyle.copy(color = blueDark)
                 )
 
             }
@@ -390,14 +394,14 @@ fun FormMainSummaryCard(
             ) {
 
                 Text(
-                    stringResource(R.string.csg_disbursed), style = quesOptionTextStyle.copy(
+                    stringResource(R.string.csg_disbursed), style = newMediumTextStyle.copy(
                         blueDark
                     )
                 )
                 Text(
                     text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
                         .toString()),
-                    style = quesOptionTextStyle.copy(blueDark)
+                    style = defaultTextStyle.copy(color = blueDark)
                 )
 
             }
@@ -409,11 +413,11 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Didis", style = quesOptionTextStyle.copy(color = blueDark)
+                    "Didis", style = newMediumTextStyle.copy(color = blueDark)
                 )
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
-                    style = quesOptionTextStyle.copy(color = blueDark)
+                    style = defaultTextStyle.copy(color = blueDark)
                 )
 
             }

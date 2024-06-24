@@ -167,7 +167,7 @@ fun StepsBoxGrantComponent(
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
-                        style = largeTextStyle
+                        style = largeTextStyle.copy(blueDark)
                     )
                     LinearProgressBarComponent(
                         progress = curPercentage.value

@@ -34,6 +34,7 @@ import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
@@ -103,7 +104,7 @@ fun BasicMissionCard(
                     )
                     Text(
                         text = "$pendingCount / $totalCount $countStatusText",
-                        style = smallerTextStyle.copy(color = blueDark),
+                        style = smallTextStyle.copy(color = blueDark),
                     )
                 }
             }
