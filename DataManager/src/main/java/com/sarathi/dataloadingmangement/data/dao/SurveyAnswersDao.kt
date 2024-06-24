@@ -130,6 +130,10 @@ interface SurveyAnswersDao {
         uniqueUserIdentifier: String
     ): List<SurveyAnswerEntity>?
 
+    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier")
+    fun getAllSurveyAnswerForUser(
+        uniqueUserIdentifier: String
+    ): List<SurveyAnswerEntity>
     @Query("Delete from ques_answer_table where userId =:userId ")
     fun deleteSurveyAnswerForUser(
         userId: String,

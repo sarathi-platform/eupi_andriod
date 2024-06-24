@@ -32,12 +32,13 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
     }
 
-    fun saveMultiImage() {
+    fun saveMultiImage(activityId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             documentValues.value.firstOrNull()?.filePath?.let {
                 documentUseCase.saveDocumentToDB(
                     referenceId = generateUUID(),
-                    documentValue = it
+                    documentValue = it,
+                    activityId = activityId
                 )
             }
         }

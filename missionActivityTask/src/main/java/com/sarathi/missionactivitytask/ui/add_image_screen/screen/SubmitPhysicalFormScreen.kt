@@ -69,7 +69,7 @@ fun SubmitPhysicalFormScreen(
                         isActive = viewModel.isButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
-                            viewModel.saveMultiImage()
+                            viewModel.saveMultiImage(activityId)
                             viewModel.updateFromTable(activityId = activityId)
                             navigateToActivityCompletionScreen(
                                 navController,

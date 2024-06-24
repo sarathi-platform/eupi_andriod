@@ -66,6 +66,12 @@ interface FormDao {
         isFormGenerated: Boolean
     )
 
+    @Query("select * from form_table where userId =:userId")
+    suspend fun getAllFormSummaryDataForUser(
+        userId: String,
+    ): List<FormEntity>
+
+
     @Query("Delete from form_table where userId =:userId ")
     fun deleteFormForUser(
         userId: String,

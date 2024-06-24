@@ -71,6 +71,11 @@ interface MissionDao {
         missionId: Int
     ): MissionEntity
 
+    @Query("Select * from mission_table where  userId=:userId and isActive=1")
+    suspend fun getAllMissionForUser(
+        userId: String,
+    ): List<MissionEntity>
+
     @Query("UPDATE mission_table set actualStartDate = :actualStartDate where userId=:userId and missionId = :missionId  and isActive=1")
     fun updateMissionActualStartDate(
         userId: String,

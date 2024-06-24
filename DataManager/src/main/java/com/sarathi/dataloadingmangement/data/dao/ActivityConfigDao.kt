@@ -30,6 +30,9 @@ interface ActivityConfigDao {
     @Query("Delete from activity_config_table where activityId=:activityId and userId=:userId")
     fun deleteActivityConfig(activityId: Int, userId: String)
 
+    @Query("Select  subject from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId and activityId=:activityId and missionId=:missionId")
+    fun getSubjectTypeForActivity(missionId: Int, activityId: Int, userId: String): String
+
     @Query("Delete from activity_config_table where userId=:userId")
     fun deleteActivityConfigForUser(userId: String)
 
