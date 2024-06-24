@@ -34,6 +34,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllDataUsecase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -103,10 +104,11 @@ object UseCaseModule {
     @Singleton
     fun providesExportImportUseCase(
         repository: ExportImportRepository,
-        eventsWriterRepository: EventsWriterRepository
+        eventsWriterRepository: EventsWriterRepository,
+        deleteAllDataUsecase: DeleteAllDataUsecase
     ): ExportImportUseCase {
         return ExportImportUseCase(
-            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
+            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository, deleteAllDataUsecase),
             getExportOptionListUseCase = GetExportOptionListUseCase(repository),
             getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)

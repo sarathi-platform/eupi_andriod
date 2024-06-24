@@ -35,6 +35,7 @@ import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllDataUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -58,6 +59,7 @@ import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.DeleteAllDataRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
@@ -774,4 +776,22 @@ class DataLoadingModule {
             attributeValueReferenceDao = attributeValueReferenceDao
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideDataDeleteRepository(
+        nudgeGrantDatabase: NudgeGrantDatabase,
+        coreSharedPrefs: CoreSharedPrefs
+    ): DeleteAllDataRepositoryImpl {
+        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataDeleteUsecase(
+        deleteAllDataRepositoryImpl: DeleteAllDataRepositoryImpl
+    ): DeleteAllDataUsecase {
+        return DeleteAllDataUsecase(deleteAllDataRepositoryImpl)
+    }
+
 }

@@ -27,4 +27,9 @@ interface FormUiConfigDao {
         missionId: Int,
     )
 
+    @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier ")
+    fun deleteActivityFormUiConfigForUser(
+        uniqueUserIdentifier: String,
+    )
+
 }
