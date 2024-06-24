@@ -99,7 +99,7 @@ interface QuestionEntityDao {
     fun getQuestionForTypeForSurveySection(type: List<String>, userid: String): List<QuestionEntity>
 
     @Query("Delete from $QUESTION_TABLE where userId=:userid ")
-    fun deleteAllQuestions(userid: String)
+    fun deleteAllQuestionsForUser(userid: String)
 
     @Query("SELECT `order` from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
     fun getOrderId(

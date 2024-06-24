@@ -66,4 +66,10 @@ interface FormDao {
         isFormGenerated: Boolean
     )
 
+    @Query("Delete from form_table where userId =:userId ")
+    fun deleteFormForUser(
+        userId: String,
+    ): Int
+
+
 }

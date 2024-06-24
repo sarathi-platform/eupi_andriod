@@ -29,4 +29,8 @@ interface ActivityConfigDao {
 
     @Query("Delete from activity_config_table where activityId=:activityId and userId=:userId")
     fun deleteActivityConfig(activityId: Int, userId: String)
+
+    @Query("Delete from activity_config_table where userId=:userId")
+    fun deleteActivityConfigForUser(userId: String)
+
 }

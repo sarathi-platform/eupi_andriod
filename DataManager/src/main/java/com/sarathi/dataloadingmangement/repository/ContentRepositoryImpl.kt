@@ -33,7 +33,7 @@ class ContentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteContentFromDB() {
-        contentDao.deleteContent()
+        contentDao.deleteContent(coreSharedPrefs.getUniqueUserIdentifier())
     }
 
     override suspend fun getContentData(): List<Content> {

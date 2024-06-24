@@ -27,4 +27,7 @@ interface GrantConfigDao {
 
     @Query("Delete from grant_config_table where activityConfigId=:activityConfigId and userId=:userId")
     fun deleteGrantConfig(activityConfigId: Long, userId: String)
+
+    @Query("Delete from grant_config_table where  userId=:userId")
+    fun deleteGrantConfigForUser(userId: String)
 }

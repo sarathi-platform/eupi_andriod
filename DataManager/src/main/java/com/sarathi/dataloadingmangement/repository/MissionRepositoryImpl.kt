@@ -290,8 +290,13 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveProgrammeToDb(programme: ProgrameResponse) {
-        programmeDao.deleteProgramme()
-        programmeDao.insertProgramme(ProgrammeEntity.getProgrammeEntity(programme))
+        programmeDao.deleteProgramme(sharedPrefs.getUniqueUserIdentifier())
+        programmeDao.insertProgramme(
+            ProgrammeEntity.getProgrammeEntity(
+                programme,
+                sharedPrefs.getUniqueUserIdentifier()
+            )
+        )
     }
 
     override suspend fun getAllMission(): List<MissionUiModel> {
