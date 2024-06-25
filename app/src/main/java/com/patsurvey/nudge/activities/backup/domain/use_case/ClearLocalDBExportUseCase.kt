@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities.backup.domain.use_case
 
-import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllDataUsecase
@@ -19,7 +19,13 @@ class ClearLocalDBExportUseCase(
             }
             true
         } catch (exception: Exception) {
-            BaselineLogger.e("ClearLocalDBUseCase", "invoke", exception)
+            CoreLogger.e(
+                tag = "ClearLocalDBUseCase",
+                msg = "Clear db exception ",
+                ex = exception,
+                stackTrace = true
+            )
+
             false
         }
     }
