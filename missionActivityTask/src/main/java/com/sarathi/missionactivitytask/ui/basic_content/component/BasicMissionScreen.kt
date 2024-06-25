@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
@@ -116,6 +117,8 @@ fun BasicMissionCard(
                         onPrimaryClick()
                     }
                 )
+            } else {
+                Spacer(Modifier.height(18.dp))
             }
         }
     }

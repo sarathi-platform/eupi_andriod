@@ -40,10 +40,12 @@ import com.sarathi.surveymanager.ui.screen.listToCommaSeparatedString
 fun SubmitPhysicalFormScreen(
     navController: NavController = rememberNavController(),
     viewModel: SubmitPhysicalFormScreenViewModel,
-    activityId: Int
+    activityId: Int,
+    taskIdList: String
 ) {
     val outerState = rememberLazyListState()
     LaunchedEffect(key1 = true) {
+
         viewModel.setTotalDidi(activityId = activityId)
     }
     Scaffold(modifier = Modifier.fillMaxWidth(),
@@ -73,7 +75,7 @@ fun SubmitPhysicalFormScreen(
                         isArrowRequired = false,
                         onClick = {
                             viewModel.saveMultiImage(activityId)
-                            viewModel.updateFromTable(activityId = activityId)
+                            viewModel.updateFromTable(activityId = activityId, taskIdList)
                             navigateToActivityCompletionScreen(
                                 navController,
                                 "Form E  generated successfully for ${viewModel.totalDidi.value} didis"

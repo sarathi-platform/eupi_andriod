@@ -220,7 +220,6 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     fun saveButtonClicked() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             taskStatusUseCase.markTaskCompleted(
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 taskId = taskEntity?.taskId ?: DEFAULT_ID
             )
             taskEntity = getTaskUseCase.getTask(taskId)
@@ -248,7 +247,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         if (sanctionedAmount == 0) {
             return !isActivityCompleted.value && taskList.value.isNotEmpty()
         } else {
-            return sanctionedAmount == getTotalSubmittedAmount() && !isActivityCompleted.value && isAllFormGeneratedDisburement()
+            return true
         }
     }
 
@@ -293,5 +292,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     }
 
+    fun isManualTaskCompleteActive(): Boolean {
+        return sanctionedAmount == 0
+    }
 
 }

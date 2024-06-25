@@ -88,7 +88,8 @@ fun DisbursementFormSummaryScreen(
     navController: NavController = rememberNavController(),
     viewModel: DisbursementFormSummaryScreenViewModel,
     activityId: Int,
-    missionId: Int
+    missionId: Int,
+    taskList: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -199,7 +200,8 @@ fun DisbursementFormSummaryScreen(
                             onClick = {
                                 navigateToAddImageScreen(
                                     navController = navController,
-                                    activityId = activityId
+                                    activityId = activityId,
+                                    taskIdList = taskList
                                 )
                             }
                         )

@@ -116,7 +116,8 @@ fun GrantTaskScreen(
                                 navigateToDisbursmentSummaryScreen(
                                     navController = navController,
                                     activityId = activityId,
-                                    missionId = missionId
+                                    missionId = missionId,
+                                    taskIdList = viewModel.getTaskListOfDisburesementAmountEqualSanctionedAmount()
                                 )
                             })
                     }
@@ -241,9 +242,6 @@ private fun TaskRowView(
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
-
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                    SurveyStatusEnum.NOT_AVAILABLE.name
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name

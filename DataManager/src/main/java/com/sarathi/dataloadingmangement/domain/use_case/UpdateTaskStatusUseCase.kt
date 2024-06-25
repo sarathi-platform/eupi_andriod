@@ -4,8 +4,8 @@ import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import javax.inject.Inject
 
 class UpdateTaskStatusUseCase @Inject constructor(private val repository: ITaskStatusRepository) {
-    suspend fun markTaskCompleted(subjectId: Int, taskId: Int) {
-        return repository.markCompleteTaskStatus(subjectId = subjectId, taskId = taskId)
+    suspend fun markTaskCompleted(taskId: Int) {
+        return repository.markCompleteTaskStatus(taskId = taskId)
     }
 
     suspend fun markTaskInProgress(taskId: Int) {

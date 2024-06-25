@@ -79,11 +79,14 @@ fun DisbursementSummaryScreen(
                     .padding(dimen_10_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = stringResource(R.string.go_back),
+                    buttonTitle = if (viewModel.isManualTaskCompleteActive()) stringResource(R.string.complete) else stringResource(
+                        R.string.go_back
+                    ),
                     isActive = viewModel.isButtonEnable.value,
-                    isArrowRequired = true,
-                    isLeftArrow = true,
+                    isArrowRequired = !viewModel.isManualTaskCompleteActive(),
+                    isLeftArrow = !viewModel.isManualTaskCompleteActive(),
                     onClick = {
+                        if (viewModel.isManualTaskCompleteActive()) {
                         viewModel.saveButtonClicked()
                         onNavigateSuccessScreen(
                             "${
@@ -91,6 +94,9 @@ fun DisbursementSummaryScreen(
                                     ?: BLANK_STRING
                             } for ${subjectName}"
                         )
+                        } else {
+                            navController.popBackStack()
+                        }
                     }
                 )
             }

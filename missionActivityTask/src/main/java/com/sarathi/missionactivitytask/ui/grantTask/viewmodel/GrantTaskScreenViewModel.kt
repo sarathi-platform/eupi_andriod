@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -309,6 +310,7 @@ class GrantTaskScreenViewModel @Inject constructor(
 
 
     }
+
     private suspend fun isContentScreenEmpty() {
         val isContentEmpty = fetchContentUseCase.getContentCount(
             matId = activityId,
@@ -323,7 +325,6 @@ class GrantTaskScreenViewModel @Inject constructor(
         }
 
     }
-
 
 
     private fun getGrantTaskCardModel(
@@ -348,6 +349,19 @@ class GrantTaskScreenViewModel @Inject constructor(
                     .isNotEmpty() && !isActivityCompleted.value
 
         }
+    }
+
+
+    fun getTaskListOfDisburesementAmountEqualSanctionedAmount(): String {
+        val taskListSanctionedEqualDisbursed = ArrayList<String>()
+
+        taskList.value.entries.forEach { task ->
+
+            if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
+                taskListSanctionedEqualDisbursed.add(task.key.toString())
+            }
+        }
+        return taskListSanctionedEqualDisbursed.joinToString(DELEGATE_COMM)
     }
 
 
