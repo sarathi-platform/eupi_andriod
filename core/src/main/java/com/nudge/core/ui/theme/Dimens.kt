@@ -23,12 +23,17 @@ val dimen_16_dp = 16.dp
 val dimen_18_dp = 18.dp
 val dimen_20_dp = 20.dp
 val dimen_24_dp = 24.dp
+val dimen_27_dp = 27.dp
 val dimen_30_dp = 30.dp
+val dimen_35_dp = 35.dp
 val dimen_40_dp = 40.dp
+val dimen_48_dp = 48.dp
 
 val dimen_56_dp = 56.dp
 val dimen_50_dp = 50.dp
+val dimen_60_dp = 60.dp
 val dimen_64_dp = 64.dp
+val dimen_72_dp = 72.dp
 val dimen_80_dp = 80.dp
 
 val dimen_100_dp = 100.dp

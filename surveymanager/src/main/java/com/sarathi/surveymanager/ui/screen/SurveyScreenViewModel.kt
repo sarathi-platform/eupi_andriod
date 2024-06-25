@@ -127,7 +127,7 @@ class SurveyScreenViewModel @Inject constructor(
 
                     )
             }
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name || taskEntity?.status == SurveyStatusEnum.COMPLETED.name) {
                 taskStatusUseCase.markTaskInProgress(
                     taskId = taskId
                 )

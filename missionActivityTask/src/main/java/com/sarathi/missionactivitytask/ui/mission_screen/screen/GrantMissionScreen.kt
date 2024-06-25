@@ -29,6 +29,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
+import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
@@ -75,7 +76,7 @@ fun GrantMissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.missionList.value.isEmpty(),
+        isDataNotAvailable = viewModel.missionList.value.isEmpty() && !viewModel.loaderState.value.isLoaderVisible,
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
@@ -138,6 +139,10 @@ fun GrantMissionScreen(
                                     )*/
                                 }
                             )
+                            CustomVerticalSpacer()
+                        }
+                        item {
+                            CustomVerticalSpacer()
                         }
                     }
                 }

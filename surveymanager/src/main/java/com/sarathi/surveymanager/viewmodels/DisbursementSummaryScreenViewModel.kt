@@ -20,6 +20,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiM
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyUIModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyCardTag
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -178,7 +179,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
                     surveyID = surveyId,
                     sectionId = sectionId,
-                    surveyName = "",
+                    surveyName = BLANK_STRING,
                     grantId = grantConfigUi.value.grantId,
                     grantType = grantConfigUi.value.grantType,
                     referenceId = referenceId,
@@ -192,6 +193,16 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 onDeleteSuccess(deleteCount)
             }
             formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)
+            getTaskUseCase.updateTaskStatus(
+                taskEntity?.taskId ?: taskId,
+                SurveyStatusEnum.INPROGRESS.name
+            )
+            taskEntity = getTaskUseCase.getTask(taskId)
+            matStatusEventWriterUseCase.updateTaskStatus(
+                taskEntity!!,
+                "CSG",
+                subjectType = subjectType
+            )
         }
     }
 

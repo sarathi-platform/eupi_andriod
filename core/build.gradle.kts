@@ -76,7 +76,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.4.1")
 //Material
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material:material:1.5.3")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("com.github.wwdablu:SimplyPDF:2.0.0")
 

@@ -43,6 +43,7 @@ import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
 import com.nudge.core.enums.EventType
 import com.nudge.core.exportAllOldImages
+import com.nudge.core.exportDatabase
 import com.nudge.core.exportLogFile
 import com.nudge.core.exportOldData
 import com.nudge.core.exportcsv.CsvConfig
@@ -63,6 +64,7 @@ import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
+import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -143,31 +145,54 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
-    fun exportLocalDatabase(isNeedToShare: Boolean, onExportSuccess: (Uri) -> Unit) {
-        BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase -----")
-        try {
-            onEvent(LoaderEvent.UpdateLoaderState(true))
-            exportOldData(
-                appContext = mAppContext,
-                applicationID = applicationId.value,
-                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                databaseName = if (loggedInUserType.value == UPCM_USER) NUDGE_BASELINE_DATABASE else NUDGE_DATABASE,
-                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value)
-            ) {
-                BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-                if (isNeedToShare) {
-                    openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
-                } else {
-                    onExportSuccess(it)
-                }
-            }
-        } catch (e: Exception) {
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel", "exportLocalDatabase :${e.message}", e)
-        }
+    fun exportLocalDatabase(isNeedToShare:Boolean,onExportSuccess: (Uri) -> Unit) {
+        BaselineLogger.d("ExportImportViewModel","exportLocalDatabase -----")
+         try {
+             onEvent(LoaderEvent.UpdateLoaderState(true))
+             if (loggedInUserType.value == UPCM_USER) {
+                 exportDatabase(
+                     appContext = mAppContext,
+                     applicationID = applicationId.value,
+                     mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                     databaseName = listOf(NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE),
+                     userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
+                     moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
+                 ) {
+                     BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
+                     onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
+                 }
+             } else {
+                 exportOldData(
+                     appContext = mAppContext,
+                     applicationID = applicationId.value,
+                     mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                     databaseName = NUDGE_DATABASE,
+                     userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
+                     moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value)
+                 ) {
+                     BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
+                     onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
+                 }
+             }
 
+         } catch (e: Exception) {
+             onEvent(LoaderEvent.UpdateLoaderState(false))
+             BaselineLogger.e("ExportImportViewModel", "exportLocalDatabase :${e.message}", e)
+         }
+
+    }
+
+    private fun onExportLocalDbSuccess(
+        isNeedToShare: Boolean,
+        it: Uri,
+        onExportSuccess: (Uri) -> Unit
+    ) {
+        onEvent(LoaderEvent.UpdateLoaderState(false))
+        if (isNeedToShare) {
+            openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
+        } else {
+            onExportSuccess(it)
+        }
     }
 
 
@@ -179,24 +204,17 @@ class ExportImportViewModel @Inject constructor(
                 val imageZipUri = exportAllOldImages(
                     appContext = mAppContext,
                     applicationID = applicationId.value,
-                    mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                    moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value),
-                    userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
-                )
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-                if (imageZipUri != null) {
-                    BaselineLogger.d(
-                        "ExportImportViewModel",
-                        "exportLocalImages: ${imageZipUri.path} ----"
-                    )
-                    openShareSheet(
-                        convertURIAccToOS(imageZipUri),
-                        "Share All Images",
-                        type = ZIP_MIME_TYPE
-                    )
-                }
+                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value),
+                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
+            )
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            if(imageZipUri != null){
+                BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
+                openShareSheet(convertURIAccToOS(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
             }
-        } catch (e: Exception) {
+        }
+        }catch (e:Exception){
             onEvent(LoaderEvent.UpdateLoaderState(false))
             BaselineLogger.e("ExportImportViewModel", "exportLocalImages :${e.message}", e)
         }

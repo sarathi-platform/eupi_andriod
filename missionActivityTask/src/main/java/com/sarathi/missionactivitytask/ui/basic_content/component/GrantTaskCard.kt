@@ -20,7 +20,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -28,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -37,27 +35,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.formatToIndianRupee
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_30_dp
+import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.languageItemActiveBg
-import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
@@ -85,13 +85,10 @@ fun GrantTaskCard(
     val taskMarkedNotAvailable = remember {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
     }
-    androidx.compose.material3.Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimen_30_dp
-        ), modifier = Modifier
+    BasicCardView(
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(dimen_16_dp)
-            .clip(RoundedCornerShape(dimen_6_dp))
+            .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
                 color = if (status?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
@@ -107,7 +104,7 @@ fun GrantTaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_16_dp),
+                    .padding(horizontal = dimen_16_dp, vertical = dimen_5_dp),
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -121,11 +118,26 @@ fun GrantTaskCard(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = title?.value ?: BLANK_STRING,
-                        style = mediumTextStyle,
-                        color = brownDark
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        title?.value?.let {
+                            if (it.contains("vo", true)) {
+                                title.icon?.let {
+                                    ImageViewer(it)
+                                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                                }
+                                Spacer(modifier = Modifier.width(dimen_3_dp))
+                            }
+                            Text(
+                                text = title.value,
+                                style = buttonTextStyle,
+                                color = blueDark
+                            )
+                        }
+                    }
                     SubContainerView(subTitle1)
                 }
                 if (status?.value == (StatusEnum.COMPLETED.name)) {
@@ -163,18 +175,11 @@ fun GrantTaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = dimen_16_dp, top = dimen_5_dp),
+                    .padding(start = dimen_16_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (subtitle2?.value?.isNotBlank() == true) {
-                    Text(
-                        text = subtitle2.value,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimen_5_dp),
-                        color = blueDark,
-                        style = newMediumTextStyle
-                    )
+                    SubContainerView(subtitle2)
                 }
             }
             Column(
@@ -183,12 +188,9 @@ fun GrantTaskCard(
                     .padding(horizontal = 16.dp)
             ) {
                 SubContainerView(subtitle3)
-                SubContainerView(subtitle4)
-                SubContainerView(subtitle5)
+                SubContainerView(subtitle4, isNumberFormattingRequired = true)
+                SubContainerView(subtitle5, isNumberFormattingRequired = true)
             }
-
-//            GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
-//            GrantAmountView(subtitle2 = subtitle5, iconResId = R.drawable.ic_grant_sanction)
 
             if (status?.value == StatusEnum.NOT_STARTED.name) {
                 Row(
@@ -231,7 +233,7 @@ fun GrantTaskCard(
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
                             Text(
-                                text = stringResource(R.string.view),
+                                text = stringResource(R.string.task_view),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp),
                                 color = blueDark,
@@ -264,27 +266,32 @@ fun GrantTaskCard(
 }
 
 @Composable
-private fun SubContainerView(taskCard: GrantTaskCardModel?) {
+private fun SubContainerView(
+    taskCard: GrantTaskCardModel?,
+    isNumberFormattingRequired: Boolean = false
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (taskCard?.icon != null) {
-            ImageViewer(taskCard.icon!!)
-            Spacer(modifier = Modifier.width(6.dp))
-
+        taskCard?.icon?.let {
+            ImageViewer(it)
+            Spacer(modifier = Modifier.width(dimen_5_dp))
         }
+
         if (!TextUtils.isEmpty(taskCard?.label)) {
-            Text(text = taskCard?.label!!, color = blueDark, style = newMediumTextStyle)
+            Text(
+                text = taskCard?.label!!,
+                color = blueDark,
+                style = newMediumTextStyle
+            )
         }
         if (!TextUtils.isEmpty(taskCard?.value)) {
-
             Text(
-                text = taskCard?.value!!,
+                text = if (isNumberFormattingRequired) formatToIndianRupee(taskCard?.value!!) else taskCard?.value!!,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimen_5_dp),
+                    .padding(horizontal = dimen_1_dp),
                 color = blueDark,
                 style = newMediumTextStyle
             )
@@ -294,12 +301,12 @@ private fun SubContainerView(taskCard: GrantTaskCardModel?) {
 
 @Composable
 fun ImageViewer(uri: Uri) {
-
-
     AsyncImage(
         model = uri,
         contentDescription = "Loaded Image",
-        modifier = Modifier.size(22.dp)
+        modifier = Modifier
+            .size(15.dp)
+            .padding(vertical = dimen_0_dp)
     )
 
 }
@@ -322,8 +329,8 @@ private fun PrimarySecondaryButtonView(
             isIcon = false,
             onClick = {
                 if (!isActivityCompleted) {
-                taskMarkedNotAvailable.value = true
-                onNotAvailable()
+                    taskMarkedNotAvailable.value = true
+                    onNotAvailable()
                 } else {
                     showCustomToast(
                         context,

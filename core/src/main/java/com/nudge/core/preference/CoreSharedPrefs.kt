@@ -143,19 +143,19 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun setDataLoaded(isDataLoaded: Boolean) {
-        savePref(PREF_KEY_DATA_LOADED, isDataLoaded)
+        savePref(PREF_KEY_DATA_LOADED + getMobileNo(), isDataLoaded)
     }
 
     override fun isDataLoaded(): Boolean {
-        return getPref(PREF_KEY_DATA_LOADED, false)
+        return getPref(PREF_KEY_DATA_LOADED + getMobileNo(), false)
     }
 
     override fun isDidiTabDataLoaded(): Boolean {
-        return getPref(PREF_KEY_DIDI_TAB_DATA_LOADED, false)
+        return getPref(PREF_KEY_DIDI_TAB_DATA_LOADED + getMobileNo(), false)
     }
 
     override fun setDidiTabDataLoaded(isDataLoaded: Boolean) {
-        savePref(PREF_KEY_DIDI_TAB_DATA_LOADED, isDataLoaded)
+        savePref(PREF_KEY_DIDI_TAB_DATA_LOADED + getMobileNo(), isDataLoaded)
     }
 
     override fun getSelectedLanguageCode(): String {

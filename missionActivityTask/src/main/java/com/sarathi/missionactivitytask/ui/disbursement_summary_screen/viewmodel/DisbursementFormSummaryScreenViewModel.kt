@@ -4,11 +4,13 @@ import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.PDF_MIME_TYPE
 import com.nudge.core.PDF_TYPE
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
 import com.nudge.core.saveFileToDownload
+import com.nudge.core.toInMillisec
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.PdfGenerator
 import com.nudge.core.utils.PdfModel
@@ -64,7 +66,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     private fun initDisbursementSummaryScreen(activityId: Int, missionId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _formList.value =
-                getFormData(activityId, missionId).groupBy { Pair(it.date, it.voName) }
+                getFormData(activityId, missionId).sortedByDescending {
+                    it.date.toInMillisec(
+                        DD_MMM_YYYY_FORMAT
+                    )
+                }.groupBy { Pair(it.date, it.voName) }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

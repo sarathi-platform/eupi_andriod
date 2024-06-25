@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -80,6 +81,7 @@ import com.sarathi.missionactivitytask.ui.components.rememberCustomDateRangePick
 import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerBottomSheetProperties
 import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerProperties
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.PERCENTAGE_SIGN
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
 import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceEditScreen
@@ -208,7 +210,7 @@ fun SmallGroupAttendanceHistoryScreen(
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
-            isDataAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
+            isDataNotAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
                     && smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupId == 0,
             onRetry = {},
             onBottomUI = {
@@ -303,6 +305,19 @@ fun SmallGroupAttendanceHistoryScreen(
                                             readOnly = true,
                                             textStyle = defaultTextStyle,
                                             singleLine = true,
+                                            interactionSource = remember {
+                                                MutableInteractionSource()
+                                            }.also { interactionSource ->
+                                                LaunchedEffect(key1 = interactionSource) {
+                                                    interactionSource.interactions.collect {
+                                                        if (it is PressInteraction.Release) {
+                                                            scope.launch {
+                                                                sheetState.show()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             colors = OutlinedTextFieldDefaults.colors(
                                                 focusedTextColor = textColorDark,
                                                 unfocusedBorderColor = dateRangeFieldColor,
@@ -518,10 +533,11 @@ fun AttendanceSummaryCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(
+                    text =
+                    stringResource(
                         R.string.attendance_percentage_text,
                         attendancePercentage.value
-                    ) + "%",
+                    ) + PERCENTAGE_SIGN,
                     style = defaultTextStyle,
                     color = green,
                     modifier = Modifier

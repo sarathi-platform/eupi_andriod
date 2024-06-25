@@ -19,7 +19,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,6 +40,7 @@ import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
 import com.sarathi.missionactivitytask.utils.StatusEnum
@@ -56,13 +56,10 @@ fun TaskDisbursementCard(
     status: String = StatusEnum.COMPLETED.name,
     modifier: Modifier,
 ) {
-    androidx.compose.material3.Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 30.dp
-        ), modifier = Modifier
+    BasicCardView(
+        modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
                 color = if (status == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,

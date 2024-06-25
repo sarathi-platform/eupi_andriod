@@ -16,11 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.largeTextStyle
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.media.getActivity
@@ -39,10 +40,14 @@ fun MediaToolbarComponent(
         modifier = modifier
     ) {
         IconButton(
-            onClick = onBackIconClick ,
+            onClick = onBackIconClick,
             modifier = Modifier
         ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                tint = blueDark,
+                contentDescription = "Back Button"
+            )
         }
 
         Box(
@@ -55,7 +60,7 @@ fun MediaToolbarComponent(
                     .align(Alignment.Center)
                     .padding(0.dp, 0.dp, 0.dp, 7.dp),
                 text = title,
-                color = Color.Black,
+                color = blueDark,
                 textAlign = TextAlign.Center,
                 style = largeTextStyle
             )
@@ -64,7 +69,8 @@ fun MediaToolbarComponent(
         Row {
             IconButton(
                 onClick = {
-                    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    val isLandscape =
+                        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
                     activity?.requestedOrientation = if (isLandscape) {
                         ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                     } else {
@@ -79,12 +85,12 @@ fun MediaToolbarComponent(
                 )
             }
 
-            IconButton(
-                onClick = { onDownloadClick() },
-                modifier = Modifier
-            ) {
-                Icon(painterResource(id = R.drawable.baseline_download_for_offline_24), contentDescription = "Download Button")
-            }
+//            IconButton(
+//                onClick = { onDownloadClick() },
+//                modifier = Modifier
+//            ) {
+//                Icon(painterResource(id = R.drawable.baseline_download_for_offline_24), contentDescription = "Download Button")
+//            }
         }
     }
 }
@@ -98,5 +104,5 @@ fun ToolbarComponentPreview() {
         onDownloadClick = {
             // Handle download
         }
-        )
+    )
 }

@@ -257,6 +257,7 @@ fun NavGraphBuilder.MatNavigation(
         ) {
             SurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
+                onSettingClick = onSettingIconClick,
                 taskId = it.arguments?.getInt(
                     ARG_TASK_ID
                 ) ?: 0,
@@ -378,7 +379,7 @@ fun NavGraphBuilder.MatNavigation(
                 onNavigateBack = {
                     navController.popBackStack(
                         MATHomeScreens.GrantTaskScreen.route,
-                        inclusive = false
+                        inclusive = true
                     )
                 },
                 navController = navController, message = it.arguments?.getString(

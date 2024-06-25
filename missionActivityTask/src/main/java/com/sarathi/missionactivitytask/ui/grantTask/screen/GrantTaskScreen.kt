@@ -32,6 +32,9 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -45,6 +48,7 @@ import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummarySc
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
+import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
@@ -80,6 +84,7 @@ fun GrantTaskScreen(
         onRetry = {},
         onBottomUI = {
             BottomAppBar(
+                modifier = Modifier.height(dimen_72_dp),
                 backgroundColor = white
             ) {
                 Row(
@@ -162,10 +167,10 @@ fun GrantTaskScreen(
                             )
                         })
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(dimen_10_dp))
                 if (viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value) {
                     LazyColumn(
-                        modifier = Modifier.padding(bottom = 50.dp)
+                        modifier = Modifier.padding(bottom = dimen_50_dp)
                     ) {
                         viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                             item {
@@ -193,15 +198,21 @@ fun GrantTaskScreen(
                             ) { _, task ->
                                 TaskRowView(viewModel, navController, task)
                             }
+                            item {
+                                CustomVerticalSpacer(size = dimen_20_dp)
+                            }
                         }
                     }
                 } else {
                     if (viewModel.filterList.value.isNotEmpty()) {
-                        LazyColumn(modifier = Modifier.padding(bottom = 50.dp)) {
+                        LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                             itemsIndexed(
                                 items = viewModel.filterList.value.entries.toList()
                             ) { _, task ->
                                 TaskRowView(viewModel, navController, task)
+                            }
+                            item {
+                                CustomVerticalSpacer(size = dimen_20_dp)
                             }
                         }
                     }
@@ -218,48 +229,65 @@ private fun TaskRowView(
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>
 ) {
-    GrantTaskCard(
-        onPrimaryButtonClick = { subjectName ->
-            viewModel.activityConfigUiModel?.let {
-                navigateToGrantSurveySummaryScreen(
-                    navController,
-                    taskId = task.key,
-                    surveyId = it.surveyId,
-                    sectionId = it.sectionId,
-                    subjectType = it.subject,
-                    subjectName = subjectName,
-                    activityConfigId = it.activityConfigId,
-                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                        ?: DEFAULT_ID,
-                )
-            }
-        },
-        onNotAvailable = {
-            if (!viewModel.isActivityCompleted.value) {
+    Column {
+        GrantTaskCard(
+            onPrimaryButtonClick = { subjectName ->
+                if (!viewModel.isActivityCompleted.value) {
+                    if (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name) {
+                        task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
+                            SurveyStatusEnum.INPROGRESS.name
+                        viewModel.updateTaskAvailableStatus(
+                            taskId = task.key,
+                            status = SurveyStatusEnum.INPROGRESS.name,
 
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                    SurveyStatusEnum.NOT_AVAILABLE.name
-                viewModel.updateTaskAvailableStatus(
-                    taskId = task.key,
-                    status = SurveyStatusEnum.NOT_AVAILABLE.name
-                )
-                viewModel.checkButtonValidation()
-            }
-        },
-        imagePath = viewModel.getFilePathUri(
-            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
-        ),
-        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
-        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
-        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
-        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
-        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
-        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
-        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
-        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
-        formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name],
-        isActivityCompleted = viewModel.isActivityCompleted.value
-    )
+                            )
+                    }
+                }
+                viewModel.activityConfigUiModel?.let {
+                    if (subjectName.isNotBlank()) {
+                        navigateToGrantSurveySummaryScreen(
+                            navController,
+                            taskId = task.key,
+                            surveyId = it.surveyId,
+                            sectionId = it.sectionId,
+                            subjectType = it.subject,
+                            subjectName = subjectName,
+                            activityConfigId = it.activityConfigId,
+                            sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                                ?: DEFAULT_ID,
+                        )
+                    }
+
+                }
+            },
+            onNotAvailable = {
+                if (!viewModel.isActivityCompleted.value) {
+
+                    task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
+                        SurveyStatusEnum.NOT_AVAILABLE.name
+                    viewModel.updateTaskAvailableStatus(
+                        taskId = task.key,
+                        status = SurveyStatusEnum.NOT_AVAILABLE.name
+                    )
+                    viewModel.checkButtonValidation()
+                }
+            },
+            imagePath = viewModel.getFilePathUri(
+                task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
+            ),
+            title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
+            subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
+            primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
+            secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
+            status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
+            subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
+            subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
+            subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
+            subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
+            formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name],
+            isActivityCompleted = viewModel.isActivityCompleted.value
+        )
+        CustomVerticalSpacer()
+    }
 }
 

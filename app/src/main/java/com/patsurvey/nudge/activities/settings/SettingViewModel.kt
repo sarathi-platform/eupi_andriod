@@ -18,7 +18,6 @@ import com.nudge.core.exportOldData
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
-import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -58,7 +57,6 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
-import com.patsurvey.nudge.utils.LogWriter
 import com.patsurvey.nudge.utils.LogWriter.getLogFile
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -866,6 +864,8 @@ class SettingViewModel @Inject constructor(
 
     fun clearAccessToken() {
         prefRepo.saveAccessToken("")
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDataLoaded(false)
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDidiTabDataLoaded(false)
         clearEventWriterFileName()
         prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
         prefRepo.saveSettingOpenFrom(0)

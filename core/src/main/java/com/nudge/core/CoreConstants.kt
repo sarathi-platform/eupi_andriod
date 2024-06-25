@@ -55,7 +55,7 @@ const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
 const val SUFFIX_IMAGE_ZIP_FILE = "Image"
 const val SUFFIX_EVENT_ZIP_FILE = "file"
-const val BASELINE = "BASELINE"
+const val BASELINE = "BASELINE/GRANT"
 const val HAMLET = "HAMLET"
 const val SELECTION = "SELECTION"
 
@@ -80,6 +80,7 @@ const val DEFAULT_DATE_RANGE_DURATION: Long = 30
 const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
 const val ATTENDANCE_DELETED = "Deleted"
+const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
