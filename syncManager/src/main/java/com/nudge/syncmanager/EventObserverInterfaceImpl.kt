@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
@@ -20,8 +20,10 @@ import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
+import com.nudge.syncmanager.utils.WORKER_ARG_BATCH_COUNT
+import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import com.nudge.syncmanager.workers.SyncUploadWorker
-import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -66,28 +68,36 @@ class EventObserverInterfaceImpl @Inject constructor(
     }
 
 
-    override suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed): Flow<WorkInfo> {
+    override suspend fun syncPendingEvent(
+        context: Context,
+        networkSpeed: NetworkSpeed,
+        syncType: Int
+    ): UUID {
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresBatteryNotLow(true)
             .build()
         val data = Data.Builder()
-        data.putInt("batchCount", getBatchSize(networkSpeed))
-        val uploadWorkRequest: WorkRequest =
-            PeriodicWorkRequestBuilder<SyncUploadWorker>(2, TimeUnit.MINUTES)
+        data.putInt(WORKER_ARG_BATCH_COUNT, getBatchSize(networkSpeed))
+        data.putInt(WORKER_ARG_SYNC_TYPE, syncType)
+        val uploadWorkRequest: PeriodicWorkRequest =
+            PeriodicWorkRequestBuilder<SyncUploadWorker>(repeatInterval = 15, repeatIntervalTimeUnit =  TimeUnit.MINUTES)
                 .setConstraints(
                     constraints
-                ).addTag(PRODUCER_WORKER_TAG)
+                )
                 .setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    90000,
+                    backoffPolicy = BackoffPolicy.LINEAR,
+                    backoffDelay = 90000,
                     TimeUnit.MILLISECONDS
                 ).setInputData(data.build())
                 .build()
 
-        workManager.enqueue(uploadWorkRequest)
-        return workManager.getWorkInfoByIdFlow(uploadWorkRequest.id)
+        workManager.enqueueUniquePeriodicWork(
+            PRODUCER_WORKER_TAG,
+            ExistingPeriodicWorkPolicy.UPDATE, uploadWorkRequest
+        )
+        return uploadWorkRequest.id
     }
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {

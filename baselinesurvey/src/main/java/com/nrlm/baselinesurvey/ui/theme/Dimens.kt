@@ -21,6 +21,7 @@ val dimen_12_dp = 12.dp
 val dimen_14_dp = 14.dp
 val dimen_16_dp = 16.dp
 val dimen_18_dp = 18.dp
+val dimen_17_dp = 17.dp
 val dimen_20_dp = 20.dp
 val dimen_24_dp = 24.dp
 val dimen_30_dp = 30.dp

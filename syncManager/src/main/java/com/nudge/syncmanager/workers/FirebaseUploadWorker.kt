@@ -21,9 +21,9 @@ class FirebaseUploadWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return if (runAttemptCount < 5) { // runAttemptCount starts from 0
             try {
-                var totalPendingEventCount = syncApiRepository.getPendingEventCount()
+                var totalPendingEventCount = syncApiRepository.getPendingEventCount(selectedSyncType)
                 while (totalPendingEventCount > 0) {
-                    totalPendingEventCount = syncApiRepository.getPendingEventCount()
+                    totalPendingEventCount = syncApiRepository.getPendingEventCount(selectedSyncType)
                 }
             } catch (ex: SocketTimeoutException) {
                 Result.retry()

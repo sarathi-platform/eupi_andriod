@@ -793,6 +793,19 @@ fun roundOffDecimal(number: Double): Double? {
 
 }
 
+fun roundOffDecimalFloat(number: Float): Float? {
+    return try {
+        val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
+        df.roundingMode = RoundingMode.CEILING
+        df.format(number).toFloat()
+    }catch (ex:Exception){
+        NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
+        0.00f
+    }
+
+
+}
+
 fun roundOffDecimalPoints(number: Double): String {
     return String.format(Locale.ENGLISH,"%.2f", number)
 }

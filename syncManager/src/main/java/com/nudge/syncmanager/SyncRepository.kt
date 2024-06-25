@@ -16,7 +16,6 @@ import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.model.request.EventConsumerRequest
-import com.nudge.core.model.response.EventConsumerResponse
 import com.nudge.syncmanager.network.SyncApiService
 import javax.inject.Inject
 
@@ -49,7 +48,7 @@ class SyncApiRepository @Inject constructor(
         )
     }
 
-    fun getPendingEventCount(): Int {
+    fun getPendingEventCount(selectedSyncType: Int): Int {
         return eventDao.getTotalPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,

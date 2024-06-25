@@ -15,6 +15,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.model.response.EventConsumerResponse
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
+import com.nudge.core.utils.SyncType
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -99,4 +100,56 @@ interface EventsDao {
 
     @Query("SELECT * FROM $EventsTable WHERE status= :status AND mobile_number= :mobileNumber")
     fun getSuccessEventCount(status:String,mobileNumber:String):List<Events>
+
+
+    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber AND type NOT LIKE '%image%' ORDER BY modified_date DESC LIMIT :batchLimit")
+    fun getAllPendingDataEvent(
+        status: List<String>,
+        batchLimit: Int,
+        retryCount: Int,
+        mobileNumber: String
+    ): List<Events>
+
+    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber AND type LIKE '%image%' ORDER BY modified_date DESC LIMIT :batchLimit")
+    fun getAllPendingImageEvent(
+        status: List<String>,
+        batchLimit: Int,
+        retryCount: Int,
+        mobileNumber: String
+    ): List<Events>
+
+    @Transaction
+    fun getAllPendingEventList(status: List<String>,batchLimit:Int,retryCount: Int,mobileNumber:String,syncType:Int): List<Events>{
+        return when(syncType){
+            SyncType.SYNC_ALL.ordinal ->{
+                 getAllPendingEvent(
+                    status,
+                    batchLimit,
+                    retryCount,
+                    mobileNumber
+                )
+            }
+            SyncType.SYNC_ONLY_DATA.ordinal -> {
+                getAllPendingDataEvent(
+                    status,
+                    batchLimit,
+                    retryCount,
+                    mobileNumber
+                )
+            }
+
+            SyncType.SYNC_ONLY_IMAGES.ordinal -> {
+                 getAllPendingImageEvent(
+                    status,
+                    batchLimit,
+                    retryCount,
+                    mobileNumber
+                )
+            }
+
+            else -> {
+                emptyList<Events>()
+            }
+        }
+    }
 }

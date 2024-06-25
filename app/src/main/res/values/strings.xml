@@ -544,4 +544,6 @@
     <string name="sync_started" translatable="false">Sync Started. Please wait...</string>
     <string name="select_date">Select Date</string>
     <string name="no_history_available_right_now">No History Available Right Now</string>
+    <string name="sync_only_data" translatable="false">Sync Only Data</string>
+    <string name="sync_only_images" translatable="false">Sync Only Images</string>
 </resources>

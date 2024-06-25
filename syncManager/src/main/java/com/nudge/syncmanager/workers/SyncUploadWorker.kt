@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BLANK_STRING
@@ -23,7 +23,8 @@ import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.SyncApiRepository
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.syncmanager.utils.SUCCESS
-import com.nudge.syncmanager.utils.WORKER_RESULT
+import com.nudge.core.utils.SyncType
+import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.text.SimpleDateFormat
@@ -42,8 +43,11 @@ class SyncUploadWorker @AssistedInject constructor(
         var mPendingEventList = listOf<Events>()
 
         if (runAttemptCount >= 5) {
-            return Result.failure(Data.Builder().putString(WORKER_RESULT, "Failed: Producer Failed with Attempt Count").build())
+            return Result.failure(workDataOf(
+                WorkerKeys.ERROR_MSG to  "Failed: Producer Failed with Attempt Count"
+            ))
         }
+        val selectedSyncType= inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
 
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
@@ -55,14 +59,18 @@ class SyncUploadWorker @AssistedInject constructor(
 
             CoreLogger.d(applicationContext, TAG, "doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount")
 
-            var totalPendingEventCount = syncApiRepository.getPendingEventCount()
+            var totalPendingEventCount = syncApiRepository.getPendingEventCount(syncType = selectedSyncType)
             CoreLogger.d(applicationContext, TAG, "doWork: totalPendingEventCount: $totalPendingEventCount")
 
             while (totalPendingEventCount > 0) {
                 mPendingEventList = syncApiRepository.getPendingEventFromDb(batchLimit, retryCount)
 
                 if (mPendingEventList.isEmpty()) {
-                    return Result.success(Data.Builder().putString(WORKER_RESULT, "Success: All Producer Completed").build())
+                    return Result.success(
+                        workDataOf(
+                            WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed"
+                        )
+                    )
                 }
 
                 CoreLogger.d(applicationContext, TAG, "doWork: pendingEvents List: ${mPendingEventList.json()}")
@@ -72,7 +80,9 @@ class SyncUploadWorker @AssistedInject constructor(
                     apiResponse.data?.let { eventList ->
                         if (eventList.isNotEmpty()) {
                             processEventList(eventList)
-                            totalPendingEventCount = syncApiRepository.getPendingEventCount()
+                            totalPendingEventCount = syncApiRepository.getPendingEventCount(
+                                syncType = selectedSyncType
+                            )
                             CoreLogger.d(applicationContext, TAG, "doWork: After totalPendingEventCount: $totalPendingEventCount")
                         } else {
                             handleEmptyEventListResponse(mPendingEventList)
@@ -87,7 +97,9 @@ class SyncUploadWorker @AssistedInject constructor(
 
             fetchConsumerStatus(syncApiRepository, syncApiRepository.getLoggedInMobileNumber())
             CoreLogger.d(applicationContext, TAG, "doWork: success totalPendingEventCount: $totalPendingEventCount")
-            Result.success(Data.Builder().putString(WORKER_RESULT, "Success: All Producer Completed and Count 0").build())
+            Result.success(workDataOf(
+                WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
+            ))
         } catch (ex: Exception) {
             handleException(ex, mPendingEventList)
         } finally {
@@ -134,7 +146,9 @@ class SyncUploadWorker @AssistedInject constructor(
             if (mPendingEventList.isNotEmpty()) {
                 syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, ex.message ?: SOMETHING_WENT_WRONG))
             }
-             Result.failure(Data.Builder().putString(WORKER_RESULT, "Failed: Producer Failed with Exception: ${ex.message}").build())
+             Result.failure(workDataOf(
+                 WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Exception: ${ex.message}"
+             ))
         }
     }
 
