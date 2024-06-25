@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.components
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.background

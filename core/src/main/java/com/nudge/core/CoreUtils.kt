@@ -31,8 +31,8 @@ import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
-import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -872,13 +872,13 @@ fun moduleNameAccToLoggedInUser(loggedInUser:String):String{
     return if(loggedInUser == UPCM_USER) BASELINE else SELECTION
 }
 
-fun String.getDateInMillis(): Long {
+fun String.getDateInMillis(pattern: String = "yyyy-MM-dd"): Long {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val localDate = LocalDate.parse(this)
         val zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault())
         zonedDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
         val date = dateFormat.parse(this)
         date?.time ?: 0L
     }
