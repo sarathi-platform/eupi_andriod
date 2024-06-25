@@ -29,6 +29,7 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     val documentValues = mutableStateOf<ArrayList<DocumentUiModel>>(arrayListOf())
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    val totalDidi = mutableStateOf(0)
     override fun <T> onEvent(event: T) {
     }
 
@@ -46,6 +47,13 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
 
     fun checkButtonValidation() {
         isButtonEnable.value = documentValues.value.isNotEmpty()
+    }
+
+    fun setTotalDidi(activityId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            totalDidi.value = formUseCase.getNonGeneratedFormSummaryData(activityId = activityId)
+                .distinctBy { it.taskid }.size
+        }
     }
 
     fun updateFromTable(activityId: Int) {

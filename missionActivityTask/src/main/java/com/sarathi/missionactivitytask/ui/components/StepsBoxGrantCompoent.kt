@@ -57,7 +57,6 @@ import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallerTextStyle
-import com.nudge.core.ui.theme.stepIconCompleted
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
@@ -124,10 +123,10 @@ fun StepsBoxGrantComponent(
                     .padding(end = dimen_16_dp, start = dimen_8_dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
-                Icon(
+                Image(
                     painter = painter,
                     contentDescription = null,
-                    tint = if (isCompleted) stepIconCompleted else blueDark,
+                    //  tint = if (isCompleted) stepIconCompleted else blueDark,
                     modifier = Modifier
                         .constrainAs(iconContainer) {
                             start.linkTo(parent.start)
