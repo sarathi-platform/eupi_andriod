@@ -246,7 +246,7 @@ private fun TaskRowView(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
-                viewModel.checkButtonValidation()
+                viewModel.isActivityCompleted()
             }
         },
         imagePath = viewModel.getFilePathUri(

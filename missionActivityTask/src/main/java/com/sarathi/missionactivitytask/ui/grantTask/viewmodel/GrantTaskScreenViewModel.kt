@@ -240,14 +240,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
 
-    fun checkButtonValidation() {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-
-            isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
-                missionId = missionId,
-                activityId = activityId
-            ) && !isActivityCompleted.value
-        }
+    private suspend fun checkButtonValidation() {
+        isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
+            missionId = missionId,
+            activityId = activityId
+        ) && !isActivityCompleted.value
     }
 
     fun markActivityCompleteStatus() {
@@ -299,7 +296,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun isActivityCompleted() {
+    fun isActivityCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
                 missionId = missionId ?: 0,
