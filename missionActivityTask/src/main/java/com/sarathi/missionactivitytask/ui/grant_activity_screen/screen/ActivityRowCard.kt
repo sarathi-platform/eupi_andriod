@@ -85,4 +85,3 @@ private fun getActivityIcon(index: Int): Painter {
 }
 
 data class BasicContent(val contentType: String, val contentTitle: String)
-data class GrantStep(val boxTittle: String, val boxSubTitle: String)
