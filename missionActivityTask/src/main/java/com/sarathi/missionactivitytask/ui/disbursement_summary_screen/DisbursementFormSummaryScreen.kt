@@ -181,7 +181,7 @@ fun DisbursementFormSummaryScreen(
                                 colorFilter = ColorFilter.tint(blueDark)
                             )
                             Text(
-                                stringResource(com.sarathi.missionactivitytask.R.string.download),
+                                stringResource(R.string.download),
                                 style = defaultTextStyle
                             )
 

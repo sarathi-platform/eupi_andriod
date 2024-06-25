@@ -72,16 +72,17 @@ fun CollapsibleCard(
                 .fillMaxWidth()
                 .background(Color.Transparent)
         ) {
-            Column(modifier = Modifier
-                .clip(RoundedCornerShape(dimen_6_dp))
-                .border(
-                    width = dimen_1_dp, color = greyBorderColor, shape = RoundedCornerShape(
-                        dimen_6_dp
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(dimen_6_dp))
+                    .border(
+                        width = dimen_1_dp, color = greyBorderColor, shape = RoundedCornerShape(
+                            dimen_6_dp
+                        )
                     )
-                )
-                .fillMaxWidth()
-                .background(white)
-                .clickable { expanded.value = !expanded.value }) {
+                    .fillMaxWidth()
+                    .background(white)
+            ) {
                 Row(modifier = Modifier
                     .clickable(enabled = isEditable) {
                         onClick()
@@ -98,34 +99,48 @@ fun CollapsibleCard(
                         style = defaultTextStyle.copy(color = if (isEditable) white else greyColor)
                     )
                 }
-                if (summaryCount > 0) {
+            }
+        }
+        if (summaryCount > 0) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimen_10_dp)
+            )
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = dimen_30_dp
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(white)
+                        .clickable { expanded.value = !expanded.value },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(white),
-                        verticalAlignment = Alignment.CenterVertically
+                            .weight(1f)
+                            .padding(dimen_10_dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(dimen_10_dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.summary),
-                                style = defaultTextStyle.copy(color = blueDark),
-                            )
-                        }
-
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = null,
-                            tint = blueDark,
-                            modifier = Modifier
-                                .size(50.dp)
-                                .padding(dimen_10_dp)
-                                .rotate(if (expanded.value) 180f else 0f)
+                        Text(
+                            text = stringResource(R.string.summary),
+                            style = defaultTextStyle.copy(color = blueDark),
                         )
                     }
+
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = blueDark,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(dimen_10_dp)
+                            .rotate(if (expanded.value) 180f else 0f)
+                    )
                 }
             }
         }
@@ -138,13 +153,13 @@ fun CollapsibleCard(
             visible = expanded.value, enter = expandVertically(), exit = shrinkVertically()
         ) {
             Column(
-                modifier = Modifier.background(white)
+                modifier = Modifier
+                    .background(white)
             ) {
                 onContentUI()
             }
         }
     }
-
 }
 
 @Preview(showBackground = true)
