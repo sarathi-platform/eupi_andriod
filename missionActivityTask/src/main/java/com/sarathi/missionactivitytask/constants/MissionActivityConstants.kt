@@ -37,6 +37,7 @@ object MissionActivityConstants {
     const val ARG_SANCTIONED_AMOUNT = "sanctioned_amount"
     const val ARG_TOTAL_SUBMITTED_AMOUNT = "total_submitted_amount"
     const val ARG_ACTIVITY_MASSAGE = "activity_massage"
+    const val ARG_IS_FROM_ACTIVITY = "from_activity"
     const val FINAL_STEP_COMPLETION_DELAY = 3000L
     const val ARG_FORM_PATH = "form_path"
     const val ARG_MAT_ID = "mat_id"

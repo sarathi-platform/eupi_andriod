@@ -98,8 +98,9 @@ fun GrantTaskScreen(
                             viewModel.markActivityCompleteStatus()
 
                             navigateToActivityCompletionScreen(
-                                navController,
-                                context.getString(
+                                isFromActivity = true,
+                                navController = navController,
+                                activityMsg = context.getString(
                                     R.string.activity_completion_message,
                                     activityName
                                 )

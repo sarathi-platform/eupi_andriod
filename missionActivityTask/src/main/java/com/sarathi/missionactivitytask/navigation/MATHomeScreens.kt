@@ -25,7 +25,7 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "${MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}")
 
     object ActivityCompletionScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_MASSAGE}}")
+        MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_MASSAGE}}/{${MissionActivityConstants.ARG_IS_FROM_ACTIVITY}}")
 
     object FinalStepCompletionScreen :
         MATHomeScreens(route = MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)

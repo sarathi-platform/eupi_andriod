@@ -1,4 +1,3 @@
-
 package com.sarathi.missionactivitytask.navigation
 
 import androidx.compose.ui.Modifier
@@ -28,6 +27,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_PATH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_ACTIVITY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
@@ -350,18 +350,24 @@ fun NavGraphBuilder.MatNavigation(
                 name = ARG_ACTIVITY_MASSAGE
             ) {
                 type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_IS_FROM_ACTIVITY
+            ) {
+                type = NavType.BoolType
             }
         )) {
             ActivitySuccessScreen(
-                onNavigateBack = {
+                onNavigateBack = { isFromActivity ->
                     navController.popBackStack(
                         MATHomeScreens.GrantTaskScreen.route,
-                        inclusive = true
+                        inclusive = isFromActivity
                     )
                 },
                 navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
             )
         }
 
@@ -410,7 +416,6 @@ fun NavGraphBuilder.MatNavigation(
 }
 
 
-
 fun navigateToContentDetailScreen(
     navController: NavController,
     matId: Int,
@@ -456,13 +461,18 @@ fun navigateToGrantSurveySummaryScreen(
 }
 
 
-fun navigateToActivityCompletionScreen(navController: NavController, activityMsg: String) {
-    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg")
+fun navigateToActivityCompletionScreen(
+    navController: NavController,
+    activityMsg: String,
+    isFromActivity: Boolean = false
+) {
+    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
 }
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {
     navController.navigate(MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
 }
+
 fun navigateToPdfViewerScreen(navController: NavController, filePath: String) {
     navController.navigate("$PDF_VIEWER_SCREEN_ROUTE_NAME/$filePath")
 }
