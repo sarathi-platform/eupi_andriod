@@ -36,7 +36,6 @@ import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
-import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
@@ -128,7 +127,8 @@ fun GrantTaskScreen(
 
             Column {
                 BaseContentScreen(
-                    matId = activityId, contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                    matId = viewModel.matId.value,
+                    contentScreenCategory = viewModel.contentCategory.value
                 ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
                     if (!isLimitContentData) {
                         navigateToMediaPlayerScreen(
@@ -140,8 +140,8 @@ fun GrantTaskScreen(
                     } else {
                         navigateToContentDetailScreen(
                             navController,
-                            matId = activityId,
-                            contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                            matId = viewModel.matId.value,
+                            contentScreenCategory = viewModel.contentCategory.value
                         )
                     }
                 }

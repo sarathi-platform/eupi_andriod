@@ -19,6 +19,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
@@ -68,7 +69,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     var isActivityCompleted = mutableStateOf(false)
     var isGenerateFormButtonEnable = mutableStateOf(false)
     var isGenerateFormButtonVisible = mutableStateOf(false)
-
+    var matId = mutableStateOf<Int>(0)
+    var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
 
@@ -96,6 +98,7 @@ class GrantTaskScreenViewModel @Inject constructor(
 
             val taskUiModel =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            isContentScreenEmpty()
             getSurveyDetail()
             isActivityCompleted()
             isGenerateFormButtonEnable()
@@ -306,6 +309,22 @@ class GrantTaskScreenViewModel @Inject constructor(
 
 
     }
+    private suspend fun isContentScreenEmpty() {
+        val isContentEmpty = fetchContentUseCase.getContentCount(
+            matId = activityId,
+            contentCategory = ContentCategoryEnum.ACTIVITY.ordinal
+        ) == 0
+        if (isContentEmpty) {
+            matId.value = missionId
+            contentCategory.value = ContentCategoryEnum.MISSION.ordinal
+        } else {
+            matId.value = activityId
+            contentCategory.value = ContentCategoryEnum.ACTIVITY.ordinal
+        }
+
+    }
+
+
 
     private fun getGrantTaskCardModel(
         activityUiConfig: UiConfigModel,
