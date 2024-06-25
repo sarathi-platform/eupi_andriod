@@ -221,17 +221,6 @@ private fun TaskRowView(
 ) {
     GrantTaskCard(
         onPrimaryButtonClick = { subjectName ->
-            if (!viewModel.isActivityCompleted.value) {
-                if (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name) {
-                    task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                        SurveyStatusEnum.INPROGRESS.name
-                    viewModel.updateTaskAvailableStatus(
-                        taskId = task.key,
-                        status = SurveyStatusEnum.INPROGRESS.name,
-
-                        )
-                }
-            }
             viewModel.activityConfigUiModel?.let {
                 if (subjectName.isNotBlank()) {
                     navigateToGrantSurveySummaryScreen(
