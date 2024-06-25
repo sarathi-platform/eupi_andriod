@@ -2,22 +2,33 @@ package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.toInMillisec
+import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.red
+import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -89,6 +100,42 @@ fun DisbursementSummaryScreen(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
+                item {
+                    if (!viewModel.isAddDisbursementButtonEnable.value && sanctionedAmount != 0) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimen_16_dp)
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = red,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append("*")
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append("Sanctioned amount has been fully disbursed’")
+                                    }
+
+                                }
+                            )
+                        }
+                    }
+
+                }
                 item {
                     CollapsibleCard(
                         title = viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
