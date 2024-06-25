@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greyColor
@@ -38,7 +39,9 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.R
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,7 +118,12 @@ fun DatePickerComponent(
                             context,
                             R.style.my_dialog_theme,
                             { _, selectedYear, selectedMonth, selectedDay ->
-                                text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                                val calendar = Calendar.getInstance()
+                                calendar.set(selectedYear, selectedMonth, selectedDay)
+                                val dateFormat =
+                                    SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.getDefault())
+                                val formattedDate = dateFormat.format(calendar.time)
+                                text = formattedDate
                                 onAnswerSelection(text)
                             }, year, month, day
                         ).show()

@@ -52,6 +52,7 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
@@ -148,6 +149,14 @@ fun GrantTaskCard(
                         contentDescription = null,
                         modifier = Modifier.size(dimen_20_dp),
                         tint = greenOnline,
+                    )
+                } else if (status?.value == StatusEnum.NOT_AVAILABLE.name) {
+                    Text(
+                        text = stringResource(id = R.string.not_available),
+                        style = defaultTextStyle,
+                        modifier = Modifier
+                            .padding(horizontal = dimen_5_dp),
+                        color = greyColor
                     )
                 } else if (status?.value == StatusEnum.INPROGRESS.name) {
                     if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
@@ -326,7 +335,7 @@ private fun PrimarySecondaryButtonView(
 
 ) {
     val context = LocalContext.current
-    if (secondaryButtonText.isNotBlank()) {
+    if (secondaryButtonText.isNotBlank() && !taskMarkedNotAvailable.value) {
         PrimaryButton(
             text = secondaryButtonText,
             isIcon = false,
@@ -356,10 +365,7 @@ private fun PrimarySecondaryButtonView(
     if (primaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = primaryButtonText,
-            color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
-                containerColor = languageItemActiveBg,
-                contentColor = blueDark
-            ) else ButtonDefaults.buttonColors(
+            color = ButtonDefaults.buttonColors(
                 containerColor = blueDark,
                 contentColor = white
             ),
