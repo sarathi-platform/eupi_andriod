@@ -5,6 +5,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 class ExportImportRepositoryImpl @Inject constructor(
     val prefBSRepo: PrefBSRepo,
+    val coreSharedPrefs: CoreSharedPrefs,
     val nudgeBaselineDatabase:NudgeBaselineDatabase,
     val nudgeDatabase: NudgeDatabase
 ):ExportImportRepository {
@@ -42,6 +44,8 @@ class ExportImportRepositoryImpl @Inject constructor(
 
     override fun setAllDataSynced() {
         prefBSRepo.setDataSyncStatus(false)
+        coreSharedPrefs.setDataLoaded(isDataLoaded = false)
+
     }
 
     override fun getUserMobileNumber(): String {
