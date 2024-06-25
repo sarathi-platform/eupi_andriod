@@ -58,6 +58,7 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
@@ -84,8 +85,11 @@ fun GrantTaskCard(
     formGeneratedCount: GrantTaskCardModel?,
     onNotAvailable: () -> Unit,
 ) {
-    val taskMarkedNotAvailable = remember {
+    val taskMarkedNotAvailable = remember(status?.value) {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
+    }
+    val taskStatus = remember(status?.value) {
+        mutableStateOf(status?.value)
     }
     BasicCardView(
         modifier = Modifier
@@ -94,7 +98,7 @@ fun GrantTaskCard(
             .clip(RoundedCornerShape(dimen_6_dp))
             .border(
                 width = dimen_1_dp,
-                color = if (status?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
+                color = if (taskStatus?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
                 shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
@@ -143,14 +147,14 @@ fun GrantTaskCard(
                     }
                     SubContainerView(subTitle1)
                 }
-                if (status?.value == (StatusEnum.COMPLETED.name)) {
+                if (taskStatus?.value == (StatusEnum.COMPLETED.name)) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_check_circle),
                         contentDescription = null,
                         modifier = Modifier.size(dimen_20_dp),
                         tint = greenOnline,
                     )
-                } else if (status?.value == StatusEnum.NOT_AVAILABLE.name) {
+                } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
                         text = stringResource(id = R.string.not_available),
                         style = defaultTextStyle,
@@ -158,7 +162,7 @@ fun GrantTaskCard(
                             .padding(horizontal = dimen_5_dp),
                         color = greyColor
                     )
-                } else if (status?.value == StatusEnum.INPROGRESS.name) {
+                } else if (taskStatus?.value == StatusEnum.INPROGRESS.name) {
                     if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
                             "0"
                         )
@@ -203,7 +207,7 @@ fun GrantTaskCard(
                 SubContainerView(subtitle5, isNumberFormattingRequired = true)
             }
 
-            if (status?.value == StatusEnum.NOT_STARTED.name) {
+            if (taskStatus?.value == StatusEnum.NOT_STARTED.name) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -218,7 +222,8 @@ fun GrantTaskCard(
                         primaryButtonText?.value ?: BLANK_STRING,
                         onPrimaryButtonClick,
                         title?.value ?: BLANK_STRING,
-                        isActivityCompleted
+                        isActivityCompleted,
+                        taskStatus
                     )
                 }
             } else {
@@ -239,7 +244,7 @@ fun GrantTaskCard(
                         .padding(dimen_16_dp),
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
-                    if (status?.value == StatusEnum.COMPLETED.name) {
+                    if (taskStatus?.value == StatusEnum.COMPLETED.name) {
                         Row(modifier = Modifier.clickable {
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
@@ -267,7 +272,8 @@ fun GrantTaskCard(
                             primaryButtonText = stringResource(R.string.continue_text),
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
-                            isActivityCompleted
+                            isActivityCompleted,
+                            taskStatus
                         )
                     }
                 }
@@ -331,7 +337,8 @@ private fun PrimarySecondaryButtonView(
     primaryButtonText: String,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     title: String,
-    isActivityCompleted: Boolean
+    isActivityCompleted: Boolean,
+    taskStatus: MutableState<String?>
 
 ) {
     val context = LocalContext.current
@@ -342,6 +349,7 @@ private fun PrimarySecondaryButtonView(
             onClick = {
                 if (!isActivityCompleted) {
                     taskMarkedNotAvailable.value = true
+                    taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
                     onNotAvailable()
                 } else {
                     showCustomToast(
