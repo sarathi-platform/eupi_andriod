@@ -16,13 +16,12 @@ class TaskStatusRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     ITaskStatusRepository {
-    override fun markCompleteTaskStatus(subjectId: Int, taskId: Int) {
+    override fun markCompleteTaskStatus(taskId: Int) {
         taskDao.markTaskCompleted(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             taskId = taskId,
             actualCompletedDate = System.currentTimeMillis().toDate().toString(),
             status = SurveyStatusEnum.COMPLETED.name,
-            subjectId = subjectId
         )
     }
 

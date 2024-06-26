@@ -22,7 +22,7 @@ fun BaseContentScreen(
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
     onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean, contentTitle: String) -> Unit
 ) {
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = matId) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitContentScreenState(matId, contentScreenCategory))
     }

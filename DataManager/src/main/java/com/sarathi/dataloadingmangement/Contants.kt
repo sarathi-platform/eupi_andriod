@@ -45,3 +45,5 @@ const val DELEGATE_DOT = "."
 
 const val SUBJECT_TABLE = "subject_table"
 const val SMALL_GROUP_DIDI_MAPPING_TABLE = "small_group_didi_mapping_table"
+const val MANUAL_TASK_COMPLETION = "Manual"
+const val SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED = "sanctioned = disbursed + form e"

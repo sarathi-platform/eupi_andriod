@@ -113,6 +113,8 @@ fun BasicMissionCard(
                         onPrimaryClick()
                     }
                 )
+            } else {
+                Spacer(Modifier.height(dimen_18_dp))
             }
         }
     }

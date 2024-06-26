@@ -88,7 +88,8 @@ fun DisbursementFormSummaryScreen(
     navController: NavController = rememberNavController(),
     viewModel: DisbursementFormSummaryScreenViewModel,
     activityId: Int,
-    missionId: Int
+    missionId: Int,
+    taskList: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -181,7 +182,7 @@ fun DisbursementFormSummaryScreen(
                                 colorFilter = ColorFilter.tint(blueDark)
                             )
                             Text(
-                                stringResource(com.sarathi.missionactivitytask.R.string.download),
+                                stringResource(R.string.download),
                                 style = defaultTextStyle
                             )
 
@@ -199,7 +200,8 @@ fun DisbursementFormSummaryScreen(
                             onClick = {
                                 navigateToAddImageScreen(
                                     navController = navController,
-                                    activityId = activityId
+                                    activityId = activityId,
+                                    taskIdList = taskList
                                 )
                             }
                         )

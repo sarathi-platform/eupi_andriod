@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.DELEGATE_COMM
+import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -19,6 +21,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
@@ -68,7 +71,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     var isActivityCompleted = mutableStateOf(false)
     var isGenerateFormButtonEnable = mutableStateOf(false)
     var isGenerateFormButtonVisible = mutableStateOf(false)
-
+    var matId = mutableStateOf<Int>(0)
+    var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
 
@@ -94,8 +98,9 @@ class GrantTaskScreenViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
-        val taskUiModel =
-            getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            val taskUiModel =
+                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            isContentScreenEmpty()
             getSurveyDetail()
             isActivityCompleted()
             isGenerateFormButtonEnable()
@@ -236,14 +241,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
 
-    fun checkButtonValidation() {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-
-            isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
-                missionId = missionId,
-                activityId = activityId
-            ) && !isActivityCompleted.value
-        }
+    private suspend fun checkButtonValidation() {
+        isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
+            missionId = missionId,
+            activityId = activityId
+        ) && !isActivityCompleted.value
     }
 
     fun markActivityCompleteStatus() {
@@ -295,7 +297,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun isActivityCompleted() {
+    fun isActivityCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
                 missionId = missionId ?: 0,
@@ -306,6 +308,22 @@ class GrantTaskScreenViewModel @Inject constructor(
 
 
     }
+
+    private suspend fun isContentScreenEmpty() {
+        val isContentEmpty = fetchContentUseCase.getContentCount(
+            matId = activityId,
+            contentCategory = ContentCategoryEnum.ACTIVITY.ordinal
+        ) == 0
+        if (isContentEmpty) {
+            matId.value = missionId
+            contentCategory.value = ContentCategoryEnum.MISSION.ordinal
+        } else {
+            matId.value = activityId
+            contentCategory.value = ContentCategoryEnum.ACTIVITY.ordinal
+        }
+
+    }
+
 
     private fun getGrantTaskCardModel(
         activityUiConfig: UiConfigModel,
@@ -325,9 +343,26 @@ class GrantTaskScreenViewModel @Inject constructor(
                 .isNotEmpty()
         if (isGenerateFormButtonVisible.value) {
             isGenerateFormButtonEnable.value =
-                formUseCase.getNonGeneratedFormSummaryData(activityId).isNotEmpty()
+                formUseCase.getNonGeneratedFormSummaryData(activityId)
+                    .isNotEmpty() && !isActivityCompleted.value
 
         }
+    }
+
+
+    fun getTaskListOfDisburesementAmountEqualSanctionedAmount(): String {
+        val taskListSanctionedEqualDisbursed = ArrayList<String>()
+        if (activityConfigUiModel?.taskCompletion == SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED) {
+            taskList.value.entries.forEach { task ->
+
+                if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
+                    taskListSanctionedEqualDisbursed.add(task.key.toString())
+                }
+            }
+        } else {
+            return BLANK_STRING
+        }
+        return taskListSanctionedEqualDisbursed.joinToString(DELEGATE_COMM)
     }
 
 

@@ -129,7 +129,7 @@ fun ContentDetailScreen(
                 .padding(10.dp)
         ) {
             ButtonPositive(
-                buttonTitle = stringResource(R.string.go_back), isActive = true, isLeftArrow = false
+                buttonTitle = stringResource(R.string.go_back), isActive = true, isLeftArrow = true
 
             ) {
                 navController.popBackStack()

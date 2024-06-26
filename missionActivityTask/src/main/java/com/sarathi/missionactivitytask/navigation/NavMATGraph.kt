@@ -1,4 +1,3 @@
-
 package com.sarathi.missionactivitytask.navigation
 
 import androidx.compose.ui.Modifier
@@ -31,6 +30,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_PATH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_ACTIVITY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
@@ -42,6 +42,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SU
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID_LIST
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
@@ -373,18 +374,24 @@ fun NavGraphBuilder.MatNavigation(
                 name = ARG_ACTIVITY_MASSAGE
             ) {
                 type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_IS_FROM_ACTIVITY
+            ) {
+                type = NavType.BoolType
             }
         )) {
             ActivitySuccessScreen(
-                onNavigateBack = {
+                onNavigateBack = { isFromActivity ->
                     navController.popBackStack(
                         MATHomeScreens.GrantTaskScreen.route,
-                        inclusive = true
+                        inclusive = isFromActivity
                     )
                 },
                 navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
             )
         }
 
@@ -398,13 +405,17 @@ fun NavGraphBuilder.MatNavigation(
             },
             navArgument(name = ARG_MISSION_ID) {
                 type = NavType.IntType
+            },
+            navArgument(name = ARG_TASK_ID_LIST) {
+                type = NavType.StringType
             }
         )) {
             DisbursementFormSummaryScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
-                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
+                taskList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
         composable(route = MATHomeScreens.PdfViewerScreen.route, arguments = listOf(
@@ -421,17 +432,20 @@ fun NavGraphBuilder.MatNavigation(
         composable(route = MATHomeScreens.AddImageScreen.route, arguments = listOf(
             navArgument(ARG_ACTIVITY_ID) {
                 type = NavType.IntType
+            },
+            navArgument(ARG_TASK_ID_LIST) {
+                type = NavType.StringType
             }
         )) {
             SubmitPhysicalFormScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
+                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
     }
 }
-
 
 
 fun navigateToContentDetailScreen(
@@ -443,9 +457,9 @@ fun navigateToContentDetailScreen(
 }
 
 fun navigateToDisbursmentSummaryScreen(
-    navController: NavController, activityId: Int, missionId: Int
+    navController: NavController, activityId: Int, missionId: Int, taskIdList: String
 ) {
-    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId")
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdList")
 }
 
 fun navigateToSurveyScreen(
@@ -479,13 +493,18 @@ fun navigateToGrantSurveySummaryScreen(
 }
 
 
-fun navigateToActivityCompletionScreen(navController: NavController, activityMsg: String) {
-    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg")
+fun navigateToActivityCompletionScreen(
+    navController: NavController,
+    activityMsg: String,
+    isFromActivity: Boolean = false
+) {
+    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
 }
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {
     navController.navigate(MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
 }
+
 fun navigateToPdfViewerScreen(navController: NavController, filePath: String) {
     navController.navigate("$PDF_VIEWER_SCREEN_ROUTE_NAME/$filePath")
 }
@@ -508,8 +527,8 @@ fun navigateToActivityScreen(
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted")
 }
 
-fun navigateToAddImageScreen(navController: NavController, activityId: Int) {
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId")
+fun navigateToAddImageScreen(navController: NavController, activityId: Int, taskIdList: String) {
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdList")
 }
 
 fun navigateToTaskScreen(

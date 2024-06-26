@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -60,7 +61,7 @@ fun ActivityRowCard(
                     totalCount = activity.taskCount,
                     index = index,
                     isDividerVisible = index != activities.lastIndex,
-                    painter = painterResource(id = R.drawable.ic_mission_inprogress)
+                    painter = getActivityIcon(index = index)
                 ) {
                     navigateToTaskScreen(
                         navController,
@@ -78,6 +79,12 @@ fun ActivityRowCard(
 
 }
 
+@Composable
+private fun getActivityIcon(index: Int): Painter {
+    if (index == 0) {
+        return painterResource(id = R.drawable.ic_receipt_icon)
+    }
+    return painterResource(id = R.drawable.ic_disbursement_icon)
+}
 
 data class BasicContent(val contentType: String, val contentTitle: String)
-data class GrantStep(val boxTittle: String, val boxSubTitle: String)

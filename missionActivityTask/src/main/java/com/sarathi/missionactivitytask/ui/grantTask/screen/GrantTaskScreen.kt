@@ -38,7 +38,6 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
-import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
@@ -102,8 +101,9 @@ fun GrantTaskScreen(
                             viewModel.markActivityCompleteStatus()
 
                             navigateToActivityCompletionScreen(
-                                navController,
-                                context.getString(
+                                isFromActivity = true,
+                                navController = navController,
+                                activityMsg = context.getString(
                                     R.string.activity_completion_message,
                                     activityName
                                 )
@@ -120,7 +120,8 @@ fun GrantTaskScreen(
                                 navigateToDisbursmentSummaryScreen(
                                     navController = navController,
                                     activityId = activityId,
-                                    missionId = missionId
+                                    missionId = missionId,
+                                    taskIdList = viewModel.getTaskListOfDisburesementAmountEqualSanctionedAmount()
                                 )
                             })
                     }
@@ -131,7 +132,8 @@ fun GrantTaskScreen(
 
             Column {
                 BaseContentScreen(
-                    matId = activityId, contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                    matId = viewModel.matId.value,
+                    contentScreenCategory = viewModel.contentCategory.value
                 ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
                     if (!isLimitContentData) {
                         navigateToMediaPlayerScreen(
@@ -143,8 +145,8 @@ fun GrantTaskScreen(
                     } else {
                         navigateToContentDetailScreen(
                             navController,
-                            matId = activityId,
-                            contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                            matId = viewModel.matId.value,
+                            contentScreenCategory = viewModel.contentCategory.value
                         )
                     }
                 }
@@ -229,65 +231,48 @@ private fun TaskRowView(
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>
 ) {
-    Column {
-        GrantTaskCard(
-            onPrimaryButtonClick = { subjectName ->
-                if (!viewModel.isActivityCompleted.value) {
-                    if (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name) {
-                        task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                            SurveyStatusEnum.INPROGRESS.name
-                        viewModel.updateTaskAvailableStatus(
-                            taskId = task.key,
-                            status = SurveyStatusEnum.INPROGRESS.name,
-
-                            )
-                    }
-                }
-                viewModel.activityConfigUiModel?.let {
-                    if (subjectName.isNotBlank()) {
-                        navigateToGrantSurveySummaryScreen(
-                            navController,
-                            taskId = task.key,
-                            surveyId = it.surveyId,
-                            sectionId = it.sectionId,
-                            subjectType = it.subject,
-                            subjectName = subjectName,
-                            activityConfigId = it.activityConfigId,
-                            sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                                ?: DEFAULT_ID,
-                        )
-                    }
-
-                }
-            },
-            onNotAvailable = {
-                if (!viewModel.isActivityCompleted.value) {
-
-                    task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
-                        SurveyStatusEnum.NOT_AVAILABLE.name
-                    viewModel.updateTaskAvailableStatus(
+    GrantTaskCard(
+        onPrimaryButtonClick = { subjectName ->
+            viewModel.activityConfigUiModel?.let {
+                if (subjectName.isNotBlank()) {
+                    navigateToGrantSurveySummaryScreen(
+                        navController,
                         taskId = task.key,
-                        status = SurveyStatusEnum.NOT_AVAILABLE.name
+                        surveyId = it.surveyId,
+                        sectionId = it.sectionId,
+                        subjectType = it.subject,
+                        subjectName = subjectName,
+                        activityConfigId = it.activityConfigId,
+                        sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                            ?: DEFAULT_ID,
                     )
-                    viewModel.checkButtonValidation()
                 }
-            },
-            imagePath = viewModel.getFilePathUri(
-                task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
-            ),
-            title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
-            subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
-            primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
-            secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
-            status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
-            subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
-            subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
-            subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
-            subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
-            formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name],
-            isActivityCompleted = viewModel.isActivityCompleted.value
-        )
-        CustomVerticalSpacer()
-    }
+
+            }
+        },
+        onNotAvailable = {
+            if (!viewModel.isActivityCompleted.value) {
+                viewModel.updateTaskAvailableStatus(
+                    taskId = task.key,
+                    status = SurveyStatusEnum.NOT_AVAILABLE.name
+                )
+                viewModel.isActivityCompleted()
+            }
+        },
+        imagePath = viewModel.getFilePathUri(
+            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
+        ),
+        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
+        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
+        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
+        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
+        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
+        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
+        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
+        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
+        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
+        formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name],
+        isActivityCompleted = viewModel.isActivityCompleted.value
+    )
 }
 
