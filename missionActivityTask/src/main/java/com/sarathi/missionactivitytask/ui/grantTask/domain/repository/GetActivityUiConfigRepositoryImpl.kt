@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.domain.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
 import com.sarathi.dataloadingmangement.repository.IUiConfigRepository
 import com.sarathi.missionactivitytask.domain.repository.BaseRepository
@@ -26,5 +27,10 @@ class GetActivityUiConfigRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getActivityConfig(activityId: Int): ActivityConfigEntity? {
+        return activityConfigDao.getActivityConfig(activityId = activityId)
+    }
+
 
 }
+

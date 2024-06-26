@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.ApiResponseModel
@@ -14,8 +15,8 @@ import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
+import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
-import com.sarathi.dataloadingmangement.model.survey.response.QuestionList
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionOptionsResponseModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
@@ -113,12 +114,13 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         questionId: Int
     ) {
         val grantConfig = grantConfigDao.getGrantModeNature()
-
-        val options = Gson().fromJson<QuestionList>(
+        val type =
+            object : TypeToken<List<OptionsItem?>?>() {}.type
+        val options = Gson().fromJson<List<OptionsItem>>(
             if (tag == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
-            QuestionList::class.java
+            type
 
-        ).options
+        )
         options?.forEach { option ->
             mergedOptionItem.add(
                 OptionsUiModel(
