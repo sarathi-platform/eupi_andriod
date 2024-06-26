@@ -35,6 +35,7 @@ import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -300,13 +301,12 @@ class GrantTaskScreenViewModel @Inject constructor(
     fun isActivityCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
-                missionId = missionId ?: 0,
-                activityId = activityId ?: 0
+                missionId = missionId,
+                activityId = activityId
             )
             checkButtonValidation()
+            delay(500)
         }
-
-
     }
 
     private suspend fun isContentScreenEmpty() {

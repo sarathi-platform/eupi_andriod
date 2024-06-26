@@ -20,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -63,7 +64,7 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateFromTable(activityId: Int, taskIdList: String) {
+    fun updateFromTable(activityId: Int, taskIdList: String, onCompleted: () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val formGeneratedDate = System.currentTimeMillis().toDate().toString()
             var subjectType: String = BLANK_STRING
@@ -78,6 +79,17 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
                     localReferenceId = it.localReferenceId
                 )
             }
+            documentEventWriter(formGeneratedDate, activityId)
+
+            updateTaskStatus(taskIdList, subjectType)
+            withContext(Dispatchers.Main) {
+                onCompleted()
+            }
+        }
+    }
+
+    private fun documentEventWriter(formGeneratedDate: String, activityId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             documentValues.value.firstOrNull()?.filePath?.split(DELEGATE_COMM)?.forEach {
                 documentEventWriterUseCase.writeSaveDocumentEvent(
                     generatedDate = formGeneratedDate,
@@ -85,11 +97,9 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
                     documentName = it,
                     activityId = activityId
                 )
-
             }
-
-            updateTaskStatus(taskIdList, subjectType)
         }
+
     }
 
     fun getPrefixFileName(): String {

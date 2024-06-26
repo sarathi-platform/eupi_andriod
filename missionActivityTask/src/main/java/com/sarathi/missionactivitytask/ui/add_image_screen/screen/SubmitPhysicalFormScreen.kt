@@ -75,11 +75,16 @@ fun SubmitPhysicalFormScreen(
                         isArrowRequired = false,
                         onClick = {
                             viewModel.saveMultiImage(activityId)
-                            viewModel.updateFromTable(activityId = activityId, taskIdList)
-                            navigateToActivityCompletionScreen(
-                                navController,
-                                "Form E  generated successfully for ${viewModel.totalDidi.value} didis"
-                            )
+                            viewModel.updateFromTable(
+                                activityId = activityId,
+                                taskIdList,
+                                onCompleted = {
+                                    navigateToActivityCompletionScreen(
+                                        navController,
+                                        "Form E  generated successfully for ${viewModel.totalDidi.value} didis"
+                                    )
+                                })
+
                         })
                 }
             }
