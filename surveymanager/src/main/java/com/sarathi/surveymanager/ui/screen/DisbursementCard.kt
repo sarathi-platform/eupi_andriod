@@ -68,14 +68,40 @@ fun DisbursementCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TextRow(
-                    text1 = stringResource(R.string.date),
-                    text2 = subTitle1 ?: BLANK_STRING
-                )
-                TextRow(
-                    text1 = stringResource(R.string.amount),
-                    text2 = formatToIndianRupee(subTitle2)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        modifier = Modifier.padding(end = dimen_5_dp),
+                        text = stringResource(R.string.date),
+                        style = defaultTextStyle.copy(color = greyColor)
+                    )
+                    if (subTitle1.isNotBlank()) {
+                        Text(
+                            text = subTitle1,
+                            style = defaultTextStyle.copy(color = blueDark)
+                        )
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        modifier = Modifier.padding(end = dimen_5_dp),
+                        text = stringResource(R.string.amount),
+                        style = defaultTextStyle.copy(color = greyColor)
+                    )
+                    if (formatToIndianRupee(subTitle2).isNotBlank()) {
+                        Text(
+                            text = formatToIndianRupee(subTitle2),
+                            style = defaultTextStyle.copy(color = blueDark)
+                        )
+                    }
+                }
             }
 
             Divider(
@@ -231,16 +257,24 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
     ) {
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier.padding(end = dimen_5_dp),
+                modifier = Modifier.weight(.2f),
                 text = text1,
                 style = defaultTextStyle.copy(color = greyColor)
             )
         }
         if (text2.isNotBlank()) {
             if (isReadMode) {
-                TextWithReadMoreComponent(title = text1, contentData = text2)
+                TextWithReadMoreComponent(
+                    modifier = Modifier.weight(.8f),
+                    title = text1,
+                    contentData = text2
+                )
             } else {
-                Text(text = text2, style = defaultTextStyle.copy(color = blueDark))
+                Text(
+                    modifier = Modifier.weight(.8f),
+                    text = text2,
+                    style = defaultTextStyle.copy(color = blueDark)
+                )
             }
         }
     }
