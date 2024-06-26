@@ -79,14 +79,14 @@ fun DisbursementSummaryScreen(
                     .padding(dimen_10_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = if (viewModel.isManualTaskCompleteActive()) stringResource(R.string.complete) else stringResource(
+                    buttonTitle = if (viewModel.isManualTaskCompletion.value) stringResource(R.string.complete) else stringResource(
                         R.string.go_back
                     ),
                     isActive = viewModel.isButtonEnable.value,
-                    isArrowRequired = !viewModel.isManualTaskCompleteActive(),
-                    isLeftArrow = !viewModel.isManualTaskCompleteActive(),
+                    isArrowRequired = !viewModel.isManualTaskCompletion.value,
+                    isLeftArrow = !viewModel.isManualTaskCompletion.value,
                     onClick = {
-                        if (viewModel.isManualTaskCompleteActive()) {
+                        if (viewModel.isManualTaskCompletion.value) {
                         viewModel.saveButtonClicked()
                         onNavigateSuccessScreen(
                             "${

@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.add_image_screen.screen
 
+import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.generateUUID
@@ -96,22 +97,24 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
     }
 
     suspend fun updateTaskStatus(taskIdList: String, subjectType: String) {
-        taskIdList.split(DELEGATE_COMM)?.forEach {
-            getTaskUseCase.getTask(it.toInt())
-            taskStatusUseCase.markTaskCompleted(
-                taskId = it.toInt()
-            )
-            val taskEntity = getTaskUseCase.getTask(it.toInt())
-
-            taskEntity?.let {
-                matStatusEventWriterUseCase.updateTaskStatus(
-                    taskEntity = it,
-                    surveyName = "",
-                    subjectType = subjectType
+        if (!TextUtils.isEmpty(taskIdList)) {
+            taskIdList.split(DELEGATE_COMM)?.forEach {
+                getTaskUseCase.getTask(it.toInt())
+                taskStatusUseCase.markTaskCompleted(
+                    taskId = it.toInt()
                 )
-            }
-        }
+                val taskEntity = getTaskUseCase.getTask(it.toInt())
 
+                taskEntity?.let {
+                    matStatusEventWriterUseCase.updateTaskStatus(
+                        taskEntity = it,
+                        surveyName = "",
+                        subjectType = subjectType
+                    )
+                }
+            }
+
+        }
     }
 
 }
