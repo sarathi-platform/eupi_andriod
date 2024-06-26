@@ -24,7 +24,8 @@ data class SubjectAttributeEntity(
     var tagType: String,
     var missionId: Int,
     var taskId: Int,
-    var activityId: Int
+    var activityId: Int,
+    var isActive: Int = 1
 ) {
     companion object {
 

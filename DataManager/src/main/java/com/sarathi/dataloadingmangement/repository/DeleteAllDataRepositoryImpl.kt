@@ -9,46 +9,80 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs
 ) : IDeleteAllDataRepository {
     override suspend fun deleteAllDataFromDb() {
-        nudgeGrantDatabase.activityConfigDao()
-            .deleteActivityConfigForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.activityDao()
-            .deleteActivityForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.activityLanguageDao()
-            .deleteActivityLanguageAttributeForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.attributeValueReferenceDao()
-            .deleteAttributeValueReferenceForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.contentConfigDao()
-            .deleteContentConfigForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.contentDao().deleteContent(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.documentDao()
-            .deleteDocumentForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.formEDao().deleteFormForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.formUiConfigDao()
-            .deleteActivityFormUiConfigForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.grantConfigDao()
-            .deleteGrantConfigForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.missionDao()
-            .deleteMissionsForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.missionLanguageAttributeDao()
-            .deleteMissionLanguageAttributeForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.optionItemDao()
-            .deleteOptionsForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.programmeDao().deleteProgramme(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.questionEntityDao()
-            .deleteAllQuestionsForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.surveyEntityDao()
-            .deleteAllSurveyForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.subjectAttributeDao()
-            .deleteSubjectAttributes(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.surveyAnswersDao()
-            .deleteSurveyAnswerForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.surveyEntityDao()
-            .deleteAllSurveyForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.surveyLanguageAttributeDao()
-            .deleteSurveyLanguageAttributeForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.taskDao()
-            .deleteActivityTaskForUser(coreSharedPrefs.getUniqueUserIdentifier())
-        nudgeGrantDatabase.uiConfigDao()
-            .deleteActivityUiConfigForUser(coreSharedPrefs.getUniqueUserIdentifier())
+        val userId = coreSharedPrefs.getUniqueUserIdentifier()
+        nudgeGrantDatabase.apply {
+            activityConfigDao()
+                .deleteActivityConfigForUser(userId)
+
+            activityDao()
+                .deleteActivityForUser(userId)
+
+            activityLanguageDao()
+                .deleteActivityLanguageAttributeForUser(userId)
+
+            attributeValueReferenceDao()
+                .deleteAttributeValueReferenceForUser(userId)
+
+            contentConfigDao()
+                .deleteContentConfigForUser(userId)
+
+            contentDao()
+                .deleteContent(userId)
+
+            documentDao()
+                .deleteDocumentForUser(userId)
+
+            formEDao()
+                .deleteFormForUser(userId)
+
+            formUiConfigDao()
+                .deleteActivityFormUiConfigForUser(userId)
+
+            grantConfigDao()
+                .deleteGrantConfigForUser(userId)
+
+            missionDao()
+                .deleteMissionsForUser(userId)
+
+            missionLanguageAttributeDao()
+                .deleteMissionLanguageAttributeForUser(userId)
+
+            optionItemDao()
+                .deleteOptionsForUser(userId)
+
+            programmeDao()
+                .deleteProgramme(userId)
+
+            questionEntityDao()
+                .deleteAllQuestionsForUser(userId)
+
+            surveyEntityDao()
+                .deleteAllSurveyForUser(userId)
+
+            subjectAttributeDao()
+                .deleteSubjectAttributes(userId)
+
+            surveyAnswersDao()
+                .deleteSurveyAnswerForUser(userId)
+
+            surveyEntityDao()
+                .deleteAllSurveyForUser(userId)
+
+            surveyLanguageAttributeDao()
+                .deleteSurveyLanguageAttributeForUser(userId)
+
+            taskDao()
+                .deleteActivityTaskForUser(userId)
+
+            uiConfigDao()
+                .deleteActivityUiConfigForUser(userId)
+
+            subjectEntityDao()
+                .deleteSubjectsForUsers(userId)
+
+            smallGroupDidiMappingDao()
+                .deleteSmallGroupDidiMappingForUser(userId)
+
+        }
     }
 }

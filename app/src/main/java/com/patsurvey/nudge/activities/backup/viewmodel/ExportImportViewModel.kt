@@ -325,6 +325,7 @@ class ExportImportViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 if (loggedInUserType.value == UPCM_USER) {
+
                     eventWriterHelperImpl.regenerateAllEvent(appContext = mAppContext)
                     regenerateGrantEventUsecase.invoke()
                 } else {

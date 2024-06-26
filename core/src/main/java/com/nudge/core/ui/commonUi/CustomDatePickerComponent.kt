@@ -68,6 +68,7 @@ fun CustomDatePickerComponent(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberCustomDatePickerState(
     @Suppress("AutoBoxing") initialSelectedDateMillis: Long? = getCurrentTimeInMillis(),

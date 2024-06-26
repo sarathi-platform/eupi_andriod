@@ -83,7 +83,7 @@ class MissionRepositoryImpl @Inject constructor(
 
 //                    Gson().fromJson(it?.reader(), ApiResponseModel<List<ProgrameResponse>>::class.java)
             }
-        return surveyResponseModel!!/*apiInterface.getMissions(missionRequest)*/
+        return /*surveyResponseModel!!*/apiInterface.getMissions(missionRequest)
     }
 
     override suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int) {

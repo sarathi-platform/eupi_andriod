@@ -10,3 +10,15 @@ data class SmallGroupAttendanceHistoryModel(
     var value: String,
     val valueType: String,
 )
+
+data class SmallGroupAttendanceHistoryModelForEvent(
+    val id: Int,
+    val subjectId: Int,
+    var subjectType: String,
+    val smallGroupId: Int,
+    var attribute: String,
+    var date: String,
+    var key: String,
+    var value: String,
+    val valueType: String,
+)

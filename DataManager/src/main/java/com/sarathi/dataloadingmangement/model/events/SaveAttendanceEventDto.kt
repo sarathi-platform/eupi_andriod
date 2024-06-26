@@ -1,4 +1,4 @@
-package com.nudge.syncmanager.model
+package com.sarathi.dataloadingmangement.model.events
 
 
 import com.google.gson.annotations.Expose

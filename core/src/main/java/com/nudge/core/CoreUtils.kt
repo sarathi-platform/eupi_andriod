@@ -51,6 +51,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -1042,4 +1043,29 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
         )
     )
     coreSharedPrefs.setFileExported(false)
+}
+
+const val YYYY_MM_DD = "yyyy-MM-dd"
+
+fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
+    if (this == null)
+        return BLANK_STRING
+
+    val formatter = SimpleDateFormat(pattern)
+    return formatter.format(Date(this))
+}
+
+fun String.getDateInMillis(): Long {
+    val dateSplit = this.split("/")
+    val calendar: Calendar = Calendar.getInstance()
+    calendar.set(dateSplit[2].toInt(), dateSplit[1].toInt(), dateSplit[0].toInt())
+    return calendar.timeInMillis
+}
+
+fun Boolean.getAttendanceFromBoolean(): String {
+    return if (this) ATTENDANCE_PRESENT else ATTENDANCE_ABSENT
+}
+
+fun String?.getBooleanValueFromAttendance(): Boolean {
+    return this?.equals(ATTENDANCE_PRESENT) ?: false
 }

@@ -5,6 +5,7 @@ import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import javax.inject.Inject
 
@@ -15,12 +16,13 @@ class RegenerateGrantEventUsecase @Inject constructor(
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val documentEventWriterUseCase: DocumentEventWriterUseCase,
+    private val attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
-
 ) {
 
 
     suspend fun invoke() {
+
         coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_" + coreSharedPrefs.getMobileNo()))
         coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_" + coreSharedPrefs.getMobileNo()))
         writeMissionStatusEvent()
@@ -29,8 +31,11 @@ class RegenerateGrantEventUsecase @Inject constructor(
         writeSurveyAnswerEvents()
         writeFormUpdateEvent()
         writeDocumentUploadEvent()
+        writeAttendanceEvent()
+    }
 
-
+    private suspend fun writeAttendanceEvent() {
+        attendanceEventWriterUseCase.invoke()
     }
 
     private suspend fun writeMissionStatusEvent() {

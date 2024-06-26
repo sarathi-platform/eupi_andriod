@@ -4,8 +4,6 @@ import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,17 +17,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,23 +31,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.nudge.core.DD_MMM_YYYY_FORMAT
-import com.nudge.core.getDateInMillis
-import com.nudge.core.ui.commonUi.CustomDatePickerComponent
-import com.nudge.core.ui.commonUi.rememberCustomDatePickerDialogProperties
-import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
-import com.nudge.core.ui.commonUi.rememberDatePickerProperties
-import com.nudge.core.ui.theme.dateRangeFieldColor
-import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallerTextStyle
-import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.R
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -71,8 +56,8 @@ fun DatePickerComponent(
     var text by remember { mutableStateOf(defaultValue) }
     val context = LocalContext.current
 
-    //TODO Test this code.
-    val scope = rememberCoroutineScope()
+    //TODO Anupam Test this code and fix crash in text.getDateInMillis(pattern = DD_MMM_YYYY_FORMAT).
+    /*val scope = rememberCoroutineScope()
 
     val datePickerState =
         rememberCustomDatePickerState(initialSelectedDateMillis = text.getDateInMillis(pattern = DD_MMM_YYYY_FORMAT))
@@ -98,7 +83,7 @@ fun DatePickerComponent(
             onAnswerSelection(text)
             datePickerDialogProperties.hide()
         }
-    )
+    )*/
 
     Column(
         modifier = Modifier
@@ -109,7 +94,7 @@ fun DatePickerComponent(
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
 
-        OutlinedTextField(
+        /*OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(white)
@@ -169,7 +154,7 @@ fun DatePickerComponent(
 
             },
             onValueChange = {}
-        )
+        )*/
 
         Box(
             modifier = Modifier
