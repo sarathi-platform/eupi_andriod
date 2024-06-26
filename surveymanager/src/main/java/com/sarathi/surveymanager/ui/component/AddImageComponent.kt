@@ -49,9 +49,12 @@ import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_150_dp
+import com.nudge.core.ui.theme.dimen_200_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dotedBorderColor
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.redDark
@@ -91,11 +94,13 @@ fun AddImageComponent(
     )
 
     val boxModifier = if (imageList.isNotEmpty()) {
-        Modifier.size(150.dp)
+        Modifier
+            .size(dimen_150_dp)
+            .padding(dimen_5_dp)
     } else {
         Modifier
             .fillMaxSize()
-            .height(200.dp)
+            .height(dimen_200_dp)
     }
     Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
@@ -138,11 +143,6 @@ fun AddImageComponent(
                                 dotRadius = 6f,
                                 dotColor = dotedBorderColor
                             ),
-//                            .border(
-//                                width = 2.dp,
-//                                color = borderGreyLight,
-//                                shape = RoundedCornerShape(6.dp)
-//                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -193,15 +193,15 @@ fun getSavedImageUri(
 fun ImageView(uri: Uri, isEditable: Boolean, onDelete: (fileUri: Uri) -> Unit) {
     Box(
         modifier = Modifier
-            .size(150.dp)
-            .padding(horizontal = dimen_10_dp)
+            .size(dimen_150_dp)
+            .padding(dimen_5_dp)
     ) {
         Image(
             painter = rememberAsyncImagePainter(uri),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(6.dp))
+                .clip(RoundedCornerShape(dimen_6_dp))
                 .background(Color.Gray),
             contentScale = ContentScale.Crop
         )

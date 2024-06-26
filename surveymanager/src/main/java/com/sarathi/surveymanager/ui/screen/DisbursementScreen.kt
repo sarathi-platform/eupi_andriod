@@ -24,11 +24,12 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.toInMillisec
 import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultSpanStyle
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.red
-import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -87,13 +88,13 @@ fun DisbursementSummaryScreen(
                     isLeftArrow = !viewModel.isManualTaskCompletion.value,
                     onClick = {
                         if (viewModel.isManualTaskCompletion.value) {
-                        viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen(
-                            "${
-                                viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
-                                    ?: BLANK_STRING
-                            } for ${subjectName}"
-                        )
+                            viewModel.saveButtonClicked()
+                            onNavigateSuccessScreen(
+                                "${
+                                    viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
+                                        ?: BLANK_STRING
+                                } for ${subjectName}"
+                            )
                         } else {
                             navController.popBackStack()
                         }
@@ -126,16 +127,10 @@ fun DisbursementSummaryScreen(
                                         append("*")
                                     }
                                     withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontFamily = NotoSans
-                                        )
+                                        style = defaultSpanStyle.copy(blueDark)
                                     ) {
                                         append("Sanctioned amount has been fully disbursed’")
                                     }
-
                                 }
                             )
                         }

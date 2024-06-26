@@ -305,14 +305,14 @@ private fun MakeDisburesementRow(
                 .height(dimen_5_dp)
         )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            TextRow(text1 = "Mode: ", text2 = disbursementFormSummaryUiModel.mode)
+            TextRow(text1 = "Mode:", text2 = disbursementFormSummaryUiModel.mode)
             TextRow(
-                text1 = "Nature: ",
+                text1 = "Nature:",
                 text2 = disbursementFormSummaryUiModel.nature,
                 isReadMode = true
             )
             TextRow(
-                text1 = "Amount: ",
+                text1 = "Amount:",
                 text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
             )
         }
@@ -324,21 +324,28 @@ private fun MakeDisburesementRow(
 @Composable
 private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier.padding(end = dimen_5_dp),
+                modifier = Modifier
+                    .weight(.2f),
                 text = text1,
                 style = newMediumTextStyle.copy(color = greyColor)
             )
         }
         if (text2.isNotBlank()) {
             if (isReadMode) {
-                TextWithReadMoreComponent(title = text1, contentData = text2)
+                TextWithReadMoreComponent(
+                    modifier = Modifier.weight(.8f),
+                    title = text1,
+                    contentData = text2
+                )
             } else {
                 Text(
+                    modifier = Modifier.weight(.8f),
                     text = text2,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
