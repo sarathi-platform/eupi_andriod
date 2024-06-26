@@ -6,10 +6,8 @@
     <string name="bangla" translatable="false">হিন্দি</string>
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
-
     <string name="mark_complete_text">Complete Para / Tola Addition</string>
     <string name="go_back_text">Go Back</string>
-
     <string name="progress_item_text">Progress</string>
     <string name="didis_item_text_plural">Didis</string>
     <string name="didis_item_text_singular">Didi</string>
