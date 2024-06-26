@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
 
@@ -20,6 +21,9 @@ interface UiConfigDao {
         uniqueUserIdentifier: String,
         languageCode: String
     ): List<UiConfigModel>
+
+    @Query("Select * from activity_config_table where activityId=:activityId")
+    fun getActivityConfig(activityId: Int): ActivityConfigEntity?
 
     @Query("Delete from  ui_config_table where  missionId=:missionId and activityId=:activityId and userId=:uniqueUserIdentifier")
     fun deleteActivityUiConfig(

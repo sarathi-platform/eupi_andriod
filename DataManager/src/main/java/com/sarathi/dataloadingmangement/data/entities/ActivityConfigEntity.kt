@@ -24,6 +24,7 @@ data class ActivityConfigEntity(
     var doer: String,
     var reviewer: String,
     var subject: String,
+    var taskCompletion: String,
     var activityId: Int,
     var missionId: Int
 
@@ -45,7 +46,8 @@ data class ActivityConfigEntity(
                 reviewer = activityConfig.reviewer,
                 subject = activityConfig.subject,
                 activityId = activityId,
-                missionId = missionId
+                missionId = missionId,
+                taskCompletion = activityConfig.taskCompletion ?: BLANK_STRING
             )
 
         }

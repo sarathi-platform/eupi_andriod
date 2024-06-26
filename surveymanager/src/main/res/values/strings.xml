@@ -25,5 +25,6 @@
     <string name="form_e_generated">Form E generated</string>
     <string name="done">Done</string>
     <string name="go_back">Go back</string>
+    <string name="complete">Complete</string>
 
 </resources>
