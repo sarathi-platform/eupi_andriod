@@ -108,7 +108,7 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
                 taskEntity?.let {
                     matStatusEventWriterUseCase.updateTaskStatus(
                         taskEntity = it,
-                        surveyName = "",
+                        surveyName = BLANK_STRING,
                         subjectType = subjectType
                     )
                 }
