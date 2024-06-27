@@ -26,6 +26,7 @@ import com.sarathi.dataloadingmangement.R
 
 @Composable
 fun TextWithReadMoreComponent(
+    modifier: Modifier = Modifier.fillMaxWidth(),
     textStyle: TextStyle = defaultTextStyle,
     title: String = BLANK_STRING,
     maxLines: Int = 1,
@@ -34,9 +35,7 @@ fun TextWithReadMoreComponent(
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier,
     ) {
         TextWithReadMore(
             text = contentData,

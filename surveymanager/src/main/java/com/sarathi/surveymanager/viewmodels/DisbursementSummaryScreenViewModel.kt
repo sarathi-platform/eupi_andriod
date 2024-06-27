@@ -90,15 +90,15 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun initData() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isManualTaskCompleteActive()
+            taskEntity = getTaskUseCase.getTask(taskId)
             _taskList.value =
                 saveSurveyAnswerUseCase.getAllSaveAnswer(
                     surveyId = surveyId,
                     sectionId = sectionId,
                     taskId = taskId
                 ).groupBy { it.referenceId }
+            isManualTaskCompleteActive()
             setGrantComponentDTO()
-            taskEntity = getTaskUseCase.getTask(taskId)
             isActivityCompleted()
         }
     }
@@ -130,7 +130,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         var subTitle3 = BLANK_STRING
         var subTitle4 = BLANK_STRING
         var subTitle5 = BLANK_STRING
-        var isFormGenerated: Boolean = false
+        var isFormGenerated = false
         surveyList.forEach { survey ->
             isFormGenerated = survey.isFormGenerated
             val selectedValue = getSelectedValue(survey.optionItems)
@@ -143,7 +143,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
             }
         }
-        val referenceId = surveyList.firstOrNull()?.referenceId ?: ""
+        val referenceId = surveyList.firstOrNull()?.referenceId ?: BLANK_STRING
 
         return SurveyUIModel(
             referenceId = referenceId,
@@ -286,7 +286,9 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private suspend fun isManualTaskCompleteActive() {
         isManualTaskCompletion.value =
-            activityUiConfigUseCase.getActivityConfig(activityId = activityConfigId)?.taskCompletion == MANUAL_TASK_COMPLETION
+            activityUiConfigUseCase.getActivityConfig(
+                activityId = taskEntity?.activityId ?: 0
+            )?.taskCompletion == MANUAL_TASK_COMPLETION
     }
 
 }

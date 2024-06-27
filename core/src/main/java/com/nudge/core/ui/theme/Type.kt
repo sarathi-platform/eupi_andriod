@@ -56,6 +56,12 @@ val defaultTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )
+val defaultSpanStyle = SpanStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)
+
 val quesOptionTextStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.Normal,
