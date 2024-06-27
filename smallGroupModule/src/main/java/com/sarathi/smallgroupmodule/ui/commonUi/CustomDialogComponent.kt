@@ -30,7 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.black100Percent
-import com.nudge.core.ui.theme.deleteButtonBg
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.greyBorder
 
 @Composable
@@ -39,6 +39,7 @@ fun CustomDialogComponent(
     message: String,
     positiveButtonTitle: String? = BLANK_STRING,
     negativeButtonTitle: String? = BLANK_STRING,
+    positiveButtonColor: Color = blueDark,
     dismissOnBackPress: Boolean? = true,
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
@@ -115,7 +116,7 @@ fun CustomDialogComponent(
                                 if (!it.isNullOrEmpty()) {
                                     CustomButton(
                                         buttonTitle = it,
-                                        buttonColor = deleteButtonBg,
+                                        buttonColor = positiveButtonColor,
                                         isArrowRequired = false,
                                         modifier = Modifier
                                             .weight(1f)

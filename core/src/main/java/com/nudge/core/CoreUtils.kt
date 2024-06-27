@@ -231,7 +231,27 @@ fun renameFile(context: Context, oldName: String, newName: String, mobileNumber:
     }
 }
 
-fun getDefaultBackUpFileName(mobileNo: String): String {
+fun getDefaultBackUpFileName(mobileNo: String, userType: String): String {
+    var fileName = LOCAL_BACKUP_FILE_NAME
+
+    if (userType != UPCM_USER)
+        fileName = fileName + SELECTION
+
+    return fileName + "_" + mobileNo + "_" + System.currentTimeMillis()
+        .toDateInMMDDYYFormat()
+}
+
+fun getDefaultImageBackUpFileName(mobileNo: String, userType: String): String {
+    var fileName = LOCAL_BACKUP__IMAGE_FILE_NAME
+
+    if (userType != UPCM_USER)
+        fileName = fileName + SELECTION
+
+    return fileName + "_" + mobileNo + "_" + System.currentTimeMillis()
+        .toDateInMMDDYYFormat()
+}
+
+/*fun getDefaultBackUpFileName(mobileNo: String): String {
     return LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
         .toDateInMMDDYYFormat()
 }
@@ -239,7 +259,7 @@ fun getDefaultBackUpFileName(mobileNo: String): String {
 fun getDefaultImageBackUpFileName(mobileNo: String): String {
     return LOCAL_BACKUP__IMAGE_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
         .toDateInMMDDYYFormat()
-}
+}*/
 
 fun compressImage(imageUri: String, activity: Context, name: String): String? {
     var filename: String? = ""
@@ -1034,12 +1054,14 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
     val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
     coreSharedPrefs.setBackupFileName(
         getDefaultBackUpFileName(
-            mobileNo
+            mobileNo,
+            coreSharedPrefs.getUserType() ?: BLANK_STRING
         )
     )
     coreSharedPrefs.setImageBackupFileName(
         getDefaultImageBackUpFileName(
-            mobileNo
+            mobileNo,
+            coreSharedPrefs.getUserType()
         )
     )
     coreSharedPrefs.setFileExported(false)

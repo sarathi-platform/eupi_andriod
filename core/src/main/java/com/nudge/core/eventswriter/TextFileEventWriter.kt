@@ -183,10 +183,20 @@ open class TextFileEventWriter : IEventWriter {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
         if (CoreSharedPrefs.getInstance(context).isFileExported()) {
                 coreSharedPrefs
-                    .setBackupFileName(getDefaultBackUpFileName(mobileNo))
+                    .setBackupFileName(
+                        getDefaultBackUpFileName(
+                            mobileNo,
+                            coreSharedPrefs.getUserType()
+                        )
+                    )
 
-                coreSharedPrefs
-                    .setImageBackupFileName(getDefaultImageBackUpFileName(mobileNo))
+            coreSharedPrefs
+                .setImageBackupFileName(
+                    getDefaultImageBackUpFileName(
+                        mobileNo,
+                        coreSharedPrefs.getUserType()
+                    )
+                )
 
             coreSharedPrefs.setFileExported(false)
         }
