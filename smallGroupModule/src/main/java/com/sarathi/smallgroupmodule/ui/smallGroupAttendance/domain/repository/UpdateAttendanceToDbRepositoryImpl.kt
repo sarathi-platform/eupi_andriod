@@ -99,6 +99,16 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun softDeleteOldAttendanceForDate(
+        finalAttendanceStateList: List<SubjectAttendanceState>,
+        selectedDate: Long
+    ) {
+        softDeleteAttendanceFromSubjectAttributeTable(
+            finalAttendanceStateList,
+            selectedDate
+        )
+    }
+
     override suspend fun removeAttendanceFromSubjectAttributeTable(
         finalAttendanceStateList: List<SubjectAttendanceState>,
         selectedDate: Long
@@ -119,5 +129,16 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
         attributeValueReferenceDao.removeAttendanceAttributeFromReferenceTable(referenceIdMap.values.map { it })
     }
 
+    override suspend fun softDeleteAttendanceFromSubjectAttributeTable(
+        finalAttendanceStateList: List<SubjectAttendanceState>,
+        selectedDate: Long
+    ) {
+        val subjectIds = finalAttendanceStateList.map { it.subjectId }
+        subjectAttributeDao.softDeleteAttendanceFromSubjectAttributeTable(
+            subjectIds, subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
+            attributeType = AttributesType.ATTRIBUTE_ATTENDANCE.attributeType,
+            date = selectedDate.toString()
+        )
+    }
 
 }

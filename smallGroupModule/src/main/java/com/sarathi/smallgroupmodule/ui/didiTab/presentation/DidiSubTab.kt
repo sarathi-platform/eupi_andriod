@@ -9,10 +9,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.IconProperties
-import com.sarathi.missionactivitytask.ui.components.LazyColumnWithVerticalPadding
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel

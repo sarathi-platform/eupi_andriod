@@ -30,4 +30,6 @@ data class ActivityConfig(
     val grantConfig: List<GrantConfigResponse>?,
     @SerializedName("formConfig")
     val formConfig: List<FormConfigResponse?>,
+    @SerializedName("taskCompletion")
+    val taskCompletion: String?,
 )

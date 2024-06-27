@@ -2,9 +2,9 @@ package com.patsurvey.nudge.activities.backup.domain.use_case
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.model.SettingOptionModel
+import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.utils.UPCM_USER
 
@@ -45,7 +45,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.EXPORT_LOG_FILE.name
             )
         )
-        if(repository.getLoggedInUserType()== UPCM_USER) {
+        if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
                     5,
@@ -55,17 +55,18 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 )
             )
         }
-        list.add(
+        // Removing this for now in Merged build, may get completely removed later.
+        /*list.add(
             SettingOptionModel(
                 6,
                 context.getString(R.string.import_data),
                 BLANK_STRING,
                 SettingTagEnum.IMPORT_DATA.name
             )
-        )
+        )*/
 
         list.add(
-                SettingOptionModel(
+            SettingOptionModel(
                     7,
                     context.getString(R.string.load_server_data),
                     BLANK_STRING,

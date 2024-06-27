@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.components
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +16,7 @@ fun CustomVerticalSpacer(
 ) {
     Spacer(
         modifier = Modifier
-            .height(dimen_10_dp)
+            .height(size)
             .fillMaxWidth()
             .then(modifier)
     )
@@ -30,7 +30,7 @@ fun CustomHorizontalSpacer(
 ) {
     Spacer(
         modifier = Modifier
-            .width(dimen_10_dp)
+            .width(size)
             .then(modifier)
     )
 }

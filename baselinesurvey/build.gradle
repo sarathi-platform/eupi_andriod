@@ -7,7 +7,7 @@ plugins {
     id 'kotlin-kapt'
 }
 
-def version = "2.0.24"
+def version = "2.0.28"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -15,7 +15,7 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 33
-        versionCode 28
+        versionCode 32
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

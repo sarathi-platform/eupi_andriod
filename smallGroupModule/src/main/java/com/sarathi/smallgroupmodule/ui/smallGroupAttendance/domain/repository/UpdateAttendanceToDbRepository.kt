@@ -21,6 +21,11 @@ interface UpdateAttendanceToDbRepository {
         selectedDate: Long
     )
 
+    suspend fun softDeleteOldAttendanceForDate(
+        finalAttendanceStateList: List<SubjectAttendanceState>,
+        selectedDate: Long
+    )
+
     suspend fun removeAttendanceFromSubjectAttributeTable(
         finalAttendanceStateList: List<SubjectAttendanceState>,
         selectedDate: Long
@@ -32,5 +37,10 @@ interface UpdateAttendanceToDbRepository {
     )
 
     suspend fun getOldRefForAttendanceAttribute(state: SubjectAttendanceState): Int
+
+    suspend fun softDeleteAttendanceFromSubjectAttributeTable(
+        finalAttendanceStateList: List<SubjectAttendanceState>,
+        selectedDate: Long
+    )
 
 }

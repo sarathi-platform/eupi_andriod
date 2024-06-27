@@ -24,7 +24,6 @@ import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -37,7 +36,7 @@ fun ButtonComponent(title: String = BLANK_STRING) {
     ) {
         Box(
             modifier = Modifier
-                .padding(end = dimen_16_dp, top = dimen_2_dp)
+                .padding(start = dimen_16_dp, end = dimen_16_dp)
                 .size(60.dp)
                 .clip(shape = CircleShape)
                 .border(

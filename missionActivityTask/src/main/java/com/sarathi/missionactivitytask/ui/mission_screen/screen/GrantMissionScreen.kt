@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.R
@@ -75,7 +76,7 @@ fun GrantMissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.missionList.value.isEmpty(),
+        isDataNotAvailable = viewModel.missionList.value.isEmpty() && !viewModel.loaderState.value.isLoaderVisible,
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
@@ -138,6 +139,10 @@ fun GrantMissionScreen(
                                     )*/
                                 }
                             )
+                            CustomVerticalSpacer()
+                        }
+                        item {
+                            CustomVerticalSpacer()
                         }
                     }
                 }

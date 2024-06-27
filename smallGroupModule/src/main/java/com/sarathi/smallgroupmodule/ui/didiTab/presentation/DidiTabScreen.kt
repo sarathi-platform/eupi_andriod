@@ -23,9 +23,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -87,7 +87,7 @@ fun DidiTabScreen(
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
-        isDataAvailable = (didiList.value.isEmpty() && !isSearchActive.value && !didiTabViewModel
+        isDataNotAvailable = (didiList.value.isEmpty() && !isSearchActive.value && !didiTabViewModel
             .loaderState.value.isLoaderVisible),
         onSearchValueChange = {
 
@@ -107,82 +107,82 @@ fun DidiTabScreen(
                     .fillMaxSize()
                     .pullRefresh(pullToRefreshState)
             ) {
-                /*if (didiTabViewModel.loaderState.value.isLoaderVisible) {
-                    PullRefreshIndicator(
-                        refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
-                        state = pullToRefreshState,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .zIndex(1f),
-                        contentColor = blueDark,
-                    )
-                }*/
-                Column(
+                /*PullRefreshIndicator(
+                    refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
+                    state = pullToRefreshState,
                     modifier = Modifier
-                        .padding(horizontal = dimen_16_dp)
-                        .padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
-                ) {
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                        modifier = Modifier.fillMaxWidth(),
+                        .align(Alignment.TopCenter)
+                        .zIndex(1f),
+                    contentColor = blueDark,
+                )*/
+                if (didiList.value.isNotEmpty() || didiTabViewModel.filteredSmallGroupList.value.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = dimen_16_dp)
+                            .padding(top = dimen_10_dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
 
-                        tabs.forEachIndexed { index, tab ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
 
-                            val count = getCount(index, didiTabViewModel)
-                            val tabName = getTabName(context, tab)
-                            TabItem(
-                                isSelected = SmallGroupCore.tabIndex.value == index,
-                                onClick = {
-                                    SmallGroupCore.tabIndex.value = index
+                            tabs.forEachIndexed { index, tab ->
+
+                                val count = getCount(index, didiTabViewModel)
+                                val tabName = getTabName(context, tab)
+                                TabItem(
+                                    isSelected = SmallGroupCore.tabIndex.value == index,
+                                    onClick = {
+                                        SmallGroupCore.tabIndex.value = index
+                                    },
+                                    text = "$tabName ($count)"
+                                )
+                            }
+
+                        }
+
+                        Column {
+                            SearchWithFilterViewComponent(
+                                placeholderString = when (SmallGroupCore.tabIndex.value) {
+                                    DidiSubTabsEnum.DidiTab.id -> "Search by didis"
+                                    DidiSubTabsEnum.SmallGroupTab.id -> "Search by small groups"
+                                    else -> "Search by didis"
                                 },
-                                text = "$tabName ($count)"
-                            )
-                        }
+                                showFilter = false,
+                                onFilterSelected = {
 
-                    }
-
-                    Column {
-                        SearchWithFilterViewComponent(
-                            placeholderString = when (SmallGroupCore.tabIndex.value) {
-                                DidiSubTabsEnum.DidiTab.id -> "Search by didis"
-                                DidiSubTabsEnum.SmallGroupTab.id -> "Search by small groups"
-                                else -> "Search by didis"
-                            },
-                            showFilter = false,
-                            onFilterSelected = {
-
-                            },
-                            onSearchValueChange = { searchQuery ->
-                                isSearchActive.value = searchQuery.isNotEmpty()
-                                didiTabViewModel.onEvent(
-                                    CommonEvents.SearchValueChangedEvent(
-                                        searchQuery,
-                                        (SmallGroupCore.tabIndex.value as Int)
+                                },
+                                onSearchValueChange = { searchQuery ->
+                                    isSearchActive.value = searchQuery.isNotEmpty()
+                                    didiTabViewModel.onEvent(
+                                        CommonEvents.SearchValueChangedEvent(
+                                            searchQuery,
+                                            (SmallGroupCore.tabIndex.value as Int)
+                                        )
                                     )
-                                )
-                            }
-                        )
-                        CustomVerticalSpacer()
-                        when (SmallGroupCore.tabIndex.value) {
-                            DidiSubTabsEnum.DidiTab.id -> {
-                                DidiSubTab(
-                                    didiTabViewModel = didiTabViewModel,
-                                    didiList = didiList.value
-                                )
-                            }
-
-                            DidiSubTabsEnum.SmallGroupTab.id -> SmallGroupSubTab(
-                                didiTabViewModel = didiTabViewModel,
-                                smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
-                                navHostController = navHostController
+                                }
                             )
+                            CustomVerticalSpacer()
+                            when (SmallGroupCore.tabIndex.value) {
+                                DidiSubTabsEnum.DidiTab.id -> {
+                                    DidiSubTab(
+                                        didiTabViewModel = didiTabViewModel,
+                                        didiList = didiList.value
+                                    )
+                                }
+
+                                DidiSubTabsEnum.SmallGroupTab.id -> SmallGroupSubTab(
+                                    didiTabViewModel = didiTabViewModel,
+                                    smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
+                                    navHostController = navHostController
+                                )
+                            }
                         }
+
+
                     }
-
-
                 }
             }
         }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -61,25 +62,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.ContentWithImage
+import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
+import com.nudge.core.ui.commonUi.ImageProperties
+import com.nudge.core.ui.commonUi.SheetHeight
+import com.nudge.core.ui.commonUi.rememberCustomDateRangePickerSheetState
+import com.nudge.core.ui.commonUi.rememberDateRangePickerBottomSheetProperties
+import com.nudge.core.ui.commonUi.rememberDateRangePickerProperties
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
-import com.sarathi.missionactivitytask.ui.components.ContentWithImage
-import com.sarathi.missionactivitytask.ui.components.CustomDateRangePickerBottomSheetComponent
 import com.sarathi.missionactivitytask.ui.components.IconProperties
-import com.sarathi.missionactivitytask.ui.components.ImageProperties
-import com.sarathi.missionactivitytask.ui.components.SheetHeight
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
-import com.sarathi.missionactivitytask.ui.components.rememberCustomDateRangePickerSheetState
-import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerBottomSheetProperties
-import com.sarathi.missionactivitytask.ui.components.rememberDateRangePickerProperties
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.PERCENTAGE_SIGN
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
 import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceEditScreen
@@ -208,7 +210,7 @@ fun SmallGroupAttendanceHistoryScreen(
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
-            isDataAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
+            isDataNotAvailable = smallGroupAttendanceHistoryViewModel.subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
                     && smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupId == 0,
             onRetry = {},
             onBottomUI = {
@@ -303,6 +305,19 @@ fun SmallGroupAttendanceHistoryScreen(
                                             readOnly = true,
                                             textStyle = defaultTextStyle,
                                             singleLine = true,
+                                            interactionSource = remember {
+                                                MutableInteractionSource()
+                                            }.also { interactionSource ->
+                                                LaunchedEffect(key1 = interactionSource) {
+                                                    interactionSource.interactions.collect {
+                                                        if (it is PressInteraction.Release) {
+                                                            scope.launch {
+                                                                sheetState.show()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             colors = OutlinedTextFieldDefaults.colors(
                                                 focusedTextColor = textColorDark,
                                                 unfocusedBorderColor = dateRangeFieldColor,
@@ -518,10 +533,11 @@ fun AttendanceSummaryCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(
+                    text =
+                    stringResource(
                         R.string.attendance_percentage_text,
                         attendancePercentage.value
-                    ) + "%",
+                    ) + PERCENTAGE_SIGN,
                     style = defaultTextStyle,
                     color = green,
                     modifier = Modifier

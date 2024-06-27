@@ -1,21 +1,23 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
@@ -34,7 +36,6 @@ fun ActivityRowCard(
         ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
             if (!isLimitContentData) {
                 onContentData(contentValue, contentKey, contentType, contentTitle)
-//                navigateToMediaPlayerScreen(navController, contentKey, contentType, contentTitle)
             } else {
                 navigateToContentDetailScreen(
                     navController,
@@ -43,8 +44,10 @@ fun ActivityRowCard(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
         LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimen_16_dp)
         ) {
             itemsIndexed(
                 items = activities
@@ -58,7 +61,7 @@ fun ActivityRowCard(
                     totalCount = activity.taskCount,
                     index = index,
                     isDividerVisible = index != activities.lastIndex,
-                    painter = painterResource(id = R.drawable.ic_mission_inprogress)
+                    painter = getActivityIcon(index = index)
                 ) {
                     navigateToTaskScreen(
                         navController,
@@ -67,14 +70,21 @@ fun ActivityRowCard(
                         activityName = activity.description
                     )
                 }
-
-
+            }
+            item {
+                CustomVerticalSpacer(size = dimen_20_dp)
             }
         }
     }
 
 }
 
+@Composable
+private fun getActivityIcon(index: Int): Painter {
+    if (index == 0) {
+        return painterResource(id = R.drawable.ic_receipt_icon)
+    }
+    return painterResource(id = R.drawable.ic_disbursement_icon)
+}
 
 data class BasicContent(val contentType: String, val contentTitle: String)
-data class GrantStep(val boxTittle: String, val boxSubTitle: String)

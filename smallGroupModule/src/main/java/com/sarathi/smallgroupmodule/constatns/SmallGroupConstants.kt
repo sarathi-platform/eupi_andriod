@@ -7,4 +7,6 @@ object SmallGroupConstants {
 
     const val HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE = 2
 
+    const val PERCENTAGE_SIGN = "%"
+
 }

@@ -16,11 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.BasicTextWithIconComponent
-import com.sarathi.missionactivitytask.ui.components.LazyColumnWithVerticalPadding
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceHistoryScreen
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.theme.blueDark

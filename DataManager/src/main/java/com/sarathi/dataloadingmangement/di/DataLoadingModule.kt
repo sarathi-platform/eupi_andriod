@@ -35,6 +35,7 @@ import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -51,6 +52,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
@@ -58,6 +60,7 @@ import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.DeleteAllDataRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
@@ -89,6 +92,8 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
@@ -690,17 +695,19 @@ class DataLoadingModule {
         surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
         formEventWriterUseCase: FormEventWriterUseCase,
         documentEventWriterUseCase: DocumentEventWriterUseCase,
+        attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
         coreSharedPrefs: CoreSharedPrefs
 
     ): RegenerateGrantEventUsecase {
         return RegenerateGrantEventUsecase(
             regenerateGrantEventRepositoryImpl = regenerateGrantEventRepositoryImpl,
-            matStatusEventWriterUseCase,
-            fetchDataUseCase,
-            surveyAnswerEventWriterUseCase,
-            formEventWriterUseCase,
-            documentEventWriterUseCase,
-            coreSharedPrefs
+            matStatusEventWriterUseCase = matStatusEventWriterUseCase,
+            fetchDataUseCase = fetchDataUseCase,
+            surveyAnswerEventWriterUseCase = surveyAnswerEventWriterUseCase,
+            formEventWriterUseCase = formEventWriterUseCase,
+            documentEventWriterUseCase = documentEventWriterUseCase,
+            attendanceEventWriterUseCase = attendanceEventWriterUseCase,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
@@ -774,4 +781,50 @@ class DataLoadingModule {
             attributeValueReferenceDao = attributeValueReferenceDao
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideDataDeleteRepository(
+        nudgeGrantDatabase: NudgeGrantDatabase,
+        coreSharedPrefs: CoreSharedPrefs
+    ): DeleteAllDataRepositoryImpl {
+        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataDeleteUsecase(
+        deleteAllDataRepositoryImpl: DeleteAllDataRepositoryImpl
+    ): DeleteAllGrantDataUseCase {
+        return DeleteAllGrantDataUseCase(deleteAllDataRepositoryImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttendanceEventWriterUseCase(
+        attendanceEventWriterRepository: AttendanceEventWriterRepository,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): AttendanceEventWriterUseCase {
+        return AttendanceEventWriterUseCase(
+            attendanceEventWriterRepository,
+            eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttendanceEventWriterRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao
+    ): AttendanceEventWriterRepository {
+        return AttendanceEventWriterRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            smallGroupDidiMappingDao = smallGroupDidiMappingDao,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao
+        )
+    }
+
 }

@@ -19,7 +19,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +29,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.greenOnline
@@ -56,13 +56,10 @@ fun TaskDisbursementCard(
     status: String = StatusEnum.COMPLETED.name,
     modifier: Modifier,
 ) {
-    androidx.compose.material3.Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 30.dp
-        ), modifier = Modifier
+    BasicCardView(
+        modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
                 color = if (status == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,

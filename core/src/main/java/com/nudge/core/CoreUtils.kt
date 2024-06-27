@@ -31,6 +31,7 @@ import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
@@ -44,17 +45,21 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+
+private const val TAG = "CoreUtils"
 
 fun Long.toDate(
     dateFormat: Long = System.currentTimeMillis(),
@@ -92,8 +97,17 @@ fun Long.toDateString(): String {
     val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
-
-
+fun Long.toDateInMonthString(): String {
+    val dateTime = Date(this)
+    val format = SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault())
+    return format.format(dateTime)
+}
+fun String.toInMillisec(format: String): Long {
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val date = dateFormat.parse(this)
+    val millis = date?.time
+    return millis ?: 0
+}
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 
 fun String.getSizeInLong() = this.toByteArray().size.toLong()
@@ -355,8 +369,7 @@ private fun calculateInSampleSize(
     }
     return inSampleSize
 }
-
-suspend fun exportDbFile(appContext: Context, applicationID: String, databaseName: String): Uri? {
+ suspend fun exportDbFile(appContext: Context, applicationID: String,databaseName:String): Uri? {
     var backupDB: File? = null
     try {
         val sd = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -383,6 +396,21 @@ suspend fun exportDbFile(appContext: Context, applicationID: String, databaseNam
 
     return backupDB?.let { uriFromFile(appContext, it, applicationID) }
 
+}
+
+suspend fun exportDbFiles(
+    appContext: Context,
+    applicationID: String,
+    databaseNames: List<String>
+): List<Pair<String, Uri?>> {
+    val uriList = ArrayList<Pair<String, Uri?>>()
+    databaseNames.forEach { dbName ->
+        val uri = exportDbFile(appContext, applicationID, dbName)
+        uri?.let {
+            uriList.add(Pair(dbName, it))
+        }
+    }
+    return uriList
 }
 
 fun getAllFilesInDirectory(
@@ -500,10 +528,64 @@ fun exportOldData(
             onExportSuccess(zipFileUri)
 
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            CoreLogger.e(
+                tag = TAG,
+                msg = "exportOldData: exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
         }
     }
 
+}
+
+fun exportDatabase(
+    appContext: Context,
+    applicationID: String,
+    mobileNo: String,
+    databaseName: List<String>,
+    userName: String,
+    moduleName: String,
+    onExportSuccess: (zipUri: Uri) -> Unit
+) {
+    CoreDispatchers.ioCoroutineScope {
+        try {
+
+            val dbUrisList = exportDbFiles(appContext, applicationID, databaseName)
+            val zipFileDirectory = appContext
+                .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+
+            val zipFileName =
+                "${userName}_${mobileNo}_${SARATHI}_Database_${moduleName}_${System.currentTimeMillis()}.zip"
+            val zipFileUri =
+                uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
+
+            ZipManager.zip(
+                dbUrisList,
+                zipFileUri,
+                appContext
+            )
+            delay(100)
+            if (dbUrisList.map { it.second }.all { it != null }) {
+                copyZipFile(
+                    appContext,
+                    zipFileUri,
+                    zipFileName,
+                    mobileNo,
+                    userName
+                )
+            }
+            onExportSuccess(zipFileUri)
+
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = TAG,
+                msg = "exportDatabase: exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
+        }
+    }
 
 }
 
@@ -791,13 +873,13 @@ fun moduleNameAccToLoggedInUser(loggedInUser:String):String{
     return if(loggedInUser == UPCM_USER) BASELINE else SELECTION
 }
 
-fun String.getDateInMillis(): Long {
+fun String.getDateInMillis(pattern: String = "yyyy-MM-dd"): Long {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val localDate = LocalDate.parse(this)
         val zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault())
         zonedDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
         val date = dateFormat.parse(this)
         date?.time ?: 0L
     }
@@ -931,6 +1013,23 @@ fun getCurrentTimeInMillis(): Long {
     return System.currentTimeMillis()
 }
 
+fun formatToIndianRupee(amount: String): String {
+    try {
+        val formatter = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
+        val formattedAmount = formatter.format(amount.toInt())
+        return if (formattedAmount.contains(".00")) {
+            formattedAmount.replace(".00", BLANK_STRING)
+        } else {
+            formattedAmount
+        }
+    } catch (ex: Exception) {
+        CoreAppDetails.getContext()
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+        return amount
+    }
+
+}
+
 fun updateCoreEventFileName(context: Context,mobileNo: String){
     val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
     coreSharedPrefs.setBackupFileName(
@@ -944,4 +1043,29 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
         )
     )
     coreSharedPrefs.setFileExported(false)
+}
+
+const val YYYY_MM_DD = "yyyy-MM-dd"
+
+fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
+    if (this == null)
+        return BLANK_STRING
+
+    val formatter = SimpleDateFormat(pattern)
+    return formatter.format(Date(this))
+}
+
+fun String.getDateInMillis(): Long {
+    val dateSplit = this.split("/")
+    val calendar: Calendar = Calendar.getInstance()
+    calendar.set(dateSplit[2].toInt(), dateSplit[1].toInt(), dateSplit[0].toInt())
+    return calendar.timeInMillis
+}
+
+fun Boolean.getAttendanceFromBoolean(): String {
+    return if (this) ATTENDANCE_PRESENT else ATTENDANCE_ABSENT
+}
+
+fun String?.getBooleanValueFromAttendance(): Boolean {
+    return this?.equals(ATTENDANCE_PRESENT) ?: false
 }

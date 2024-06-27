@@ -11,36 +11,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
-import com.nudge.core.ui.theme.dimen_30_dp
+import com.nudge.core.ui.theme.dimen_27_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.largeTextStyle
-import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
+import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
@@ -62,20 +60,17 @@ fun BasicMissionCard(
     onPrimaryClick: () -> Unit
 ) {
     BasicCardView(
-        cardElevation = CardDefaults.cardElevation(defaultElevation = dimen_10_dp),
         modifier = Modifier
             .clickable {
                 onPrimaryClick()
             }
             .fillMaxWidth()
-            .padding(dimen_16_dp)
-            .clip(RoundedCornerShape(dimen_6_dp))
+            .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
                 color = statusColor(status),
                 shape = RoundedCornerShape(dimen_6_dp)
             )
-            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -99,14 +94,14 @@ fun BasicMissionCard(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimen_30_dp, vertical = dimen_16_dp)
+                        .padding(start = dimen_50_dp, end = dimen_16_dp)
                 ) {
                     LinearProgressBarComponent(
                         progress = pendingCount.toFloat() / totalCount,
                     )
                     Text(
                         text = "$pendingCount / $totalCount $countStatusText",
-                        style = smallTextStyleMediumWeight2.copy(color = blueDark),
+                        style = smallTextStyle.copy(color = blueDark),
                     )
                 }
             }
@@ -118,6 +113,8 @@ fun BasicMissionCard(
                         onPrimaryClick()
                     }
                 )
+            } else {
+                Spacer(Modifier.height(dimen_18_dp))
             }
         }
     }
@@ -140,26 +137,29 @@ fun ContentBody(title: String, prefixIcon: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(
+                start = dimen_16_dp,
+                end = dimen_16_dp,
+                top = dimen_16_dp,
+                bottom = dimen_5_dp
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = prefixIcon),
+            tint = blueDark,
             contentDescription = null,  // Ideally, provide meaningful descriptions
-            modifier = Modifier.size(dimen_24_dp)
+            modifier = Modifier.size(dimen_27_dp)
         )
 
         Text(
             text = title,
-            style = largeTextStyle.copy(color = blueDark),
+            style = largeTextStyle.copy(color = blueDark).copy(fontSize = 20.sp),
             modifier = Modifier
                 .padding(start = dimen_5_dp)
                 .weight(weight_100_percent),
             overflow = TextOverflow.Ellipsis
         )
-
-        Spacer(modifier = Modifier.width(dimen_5_dp))
-
     }
 }
 

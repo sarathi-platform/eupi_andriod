@@ -21,15 +21,6 @@ fun HomeUserScreen(
     onSettingIconClick: () -> Unit
 ) {
     if(prefRepo.getLoggedInUserType().equals(UPCM_USER)) {
-//        GrantMissionScreen(
-//            navController = navController,
-//            viewModel = hiltViewModel(),
-//            onSettingClick = onSettingIconClick
-//        ) {
-//
-//        }
-        //TODO Remove after test
-
         DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
         if (prefRepo.isUserBPC()) {

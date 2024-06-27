@@ -91,6 +91,8 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.nudge.core.enums.EventName
+import com.nudge.core.utils.state.DialogState
+import com.nudge.core.utils.state.rememberDialogState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -1298,6 +1300,7 @@ fun ShowCustomDialog(
     message: String,
     positiveButtonTitle: String? = BLANK_STRING,
     negativeButtonTitle: String? = BLANK_STRING,
+    dialogState: DialogState = rememberDialogState(),
     dismissOnBackPress: Boolean? = true,
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
@@ -1422,6 +1425,9 @@ fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
         } catch (ex: Exception) {
             BaselineLogger.e("ExportImportViewModel", "openShareSheet :${ex.message}", ex)
         }
+    }else{
+       showCustomToast(BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(R.string.no_data_available_at_the_moment))
+
     }
 
 }

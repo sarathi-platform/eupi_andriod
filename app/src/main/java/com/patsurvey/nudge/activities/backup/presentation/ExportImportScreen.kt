@@ -115,22 +115,29 @@ fun ExportImportScreen(
             positiveButtonTitle = stringResource(id = R.string.yes_text),
             negativeButtonTitle = stringResource(id = R.string.option_no),
             onNegativeButtonClick = {
-                BaselineLogger.d("ExportImportScreen","Load Server Data Dialog No Click")
-                viewModel.showLoadConfirmationDialog.value =false
-                                    },
+                BaselineLogger.d("ExportImportScreen", "Load Server Data Dialog No Click")
+                viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                viewModel.showLoadConfirmationDialog.value = false
+            },
             onPositiveButtonClick = {
-                BaselineLogger.d("ExportImportScreen","Load Server Data Dialog YES Click")
-                viewModel.exportLocalDatabase(isNeedToShare = false){
+                BaselineLogger.d("ExportImportScreen", "Load Server Data Dialog YES Click")
+                viewModel.exportLocalDatabase(isNeedToShare = false) {
                     viewModel.clearLocalDatabase {
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                         viewModel.showLoadConfirmationDialog.value = false
                         if (viewModel.loggedInUserType.value == UPCM_USER) {
-                            navController.navigate(route = NudgeNavigationGraph.HOME) {
+                            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                                launchSingleTop = true
+//                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
+//                                    inclusive = true
+//                                }
+                            }
+                            /*navController.navigate(route = NudgeNavigationGraph.HOME) {
                                 launchSingleTop = true
                                 popUpTo(AuthScreen.START_SCREEN.route) {
                                     inclusive = true
                                 }
-                            }
+                            }*/
                         } else {
                             when (navController.graph.route) {
                                 NudgeNavigationGraph.ROOT -> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)

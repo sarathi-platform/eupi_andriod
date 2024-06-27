@@ -15,14 +15,15 @@ import androidx.compose.material.BottomAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -39,10 +40,14 @@ import com.sarathi.surveymanager.ui.screen.listToCommaSeparatedString
 fun SubmitPhysicalFormScreen(
     navController: NavController = rememberNavController(),
     viewModel: SubmitPhysicalFormScreenViewModel,
-    activityId: Int
+    activityId: Int,
+    taskIdList: String
 ) {
     val outerState = rememberLazyListState()
-    val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+
+        viewModel.setTotalDidi(activityId = activityId)
+    }
     Scaffold(modifier = Modifier.fillMaxWidth(),
         containerColor = white,
         topBar = {},
@@ -70,11 +75,16 @@ fun SubmitPhysicalFormScreen(
                         isArrowRequired = false,
                         onClick = {
                             viewModel.saveMultiImage(activityId)
-                            viewModel.updateFromTable(activityId = activityId)
-                            navigateToActivityCompletionScreen(
-                                navController,
-                                context.getString(R.string.form_e_submitted_successfully)
-                            )
+                            viewModel.updateFromTable(
+                                activityId = activityId,
+                                taskIdList,
+                                onCompleted = {
+                                    navigateToActivityCompletionScreen(
+                                        navController,
+                                        "Form E  generated successfully for ${viewModel.totalDidi.value} didis"
+                                    )
+                                })
+
                         })
                 }
             }
@@ -86,6 +96,9 @@ fun SubmitPhysicalFormScreen(
                     .padding(dimen_16_dp)
             ) {
                 Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimen_5_dp),
                     text = stringResource(R.string.attach_physical_form_e_signed_sealed),
                     style = largeTextStyle
                 )
