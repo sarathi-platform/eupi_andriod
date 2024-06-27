@@ -34,11 +34,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.nudge.core.ui.events.DialogEvents
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
 import com.sarathi.missionactivitytask.ui.components.IconProperties
-import com.sarathi.missionactivitytask.ui.components.LazyColumnWithVerticalPadding
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent

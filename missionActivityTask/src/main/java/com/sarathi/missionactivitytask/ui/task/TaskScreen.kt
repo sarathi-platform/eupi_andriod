@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.greenOnline
@@ -40,7 +41,6 @@ import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
 import com.sarathi.missionactivitytask.utils.StatusEnum

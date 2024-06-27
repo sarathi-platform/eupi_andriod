@@ -37,6 +37,7 @@ import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -59,7 +60,6 @@ import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel

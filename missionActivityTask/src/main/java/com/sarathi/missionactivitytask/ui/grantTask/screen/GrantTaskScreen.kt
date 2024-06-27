@@ -29,11 +29,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
@@ -47,7 +49,6 @@ import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummarySc
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
@@ -177,8 +178,11 @@ fun GrantTaskScreen(
                         viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                             item {
                                 Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = dimen_6_dp)
                                 ) {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_vo_name_icon),
@@ -195,10 +199,14 @@ fun GrantTaskScreen(
                                     )
                                 }
                             }
+                            item {
+                                CustomVerticalSpacer()
+                            }
                             itemsIndexed(
                                 items = itemsInCategory
                             ) { _, task ->
                                 TaskRowView(viewModel, navController, task)
+                                CustomVerticalSpacer()
                             }
                             item {
                                 CustomVerticalSpacer(size = dimen_20_dp)
@@ -212,6 +220,7 @@ fun GrantTaskScreen(
                                 items = viewModel.filterList.value.entries.toList()
                             ) { _, task ->
                                 TaskRowView(viewModel, navController, task)
+                                CustomVerticalSpacer()
                             }
                             item {
                                 CustomVerticalSpacer(size = dimen_20_dp)

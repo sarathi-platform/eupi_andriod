@@ -30,6 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.black100Percent
+import com.nudge.core.ui.theme.deleteButtonBg
 import com.nudge.core.ui.theme.greyBorder
 
 @Composable
@@ -112,10 +113,10 @@ fun CustomDialogComponent(
                             Spacer(modifier = Modifier.width(8.dp))
                             positiveButtonTitle?.let {
                                 if (!it.isNullOrEmpty()) {
-                                    ButtonPositive(
+                                    CustomButton(
                                         buttonTitle = it,
+                                        buttonColor = deleteButtonBg,
                                         isArrowRequired = false,
-                                        isActive = true,
                                         modifier = Modifier
                                             .weight(1f)
                                             .padding(vertical = 2.dp)
@@ -124,7 +125,6 @@ fun CustomDialogComponent(
                                     }
                                 }
                             }
-
                         }
                     }
                 }

@@ -34,9 +34,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
@@ -108,10 +108,8 @@ fun CollapsibleCard(
                     .fillMaxWidth()
                     .height(dimen_10_dp)
             )
-            Card(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = dimen_30_dp
-                ), modifier = Modifier
+            BasicCardView(
+                modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
             ) {

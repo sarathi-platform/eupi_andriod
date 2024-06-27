@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.components
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -35,7 +36,6 @@ import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
-import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
 fun BasicCardView(
@@ -112,7 +112,7 @@ fun ContentWithImage(
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageViewComponent(
+            CommonCircularImageViewComponent(
                 modifier = Modifier
                     .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
                     .clip(CircleShape)
@@ -162,7 +162,7 @@ fun ImageCardWithBottomContent(
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CircularImageViewComponent(
+                CommonCircularImageViewComponent(
                     modifier = Modifier
                         .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
                         .clip(CircleShape)

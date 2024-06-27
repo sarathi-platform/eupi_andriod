@@ -95,4 +95,6 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("com.github.wwdablu:SimplyPDF:2.0.0")
 
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
 }

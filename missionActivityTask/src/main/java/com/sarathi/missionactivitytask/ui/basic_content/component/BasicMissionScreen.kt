@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -38,7 +39,6 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton

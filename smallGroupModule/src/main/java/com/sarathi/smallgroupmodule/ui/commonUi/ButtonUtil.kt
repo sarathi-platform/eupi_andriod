@@ -173,6 +173,74 @@ fun ButtonPositive(
 }
 
 @Composable
+fun CustomButton(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    isArrowRequired: Boolean = true,
+    isLeftArrow: Boolean = false,
+    textColor: Color = Color.White,
+    buttonColor: Color = blueDark,
+    iconTintColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(buttonColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+
+            ) {
+                onClick()
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (isArrowRequired && isLeftArrow) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Positive Button",
+                    tint = iconTintColor,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
+                )
+            }
+            Text(
+                text = buttonTitle,
+                color = textColor,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+            if (isArrowRequired && !isLeftArrow) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Positive Button",
+                    tint = iconTintColor,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, left = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun ButtonOutline(
     modifier: Modifier = Modifier,
     buttonTitle: String = BLANK_STRING,

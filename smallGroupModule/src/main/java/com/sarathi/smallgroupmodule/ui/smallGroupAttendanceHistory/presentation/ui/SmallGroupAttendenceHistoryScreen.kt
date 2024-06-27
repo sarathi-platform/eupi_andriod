@@ -62,7 +62,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.ContentWithImage
 import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
+import com.nudge.core.ui.commonUi.ImageProperties
 import com.nudge.core.ui.commonUi.SheetHeight
 import com.nudge.core.ui.commonUi.rememberCustomDateRangePickerSheetState
 import com.nudge.core.ui.commonUi.rememberDateRangePickerBottomSheetProperties
@@ -72,11 +75,8 @@ import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
-import com.sarathi.missionactivitytask.ui.components.ContentWithImage
 import com.sarathi.missionactivitytask.ui.components.IconProperties
-import com.sarathi.missionactivitytask.ui.components.ImageProperties
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
