@@ -23,13 +23,12 @@ import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 import com.nudge.syncmanager.utils.WORKER_ARG_BATCH_COUNT
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import com.nudge.syncmanager.workers.SyncUploadWorker
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class EventObserverInterfaceImpl @Inject constructor(
     val eventsDao: EventsDao,
-    val eventDependencyDao: EventDependencyDao,
+    private val eventDependencyDao: EventDependencyDao,
     val eventStatusDao: EventStatusDao,
     private val workManager: WorkManager
 ) : EventObserverInterface {
@@ -72,7 +71,7 @@ class EventObserverInterfaceImpl @Inject constructor(
         context: Context,
         networkSpeed: NetworkSpeed,
         syncType: Int
-    ): UUID {
+    ) {
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -97,10 +96,9 @@ class EventObserverInterfaceImpl @Inject constructor(
             PRODUCER_WORKER_TAG,
             ExistingPeriodicWorkPolicy.UPDATE, uploadWorkRequest
         )
-        return uploadWorkRequest.id
     }
 
-    fun getBatchSize(networkSpeed: NetworkSpeed): Int {
+    private fun getBatchSize(networkSpeed: NetworkSpeed): Int {
         return when (networkSpeed) {
             NetworkSpeed.EXCELLENT -> return 20
             NetworkSpeed.GOOD -> return 15

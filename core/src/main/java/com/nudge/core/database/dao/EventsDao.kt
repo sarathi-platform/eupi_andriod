@@ -12,11 +12,9 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.EventsTable
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
-import com.nudge.core.model.response.EventConsumerResponse
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
 import com.nudge.core.utils.SyncType
-import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 @Dao
@@ -150,6 +148,41 @@ interface EventsDao {
             else -> {
                 emptyList<Events>()
             }
+        }
+    }
+
+
+    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND type NOT LIKE '%image%'")
+    fun getTotalPendingDataEventCount(status: List<String>, mobileNumber: String): Int
+
+    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND type LIKE '%image%'")
+    fun getTotalPendingImageEventCount(status: List<String>, mobileNumber: String): Int
+
+    @Transaction
+    fun getSyncPendingEventCount(status: List<String>, mobileNumber: String, syncType: Int): Int {
+        return when (syncType) {
+            SyncType.SYNC_ALL.ordinal -> {
+                getTotalPendingEventCount(
+                    status,
+                    mobileNumber
+                )
+            }
+
+            SyncType.SYNC_ONLY_DATA.ordinal -> {
+                getTotalPendingDataEventCount(
+                    status,
+                    mobileNumber
+                )
+            }
+
+            SyncType.SYNC_ONLY_IMAGES.ordinal -> {
+                getTotalPendingImageEventCount(
+                    status,
+                    mobileNumber
+                )
+            }
+
+            else -> 0
         }
     }
 }

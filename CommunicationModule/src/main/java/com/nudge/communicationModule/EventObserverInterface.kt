@@ -4,7 +4,6 @@ import android.content.Context
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
-import java.util.UUID
 
 interface EventObserverInterface {
 
@@ -22,7 +21,7 @@ interface EventObserverInterface {
         context: Context,
         networkSpeed: NetworkSpeed,
         syncType: Int
-    ): UUID
+    )
 
     suspend fun getEvent():List<Events>
 }

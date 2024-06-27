@@ -17,13 +17,13 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
 import com.nudge.core.getBatchSize
 import com.nudge.core.json
+import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
-import com.nudge.syncmanager.SyncApiRepository
-import com.nudge.core.model.request.EventConsumerRequest
-import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.core.utils.SyncType
+import com.nudge.syncmanager.SyncApiRepository
+import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -63,7 +63,11 @@ class SyncUploadWorker @AssistedInject constructor(
             CoreLogger.d(applicationContext, TAG, "doWork: totalPendingEventCount: $totalPendingEventCount")
 
             while (totalPendingEventCount > 0) {
-                mPendingEventList = syncApiRepository.getPendingEventFromDb(batchLimit, retryCount)
+                mPendingEventList = syncApiRepository.getPendingEventFromDb(
+                    batchLimit = batchLimit,
+                    retryCount = retryCount,
+                    syncType = selectedSyncType
+                )
 
                 if (mPendingEventList.isEmpty()) {
                     return Result.success(
@@ -95,7 +99,11 @@ class SyncUploadWorker @AssistedInject constructor(
                 }
             }
 
-            fetchConsumerStatus(syncApiRepository, syncApiRepository.getLoggedInMobileNumber())
+            fetchConsumerStatus(
+                context = applicationContext,
+                syncApiRepository = syncApiRepository,
+                mobileNumber = syncApiRepository.getLoggedInMobileNumber()
+            )
             CoreLogger.d(applicationContext, TAG, "doWork: success totalPendingEventCount: $totalPendingEventCount")
             Result.success(workDataOf(
                 WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
@@ -113,28 +121,46 @@ class SyncUploadWorker @AssistedInject constructor(
 
         if (eventSuccessList.isNotEmpty()) {
             CoreLogger.d(applicationContext, TAG, "doWork: eventSuccessList List: ${eventSuccessList.json()}")
-            syncApiRepository.updateSuccessEventStatus(eventSuccessList)
+            syncApiRepository.updateSuccessEventStatus(
+                context = applicationContext,
+                eventList = eventSuccessList
+            )
         }
 
         if (eventFailedList.isNotEmpty()) {
             CoreLogger.d(applicationContext, TAG, "doWork: eventFailedList List: ${eventFailedList.json()}")
-            syncApiRepository.updateFailedEventStatus(eventFailedList)
+            syncApiRepository.updateFailedEventStatus(
+                context = applicationContext,
+                eventList = eventFailedList
+            )
         }
     }
 
     private fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
-        syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION))
+        syncApiRepository.updateFailedEventStatus(
+            context = applicationContext,
+            eventList = createEventResponseList(
+                mPendingEventList,
+                RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
+            )
+        )
     }
 
     private fun handleNullApiResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Getting API response Null")
-        syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, RESPONSE_DATA_IS_NULL_EXCEPTION))
+        syncApiRepository.updateFailedEventStatus(
+            context = applicationContext,
+            eventList = createEventResponseList(mPendingEventList, RESPONSE_DATA_IS_NULL_EXCEPTION)
+        )
     }
 
     private fun handleFailedApiResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Getting API Failed")
-        syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, RESPONSE_STATUS_FAILED_EXCEPTION))
+        syncApiRepository.updateFailedEventStatus(
+            context = applicationContext,
+            eventList = createEventResponseList(mPendingEventList, RESPONSE_STATUS_FAILED_EXCEPTION)
+        )
     }
 
     private fun handleException(ex: Exception, mPendingEventList: List<Events>): Result {
@@ -144,7 +170,13 @@ class SyncUploadWorker @AssistedInject constructor(
              Result.retry()
         } else {
             if (mPendingEventList.isNotEmpty()) {
-                syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, ex.message ?: SOMETHING_WENT_WRONG))
+                syncApiRepository.updateFailedEventStatus(
+                    context = applicationContext,
+                    eventList = createEventResponseList(
+                        mPendingEventList,
+                        ex.message ?: SOMETHING_WENT_WRONG
+                    )
+                )
             }
              Result.failure(workDataOf(
                  WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Exception: ${ex.message}"
@@ -179,7 +211,11 @@ fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<Sy
 }
 
 @SuppressLint("SimpleDateFormat")
-suspend fun fetchConsumerStatus(syncApiRepository:SyncApiRepository, mobileNumber:String){
+suspend fun fetchConsumerStatus(
+    context: Context,
+    syncApiRepository: SyncApiRepository,
+    mobileNumber: String
+) {
     val date= SimpleDateFormat("yyyy-MM-dd").format(Date())
     val eventConsumerRequest = EventConsumerRequest(
         requestId = BLANK_STRING,
@@ -191,7 +227,7 @@ suspend fun fetchConsumerStatus(syncApiRepository:SyncApiRepository, mobileNumbe
     if(consumerAPIResponse.status == SUCCESS){
             consumerAPIResponse.data?.let {
                 if(it.isNotEmpty()){
-                    syncApiRepository.updateEventConsumerStatus(it)
+                    syncApiRepository.updateEventConsumerStatus(context = context, eventList = it)
                 }
             }
     }

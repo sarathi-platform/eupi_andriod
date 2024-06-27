@@ -22,12 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.nrlm.baselinesurvey.ui.theme.dimen_0_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_17_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_2_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
@@ -44,17 +45,12 @@ import com.patsurvey.nudge.utils.roundOffDecimalFloat
 @Composable
 fun EventTypeCard(
     title: String,
-    totalEventCount:Int,
-    successEventCount:Int,
     syncButtonTitle:String,
-    isRefreshRequired:Boolean,
+    progress: Float? = 0f,
+    isProgressBarVisible: Boolean,
     onCardClick: () -> Unit,
     onSyncButtonClick:() -> Unit
 ) {
-    var progState=successEventCount.toFloat()/totalEventCount
-    if(totalEventCount == 0 && successEventCount ==0){
-        progState = 0f
-    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,20 +78,21 @@ fun EventTypeCard(
                     bottom.linkTo(circularProgressBar.bottom)
                 }
             )
-            if(isRefreshRequired) {
+            if (isProgressBarVisible) {
                 Box(
                     modifier = Modifier
                         .height(dimen_40_dp)
                         .padding(dimen_5_dp)
-                        .constrainAs(circularProgressBar){
-                        end.linkTo(parent.end)
-                        top.linkTo(parent.top)
-                    }
+                        .constrainAs(circularProgressBar) {
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                        }
                 ) {
                     CircularProgressIndicator(
                         color = blueDark,
+                        strokeWidth = dimen_2_dp,
                         modifier = Modifier
-                            .size(28.dp)
+                            .size(dimen_18_dp)
                             .align(Alignment.Center)
                     )
                 }
@@ -103,13 +100,13 @@ fun EventTypeCard(
 
             LinearProgressIndicator(
                 progress = animateFloatAsState(
-                    targetValue = progState,
+                    targetValue = progress ?: 0f,
                     animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = BLANK_STRING
                 ).value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = dimen_20_dp)
-                    .height(dimen_20_dp)
+                    .height(dimen_24_dp)
                     .constrainAs(progressBar) {
                         top.linkTo(titleText.bottom)
                         start.linkTo(parent.start)
@@ -119,18 +116,19 @@ fun EventTypeCard(
             )
 
             Text(
-                text = "${roundOffDecimalFloat(progState*100)}%",
+                text = "${roundOffDecimalFloat((progress ?: 0f) * 100)}%",
                 style = syncItemCountStyle,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top =dimen_17_dp).constrainAs(countText){
+                    .padding(top = dimen_20_dp)
+                    .constrainAs(countText) {
                         top.linkTo(titleText.bottom)
                         end.linkTo(progressBar.end)
                         start.linkTo(parent.start)
                     }
             )
-            if(syncButtonTitle.isNotEmpty() && totalEventCount >0) {
+            if (syncButtonTitle.isNotEmpty()) {
 
                 Button(
                     onClick = {
@@ -162,9 +160,8 @@ fun EventTypeCard(
 fun CommonSyncScreenPreview() {
     EventTypeCard(
         title = "Sync Data",
-        totalEventCount = 5,
-        successEventCount = 0,
-        isRefreshRequired = true,
+        progress = 1f,
+        isProgressBarVisible = true,
         onCardClick = {},
         syncButtonTitle = "Sync Data",
         onSyncButtonClick = {}
