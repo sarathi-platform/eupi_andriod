@@ -38,7 +38,7 @@ import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeReposi
 import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepositoryImpl
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetSyncEventsUseCase
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetUserDetailsSyncUseCase
-import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncHomeUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -151,8 +151,8 @@ object UseCaseModule {
     @Singleton
     fun provideSyncHomeUseCase(
         repository: SyncHomeRepository
-    ):SyncHomeUseCase{
-        return SyncHomeUseCase(
+    ): SyncEventDetailUseCase {
+        return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
             getSyncEventsUseCase = GetSyncEventsUseCase(repository)
         )

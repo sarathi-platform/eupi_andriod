@@ -32,7 +32,8 @@ class SyncApiRepository @Inject constructor(
         return apiService.syncEvent(eventRequest)
     }
 
-    suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest): ApiResponseModel<List<SyncEventResponse>> {
+    suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest)
+            : ApiResponseModel<List<SyncEventResponse>> {
         return apiService.syncConsumerStatusApi(eventConsumerRequest)
     }
 

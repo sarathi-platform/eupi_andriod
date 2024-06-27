@@ -89,7 +89,7 @@ fun SyncHomeScreen(
     }
 
     DisposableEffect(key1 = lifeCycleOwner) {
-        val eventListLive = viewModel.syncHomeUseCase.getSyncEventsUseCase.getTotalEvents()
+        val eventListLive = viewModel.syncEventDetailUseCase.getSyncEventsUseCase.getTotalEvents()
         eventListLive.observe(lifeCycleOwner) { eventList ->
 
             totalDataEventCount.value = eventList.filter {

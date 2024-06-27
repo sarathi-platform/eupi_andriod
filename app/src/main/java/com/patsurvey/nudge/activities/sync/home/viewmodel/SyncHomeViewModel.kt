@@ -16,7 +16,7 @@ import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.MyApplication
-import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncHomeUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncHomeViewModel @Inject constructor(
-    val syncHomeUseCase: SyncHomeUseCase,
+    val syncEventDetailUseCase: SyncEventDetailUseCase,
     val prefRepo: PrefBSRepo
 ) : BaseViewModel()  {
     val selectedSyncType = mutableIntStateOf(SyncType.SYNC_ALL.ordinal)
