@@ -138,11 +138,11 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideSyncHomeRepository(
-        prefRepo: PrefRepo,
-        eventsDao: EventsDao
+        corePrefRepo: CorePrefRepo,
+        eventsDao: EventsDao,
     ): SyncHomeRepository {
         return SyncHomeRepositoryImpl(
-            prefRepo = prefRepo,
+            corePrefRepo = corePrefRepo,
             eventsDao = eventsDao
         )
     }

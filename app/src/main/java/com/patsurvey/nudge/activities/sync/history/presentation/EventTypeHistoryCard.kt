@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.sync.history.presentation
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.nrlm.baselinesurvey.ui.theme.dimen_0_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
@@ -43,10 +41,6 @@ fun EventTypeHistoryCard(
             modifier = Modifier
                 .background(Color.White)
                 .padding(dimen_8_dp)
-                .border(
-                    width = dimen_0_dp,
-                    color = Color.Transparent,
-                )
         ) {
             val (titleText,countText) = createRefs()
             Text(

@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.theme
 
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 val defaultCardElevation = 10.dp
 val roundedCornerRadiusDefault = 6.dp
@@ -25,6 +26,7 @@ val dimen_17_dp = 17.dp
 val dimen_20_dp = 20.dp
 val dimen_24_dp = 24.dp
 val dimen_30_dp = 30.dp
+val dimen_32_dp = 32.dp
 val dimen_40_dp = 40.dp
 
 val dimen_56_dp = 56.dp
@@ -36,6 +38,7 @@ val dimen_100_dp = 100.dp
 
 val dimen_450_px = 450
 val dimen_400_px = 400
+val text_size_16_sp = 16.sp
 
 val weight_10_percent = 0.1f
 val weight_20_percent = 0.2f

@@ -7,6 +7,10 @@ interface SyncHistoryRepository {
     fun getUserMobileNumber(): String
     fun getUserID(): String
 
-    fun getAllEventsBetweenDates(startDate:String,endDate:String): List<EventStatusEntity>
-    fun getAllEventStatusForUser(): List<EventStatusEntity>
+    suspend fun getAllEventsBetweenDates(
+        startDate: String,
+        endDate: String
+    ): List<EventStatusEntity>
+
+    suspend fun getAllEventStatusForUser(): List<EventStatusEntity>
 }

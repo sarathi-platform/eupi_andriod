@@ -1,7 +1,5 @@
 package com.patsurvey.nudge.activities.sync.history.domain.repository
 
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventStatusEntity
@@ -21,13 +19,16 @@ class SyncHistoryRepositoryImpl @Inject constructor(
         return prefRepo.getUserId()
     }
 
-    override fun getAllEventsBetweenDates(startDate:String,endDate:String): List<EventStatusEntity> {
+    override suspend fun getAllEventsBetweenDates(
+        startDate: String,
+        endDate: String
+    ): List<EventStatusEntity> {
         return eventStatusDao.getAllEventStatusBetweenDates(
             mobileNumber = prefRepo.getMobileNumber()
         )
     }
 
-    override fun getAllEventStatusForUser(): List<EventStatusEntity> {
+    override suspend fun getAllEventStatusForUser(): List<EventStatusEntity> {
         return eventStatusDao.getAllEventStatusForUser(prefRepo.getMobileNumber())
     }
 

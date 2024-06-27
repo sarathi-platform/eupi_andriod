@@ -57,7 +57,7 @@ class SyncHomeViewModel @Inject constructor(
                     )
             }catch (ex:Exception){
                 CoreLogger.d(
-                    CoreAppDetails.getContext(),
+                    CoreAppDetails.getApplicationContext(),
                     "SyncHomeViewModel",
                     " syncAllPending: ${ex.printStackTrace()} "
                 )
@@ -69,13 +69,13 @@ class SyncHomeViewModel @Inject constructor(
         syncWorkerInfoState?.let {
             if (it == WorkInfo.State.RUNNING || it == WorkInfo.State.ENQUEUED) {
                 CoreLogger.d(
-                    CoreAppDetails.getContext(),
+                    CoreAppDetails.getApplicationContext(),
                     "SyncHomeViewModel",
                     "CancelSyncUploadWorker :: Worker Status: $it"
                 )
                 workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
                 CoreLogger.d(
-                    CoreAppDetails.getContext(),
+                    CoreAppDetails.getApplicationContext(),
                     "SyncHomeViewModel",
                     "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
                 )

@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,7 +45,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -52,9 +52,13 @@ import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_56_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.searchFieldBg
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
+import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
@@ -90,6 +94,77 @@ fun SyncHistoryScreen(
             skipHalfExpanded = true
         )
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = viewModel.eventList) {
+
+        val eventStatusUIList = arrayListOf<Pair<String, Int>>()
+        val successConsumerCount =
+            viewModel.eventList.value.filter { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }.size
+        if (successConsumerCount > 1) {
+            eventStatusUIList.add(
+                Pair(
+                    context.getString(R.string.consumer_success_event_count),
+                    successConsumerCount
+                )
+            )
+        }
+
+        val successProducerCount =
+            viewModel.eventList.value.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }.size
+        if (successProducerCount > 1) {
+            eventStatusUIList.add(
+                Pair(
+                    context.getString(R.string.producer_success_event_count),
+                    successProducerCount
+                )
+            )
+        }
+
+        val inProgressConsumerCount =
+            viewModel.eventList.value.filter { it.status == EventSyncStatus.CONSUMER_IN_PROGRESS.eventSyncStatus }.size
+        if (inProgressConsumerCount > 1) {
+            eventStatusUIList.add(
+                Pair(
+                    context.getString(R.string.consumer_inprogress_event_count),
+                    inProgressConsumerCount
+                )
+            )
+        }
+
+        val inProgressProducerCount =
+            viewModel.eventList.value.filter { it.status == EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus }.size
+        if (inProgressProducerCount > 1) {
+            eventStatusUIList.add(
+                Pair(
+                    context.getString(R.string.producer_inprogress_event_count),
+                    inProgressProducerCount
+                )
+            )
+        }
+
+        val failedConsumerCount =
+            viewModel.eventList.value.filter { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }.size
+        if (failedConsumerCount > 1) {
+            eventStatusUIList.add(
+                Pair(
+                    context.getString(R.string.consumer_failed_event_count),
+                    failedConsumerCount
+                )
+            )
+        }
+
+        val failedProducerCount =
+            viewModel.eventList.value.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }.size
+        if (failedProducerCount > 1) {
+            eventStatusUIList.add(
+                Pair(
+                    context.getString(R.string.producer_failed_event_count),
+                    failedProducerCount
+                )
+            )
+        }
+        viewModel._countList.value = eventStatusUIList
+    }
 
     ModalBottomSheetLayout(
         modifier = Modifier,
@@ -145,7 +220,6 @@ fun SyncHistoryScreen(
                                     "Dates: Start Date: ${viewModel.startDate.value} :: End Date: ${viewModel.startDate.value}"
                                 )
                                 viewModel.getAllEventsBetweenDates(
-                                    context = context,
                                     startDate = state.selectedStartDateMillis ?: System.currentTimeMillis(),
                                     endDate = state.selectedEndDateMillis ?: System.currentTimeMillis()
                                 )
@@ -173,7 +247,7 @@ fun SyncHistoryScreen(
             Column(
                 modifier = Modifier
                     .background(Color.White)
-                    .padding(start = 10.dp, end = 10.dp, top = 65.dp)
+                    .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
                     .fillMaxWidth()
 
             ) {
@@ -261,7 +335,7 @@ private fun CreateEventUIList(
                         withStyle(
                             style = SpanStyle(
                                 color = textColorDark,
-                                fontSize = 16.sp,
+                                fontSize = text_size_16_sp,
                                 fontWeight = FontWeight.Normal,
                                 fontFamily = NotoSans
                             )
@@ -271,7 +345,7 @@ private fun CreateEventUIList(
                             )
                         }
                     },
-                    modifier = Modifier.padding(top = 32.dp)
+                    modifier = Modifier.padding(top = dimen_32_dp)
                 )
             }
         }
