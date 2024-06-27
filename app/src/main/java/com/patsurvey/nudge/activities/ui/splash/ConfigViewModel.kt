@@ -47,7 +47,7 @@ class ConfigViewModel @Inject constructor(
                         "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
                     )
                     if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let { it ->
+                        response.data?.let {
                             it.languageList.forEach { language ->
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }
@@ -110,7 +110,7 @@ class ConfigViewModel @Inject constructor(
                 "checkAndAddLanguage -> localLanguages: $localLanguages"
             )
             if (localLanguages.isEmpty())
-                addDefaultLanguage(configRepository.languageListDao)
+                addDefaultLanguage(configRepository.languageListDao,configRepository.baselineLanguageDao)
         }
     }
 }

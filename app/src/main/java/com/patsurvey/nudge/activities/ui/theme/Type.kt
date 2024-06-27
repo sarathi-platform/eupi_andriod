@@ -115,6 +115,6 @@ val didiDetailLabelStyle = TextStyle(
 val syncItemCountStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.Normal,
-    color = textColorBlueLight,
+    color = black100Percent,
     fontSize = 12.sp
 )

@@ -1,21 +1,21 @@
 package com.nudge.syncmanager
 
 
-import android.util.Log
+import android.content.Context
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
-import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.preference.CorePrefRepo
-import com.nudge.core.model.request.EventConsumerRequest
-import com.nudge.core.model.response.EventConsumerResponse
+import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.network.SyncApiService
 import javax.inject.Inject
 
@@ -36,34 +36,34 @@ class SyncApiRepository @Inject constructor(
         return apiService.syncConsumerStatusApi(eventConsumerRequest)
     }
 
-    fun getPendingEventFromDb(batchLimit: Int, retryCount: Int): List<Events> {
-        return eventDao.getAllPendingEvent(
+    fun getPendingEventFromDb(batchLimit: Int, retryCount: Int, syncType: Int): List<Events> {
+        return eventDao.getAllPendingEventList(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
                 EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
             ),
             batchLimit = batchLimit,
             retryCount = retryCount,
-            mobileNumber = prefRepo.getMobileNumber()
+            mobileNumber = prefRepo.getMobileNumber(),
+            syncType = syncType
         )
     }
 
-    fun getPendingEventCount(): Int {
-        return eventDao.getTotalPendingEventCount(
+    fun getPendingEventCount(syncType: Int): Int {
+        return eventDao.getSyncPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
                 EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
             ),
-            mobileNumber = prefRepo.getMobileNumber()
+            mobileNumber = prefRepo.getMobileNumber(),
+            syncType = syncType
         )
-
     }
 
-    fun updateSuccessEventStatus(eventList: List<SyncEventResponse>) {
+    fun updateSuccessEventStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
             eventDao.updateSuccessEventStatus(eventList)
             eventList.forEach {
-                Log.d("TAG", "updateSuccessEventStatus: ${it.json()} ")
                 eventStatusDao.insert(
                     EventStatusEntity(
                         clientId = it.clientId,
@@ -76,40 +76,59 @@ class SyncApiRepository @Inject constructor(
                 )
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            Log.d("TAG", "updateSuccessEventStatus: Exception: ${ex.message}")
+            CoreLogger.d(
+                context = context,
+                "SyncApiRepository",
+                "updateSuccessEventStatus: Exception: ${ex.message}"
+            )
         }
 
     }
 
-    fun updateFailedEventStatus(eventList: List<SyncEventResponse>) {
-        eventDao.updateFailedEventStatus(eventList)
-        eventList.forEach {
-            eventStatusDao.insert(
-                EventStatusEntity(
-                    clientId = it.clientId,
-                    errorMessage = BLANK_STRING,
-                    status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-                    mobileNumber = it.mobileNumber,
-                    createdBy = prefRepo.getUserId(),
-                    eventStatusId = 0
+    fun updateFailedEventStatus(context: Context, eventList: List<SyncEventResponse>) {
+        try {
+            eventDao.updateFailedEventStatus(eventList)
+            eventList.forEach {
+                eventStatusDao.insert(
+                    EventStatusEntity(
+                        clientId = it.clientId,
+                        errorMessage = it.errorMessage.ifEmpty { SOMETHING_WENT_WRONG },
+                        status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                        mobileNumber = prefRepo.getMobileNumber(),
+                        createdBy = prefRepo.getUserId(),
+                        eventStatusId = 0
+                    )
                 )
+            }
+        } catch (e: Exception) {
+            CoreLogger.d(
+                context = context,
+                "SyncApiRepository",
+                "updateFailedEventStatus: Exception: ${e.message}"
             )
         }
     }
 
-    fun updateEventConsumerStatus(eventList: List<SyncEventResponse>) {
-        eventDao.updateConsumerStatus(eventList)
-        eventList.forEach {
-            eventStatusDao.insert(
-                EventStatusEntity(
-                    clientId = it.clientId,
-                    errorMessage = it.errorMessage,
-                    status = it.status,
-                    mobileNumber = it.mobileNumber,
-                    createdBy = prefRepo.getUserId(),
-                    eventStatusId = 0
+    fun updateEventConsumerStatus(context: Context, eventList: List<SyncEventResponse>) {
+        try {
+            eventDao.updateConsumerStatus(eventList)
+            eventList.forEach {
+                eventStatusDao.insert(
+                    EventStatusEntity(
+                        clientId = it.clientId,
+                        errorMessage = it.errorMessage,
+                        status = it.status,
+                        mobileNumber = prefRepo.getMobileNumber(),
+                        createdBy = prefRepo.getUserId(),
+                        eventStatusId = 0
+                    )
                 )
+            }
+        } catch (e: Exception) {
+            CoreLogger.d(
+                context = context,
+                "SyncApiRepository",
+                "updateFailedEventStatus: Exception: ${e.message}"
             )
         }
     }

@@ -18,7 +18,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +38,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.ONE_SECOND
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.showCustomToast
@@ -57,8 +55,7 @@ fun SplashScreen(
         showCustomToast(context,networkErrorMessage)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
-    val isLoggedIn = viewModel.isLoggedIn()/*false*/
-    val scope = rememberCoroutineScope()
+    val isLoggedIn = viewModel.isLoggedIn()
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
@@ -204,8 +201,7 @@ fun SplashScreen(
 fun openUserHomeScreen(userType:String,navController: NavController) {
     try {
         Log.d("TAG", "openUserHomeScreen:m${userType} :: ${navController.graph.route    }")
-        if (userType.equals(UPCM_USER)
-        ) {
+        if (userType==UPCM_USER) {
             if(navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true){
                 navController.navigate(route = HomeScreens.DATA_LOADING_SCREEN.route) {
                     launchSingleTop = true

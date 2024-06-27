@@ -64,6 +64,7 @@
     <string name="not_added">लोकेशन नहीं जोड़ा गया</string>
     <string name="mark_as_completed">पूर्ण हुआ चिन्हित करे</string>
     <string name="village_text">ग्राम</string>
+    <string name="select_date">तारीख़ चुनें</string>
     <string name="vo_name">ग्राम संगठन का नाम</string>
     <string name="total">कुल</string>
     <string name="participation_date_wealth_ranking">दिनांक</string>
@@ -398,6 +399,9 @@
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
     <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>
     <string name="change_language">भाषा बदलें</string>
+    <string name="no_history_available_right_now">अभी कोई इतिहास उपलब्ध नहीं है</string>
+    <string name="sync_data">डेटा</string>
+    <string name="sync_images">इमेजिस</string>
 
 
 </resources>

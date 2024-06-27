@@ -6,6 +6,7 @@ import com.patsurvey.nudge.R
 
 const val BLANK_STRING=""
 const val ONE="1"
+const val ZERO=0
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH=8
 const val MAXIMUM_RANGE=99999
@@ -248,4 +249,6 @@ const val MIN_PROGRESS_COUNT_FLOAT = 0F
 const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE=1
 const val EARNING_FAMILY_MEMBERS_OPTION_VALUE=2
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
-
+const val IMAGE_STRING="image"
+const val SYNC_IMAGE="IMAGE"
+const val SYNC_DATA="DATA"

@@ -529,9 +529,21 @@
     </plurals>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
     <string name="change_language">Change Language</string>
-    <string name="sync_data" translatable="false">Data</string>
-    <string name="sync_images" translatable="false">Images</string>
+    <string name="sync_data">Data</string>
+    <string name="sync_images">Images</string>
     <string name="sync_all_data" translatable="false">Sync All Data</string>
-
-
+    <string name="sync_data_history" translatable="false">Sync Data History</string>
+    <string name="sync_image_history" translatable="false">Sync Image History</string>
+    <string name="consumer_success_event_count" translatable="false">Consumer Success Event Count</string>
+    <string name="producer_success_event_count" translatable="false">Producer Success Event Count</string>
+    <string name="consumer_inprogress_event_count" translatable="false">Consumer Inprogress Event Count</string>
+    <string name="producer_inprogress_event_count" translatable="false">Producer Inprogress Event Count</string>
+    <string name="consumer_failed_event_count" translatable="false">Consumer Failed Event Count</string>
+    <string name="producer_failed_event_count" translatable="false">Producer Failed Event Count</string>
+    <string name="history_is_not_available_because_data_is_not_synced" translatable="false">History is not available right not because data is not synced</string>
+    <string name="sync_started" translatable="false">Sync Started. Please wait...</string>
+    <string name="select_date">Select Date</string>
+    <string name="no_history_available_right_now">No History Available Right Now</string>
+    <string name="sync_only_data" translatable="false">Sync Only Data</string>
+    <string name="sync_only_images" translatable="false">Sync Only Images</string>
 </resources>

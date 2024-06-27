@@ -793,6 +793,19 @@ fun roundOffDecimal(number: Double): Double? {
 
 }
 
+fun roundOffDecimalFloat(number: Float): Float? {
+    return try {
+        val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
+        df.roundingMode = RoundingMode.CEILING
+        df.format(number).toFloat()
+    }catch (ex:Exception){
+        NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
+        0.00f
+    }
+
+
+}
+
 fun roundOffDecimalPoints(number: Double): String {
     return String.format(Locale.ENGLISH,"%.2f", number)
 }
@@ -1193,7 +1206,7 @@ fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,pre
     }
 }
 
-fun addDefaultLanguage(languageListDao: LanguageListDao) {
+fun addDefaultLanguage(languageListDao: LanguageListDao,baselineLanguageDao:com.nrlm.baselinesurvey.database.dao.LanguageListDao) {
     languageListDao.insertAll(
         listOf(
             LanguageEntity(
@@ -1225,6 +1238,46 @@ fun addDefaultLanguage(languageListDao: LanguageListDao) {
                 localName = "অসমীয়া"
             ),
             LanguageEntity(
+                5,
+                language = "Bodo",
+                langCode = "be",
+                orderNumber = 5,
+                localName = "बर'"
+            )
+        )
+    )
+
+    baselineLanguageDao.insertAll(
+        listOf(
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                id = 2,
+                language = "English",
+                langCode = "en",
+                orderNumber = 1,
+                localName = "English"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                1,
+                language = "Hindi",
+                langCode = "hi",
+                orderNumber = 2,
+                localName = "हिंदी"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                3,
+                language = "Bengali",
+                langCode = "bn",
+                orderNumber = 3,
+                localName = "বাংলা"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                4,
+                language = "Assamese",
+                langCode = "as",
+                orderNumber = 4,
+                localName = "অসমীয়া"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
                 5,
                 language = "Bodo",
                 langCode = "be",

@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BLANK_STRING
@@ -17,13 +17,14 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
 import com.nudge.core.getBatchSize
 import com.nudge.core.json
+import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.SyncApiRepository
-import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.syncmanager.utils.SUCCESS
-import com.nudge.syncmanager.utils.WORKER_RESULT
+import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.text.SimpleDateFormat
@@ -40,95 +41,149 @@ class SyncUploadWorker @AssistedInject constructor(
     private val retryCount=3
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
-        return if (runAttemptCount < 5) {
-            try {
 
-                val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
-                 DeviceBandwidthSampler.getInstance().startSampling()
+        if (runAttemptCount >= 5) {
+            return Result.failure(workDataOf(
+                WorkerKeys.ERROR_MSG to  "Failed: Producer Failed with Attempt Count"
+            ))
+        }
+        val selectedSyncType= inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
 
-                if (runAttemptCount > 0) {
-                    batchLimit = getBatchSize(connectionQuality)
-                }
-                CoreLogger.d(applicationContext,TAG,"doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount")
-                var totalPendingEventCount = syncApiRepository.getPendingEventCount()
-                CoreLogger.d(applicationContext,TAG,"doWork: totalPendingEventCount: $totalPendingEventCount")
-                while (totalPendingEventCount > 0){
-                    mPendingEventList = syncApiRepository.getPendingEventFromDb(
-                        batchLimit = batchLimit,
-                        retryCount = retryCount
+        return try {
+            val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
+            DeviceBandwidthSampler.getInstance().startSampling()
+
+            if (runAttemptCount > 0) {
+                batchLimit = getBatchSize(connectionQuality)
+            }
+
+            CoreLogger.d(applicationContext, TAG, "doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount")
+
+            var totalPendingEventCount = syncApiRepository.getPendingEventCount(syncType = selectedSyncType)
+            CoreLogger.d(applicationContext, TAG, "doWork: totalPendingEventCount: $totalPendingEventCount")
+
+            while (totalPendingEventCount > 0) {
+                mPendingEventList = syncApiRepository.getPendingEventFromDb(
+                    batchLimit = batchLimit,
+                    retryCount = retryCount,
+                    syncType = selectedSyncType
+                )
+
+                if (mPendingEventList.isEmpty()) {
+                    return Result.success(
+                        workDataOf(
+                            WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed"
+                        )
                     )
-                    if(mPendingEventList.isNotEmpty()) {
-                        CoreLogger.d(applicationContext,TAG,"doWork: pendingEvents List: ${mPendingEventList.json()}")
-                        val apiResponse = syncApiRepository.syncProducerEventToServer(mPendingEventList)
-
-                        if (apiResponse.status.equals(SUCCESS)) {
-                            apiResponse.data?.let { eventList ->
-                                if (eventList.isNotEmpty()) {
-                                    val eventSuccessList =
-                                        eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
-                                    val eventFailedList =
-                                        eventList.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }
-
-                                    if (eventSuccessList.isNotEmpty()) {
-                                        CoreLogger.d(applicationContext,TAG,"doWork: eventSuccessList List: ${eventSuccessList.json()}")
-                                        syncApiRepository.updateSuccessEventStatus(eventSuccessList)
-                                    }
-                                    if (eventFailedList.isNotEmpty()) {
-                                        CoreLogger.d(applicationContext,TAG,"doWork: eventFailedList List: ${eventFailedList.json()}")
-                                        syncApiRepository.updateFailedEventStatus(eventFailedList)
-                                    }
-                                    totalPendingEventCount = syncApiRepository.getPendingEventCount()
-                                    CoreLogger.d(applicationContext,TAG,"doWork: After totalPendingEventCount: $totalPendingEventCount")
-                                    DeviceBandwidthSampler.getInstance().stopSampling()
-                                }else {
-                                    if (mPendingEventList.isNotEmpty()) syncApiRepository.updateFailedEventStatus(
-                                        createEventResponseList(
-                                            mPendingEventList,
-                                            RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
-                                        )
-                                    )
-                                }
-
-                            } ?: syncApiRepository.updateFailedEventStatus(
-                                createEventResponseList(
-                                    mPendingEventList,
-                                    RESPONSE_DATA_IS_NULL_EXCEPTION
-                                )
-                            )
-                        } else {
-                            DeviceBandwidthSampler.getInstance().stopSampling()
-                            if (mPendingEventList.isNotEmpty()) syncApiRepository.updateFailedEventStatus(
-                                createEventResponseList(
-                                    mPendingEventList,
-                                    RESPONSE_STATUS_FAILED_EXCEPTION
-                                )
-                            )
-                        }
-                    }else {
-                        val outputData = Data.Builder().putString(WORKER_RESULT,"Success : All Producer Completed").build()
-                        Result.success(outputData)
-                    }
                 }
-                fetchConsumerStatus(syncApiRepository = syncApiRepository, mobileNumber =syncApiRepository.getLoggedInMobileNumber() )
-                CoreLogger.d(applicationContext,TAG,"doWork: success totalPendingEventCount: $totalPendingEventCount")
-                Result.success(Data.Builder().putString(WORKER_RESULT,"Success : All Producer Completed and Count 0").build())
-                // do long running work
-            } catch (ex: Exception) {
-                CoreLogger.e(applicationContext,TAG,"doWork :Exception: ${ex.message} :: ${mPendingEventList.json()}",ex,true)
-                DeviceBandwidthSampler.getInstance().stopSampling()
-                if(runAttemptCount<3)
-                 Result.retry()
-                else {
-                    if(mPendingEventList.isNotEmpty()){
-                        syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList,ex.message ?: SOMETHING_WENT_WRONG))
+
+                CoreLogger.d(applicationContext, TAG, "doWork: pendingEvents List: ${mPendingEventList.json()}")
+                val apiResponse = syncApiRepository.syncProducerEventToServer(mPendingEventList)
+
+                if (apiResponse.status == SUCCESS) {
+                    apiResponse.data?.let { eventList ->
+                        if (eventList.isNotEmpty()) {
+                            processEventList(eventList)
+                            totalPendingEventCount = syncApiRepository.getPendingEventCount(
+                                syncType = selectedSyncType
+                            )
+                            CoreLogger.d(applicationContext, TAG, "doWork: After totalPendingEventCount: $totalPendingEventCount")
+                        } else {
+                            handleEmptyEventListResponse(mPendingEventList)
+                        }
+                    } ?: run {
+                        handleNullApiResponse(mPendingEventList)
                     }
-                    Result.failure(Data.Builder().putString(WORKER_RESULT,"Failed : Producer Failed with Exception: ${ex.message}").build())
+                } else {
+                    handleFailedApiResponse(mPendingEventList)
                 }
             }
-        } else {
-            Result.failure(Data.Builder().putString(WORKER_RESULT,"Failed : Producer Failed with Attempt Count").build())
+
+            fetchConsumerStatus(
+                context = applicationContext,
+                syncApiRepository = syncApiRepository,
+                mobileNumber = syncApiRepository.getLoggedInMobileNumber()
+            )
+            CoreLogger.d(applicationContext, TAG, "doWork: success totalPendingEventCount: $totalPendingEventCount")
+            Result.success(workDataOf(
+                WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
+            ))
+        } catch (ex: Exception) {
+            handleException(ex, mPendingEventList)
+        } finally {
+            DeviceBandwidthSampler.getInstance().stopSampling()
         }
     }
+
+    private fun processEventList(eventList: List<SyncEventResponse>) {
+        val eventSuccessList = eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
+        val eventFailedList = eventList.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }
+
+        if (eventSuccessList.isNotEmpty()) {
+            CoreLogger.d(applicationContext, TAG, "doWork: eventSuccessList List: ${eventSuccessList.json()}")
+            syncApiRepository.updateSuccessEventStatus(
+                context = applicationContext,
+                eventList = eventSuccessList
+            )
+        }
+
+        if (eventFailedList.isNotEmpty()) {
+            CoreLogger.d(applicationContext, TAG, "doWork: eventFailedList List: ${eventFailedList.json()}")
+            syncApiRepository.updateFailedEventStatus(
+                context = applicationContext,
+                eventList = eventFailedList
+            )
+        }
+    }
+
+    private fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
+        CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
+        syncApiRepository.updateFailedEventStatus(
+            context = applicationContext,
+            eventList = createEventResponseList(
+                mPendingEventList,
+                RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
+            )
+        )
+    }
+
+    private fun handleNullApiResponse(mPendingEventList: List<Events>) {
+        CoreLogger.d(applicationContext, TAG, "doWork: Getting API response Null")
+        syncApiRepository.updateFailedEventStatus(
+            context = applicationContext,
+            eventList = createEventResponseList(mPendingEventList, RESPONSE_DATA_IS_NULL_EXCEPTION)
+        )
+    }
+
+    private fun handleFailedApiResponse(mPendingEventList: List<Events>) {
+        CoreLogger.d(applicationContext, TAG, "doWork: Getting API Failed")
+        syncApiRepository.updateFailedEventStatus(
+            context = applicationContext,
+            eventList = createEventResponseList(mPendingEventList, RESPONSE_STATUS_FAILED_EXCEPTION)
+        )
+    }
+
+    private fun handleException(ex: Exception, mPendingEventList: List<Events>): Result {
+        CoreLogger.e(applicationContext, TAG, "doWork: Exception: ${ex.message} :: ${mPendingEventList.json()}", ex, true)
+
+        return if (runAttemptCount < 3) {
+             Result.retry()
+        } else {
+            if (mPendingEventList.isNotEmpty()) {
+                syncApiRepository.updateFailedEventStatus(
+                    context = applicationContext,
+                    eventList = createEventResponseList(
+                        mPendingEventList,
+                        ex.message ?: SOMETHING_WENT_WRONG
+                    )
+                )
+            }
+             Result.failure(workDataOf(
+                 WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Exception: ${ex.message}"
+             ))
+        }
+    }
+
 
 }
 
@@ -156,7 +211,11 @@ fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<Sy
 }
 
 @SuppressLint("SimpleDateFormat")
-suspend fun fetchConsumerStatus(syncApiRepository:SyncApiRepository, mobileNumber:String){
+suspend fun fetchConsumerStatus(
+    context: Context,
+    syncApiRepository: SyncApiRepository,
+    mobileNumber: String
+) {
     val date= SimpleDateFormat("yyyy-MM-dd").format(Date())
     val eventConsumerRequest = EventConsumerRequest(
         requestId = BLANK_STRING,
@@ -168,7 +227,7 @@ suspend fun fetchConsumerStatus(syncApiRepository:SyncApiRepository, mobileNumbe
     if(consumerAPIResponse.status == SUCCESS){
             consumerAPIResponse.data?.let {
                 if(it.isNotEmpty()){
-                    syncApiRepository.updateEventConsumerStatus(it)
+                    syncApiRepository.updateEventConsumerStatus(context = context, eventList = it)
                 }
             }
     }
