@@ -71,3 +71,5 @@ val eventWriters = listOf<IEventWriter>(
     LogEventWriter(),
     ImageEventWriter()
 )
+const val BATCH_DEFAULT_LIMIT = 5
+const val RETRY_DEFAULT_COUNT = 3

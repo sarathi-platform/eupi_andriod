@@ -34,7 +34,7 @@ class EventObserverInterfaceImpl @Inject constructor(
 ) : EventObserverInterface {
 
     override fun <T> onEventCallback(event: T) {
-        //TODO: Needs to implement after sync integration
+        //Needs to implement after sync integration
     }
 
     override suspend fun addEvent(event: Events) {
@@ -81,7 +81,10 @@ class EventObserverInterfaceImpl @Inject constructor(
         data.putInt(WORKER_ARG_BATCH_COUNT, getBatchSize(networkSpeed))
         data.putInt(WORKER_ARG_SYNC_TYPE, syncType)
         val uploadWorkRequest: PeriodicWorkRequest =
-            PeriodicWorkRequestBuilder<SyncUploadWorker>(repeatInterval = 15, repeatIntervalTimeUnit =  TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<SyncUploadWorker>(
+                repeatInterval = 15,
+                repeatIntervalTimeUnit = TimeUnit.MINUTES
+            )
                 .setConstraints(
                     constraints
                 )
@@ -100,9 +103,9 @@ class EventObserverInterfaceImpl @Inject constructor(
 
     private fun getBatchSize(networkSpeed: NetworkSpeed): Int {
         return when (networkSpeed) {
-            NetworkSpeed.EXCELLENT -> return 20
-            NetworkSpeed.GOOD -> return 15
-            NetworkSpeed.MODERATE -> return 10
+            NetworkSpeed.EXCELLENT -> 20
+            NetworkSpeed.GOOD -> 15
+            NetworkSpeed.MODERATE -> 10
             NetworkSpeed.POOR -> 5
             NetworkSpeed.UNKNOWN -> 3
         }
