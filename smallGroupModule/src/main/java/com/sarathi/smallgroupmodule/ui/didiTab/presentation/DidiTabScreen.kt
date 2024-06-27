@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -16,15 +17,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -107,14 +111,14 @@ fun DidiTabScreen(
                     .fillMaxSize()
                     .pullRefresh(pullToRefreshState)
             ) {
-                /*PullRefreshIndicator(
+                PullRefreshIndicator(
                     refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
                     state = pullToRefreshState,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .zIndex(1f),
                     contentColor = blueDark,
-                )*/
+                )
                 if (didiList.value.isNotEmpty() || didiTabViewModel.filteredSmallGroupList.value.isNotEmpty()) {
                     Column(
                         modifier = Modifier
