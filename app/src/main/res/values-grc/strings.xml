@@ -252,7 +252,7 @@
     <string name="result_text_plural">result</string>
     <string name="didis_endorsed_by_vo_plural">VO chi ra.chakgimin Didi rang</string>
     <string name="didi_endorsed_by_vo_singular">VO chi ra.chakgimin Didi</string>
-    <string name="summary_vo_endoresement_text_singular">Didi ko VO chi ra.chakna gita on'.ataha</string>
+    <string name="summary_vo_endoresement_text_singular">Didi ko VO chi ra.chakna gita on\'.ataha</string>
     <string name="summary_wealth_ranking_text_singular">Didi ko Kangal ine mesokaha</string>
     <string name="summary_didis_mobilised_text_singular">Didi chimongaha</string>
     <string name="summary_tolas_added_text_singular">Song/Gittim ko on.dapaha</string>
@@ -288,7 +288,7 @@
     <string name="retake_photo_text">Photo ko ka.taibo</string>
     <string name="previous_step_not_complete_messgae_text">Skanggipa Bak Matchotkuja</string>
     <string name="vo_endorsement_inprogress_village_banner_text">VO ra.chakaniko dakenga</string>
-    <string name="latest_status_text">"Gitalsranggipa Status'</string>
+    <string name="latest_status_text">"Gitalsranggipa Status\'</string>
     <string name="ranking_text_rich">Man·e cha·a</string>
     <string name="ranking_text_medium">Chol ong·kalgipa</string>
     <string name="ranking_text_poor">Kangal</string>
