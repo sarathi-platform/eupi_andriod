@@ -238,9 +238,13 @@ class GrantTaskScreenViewModel @Inject constructor(
         } else {
             filteredList.putAll(taskList.value)
         }
-        _filterList.value = filteredList
+        if (isFilterApplied) {
+            filterTaskMap =
+                filteredList.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
+        } else {
+            _filterList.value = filteredList
+        }
     }
-
 
     private suspend fun checkButtonValidation() {
         isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
