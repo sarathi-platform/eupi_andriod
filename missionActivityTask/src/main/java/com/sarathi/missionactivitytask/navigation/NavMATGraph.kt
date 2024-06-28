@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.navigation
 
+import android.text.TextUtils
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -408,6 +409,8 @@ fun NavGraphBuilder.MatNavigation(
             },
             navArgument(name = ARG_TASK_ID_LIST) {
                 type = NavType.StringType
+                nullable = true
+                defaultValue = BLANK_STRING
             }
         )) {
             DisbursementFormSummaryScreen(
@@ -435,6 +438,8 @@ fun NavGraphBuilder.MatNavigation(
             },
             navArgument(ARG_TASK_ID_LIST) {
                 type = NavType.StringType
+                defaultValue = BLANK_STRING
+                nullable = true
             }
         )) {
             SubmitPhysicalFormScreen(
@@ -459,7 +464,9 @@ fun navigateToContentDetailScreen(
 fun navigateToDisbursmentSummaryScreen(
     navController: NavController, activityId: Int, missionId: Int, taskIdList: String
 ) {
-    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdList")
+    var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
+
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
 }
 
 fun navigateToSurveyScreen(
@@ -528,7 +535,9 @@ fun navigateToActivityScreen(
 }
 
 fun navigateToAddImageScreen(navController: NavController, activityId: Int, taskIdList: String) {
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdList")
+    var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
+
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdListWithNullable")
 }
 
 fun navigateToTaskScreen(
