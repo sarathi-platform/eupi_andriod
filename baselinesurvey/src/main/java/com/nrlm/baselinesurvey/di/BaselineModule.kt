@@ -136,6 +136,7 @@ import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CorePrefRepo
 import dagger.Module
 import dagger.Provides
@@ -688,7 +689,8 @@ object BaselineModule {
         eventDependencyDao: EventDependencyDao,
         nudgeBaselineDatabase: NudgeBaselineDatabase,
         eventWriterHelper: EventWriterHelperImpl,
-        eventStatusDao: EventStatusDao
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
             prefBSRepo = prefBSRepo,
@@ -697,7 +699,8 @@ object BaselineModule {
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             missionEntityDao = missionEntityDao,
-            eventStatusDao = eventStatusDao
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

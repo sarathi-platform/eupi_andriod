@@ -5,6 +5,7 @@ import android.net.Uri
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
@@ -18,7 +19,8 @@ interface IEventWriter {
         dependencyEntity: List<EventDependencyEntity>,
         eventsDao: EventsDao,
         eventStatusDao: EventStatusDao,
-        eventDependencyDao: EventDependencyDao
+        eventDependencyDao: EventDependencyDao,
+        imageStatusDao: ImageStatusDao
     )
 
 

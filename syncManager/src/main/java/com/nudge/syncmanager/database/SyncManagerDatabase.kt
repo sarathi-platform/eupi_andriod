@@ -10,17 +10,20 @@ import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.ImageStatusEntity
 
 @Database(
     entities = [
         Events::class,
         EventDependencyEntity::class,
         ApiStatusEntity::class,
-        EventStatusEntity::class
+        EventStatusEntity::class,
+        ImageStatusEntity::class
     ],
     version = SYNC_MANAGER_DB_VERSION,
     exportSchema = false
@@ -35,4 +38,5 @@ abstract class SyncManagerDatabase : RoomDatabase() {
     abstract fun apiStatusDao(): ApiStatusDao
     abstract fun eventStatusDao():EventStatusDao
 
+    abstract fun imageStatusDao(): ImageStatusDao
 }

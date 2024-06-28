@@ -13,6 +13,7 @@ const val EventsTable = "events_table"
 const val EventsStatusTable = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
+const val ImageStatusTable = "image_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -65,6 +66,7 @@ const val DEFAULT_LANGUAGE_CODE="en"
 const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val KOKBOROK_LANGUAGE_CODE="ky"
+const val IMAGE_EVENT_STRING = "IMAGE"
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),

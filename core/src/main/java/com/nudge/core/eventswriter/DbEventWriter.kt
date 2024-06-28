@@ -2,16 +2,20 @@ package com.nudge.core.eventswriter
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
+import androidx.core.net.toFile
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.enums.EventWriterName
+import com.nudge.core.toDate
 
 class DbEventWrite() : IEventWriter {
     override suspend fun addEvent(
@@ -22,12 +26,32 @@ class DbEventWrite() : IEventWriter {
         dependencyEntity: List<EventDependencyEntity>,
         eventsDao: EventsDao,
         eventStatusDao: EventStatusDao,
-        eventDependencyDao: EventDependencyDao
+        eventDependencyDao: EventDependencyDao,
+        imageStatusDao: ImageStatusDao
     ) {
-        Log.d("TAG", "addEvent DbEventWrite: ${event.id}")
-
         eventsDao.insert(event)
+        if (event.name.contains(IMAGE_EVENT_STRING)) {
+            uri?.let {
+                if (it != Uri.EMPTY) {
+                    imageStatusDao.insert(
+                        ImageStatusEntity(
+                            errorMessage = BLANK_STRING,
+                            retryCount = 0,
+                            mobileNumber = event.mobile_number,
+                            createdBy = event.createdBy,
+                            fileName = it.toFile().name,
+                            filePath = it.path ?: BLANK_STRING,
+                            name = event.name,
+                            type = event.type,
+                            status = event.status,
+                            imageEventId = event.id,
+                            modifiedDate = System.currentTimeMillis().toDate()
+                        )
+                    )
+                }
+            }
 
+        }
             eventStatusDao.insert(
                 EventStatusEntity(
                     clientId = event.id,

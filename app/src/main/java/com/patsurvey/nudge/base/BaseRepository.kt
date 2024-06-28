@@ -7,6 +7,7 @@ import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventFormatterName
@@ -88,6 +89,9 @@ abstract class BaseRepository{
 
     @Inject
     lateinit var eventStatusDao: EventStatusDao
+
+    @Inject
+    lateinit var imageStatusDao: ImageStatusDao
 
     open fun onServerError(error: ErrorModel?){
 
@@ -413,7 +417,8 @@ abstract class BaseRepository{
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
             eventDependencyDao,
-            eventStatusDao = eventStatusDao
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

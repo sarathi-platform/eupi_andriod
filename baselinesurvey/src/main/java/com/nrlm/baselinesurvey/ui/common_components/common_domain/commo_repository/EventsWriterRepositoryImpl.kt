@@ -20,6 +20,7 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -43,7 +44,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
-    private val eventStatusDao: EventStatusDao
+    private val eventStatusDao: EventStatusDao,
+    private val imageStatusDao: ImageStatusDao
     ) : EventsWriterRepository {
 
     override suspend fun <T> createEvent(
@@ -336,7 +338,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
-            eventStatusDao = eventStatusDao
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 
