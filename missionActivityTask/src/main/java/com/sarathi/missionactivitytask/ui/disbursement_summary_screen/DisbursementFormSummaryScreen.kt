@@ -109,7 +109,7 @@ fun DisbursementFormSummaryScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = "Disbursement summary",
+        title = stringResource(R.string.disbursement_summary),
         modifier = Modifier,
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
@@ -193,7 +193,7 @@ fun DisbursementFormSummaryScreen(
                             .padding(10.dp)
                     ) {
                         ButtonPositive(
-                            buttonTitle = "Attach physical form E",
+                            buttonTitle = stringResource(R.string.attach_physical_form_e),
                             isActive = true,
                             isArrowRequired = false,
                             onClick = {
@@ -303,14 +303,17 @@ private fun MakeDisburesementRow(
                 .height(dimen_5_dp)
         )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            TextRow(text1 = "Mode: ", text2 = disbursementFormSummaryUiModel.mode)
             TextRow(
-                text1 = "Nature: ",
+                text1 = stringResource(R.string.mode),
+                text2 = disbursementFormSummaryUiModel.mode
+            )
+            TextRow(
+                text1 = stringResource(R.string.nature),
                 text2 = disbursementFormSummaryUiModel.nature,
                 isReadMode = true
             )
             TextRow(
-                text1 = "Amount: ",
+                text1 = stringResource(R.string.amount),
                 text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
             )
         }
@@ -337,6 +340,7 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
                 TextWithReadMoreComponent(title = text1, contentData = text2)
             } else {
                 Text(
+                    modifier = Modifier.padding(start = dimen_5_dp),
                     text = text2,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
@@ -411,7 +415,8 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Didis", style = newMediumTextStyle.copy(color = blueDark)
+                    stringResource(R.string.didis),
+                    style = newMediumTextStyle.copy(color = blueDark)
                 )
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",

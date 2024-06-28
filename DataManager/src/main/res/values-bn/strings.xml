@@ -1,2 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Sarathi</string>
+    <string name="received">প্রাপ্ত হয়েছে :</string>
+    <string name="complete_activity">কার্যকলাপ সম্পন্ন করুন</string>
+    <string name="task_view">দেখুন</string>
+    <string name="continue_text">চালিয়ে যান</string>
+    <string name="generate_form_e">ফর্ম ই তৈরি করুন</string>
+    <string name="submit_form_e">ফর্ম E জমা দিন</string>
+    <string name="csg_disbursed">CSG বিতরণ করা হয়েছে</string>
+    <string name="select">নির্বাচন করুন</string>
+    <string name="delete">মুছে ফেলুন</string>
+    <string name="mode">প্রকার :</string>
+</resources>

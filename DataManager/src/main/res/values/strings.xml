@@ -43,4 +43,11 @@
     <string name="form_e_generated">Form E generated</string>
     <string name="done">Done</string>
     <string name="more">+%1$s More</string>
+    <string name="ok">Ok</string>
+    <string name="disbursement_summary">Disbursement summary</string>
+    <string name="attach_physical_form_e">Attach physical form E</string>
+    <string name="didis">Didis</string>
+    <string name="file_not_exists">"file not Exists "</string>
+    <string name="activities_completed">Activities Completed</string>
+    <string name="start">Start</string>
 </resources>

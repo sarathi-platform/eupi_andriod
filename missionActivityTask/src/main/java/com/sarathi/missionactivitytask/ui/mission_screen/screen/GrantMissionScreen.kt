@@ -23,7 +23,6 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
 import com.nudge.core.ui.theme.blueDark
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
@@ -115,13 +114,13 @@ fun GrantMissionScreen(
                     LazyColumn {
                         items(viewModel.filterMissionList.value) { mission ->
                             BasicMissionCard(
-                                status = mission.missionStatus ?: BLANK_STRING,
-                                countStatusText = "Activities Completed",
+                                status = mission.missionStatus,
+                                countStatusText = context.getString(R.string.activities_completed),
                                 totalCount = mission.activityCount,
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,
                                 needToShowProgressBar = true,
-                                primaryButtonText = "Start",
+                                primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
                                     navigateToActivityScreen(
                                         navController,

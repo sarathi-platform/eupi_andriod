@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
@@ -43,6 +44,7 @@ import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
+import com.sarathi.missionactivitytask.R
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -112,7 +114,11 @@ fun CustomDateRangePickerBottomSheetComponent(
                             containerColor = blueDark
                         )
                     ) {
-                        Text(text = "Ok", color = white, style = smallTextStyleWithNormalWeight)
+                        Text(
+                            text = stringResource(R.string.ok),
+                            color = white,
+                            style = smallTextStyleWithNormalWeight
+                        )
                     }
                 }
 

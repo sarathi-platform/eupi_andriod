@@ -31,7 +31,10 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
@@ -47,15 +50,15 @@ fun ReceiptFoundCard(
 ) {
     androidx.compose.material3.Card(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
+            defaultElevation = dimen_10_dp
         ), modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .padding(dimen_16_dp)
+            .clip(RoundedCornerShape(dimen_6_dp))
             .border(
-                width = 1.dp,
+                width = dimen_1_dp,
                 color = white,
-                shape = RoundedCornerShape(6.dp)
+                shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
     ) {
@@ -67,7 +70,7 @@ fun ReceiptFoundCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 16.dp),
+                    .padding(start = dimen_16_dp, top = dimen_16_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (isHamletIcon) {

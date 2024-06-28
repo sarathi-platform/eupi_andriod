@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sarathi</string>
+    <string name="received">Sogphaikha :</string>
+    <string name="complete_activity">"Khlaimung Paihjak "</string>
+    <string name="task_view">Khulok Naidi</string>
+    <string name="continue_text">Continue</string>
+    <string name="generate_form_e">Form E swnamdi</string>
+    <string name="submit_form_e">"Form E Submit Khlaidi "</string>
+    <string name="csg_disbursed">CSG rang yapharjak</string>
+    <string name="select">"Chongdi "</string>
+    <string name="delete">Tandi</string>
+</resources>

@@ -85,7 +85,7 @@ fun ActivityScreen(
                     } else {
                         Toast.makeText(
                             context,
-                            "file not Exists ",
+                            context.getString(R.string.file_not_exists),
                             Toast.LENGTH_SHORT
                         ).show()
                     }

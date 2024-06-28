@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -43,6 +44,7 @@ fun SubmitPhysicalFormScreen(
     activityId: Int
 ) {
     val outerState = rememberLazyListState()
+    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.setTotalDidi(activityId = activityId)
     }
@@ -76,7 +78,10 @@ fun SubmitPhysicalFormScreen(
                             viewModel.updateFromTable(activityId = activityId)
                             navigateToActivityCompletionScreen(
                                 navController,
-                                "Form E  generated successfully for ${viewModel.totalDidi.value} didis"
+                                context.getString(
+                                    R.string.form_e_generated_successfully_for_didis,
+                                    viewModel.totalDidi.value.toString()
+                                )
                             )
                         })
                 }
@@ -121,7 +126,7 @@ fun SubmitPhysicalFormScreen(
 fun saveMultiImage(filePath: String, values: ArrayList<DocumentUiModel>?, isDeleted: Boolean) {
     val savedOptions =
         commaSeparatedStringToList(values?.firstOrNull()?.filePath ?: BLANK_STRING)
-    val list: ArrayList<String> = ArrayList<String>()
+    val list: ArrayList<String> = ArrayList()
     list.addAll(savedOptions)
 
     if (isDeleted) {

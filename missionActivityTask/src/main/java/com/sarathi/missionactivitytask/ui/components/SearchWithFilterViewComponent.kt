@@ -121,7 +121,7 @@ fun SearchWithFilterViewComponent(
                                 modifier = Modifier
                                     .absolutePadding(top = 2.dp)
                                     .clickable {
-                                        searchString = ""
+                                        searchString = BLANK_STRING
                                         onSearchValueChange(searchString)
                                     }
                             )

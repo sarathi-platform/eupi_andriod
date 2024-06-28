@@ -1,2 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Sarathi</string>
+    <string name="close">Close</string>
+    <string name="not_able_to_load">Not able to load data please try again..</string>
+    <string name="retry">Retry</string>
+    <string name="in_progress">In Progress</string>
+    <string name="received">"প্ৰাপ্ত হৈছে : "</string>
+    <string name="complete_activity">সম্পূৰ্ণ কাৰ্যকলাপ  Activity</string>
+    <string name="complete_mission">Complete Mission</string>
+    <string name="task_view">চাওক</string>
+    <string name="continue_text">অব্যাহত ৰাখক</string>
+    <string name="not_available">Not Available</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
+    <string name="generate_form_e">Form E সৃষ্টি কৰক</string>
+    <string name="go_back">Go Back</string>
+    <string name="submit_form_e">ফর্ম E জমা দিয়ক</string>
+    <string name="attach_physical_form_e_signed_sealed">Attach Physical Form E (Signed and Sealed)</string>
+    <string name="activity_completed_unable_to_edit">you can\'t edit as activity is completed</string>
+    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
+    <string name="csg_disbursed">চিএচজি বিতৰণ কৰা হৈছে</string>
+    <string name="activity_completion_message">You have successfully completed %1s activity.</string>
+    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
+    <string name="select">নিৰ্বাচন কৰক</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="submit">Submit</string>
+    <string name="delete">মচি পেলাওক</string>
+    <string name="date">Date:</string>
+    <string name="amount">Amount:</string>
+    <string name="nature">Nature:</string>
+    <string name="mode">Mode:</string>
+    <string name="no_of_didi_s">Didis:</string>
+    <string name="edit">Edit</string>
+    <string name="add_image">+ Add Image</string>
+    <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="amount_limit">Amount limit is %1$d</string>
+    <string name="amount_limit_message">Amount is greater than sanctioned amount : %1$d</string>
+    <string name="summary">Summary</string>
+    <string name="form_e_generated">Form E generated</string>
+    <string name="done">Done</string>
+    <string name="more">+%1$s More</string>
+    <string name="ok">Ok</string>
+    <string name="disbursement_summary">Disbursement summary</string>
+    <string name="attach_physical_form_e">Attach physical form E</string>
+    <string name="didis">Didis</string>
+    <string name="file_not_exists">"file not Exists "</string>
+    <string name="activities_completed">Activities Completed</string>
+    <string name="start">Start</string>
+</resources>

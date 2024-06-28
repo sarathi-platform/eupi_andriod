@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Sarathi</string>
+    <string name="received">मोननाय जादों :</string>
+    <string name="complete_activity">"आबुं हाबाफारि "</string>
+    <string name="task_view">"नुथाय "</string>
+    <string name="continue_text">सोलिबाय थाथों</string>
+    <string name="generate_form_e">र्फम E सोरजि</string>
+    <string name="submit_form_e">र्फम E खौ जमा हो</string>
+    <string name="csg_disbursed">सि.एस.जि बिलायनाय जाबाय</string>
+    <string name="select">सायख\'</string>
+    <string name="delete">মুছে ফেলুন</string>
+</resources>

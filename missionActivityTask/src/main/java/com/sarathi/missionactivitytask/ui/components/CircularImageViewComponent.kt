@@ -18,13 +18,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.yellowBg
 
 @Composable
 fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: Uri) {
     Box(
         modifier = modifier
-            .border(width = 2.dp, shape = CircleShape, color = brownDark)
+            .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
             .clip(CircleShape)
             .width(55.dp)
             .height(55.dp)
