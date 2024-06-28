@@ -166,14 +166,14 @@ fun GrantTaskScreen(
                             viewModel.onEvent(
                                 SearchEvent.PerformSearch(
                                     queryTerm,
-                                    viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value,
+                                    viewModel.isGroupByEnable.value,
                                     BLANK_STRING
                                 )
                             )
                         })
                 }
                 Spacer(modifier = Modifier.height(dimen_10_dp))
-                if (viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value) {
+                if (viewModel.isGroupByEnable.value) {
                     LazyColumn(
                         modifier = Modifier.padding(bottom = dimen_50_dp)
                     ) {
