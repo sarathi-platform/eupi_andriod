@@ -165,7 +165,9 @@ fun GrantTaskScreen(
                         onSearchValueChange = { queryTerm ->
                             viewModel.onEvent(
                                 SearchEvent.PerformSearch(
-                                    queryTerm, false, BLANK_STRING
+                                    queryTerm,
+                                    viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value,
+                                    BLANK_STRING
                                 )
                             )
                         })
