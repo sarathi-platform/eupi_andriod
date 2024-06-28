@@ -68,7 +68,8 @@ import com.nudge.core.model.MissionUiModel as CoreMissionUiModel
 fun NavGraphBuilder.MatNavigation(
     navController: NavHostController,
     onSettingIconClick: () -> Unit,
-    onNavigateToBaselineMission: (mission: CoreMissionUiModel) -> Unit
+    onNavigateToBaselineMission: (mission: CoreMissionUiModel) -> Unit,
+    onBackPressed: () -> Unit
 ) {
     navigation(
         route = MAT_GRAPH,
@@ -78,7 +79,8 @@ fun NavGraphBuilder.MatNavigation(
         composable(route = MATHomeScreens.MissionScreen.route) {
             GrantMissionScreen(
                 navController = navController, viewModel = hiltViewModel(),
-                onSettingClick = onSettingIconClick
+                onSettingClick = onSettingIconClick,
+                onBackPressed = onBackPressed
             ) { isBaselineMission, mission: MissionUiModel ->
                 if (isBaselineMission) {
                     onNavigateToBaselineMission(

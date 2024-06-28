@@ -506,10 +506,10 @@
     <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
-        <plurals name="vo_endorsement_not_started">
-            <item quantity="one">CLF Endorsement is not started</item>
-            <item quantity="other">VO Endorsement is not started</item>
-        </plurals>
+    <plurals name="vo_endorsement_not_started">
+        <item quantity="one">CLF Endorsement is not started</item>
+        <item quantity="other">VO Endorsement is not started</item>
+    </plurals>
     <string name="export_data_test">Export Data</string>
     <string name="network_not_available_message">Network not available, Please try again later!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>

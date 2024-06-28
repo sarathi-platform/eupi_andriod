@@ -1,6 +1,7 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
+import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -49,6 +51,7 @@ fun DidiTabScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     didiTabViewModel: DidiTabViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit,
     onSettingClicked: () -> Unit
 ) {
     val context = LocalContext.current
@@ -56,6 +59,30 @@ fun DidiTabScreen(
     LaunchedEffect(key1 = true) {
         didiTabViewModel.onEvent(InitDataEvent.InitDataState)
     }
+
+    val showAppExitDialog = remember {
+        mutableStateOf(false)
+    }
+
+    BackHandler {
+        showAppExitDialog.value = true
+    }
+
+    if (showAppExitDialog.value) {
+        ShowCustomDialog(
+            title = stringResource(id = com.sarathi.missionactivitytask.R.string.are_you_sure),
+            message = stringResource(id = com.sarathi.missionactivitytask.R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = stringResource(id = com.sarathi.missionactivitytask.R.string.exit),
+            negativeButtonTitle = stringResource(id = com.sarathi.missionactivitytask.R.string.cancel),
+            onNegativeButtonClick = {
+                showAppExitDialog.value = false
+            },
+            onPositiveButtonClick = {
+                onBackPressed()
+            }
+        )
+    }
+
 
     val pullToRefreshState = rememberPullRefreshState(
         refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,

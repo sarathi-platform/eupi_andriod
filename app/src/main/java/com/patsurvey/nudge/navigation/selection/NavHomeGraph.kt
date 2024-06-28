@@ -14,6 +14,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.MissionUiModel
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
@@ -143,7 +144,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(route = HomeScreens.DIDI_TAB_SCREEN.route) {
-            DidiTabScreen(navHostController = navController) {
+            DidiTabScreen(navHostController = navController,
+                onBackPressed = {
+                    finishActivity()
+                }) {
                 navController.navigateToSettingScreen()
             }
         }
@@ -161,6 +165,9 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         MatNavigation(
             navController = navController,
             onSettingIconClick = { navController.navigateToSettingScreen() },
+            onBackPressed = {
+                finishActivity()
+            },
             onNavigateToBaselineMission = { mission: MissionUiModel ->
                 navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
             }
@@ -169,6 +176,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
             navController = navController,
             onSettingIconClick = { navController.navigateToSettingScreen() })
     }
+}
+
+fun finishActivity() {
+    (CoreAppDetails.getApplicationDetails()?.activity)?.finish()
 }
 
 fun NavHostController.navigateToSettingScreen() {
