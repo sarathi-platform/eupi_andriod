@@ -2,18 +2,17 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
 import android.text.TextUtils
+import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.uriFromFile
 import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
-import java.io.File
 import javax.inject.Inject
 
 class SurveyAnswerEventWriterUseCase @Inject constructor(
@@ -107,6 +106,11 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
 
 
                 uriList?.forEach { uri ->
+                    compressImage(
+                        uri.path ?: BLANK_STRING,
+                        CoreAppDetails.getContext()!!,
+                        getFileNameFromURL(uri.path ?: BLANK_STRING)
+                    )
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(
                         it,
                         uri = uri
