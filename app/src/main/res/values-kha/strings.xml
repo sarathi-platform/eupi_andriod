@@ -9,16 +9,13 @@
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
     <plurals name="didis_added">
-        <item quantity="one">दीदी ज़ोड दी गई है</item>
-        <item quantity="other">दीदीयाँ ज़ोड दी गई है</item>
+        <item quantity="one">I kong la dep pynrung</item>
+        <item quantity="other">Ki Kong la dep pynrung</item>
     </plurals>
     <plurals name="poor_didis_pending_text">
-        <item quantity="one">गरीब दीदी बची हुई है</item>
-        <item quantity="other">गरीब दीदियाँ बची हुई है</item>
+        <item quantity="one">I kong ha ka kyrdan ba duk ba dang sahteng</item>
+        <item quantity="other">Ki Kong ha ka kyrdan ba duk ba dang sahteng</item>
     </plurals>
-
-
-    <!--   Updated 03-10-2023 -->
 
 
     <string name="mark_complete_text">Pyndep ka jingthep ia ka kyrteng dong</string>
@@ -369,7 +366,7 @@
     <string name="pat_success_message_singular">Ka jinglum jingtip da ka PAT ia {TOTAL_COUNT} i kong ba pynrung thymmai la ai</string>
     <string name="total_pat_attempted_string">Baroh kiba la pyrshan ban pynrung ha ka PAT</string>
     <string name="didis_marked_as_not_available_string">I kong ba la kdew ba ym don</string>
-    <string name="able_bodied_women_flag_text">Don na ki riew kynthei ha ka longing ki ba biang ha ka dkhot met?</string>
+    <string name="able_bodied_women_flag_text">Don na ki riew kynthei ha ka \nlonging ki ba biang ha ka dkhot met?</string>
     <string name="something_went_wrong">Kaei kaei ka don kaba bakla.</string>
     <string name="score_comparison_section_1_text">Ka bynta 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Ka jing bym mynjur da ka VO ia kane ka shnong mynta!</string>
