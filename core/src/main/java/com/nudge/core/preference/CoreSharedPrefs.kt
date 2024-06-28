@@ -67,7 +67,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getBackupFileName(mobileNo: String): String {
         return prefs.getString(
             PREF_FILE_BACKUP_NAME,
-            getDefaultBackUpFileName(mobileNo)
+            getDefaultBackUpFileName(mobileNo, getUserName())
         )!!
 
     }
@@ -79,7 +79,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getImageBackupFileName(mobileNo: String): String {
         return prefs.getString(
             PREF_IMAGE_FILE_BACKUP_NAME,
-            getDefaultImageBackUpFileName(mobileNo)
+            getDefaultImageBackUpFileName(mobileNo, getUserType())
         )!!
     }
 

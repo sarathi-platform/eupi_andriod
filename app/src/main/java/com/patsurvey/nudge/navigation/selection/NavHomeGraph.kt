@@ -319,7 +319,7 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(NudgeNavigationGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                     popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false
