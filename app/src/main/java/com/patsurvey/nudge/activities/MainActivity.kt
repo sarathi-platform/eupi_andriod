@@ -33,6 +33,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.nudge.core.CoreObserverInterface
+import com.nudge.core.CoreObserverManager
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -55,12 +57,11 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity(), OnLocaleChangedListener {
+class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverInterface {
     private val localizationDelegate = LocalizationActivityDelegate(this)
 
     @Inject
     lateinit var sharedPrefs: PrefRepo
-
 
 
     private val mViewModel: MainActivityViewModel by viewModels()
@@ -92,6 +93,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 activity = this
             )
         )
+        CoreObserverManager.addObserver(this)
         getSyncEnabled()
         setContent {
             Nudge_Theme {
@@ -283,6 +285,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         AnalyticsHelper.cleanup()
         mViewModel.isOnline.removeObservers(this)
         applicationContext.cacheDir.deleteRecursively()
+        CoreObserverManager.removeObserver(this)
         RetryHelper.cleanUp()
         super.onDestroy()
     }
@@ -347,5 +350,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
                 }
             }
+    }
+
+    override fun updateMissionActivityStatusOnGrantInit(onSuccess: (isSuccess: Boolean) -> Unit) {
+        mViewModel.updateBaselineStatusOnInit() {
+            onSuccess(it)
+        }
     }
 }

@@ -9,12 +9,12 @@
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
     <plurals name="didis_added">
-        <item quantity="one">दीदी ज़ोड दी गई है</item>
-        <item quantity="other">दीदीयाँ ज़ोड दी गई है</item>
+        <item quantity="one">Didi ko ondapaha</item>
+        <item quantity="other">Didi rangko ondapaha</item>
     </plurals>
     <plurals name="poor_didis_pending_text">
-        <item quantity="one">गरीब दीदी बची हुई है</item>
-        <item quantity="other">गरीब दीदियाँ बची हुई है</item>
+        <item quantity="one">Dongkuenggipa kangal didi</item>
+        <item quantity="other">dongkuenggipa kangal didi-rang</item>
     </plurals>
 
 
@@ -366,7 +366,7 @@
     <string name="pat_success_message_singular">{TOTAL_COUNT}  Gital Didi rangni PAT Survey ko submit ka.aha</string>
     <string name="total_pat_attempted_string">PAT Chugimik ko Dakaha</string>
     <string name="didis_marked_as_not_available_string">Didi jerangkon dongja ine chin dakaha</string>
-    <string name="able_bodied_women_flag_text">Be.en bimangni gita namgipa\n mechik nokdango dongama?</string>
+    <string name="able_bodied_women_flag_text">Be.en bimangni gita namgipa \nmechik nokdango dongama?</string>
     <string name="something_went_wrong">Maiba ong.aha</string>
     <string name="score_comparison_section_1_text">Section 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Da.o VO songko rachakuja!</string>

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.CoreObserverManager
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -82,8 +84,22 @@ class MissionScreenViewModel @Inject constructor(
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
-                initMissionScreen()
+                // Temp method to be removed after baseline is migrated to Grant flow.
+                updateStatusForBaselineMission() { success ->
+                    CoreLogger.i(
+                        tag = "MissionScreenViewMode",
+                        msg = "updateStatusForBaselineMission: success: $success"
+                    )
+                    initMissionScreen() // Move this out of the lambda block once the above method is removed
+                }
             }, isRefresh = isRefresh)
+        }
+    }
+
+    // Temp method to be removed after baseline is migrated to Grant flow.
+    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
+        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
+            onSuccess(it)
         }
     }
 
