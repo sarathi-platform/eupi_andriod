@@ -5,15 +5,19 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.NO_OF_POOR_DIDI_TAG
 import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import javax.inject.Inject
 
 class SurveySaveRepositoryImpl @Inject constructor(
     val surveyAnswersDao: SurveyAnswersDao,
-    val coreSharedPrefs: CoreSharedPrefs
+    val coreSharedPrefs: CoreSharedPrefs,
+    val optionItemDao: OptionItemDao
 ) :
     ISurveySaveRepository {
     override suspend fun saveSurveyAnswer(
@@ -131,11 +135,38 @@ class SurveySaveRepositoryImpl @Inject constructor(
         taskId: Int,
         sectionId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
-        return surveyAnswersDao.getSurveyAnswersForSummary(
+        val optionUiModelList = getOptionsUiModel(sectionId, surveyId)
+        val surveyAnswers = surveyAnswersDao.getSurveyAnswersForSummary(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             sectionId = sectionId,
             surveyId = surveyId,
             taskId = taskId
+        )
+        surveyAnswers.forEachIndexed { index, surveyAnswerData ->
+            when (surveyAnswerData.questionType) {
+                QuestionType.MultiSelectDropDown.name,
+                QuestionType.SingleSelectDropDown.name -> {
+                    surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
+                        val optionItem =
+                            optionUiModelList.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
+                        if (optionItem != null) {
+                            surveyAnswers[index].optionItems[optionIndex].description =
+                                option.description
+                        }
+                    }
+                }
+            }
+        }
+        return surveyAnswers
+    }
+
+    private fun getOptionsUiModel(sectionId: Int, surveyId: Int): List<OptionsUiModel> {
+        return optionItemDao.getSurveySectionQuestionOptionsForLanguage(
+            languageId = coreSharedPrefs.getAppLanguage(),
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            referenceType = LanguageAttributeReferenceType.OPTION.name,
         )
     }
 
@@ -153,5 +184,6 @@ class SurveySaveRepositoryImpl @Inject constructor(
             referenceId = referenceId
         )
     }
+
 
 }

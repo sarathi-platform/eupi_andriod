@@ -9,6 +9,8 @@ import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverte
 data class SurveyAnswerFormSummaryUiModel(
     @SerializedName("subjectId")
     var subjectId: Int,
+    @SerializedName("questionId")
+    var questionId: Int,
 
     @SerializedName("surveyId")
     var surveyId: Int,

@@ -508,12 +508,13 @@ class DataLoadingModule {
     @Singleton
     fun provideSaveSurveyRepository(
         surveyAnswersDao: SurveyAnswersDao,
-        coreSharedPrefs: CoreSharedPrefs
-
+        coreSharedPrefs: CoreSharedPrefs,
+        optionItemDao: OptionItemDao
     ): ISurveySaveRepository {
         return SurveySaveRepositoryImpl(
             surveyAnswersDao = surveyAnswersDao,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            optionItemDao = optionItemDao
         )
     }
 
