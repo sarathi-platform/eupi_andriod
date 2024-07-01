@@ -17,7 +17,6 @@ import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -57,11 +56,6 @@ import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenVie
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
-import kotlinx.coroutines.delay
-
-private val function = {
-
-}
 
 @Composable
 fun GrantTaskScreen(
