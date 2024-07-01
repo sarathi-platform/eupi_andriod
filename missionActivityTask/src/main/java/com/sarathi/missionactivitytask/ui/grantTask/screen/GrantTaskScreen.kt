@@ -304,6 +304,11 @@ private fun TaskRowView(
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = GrantTaskCardModel(
+                    value = SurveyStatusEnum.NOT_AVAILABLE.name,
+                    label = BLANK_STRING,
+                    icon = null
+                )
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
