@@ -17,7 +17,6 @@ import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
-import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import javax.inject.Inject
 
 class SurveySaveRepositoryImpl @Inject constructor(
@@ -138,52 +137,15 @@ class SurveySaveRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllSaveAnswer(
-        activityConfigId: Int,
         surveyId: Int,
         taskId: Int,
-        sectionId: Int,
-        grantId: Int
+        sectionId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
-        // val optionUiModelList = getOptionsUiModel(sectionId, surveyId)
-        val surveyAnswers = surveyAnswersDao.getSurveyAnswersForSummary(
+        return surveyAnswersDao.getSurveyAnswersForSummary(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             sectionId = sectionId,
             surveyId = surveyId,
             taskId = taskId
-        )
-        surveyAnswers.forEachIndexed { index, surveyAnswerData ->
-            when (surveyAnswerData.questionType) {
-                QuestionType.MultiSelectDropDown.name,
-                QuestionType.SingleSelectDropDown.name -> {
-                    val optionUiModelList = getOptionsForModeAndNature(
-                        activityConfigId = activityConfigId,
-                        grantId = grantId,
-                        tag = surveyAnswerData.tagId,
-                        surveyId = surveyId,
-                        sectionId = sectionId,
-                        questionId = surveyAnswerData.questionId
-                    )
-                    surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
-                        val optionItem =
-                            optionUiModelList.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
-                        if (optionItem != null) {
-                            surveyAnswers[index].optionItems[optionIndex].description =
-                                option.description
-                        }
-                    }
-                }
-            }
-        }
-        return surveyAnswers
-    }
-
-    private fun getOptionsUiModel(sectionId: Int, surveyId: Int): List<OptionsUiModel> {
-        return optionItemDao.getSurveySectionQuestionOptionsForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            sectionId = sectionId,
-            surveyId = surveyId,
-            referenceType = LanguageAttributeReferenceType.OPTION.name,
         )
     }
 

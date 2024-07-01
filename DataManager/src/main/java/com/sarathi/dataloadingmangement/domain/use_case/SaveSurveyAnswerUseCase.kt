@@ -50,11 +50,9 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         grantId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
         return repository.getAllSaveAnswer(
-            activityConfigId = activityConfigId,
             taskId = taskId,
             surveyId = surveyId,
             sectionId = sectionId,
-            grantId = grantId
         )
     }
 

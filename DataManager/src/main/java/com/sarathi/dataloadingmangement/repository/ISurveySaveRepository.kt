@@ -17,11 +17,9 @@ interface ISurveySaveRepository {
     fun getSurveyAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String
     fun getUserIdentifier(): String
     suspend fun getAllSaveAnswer(
-        activityConfigId: Int,
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
-        grantId: Int
     ): List<SurveyAnswerFormSummaryUiModel>
 
     suspend fun deleteSurveyAnswer(
