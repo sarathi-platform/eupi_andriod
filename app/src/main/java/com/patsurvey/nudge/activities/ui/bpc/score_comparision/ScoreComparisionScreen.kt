@@ -135,8 +135,8 @@ fun ScoreComparisionScreen(
     }
 
     BackHandler() {
-        navController.navigate(NudgeNavigationGraph.HOME){
-            popUpTo(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route){
+        navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+            popUpTo(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
                 inclusive = true
             }
         }
@@ -411,7 +411,7 @@ fun ScoreComparisionScreen(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                navController.navigate(NudgeNavigationGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                     popUpTo(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                     }
