@@ -316,6 +316,7 @@ fun DidiItemCardForPat(
                                     if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                                         || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
                                     ) {
+                                        prefRepo.saveQuestionScreenOpenFrom(PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal)
                                         if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                             didiMarkedNotAvailable.value = false
                                         }
@@ -691,7 +692,9 @@ fun showDidiImageDialog(didi: DidiEntity,onCloseClick:()->Unit){
 @Composable
 fun CustomLoaderDialog(isVisible:Boolean){
     Dialog(onDismissRequest = {  }) {
-        Box(modifier = Modifier.size(50.dp,50.dp).background(Color.White), contentAlignment = Alignment.Center){
+        Box(modifier = Modifier
+            .size(50.dp, 50.dp)
+            .background(Color.White), contentAlignment = Alignment.Center){
             LoaderComponent(visible =isVisible)
 
         }
