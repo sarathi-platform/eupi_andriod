@@ -201,6 +201,9 @@ fun NavGraphBuilder.MatNavigation(
             }
         )) {
             ContentDetailScreen(
+                onSettingIconClicked = {
+                    onSettingIconClick()
+                },
                 navController = navController, viewModel = hiltViewModel(),
                 onNavigateToMediaScreen = { fileType, key, contentTitle ->
                     navigateToMediaPlayerScreen(

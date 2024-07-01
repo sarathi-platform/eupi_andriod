@@ -52,5 +52,7 @@
     <string name="activities_completed">"কাৰ্যকলাপ সম্পূৰ্ণ হৈছে "</string>
     <string name="start">আৰম্ভ কৰক</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">Sanctioned amount has been fully disbursed</string>
+    <string name="complete">Complete</string>
+    <string name="references">References (%1$s)</string>
 
 </resources>

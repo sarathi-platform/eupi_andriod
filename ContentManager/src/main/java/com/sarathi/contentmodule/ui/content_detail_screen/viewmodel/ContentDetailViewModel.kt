@@ -73,7 +73,11 @@ class ContentDetailViewModel @Inject constructor(
         } else {
             filteredList.addAll(contentList.value)
         }
-        _filterContentList.value = filteredList
+        if (isFilterApplied) {
+            filterContentMap = filteredList.groupBy { it.contentType }
+        } else {
+            _filterContentList.value = filteredList
+        }
     }
 
     fun isFilePathExists(filePath: String): Boolean {

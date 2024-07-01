@@ -90,15 +90,17 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun initData() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            setGrantComponentDTO()
             taskEntity = getTaskUseCase.getTask(taskId)
             _taskList.value =
                 saveSurveyAnswerUseCase.getAllSaveAnswer(
+                    activityConfigId = activityConfigId,
                     surveyId = surveyId,
                     sectionId = sectionId,
-                    taskId = taskId
+                    taskId = taskId,
+                    grantId = grantConfigUi.value.grantId
                 ).groupBy { it.referenceId }
             isManualTaskCompleteActive()
-            setGrantComponentDTO()
             isActivityCompleted()
         }
     }
@@ -211,15 +213,11 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         }
     }
 
-    fun setGrantComponentDTO() {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            grantConfigUi.value = grantConfigUseCase.getGrantComponentDTO(
-                surveyId = surveyId,
-                activityConfigId = activityConfigId
-            )
-
-        }
-
+    suspend fun setGrantComponentDTO() {
+        grantConfigUi.value = grantConfigUseCase.getGrantComponentDTO(
+            surveyId = surveyId,
+            activityConfigId = activityConfigId
+        )
     }
 
     fun saveButtonClicked() {

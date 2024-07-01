@@ -43,14 +43,18 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
     }
 
     suspend fun getAllSaveAnswer(
+        activityConfigId: Int,
         surveyId: Int,
         taskId: Int,
-        sectionId: Int
+        sectionId: Int,
+        grantId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
         return repository.getAllSaveAnswer(
+            activityConfigId = activityConfigId,
             taskId = taskId,
             surveyId = surveyId,
-            sectionId = sectionId
+            sectionId = sectionId,
+            grantId = grantId
         )
     }
 

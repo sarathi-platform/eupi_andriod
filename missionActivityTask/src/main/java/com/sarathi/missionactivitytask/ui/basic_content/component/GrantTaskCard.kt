@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -228,7 +229,7 @@ fun GrantTaskCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = dimen_5_dp, bottom = dimen_5_dp)
+                        .padding(top = dimen_5_dp)
                 ) {
                     Divider(
                         modifier = Modifier
@@ -240,7 +241,8 @@ fun GrantTaskCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimen_16_dp),
-                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (taskStatus?.value == StatusEnum.COMPLETED.name) {
                         Row(modifier = Modifier.clickable {
@@ -249,9 +251,10 @@ fun GrantTaskCard(
                             Text(
                                 text = stringResource(R.string.task_view),
                                 modifier = Modifier
-                                    .padding(horizontal = dimen_5_dp),
+                                    .padding(horizontal = dimen_5_dp)
+                                    .absolutePadding(bottom = 3.dp),
                                 color = blueDark,
-                                style = newMediumTextStyle
+                                style = newMediumTextStyle,
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Icon(

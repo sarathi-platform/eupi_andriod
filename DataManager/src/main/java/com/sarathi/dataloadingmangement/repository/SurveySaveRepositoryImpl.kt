@@ -1,13 +1,19 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.MODE_TAG
 import com.sarathi.dataloadingmangement.NO_OF_POOR_DIDI_TAG
 import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
@@ -17,7 +23,8 @@ import javax.inject.Inject
 class SurveySaveRepositoryImpl @Inject constructor(
     val surveyAnswersDao: SurveyAnswersDao,
     val coreSharedPrefs: CoreSharedPrefs,
-    val optionItemDao: OptionItemDao
+    val optionItemDao: OptionItemDao,
+    val grantConfigDao: GrantConfigDao
 ) :
     ISurveySaveRepository {
     override suspend fun saveSurveyAnswer(
@@ -131,11 +138,13 @@ class SurveySaveRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllSaveAnswer(
+        activityConfigId: Int,
         surveyId: Int,
         taskId: Int,
-        sectionId: Int
+        sectionId: Int,
+        grantId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
-        val optionUiModelList = getOptionsUiModel(sectionId, surveyId)
+        // val optionUiModelList = getOptionsUiModel(sectionId, surveyId)
         val surveyAnswers = surveyAnswersDao.getSurveyAnswersForSummary(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             sectionId = sectionId,
@@ -146,6 +155,14 @@ class SurveySaveRepositoryImpl @Inject constructor(
             when (surveyAnswerData.questionType) {
                 QuestionType.MultiSelectDropDown.name,
                 QuestionType.SingleSelectDropDown.name -> {
+                    val optionUiModelList = getOptionsForModeAndNature(
+                        activityConfigId = activityConfigId,
+                        grantId = grantId,
+                        tag = surveyAnswerData.tagId,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = surveyAnswerData.questionId
+                    )
                     surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
                         val optionItem =
                             optionUiModelList.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
@@ -185,5 +202,44 @@ class SurveySaveRepositoryImpl @Inject constructor(
         )
     }
 
+    private fun getOptionsForModeAndNature(
+        activityConfigId: Int,
+        grantId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        questionId: Int,
+        tag: Int
+    ): List<OptionsUiModel> {
 
+        val grantConfig =
+            grantConfigDao.getGrantConfigWithGrantId(activityConfigId, grantId = grantId)
+        val modeOrNatureOptions = ArrayList<OptionsUiModel>()
+        val type = object : TypeToken<List<OptionsItem?>?>() {}.type
+        val options = Gson().fromJson<List<OptionsItem>>(
+            if (tag.toString() == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
+            type
+        )
+        options?.forEach { option ->
+            modeOrNatureOptions.add(
+                OptionsUiModel(
+                    sectionId = sectionId,
+                    surveyId = surveyId,
+                    questionId = questionId,
+                    optionId = option?.optionId,
+                    optionTag = option?.tag ?: DEFAULT_ID,
+                    optionType = option?.optionType,
+                    originalValue = option?.originalValue,
+                    isSelected = false,
+                    description = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.description,
+                    paraphrase = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.paraphrase,
+                    contentEntities = option?.contentList ?: listOf(),
+                    conditions = option?.conditions
+                )
+            )
+
+        }
+
+        return modeOrNatureOptions
+
+    }
 }

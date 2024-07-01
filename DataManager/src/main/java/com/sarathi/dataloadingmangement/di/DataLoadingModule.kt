@@ -509,12 +509,14 @@ class DataLoadingModule {
     fun provideSaveSurveyRepository(
         surveyAnswersDao: SurveyAnswersDao,
         coreSharedPrefs: CoreSharedPrefs,
-        optionItemDao: OptionItemDao
+        optionItemDao: OptionItemDao,
+        grantConfigDao: GrantConfigDao
     ): ISurveySaveRepository {
         return SurveySaveRepositoryImpl(
             surveyAnswersDao = surveyAnswersDao,
             coreSharedPrefs = coreSharedPrefs,
-            optionItemDao = optionItemDao
+            optionItemDao = optionItemDao,
+            grantConfigDao = grantConfigDao
         )
     }
 

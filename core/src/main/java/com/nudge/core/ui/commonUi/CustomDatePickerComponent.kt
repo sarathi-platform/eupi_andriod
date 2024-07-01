@@ -23,12 +23,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
+import com.nudge.core.R
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.searchFieldBg
-import com.sarathi.missionactivitytask.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

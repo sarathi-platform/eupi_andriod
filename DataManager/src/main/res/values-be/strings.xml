@@ -52,5 +52,7 @@
     <string name="activities_completed">"हाबाफारिफोरा गासैबो जाजुबबाय "</string>
     <string name="start">जागायजेन</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">Sanctioned amount has been fully disbursed</string>
+    <string name="complete">Complete</string>
+    <string name="references">References (%1$s)</string>
 
 </resources>

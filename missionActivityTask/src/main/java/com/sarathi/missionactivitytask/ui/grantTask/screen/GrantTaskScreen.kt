@@ -37,6 +37,7 @@ import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -152,23 +153,29 @@ fun GrantTaskScreen(
                     }
                 }
                 if (isSearch) {
-                    SearchWithFilterViewComponent(
-                        placeholderString = viewModel.searchLabel.value,
-                        filterSelected = viewModel.isGroupByEnable.value,
-                        modifier = Modifier.padding(horizontal = 10.dp),
-                        showFilter = viewModel.isFilerEnable.value,
-                        onFilterSelected = {
-                            if (viewModel.filterList.value.isNotEmpty()) {
-                                viewModel.isGroupByEnable.value = !it
-                            }
-                        },
-                        onSearchValueChange = { queryTerm ->
-                            viewModel.onEvent(
-                                SearchEvent.PerformSearch(
-                                    queryTerm, false, BLANK_STRING
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimen_8_dp)) {
+                        SearchWithFilterViewComponent(
+                            placeholderString = viewModel.searchLabel.value,
+                            filterSelected = viewModel.isGroupByEnable.value,
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            showFilter = viewModel.isFilerEnable.value,
+                            onFilterSelected = {
+                                if (viewModel.filterList.value.isNotEmpty()) {
+                                    viewModel.isGroupByEnable.value = !it
+                                }
+                            },
+                            onSearchValueChange = { queryTerm ->
+                                viewModel.onEvent(
+                                    SearchEvent.PerformSearch(
+                                        queryTerm, false, BLANK_STRING
+                                    )
                                 )
-                            )
-                        })
+                            })
+                    }
+
                 }
                 Spacer(modifier = Modifier.height(dimen_10_dp))
                 if (viewModel.filterTaskMap.isNotEmpty() && viewModel.isGroupByEnable.value) {

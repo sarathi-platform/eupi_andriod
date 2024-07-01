@@ -2,8 +2,10 @@ package com.sarathi.missionactivitytask.ui.mission_screen.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
@@ -86,14 +89,20 @@ fun GrantMissionScreen(
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (isSearch) {
-                SearchWithFilterViewComponent(placeholderString = "Search",
-                    filterSelected = false,
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    showFilter = false,
-                    onFilterSelected = {},
-                    onSearchValueChange = { queryTerm ->
-                        onSearchValueChanged(queryTerm)
-                    })
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_5_dp)) {
+                    SearchWithFilterViewComponent(placeholderString = "Search",
+                        filterSelected = false,
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        showFilter = false,
+                        onFilterSelected = {},
+                        onSearchValueChange = { queryTerm ->
+                            onSearchValueChanged(queryTerm)
+                        })
+                }
+
             }
 
             Box(
