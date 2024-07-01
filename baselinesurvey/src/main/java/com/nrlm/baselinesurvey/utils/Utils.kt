@@ -1422,6 +1422,9 @@ fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
         } catch (ex: Exception) {
             BaselineLogger.e("ExportImportViewModel", "openShareSheet :${ex.message}", ex)
         }
+    }else{
+       showCustomToast(BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(R.string.no_data_available_at_the_moment))
+
     }
 
 }
