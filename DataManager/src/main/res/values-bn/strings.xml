@@ -1,14 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sarathi</string>
+    <string name="online_text">অনলাইন</string>
+    <string name="offline_text">অফলাইন</string>
+    <string name="not_able_to_load">েটা লোড করতে অক্ষম অনুগ্রহ করে আবার চেষ্টা করুন..</string>
+    <string name="retry">"পুনরায় চেষ্টা করা "</string>
+    <string name="in_progress">"এখন চলছে "</string>
     <string name="received">প্রাপ্ত হয়েছে :</string>
     <string name="complete_activity">কার্যকলাপ সম্পন্ন করুন</string>
+    <string name="complete_mission">Complete Mission</string>
     <string name="task_view">দেখুন</string>
     <string name="continue_text">চালিয়ে যান</string>
+    <string name="not_available">পাওয়া যায় না</string>
+    <string name="share">"শেয়ার করুন "</string>
+    <string name="download">"ডাউনলোড করুন "</string>
     <string name="generate_form_e">ফর্ম ই তৈরি করুন</string>
+    <string name="go_back">Go Back</string>
     <string name="submit_form_e">ফর্ম E জমা দিন</string>
+    <string name="attach_physical_form_e_signed_sealed">Attach Physical Form E (Signed and Sealed)</string>
+    <string name="activity_completed_unable_to_edit">you can\'t edit as activity is completed</string>
+    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
     <string name="csg_disbursed">CSG বিতরণ করা হয়েছে</string>
+    <string name="activity_completion_message">You have successfully completed %1s activity.</string>
+    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
     <string name="select">নির্বাচন করুন</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="submit">"জমা দিন "</string>
     <string name="delete">মুছে ফেলুন</string>
-    <string name="mode">প্রকার :</string>
+    <string name="date">তারিখ:</string>
+    <string name="amount">পরিমাণ:</string>
+    <string name="nature">প্ৰকৃতি:</string>
+    <string name="mode">প্রকার:</string>
+    <string name="no_of_didi_s">Didis:</string>
+    <string name="edit">সম্পাদনা</string>
+    <string name="add_image">"+ ছবি যোগ কর "</string>
+    <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete?</string>
+    <string name="no">না</string>
+    <string name="yes">হ্যাঁ</string>
+    <string name="amount_limit">পরিমাণের সীমা হল %1$d</string>
+    <string name="amount_limit_message">Amount is greater than sanctioned amount : %1$d</string>
+    <string name="summary">সারাংশ</string>
+    <string name="form_e_generated">ফর্ম E তৈরি হয়েছে</string>
+    <string name="done">সম্পন্ন করুন</string>
+    <string name="more">"+%1$s আরও "</string>
+    <string name="ok">ঠিক আছে</string>
+    <string name="disbursement_summary">বিতরণ সারাংশ</string>
+    <string name="attach_physical_form_e">প্রিন্ট করা ফর্ম E সংযুক্ত করুন</string>
+    <string name="close">বন্ধ করুন</string>
+    <string name="didis">দিদিরা</string>
+    <string name="file_not_exists">"file not Exists "</string>
+    <string name="activities_completed">"কার্যক্রম সমাপ্ত হয়েছে "</string>
+    <string name="start">শুরু করুন</string>
+    <string name="sanctioned_amount_has_been_fully_disbursed">Sanctioned amount has been fully disbursed</string>
+
 </resources>

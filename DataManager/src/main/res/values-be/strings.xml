@@ -1,13 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sarathi</string>
+    <string name="online_text">अनलाइन</string>
+    <string name="offline_text">अफलाइन</string>
+    <string name="not_able_to_load">Not  able to load data please try again..</string>
+    <string name="retry">Retry</string>
+    <string name="in_progress">"सोलिगासिनो दं "</string>
     <string name="received">मोननाय जादों :</string>
     <string name="complete_activity">"आबुं हाबाफारि "</string>
+    <string name="complete_mission">Complete Mission</string>
     <string name="task_view">"नुथाय "</string>
     <string name="continue_text">सोलिबाय थाथों</string>
+    <string name="not_available">"मोननो थाङा "</string>
+    <string name="share">"राननानै ला "</string>
+    <string name="download">"दाउनलड "</string>
     <string name="generate_form_e">र्फम E सोरजि</string>
+    <string name="go_back">Go Back</string>
     <string name="submit_form_e">र्फम E खौ जमा हो</string>
+    <string name="attach_physical_form_e_signed_sealed">Attach Physical Form E (Signed and Sealed)</string>
+    <string name="activity_completed_unable_to_edit">you can\'t edit as activity is completed</string>
+    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
     <string name="csg_disbursed">सि.एस.जि बिलायनाय जाबाय</string>
+    <string name="activity_completion_message">You have successfully completed %1s activity.</string>
+    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
     <string name="select">सायख\'</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="submit">"जमा हो "</string>
     <string name="delete">মুছে ফেলুন</string>
+    <string name="date">अक्ट:</string>
+    <string name="amount">बिबां:</string>
+    <string name="nature">স্বভাব:</string>
+    <string name="mode">"खान्थि "</string>
+    <string name="no_of_didi_s">Didis:</string>
+    <string name="edit">फोसाबनाय/सोदांनाय</string>
+    <string name="add_image">"+ सावगारिखौ होफा "</string>
+    <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete?</string>
+    <string name="no">गैया</string>
+    <string name="yes">नंगौ</string>
+    <string name="amount_limit">रांनि सिमाया जाबाय %1$d</string>
+    <string name="amount_limit_message">Amount is greater than sanctioned amount : %1$d</string>
+    <string name="summary">गुदिखिथागुदिखिथा</string>
+    <string name="form_e_generated">र्फम E सोरजिनाय</string>
+    <string name="done">खालामनाय जाबाय</string>
+    <string name="more">"+%1$s गोबां  "</string>
+    <string name="ok">Ok</string>
+    <string name="disbursement_summary">बिलायनायनि सुंद\' फोरमायथि</string>
+    <string name="attach_physical_form_e">फिसिकेल र्फम E खौ सरजाब</string>
+    <string name="close">बन्द खालाम</string>
+    <string name="didis">आब’मोन</string>
+    <string name="file_not_exists">"file not Exists "</string>
+    <string name="activities_completed">"हाबाफारिफोरा गासैबो जाजुबबाय "</string>
+    <string name="start">जागायजेन</string>
+    <string name="sanctioned_amount_has_been_fully_disbursed">Sanctioned amount has been fully disbursed</string>
+
 </resources>
