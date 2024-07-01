@@ -24,7 +24,6 @@ import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
@@ -40,7 +39,7 @@ fun ButtonComponent(title: String = BLANK_STRING) {
                 .size(60.dp)
                 .clip(shape = CircleShape)
                 .border(
-                    dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_100_dp)
+                    dimen_1_dp, color = blueDark, RoundedCornerShape(dimen_100_dp)
                 )
                 .background(color = Color.Transparent)
                 .fillMaxSize(),

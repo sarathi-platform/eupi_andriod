@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -54,11 +52,9 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.capitalizeFirstLetter
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dateRangeFieldColor
-import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
@@ -168,29 +164,35 @@ fun ContentDetailScreen(
                 .fillMaxSize()
                 .padding(top = 75.dp)
         ) {
-            SearchWithFilterViewComponent(placeholderString = "Search",
-                filterSelected = viewModel.filterSelected.value,
-                modifier = Modifier.padding(horizontal = dimen_10_dp),
-                showFilter = true,
-                onFilterSelected = {
-                    if (viewModel.filterContentList.value.isNotEmpty()) {
-                        viewModel.filterSelected.value = !it
-                    }
-                },
-                onSearchValueChange = { queryTerm ->
-                    viewModel.onEvent(
-                        SearchEvent.PerformSearch(
-                            queryTerm,
-                            viewModel.filterSelected.value,
-                            ""
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
+                SearchWithFilterViewComponent(placeholderString = "Search",
+                    filterSelected = viewModel.filterSelected.value,
+                    modifier = Modifier.padding(horizontal = dimen_10_dp),
+                    showFilter = true,
+                    onFilterSelected = {
+                        if (viewModel.filterContentList.value.isNotEmpty()) {
+                            viewModel.filterSelected.value = !it
+                        }
+                    },
+                    onSearchValueChange = { queryTerm ->
+                        viewModel.onEvent(
+                            SearchEvent.PerformSearch(
+                                queryTerm,
+                                viewModel.filterSelected.value,
+                                ""
+                            )
                         )
-                    )
-                })
-            Spacer(modifier = Modifier.height(dimen_16_dp))
+                    })
+            }
+
             if (viewModel.filterContentList.value.isNotEmpty()) {
                 BoxWithConstraints(
                     modifier = Modifier
-                        .padding(top = dimen_20_dp)
+                        .padding(top = dimen_10_dp)
                         .scrollable(
                             state = rememberScrollableState {
                                 scope.launch {
@@ -223,18 +225,19 @@ fun ContentDetailScreen(
                                 Text(
                                     text = fiterItem.capitalizeFirstLetter(),
                                     style = mediumTextStyle,
-                                    color = Color.Black,
+                                    color = blueDark,
                                     modifier = Modifier.padding(
-                                        horizontal = dimen_16_dp,
-                                        vertical = dimen_5_dp
+                                        start = dimen_18_dp, bottom = dimen_5_dp,
                                     )
                                 )
                                 LazyVerticalGrid(
                                     state = innerState,
-                                    modifier = Modifier.heightIn(
-                                        min = dimen_100_dp,
-                                        max = maxHeight
-                                    ),
+                                    modifier = Modifier
+                                        .heightIn(
+                                            min = 0.dp,
+                                            max = maxHeight
+                                        )
+                                        .padding(bottom = dimen_5_dp),
                                     columns = GridCells.Fixed(4),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
@@ -305,7 +308,7 @@ private fun ContentRowView(
             } else {
                 Toast.makeText(
                     context,
-                    "file not Exists ",
+                    context.getString(R.string.file_not_exists),
                     Toast.LENGTH_SHORT
                 ).show()
             }

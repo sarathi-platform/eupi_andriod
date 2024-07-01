@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_150_dp
@@ -146,7 +147,8 @@ fun AddImageComponent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            stringResource(R.string.add_image), style = largeTextStyle,
+                            stringResource(R.string.add_image),
+                            style = largeTextStyle.copy(blueDark),
                         )
                     }
                 }
