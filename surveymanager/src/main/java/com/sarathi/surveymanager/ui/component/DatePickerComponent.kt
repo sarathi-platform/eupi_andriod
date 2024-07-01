@@ -217,7 +217,7 @@ fun DatePickerComponent(
                                 val calendar = Calendar.getInstance()
                                 calendar.set(selectedYear, selectedMonth, selectedDay)
                                 val dateFormat =
-                                    SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.getDefault())
+                                    SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.ENGLISH)
                                 val formattedDate = dateFormat.format(calendar.time)
                                 text = formattedDate
                                 onAnswerSelection(text)
