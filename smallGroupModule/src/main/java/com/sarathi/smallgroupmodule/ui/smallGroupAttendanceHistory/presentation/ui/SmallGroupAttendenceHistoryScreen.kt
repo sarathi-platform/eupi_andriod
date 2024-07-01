@@ -73,6 +73,7 @@ import com.nudge.core.ui.commonUi.rememberDateRangePickerProperties
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.deleteButtonBg
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
@@ -167,6 +168,7 @@ fun SmallGroupAttendanceHistoryScreen(
             message = stringResource(R.string.delete_attendance_confirmation_msg),
             positiveButtonTitle = stringResource(id = R.string.yes),
             negativeButtonTitle = stringResource(id = R.string.no),
+            positiveButtonColor = deleteButtonBg,
             onPositiveButtonClick = {
                 smallGroupAttendanceHistoryViewModel.onEvent(SmallGroupAttendanceEvent.DeleteAttendanceForDateEvent {
 

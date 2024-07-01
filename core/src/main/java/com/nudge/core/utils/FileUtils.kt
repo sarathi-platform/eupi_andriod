@@ -423,7 +423,7 @@ object FileUtils {
 
     fun getImageUri(context: Context, fileName: String): Uri? {
         val file =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
         return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
             uriFromFile(
                 context, file,

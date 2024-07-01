@@ -33,4 +33,8 @@
     <!--    <string name="file_not_exists">"file not Exists "</string>-->
     <!--    <string name="activities_completed">Activities Completed</string>-->
     <!--    <string name="start">Start</string>-->
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
 </resources>

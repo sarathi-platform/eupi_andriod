@@ -155,7 +155,7 @@ fun ParticipatoryWealthRankingSurvey(
             showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
         } else {
             if (isStepComplete) {
-                navController.navigate(NudgeNavigationGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                     popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false

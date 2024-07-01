@@ -50,6 +50,7 @@ fun ActivitySuccessScreen(
             .fillMaxSize()
             .then(modifier)
     ) {
+        if (isFromActivitySuccess) {
         KonfettiView(
             modifier = Modifier.fillMaxSize(),
             parties = listOf(
@@ -69,6 +70,7 @@ fun ActivitySuccessScreen(
                 }
             }
         )
+        }
 
         Column(
             Modifier

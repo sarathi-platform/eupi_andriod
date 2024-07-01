@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -99,7 +98,7 @@ fun DigitalFormCScreen(
         if (fromScreen == ARG_FROM_SETTING)
             navController.popBackStack()
         else {
-            navController.navigate(NudgeNavigationGraph.HOME) {
+            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                 popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                     inclusive = true
                     saveState = false
@@ -551,7 +550,7 @@ fun DigitalFormCScreen(
                         if (fromScreen == ARG_FROM_SETTING)
                             navController.popBackStack()
                         else {
-                            navController.navigate(NudgeNavigationGraph.HOME) {
+                            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                                 popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                                     inclusive = true
                                     saveState = false

@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.screen
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,9 +18,12 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,6 +34,7 @@ import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
@@ -45,8 +50,10 @@ fun GrantMissionScreen(
     navController: NavController = rememberNavController(),
     viewModel: MissionScreenViewModel = hiltViewModel(),
     onSettingClick: () -> Unit,
-    onNavigationToActivity: (isBaselineMission: Boolean, mission: MissionUiModel) -> Unit
-) {
+    onBackPressed: () -> Unit,
+    onNavigationToActivity: (isBaselineMission: Boolean, mission: MissionUiModel) -> Unit,
+
+    ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
         viewModel.loaderState.value.isLoaderVisible,
@@ -71,6 +78,31 @@ fun GrantMissionScreen(
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
+
+    val showAppExitDialog = remember {
+        mutableStateOf(false)
+    }
+
+    BackHandler {
+        showAppExitDialog.value = true
+    }
+
+    if (showAppExitDialog.value) {
+        ShowCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message = stringResource(id = R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = stringResource(id = R.string.exit),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            onNegativeButtonClick = {
+                showAppExitDialog.value = false
+            },
+            onPositiveButtonClick = {
+                onBackPressed()
+            }
+        )
+    }
+
+
     ToolBarWithMenuComponent(
         title = "SARATHI",
         modifier = Modifier.fillMaxSize(),

@@ -381,8 +381,6 @@ fun NestedLazyList(
                     ) { index, question ->
                         when (question?.questionEntity?.type) {
                             QuestionType.AutoCalculation.name -> {
-
-
                                 Card(
                                     elevation = CardDefaults.cardElevation(
                                         defaultElevation = defaultCardElevation

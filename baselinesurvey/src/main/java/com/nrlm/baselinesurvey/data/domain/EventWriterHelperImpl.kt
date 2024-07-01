@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
@@ -776,8 +777,18 @@ class EventWriterHelperImpl @Inject constructor(
 
     private fun changeFileName(appContext: Context,prefix: String) {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(appContext)
-        coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
-        coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
+        coreSharedPrefs.setBackupFileName(
+            getDefaultBackUpFileName(
+                prefix + prefBSRepo.getMobileNumber(),
+                prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
+            )
+        )
+        coreSharedPrefs.setImageBackupFileName(
+            getDefaultImageBackUpFileName(
+                prefix + prefBSRepo.getMobileNumber(),
+                prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
+            )
+        )
         if (!TextUtils.isEmpty(prefix))
             coreSharedPrefs.setFileExported(false)
     }

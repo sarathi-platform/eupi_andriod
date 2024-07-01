@@ -875,12 +875,13 @@ class SettingViewModel @Inject constructor(
     private fun clearEventWriterFileName() {
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
             getDefaultBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefRepo.getMobileNumber() ?: "", prefRepo?.getLoggedInUserType() ?: BLANK_STRING
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
             getDefaultImageBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefRepo.getMobileNumber() ?: "",
+                prefRepo?.getLoggedInUserType() ?: BLANK_STRING
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
