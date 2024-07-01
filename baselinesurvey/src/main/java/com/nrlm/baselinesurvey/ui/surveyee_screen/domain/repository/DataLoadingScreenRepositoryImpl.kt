@@ -70,11 +70,9 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
-import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
-import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
@@ -874,7 +872,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             true
         }
     }
-
 
     override fun saveSettingScreenOpen() {
         prefBSRepo.savePref(PREF_KEY_IS_SETTING_SCREEN_OPEN,false)
