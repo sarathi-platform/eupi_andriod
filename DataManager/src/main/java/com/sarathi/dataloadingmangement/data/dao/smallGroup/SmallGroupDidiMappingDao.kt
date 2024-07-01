@@ -38,6 +38,12 @@ interface SmallGroupDidiMappingDao {
         lastEntryDate: Long
     ): List<SmallGroupDidiMappingEntity>
 
+    @Query("SELECT * from $SMALL_GROUP_DIDI_MAPPING_TABLE where userId = :userId and date = :lastEntryDate")
+    suspend fun getAllMappingForUser(
+        userId: String,
+        lastEntryDate: Long
+    ): List<SmallGroupDidiMappingEntity>
+
     @Query("SELECT count(*) from $SMALL_GROUP_DIDI_MAPPING_TABLE where userId = :userId and smallGroupId = :smallGroupId")
     suspend fun getDidiCountForSmallGroup(userId: String, smallGroupId: Int): Int
 
@@ -130,5 +136,31 @@ interface SmallGroupDidiMappingDao {
         }
 
     }
+
+    @Transaction
+    suspend fun getAllLatestMappingForUser(
+        userId: String
+    ): List<SmallGroupDidiMappingEntity> {
+        return try {
+            val lastEntryDate = getLastEntryDateForUser(userId)
+            getAllMappingForUser(
+                userId = userId,
+                lastEntryDate = lastEntryDate
+            )
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                CoreAppDetails.getContext()!!,
+                "SmallGroupDidiMappingDao",
+                "getAllLatestMappingForSmallGroup exception: ${ex.message}",
+                ex,
+                true
+            )
+            emptyList()
+        }
+
+    }
+
+    @Query("DELETE from $SMALL_GROUP_DIDI_MAPPING_TABLE where userId = :userId")
+    fun deleteSmallGroupDidiMappingForUser(userId: String)
 
 }

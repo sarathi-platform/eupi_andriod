@@ -19,10 +19,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BottomNavItem
 
@@ -56,12 +56,12 @@ fun HomeScreen(
                 items = listOf(
                     BottomNavItem(
                         stringResource(R.string.progress_item_text),
-                        HomeScreens.PROGRESS_SCREEN.route,
+                        HomeScreens.PROGRESS_SEL_SCREEN.route,
                         painterResource(R.drawable.progress_icon)
                     ),
                     BottomNavItem(
                         stringResource(R.string.didi_endorsed_text_plural),
-                        HomeScreens.DIDI_SCREEN.route,
+                        HomeScreens.DIDI_SEL_SCREEN.route,
                         painterResource(R.drawable.didi_icon)
                     ),
                 ),

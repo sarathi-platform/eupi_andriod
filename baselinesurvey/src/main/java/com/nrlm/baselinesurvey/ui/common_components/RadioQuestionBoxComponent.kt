@@ -50,6 +50,7 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.htmltext.HtmlText
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -63,7 +64,6 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")

@@ -14,8 +14,10 @@ class DeleteAttendanceToDbUseCase @Inject constructor(
         finalAttendanceStateList: List<SubjectAttendanceState>,
         onSuccess: () -> Unit
     ) {
-
-        updateAttendanceToDbRepository.removeOldAttendanceForDate(finalAttendanceStateList, date)
+        updateAttendanceToDbRepository.softDeleteOldAttendanceForDate(
+            finalAttendanceStateList,
+            date
+        )
         onSuccess()
 
     }

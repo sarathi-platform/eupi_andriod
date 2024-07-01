@@ -24,11 +24,12 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.toInMillisec
 import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultSpanStyle
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.red
-import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -79,18 +80,24 @@ fun DisbursementSummaryScreen(
                     .padding(dimen_10_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = stringResource(R.string.go_back),
+                    buttonTitle = if (viewModel.isManualTaskCompletion.value) stringResource(R.string.complete) else stringResource(
+                        R.string.go_back
+                    ),
                     isActive = viewModel.isButtonEnable.value,
-                    isArrowRequired = true,
-                    isLeftArrow = true,
+                    isArrowRequired = !viewModel.isManualTaskCompletion.value,
+                    isLeftArrow = !viewModel.isManualTaskCompletion.value,
                     onClick = {
-                        viewModel.saveButtonClicked()
-                        onNavigateSuccessScreen(
-                            "${
-                                viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
-                                    ?: BLANK_STRING
-                            } for ${subjectName}"
-                        )
+                        if (viewModel.isManualTaskCompletion.value) {
+                            viewModel.saveButtonClicked()
+                            onNavigateSuccessScreen(
+                                "${
+                                    viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
+                                        ?: BLANK_STRING
+                                } for ${subjectName}"
+                            )
+                        } else {
+                            navController.popBackStack()
+                        }
                     }
                 )
             }
@@ -120,16 +127,10 @@ fun DisbursementSummaryScreen(
                                         append("*")
                                     }
                                     withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontFamily = NotoSans
-                                        )
+                                        style = defaultSpanStyle.copy(blueDark)
                                     ) {
                                         append(stringResource(R.string.sanctioned_amount_has_been_fully_disbursed))
                                     }
-
                                 }
                             )
                         }

@@ -23,14 +23,15 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
+import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveDocumentEventDto
+import com.sarathi.dataloadingmangement.model.events.SaveFormAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import com.sarathi.dataloadingmangement.model.events.SaveFormAnswerEventDto
 
 class EventWriterRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -91,6 +92,11 @@ class EventWriterRepositoryImpl @Inject constructor(
             EventName.UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT -> {
 
                 requestPayload = (eventItem as SectionStatusUpdateEventDto).json()
+            }
+
+            EventName.SAVE_SUBJECT_ATTENDANCE_EVENT,
+            EventName.DELETE_SUBJECT_ATTENDANCE_EVENT -> {
+                requestPayload = (eventItem as SaveAttendanceEventDto).json()
             }
 
             else -> {

@@ -1,8 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -11,13 +10,14 @@ import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import javax.inject.Inject
 
 class FormQuestionResponseRepositoryImpl @Inject constructor(
     private val questionEntityDao: QuestionEntityDao,
     private val optionItemDao: OptionItemDao,
     private val formQuestionResponseDao: FormQuestionResponseDao,
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val contentDao: ContentDao
 ) : FormQuestionResponseRepository {
     override suspend fun getFormQuestionOptions(
@@ -36,7 +36,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     }
 
     fun getSelectedLanguage(): Int {
-        return prefRepo.getAppLanguageId() ?: 2
+        return prefBSRepo.getAppLanguageId() ?: 2
     }
 
     override suspend fun getFormResponsesForQuestion(
@@ -204,7 +204,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             surveyId,
             sectionId,
             questionId,
-            languageId = prefRepo.getAppLanguageId() ?: DEFAULT_BUFFER_SIZE
+            languageId = prefBSRepo.getAppLanguageId() ?: DEFAULT_BUFFER_SIZE
         )
     }
 
@@ -235,7 +235,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
 }

@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.sarathi.dataloadingmangement.MANUAL_TASK_COMPLETION
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
@@ -41,6 +43,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,
+    private val activityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
 ) : BaseViewModel() {
     private val _taskList =
@@ -58,6 +61,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private var taskEntity: ActivityTaskEntity? = null
     var isActivityCompleted = mutableStateOf(false)
     var isAddDisbursementButtonEnable = mutableStateOf(true)
+    var isManualTaskCompletion = mutableStateOf(true)
     private var sanctionedAmount: Int = 0
     private var totalSubmittedAmount = 0
 
@@ -86,14 +90,15 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun initData() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            taskEntity = getTaskUseCase.getTask(taskId)
             _taskList.value =
                 saveSurveyAnswerUseCase.getAllSaveAnswer(
                     surveyId = surveyId,
                     sectionId = sectionId,
                     taskId = taskId
                 ).groupBy { it.referenceId }
+            isManualTaskCompleteActive()
             setGrantComponentDTO()
-            taskEntity = getTaskUseCase.getTask(taskId)
             isActivityCompleted()
         }
     }
@@ -125,7 +130,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         var subTitle3 = BLANK_STRING
         var subTitle4 = BLANK_STRING
         var subTitle5 = BLANK_STRING
-        var isFormGenerated: Boolean = false
+        var isFormGenerated = false
         surveyList.forEach { survey ->
             isFormGenerated = survey.isFormGenerated
             val selectedValue = getSelectedValue(survey.optionItems)
@@ -138,7 +143,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
             }
         }
-        val referenceId = surveyList.firstOrNull()?.referenceId ?: ""
+        val referenceId = surveyList.firstOrNull()?.referenceId ?: BLANK_STRING
 
         return SurveyUIModel(
             referenceId = referenceId,
@@ -220,7 +225,6 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     fun saveButtonClicked() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             taskStatusUseCase.markTaskCompleted(
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 taskId = taskEntity?.taskId ?: DEFAULT_ID
             )
             taskEntity = getTaskUseCase.getTask(taskId)
@@ -248,7 +252,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         if (sanctionedAmount == 0) {
             return !isActivityCompleted.value && taskList.value.isNotEmpty()
         } else {
-            return sanctionedAmount == getTotalSubmittedAmount() && !isActivityCompleted.value && isAllFormGeneratedDisburement()
+            return true
         }
     }
 
@@ -279,19 +283,12 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         return totalSubmittedAmount
     }
 
-    fun isAllFormGeneratedDisburement(): Boolean {
-        taskList.value.entries.forEach {
-            it.value.forEach {
-                if (!it.isFormGenerated) {
-                    return false
-                }
-            }
 
-
-        }
-        return true
-
+    private suspend fun isManualTaskCompleteActive() {
+        isManualTaskCompletion.value =
+            activityUiConfigUseCase.getActivityConfig(
+                activityId = taskEntity?.activityId ?: 0
+            )?.taskCompletion == MANUAL_TASK_COMPLETION
     }
-
 
 }

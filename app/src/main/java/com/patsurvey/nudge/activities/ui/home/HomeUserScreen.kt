@@ -5,13 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.UPCM_USER
-import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
 
 @Composable
 fun HomeUserScreen(
@@ -20,13 +20,9 @@ fun HomeUserScreen(
     prefRepo: PrefRepo,
     onSettingIconClick: () -> Unit
 ) {
-    if (prefRepo.getLoggedInUserType() == UPCM_USER) {
-        GrantMissionScreen(
-            navController = navController,
-            viewModel = hiltViewModel(),
-            onSettingClick = onSettingIconClick
-        )
-    } else {
+    if(prefRepo.getLoggedInUserType().equals(UPCM_USER)) {
+        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+    }else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(
                 bpcProgreesScreenViewModel = hiltViewModel(),
@@ -36,7 +32,7 @@ fun HomeUserScreen(
                     navController.navigate("bpc_graph/$villageId/$stepId")
                 },
                 onNavigateToSetting = {
-                    navController.navigate(Graph.SETTING_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                 },
                 onBackClick = {
                     navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
@@ -44,7 +40,6 @@ fun HomeUserScreen(
             )
         } else {
             ProgressScreen(
-                stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth(),
                 onNavigateToStep = { villageId, stepId, index, isStepComplete ->
@@ -57,7 +52,7 @@ fun HomeUserScreen(
                     }
                 },
                 onNavigateToSetting = {
-                    navController.navigate(Graph.SETTING_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                 }, onBackClick = {
                     navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
                 }

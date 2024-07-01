@@ -32,11 +32,11 @@ import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.nudge.syncmanager.EventWriterHelper
 import com.nudge.syncmanager.getParentEntityMapForEvent
-import com.nudge.syncmanager.model.PayloadData
-import com.nudge.syncmanager.model.SaveAttendanceEventDto
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
+import com.sarathi.dataloadingmangement.model.events.PayloadData
+import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.smallgroupmodule.utils.getAttendanceFromBoolean
 import com.sarathi.smallgroupmodule.utils.getDate

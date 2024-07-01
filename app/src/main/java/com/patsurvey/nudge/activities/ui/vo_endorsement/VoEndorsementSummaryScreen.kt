@@ -8,7 +8,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
@@ -17,7 +25,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,11 +60,30 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.SectionOneSummeryItem
 import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementColor
+import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementColor
+import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.data.prefs.SharedPrefs.Companion.PREF_KEY_VO_SUMMARY_OPEN_FROM
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.AcceptRejectButtonBox
+import com.patsurvey.nudge.utils.AcceptRejectButtonBoxPreFilled
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.HUSBAND_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.showDidiImageDialog
+import com.patsurvey.nudge.utils.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -72,7 +107,12 @@ fun VoEndorsementSummaryScreen(
     val screenHeight = configuration.screenHeightDp
     val didi = viewModel?.didiEntity?.collectAsState()
     val showDialog = remember { mutableStateOf(false) }
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f
+    ) {
+        voDidiList.size
+    }
     val coroutineScope = rememberCoroutineScope()
     val dialogActionType = remember { mutableStateOf(DidiEndorsementStatus.ENDORSED.ordinal) }
     val selectedDidiForDialog= viewModel.selectedDidiEntity.collectAsState()
@@ -192,7 +232,6 @@ fun VoEndorsementSummaryScreen(
 
 
                     HorizontalPager(
-                        pageCount = voDidiList.size,
                         state = pagerState,
                         userScrollEnabled = false
                     ) {

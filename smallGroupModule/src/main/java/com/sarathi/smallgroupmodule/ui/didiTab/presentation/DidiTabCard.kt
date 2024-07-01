@@ -13,13 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.nudge.core.NO_TOLA_TITLE
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ImageCardWithBottomContent
+import com.nudge.core.ui.commonUi.ImageProperties
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
-import com.sarathi.missionactivitytask.ui.components.ImageCardWithBottomContent
-import com.sarathi.missionactivitytask.ui.components.ImageProperties
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.smallgroupmodule.ui.theme.blueDark

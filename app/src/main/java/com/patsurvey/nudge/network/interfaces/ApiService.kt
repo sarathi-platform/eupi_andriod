@@ -52,6 +52,9 @@ interface ApiService {
     @GET("/read-api/config/language/get")
     suspend fun configDetails() : ApiResponseModel<ConfigResponseModel>
 
+    @GET("/read-api/config/language/get/v2")
+    suspend fun configDetailsV2() : ApiResponseModel<ConfigResponseModel>
+
     @POST("/auth-api/user/generate-otp")
     suspend fun generateOtp(@Body loginRequest: LoginRequest
     ): ApiResponseModel<String>

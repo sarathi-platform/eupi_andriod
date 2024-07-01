@@ -32,25 +32,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.ContentWithImage
+import com.nudge.core.ui.commonUi.CustomDatePickerComponent
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ImageProperties
+import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
+import com.nudge.core.ui.commonUi.rememberCustomDatePickerDialogProperties
+import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
+import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveWithLoaderComponent
-import com.sarathi.missionactivitytask.ui.components.ContentWithImage
-import com.sarathi.missionactivitytask.ui.components.CustomDatePickerComponent
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
-import com.sarathi.missionactivitytask.ui.components.ImageProperties
-import com.sarathi.missionactivitytask.ui.components.LazyColumnWithVerticalPadding
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
-import com.sarathi.missionactivitytask.ui.components.rememberCustomDatePickerDialogProperties
-import com.sarathi.missionactivitytask.ui.components.rememberCustomDatePickerState
-import com.sarathi.missionactivitytask.ui.components.rememberDatePickerProperties
 import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.navigation.navigateToHistoryScreenFromAttendance
 import com.sarathi.smallgroupmodule.ui.commonUi.CustomDialogComponent
@@ -159,6 +159,7 @@ fun SmallGroupAttendanceScreen(
         onBackIconClick = { navHostController.navigateUp() },
         onSearchValueChange = {},
         isSearch = true,
+        isDataNotAvailable = smallGroupAttendanceScreenViewModel.smallGroupDetails.value.smallGroupId == 0,
         onRetry = {},
         onBottomUI = {
             BottomAppBar(

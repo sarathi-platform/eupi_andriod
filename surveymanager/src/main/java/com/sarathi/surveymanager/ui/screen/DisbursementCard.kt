@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,14 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -34,9 +35,7 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.uncheckedTrackColor
-import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.surveymanager.R
 
@@ -52,10 +51,10 @@ fun DisbursementCard(
     isFormgenerated: Boolean
 
 ) {
-    Card(
-        elevation = dimen_10_dp,
-        backgroundColor = white,
-        shape = RoundedCornerShape(roundedCornerRadiusDefault)
+
+    BasicCardView(
+        modifier = Modifier
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -68,14 +67,40 @@ fun DisbursementCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TextRow(
-                    text1 = stringResource(R.string.date),
-                    text2 = subTitle1 ?: BLANK_STRING
-                )
-                TextRow(
-                    text1 = stringResource(R.string.amount),
-                    text2 = formatToIndianRupee(subTitle2)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        modifier = Modifier.padding(end = dimen_5_dp),
+                        text = stringResource(R.string.date),
+                        style = defaultTextStyle.copy(color = greyColor)
+                    )
+                    if (subTitle1.isNotBlank()) {
+                        Text(
+                            text = subTitle1,
+                            style = defaultTextStyle.copy(color = blueDark)
+                        )
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        modifier = Modifier.padding(end = dimen_5_dp),
+                        text = stringResource(R.string.amount),
+                        style = defaultTextStyle.copy(color = greyColor)
+                    )
+                    if (formatToIndianRupee(subTitle2).isNotBlank()) {
+                        Text(
+                            text = formatToIndianRupee(subTitle2),
+                            style = defaultTextStyle.copy(color = blueDark)
+                        )
+                    }
+                }
             }
 
             Divider(
@@ -231,16 +256,24 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
     ) {
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier.padding(end = dimen_5_dp),
+                modifier = Modifier.weight(.2f),
                 text = text1,
                 style = defaultTextStyle.copy(color = greyColor)
             )
         }
         if (text2.isNotBlank()) {
             if (isReadMode) {
-                TextWithReadMoreComponent(title = text1, contentData = text2)
+                TextWithReadMoreComponent(
+                    modifier = Modifier.weight(.8f),
+                    title = text1,
+                    contentData = text2
+                )
             } else {
-                Text(text = text2, style = defaultTextStyle.copy(color = blueDark))
+                Text(
+                    modifier = Modifier.weight(.8f),
+                    text = text2,
+                    style = defaultTextStyle.copy(color = blueDark)
+                )
             }
         }
     }

@@ -2,6 +2,7 @@ package com.patsurvey.nudge.model.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.model.datamodel.ReferenceIdModel
 import com.patsurvey.nudge.database.VillageEntity
 
 data class UserDetailsResponse(
@@ -35,5 +36,9 @@ data class UserDetailsResponse(
 
     @SerializedName("villageList")
     @Expose
-    val villageList:List<VillageEntity>?
+    val villageList:List<VillageEntity>?,
+
+    @SerializedName("referenceId")
+    @Expose
+    val referenceId: List<ReferenceIdModel>
 )

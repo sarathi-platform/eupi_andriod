@@ -139,4 +139,7 @@ val uncheckedTrackColor = Color(0xFFC0C6CE)
 val dotedBorderColor = Color(0xFF676767)
 val grayColor = Color(0xFFACACAC)
 
+val dateRangeFieldColor = Color(0xFFD9D9D9)
+
+val deleteButtonBg = Color(0xFFFF0000)
 

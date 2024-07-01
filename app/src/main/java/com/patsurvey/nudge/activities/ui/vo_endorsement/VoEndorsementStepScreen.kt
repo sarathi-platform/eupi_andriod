@@ -84,7 +84,8 @@ fun VoEndorsementStepScreen(
                                             fontFamily = NotoSans
                                         )
                                     ) {
-                                        append(stringResource(R.string.no_didis_availble_for_vo_endorsement))
+                                        append(
+                                            stringResource(R.string.no_didis_availble_for_vo_endorsement))
                                     }
                                 },
                                 modifier = Modifier.padding(top = 32.dp)

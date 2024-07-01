@@ -57,7 +57,6 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
-import com.patsurvey.nudge.utils.LogWriter
 import com.patsurvey.nudge.utils.LogWriter.getLogFile
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -172,7 +171,9 @@ class SettingViewModel @Inject constructor(
         numericAnswerDao,
         villegeListDao
     )
-
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
     fun isFormAAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val formCFilePath =
@@ -864,6 +865,7 @@ class SettingViewModel @Inject constructor(
     fun clearAccessToken() {
         prefRepo.saveAccessToken("")
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDataLoaded(false)
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDidiTabDataLoaded(false)
         clearEventWriterFileName()
         prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
         prefRepo.saveSettingOpenFrom(0)
@@ -889,7 +891,7 @@ class SettingViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val context = MyApplication.applicationContext()
             exportLocalData(context)
-            LogWriter.buildSupportLogAndShare()
+
         }
     }
 
@@ -938,7 +940,7 @@ class SettingViewModel @Inject constructor(
                     getFormPdfAndLogUri(),
                     prefRepo.getMobileNumber(),
                     userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
-
+                    moduleName = BLANK_STRING
                 )
 
                 val imageUri = compression.compressBackupImages(
@@ -975,13 +977,13 @@ class SettingViewModel @Inject constructor(
                 var didiList: List<DidiEntity> =
                     didiDao.getAllDidisForVillage(selectedVillageId)
 
-                val isFormAGenerated = generateFormA(casteList, selectedVillageId, didiList)
+                val isFormAGenerated = generateFormA(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                 addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, uris)
 
-                val isFormBGenerated = generateFormB(casteList, selectedVillageId, didiList)
+                val isFormBGenerated = generateFormB(prefRepo.getStateId() ,casteList, selectedVillageId, didiList)
                 addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, uris)
 
-                val isFormCGenerated = generateFormc(casteList, selectedVillageId, didiList)
+                val isFormCGenerated = generateFormc(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                 addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, uris)
 
             }
@@ -1036,12 +1038,15 @@ class SettingViewModel @Inject constructor(
     }
 
     private suspend fun generateFormc(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) =
         PdfUtils.getFormCPdf(
-            NudgeCore.getAppContext(), villageEntity = prefRepo.getSelectedVillage(),
+            NudgeCore.getAppContext(),
+            stateId,
+            villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -1054,12 +1059,15 @@ class SettingViewModel @Inject constructor(
 
 
     private suspend fun generateFormB(
+        stateId:Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) =
         PdfUtils.getFormBPdf(
-            NudgeCore.getAppContext(), villageEntity = prefRepo.getSelectedVillage(),
+            NudgeCore.getAppContext(),
+            stateId ,
+            villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -1072,11 +1080,13 @@ class SettingViewModel @Inject constructor(
 
 
     private suspend fun generateFormA(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) = PdfUtils.getFormAPdf(
         NudgeCore.getAppContext(),
+        stateId,
         villageEntity = prefRepo.getSelectedVillage(),
         casteList = casteList,
         didiDetailList = didiList,
@@ -1114,7 +1124,8 @@ class SettingViewModel @Inject constructor(
             applicationID = BuildConfig.APPLICATION_ID,
             mobileNo = userUniqueId,
             databaseName = NUDGE_DATABASE,
-            userName = ""
+            userName = BLANK_STRING,
+            moduleName = BLANK_STRING
         ) {
             onExportSuccess()
         }

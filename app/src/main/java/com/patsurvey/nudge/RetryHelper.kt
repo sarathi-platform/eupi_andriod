@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
@@ -44,7 +45,6 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
 import com.patsurvey.nudge.utils.COMPLETED_STRING
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -1054,7 +1054,7 @@ object RetryHelper {
                             if (it.villageList?.isNotEmpty() == true) {
                                 villageListDao?.insertAll(it.villageList ?: listOf())
                                 delay(500)
-                                val localVillageList = villageListDao?.getAllVillages(prefRepo?.getAppLanguageId() ?:2)
+                                val localVillageList = villageListDao?.getAllVillages(prefRepo?.getAppLanguageId() ?:DEFAULT_LANGUAGE_ID)
                                 if (localVillageList.isNullOrEmpty()) {
                                     saveVillageList(true, villageListDao?.getAllVillages(DEFAULT_LANGUAGE_ID))
                                 } else{

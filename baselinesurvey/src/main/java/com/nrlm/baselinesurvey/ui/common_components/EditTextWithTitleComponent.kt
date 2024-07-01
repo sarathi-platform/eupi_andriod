@@ -50,12 +50,13 @@ fun EditTextWithTitleComponent(
     isOnlyNumber: Boolean = false,
     maxLength: Int = 150,
     isContent: Boolean = false,
+    resetResponse: Boolean = false,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt = remember {
+    val txt = remember(resetResponse, showQuestion?.optionId) {
         mutableStateOf(defaultValue)
-   }
+    }
 //    if (txt.value.isBlank()) {
 //        txt.value = defaultValue
 //    }

@@ -10,9 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.media.PdfViewer
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME
@@ -39,12 +42,12 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SU
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID_LIST
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
@@ -58,11 +61,13 @@ import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccess
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
+import com.nudge.core.model.MissionUiModel as CoreMissionUiModel
 
 
 fun NavGraphBuilder.MatNavigation(
     navController: NavHostController,
-    onSettingIconClick: () -> Unit
+    onSettingIconClick: () -> Unit,
+    onNavigateToBaselineMission: (mission: CoreMissionUiModel) -> Unit
 ) {
     navigation(
         route = MAT_GRAPH,
@@ -73,7 +78,26 @@ fun NavGraphBuilder.MatNavigation(
             GrantMissionScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick
-            )
+            ) { isBaselineMission, mission: MissionUiModel ->
+                if (isBaselineMission) {
+                    onNavigateToBaselineMission(
+                        CoreMissionUiModel(
+                            missionId = mission.missionId,
+                            description = mission.description,
+                            missionStatus = mission.missionStatus,
+                            activityCount = mission.activityCount,
+                            pendingActivityCount = mission.pendingActivityCount
+                        )
+                    )
+                } else {
+                    navigateToActivityScreen(
+                        navController,
+                        missionName = mission.description,
+                        missionId = mission.missionId,
+                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
+                    )
+                }
+            }
         }
         composable(
             route = MATHomeScreens.ActivityScreen.route, arguments = listOf(
@@ -381,13 +405,17 @@ fun NavGraphBuilder.MatNavigation(
             },
             navArgument(name = ARG_MISSION_ID) {
                 type = NavType.IntType
+            },
+            navArgument(name = ARG_TASK_ID_LIST) {
+                type = NavType.StringType
             }
         )) {
             DisbursementFormSummaryScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
-                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
+                taskList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
         composable(route = MATHomeScreens.PdfViewerScreen.route, arguments = listOf(
@@ -404,12 +432,16 @@ fun NavGraphBuilder.MatNavigation(
         composable(route = MATHomeScreens.AddImageScreen.route, arguments = listOf(
             navArgument(ARG_ACTIVITY_ID) {
                 type = NavType.IntType
+            },
+            navArgument(ARG_TASK_ID_LIST) {
+                type = NavType.StringType
             }
         )) {
             SubmitPhysicalFormScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
+                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
     }
@@ -425,9 +457,9 @@ fun navigateToContentDetailScreen(
 }
 
 fun navigateToDisbursmentSummaryScreen(
-    navController: NavController, activityId: Int, missionId: Int
+    navController: NavController, activityId: Int, missionId: Int, taskIdList: String
 ) {
-    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId")
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdList")
 }
 
 fun navigateToSurveyScreen(
@@ -495,8 +527,8 @@ fun navigateToActivityScreen(
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted")
 }
 
-fun navigateToAddImageScreen(navController: NavController, activityId: Int) {
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId")
+fun navigateToAddImageScreen(navController: NavController, activityId: Int, taskIdList: String) {
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdList")
 }
 
 fun navigateToTaskScreen(

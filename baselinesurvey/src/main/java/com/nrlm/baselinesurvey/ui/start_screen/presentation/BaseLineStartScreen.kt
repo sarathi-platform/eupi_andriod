@@ -3,10 +3,13 @@ package com.nrlm.baselinesurvey.ui.start_screen.presentation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -51,6 +54,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -76,7 +80,10 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
-import com.nrlm.baselinesurvey.utils.uriFromFile
+import com.nudge.core.Core
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.uriFromFile
+import com.nudge.navigationmanager.graphs.HomeScreens
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
@@ -95,7 +102,7 @@ fun BaseLineStartScreen(
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
-
+   val mApplicationDetails=CoreAppDetails.getApplicationDetails()
     val didi = baseLineStartViewModel.didiEntity
     LaunchedEffect(key1 = true) {
         baseLineStartViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -104,7 +111,7 @@ fun BaseLineStartScreen(
             sectionId = sectionId,
             surveyId = surveyId,
             false,
-            localContext
+            localContext as Activity
         )
         delay(200)
         baseLineStartViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -121,9 +128,7 @@ fun BaseLineStartScreen(
 
 
 
-    BackHandler {
-        navController.popBackStack()
-    }
+
     LoaderComponent(
         visible = baseLineStartViewModel.loaderState.value.isLoaderVisible,
     )
@@ -237,34 +242,40 @@ fun BaseLineStartScreen(
                     onResult = { success ->
                         hasImage = success
                         BaselineLogger.d(
-                            "PatDidiSummaryScreen",
+                            "BaseLineStartScreen",
                             "rememberLauncherForActivityResult -> onResult = success: $success"
                         )
                         if (success) {
-                            if (baseLineStartViewModel.tempUri == Uri.EMPTY) {
-                                baseLineStartViewModel.imagePath =
-                                    baseLineStartViewModel.getTempFilePath()
-                                val uri =
-                                    uriFromFile(localContext, File(baseLineStartViewModel.imagePath))
-                                baseLineStartViewModel.tempUri = uri
-                                baseLineStartViewModel.getDidiDetails(
-                                    didiId,
-                                    sectionId = sectionId,
-                                    surveyId,
-                                    true,
-                                    localContext
-                                )
-                                BaselineLogger.e(
-                                    "CameraIssue",
-                                    "ImagePath ${baseLineStartViewModel.imagePath}"
-                                )
-                            } else {
-                                baseLineStartViewModel.onEvent(
-                                    StartSurveyScreenEvents.SaveImagePathForSurveyee(
-                                        localContext
+                            mApplicationDetails?.let {appDetails->
+                                if (baseLineStartViewModel.tempUri == Uri.EMPTY) {
+                                    baseLineStartViewModel.imagePath =
+                                        baseLineStartViewModel.getTempFilePath()
+                                    val uri =
+                                        uriFromFile(
+                                            context = localContext,
+                                            file = File(baseLineStartViewModel.imagePath),
+                                            applicationID = appDetails.applicationID)
+                                    baseLineStartViewModel.tempUri = uri
+                                    baseLineStartViewModel.getDidiDetails(
+                                        didiId,
+                                        sectionId = sectionId,
+                                        surveyId,
+                                        true,
+                                        appDetails.activity
                                     )
-                                )
+                                    BaselineLogger.e(
+                                        "CameraIssue",
+                                        "ImagePath ${baseLineStartViewModel.imagePath}"
+                                    )
+                                } else {
+                                    baseLineStartViewModel.onEvent(
+                                        StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                            appDetails.activity
+                                        )
+                                    )
+                                }
                             }
+
                         } else {
                             baseLineStartViewModel.shouldShowPhoto.value =
                                 baseLineStartViewModel.photoUri.value != Uri.EMPTY
@@ -311,23 +322,16 @@ fun BaseLineStartScreen(
                                             Manifest.permission.READ_EXTERNAL_STORAGE
                                         ) == PackageManager.PERMISSION_GRANTED -> {
                                             BaselineLogger.d(
-                                                "PatImagePreviewScreen",
-                                                "Permission previously granted"
+                                                "BaseLineStartScreen",
+                                                "Permission previously granted 1"
                                             )
 
-                                            val imageFile =
-                                                baseLineStartViewModel.getFileName(
-                                                    localContext,
-                                                    didi.value
-                                                )
-                                            baseLineStartViewModel.imagePath =
-                                                imageFile.absolutePath
-                                            val uri = uriFromFile(localContext, imageFile)
-                                            baseLineStartViewModel.tempUri = uri
-                                            baseLineStartViewModel.saveTempFilePath(
-                                                baseLineStartViewModel.imagePath
+                                            findFileAndLaunchCamera(
+                                                context = localContext,
+                                                viewModel = baseLineStartViewModel,
+                                                didi = didi.value,
+                                                cameraLauncher = cameraLauncher
                                             )
-                                            cameraLauncher.launch(uri)
                                         }
 
                                         ActivityCompat.shouldShowRequestPermissionRationale(
@@ -370,23 +374,16 @@ fun BaseLineStartScreen(
                                             Manifest.permission.CAMERA
                                         ) == PackageManager.PERMISSION_GRANTED -> {
                                             BaselineLogger.d(
-                                                "PatImagePreviewScreen",
-                                                "Permission previously granted"
+                                                "BaseLineStartScreen",
+                                                "Permission previously granted 2"
                                             )
 
-                                            val imageFile =
-                                                baseLineStartViewModel.getFileName(
-                                                    localContext,
-                                                    didi.value
-                                                )
-                                            baseLineStartViewModel.imagePath =
-                                                imageFile.absolutePath
-                                            val uri = uriFromFile(localContext, imageFile)
-                                            baseLineStartViewModel.tempUri = uri
-                                            baseLineStartViewModel.saveTempFilePath(
-                                                baseLineStartViewModel.imagePath
+                                            findFileAndLaunchCamera(
+                                                context = localContext,
+                                                viewModel = baseLineStartViewModel,
+                                                didi = didi.value,
+                                                cameraLauncher = cameraLauncher
                                             )
-                                            cameraLauncher.launch(uri)
                                         }
 
                                         ActivityCompat.shouldShowRequestPermissionRationale(
@@ -394,7 +391,7 @@ fun BaseLineStartScreen(
                                             Manifest.permission.CAMERA
                                         ) -> {
                                             BaselineLogger.d(
-                                                "PatImagePreviewScreen",
+                                                "BaseLineStartScreen",
                                                 "Show camera permissions dialog"
                                             )
                                             ActivityCompat.requestPermissions(
@@ -462,23 +459,14 @@ fun BaseLineStartScreen(
                                 ) == PackageManager.PERMISSION_GRANTED -> {
                                     BaselineLogger.d(
                                         "PatImagePreviewScreen",
-                                        "Permission previously granted"
+                                        "Permission previously granted 3"
                                     )
-
-                                    val imageFile =
-                                        baseLineStartViewModel.getFileName(localContext, didi.value)
-                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                    val uri = uriFromFile(localContext, imageFile)
-                                    BaselineLogger.d(
-                                        "PatDidiSummaryScreen",
-                                        "Retake Photo button Clicked: $uri"
+                                    findFileAndLaunchCamera(
+                                        context = localContext,
+                                        viewModel = baseLineStartViewModel,
+                                        didi = didi.value,
+                                        cameraLauncher = cameraLauncher
                                     )
-                                    baseLineStartViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
-                                    baseLineStartViewModel.saveTempFilePath(
-                                        baseLineStartViewModel.imagePath
-                                    )
-                                    cameraLauncher.launch(uri)
                                     baseLineStartViewModel.shouldShowPhoto.value = false
                                 }
 
@@ -523,23 +511,14 @@ fun BaseLineStartScreen(
                                 ) == PackageManager.PERMISSION_GRANTED -> {
                                     BaselineLogger.d(
                                         "PatImagePreviewScreen",
-                                        "Permission previously granted"
+                                        "Permission previously granted 4"
                                     )
-
-                                    val imageFile =
-                                        baseLineStartViewModel.getFileName(localContext, didi.value)
-                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                    val uri = uriFromFile(localContext, imageFile)
-                                    BaselineLogger.d(
-                                        "PatDidiSummaryScreen",
-                                        "Retake Photo button Clicked: $uri"
+                                    findFileAndLaunchCamera(
+                                        context = localContext,
+                                        viewModel = baseLineStartViewModel,
+                                        didi = didi.value,
+                                        cameraLauncher = cameraLauncher
                                     )
-                                    baseLineStartViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
-                                    baseLineStartViewModel.saveTempFilePath(
-                                        baseLineStartViewModel.imagePath
-                                    )
-                                    cameraLauncher.launch(uri)
                                     baseLineStartViewModel.shouldShowPhoto.value = false
                                 }
 
@@ -571,8 +550,6 @@ fun BaseLineStartScreen(
                                 }
                             }
                         }
-//                                patDidiSummaryViewModel.setCameraExecutor()
-//                                patDidiSummaryViewModel.shouldShowCamera.value = true
                     }
 
                 } else {
@@ -599,18 +576,14 @@ fun BaseLineStartScreen(
                                 ) == PackageManager.PERMISSION_GRANTED -> {
                                     BaselineLogger.d(
                                         "PatImagePreviewScreen",
-                                        "Permission previously granted"
+                                        "Permission previously granted 5"
                                     )
-
-                                    val imageFile =
-                                        baseLineStartViewModel.getFileName(localContext, didi.value)
-                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                    val uri = uriFromFile(localContext, imageFile)
-                                    baseLineStartViewModel.tempUri = uri
-                                    baseLineStartViewModel.saveTempFilePath(
-                                        baseLineStartViewModel.imagePath
+                                    findFileAndLaunchCamera(
+                                        context = localContext,
+                                        viewModel = baseLineStartViewModel,
+                                        didi = didi.value,
+                                        cameraLauncher = cameraLauncher
                                     )
-                                    cameraLauncher.launch(uri)
                                 }
 
                                 ActivityCompat.shouldShowRequestPermissionRationale(
@@ -654,18 +627,15 @@ fun BaseLineStartScreen(
                                 ) == PackageManager.PERMISSION_GRANTED -> {
                                     BaselineLogger.d(
                                         "PatImagePreviewScreen",
-                                        "Permission previously granted"
+                                        "Permission previously granted 6"
                                     )
 
-                                    val imageFile =
-                                        baseLineStartViewModel.getFileName(localContext, didi.value)
-                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                    val uri = uriFromFile(localContext, imageFile)
-                                    baseLineStartViewModel.tempUri = uri
-                                    baseLineStartViewModel.saveTempFilePath(
-                                        baseLineStartViewModel.imagePath
+                                    findFileAndLaunchCamera(
+                                        context = localContext,
+                                        viewModel = baseLineStartViewModel,
+                                        didi = didi.value,
+                                        cameraLauncher = cameraLauncher
                                     )
-                                    cameraLauncher.launch(uri)
                                 }
 
                                 ActivityCompat.shouldShowRequestPermissionRationale(
@@ -709,6 +679,24 @@ fun BaseLineStartScreen(
     }
 
 }
+fun findFileAndLaunchCamera(
+    context: Context,
+    didi: SurveyeeEntity,
+    cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>,
+    viewModel: BaseLineStartViewModel
+) {
+    val mAppDetails=CoreAppDetails.getApplicationDetails()
+    mAppDetails?.let { details ->
+        val imageFile =
+            viewModel.getFileName(context, didi)
+        Log.d("TAG", "findFileAndLaunchCamera: imageFile : ${imageFile.absolutePath}")
+        viewModel.imagePath = imageFile.absolutePath
+        val uri = uriFromFile(context, imageFile, applicationID = details.applicationID)
+        viewModel.saveTempFilePath( viewModel.imagePath )
+        viewModel.tempUri = uri
+        cameraLauncher.launch(uri)
+    }
+}
 
 private fun updateDidiDetails(
     didi: StateFlow<SurveyeeEntity>,
@@ -744,7 +732,7 @@ fun TextDetails(title: String, data: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text = title, style = defaultTextStyle, color = textColorDark)
         Text(
-            text = data, style = smallTextStyle
+            text = data, style = smallTextStyle,color = textColorDark
         )
     }
 }

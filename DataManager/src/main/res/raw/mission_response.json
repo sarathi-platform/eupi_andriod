@@ -1,188 +1,1424 @@
-[
-  {
-    "id": 1,
-    "name": "Program1 Tripura",
-    "startDate": "2024-05-27T20:57:59.938+00:00",
-    "actualStartDate": null,
-    "missions": [
-      {
-        "id": 1,
-        "name": "CSG disbursement to Didis",
-        "languages": [
-          {
-            "description": "CSG disbursement to Didis",
-            "language": "en"
-          }
-        ],
-        "startOffset": 0,
-        "endOffset": 2,
-        "missionStatus": "NOT_STARTED",
-        "actualStartDate": null,
-        "actualEndDate": null,
-        "conditions": [],
-        "validations": [],
-        "missionConfig": null,
-        "activities": [
-          {
-            "id": 1,
-            "name": "Receipt of funds",
-            "startOffset": 0,
-            "endOffset": 5,
-            "activityStatus": "NOT_STARTED",
-            "actualStartDate": null,
-            "actualEndDate": null,
-            "activityConfig": {
-              "activityType": "Grant",
-              "activityTypeId": 1,
-              "conditions": [],
-              "validations": [],
-              "content": [
-                {
-                  "contentKey": "image1",
-                  "contentType": "Image"
-                }
-              ],
-              "surveyId": 1,
-              "doer": "UPCM",
-              "subject": "VO",
-              "reviewer": "BPC",
-              "languages": [
-                {
-                  "description": "Receipt of funds",
-                  "language": "en"
-                }
-              ],
-              "uiConfig": [
-                {
-                  "languageId": "en",
+{
+  "status": "SUCCESS",
+  "message": "SUCCESS",
+  "data": [
+    {
+      "id": 1,
+      "name": "Program1 Tripura",
+      "startDate": 1716863279938,
+      "actualStartDate": null,
+      "missions": [
+        {
+          "id": 1,
+          "name": "Baseline",
+          "languages": [
+            {
+              "description": "Baseline",
+              "language": "en"
+            }
+          ],
+          "startOffset": 0,
+          "endOffset": 2,
+          "missionStatus": "INPROGRESS",
+          "actualStartDate": "12 Jun 2024",
+          "actualEndDate": null,
+          "conditions": [],
+          "validations": [],
+          "missionConfig": {
+            "activityType": "",
+            "activityTypeId": null,
+            "conditions": [],
+            "validations": [],
+            "content": [
+              {
+                "contentKey": "Bangla - CSG guide",
+                "contentType": "file",
+                "languageCode": "bn"
+              },
+              {
+                "contentKey": "CSG request process",
+                "contentType": "image",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "English - CSG guide",
+                "contentType": "file",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "CSG purpose",
+                "contentType": "image",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "3 types of card",
+                "contentType": "image",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "test_video",
+                "contentType": "video",
+                "languageCode": "en"
+              }
+            ],
+            "surveyId": null,
+            "doer": "UPCM",
+            "subject": "",
+            "reviewer": "BPC",
+            "languages": [],
+            "uiConfig": [],
+            "grantConfig": [],
+            "formConfig": []
+          },
+          "activities": [
+            {
+              "id": 1,
+              "name": "Conduct Baseline Survey",
+              "startOffset": 0,
+              "endOffset": 5,
+              "activityStatus": "INPROGRESS",
+              "actualStartDate": "12 Jun 2024",
+              "actualEndDate": null,
+              "activityConfig": {
+                "activityType": "Grant",
+                "activityTypeId": 1,
+                "conditions": [],
+                "validations": [],
+                "content": [
+                  {
+                    "contentKey": "image1",
+                    "contentType": "Image",
+                    "languageCode": "en"
+                  }
+                ],
+                "surveyId": 3,
+                "doer": "UPCM",
+                "subject": "VO",
+                "reviewer": "BPC",
+                "languages": [
+                  {
+                    "description": "Conduct Baseline Survey",
+                    "language": "en"
+                  }
+                ],
+                "uiConfig": [
+                  {
+                    "languageId": "en",
                     "key": "GRANT_TASK_TITLE",
-                    "type": "DYNAMIC",
+                    "type": "dynamic",
                     "value": "subjectName",
-                  "componentType": "Card"
+                    "componentType": "Card",
+                    "icon": "VO_icon",
+                    "label": ""
                   },
                   {
-                    "languageId": null,
+                    "languageId": "en",
                     "key": "GRANT_TASK_SUBTITLE",
-                    "type": "DYNAMIC",
+                    "type": "dynamic",
                     "value": "villageName",
-                    "componentType": "Card"
+                    "componentType": "Card",
+                    "icon": "Villagename_icon",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_3",
+                    "type": "tag",
+                    "value": "numberOfDidis",
+                    "componentType": "Card",
+                    "icon": "didis_icon",
+                    "label": "Didis : "
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_4",
+                    "type": "tag",
+                    "value": "receivedAmount",
+                    "componentType": "Card",
+                    "icon": "amount",
+                    "label": "Received : "
                   },
                   {
                     "languageId": "en",
                     "key": "GRANT_TASK_PRIMARY_BUTTON",
-                    "type": "STATIC",
+                    "type": "static",
                     "value": "Start",
-                    "componentType": "Card"
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
                   },
                   {
-                    "languageId": null,
-                    "key": "searchOn",
-                    "type": "DYNAMIC",
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_ON",
+                    "type": "dynamic",
                     "value": "subjectName",
-                    "componentType": "Search"
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
                   },
                   {
-                    "languageId": null,
-                    "key": "searchLabel",
-                    "type": "STATIC",
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_LABEL",
+                    "type": "static",
                     "value": "Search by Vo",
-                    "componentType": "Search"
+                    "componentType": "Search",
+                    "icon": "",
+                    "label": ""
                   }
+                ],
+                "grantConfig": [
+                  {
+                    "grantId": 1,
+                    "grantName": "Consumption Support Grant",
+                    "grantComponent": "{\"grantComponentType\":\"receiptOfFunds\",\"grantComponentName\":\"Add Receipt of funds\"}",
+                    "grantType": "CSG",
+                    "languageId": "en",
+                    "mode": "",
+                    "nature": "",
+                    "referenceId": 3,
+                    "referenceType": "Survey",
+                    "isMoneyJournal": true
+                  }
+                ],
+                "formConfig": []
+              },
+              "tasks": [
+                {
+                  "id": 17,
+                  "subjectId": 602,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "WAISUKMA"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "HARINCHERRA"
+                    },
+                    {
+                      "key": "numberOfDidis",
+                      "value": "85"
+                    },
+                    {
+                      "key": "receivedAmount",
+                      "value": "86"
+                    }
+                  ]
+                },
+                {
+                  "id": 18,
+                  "subjectId": 700,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "NOT_STARTED",
+                  "actualStartDate": null,
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "KHUSHI VO"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "MASURAIPARA"
+                    },
+                    {
+                      "key": "numberOfDidis",
+                      "value": "85"
+                    },
+                    {
+                      "key": "receivedAmount",
+                      "value": "86"
+                    }
+                  ]
+                },
+                {
+                  "id": 15,
+                  "subjectId": 709,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "KAUBAHA"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "SRINIBASHPARA"
+                    },
+                    {
+                      "key": "numberOfDidis",
+                      "value": "85"
+                    },
+                    {
+                      "key": "receivedAmount",
+                      "value": "86"
+                    }
+                  ]
+                }
               ]
             },
-            "tasks": [
-              {
-                "id": 1,
-                "subjectId": 512,
-                "startOffset": 0,
-                "endOffset": 5,
-                "taskStatus": "NOT_STARTED",
-                "actualStartDate": null,
-                "actualEndDate": null,
-                "taskData": [
+            {
+              "id": 2,
+              "name": "Conduct Hamlet Survey",
+              "startOffset": 0,
+              "endOffset": 5,
+              "activityStatus": "INPROGRESS",
+              "actualStartDate": "12 Jun 2024",
+              "actualEndDate": "12 Jun 2024",
+              "activityConfig": {
+                "activityType": "Grant",
+                "activityTypeId": 1,
+                "conditions": [],
+                "validations": [],
+                "content": [
                   {
-                    "key": "subjectName",
-                    "value": "Achaikta "
+                    "contentKey": "image2",
+                    "contentType": "Image",
+                    "languageCode": "en"
+                  }
+                ],
+                "surveyId": 4,
+                "doer": "UPCM",
+                "subject": "Didi",
+                "reviewer": "BPC",
+                "languages": [
+                  {
+                    "description": "Conduct Baseline Survey",
+                    "language": "en"
+                  }
+                ],
+                "uiConfig": [
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_TITLE",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
                   },
                   {
-                    "key": "villageName",
-                    "value": "HELENPUR W 4"
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE",
+                    "type": "dynamic",
+                    "value": "dadaName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_2",
+                    "type": "dynamic",
+                    "value": "address",
+                    "componentType": "Card",
+                    "icon": "address",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_3",
+                    "type": "dynamic",
+                    "value": "villageName",
+                    "componentType": "Card",
+                    "icon": "Villagename_icon",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_4",
+                    "type": "dynamic",
+                    "value": "sanctionedAmount",
+                    "componentType": "Card",
+                    "icon": "sanctioned_amount",
+                    "label": "Sanctioned : "
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_IMAGE",
+                    "type": "attribute",
+                    "value": "didiImage",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_PRIMARY_BUTTON",
+                    "type": "static",
+                    "value": "Start",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SECONDARY_BUTTON",
+                    "type": "static",
+                    "value": "Not Available",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_ON",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_LABEL",
+                    "type": "static",
+                    "value": "Search by didi",
+                    "componentType": "Search",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_GROUP_BY",
+                    "type": "dynamic",
+                    "value": "voName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_5",
+                    "type": "tag",
+                    "value": "disbursedAmount",
+                    "componentType": "Card",
+                    "icon": "amount",
+                    "label": "Disbursed : "
+                  }
+                ],
+                "grantConfig": [
+                  {
+                    "grantId": 1,
+                    "grantName": "Consumption Support Grant",
+                    "grantComponent": "{\"grantComponentType\":\"disbursement\",\"grantComponentName\":\"Add Disbursement\"}",
+                    "grantType": "CSG",
+                    "languageId": "en",
+                    "mode": "{\"options\":[{\"optionId\":1,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Cash\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Cash\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":2,\"languages\":[{\"languageCode\":\"en\",\"description\":\"kind\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"kind\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":3,\"languages\":[{\"languageCode\":\"en\",\"description\":\"DBT\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"DBT\",\"valuesDTO\":[],\"contents\":[]}]}",
+                    "nature": "{\"options\":[{\"optionId\":4,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Kitchen Garden\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Kitchen Garden\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":5,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Insurance\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Insurance\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":6,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Ration\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Ration\",\"valuesDTO\":[],\"contents\":[]}]}",
+                    "referenceId": 4,
+                    "referenceType": "Survey",
+                    "isMoneyJournal": true
+                  }
+                ],
+                "formConfig": [
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_TITLE_FORM",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_FORM",
+                    "type": "dynamic",
+                    "value": "dadaName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_2_FORM",
+                    "type": "dynamic",
+                    "value": "villageName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_3_FORM",
+                    "type": "dynamic",
+                    "value": "voName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_4_FORM",
+                    "type": "tag",
+                    "value": "mode",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_5_FORM",
+                    "type": "tag",
+                    "value": "disbursedAmount",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_PRIMARY_BUTTON_FORM",
+                    "type": "static",
+                    "value": "Complete",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SECONDARY_BUTTON_FORM",
+                    "type": "static",
+                    "value": "Generate Form E",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_6_FORM",
+                    "type": "tag",
+                    "value": "nature",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_IMAGE_FORM",
+                    "type": "attribute",
+                    "value": "didiImage",
+                    "componentType": "FORM",
+                    "formType": "Form E"
                   }
                 ]
               },
+              "tasks": [
+                {
+                  "id": 40,
+                  "subjectId": 4760,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Bila rung Reang "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Abhi ram Reang "
+                    },
+                    {
+                      "key": "address",
+                      "value": "40"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "HARINCHERRA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "2000"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": "https://nonprodnudgestorage.blob.core.windows.net/uat/eupi-documents/content/26-3239-4136_1715220844736.png"
+                    },
+                    {
+                      "key": "voName",
+                      "value": "WAISUKMA"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                },
+                {
+                  "id": 39,
+                  "subjectId": 5861,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "NOT_AVAILABLE",
+                  "actualStartDate": null,
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Ahoiti Reang "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Donka rai Reang "
+                    },
+                    {
+                      "key": "address",
+                      "value": "5"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "MASURAIPARA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "2500"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": "https://nonprodnudgestorage.blob.core.windows.net/uat/eupi-documents/content/20-3239-4136_1715224949612.png"
+                    },
+                    {
+                      "key": "voName",
+                      "value": "KHUSHI VO"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                },
+                {
+                  "id": 38,
+                  "subjectId": 7572,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "NOT_AVAILABLE",
+                  "actualStartDate": null,
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Gunthoti Tripura "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Pethamani Tripura "
+                    },
+                    {
+                      "key": "address",
+                      "value": "17"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "SRINIBASHPARA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "3000"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": ""
+                    },
+                    {
+                      "key": "voName",
+                      "value": "KAUBAHA"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                },
+                {
+                  "id": 41,
+                  "subjectId": 4780,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Sandhya rung Reang "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Sambhu ram Reang "
+                    },
+                    {
+                      "key": "address",
+                      "value": "60"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "HARINCHERRA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "2000"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": ""
+                    },
+                    {
+                      "key": "voName",
+                      "value": "WAISUKMA"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "CSG disbursement to Didis",
+          "languages": [
+            {
+              "description": "CSG disbursement to Didis",
+              "language": "en"
+            }
+          ],
+          "startOffset": 0,
+          "endOffset": 2,
+          "missionStatus": "INPROGRESS",
+          "actualStartDate": "12 Jun 2024",
+          "actualEndDate": null,
+          "conditions": [],
+          "validations": [],
+          "missionConfig": {
+            "activityType": "",
+            "activityTypeId": null,
+            "conditions": [],
+            "validations": [],
+            "content": [
               {
-                "id": 2,
-                "subjectId": 787,
-                "startOffset": 0,
-                "endOffset": 5,
-                "taskStatus": "NOT_STARTED",
-                "actualStartDate": null,
-                "actualEndDate": null,
-                "taskData": [
-                  {
-                    "key": "subjectName",
-                    "value": "HELENPUR VO"
-                  },
-                  {
-                    "key": "villageName",
-                    "value": "HELENPUR"
-                  }
-                ]
+                "contentKey": "Bangla - CSG guide",
+                "contentType": "file",
+                "languageCode": "bn"
               },
               {
-                "id": 3,
-                "subjectId": 694,
-                "startOffset": 0,
-                "endOffset": 5,
-                "taskStatus": "NOT_STARTED",
-                "actualStartDate": null,
-                "actualEndDate": null,
-                "taskData": [
-                  {
-                    "key": "subjectName",
-                    "value": "Achaikta"
-                  },
-                  {
-                    "key": "villageName",
-                    "value": "HELENPUR W 4"
-                  }
-                ]
+                "contentKey": "CSG request process",
+                "contentType": "image",
+                "languageCode": "en"
               },
               {
-                "id": 4,
-                "subjectId": 730,
-                "startOffset": 0,
-                "endOffset": 5,
-                "taskStatus": "NOT_STARTED",
-                "actualStartDate": null,
-                "actualEndDate": null,
-                "taskData": [
-                  {
-                    "key": "subjectName",
-                    "value": "Achaikta"
-                  },
-                  {
-                    "key": "villageName",
-                    "value": "HELENPUR W 4"
-                  }
-                ]
+                "contentKey": "English - CSG guide",
+                "contentType": "file",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "CSG purpose",
+                "contentType": "image",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "3 types of card",
+                "contentType": "image",
+                "languageCode": "en"
+              },
+              {
+                "contentKey": "test_video",
+                "contentType": "video",
+                "languageCode": "en"
               }
-            ]
+            ],
+            "surveyId": null,
+            "doer": "UPCM",
+            "subject": "",
+            "reviewer": "BPC",
+            "languages": [],
+            "uiConfig": [],
+            "grantConfig": [],
+            "formConfig": []
           },
-          {
-            "id": 2,
-            "name": "Disbursement",
-            "startOffset": 0,
-            "endOffset": 5,
-            "activityStatus": "NOT_STARTED",
-            "actualStartDate": null,
-            "actualEndDate": null,
-            "activityConfig": null,
-            "tasks": null
-          }
-        ]
-      }
-    ]
-  }
-]
-
+          "activities": [
+            {
+              "id": 3,
+              "name": "Receipt of funds",
+              "startOffset": 0,
+              "endOffset": 5,
+              "activityStatus": "INPROGRESS",
+              "actualStartDate": "12 Jun 2024",
+              "actualEndDate": null,
+              "activityConfig": {
+                "activityType": "Grant",
+                "activityTypeId": 1,
+                "conditions": [],
+                "validations": [],
+                "content": [
+                  {
+                    "contentKey": "image1",
+                    "contentType": "Image",
+                    "languageCode": "en"
+                  }
+                ],
+                "surveyId": 3,
+                "doer": "UPCM",
+                "subject": "VO",
+                "reviewer": "BPC",
+                "languages": [
+                  {
+                    "description": "Receipt of funds",
+                    "language": "en"
+                  }
+                ],
+                "uiConfig": [
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_TITLE",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Card",
+                    "icon": "VO_icon",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE",
+                    "type": "dynamic",
+                    "value": "villageName",
+                    "componentType": "Card",
+                    "icon": "Villagename_icon",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_3",
+                    "type": "tag",
+                    "value": "numberOfDidis",
+                    "componentType": "Card",
+                    "icon": "didis_icon",
+                    "label": "Didis : "
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_4",
+                    "type": "tag",
+                    "value": "receivedAmount",
+                    "componentType": "Card",
+                    "icon": "amount",
+                    "label": "Received : "
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_PRIMARY_BUTTON",
+                    "type": "static",
+                    "value": "Start",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_ON",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_LABEL",
+                    "type": "static",
+                    "value": "Search by Vo",
+                    "componentType": "Search",
+                    "icon": "",
+                    "label": ""
+                  }
+                ],
+                "grantConfig": [
+                  {
+                    "grantId": 1,
+                    "grantName": "Consumption Support Grant",
+                    "grantComponent": "{\"grantComponentType\":\"receiptOfFunds\",\"grantComponentName\":\"Add Receipt of funds\"}",
+                    "grantType": "CSG",
+                    "languageId": "en",
+                    "mode": "",
+                    "nature": "",
+                    "referenceId": 3,
+                    "referenceType": "Survey",
+                    "isMoneyJournal": true
+                  }
+                ],
+                "formConfig": []
+              },
+              "tasks": [
+                {
+                  "id": 7,
+                  "subjectId": 602,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "WAISUKMA"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "HARINCHERRA"
+                    },
+                    {
+                      "key": "numberOfDidis",
+                      "value": "85"
+                    },
+                    {
+                      "key": "receivedAmount",
+                      "value": "86"
+                    }
+                  ]
+                },
+                {
+                  "id": 8,
+                  "subjectId": 700,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "NOT_STARTED",
+                  "actualStartDate": null,
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "KHUSHI VO"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "MASURAIPARA"
+                    },
+                    {
+                      "key": "numberOfDidis",
+                      "value": "85"
+                    },
+                    {
+                      "key": "receivedAmount",
+                      "value": "86"
+                    }
+                  ]
+                },
+                {
+                  "id": 5,
+                  "subjectId": 709,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "KAUBAHA"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "SRINIBASHPARA"
+                    },
+                    {
+                      "key": "numberOfDidis",
+                      "value": "85"
+                    },
+                    {
+                      "key": "receivedAmount",
+                      "value": "86"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "name": "Disbursement",
+              "startOffset": 0,
+              "endOffset": 5,
+              "activityStatus": "COMPLETED",
+              "actualStartDate": "12 Jun 2024",
+              "actualEndDate": "12 Jun 2024",
+              "activityConfig": {
+                "activityType": "Grant",
+                "activityTypeId": 1,
+                "conditions": [],
+                "validations": [],
+                "content": [
+                  {
+                    "contentKey": "image2",
+                    "contentType": "Image",
+                    "languageCode": "en"
+                  }
+                ],
+                "surveyId": 4,
+                "doer": "UPCM",
+                "subject": "Didi",
+                "reviewer": "BPC",
+                "languages": [
+                  {
+                    "description": "Disbursement",
+                    "language": "en"
+                  }
+                ],
+                "uiConfig": [
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_TITLE",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE",
+                    "type": "dynamic",
+                    "value": "dadaName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_2",
+                    "type": "dynamic",
+                    "value": "address",
+                    "componentType": "Card",
+                    "icon": "address",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_3",
+                    "type": "dynamic",
+                    "value": "villageName",
+                    "componentType": "Card",
+                    "icon": "Villagename_icon",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_4",
+                    "type": "dynamic",
+                    "value": "sanctionedAmount",
+                    "componentType": "Card",
+                    "icon": "sanctioned_amount",
+                    "label": "Sanctioned : "
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_IMAGE",
+                    "type": "attribute",
+                    "value": "didiImage",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_PRIMARY_BUTTON",
+                    "type": "static",
+                    "value": "Start",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SECONDARY_BUTTON",
+                    "type": "static",
+                    "value": "Not Available",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_ON",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_SEARCH_LABEL",
+                    "type": "static",
+                    "value": "Search by didi",
+                    "componentType": "Search",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_GROUP_BY",
+                    "type": "dynamic",
+                    "value": "voName",
+                    "componentType": "Card",
+                    "icon": "",
+                    "label": ""
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_5",
+                    "type": "tag",
+                    "value": "disbursedAmount",
+                    "componentType": "Card",
+                    "icon": "amount",
+                    "label": "Disbursed : "
+                  }
+                ],
+                "grantConfig": [
+                  {
+                    "grantId": 1,
+                    "grantName": "Consumption Support Grant",
+                    "grantComponent": "{\"grantComponentType\":\"disbursement\",\"grantComponentName\":\"Add Disbursement\"}",
+                    "grantType": "CSG",
+                    "languageId": "en",
+                    "mode": "{\"options\":[{\"optionId\":1,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Cash\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Cash\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":2,\"languages\":[{\"languageCode\":\"en\",\"description\":\"kind\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"kind\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":3,\"languages\":[{\"languageCode\":\"en\",\"description\":\"DBT\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"DBT\",\"valuesDTO\":[],\"contents\":[]}]}",
+                    "nature": "{\"options\":[{\"optionId\":4,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Kitchen Garden\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Kitchen Garden\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":5,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Insurance\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Insurance\",\"valuesDTO\":[],\"contents\":[]},{\"optionId\":6,\"languages\":[{\"languageCode\":\"en\",\"description\":\"Ration\",\"paraphrase\":\"\"}],\"status\":1,\"conditions\":[],\"weight\":0,\"optionImage\":\"\",\"type\":\"\",\"order\":0,\"tag\":0,\"conditional\":false,\"originalValue\":\"Ration\",\"valuesDTO\":[],\"contents\":[]}]}",
+                    "referenceId": 4,
+                    "referenceType": "Survey",
+                    "isMoneyJournal": true
+                  }
+                ],
+                "formConfig": [
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_TITLE_FORM",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_FORM",
+                    "type": "dynamic",
+                    "value": "dadaName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_2_FORM",
+                    "type": "dynamic",
+                    "value": "villageName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_3_FORM",
+                    "type": "dynamic",
+                    "value": "voName",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_4_FORM",
+                    "type": "tag",
+                    "value": "mode",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_5_FORM",
+                    "type": "tag",
+                    "value": "disbursedAmount",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_PRIMARY_BUTTON_FORM",
+                    "type": "static",
+                    "value": "Complete",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SECONDARY_BUTTON_FORM",
+                    "type": "static",
+                    "value": "Generate Form E",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_SUBTITLE_6_FORM",
+                    "type": "tag",
+                    "value": "nature",
+                    "componentType": "Form",
+                    "formType": "Form E"
+                  },
+                  {
+                    "languageId": "en",
+                    "key": "GRANT_TASK_IMAGE_FORM",
+                    "type": "attribute",
+                    "value": "didiImage",
+                    "componentType": "FORM",
+                    "formType": "Form E"
+                  }
+                ]
+              },
+              "tasks": [
+                {
+                  "id": 30,
+                  "subjectId": 4760,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Bila rung Reang "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Abhi ram Reang "
+                    },
+                    {
+                      "key": "address",
+                      "value": "40"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "HARINCHERRA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "2000"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": "https://nonprodnudgestorage.blob.core.windows.net/uat/eupi-documents/content/26-3239-4136_1715220844736.png"
+                    },
+                    {
+                      "key": "voName",
+                      "value": "WAISUKMA"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                },
+                {
+                  "id": 29,
+                  "subjectId": 5861,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "NOT_AVAILABLE",
+                  "actualStartDate": null,
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Ahoiti Reang "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Donka rai Reang "
+                    },
+                    {
+                      "key": "address",
+                      "value": "5"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "MASURAIPARA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "2500"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": "https://nonprodnudgestorage.blob.core.windows.net/uat/eupi-documents/content/20-3239-4136_1715224949612.png"
+                    },
+                    {
+                      "key": "voName",
+                      "value": "KHUSHI VO"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                },
+                {
+                  "id": 28,
+                  "subjectId": 7572,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "NOT_AVAILABLE",
+                  "actualStartDate": null,
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Gunthoti Tripura "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Pethamani Tripura "
+                    },
+                    {
+                      "key": "address",
+                      "value": "17"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "SRINIBASHPARA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "3000"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": ""
+                    },
+                    {
+                      "key": "voName",
+                      "value": "KAUBAHA"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                },
+                {
+                  "id": 31,
+                  "subjectId": 4780,
+                  "startOffset": 0,
+                  "endOffset": 5,
+                  "taskStatus": "INPROGRESS",
+                  "actualStartDate": "12 Jun 2024",
+                  "actualEndDate": null,
+                  "taskData": [
+                    {
+                      "key": "subjectName",
+                      "value": "Sandhya rung Reang "
+                    },
+                    {
+                      "key": "dadaName",
+                      "value": "Sambhu ram Reang "
+                    },
+                    {
+                      "key": "address",
+                      "value": "60"
+                    },
+                    {
+                      "key": "villageName",
+                      "value": "HARINCHERRA"
+                    },
+                    {
+                      "key": "sanctionedAmount",
+                      "value": "2000"
+                    },
+                    {
+                      "key": "didiImage",
+                      "value": ""
+                    },
+                    {
+                      "key": "voName",
+                      "value": "WAISUKMA"
+                    },
+                    {
+                      "key": "disbursedAmount",
+                      "value": "86"
+                    },
+                    {
+                      "key": "mode",
+                      "value": "89"
+                    },
+                    {
+                      "key": "nature",
+                      "value": "90"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "lastSyncTime": null,
+  "requestId": null
+}

@@ -45,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContent
 import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.SummaryCardComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
+import com.nrlm.baselinesurvey.ui.htmltext.HtmlText
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -65,7 +66,6 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.tagList
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -183,7 +183,7 @@ fun FormTypeQuestionComponent(
                                         ) {
                                             showCustomToast(
                                                 context,
-                                                "Only One item we can added"
+                                                context.getString(R.string.only_one_entry_can_be_added)
                                             )
                                         } else if (isEditAllowed) {
                                             onAnswerSelection(questionIndex)

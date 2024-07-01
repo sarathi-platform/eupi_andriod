@@ -32,6 +32,7 @@ import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -50,12 +51,15 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+
+private const val TAG = "CoreUtils"
 
 fun Long.toDate(
     dateFormat: Long = System.currentTimeMillis(),
@@ -365,8 +369,7 @@ private fun calculateInSampleSize(
     }
     return inSampleSize
 }
-
-suspend fun exportDbFile(appContext: Context, applicationID: String, databaseName: String): Uri? {
+ suspend fun exportDbFile(appContext: Context, applicationID: String,databaseName:String): Uri? {
     var backupDB: File? = null
     try {
         val sd = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -393,6 +396,21 @@ suspend fun exportDbFile(appContext: Context, applicationID: String, databaseNam
 
     return backupDB?.let { uriFromFile(appContext, it, applicationID) }
 
+}
+
+suspend fun exportDbFiles(
+    appContext: Context,
+    applicationID: String,
+    databaseNames: List<String>
+): List<Pair<String, Uri?>> {
+    val uriList = ArrayList<Pair<String, Uri?>>()
+    databaseNames.forEach { dbName ->
+        val uri = exportDbFile(appContext, applicationID, dbName)
+        uri?.let {
+            uriList.add(Pair(dbName, it))
+        }
+    }
+    return uriList
 }
 
 fun getAllFilesInDirectory(
@@ -425,8 +443,8 @@ suspend fun exportAllOldImages(
     appContext: Context,
     applicationID: String,
     mobileNo: String,
-    userName: String,
-    timeInMillSec: String
+    userName:String,
+    moduleName: String
 ): Uri? {
     try {
 
@@ -436,7 +454,7 @@ suspend fun exportAllOldImages(
         val zipFileDirectory = appContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
 
-        val zipFileName = "${userName}_${mobileNo}_Sarathi_Image_${System.currentTimeMillis()}.zip"
+        val zipFileName = "${userName}_${mobileNo}_${SARATHI}_Image_${moduleName}_${System.currentTimeMillis()}.zip"
 
         val zipFileUri = uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
 
@@ -473,6 +491,7 @@ fun exportOldData(
     mobileNo: String,
     databaseName: String,
     userName: String,
+    moduleName:String,
     onExportSuccess: (zipUri: Uri) -> Unit
 ) {
     CoroutineScope(Dispatchers.IO).launch {
@@ -486,8 +505,7 @@ fun exportOldData(
             dbUri?.let {
                 fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
             }
-            val zipFileName =
-                "${userName}_${mobileNo}_Sarathi_Database_${System.currentTimeMillis()}.zip"
+            val zipFileName = "${userName}_${mobileNo}_${SARATHI}_Database_${moduleName}_${System.currentTimeMillis()}.zip"
             val zipFileUri =
                 uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
 
@@ -510,10 +528,64 @@ fun exportOldData(
             onExportSuccess(zipFileUri)
 
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            CoreLogger.e(
+                tag = TAG,
+                msg = "exportOldData: exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
         }
     }
 
+}
+
+fun exportDatabase(
+    appContext: Context,
+    applicationID: String,
+    mobileNo: String,
+    databaseName: List<String>,
+    userName: String,
+    moduleName: String,
+    onExportSuccess: (zipUri: Uri) -> Unit
+) {
+    CoreDispatchers.ioCoroutineScope {
+        try {
+
+            val dbUrisList = exportDbFiles(appContext, applicationID, databaseName)
+            val zipFileDirectory = appContext
+                .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+
+            val zipFileName =
+                "${userName}_${mobileNo}_${SARATHI}_Database_${moduleName}_${System.currentTimeMillis()}.zip"
+            val zipFileUri =
+                uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
+
+            ZipManager.zip(
+                dbUrisList,
+                zipFileUri,
+                appContext
+            )
+            delay(100)
+            if (dbUrisList.map { it.second }.all { it != null }) {
+                copyZipFile(
+                    appContext,
+                    zipFileUri,
+                    zipFileName,
+                    mobileNo,
+                    userName
+                )
+            }
+            onExportSuccess(zipFileUri)
+
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = TAG,
+                msg = "exportDatabase: exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
+        }
+    }
 
 }
 
@@ -523,6 +595,7 @@ fun exportLogFile(
     applicationID: String,
     mobileNo: String,
     userName: String,
+    moduleName: String,
     onExportSuccess: (zipUri: Uri) -> Unit
 ) {
 
@@ -537,7 +610,7 @@ fun exportLogFile(
 
         }
         val zipFileName =
-            "${userName}_${mobileNo}_Sarathi_Log_File_${System.currentTimeMillis()}.zip"
+            "${userName}_${mobileNo}_${SARATHI}_Log_File_${moduleName}_${System.currentTimeMillis()}.zip"
 
         val zipFileUri =
             uriFromFile(appContext, File(logDir, zipFileName), applicationID)
@@ -796,13 +869,17 @@ fun String.getDateTimeInMillis(): Long {
     }
 }
 
-fun String.getDateInMillis(): Long {
+fun moduleNameAccToLoggedInUser(loggedInUser:String):String{
+    return if(loggedInUser == UPCM_USER) BASELINE else SELECTION
+}
+
+fun String.getDateInMillis(pattern: String = "yyyy-MM-dd"): Long {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val localDate = LocalDate.parse(this)
         val zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault())
         zonedDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
         val date = dateFormat.parse(this)
         date?.time ?: 0L
     }
@@ -953,5 +1030,42 @@ fun formatToIndianRupee(amount: String): String {
 
 }
 
+fun updateCoreEventFileName(context: Context,mobileNo: String){
+    val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
+    coreSharedPrefs.setBackupFileName(
+        getDefaultBackUpFileName(
+            mobileNo
+        )
+    )
+    coreSharedPrefs.setImageBackupFileName(
+        getDefaultImageBackUpFileName(
+            mobileNo
+        )
+    )
+    coreSharedPrefs.setFileExported(false)
+}
 
+const val YYYY_MM_DD = "yyyy-MM-dd"
 
+fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
+    if (this == null)
+        return BLANK_STRING
+
+    val formatter = SimpleDateFormat(pattern)
+    return formatter.format(Date(this))
+}
+
+fun String.getDateInMillis(): Long {
+    val dateSplit = this.split("/")
+    val calendar: Calendar = Calendar.getInstance()
+    calendar.set(dateSplit[2].toInt(), dateSplit[1].toInt(), dateSplit[0].toInt())
+    return calendar.timeInMillis
+}
+
+fun Boolean.getAttendanceFromBoolean(): String {
+    return if (this) ATTENDANCE_PRESENT else ATTENDANCE_ABSENT
+}
+
+fun String?.getBooleanValueFromAttendance(): Boolean {
+    return this?.equals(ATTENDANCE_PRESENT) ?: false
+}

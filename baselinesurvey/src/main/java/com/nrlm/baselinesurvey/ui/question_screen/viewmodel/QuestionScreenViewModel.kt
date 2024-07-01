@@ -13,7 +13,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
@@ -47,6 +46,7 @@ import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
+import com.nrlm.baselinesurvey.utils.getAutoCalculationConditionConditions
 import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAnswer
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -54,6 +54,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nrlm.baselinesurvey.utils.updateOptionsForNoneCondition
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -135,6 +136,8 @@ class QuestionScreenViewModel @Inject constructor(
     val formWithNoneOptionMarkedSet = mutableSetOf<Int>()
 
     val inputNumberQuestionMap = mutableMapOf<Int, List<InputTypeQuestionAnswerEntity>>()
+
+    val calculatedResult: MutableState<Map<Int, String>> = mutableStateOf(mutableMapOf())
 
     fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -248,6 +251,7 @@ class QuestionScreenViewModel @Inject constructor(
             getFormResponseCountsForSection(surveyId, sectionId, surveyeeId)
             updateSaveUpdateState()
             delay(300)
+            onEvent(QuestionTypeEvent.UpdateAutoCalculateTypeQuestionValue)
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -1300,7 +1304,90 @@ class QuestionScreenViewModel @Inject constructor(
                     )
                 }
             }
+
+            is QuestionTypeEvent.UpdateAutoCalculateTypeQuestionValue -> {
+                val mQuestionEntityStateList = questionEntityStateList.distinctBy { it.questionId }
+                val autoCalcQuestionList =
+                    mQuestionEntityStateList.filter { it.questionEntity?.type == QuestionType.AutoCalculation.name }
+                autoCalcQuestionList.forEach { autoCalcQuestion ->
+                    autoCalcQuestion.optionItemEntityState.forEach { optionItemEntityState ->
+                        optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
+                            conditionsDto?.let {
+                                if (conditionsDto.resultType.toLowerCase()
+                                        .trim() == ResultType.Calculation.name.toLowerCase().trim()
+                                ) {
+
+                                    val calculationCondition: Pair<Int, String>? =
+                                        getAutoCalculationConditionConditions(conditionsDto.value)
+
+                                    calculationCondition?.let { calcCondition ->
+
+                                        val questionEntityState =
+                                            mQuestionEntityStateList.find { it.questionId == calcCondition.first }
+
+                                        questionEntityState?.let { q ->
+                                            val options = q.optionItemEntityState.filter {
+                                                it.optionItemEntity?.display?.lowercase()?.trim()
+                                                    ?.contains(
+                                                        calcCondition.second.lowercase().trim()
+                                                    ) == true
+                                            }
+
+                                            val selectedValues: List<InputTypeQuestionAnswerEntity> =
+                                                getSelectedValuesForQuestion(q.questionId, options)
+                                            val calculationExpression: String =
+                                                getCalculationExpressionForAutoCalculateQuestion(
+                                                    selectedValues
+                                                )
+
+                                            if (calculationExpression.isNotEmpty()) {
+                                                val result =
+                                                    CalculatorUtils.calculate(calculationExpression)
+                                                        .toString()
+                                                val map = calculatedResult.value.toMutableMap()
+                                                map[autoCalcQuestion.questionId!!] = result
+                                                calculatedResult.value = map
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private fun getCalculationExpressionForAutoCalculateQuestion(selectedValues: List<InputTypeQuestionAnswerEntity>): String {
+        if (selectedValues.isEmpty())
+            return BLANK_STRING
+
+        return selectedValues.map { it.inputValue }.joinToString("+")
+    }
+
+    private fun getSelectedValuesForQuestion(
+        questionId: Int?,
+        options: List<OptionItemEntityState>
+    ): List<InputTypeQuestionAnswerEntity> {
+        questionId?.let { qId ->
+            if (options.isEmpty())
+                return emptyList()
+
+            val questionResponse =
+                inputTypeQuestionAnswerEntityList.value.filter { it.questionId == questionId }
+
+            questionResponse.let { qResponse ->
+
+                return qResponse.filter { opt ->
+                    options.map { it.optionId }.contains(opt.optionId)
+                }
+
+            }
+
+        } ?: return emptyList()
+
     }
 
     private suspend fun updateMissionActivityTaskStatus(didiId: Int, sectionStatus: SectionStatus) {
@@ -1512,7 +1599,7 @@ class QuestionScreenViewModel @Inject constructor(
                      inputValue = inputValue
                  )
              }
-
+             onEvent(QuestionTypeEvent.UpdateAutoCalculateTypeQuestionValue)
          } catch (ex: Exception) {
              BaselineLogger.e(
                  "QuestionScreenViewModel",

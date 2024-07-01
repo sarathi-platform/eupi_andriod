@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.customviews.htmltext
 
+import android.os.Build
+import android.text.Html.fromHtml
 import android.text.Spanned
 import android.text.style.*
 import android.widget.TextView
@@ -80,7 +82,11 @@ private fun String.asHTML(
     URLSpanStyle: SpanStyle,
     customSpannedHandler: ((Spanned) -> AnnotatedString)? = null
 ) = buildAnnotatedString {
-    val spanned = HtmlCompat.fromHtml(this@asHTML, flags)
+    val spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        fromHtml(this@asHTML, flags)
+    } else {
+       HtmlCompat.fromHtml(this@asHTML,flags)
+    }
     val spans = spanned.getSpans(0, spanned.length, Any::class.java)
 
     if (customSpannedHandler != null) {

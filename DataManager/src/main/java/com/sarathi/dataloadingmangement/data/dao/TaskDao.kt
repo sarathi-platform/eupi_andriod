@@ -92,7 +92,6 @@ interface TaskDao {
     fun markTaskCompleted(
         userId: String,
         taskId: Int,
-        subjectId: Int,
         status: String,
         actualCompletedDate: String
     ) {

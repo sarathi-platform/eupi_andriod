@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -28,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.BANNER
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG
@@ -144,7 +144,8 @@ fun NestedLazyListForFormQuestions(
                             .filter {
                                 it
                                     .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.FormWithNone.name
-                            }.filter { it.showQuestion } ?: emptyList()
+                            }.filter { it.showQuestion }.sortedBy { it.optionItemEntity?.order }
+                            ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
@@ -168,7 +169,7 @@ fun NestedLazyListForFormQuestions(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",
                                     showQuestionState = option,
-                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
                                     isEditAllowed = isEditAllowed,
                                     selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
@@ -194,7 +195,7 @@ fun NestedLazyListForFormQuestions(
                                         optionId = option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING*/,
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
                                     }
                                 ) { value ->
                                     questionTypeScreenViewModel.onEvent(
@@ -246,10 +247,10 @@ fun NestedLazyListForFormQuestions(
                                     title = option.optionItemEntity.display,
                                     sources = option.optionItemEntity.values,
                                     showQuestionState = option,
-                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
                                     selectOptionText = mOption,
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
                                     }
                                 ) { value ->
                                     val valueIds = option.optionItemEntity.values?.filter {
@@ -281,27 +282,26 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
                             QuestionType.InputNumberEditText.name -> {
-                                Log.d(
-                                    "TAG",
-                                    "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}"
-                                )
+
+                                val responseValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                    formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue
+                                        ?: BLANK_STRING
+                                else
+                                    viewModel.storeCacheForResponse.getResponseForOptionId(
+                                        optionId = option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING
 
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
-                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
+                                    resetResponse = responseValue == BLANK_STRING,
+                                    defaultValue = responseValue,
                                     isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
                                     }
                                 ) { value ->
                                     questionTypeScreenViewModel.formTypeOption.let { it1 ->
@@ -340,9 +340,9 @@ fun NestedLazyListForFormQuestions(
                                         viewModel.storeCacheForResponse.getResponseForOptionId(
                                             optionId = option.optionId ?: -1
                                         )?.selectedValue ?: BLANK_STRING,
-                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
                                     },
                                     onAnswerSelection = { selectedValue ->
                                         questionTypeScreenViewModel.formTypeOption.let { formTypeOption ->
@@ -364,7 +364,7 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.Toggle.name -> {
                                 RadioOptionTypeComponent(
                                     optionItemEntityState = option,
-                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
                                     selectedValue = if (viewModel.tempRefId.value != BLANK_STRING)
                                         formQuestionResponseEntity.value.getResponseForOptionId(
                                             option.optionId ?: -1
@@ -375,7 +375,7 @@ fun NestedLazyListForFormQuestions(
                                             optionId = option.optionId ?: -1
                                         )?.selectedValue ?: BLANK_STRING,
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
                                     },
                                     onOptionSelected = { selectedValue, selectedOptionId ->
                                         questionTypeScreenViewModel.onEvent(

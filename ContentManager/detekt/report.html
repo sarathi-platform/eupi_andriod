@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+    </style>
+    <meta charset="utf-8">
+    <title>detekt report</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+        }
+
+        h1 {
+            font-family: Arial, sans-serif;
+            font-weight: 600;
+            width: fit-content;
+            background: -webkit-linear-gradient(left, rgba(105, 33, 224, 1), rgba(247, 44, 67, 1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+            background: rgb(105, 33, 224);
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.8) 0%, rgba(158, 41, 156, 0.8) 50%, rgba(247, 44, 67, 0.8) 100%);
+            padding: 0.2em;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+
+        h3 {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.4) 0%, rgba(158, 41, 156, 0.4) 50%, rgba(247, 44, 67, 0.4) 100%);
+            padding: 0.5em;
+            border-radius: 4px;
+        }
+
+        .rule-container {
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.2) 0%, rgba(158, 41, 156, 0.2) 100%);
+            border-radius: 4px;
+            padding-left: 1em;
+            padding-bottom: 0.3em;
+            padding-top: 0.3em;
+            padding-right: 1em;
+            line-height: 1.5em;
+            margin-bottom: 8px;
+            margin-top: 8px;
+        }
+
+        .rule {
+            font-family: Arial, sans-serif;
+            padding: 0.3em;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+
+        .description {
+            font-family: Arial, sans-serif;
+            color: #000000;
+            padding: 0.3em;
+        }
+
+        .location {
+            font-family: Jetbrains Mono, monospace;
+            font-weight: 500;
+            color: #000000;
+            display: block;
+        }
+
+        .message {
+            font-family: Arial, sans-serif;
+            font-size: 0.8em;
+            color: #444444;
+            display: block;
+            margin-top: 1pt;
+        }
+
+        code {
+            font-family: JetBrains Mono, monospace;
+            font-weight: 400;
+        }
+
+        pre {
+            font-family: JetBrains Mono, monospace;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            overflow: auto;
+        }
+
+        .lineno {
+            margin-right: 24px;
+            color: #9771c3;
+            background-color: rgba(230, 211, 243, 0.51);
+        }
+
+        .error {
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AwCFR4T/3uLMgAAADxJREFUCNdNyLERQEAABMCjL4lQwIzcjErpguAL+C9AvgKJDbeD/PRpLdm35Hm+MU+cB+tCKaJW4L4YBy+CAiLJrFs9mgAAAABJRU5ErkJggg==) bottom repeat-x;
+        }
+
+        .exception {
+            color: #b60808;
+            display: inline-block;
+            background-color: #ecdada;
+            border-color: #b60808;
+            border-radius: 10px;
+            border: solid 2px;
+            padding-left: 16px;
+            padding-right: 16px;
+            margin-bottom: 16px;
+        }
+
+    </style>
+</head>
+<body>
+
+<svg fill="none" height="53" style="padding-top: 8px" viewBox="0 0 225 53" width="225"
+     xmlns="http://www.w3.org/2000/svg">
+    <path d="M88.8883 42.2665V7.99487H81.6954V20.389C79.9918 18.3703 77.6257 16.6332 73.7926 16.6332C67.7828 16.6332 62.2461 21.2341 62.2461 29.6377V29.7316C62.2461 38.1352 67.8774 42.736 73.7926 42.736C77.5311 42.736 79.9445 40.9989 81.6954 38.6516V42.2665H88.8883ZM81.79 29.7316C81.79 33.9099 78.998 36.6798 75.6382 36.6798C72.2783 36.6798 69.439 33.9099 69.439 29.7316V29.6377C69.439 25.4124 72.2783 22.6894 75.6382 22.6894C78.998 22.6894 81.79 25.4593 81.79 29.6377V29.7316Z"
+          fill="#222222"/>
+    <path d="M120.325 30.3888V30.2949C120.325 23.1589 116.444 16.6332 107.974 16.6332C100.591 16.6332 95.4334 22.5486 95.4334 29.7316V29.8254C95.4334 37.5248 101.065 42.8299 108.683 42.8299C113.274 42.8299 116.681 41.0459 119.047 38.1352L114.93 34.5202C112.942 36.3511 111.192 37.1023 108.778 37.1023C105.56 37.1023 103.289 35.4122 102.579 32.1728H120.23C120.277 31.5156 120.325 31.093 120.325 30.3888ZM113.321 27.7128H102.484C103.052 24.4734 104.992 22.3608 107.974 22.3608C111.002 22.3608 112.895 24.5204 113.321 27.7128Z"
+          fill="#222222"/>
+    <path d="M141.278 41.2337V35.5061C140.237 36.0695 139.054 36.3981 137.729 36.3981C136.12 36.3981 135.41 35.6 135.41 33.9568V23.2059H141.373V17.1027H135.41V10.6709H128.217V17.1027H125.189V23.2059H128.217V35.1305C128.217 40.952 131.199 42.6891 135.599 42.6891C138.013 42.6891 139.764 42.1257 141.278 41.2337Z"
+          fill="#222222"/>
+    <path d="M172.008 30.3888V30.2949C172.008 23.1589 168.128 16.6332 159.657 16.6332C152.275 16.6332 147.117 22.5486 147.117 29.7316V29.8254C147.117 37.5248 152.748 42.8299 160.367 42.8299C164.958 42.8299 168.365 41.0459 170.731 38.1352L166.614 34.5202C164.626 36.3511 162.875 37.1023 160.462 37.1023C157.244 37.1023 154.973 35.4122 154.263 32.1728H171.914C171.961 31.5156 172.008 31.093 172.008 30.3888ZM165.005 27.7128H154.168C154.736 24.4734 156.676 22.3608 159.657 22.3608C162.686 22.3608 164.579 24.5204 165.005 27.7128Z"
+          fill="#222222"/>
+    <path d="M203.278 42.2665L193.293 27.0086L202.947 17.1027H194.334L185.911 26.2574V7.99487H178.718V42.2665H185.911V34.6141L188.419 31.985L195.044 42.2665H203.278Z"
+          fill="#222222"/>
+    <path d="M224.905 41.2337V35.5061C223.864 36.0695 222.681 36.3981 221.356 36.3981C219.747 36.3981 219.037 35.6 219.037 33.9568V23.2059H225V17.1027H219.037V10.6709H211.844V17.1027H208.816V23.2059H211.844V35.1305C211.844 40.952 214.826 42.6891 219.227 42.6891C221.64 42.6891 223.391 42.1257 224.905 41.2337Z"
+          fill="#222222"/>
+    <path clip-rule="evenodd" d="M2.18611 0C0.978755 0 0 0.978755 0 2.18611V40.771C0 41.9783 0.978755 42.9571 2.18611 42.9571H24.2534C25.6525 42.9571 26.6258 41.5473 26.3774 40.1705C26.2109 39.2481 26.124 38.2981 26.124 37.3279C26.124 28.5443 33.2445 21.4239 42.028 21.4239C42.8689 21.4239 43.6945 21.4892 44.5001 21.6149C45.8578 21.8268 47.22 20.8585 47.22 19.4844V2.18611C47.22 0.978755 46.2412 0 45.0339 0H2.18611Z"
+          fill="url(#paint0_linear)"
+          fill-rule="evenodd"/>
+    <path d="M55.3358 48.6166L54.7673 48.0481L53.2421 46.5229L52.9516 46.2324C52.2427 45.5234 52.1855 44.4067 52.673 43.5306C53.6299 41.8109 54.1762 39.833 54.1762 37.7293C54.1762 32.9104 51.3147 28.7499 47.2029 26.8501C46.5196 26.5344 45.8024 26.2808 45.0573 26.0974C44.3636 25.9268 43.6467 25.8164 42.9118 25.7727C42.6749 25.7587 42.4369 25.7495 42.1966 25.7495C38.5166 25.7495 35.2203 27.4188 33.0211 30.0381C31.9784 31.2802 31.1838 32.7357 30.7114 34.3293C30.3916 35.4079 30.217 36.5481 30.217 37.7291C30.217 38.0293 30.2319 38.3259 30.2537 38.6205C30.3082 39.3559 30.4265 40.0733 30.6082 40.766C30.8038 41.5117 31.0689 42.2296 31.3974 42.9116C33.3332 46.9295 37.4465 49.7089 42.1967 49.7089C43.957 49.7089 45.6291 49.3259 47.1357 48.6403C47.9841 48.2543 49.0046 48.3536 49.6636 49.0127L50.0894 49.4385L51.6301 50.9794L52.3016 51.6509C52.7205 52.0699 53.2697 52.2794 53.8186 52.2794C54.3677 52.2794 54.9169 52.0699 55.3357 51.6509C56.1738 50.8129 56.1738 49.4544 55.3358 48.6166ZM42.1967 45.418C39.9525 45.418 37.93 44.451 36.5232 42.9122C35.9485 42.2836 35.4772 41.5594 35.135 40.7667C34.845 40.0954 34.6493 39.3746 34.5617 38.6211C34.5277 38.3283 34.5084 38.0314 34.5084 37.7297C34.5084 33.4903 37.9574 30.0413 42.1968 30.0413C42.4379 30.0413 42.6762 30.0539 42.912 30.0756C43.6638 30.1455 44.3837 30.3242 45.0576 30.5956C45.8458 30.9127 46.5689 31.3564 47.2031 31.902C48.8434 33.3131 49.8852 35.4015 49.8852 37.7297C49.885 41.9688 46.4361 45.418 42.1967 45.418Z"
+          fill="url(#paint1_linear)"/>
+    <path d="M9.9936 25.6979C9.34217 25.6979 8.84618 25.4958 8.50566 25.0914C8.16514 24.6709 7.99487 24.1695 7.99487 23.5873V23.4903C7.99487 22.908 8.16514 22.4147 8.50566 22.0104C8.84618 21.5899 9.34217 21.3796 9.9936 21.3796C10.645 21.3796 11.141 21.5899 11.4815 22.0104C11.8221 22.4147 11.9923 22.908 11.9923 23.4903V23.5873C11.9923 24.1695 11.8221 24.6709 11.4815 25.0914C11.141 25.4958 10.645 25.6979 9.9936 25.6979ZM8.17254 10.8158V7.99487H11.8147V10.8158L10.6598 19.1612H9.32736L8.17254 10.8158Z"
+          fill="white"/>
+    <path d="M20.2729 25.6979C19.6215 25.6979 19.1255 25.4958 18.785 25.0914C18.4444 24.6709 18.2742 24.1695 18.2742 23.5873V23.4903C18.2742 22.908 18.4444 22.4147 18.785 22.0104C19.1255 21.5899 19.6215 21.3796 20.2729 21.3796C20.9243 21.3796 21.4203 21.5899 21.7608 22.0104C22.1014 22.4147 22.2716 22.908 22.2716 23.4903V23.5873C22.2716 24.1695 22.1014 24.6709 21.7608 25.0914C21.4203 25.4958 20.9243 25.6979 20.2729 25.6979ZM18.4518 10.8158V7.99487H22.094V10.8158L20.9391 19.1612H19.6067L18.4518 10.8158Z"
+          fill="white"/>
+    <defs>
+        <linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear" x1="5.222e-07" x2="51.982" y1="41.3361"
+                        y2="33.29">
+            <stop stop-color="#7942EE"/>
+            <stop offset="1" stop-color="#FF4651"/>
+        </linearGradient>
+        <linearGradient gradientUnits="userSpaceOnUse" id="paint1_linear" x1="53.0121" x2="60.9801" y1="51.5465"
+                        y2="30.2423">
+            <stop stop-color="#7942EE"/>
+            <stop offset="1" stop-color="#FF4651"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<h2>Metrics</h2>
+
+<div>
+    <ul>
+        <li>57 number of properties</li>
+        <li>49 number of functions</li>
+        <li>16 number of classes</li>
+        <li>14 number of packages</li>
+        <li>24 number of kt files</li>
+    </ul>
+</div>
+
+
+<h2>Complexity Report</h2>
+
+<div>
+    <ul>
+        <li>1,974 lines of code (loc)</li>
+        <li>1,801 source lines of code (sloc)</li>
+        <li>1,062 logical lines of code (lloc)</li>
+        <li>28 comment lines of code (cloc)</li>
+        <li>115 cyclomatic complexity (mcc)</li>
+        <li>173 cognitive complexity</li>
+        <li>71 number of total code smells</li>
+        <li>1% comment source ratio</li>
+        <li>108 mcc per 1,000 lloc</li>
+        <li>66 code smells per 1,000 lloc</li>
+    </ul>
+</div>
+
+
+<h2>Findings</h2>
+<div>Total: 71
+    <h3>TwitterCompose: 21</h3>
+    <details id="ComposableParamOrder" open="open">
+        <summary class="rule-container"><span class="rule">ComposableParamOrder: 8 </span><span
+                class="description">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/twittercompose#composableparamorder">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:56:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [fileType: String, key: String, navController: NavController = rememberNavController(), viewModel: MediaScreenViewModel, contentTitle: String] but should be [fileType: String, key: String, viewModel: MediaScreenViewModel, contentTitle: String, navController: NavController = rememberNavController()].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  53 </span>import java.util.Locale
+<span class="lineno">  54 </span>
+<span class="lineno">  55 </span>@Composable
+<span class="lineno">  56 </span>fun <span class="error">MediaScreen</span>(
+<span class="lineno">  57 </span>    fileType: String, key: String, navController: NavController = rememberNavController(),
+<span class="lineno">  58 </span>    viewModel: MediaScreenViewModel, contentTitle: String,
+<span class="lineno">  59 </span>) {
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:50:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [modifier: Modifier = Modifier, navController: NavController, filePath: String, verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp)] but should be [navController: NavController, filePath: String, modifier: Modifier = Modifier, verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp)].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  47 </span>import java.io.File
+<span class="lineno">  48 </span>
+<span class="lineno">  49 </span>@Composable
+<span class="lineno">  50 </span>fun <span class="error">PdfViewer</span>(
+<span class="lineno">  51 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  52 </span>    navController: NavController,
+<span class="lineno">  53 </span>    filePath: String,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/AppImageView.kt:12:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [modifier: Modifier = Modifier, @DrawableRes resource: Int, colorFilter: ColorFilter? = null] but should be [@DrawableRes resource: Int, modifier: Modifier = Modifier, colorFilter: ColorFilter? = null].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">   9 </span>import androidx.compose.ui.viewinterop.AndroidView
+<span class="lineno">  10 </span>
+<span class="lineno">  11 </span>@Composable
+<span class="lineno">  12 </span>fun <span class="error">AppImageView</span>(
+<span class="lineno">  13 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  14 </span>    @DrawableRes resource: Int,
+<span class="lineno">  15 </span>    colorFilter: ColorFilter? = null
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ButtonPositive.kt:38:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [modifier: Modifier = Modifier, buttonTitle: String, isArrowRequired: Boolean = true, isLeftArrow: Boolean = false, isActive: Boolean = false, textColor: Color = Color.White, iconTintColor: Color = Color.White, onClick: () -&gt; Unit] but should be [buttonTitle: String, modifier: Modifier = Modifier, isArrowRequired: Boolean = true, isLeftArrow: Boolean = false, isActive: Boolean = false, textColor: Color = Color.White, iconTintColor: Color = Color.White, onClick: () -&gt; Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  35 </span>
+<span class="lineno">  36 </span>
+<span class="lineno">  37 </span>@Composable
+<span class="lineno">  38 </span>fun <span class="error">ButtonPositive</span>(
+<span class="lineno">  39 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  40 </span>    buttonTitle: String,
+<span class="lineno">  41 </span>    isArrowRequired: Boolean = true,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/MediaToolbarComponent.kt:29:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [title: String, modifier: Modifier = Modifier, onBackIconClick: () -&gt; Unit, onDownloadClick: () -&gt; Unit] but should be [title: String, onBackIconClick: () -&gt; Unit, modifier: Modifier = Modifier, onDownloadClick: () -&gt; Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  26 </span>import com.sarathi.contentmodule.media.getActivity
+<span class="lineno">  27 </span>
+<span class="lineno">  28 </span>@Composable
+<span class="lineno">  29 </span>fun <span class="error">MediaToolbarComponent</span>(
+<span class="lineno">  30 </span>    title: String,
+<span class="lineno">  31 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  32 </span>    onBackIconClick: () -&gt; Unit,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/SearchWithFilterViewComponent.kt:50:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [placeholderString: String, modifier: Modifier = Modifier, filterSelected: Boolean = false, showFilter: Boolean = true, onFilterSelected: (Boolean) -&gt; Unit, onSearchValueChange: (String) -&gt; Unit] but should be [placeholderString: String, onFilterSelected: (Boolean) -&gt; Unit, modifier: Modifier = Modifier, filterSelected: Boolean = false, showFilter: Boolean = true, onSearchValueChange: (String) -&gt; Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  47 </span>
+<span class="lineno">  48 </span>
+<span class="lineno">  49 </span>@Composable
+<span class="lineno">  50 </span>fun <span class="error">SearchWithFilterViewComponent</span>(
+<span class="lineno">  51 </span>    placeholderString: String,
+<span class="lineno">  52 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  53 </span>    filterSelected: Boolean = false,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:34:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [title: String, modifier: Modifier, isSearch: Boolean = false, iconResId: Int = R.drawable.arrow_left, navController: NavController? = rememberNavController(), onBackIconClick: () -&gt; Unit, onSearchValueChange: (String) -&gt; Unit, isDataAvailable: Boolean = true, onBottomUI: @Composable () -&gt; Unit, onContentUI: @Composable (PaddingValues) -&gt; Unit, onSettingClick: () -&gt; Unit] but should be [title: String, modifier: Modifier, onBackIconClick: () -&gt; Unit, onSearchValueChange: (String) -&gt; Unit, onBottomUI: @Composable () -&gt; Unit, onContentUI: @Composable (PaddingValues) -&gt; Unit, isSearch: Boolean = false, iconResId: Int = R.drawable.arrow_left, navController: NavController? = rememberNavController(), isDataAvailable: Boolean = true, onSettingClick: () -&gt; Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  31 </span>
+<span class="lineno">  32 </span>@SuppressLint(&quot;UnrememberedMutableState&quot;)
+<span class="lineno">  33 </span>@Composable
+<span class="lineno">  34 </span>fun <span class="error">ToolBarWithMenuComponent</span>(
+<span class="lineno">  35 </span>    title: String,
+<span class="lineno">  36 </span>    modifier: Modifier,
+<span class="lineno">  37 </span>    isSearch: Boolean = false,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:73:5</span><span
+                    class="message">Parameters in a composable function should be ordered following this pattern: params without defaults, modifiers, params with defaults and optionally, a trailing function that might not have a default param.
+Current params are: [navController: NavController = rememberNavController(), viewModel: ContentDetailViewModel = hiltViewModel(), outerState: LazyListState = rememberLazyListState(), innerState: LazyGridState = rememberLazyGridState(), queLazyState: LazyListState = rememberLazyListState(), matId: Int, contentType: Int, onNavigateToMediaScreen: (fileType: String, key: String, title: String) -&gt; Unit] but should be [matId: Int, contentType: Int, navController: NavController = rememberNavController(), viewModel: ContentDetailViewModel = hiltViewModel(), outerState: LazyListState = rememberLazyListState(), innerState: LazyGridState = rememberLazyGridState(), queLazyState: LazyListState = rememberLazyListState(), onNavigateToMediaScreen: (fileType: String, key: String, title: String) -&gt; Unit].
+
+See https://twitter.github.io/compose-rules/rules/#ordering-composable-parameters-properly for more information.</span>
+                <pre><code><span class="lineno">  70 </span>
+<span class="lineno">  71 </span>@SuppressLint(&quot;UnusedMaterial3ScaffoldPaddingParameter&quot;)
+<span class="lineno">  72 </span>@Composable
+<span class="lineno">  73 </span>fun <span class="error">ContentDetailScreen</span>(
+<span class="lineno">  74 </span>    navController: NavController = rememberNavController(),
+<span class="lineno">  75 </span>    viewModel: ContentDetailViewModel = hiltViewModel(),
+<span class="lineno">  76 </span>    outerState: LazyListState = rememberLazyListState(),
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="ModifierMissing" open="open">
+        <summary class="rule-container"><span class="rule">ModifierMissing: 9 </span><span
+                class="description">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/twittercompose#modifiermissing">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:56:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno">  53 </span>import java.util.Locale
+<span class="lineno">  54 </span>
+<span class="lineno">  55 </span>@Composable
+<span class="lineno">  56 </span>fun <span class="error">MediaScreen</span>(
+<span class="lineno">  57 </span>    fileType: String, key: String, navController: NavController = rememberNavController(),
+<span class="lineno">  58 </span>    viewModel: MediaScreenViewModel, contentTitle: String,
+<span class="lineno">  59 </span>) {
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:145:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno"> 142 </span>}
+<span class="lineno"> 143 </span>
+<span class="lineno"> 144 </span>@Composable
+<span class="lineno"> 145 </span>fun <span class="error">VideoPlayer</span>(uri: Uri, onPlayerViewClick: () -&gt; Unit) {
+<span class="lineno"> 146 </span>    val context = LocalContext.current
+<span class="lineno"> 147 </span>    val exoPlayer = remember {
+<span class="lineno"> 148 </span>        ExoPlayer.Builder(context).build().apply {
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:181:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno"> 178 </span>}
+<span class="lineno"> 179 </span>
+<span class="lineno"> 180 </span>@Composable
+<span class="lineno"> 181 </span>fun <span class="error">ZoomableImage</span>(uri: Uri) {
+<span class="lineno"> 182 </span>    val scale = remember { mutableStateOf(1f) }
+<span class="lineno"> 183 </span>    val imagePainter = rememberAsyncImagePainter(
+<span class="lineno"> 184 </span>        model = ImageRequest.Builder(LocalContext.current)
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:217:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno"> 214 </span>}
+<span class="lineno"> 215 </span>
+<span class="lineno"> 216 </span>@Composable
+<span class="lineno"> 217 </span>fun <span class="error">PdfViewer</span>(pdfFile: File) {
+<span class="lineno"> 218 </span>    AndroidView(
+<span class="lineno"> 219 </span>        modifier = Modifier.fillMaxSize(),
+<span class="lineno"> 220 </span>        factory = { context -&gt;
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:117:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno"> 114 </span>}
+<span class="lineno"> 115 </span>
+<span class="lineno"> 116 </span>@Composable
+<span class="lineno"> 117 </span>fun <span class="error">ContentData</span>(contentType: String) {
+<span class="lineno"> 118 </span>    when (contentType.toUpperCase()) {
+<span class="lineno"> 119 </span>        FileType.IMAGE.name -&gt; {
+<span class="lineno"> 120 </span>            val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:147:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno"> 144 </span>}
+<span class="lineno"> 145 </span>
+<span class="lineno"> 146 </span>@Composable
+<span class="lineno"> 147 </span>fun <span class="error">ImageOverlay</span>(resId: Int) {
+<span class="lineno"> 148 </span>    val painter: Painter = painterResource(id = resId)
+<span class="lineno"> 149 </span>    Box(
+<span class="lineno"> 150 </span>        modifier = Modifier.fillMaxSize(),
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ButtonComponent.kt:33:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno">  30 </span>import com.sarathi.dataloadingmangement.BLANK_STRING
+<span class="lineno">  31 </span>
+<span class="lineno">  32 </span>@Composable
+<span class="lineno">  33 </span>fun <span class="error">ButtonComponent</span>(title: String = BLANK_STRING) {
+<span class="lineno">  34 </span>    Column(
+<span class="lineno">  35 </span>        verticalArrangement = Arrangement.Center,
+<span class="lineno">  36 </span>        horizontalAlignment = Alignment.CenterHorizontally
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:73:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno">  70 </span>
+<span class="lineno">  71 </span>@SuppressLint(&quot;UnusedMaterial3ScaffoldPaddingParameter&quot;)
+<span class="lineno">  72 </span>@Composable
+<span class="lineno">  73 </span>fun <span class="error">ContentDetailScreen</span>(
+<span class="lineno">  74 </span>    navController: NavController = rememberNavController(),
+<span class="lineno">  75 </span>    viewModel: ContentDetailViewModel = hiltViewModel(),
+<span class="lineno">  76 </span>    outerState: LazyListState = rememberLazyListState(),
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_screen/screen/BaseContentScreen.kt:17:5</span><span
+                    class="message">This @Composable function emits content but doesn't have a modifier parameter.
+
+See https://twitter.github.io/compose-rules/rules/#when-should-i-expose-modifier-parameters for more information.</span>
+                <pre><code><span class="lineno">  14 </span>import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+<span class="lineno">  15 </span>
+<span class="lineno">  16 </span>@Composable
+<span class="lineno">  17 </span>fun <span class="error">BaseContentScreen</span>(
+<span class="lineno">  18 </span>    matId: Int,
+<span class="lineno">  19 </span>    contentScreenCategory: Int,
+<span class="lineno">  20 </span>    viewModel: BaseContentScreenViewModel = hiltViewModel(),
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="ModifierWithoutDefault" open="open">
+        <summary class="rule-container"><span class="rule">ModifierWithoutDefault: 3 </span><span
+                class="description">This @Composable function has a modifier parameter but it doesn't have a default value.
+
+See https://twitter.github.io/compose-rules/rules/#modifiers-should-have-default-parameters for more information.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/twittercompose#modifierwithoutdefault">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:242:38</span><span
+                    class="message">This @Composable function has a modifier parameter but it doesn't have a default value.
+
+See https://twitter.github.io/compose-rules/rules/#modifiers-should-have-default-parameters for more information.</span>
+                <pre><code><span class="lineno"> 239 </span>}
+<span class="lineno"> 240 </span>
+<span class="lineno"> 241 </span>@Composable
+<span class="lineno"> 242 </span>fun TextViewer(contentValue: String, <span
+                            class="error">modifier</span>: Modifier) {
+<span class="lineno"> 243 </span>    Text(text = contentValue, modifier = modifier.fillMaxSize(), style = defaultTextStyle, color = textColorDark)
+<span class="lineno"> 244 </span>}
+<span class="lineno"> 245 </span>
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:152:9</span><span
+                    class="message">This @Composable function has a modifier parameter but it doesn't have a default value.
+
+See https://twitter.github.io/compose-rules/rules/#modifiers-should-have-default-parameters for more information.</span>
+                <pre><code><span class="lineno"> 149 </span>    @Composable
+<span class="lineno"> 150 </span>    fun ZoomableImage(
+<span class="lineno"> 151 </span>        request: ImageRequest,
+<span class="lineno"> 152 </span>        <span class="error">modifier</span>: Modifier
+<span class="lineno"> 153 </span>    ) {
+<span class="lineno"> 154 </span>        val scale = remember { mutableStateOf(1f) }
+<span class="lineno"> 155 </span>        val rotationState = remember { mutableStateOf(1f) }
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:36:5</span><span
+                    class="message">This @Composable function has a modifier parameter but it doesn't have a default value.
+
+See https://twitter.github.io/compose-rules/rules/#modifiers-should-have-default-parameters for more information.</span>
+                <pre><code><span class="lineno">  33 </span>@Composable
+<span class="lineno">  34 </span>fun ToolBarWithMenuComponent(
+<span class="lineno">  35 </span>    title: String,
+<span class="lineno">  36 </span>    <span class="error">modifier</span>: Modifier,
+<span class="lineno">  37 </span>    isSearch: Boolean = false,
+<span class="lineno">  38 </span>    iconResId: Int = R.drawable.arrow_left,
+<span class="lineno">  39 </span>    navController: NavController? = rememberNavController(),
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="RememberMissing" open="open">
+        <summary class="rule-container"><span class="rule">RememberMissing: 1 </span><span
+                class="description">Using mutableStateOf/derivedStateOf in a @Composable function without it being inside of a remember function.
+If you don't remember the state instance, a new state instance will be created when the function is recomposed.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/twittercompose#remembermissing">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:48:30</span><span
+                    class="message">Using `mutableStateOf` in a @Composable function without it being inside of a remember function.
+If you don't remember the state instance, a new state instance will be created when the function is recomposed.
+
+See https://twitter.github.io/compose-rules/rules/#state-should-be-remembered-in-composables for more information.</span>
+                <pre><code><span class="lineno">  45 </span>    onSettingClick: () -&gt; Unit
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>) {
+<span class="lineno">  48 </span>    val dataAvailableState = <span class="error">mutableStateOf(isDataAvailable)</span>
+<span class="lineno">  49 </span>
+<span class="lineno">  50 </span>    Scaffold(
+<span class="lineno">  51 </span>        modifier = modifier,
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>complexity: 11</h3>
+    <details id="LongMethod" open="open">
+        <summary class="rule-container"><span class="rule">LongMethod: 5 </span><span
+                class="description">One method should have one responsibility. Long methods tend to handle many things at once. Prefer smaller methods to make them easier to understand.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#longmethod">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:56:5</span><span
+                    class="message">The function MediaScreen is too long (77). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  53 </span>import java.util.Locale
+<span class="lineno">  54 </span>
+<span class="lineno">  55 </span>@Composable
+<span class="lineno">  56 </span>fun <span class="error">MediaScreen</span>(
+<span class="lineno">  57 </span>    fileType: String, key: String, navController: NavController = rememberNavController(),
+<span class="lineno">  58 </span>    viewModel: MediaScreenViewModel, contentTitle: String,
+<span class="lineno">  59 </span>) {
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:50:5</span><span
+                    class="message">The function PdfViewer is too long (86). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  47 </span>import java.io.File
+<span class="lineno">  48 </span>
+<span class="lineno">  49 </span>@Composable
+<span class="lineno">  50 </span>fun <span class="error">PdfViewer</span>(
+<span class="lineno">  51 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  52 </span>    navController: NavController,
+<span class="lineno">  53 </span>    filePath: String,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/SearchWithFilterViewComponent.kt:50:5</span><span
+                    class="message">The function SearchWithFilterViewComponent is too long (108). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  47 </span>
+<span class="lineno">  48 </span>
+<span class="lineno">  49 </span>@Composable
+<span class="lineno">  50 </span>fun <span class="error">SearchWithFilterViewComponent</span>(
+<span class="lineno">  51 </span>    placeholderString: String,
+<span class="lineno">  52 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  53 </span>    filterSelected: Boolean = false,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:34:5</span><span
+                    class="message">The function ToolBarWithMenuComponent is too long (63). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  31 </span>
+<span class="lineno">  32 </span>@SuppressLint(&quot;UnrememberedMutableState&quot;)
+<span class="lineno">  33 </span>@Composable
+<span class="lineno">  34 </span>fun <span class="error">ToolBarWithMenuComponent</span>(
+<span class="lineno">  35 </span>    title: String,
+<span class="lineno">  36 </span>    modifier: Modifier,
+<span class="lineno">  37 </span>    isSearch: Boolean = false,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:73:5</span><span
+                    class="message">The function ContentDetailScreen is too long (168). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  70 </span>
+<span class="lineno">  71 </span>@SuppressLint(&quot;UnusedMaterial3ScaffoldPaddingParameter&quot;)
+<span class="lineno">  72 </span>@Composable
+<span class="lineno">  73 </span>fun <span class="error">ContentDetailScreen</span>(
+<span class="lineno">  74 </span>    navController: NavController = rememberNavController(),
+<span class="lineno">  75 </span>    viewModel: ContentDetailViewModel = hiltViewModel(),
+<span class="lineno">  76 </span>    outerState: LazyListState = rememberLazyListState(),
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="LongParameterList" open="open">
+        <summary class="rule-container"><span class="rule">LongParameterList: 6 </span><span
+                class="description">The more parameters a function has the more complex it is. Long parameter lists are often used to control complex algorithms and violate the Single Responsibility Principle. Prefer functions with short parameter lists.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#longparameterlist">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:47:26</span><span
+                    class="message">The function BasicContentComponent(contentType: String, contentUrl: String, contentValue: String, contentShape: ContentShape, isLimitContentData: Boolean, totalContent: Int, contentTitle: String, onClick: () -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  44 </span>
+<span class="lineno">  45 </span>
+<span class="lineno">  46 </span>@Composable
+<span class="lineno">  47 </span>fun BasicContentComponent<span class="error">(</span>
+<span class="lineno">  48 </span><span class="error">    contentType: String = BLANK_STRING,</span>
+<span class="lineno">  49 </span><span class="error">    contentUrl: String = BLANK_STRING,</span>
+<span class="lineno">  50 </span><span class="error">    contentValue: String = BLANK_STRING,</span>
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ButtonPositive.kt:38:19</span><span
+                    class="message">The function ButtonPositive(modifier: Modifier, buttonTitle: String, isArrowRequired: Boolean, isLeftArrow: Boolean, isActive: Boolean, textColor: Color, iconTintColor: Color, onClick: () -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  35 </span>
+<span class="lineno">  36 </span>
+<span class="lineno">  37 </span>@Composable
+<span class="lineno">  38 </span>fun ButtonPositive<span class="error">(</span>
+<span class="lineno">  39 </span><span class="error">    modifier: Modifier = Modifier,</span>
+<span class="lineno">  40 </span><span class="error">    buttonTitle: String,</span>
+<span class="lineno">  41 </span><span class="error">    isArrowRequired: Boolean = true,</span>
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/CustomOutlineTextField.kt:30:27</span><span
+                    class="message">The function CustomOutlineTextField(value: String, onValueChange: (String) -&gt; Unit, modifier: Modifier, enabled: Boolean, readOnly: Boolean, textStyle: TextStyle, placeholder: @Composable (() -&gt; Unit)?, leadingIcon: @Composable (() -&gt; Unit)?, trailingIcon: @Composable (() -&gt; Unit)?, isError: Boolean, visualTransformation: VisualTransformation, keyboardOptions: KeyboardOptions, keyboardActions: KeyboardActions, singleLine: Boolean, maxLines: Int, minLines: Int, interactionSource: MutableInteractionSource, shape: Shape, colors: TextFieldColors) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  27 </span>
+<span class="lineno">  28 </span>@OptIn(ExperimentalMaterialApi::class)
+<span class="lineno">  29 </span>@Composable
+<span class="lineno">  30 </span>fun CustomOutlineTextField<span class="error">(</span>
+<span class="lineno">  31 </span><span class="error">    value: String,</span>
+<span class="lineno">  32 </span><span class="error">    onValueChange: (String) -&gt; Unit,</span>
+<span class="lineno">  33 </span><span class="error">    modifier: Modifier = Modifier,</span>
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/SearchWithFilterViewComponent.kt:50:34</span><span
+                    class="message">The function SearchWithFilterViewComponent(placeholderString: String, modifier: Modifier, filterSelected: Boolean, showFilter: Boolean, onFilterSelected: (Boolean) -&gt; Unit, onSearchValueChange: (String) -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  47 </span>
+<span class="lineno">  48 </span>
+<span class="lineno">  49 </span>@Composable
+<span class="lineno">  50 </span>fun SearchWithFilterViewComponent<span class="error">(</span>
+<span class="lineno">  51 </span><span class="error">    placeholderString: String,</span>
+<span class="lineno">  52 </span><span class="error">    modifier: Modifier = Modifier,</span>
+<span class="lineno">  53 </span><span class="error">    filterSelected: Boolean = false,</span>
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:34:29</span><span
+                    class="message">The function ToolBarWithMenuComponent(title: String, modifier: Modifier, isSearch: Boolean, iconResId: Int, navController: NavController?, onBackIconClick: () -&gt; Unit, onSearchValueChange: (String) -&gt; Unit, isDataAvailable: Boolean, onBottomUI: @Composable () -&gt; Unit, onContentUI: @Composable (PaddingValues) -&gt; Unit, onSettingClick: () -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  31 </span>
+<span class="lineno">  32 </span>@SuppressLint(&quot;UnrememberedMutableState&quot;)
+<span class="lineno">  33 </span>@Composable
+<span class="lineno">  34 </span>fun ToolBarWithMenuComponent<span class="error">(</span>
+<span class="lineno">  35 </span><span class="error">    title: String,</span>
+<span class="lineno">  36 </span><span class="error">    modifier: Modifier,</span>
+<span class="lineno">  37 </span><span class="error">    isSearch: Boolean = false,</span>
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:73:24</span><span
+                    class="message">The function ContentDetailScreen(navController: NavController, viewModel: ContentDetailViewModel, outerState: LazyListState, innerState: LazyGridState, queLazyState: LazyListState, matId: Int, contentType: Int, onNavigateToMediaScreen: (fileType: String, key: String, title: String) -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno">  70 </span>
+<span class="lineno">  71 </span>@SuppressLint(&quot;UnusedMaterial3ScaffoldPaddingParameter&quot;)
+<span class="lineno">  72 </span>@Composable
+<span class="lineno">  73 </span>fun ContentDetailScreen<span class="error">(</span>
+<span class="lineno">  74 </span><span class="error">    navController: NavController = rememberNavController(),</span>
+<span class="lineno">  75 </span><span class="error">    viewModel: ContentDetailViewModel = hiltViewModel(),</span>
+<span class="lineno">  76 </span><span class="error">    outerState: LazyListState = rememberLazyListState(),</span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>empty-blocks: 1</h3>
+    <details id="EmptyFunctionBlock" open="open">
+        <summary class="rule-container"><span class="rule">EmptyFunctionBlock: 1 </span><span
+                class="description">Empty block of code detected. As they serve no purpose they should be removed.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/empty-blocks#emptyfunctionblock">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreenViewModel.kt:39:40</span><span
+                    class="message">This empty block of code can be removed.</span>
+                <pre><code><span class="lineno">  36 </span>        return fetchContentUseCase.getFilePath(filePath)
+<span class="lineno">  37 </span>    }
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>    override fun &lt;T&gt; onEvent(event: T) <span
+                            class="error">{</span>
+<span class="lineno">  40 </span><span class="error">    }</span>
+<span class="lineno">  41 </span>
+<span class="lineno">  42 </span>}
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>naming: 6</h3>
+    <details id="PackageNaming" open="open">
+        <summary class="rule-container"><span class="rule">PackageNaming: 5 </span><span
+                class="description">Package names should match the naming convention set in the configuration.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/naming#packagenaming">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:1:1</span><span
+                    class="message">Package name should match the pattern: [a-z]+(\.[a-z][A-Za-z0-9]*)*</span>
+                <pre><code><span class="lineno">   1 </span><span class="error">package com.sarathi.contentmodule.ui.content_detail_screen.screen</span>
+<span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import android.annotation.SuppressLint
+<span class="lineno">   4 </span>import android.content.Context
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/viewmodel/ContentDetailViewModel.kt:1:1</span><span
+                    class="message">Package name should match the pattern: [a-z]+(\.[a-z][A-Za-z0-9]*)*</span>
+                <pre><code><span class="lineno">   1 </span><span class="error">package com.sarathi.contentmodule.ui.content_detail_screen.viewmodel</span>
+<span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import androidx.compose.runtime.State
+<span class="lineno">   4 </span>import androidx.compose.runtime.getValue
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_screen/domain/usecase/FetchContentUseCase.kt:1:1</span><span
+                    class="message">Package name should match the pattern: [a-z]+(\.[a-z][A-Za-z0-9]*)*</span>
+                <pre><code><span class="lineno">   1 </span><span class="error">package com.sarathi.contentmodule.ui.content_screen.domain.usecase</span>
+<span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import android.net.Uri
+<span class="lineno">   4 </span>import com.sarathi.dataloadingmangement.data.entities.Content
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_screen/screen/BaseContentScreen.kt:1:1</span><span
+                    class="message">Package name should match the pattern: [a-z]+(\.[a-z][A-Za-z0-9]*)*</span>
+                <pre><code><span class="lineno">   1 </span><span class="error">package com.sarathi.contentmodule.ui.content_screen.screen</span>
+<span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import androidx.compose.foundation.layout.Row
+<span class="lineno">   4 </span>import androidx.compose.foundation.layout.padding
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_screen/viewmodel/BaseContentScreenViewModel.kt:1:1</span><span
+                    class="message">Package name should match the pattern: [a-z]+(\.[a-z][A-Za-z0-9]*)*</span>
+                <pre><code><span class="lineno">   1 </span><span class="error">package com.sarathi.contentmodule.ui.content_screen.viewmodel</span>
+<span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import androidx.compose.runtime.State
+<span class="lineno">   4 </span>import androidx.compose.runtime.mutableStateOf
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="VariableNaming" open="open">
+        <summary class="rule-container"><span class="rule">VariableNaming: 1 </span><span
+                class="description">Variable names should follow the naming convention set in the projects configuration.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/naming#variablenaming">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/viewmodel/BaseViewModel.kt:11:9</span><span
+                    class="message">Variable names should match the pattern: [a-z][A-Za-z0-9]*</span>
+                <pre><code><span class="lineno">   8 </span>import kotlinx.coroutines.CoroutineExceptionHandler
+<span class="lineno">   9 </span>
+<span class="lineno">  10 </span>abstract class BaseViewModel : ViewModel() {
+<span class="lineno">  11 </span>    val <span class="error">_loaderState</span> = mutableStateOf&lt;LoaderState&gt;(LoaderState())
+<span class="lineno">  12 </span>    val loaderState: State&lt;LoaderState&gt; get() = _loaderState
+<span class="lineno">  13 </span>    abstract fun &lt;T&gt; onEvent(event: T)
+<span class="lineno">  14 </span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>style: 32</h3>
+    <details id="MagicNumber" open="open">
+        <summary class="rule-container"><span class="rule">MagicNumber: 12 </span><span
+                class="description">Report magic numbers. Magic number is a numeric literal that is not defined as a constant and hence it's unclear what the purpose of this number is. It's better to declare such numbers as constants and give them a proper name. By default, -1, 0, 1, and 2 are not considered to be magic numbers.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#magicnumber">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:206:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 203 </span>                .align(Alignment.Center) // keep the image centralized into the Box
+<span class="lineno"> 204 </span>                .graphicsLayer(
+<span class="lineno"> 205 </span>                    // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 206 </span>                    scaleX = maxOf(<span class="error">.5f</span>, minOf(3f, scale.value)),
+<span class="lineno"> 207 </span>                    scaleY = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 208 </span>                ),
+<span class="lineno"> 209 </span>            contentDescription = null,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:206:47</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 203 </span>                .align(Alignment.Center) // keep the image centralized into the Box
+<span class="lineno"> 204 </span>                .graphicsLayer(
+<span class="lineno"> 205 </span>                    // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 206 </span>                    scaleX = maxOf(.5f, minOf(<span class="error">3f</span>, scale.value)),
+<span class="lineno"> 207 </span>                    scaleY = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 208 </span>                ),
+<span class="lineno"> 209 </span>            contentDescription = null,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:207:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 204 </span>                .graphicsLayer(
+<span class="lineno"> 205 </span>                    // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 206 </span>                    scaleX = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 207 </span>                    scaleY = maxOf(<span class="error">.5f</span>, minOf(3f, scale.value)),
+<span class="lineno"> 208 </span>                ),
+<span class="lineno"> 209 </span>            contentDescription = null,
+<span class="lineno"> 210 </span>            painter = imagePainter,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:207:47</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 204 </span>                .graphicsLayer(
+<span class="lineno"> 205 </span>                    // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 206 </span>                    scaleX = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 207 </span>                    scaleY = maxOf(.5f, minOf(<span class="error">3f</span>, scale.value)),
+<span class="lineno"> 208 </span>                ),
+<span class="lineno"> 209 </span>            contentDescription = null,
+<span class="lineno"> 210 </span>            painter = imagePainter,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:173:40</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 170 </span>                    .align(Alignment.Center) // keep the image centralized into the Box
+<span class="lineno"> 171 </span>                    .graphicsLayer(
+<span class="lineno"> 172 </span>                        // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 173 </span>                        scaleX = maxOf(<span
+                            class="error">.5f</span>, minOf(3f, scale.value)),
+<span class="lineno"> 174 </span>                        scaleY = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 175 </span>                        rotationZ = rotationState.value
+<span class="lineno"> 176 </span>                    ),
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:173:51</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 170 </span>                    .align(Alignment.Center) // keep the image centralized into the Box
+<span class="lineno"> 171 </span>                    .graphicsLayer(
+<span class="lineno"> 172 </span>                        // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 173 </span>                        scaleX = maxOf(.5f, minOf(<span
+                            class="error">3f</span>, scale.value)),
+<span class="lineno"> 174 </span>                        scaleY = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 175 </span>                        rotationZ = rotationState.value
+<span class="lineno"> 176 </span>                    ),
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:174:40</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 171 </span>                    .graphicsLayer(
+<span class="lineno"> 172 </span>                        // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 173 </span>                        scaleX = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 174 </span>                        scaleY = maxOf(<span
+                            class="error">.5f</span>, minOf(3f, scale.value)),
+<span class="lineno"> 175 </span>                        rotationZ = rotationState.value
+<span class="lineno"> 176 </span>                    ),
+<span class="lineno"> 177 </span>                contentDescription = null,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:174:51</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 171 </span>                    .graphicsLayer(
+<span class="lineno"> 172 </span>                        // adding some zoom limits (min 50%, max 200%)
+<span class="lineno"> 173 </span>                        scaleX = maxOf(.5f, minOf(3f, scale.value)),
+<span class="lineno"> 174 </span>                        scaleY = maxOf(.5f, minOf(<span
+                            class="error">3f</span>, scale.value)),
+<span class="lineno"> 175 </span>                        rotationZ = rotationState.value
+<span class="lineno"> 176 </span>                    ),
+<span class="lineno"> 177 </span>                contentDescription = null,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:106:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 103 </span>                    overflow = TextOverflow.Ellipsis,
+<span class="lineno"> 104 </span>                    text = if (contentTitle.length &gt; 15) contentTitle.substring(
+<span class="lineno"> 105 </span>                        0,
+<span class="lineno"> 106 </span>                        <span class="error">15</span>
+<span class="lineno"> 107 </span>                    ) else contentTitle,
+<span class="lineno"> 108 </span>                    fontSize = 10.sp,
+<span class="lineno"> 109 </span>                    style = smallTextStyleMediumWeight2.copy(color = blueDark)
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:156:41</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 153 </span>        Box(
+<span class="lineno"> 154 </span>            modifier = Modifier
+<span class="lineno"> 155 </span>                .fillMaxSize()
+<span class="lineno"> 156 </span>                .background(black1.copy(<span
+                            class="error">.10f</span>))
+<span class="lineno"> 157 </span>        ) {
+<span class="lineno"> 158 </span>            Image(
+<span class="lineno"> 159 </span>                painter = painter,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:214:67</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 211 </span>                                            min = dimen_100_dp,
+<span class="lineno"> 212 </span>                                            max = maxHeight
+<span class="lineno"> 213 </span>                                        ),
+<span class="lineno"> 214 </span>                                        columns = GridCells.Fixed(<span
+                            class="error">4</span>),
+<span class="lineno"> 215 </span>                                        horizontalArrangement = Arrangement.Center
+<span class="lineno"> 216 </span>                                    ) {
+<span class="lineno"> 217 </span>                                        itemsIndexed(
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:233:55</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 230 </span>                        }
+<span class="lineno"> 231 </span>                    } else {
+<span class="lineno"> 232 </span>                        LazyVerticalGrid(
+<span class="lineno"> 233 </span>                            columns = GridCells.Fixed(<span
+                            class="error">4</span>),
+<span class="lineno"> 234 </span>                            horizontalArrangement = Arrangement.Center
+<span class="lineno"> 235 </span>                        ) {
+<span class="lineno"> 236 </span>                            itemsIndexed(
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="MaxLineLength" open="open">
+        <summary class="rule-container"><span class="rule">MaxLineLength: 9 </span><span
+                class="description">Line detected, which is longer than the defined maximum line length in the code style.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#maxlinelength">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:73:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  70 </span>        Scaffold(
+<span class="lineno">  71 </span>            topBar = {
+<span class="lineno">  72 </span>
+<span class="lineno">  73 </span><span class="error">                    AnimatedVisibility(visible = isToolbarVisible.value, enter = fadeIn()+ expandVertically(), exit = fadeOut()+ shrinkVertically()) {</span>
+<span class="lineno">  74 </span>                    MediaToolbarComponent(
+<span class="lineno">  75 </span>                        title = contentTitle,
+<span class="lineno">  76 </span>                        modifier = Modifier,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:95:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  92 </span>                        Modifier
+<span class="lineno">  93 </span>                            .clickable { isToolbarVisible.value = !isToolbarVisible.value }
+<span class="lineno">  94 </span>                            .padding(
+<span class="lineno">  95 </span><span class="error">                                vertical = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 15.dp,</span>
+<span class="lineno">  96 </span>                                horizontal = 15.dp
+<span class="lineno">  97 </span>                            ))
+<span class="lineno">  98 </span>                }
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/MediaScreen.kt:104:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 101 </span>                    Column(
+<span class="lineno"> 102 </span>                        modifier = Modifier
+<span class="lineno"> 103 </span>                            .fillMaxWidth()
+<span class="lineno"> 104 </span><span class="error">                            .padding(top = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 0.dp)</span>
+<span class="lineno"> 105 </span>                            .clickable { isToolbarVisible.value = !isToolbarVisible.value },
+<span class="lineno"> 106 </span>                        verticalArrangement = Arrangement.Center,
+<span class="lineno"> 107 </span>                        horizontalAlignment = Alignment.CenterHorizontally
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/MediaToolbarComponent.kt:77:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  74 </span>                modifier = Modifier
+<span class="lineno">  75 </span>            ) {
+<span class="lineno">  76 </span>                Icon(
+<span class="lineno">  77 </span><span class="error">                    painter = painterResource(id = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) R.drawable.content_fullscreen else R.drawable.content_fullscreen_exit_24),</span>
+<span class="lineno">  78 </span>                    contentDescription = &quot;Full Screen&quot;
+<span class="lineno">  79 </span>                )
+<span class="lineno">  80 </span>            }
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/MediaToolbarComponent.kt:86:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  83 </span>                onClick = { onDownloadClick() },
+<span class="lineno">  84 </span>                modifier = Modifier
+<span class="lineno">  85 </span>            ) {
+<span class="lineno">  86 </span><span class="error">                Icon(painterResource(id = R.drawable.baseline_download_for_offline_24), contentDescription = &quot;Download Button&quot;)</span>
+<span class="lineno">  87 </span>            }
+<span class="lineno">  88 </span>        }
+<span class="lineno">  89 </span>    }
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:172:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 169 </span>                                scope.launch {
+<span class="lineno"> 170 </span>                                    val toDown = it &lt;= 0
+<span class="lineno"> 171 </span>                                    if (toDown) {
+<span class="lineno"> 172 </span><span class="error">                                        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {</span>
+<span class="lineno"> 173 </span>                                            innerState.scrollBy(-it)
+<span class="lineno"> 174 </span>                                        } else {
+<span class="lineno"> 175 </span>                                            outerState.scrollBy(-it)
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:178:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 175 </span>                                            outerState.scrollBy(-it)
+<span class="lineno"> 176 </span>                                        }
+<span class="lineno"> 177 </span>                                    } else {
+<span class="lineno"> 178 </span><span class="error">                                        if (innerFirstVisibleItemIndex == 0 &amp;&amp; innerState.firstVisibleItemScrollOffset == 0) {</span>
+<span class="lineno"> 179 </span>                                            outerState.scrollBy(-it)
+<span class="lineno"> 180 </span>                                        } else {
+<span class="lineno"> 181 </span>                                            innerState.scrollBy(-it)
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:268:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 265 </span>        contentTitle = item.contentName,
+<span class="lineno"> 266 </span>        contentValue = item.contentValue,
+<span class="lineno"> 267 </span>        onClick = {
+<span class="lineno"> 268 </span><span class="error">            if (viewModel.isFilePathExists(item.contentValue) || item.contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {</span>
+<span class="lineno"> 269 </span>                onNavigateToMediaScreen(
+<span class="lineno"> 270 </span>                    item.contentType,
+<span class="lineno"> 271 </span>                    item.contentKey,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_screen/screen/BaseContentScreen.kt:21:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno">  18 </span>    matId: Int,
+<span class="lineno">  19 </span>    contentScreenCategory: Int,
+<span class="lineno">  20 </span>    viewModel: BaseContentScreenViewModel = hiltViewModel(),
+<span class="lineno">  21 </span><span class="error">    onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean, contentTitle: String) -&gt; Unit</span>
+<span class="lineno">  22 </span>) {
+<span class="lineno">  23 </span>    LaunchedEffect(key1 = true) {
+<span class="lineno">  24 </span>        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="UnusedParameter" open="open">
+        <summary class="rule-container"><span class="rule">UnusedParameter: 10 </span><span
+                class="description">Function parameter is unused and should be removed.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#unusedparameter">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/media/PdfViewer.kt:54:5</span><span
+                    class="message">Function parameter `verticalArrangement` is unused.</span>
+                <pre><code><span class="lineno">  51 </span>    modifier: Modifier = Modifier,
+<span class="lineno">  52 </span>    navController: NavController,
+<span class="lineno">  53 </span>    filePath: String,
+<span class="lineno">  54 </span>    <span class="error">verticalArrangement</span>: Arrangement.Vertical = Arrangement.spacedBy(8.dp)
+<span class="lineno">  55 </span>) {
+<span class="lineno">  56 </span>
+<span class="lineno">  57 </span>    val context = LocalContext.current
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:49:5</span><span
+                    class="message">Function parameter `contentUrl` is unused.</span>
+                <pre><code><span class="lineno">  46 </span>@Composable
+<span class="lineno">  47 </span>fun BasicContentComponent(
+<span class="lineno">  48 </span>    contentType: String = BLANK_STRING,
+<span class="lineno">  49 </span>    <span class="error">contentUrl</span>: String = BLANK_STRING,
+<span class="lineno">  50 </span>    contentValue: String = BLANK_STRING,
+<span class="lineno">  51 </span>    contentShape: ContentShape = ContentShape.CIRCLE,
+<span class="lineno">  52 </span>    isLimitContentData: Boolean = false,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:50:5</span><span
+                    class="message">Function parameter `contentValue` is unused.</span>
+                <pre><code><span class="lineno">  47 </span>fun BasicContentComponent(
+<span class="lineno">  48 </span>    contentType: String = BLANK_STRING,
+<span class="lineno">  49 </span>    contentUrl: String = BLANK_STRING,
+<span class="lineno">  50 </span>    <span class="error">contentValue</span>: String = BLANK_STRING,
+<span class="lineno">  51 </span>    contentShape: ContentShape = ContentShape.CIRCLE,
+<span class="lineno">  52 </span>    isLimitContentData: Boolean = false,
+<span class="lineno">  53 </span>    totalContent: Int = 0,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/BasicContentComponent.kt:51:5</span><span
+                    class="message">Function parameter `contentShape` is unused.</span>
+                <pre><code><span class="lineno">  48 </span>    contentType: String = BLANK_STRING,
+<span class="lineno">  49 </span>    contentUrl: String = BLANK_STRING,
+<span class="lineno">  50 </span>    contentValue: String = BLANK_STRING,
+<span class="lineno">  51 </span>    <span class="error">contentShape</span>: ContentShape = ContentShape.CIRCLE,
+<span class="lineno">  52 </span>    isLimitContentData: Boolean = false,
+<span class="lineno">  53 </span>    totalContent: Int = 0,
+<span class="lineno">  54 </span>    contentTitle: String = BLANK_STRING,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ButtonPositive.kt:44:5</span><span
+                    class="message">Function parameter `textColor` is unused.</span>
+                <pre><code><span class="lineno">  41 </span>    isArrowRequired: Boolean = true,
+<span class="lineno">  42 </span>    isLeftArrow: Boolean = false,
+<span class="lineno">  43 </span>    isActive: Boolean = false,
+<span class="lineno">  44 </span>    <span class="error">textColor</span>: Color = Color.White,
+<span class="lineno">  45 </span>    iconTintColor: Color = Color.White,
+<span class="lineno">  46 </span>    onClick: () -&gt; Unit
+<span class="lineno">  47 </span>) {
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:39:5</span><span
+                    class="message">Function parameter `navController` is unused.</span>
+                <pre><code><span class="lineno">  36 </span>    modifier: Modifier,
+<span class="lineno">  37 </span>    isSearch: Boolean = false,
+<span class="lineno">  38 </span>    iconResId: Int = R.drawable.arrow_left,
+<span class="lineno">  39 </span>    <span class="error">navController</span>: NavController? = rememberNavController(),
+<span class="lineno">  40 </span>    onBackIconClick: () -&gt; Unit,
+<span class="lineno">  41 </span>    onSearchValueChange: (String) -&gt; Unit,
+<span class="lineno">  42 </span>    isDataAvailable: Boolean = true,
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:45:5</span><span
+                    class="message">Function parameter `onSettingClick` is unused.</span>
+                <pre><code><span class="lineno">  42 </span>    isDataAvailable: Boolean = true,
+<span class="lineno">  43 </span>    onBottomUI: @Composable () -&gt; Unit,
+<span class="lineno">  44 </span>    onContentUI: @Composable (PaddingValues) -&gt; Unit,
+<span class="lineno">  45 </span>    <span class="error">onSettingClick</span>: () -&gt; Unit
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>) {
+<span class="lineno">  48 </span>    val dataAvailableState = mutableStateOf(isDataAvailable)
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/screen/ContentDetailScreen.kt:78:5</span><span
+                    class="message">Function parameter `queLazyState` is unused.</span>
+                <pre><code><span class="lineno">  75 </span>    viewModel: ContentDetailViewModel = hiltViewModel(),
+<span class="lineno">  76 </span>    outerState: LazyListState = rememberLazyListState(),
+<span class="lineno">  77 </span>    innerState: LazyGridState = rememberLazyGridState(),
+<span class="lineno">  78 </span>    <span class="error">queLazyState</span>: LazyListState = rememberLazyListState(),
+<span class="lineno">  79 </span>    matId: Int,
+<span class="lineno">  80 </span>    contentType: Int,
+<span class="lineno">  81 </span>    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -&gt; Unit
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/viewmodel/ContentDetailViewModel.kt:64:28</span><span
+                    class="message">Function parameter `isFilterApplied` is unused.</span>
+                <pre><code><span class="lineno">  61 </span>    }
+<span class="lineno">  62 </span>
+<span class="lineno">  63 </span>    fun performSearchQuery(
+<span class="lineno">  64 </span>        queryTerm: String, <span
+                            class="error">isFilterApplied</span>: Boolean, fromScreen: String
+<span class="lineno">  65 </span>    ) {
+<span class="lineno">  66 </span>        val filteredList = ArrayList&lt;Content&gt;()
+<span class="lineno">  67 </span>        if (queryTerm.isNotEmpty()) {
+</code></pre>
+            </li>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/content_detail_screen/viewmodel/ContentDetailViewModel.kt:64:54</span><span
+                    class="message">Function parameter `fromScreen` is unused.</span>
+                <pre><code><span class="lineno">  61 </span>    }
+<span class="lineno">  62 </span>
+<span class="lineno">  63 </span>    fun performSearchQuery(
+<span class="lineno">  64 </span>        queryTerm: String, isFilterApplied: Boolean, <span
+                            class="error">fromScreen</span>: String
+<span class="lineno">  65 </span>    ) {
+<span class="lineno">  66 </span>        val filteredList = ArrayList&lt;Content&gt;()
+<span class="lineno">  67 </span>        if (queryTerm.isNotEmpty()) {
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="UnusedPrivateProperty" open="open">
+        <summary class="rule-container"><span class="rule">UnusedPrivateProperty: 1 </span><span
+                class="description">Property is unused and should be removed.</span></summary>
+        <a href="https://detekt.dev/docs/rules/style#unusedprivateproperty">Documentation</a>
+        <ul>
+            <li><span class="location">ContentManager/src/main/java/com/sarathi/contentmodule/ui/component/ToolBarWithMenuComponent.kt:48:9</span><span
+                    class="message">Private property `dataAvailableState` is unused.</span>
+                <pre><code><span class="lineno">  45 </span>    onSettingClick: () -&gt; Unit
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>) {
+<span class="lineno">  48 </span>    val <span class="error">dataAvailableState</span> = mutableStateOf(isDataAvailable)
+<span class="lineno">  49 </span>
+<span class="lineno">  50 </span>    Scaffold(
+<span class="lineno">  51 </span>        modifier = modifier,
+</code></pre>
+            </li>
+        </ul>
+    </details>
+</div>
+
+
+generated with <a href="https://detekt.dev/">detekt version 1.23.3</a> on 2024-06-21 09:39:49 UTC.
+
+</body>
+</html>

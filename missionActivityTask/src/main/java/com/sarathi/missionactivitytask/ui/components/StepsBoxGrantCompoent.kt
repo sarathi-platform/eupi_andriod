@@ -39,15 +39,16 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_35_dp
 import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
-import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.dividerColor
@@ -82,13 +83,11 @@ fun StepsBoxGrantComponent(
         label = BLANK_STRING,
         animationSpec = tween()
     )
-    val dividerMargins = 32.dp
-
+    val dividerMargins = dimen_35_dp
 
     ConstraintLayout(
         modifier = Modifier
             .background(Color.White)
-            .padding(top = dimen_5_dp)
             .border(
                 width = 0.dp,
                 color = Color.Transparent,
@@ -100,7 +99,6 @@ fun StepsBoxGrantComponent(
             colors = CardDefaults.cardColors(containerColor = if (isCompleted) greenLight else white),
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(dimen_6_dp))
                 .border(
                     width = dimen_1_dp,
                     color = if (isCompleted) greenOnline else greyBorderColor,

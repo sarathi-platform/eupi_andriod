@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageSelectionEvent
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguagesState
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguageScreenViewModel @Inject constructor(
     private val languageScreenUseCase: LanguageScreenUseCase,
-    val prefRepo: PrefRepo
+    val prefBSRepo: PrefBSRepo
 ): BaseViewModel() {
 
     private val _languagesState = mutableStateOf<LanguagesState>(LanguagesState())

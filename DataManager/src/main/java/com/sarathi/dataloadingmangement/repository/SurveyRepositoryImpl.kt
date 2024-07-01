@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -12,7 +13,7 @@ import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
-import com.sarathi.dataloadingmangement.model.survey.response.QuestionList
+import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -25,8 +26,7 @@ class SurveyRepositoryImpl @Inject constructor(
     private val surveyEntityDao: SurveyEntityDao,
     private val grantConfigDao: GrantConfigDao,
     val coreSharedPrefs: CoreSharedPrefs
-) :
-    ISurveyRepository {
+) : ISurveyRepository {
     override suspend fun getQuestion(
         surveyId: Int,
         subjectId: Int,
@@ -74,11 +74,7 @@ class SurveyRepositoryImpl @Inject constructor(
                 questionDisplay = it.description ?: BLANK_STRING,
                 type = it.type ?: BLANK_STRING,
                 options = getOptionItemsForQuestion(
-                    it,
-                    optionItems,
-                    surveyAnswerList,
-                    activityConfigId,
-                    grantId
+                    it, optionItems, surveyAnswerList, activityConfigId, grantId
                 ),
                 isMandatory = it.isMandatory,
                 tagId = it.tag,
@@ -121,20 +117,17 @@ class SurveyRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getOptionsForModeAndNature(
-        activityConfigId: Int,
-        grantId: Int,
-        question: QuestionUiEntity
+        activityConfigId: Int, grantId: Int, question: QuestionUiEntity
     ): List<OptionsUiModel> {
 
         val grantConfig =
             grantConfigDao.getGrantConfigWithGrantId(activityConfigId, grantId = grantId)
         val modeOrNatureOptions = ArrayList<OptionsUiModel>()
-        val gson = Gson()
-        val options = gson.fromJson<QuestionList>(
-            if (question.tag.toString() == MODE_TAG) grantConfig.grantMode else grantConfig.grantNature,
-            QuestionList::class.java
-
-        ).options
+        val type = object : TypeToken<List<OptionsItem?>?>() {}.type
+        val options = Gson().fromJson<List<OptionsItem>>(
+            if (question.tag.toString() == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
+            type
+        )
         options?.forEach { option ->
             modeOrNatureOptions.add(
                 OptionsUiModel(

@@ -42,6 +42,7 @@ const val KEY_PARENT_ENTITY_ADDRESS = "didiAddress"
 const val LOCAL_BACKUP_FILE_NAME = "Sarathi_events_"
 const val LOCAL_BACKUP__IMAGE_FILE_NAME = "Sarathi_events_Image"
 const val SARATHI_DIRECTORY_NAME = "/SARATHI"
+const val SARATHI="SARATHI"
 const val LOCAL_BACKUP_EXTENSION = ".txt"
 const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
@@ -49,6 +50,21 @@ const val PDF_MIME_TYPE = "application/pdf"
 const val EXCEL_TYPE = "text/csv"
 const val PDF_TYPE = "text/pdf"
 const val REGENERATE_PREFIX = "regenerate_"
+const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
+const val ENGLISH_LANGUAGE_CODE="en"
+const val UPCM_USER="Ultra Poor change maker (UPCM)"
+const val SUFFIX_IMAGE_ZIP_FILE = "Image"
+const val SUFFIX_EVENT_ZIP_FILE = "file"
+const val BASELINE = "BASELINE-GRANT"
+const val HAMLET = "HAMLET"
+const val SELECTION = "SELECTION"
+
+const val ZIP_EXTENSION = "zip"
+const val EVENT_STRING="event"
+
+const val DEFAULT_LANGUAGE_NAME = "English"
+const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
+const val KOKBOROK_LANGUAGE_CODE="ky"
 
 const val SUCCESS = "SUCCESS"
 const val FAIL = "FAIL"
@@ -65,6 +81,8 @@ const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
 const val ATTENDANCE_DELETED = "Deleted"
 const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
+
+const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.nrlm.baselinesurvey.ACTIVITY_HAMLET_SURVEY
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.HUSBAND_STRING
@@ -163,7 +164,7 @@ fun SurveyeeCardComponent(
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (!surveyeeState.activityName.equals("Conduct Hamlet Survey"))
+                    if (!surveyeeState.activityName.equals(ACTIVITY_HAMLET_SURVEY))
                         CircularImageViewComponent(modifier = Modifier, surveyeeState.imagePath)
                     Column(
                         modifier = Modifier
@@ -173,11 +174,11 @@ fun SurveyeeCardComponent(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text =  surveyeeState.surveyeeDetails.didiName/*if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.surveyeeDetails.didiName else surveyeeState.surveyeeDetails.cohortName*/,
+                            text =  surveyeeState.surveyeeDetails.didiName,
                             style = mediumTextStyle,
                             color = brownDark
                         )
-                        if (surveyeeState.subtitle != BLANK_STRING && !surveyeeState.activityName.equals("Conduct Hamlet Survey")) {
+                        if (surveyeeState.subtitle != BLANK_STRING && !surveyeeState.activityName.equals(ACTIVITY_HAMLET_SURVEY)) {
                             Text(
                                 text = surveyeeState.subtitle,
                                 style = smallTextStyleMediumWeight,
@@ -200,7 +201,7 @@ fun SurveyeeCardComponent(
                                 Spacer(modifier = Modifier.width(dimen_3_dp))
                                 Text(
 
-                                    text = if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.address.toLowerCase(
+                                    text = if (!surveyeeState.activityName.equals(ACTIVITY_HAMLET_SURVEY)) surveyeeState.address.toLowerCase(
                                         Locale.current
                                     ).toCamelCase()
                                     else surveyeeState.surveyeeDetails.villageName.toLowerCase()
@@ -210,7 +211,7 @@ fun SurveyeeCardComponent(
                                 )
                             }
                         }
-                        if (!surveyeeState.activityName.equals("Conduct Hamlet Survey") && surveyeeState.surveyeeDetails.voName.isNotBlank()) {
+                        if (!surveyeeState.activityName.equals(ACTIVITY_HAMLET_SURVEY) && surveyeeState.surveyeeDetails.voName.isNotBlank()) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
@@ -254,7 +255,7 @@ fun SurveyeeCardComponent(
                         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
 
-                        if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) {
+                        if (!surveyeeState.activityName.equals(ACTIVITY_HAMLET_SURVEY)) {
 
                             Button(
                                 onClick = {
@@ -451,7 +452,7 @@ fun SurveyeeCardPreview() {
                 surveyeeDetails = didi,
                 subtitle = didi.didiName,
                 address = didi.houseNo + ",  " + didi.cohortName,
-                activityName =  "Conduct Hamlet Survey",
+                activityName =  ACTIVITY_HAMLET_SURVEY,
                 surveyState = SurveyState.NOT_STARTED
             ),
             showCheckBox = true,

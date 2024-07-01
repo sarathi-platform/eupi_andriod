@@ -12,7 +12,7 @@ interface IEventWriterRepository {
     suspend fun <T> createAndSaveEvent(
         eventItem: T,
         eventName: EventName,
-        eventType: EventType,
+        eventType: EventType = EventType.STATEFUL,
         surveyName: String,
     ): Events?
 

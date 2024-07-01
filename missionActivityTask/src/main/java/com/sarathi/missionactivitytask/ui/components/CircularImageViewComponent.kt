@@ -17,9 +17,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.getImagePathFromString
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.yellowBg
+import com.sarathi.surveymanager.R
+import java.io.File
 
 @Composable
 fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: Uri) {

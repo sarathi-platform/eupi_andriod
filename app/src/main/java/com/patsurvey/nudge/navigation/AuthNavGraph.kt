@@ -9,24 +9,28 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
-import com.patsurvey.nudge.ProfileScreen
+import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
-import com.patsurvey.nudge.activities.settings.SettingScreen
+import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
-        route = Graph.AUTHENTICATION,
+        route = NudgeNavigationGraph.AUTHENTICATION,
         startDestination = AuthScreen.START_SCREEN.route
     ) {
 
@@ -79,14 +83,12 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             VillageScreen(navController = navController) {
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }
-
         }
 
         composable(route = AuthScreen.AUTH_SETTING_SCREEN.route) {
-            SettingScreen(
+            SettingBSScreen(
                 navController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                viewModel = hiltViewModel()
             )
         }
 
@@ -104,12 +106,23 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = AuthScreen.PROFILE_SCREEN.route) {
-            ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
+            ProfileBSScreen(navController = navController, viewModel = hiltViewModel())
         }
-    }
 
+        composable(route = AuthScreen.DATA_LOADING_SCREEN.route) {
+            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        }
+
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+            ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+    }
+//    settingNavGraph(navController)
+//   logoutGraph(navController =navController)
 }
 
+/*
 sealed class AuthScreen(val route: String) {
     object START_SCREEN : AuthScreen(route = "start_screen")
     object LANGUAGE_SCREEN : AuthScreen(route = "language_screen")
@@ -123,3 +136,5 @@ sealed class AuthScreen(val route: String) {
     object VIDEO_PLAYER_SCREEN : AuthScreen(route = "video_player_screen/{$ARG_VIDEO_ID}")
     object MatDataLoadingScreen : AuthScreen(route = "mat_data_loading_screen")
 }
+*/
+

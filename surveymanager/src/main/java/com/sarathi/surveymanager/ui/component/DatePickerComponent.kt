@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -55,6 +55,36 @@ fun DatePickerComponent(
 ) {
     var text by remember { mutableStateOf(defaultValue) }
     val context = LocalContext.current
+
+    //TODO Anupam Test this code and fix crash in text.getDateInMillis(pattern = DD_MMM_YYYY_FORMAT).
+    /*val scope = rememberCoroutineScope()
+
+    val datePickerState =
+        rememberCustomDatePickerState(initialSelectedDateMillis = text.getDateInMillis(pattern = DD_MMM_YYYY_FORMAT))
+
+    val datePickerProperties = rememberDatePickerProperties(
+        state = datePickerState
+    )
+
+    val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
+
+
+    CustomDatePickerComponent(
+        datePickerProperties = datePickerProperties,
+        datePickerDialogProperties = datePickerDialogProperties,
+        onDismissRequest = {
+            datePickerDialogProperties.hide()
+        },
+        onConfirmButtonClicked = {
+            val dateFormat =
+                SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.getDefault())
+            val formattedDate = dateFormat.format(datePickerState.selectedDateMillis)
+            text = formattedDate
+            onAnswerSelection(text)
+            datePickerDialogProperties.hide()
+        }
+    )*/
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,6 +93,69 @@ fun DatePickerComponent(
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
+
+        /*OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(white)
+                .clickable {
+                    scope.launch {
+                        datePickerDialogProperties.show()
+                    }
+                },
+            value = text,
+            enabled = isEditable,
+            readOnly = true,
+            textStyle = defaultTextStyle,
+            singleLine = true,
+            interactionSource = remember {
+                MutableInteractionSource()
+            }.also { interactionSource ->
+                LaunchedEffect(key1 = interactionSource) {
+                    interactionSource.interactions.collect {
+                        if (it is PressInteraction.Release) {
+                            scope.launch {
+                                datePickerDialogProperties.show()
+                            }
+                        }
+                    }
+                }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textColorDark,
+                unfocusedBorderColor = dateRangeFieldColor,
+                focusedBorderColor = dateRangeFieldColor,
+                unfocusedContainerColor = white,
+                focusedContainerColor = white,
+            ),
+            placeholder = {
+                Text(
+                    text = hintText,
+                    style = smallerTextStyle.copy(
+                        color = placeholderGrey
+                    ),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    scope.launch {
+                        datePickerDialogProperties.show()
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Calendar Icon",
+                        tint = placeholderGrey
+                    )
+                }
+
+            },
+            onValueChange = {}
+        )*/
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()

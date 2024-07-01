@@ -10,7 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -53,6 +53,7 @@ dependencies {
     implementation(project(":CommunicationModule"))
     implementation(project(":missionActivityTask"))
     implementation(project(":DataManager"))
+    implementation(project(":navigationManager"))
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -87,7 +88,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
 
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material:material:1.5.3")
     implementation("androidx.compose.material3:material3:1.1.2")
 
     // Compose navigation

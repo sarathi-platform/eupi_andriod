@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +51,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -57,14 +60,15 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
+import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
@@ -92,8 +96,8 @@ fun DigitalFormAScreen(
         if (fromScreen == ARG_FROM_SETTING)
             navController.popBackStack()
         else {
-            navController.navigate(Graph.HOME) {
-                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+            navController.navigate(NudgeNavigationGraph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                     inclusive = true
                     saveState = false
                 }
@@ -260,7 +264,11 @@ fun DigitalFormAScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(id = R.string.vo_name) + ":",
+                                text = getVoNameForState(
+                                    context,
+                                    viewModel.getStateId(),
+                                    R.plurals.vo_name
+                                ) + ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -458,8 +466,8 @@ fun DigitalFormAScreen(
                         if (fromScreen == ARG_FROM_SETTING)
                             navController.popBackStack()
                         else {
-                            navController.navigate(Graph.HOME) {
-                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                            navController.navigate(NudgeNavigationGraph.HOME) {
+                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                                     inclusive = true
                                     saveState = false
                                 }

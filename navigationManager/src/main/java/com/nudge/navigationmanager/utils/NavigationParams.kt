@@ -1,0 +1,48 @@
+package com.nudge.navigationmanager.utils
+
+sealed class NavigationParams (val value:String){
+    
+    object ARG_USER_TYPE : NavigationParams("user_type")
+
+    object ARG_MOBILE_NUMBER : NavigationParams("mobile")
+    object ARG_PAGE_FROM : NavigationParams("from_page")
+    object ARG_FROM_HOME : NavigationParams("from_home")
+    object ARG_FROM_SETTING : NavigationParams("from_setting")
+    object ARG_FROM_PROGRESS : NavigationParams("from_progress_screen")
+    object ARG_FROM_PAT_SURVEY : NavigationParams("from_pat_survey")
+    object ARG_VILLAGE_NAME : NavigationParams("villageName")
+    object ARG_VILLAGE_ID : NavigationParams("villageId")
+    object ARG_DIDI_DETAILS_ID : NavigationParams("didi_details_id")
+    object ARG_STEP_ID : NavigationParams("stepId")
+    object ARG_DIDI_ID : NavigationParams("didiId")
+    object ARG_DIDI_STATUS : NavigationParams("didi_status")
+    object ARG_SECTION_TYPE : NavigationParams("section_type")
+    object ARG_QUESTION_INDEX : NavigationParams("question_index")
+    object ARG_IS_STEP_COMPLETE : NavigationParams("isStepComplete")
+    object ARG_STEP_INDEX : NavigationParams("step_index")
+    object ARG_COMPLETION_MESSAGE : NavigationParams("completion_message")
+    object ARG_PAT_SUCCESS_MESSAGE : NavigationParams("pat_success_message")
+    object ARG_FROM_SCREEN : NavigationParams("fromScreen")
+    object ARG_FROM_PAT_DIDI_LIST_SCREEN : NavigationParams("from_pat_didi_list_screen")
+    object ARG_FROM_PAT_SUMMARY_SCREEN : NavigationParams("from_pat_summary_screen")
+    object ARG_FROM_VO_ENDORSEMENT_SCREEN : NavigationParams("from_vo_endorsement_screen")
+    object ARG_VIDEO_ID : NavigationParams("video_id")
+    object PREF_FORM_PATH : NavigationParams("pref_form_path")
+    object ARG_FORM_PATH : NavigationParams("form_path")
+    object ARG_IMAGE_PATH : NavigationParams("image_path")
+    object ARG_FOR_REPLACEMENT : NavigationParams("for_replacement")
+    object ARG_SECTION_ID : NavigationParams( "section_id")
+    object ARG_SURVEY_ID : NavigationParams("survey_id")
+    object ARG_QUESTION_NAME : NavigationParams("question_name")
+    object ARG_QUESTION_ID : NavigationParams("question_id")
+
+    object ARG_VIDEO_PATH : NavigationParams("video_path")
+    object ARG_ACTIVITY_ID : NavigationParams("activity_id")
+    object ARG_ACTIVITY_DATE : NavigationParams("activity_date")
+    object ARG_MISSION_ID : NavigationParams("mission_id")
+    object ARG_MISSION_NAME : NavigationParams("mission_name")
+    object ARG_MISSION_DATE : NavigationParams("mission_date")
+    object ARG_ACTIVITY_NAME : NavigationParams("activity_name")
+
+    object ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID : NavigationParams("formQuestionResponseReferenceId")
+}

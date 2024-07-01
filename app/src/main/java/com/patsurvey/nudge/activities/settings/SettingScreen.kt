@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -78,6 +79,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -106,16 +111,14 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.home.SettingScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
@@ -231,14 +234,14 @@ fun SettingScreen(
             negativeButtonTitle = stringResource(id = R.string.option_no),
             onNegativeButtonClick = { viewModel.showLoadConfimationDialog.value = false },
             onPositiveButtonClick = {
-                viewModel.showAPILoader.value = true
-                viewModel.exportDbAndImages {
-                    viewModel.clearLocalDB {
-                        viewModel.showAPILoader.value = false
-                        if (navController.graph.route == Graph.ROOT) {
+                viewModel.showAPILoader.value=true
+                viewModel.exportDbAndImages{
+                    viewModel.clearLocalDB{
+                        viewModel.showAPILoader.value=false
+                        if (navController.graph.route == NudgeNavigationGraph.ROOT) {
                             navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
                         } else {
-                            navController.navigate(Graph.LOGOUT_GRAPH)
+                            navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                         }
                     }
                 }
@@ -303,8 +306,16 @@ fun SettingScreen(
     }
 
     BackHandler() {
-
-        backtoPreviousScreen(viewModel, navController)
+        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+            navController.navigate(NudgeNavigationGraph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
+                    inclusive = true
+                    saveState = false
+                }
+            }
+        } else {
+            navController.popBackStack()
+        }
     }
 
     Scaffold(
@@ -325,7 +336,16 @@ fun SettingScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        backtoPreviousScreen(viewModel, navController)
+                        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+                            navController.navigate(NudgeNavigationGraph.HOME) {
+                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
+                                    inclusive = true
+                                    saveState = false
+                                }
+                            }
+                        } else {
+                            navController.popBackStack()
+                        }
                     }
                     ) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
@@ -678,36 +698,15 @@ fun SettingScreen(
                 navController.navigate(AuthScreen.LOGIN.route)
                 isChangeGraphCalled.value = false
             } else {
-                if (navController.graph.route == Graph.ROOT) {
+                if (navController.graph.route == NudgeNavigationGraph.ROOT) {
                     navController.navigate(AuthScreen.LOGIN.route)
                 } else {
-                    navController.navigate(Graph.LOGOUT_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                 }
             }
         }
 
         changeGraph.value = false
-    }
-}
-
-private fun backtoPreviousScreen(
-    viewModel: SettingViewModel,
-    navController: NavController
-) {
-    if (viewModel.prefRepo.getLoggedInUserType() == UPCM_USER) {
-        navController.popBackStack()
-    } else {
-        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
-            navController.navigate(Graph.HOME) {
-
-                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                    inclusive = true
-                    saveState = false
-                }
-            }
-        } else {
-            navController.popBackStack()
-        }
     }
 }
 
@@ -1113,7 +1112,8 @@ fun showSyncDialog(
                                         modifier = Modifier
                                     )
                                     Text(
-                                        text = stringResource(id = R.string.vo_endorsement),
+
+                                        text =getVoNameForState(context,settingViewModel.getStateId(),R.plurals.vo_endorsement),
                                         style = didiDetailItemStyle,
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Start,

@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -12,7 +12,7 @@ class MissionScreenRepositoryImpl @Inject constructor(
     private val missionEntityDao: MissionEntityDao,
     private val missionActivityDao: MissionActivityDao,
     private val taskDao: ActivityTaskDao,
-    private val prefRepo: PrefRepo
+    private val prefBSRepo: PrefBSRepo
 ) : MissionScreenRepository {
     override suspend fun getMissionsFromDB(): List<MissionEntity> {
         return missionEntityDao.getMissions(getBaseLineUserId())
@@ -31,7 +31,7 @@ class MissionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
     override fun getPendingActivityCountForMissionLive(missionId: Int): LiveData<Int> {

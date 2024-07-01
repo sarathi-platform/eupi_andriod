@@ -2,11 +2,17 @@ package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,11 +21,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.nudge.core.isOnline
+import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.SmallGroupCore
 import com.sarathi.smallgroupmodule.ui.TabItem
@@ -30,6 +39,7 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
 import com.sarathi.dataloadingmangement.R as DataLoadingRes
 import com.sarathi.smallgroupmodule.R as Res
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DidiTabScreen(
     modifier: Modifier = Modifier,
@@ -40,9 +50,27 @@ fun DidiTabScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-
         didiTabViewModel.onEvent(InitDataEvent.InitDataState)
+    }
 
+    val pullToRefreshState = rememberPullRefreshState(
+        refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
+        onRefresh = {
+            if (isOnline(context)) {
+                didiTabViewModel.refreshData()
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again)
+                )
+            }
+        }
+    )
+
+    DisposableEffect(key1 = true) {
+        onDispose {
+            didiTabViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        }
     }
 
     val isSearchActive = remember {
@@ -59,11 +87,11 @@ fun DidiTabScreen(
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
-        isDataNotAvailable = didiList.value.isEmpty() && !isSearchActive.value,
+        isDataNotAvailable = (didiList.value.isEmpty() && !isSearchActive.value && !didiTabViewModel
+            .loaderState.value.isLoaderVisible),
         onSearchValueChange = {
 
         },
-        onRetry = {},
         onBottomUI = {
             /**
              *Not required as no bottom UI present for this screen
@@ -72,73 +100,90 @@ fun DidiTabScreen(
         onSettingClick = {
             onSettingClicked()
         },
+        onRetry = {},
         onContentUI = { paddingValues, b, function ->
-            Column(
+            Box(
                 modifier = Modifier
-                    .padding(horizontal = dimen_16_dp)
-                    .padding(top = dimen_16_dp),
-                verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                    .fillMaxSize()
+                    .pullRefresh(pullToRefreshState)
             ) {
+                /*PullRefreshIndicator(
+                    refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
+                    state = pullToRefreshState,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .zIndex(1f),
+                    contentColor = blueDark,
+                )*/
+                if (didiList.value.isNotEmpty() || didiTabViewModel.filteredSmallGroupList.value.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = dimen_16_dp)
+                            .padding(top = dimen_10_dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                    ) {
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
 
-                    tabs.forEachIndexed { index, tab ->
+                            tabs.forEachIndexed { index, tab ->
 
-                        val count = getCount(index, didiTabViewModel)
-                        val tabName = getTabName(context, tab)
-                        TabItem(
-                            isSelected = SmallGroupCore.tabIndex.value == index,
-                            onClick = {
-                                SmallGroupCore.tabIndex.value = index
-                            },
-                            text = "$tabName ($count)"
-                        )
-                    }
-
-                }
-
-                Column {
-                    SearchWithFilterViewComponent(
-                        placeholderString = when (SmallGroupCore.tabIndex.value) {
-                            DidiSubTabsEnum.DidiTab.id -> "Search by didis"
-                            DidiSubTabsEnum.SmallGroupTab.id -> "Search by small groups"
-                            else -> "Search by didis"
-                        },
-                        showFilter = false,
-                        onFilterSelected = {
-
-                        },
-                        onSearchValueChange = { searchQuery ->
-                            isSearchActive.value = searchQuery.isNotEmpty()
-                            didiTabViewModel.onEvent(
-                                CommonEvents.SearchValueChangedEvent(
-                                    searchQuery,
-                                    (SmallGroupCore.tabIndex.value as Int)
+                                val count = getCount(index, didiTabViewModel)
+                                val tabName = getTabName(context, tab)
+                                TabItem(
+                                    isSelected = SmallGroupCore.tabIndex.value == index,
+                                    onClick = {
+                                        SmallGroupCore.tabIndex.value = index
+                                    },
+                                    text = "$tabName ($count)"
                                 )
-                            )
-                        }
-                    )
-                    CustomVerticalSpacer()
-                    when (SmallGroupCore.tabIndex.value) {
-                        DidiSubTabsEnum.DidiTab.id -> {
-                            DidiSubTab(
-                                didiTabViewModel = didiTabViewModel,
-                                didiList = didiList.value
-                            )
+                            }
+
                         }
 
-                        DidiSubTabsEnum.SmallGroupTab.id -> SmallGroupSubTab(
-                            didiTabViewModel = didiTabViewModel,
-                            smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
-                            navHostController = navHostController
-                        )
+                        Column {
+                            SearchWithFilterViewComponent(
+                                placeholderString = when (SmallGroupCore.tabIndex.value) {
+                                    DidiSubTabsEnum.DidiTab.id -> "Search by didis"
+                                    DidiSubTabsEnum.SmallGroupTab.id -> "Search by small groups"
+                                    else -> "Search by didis"
+                                },
+                                showFilter = false,
+                                onFilterSelected = {
+
+                                },
+                                onSearchValueChange = { searchQuery ->
+                                    isSearchActive.value = searchQuery.isNotEmpty()
+                                    didiTabViewModel.onEvent(
+                                        CommonEvents.SearchValueChangedEvent(
+                                            searchQuery,
+                                            (SmallGroupCore.tabIndex.value as Int)
+                                        )
+                                    )
+                                }
+                            )
+                            CustomVerticalSpacer()
+                            when (SmallGroupCore.tabIndex.value) {
+                                DidiSubTabsEnum.DidiTab.id -> {
+                                    DidiSubTab(
+                                        didiTabViewModel = didiTabViewModel,
+                                        didiList = didiList.value
+                                    )
+                                }
+
+                                DidiSubTabsEnum.SmallGroupTab.id -> SmallGroupSubTab(
+                                    didiTabViewModel = didiTabViewModel,
+                                    smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
+                                    navHostController = navHostController
+                                )
+                            }
+                        }
+
+
                     }
                 }
-
-
             }
         }
     )

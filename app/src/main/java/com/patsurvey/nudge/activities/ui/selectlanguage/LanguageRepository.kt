@@ -38,4 +38,8 @@ class LanguageRepository @Inject constructor(
         prefRepo.saveSelectedVillage(village)
     }
 
+    fun isUserLoggedIn():Boolean =prefRepo.getAccessToken()?.isNotEmpty() ?: false
+
+    fun loggedInUserType():String = prefRepo.getLoggedInUserType()
+
 }

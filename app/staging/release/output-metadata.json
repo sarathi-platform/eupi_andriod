@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.thenudge.uat",
+  "applicationId": "com.nrlm.sarathi.stage",
   "variantName": "stagingRelease",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 1,
-      "versionName": "0.1.12",
+      "versionCode": 7,
+      "versionName": "0.1.73",
       "outputFile": "app-staging-release.apk"
     }
   ],

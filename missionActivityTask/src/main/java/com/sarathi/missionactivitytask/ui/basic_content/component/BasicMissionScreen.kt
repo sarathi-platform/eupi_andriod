@@ -17,12 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -39,7 +39,6 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
@@ -66,14 +65,12 @@ fun BasicMissionCard(
                 onPrimaryClick()
             }
             .fillMaxWidth()
-            .padding(dimen_16_dp)
-            .clip(RoundedCornerShape(dimen_6_dp))
+            .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
                 color = statusColor(status),
                 shape = RoundedCornerShape(dimen_6_dp)
             )
-            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -116,6 +113,8 @@ fun BasicMissionCard(
                         onPrimaryClick()
                     }
                 )
+            } else {
+                Spacer(Modifier.height(dimen_18_dp))
             }
         }
     }

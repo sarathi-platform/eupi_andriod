@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.network.ErrorInterceptor
@@ -54,6 +55,12 @@ object NetworkModule {
     return retrofit.create(ApiService::class.java)
   }
 
+  @Provides
+  @Singleton
+  fun provideBaselineService(retrofit: Retrofit):BaseLineApiService{
+    return retrofit.create(BaseLineApiService::class.java)
+  }
+
   /**
    * Creates Retrofit object
    *
@@ -76,6 +83,7 @@ object NetworkModule {
         .readTimeout(timeout, TimeUnit.SECONDS)
 //        .cache(cache)
     clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
+    clientBuilder.addInterceptor(ErrorInterceptor())
     clientBuilder.addInterceptor(
       getHeaderInterceptor(
         sharedPref,

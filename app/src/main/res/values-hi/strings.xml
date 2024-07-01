@@ -388,7 +388,7 @@
     <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
     <string name="warning">"चेतावनी! "</string>
     <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>
-    <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
+    <string name="logout_confirmation">क्या आप लॉग आउट करना चाहते हैं?</string>
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
     <string name="load_server_data">सर्वर डेटा लोड करें</string>
@@ -396,6 +396,8 @@
     <string name="didi_verified_by_bpc">बीपीसी द्वारा सत्यापित दीदियाँ</string>
     <string name="bpc_verification_in_progress_village_banner_text">बीपीसी सत्यापन प्रगति पर है</string>
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
+    <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>
+    <string name="change_language">भाषा बदलें</string>
 
 
 </resources>

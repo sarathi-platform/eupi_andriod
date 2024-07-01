@@ -17,7 +17,7 @@ data class OptionsUiModel(
 
 
     val paraphrase: String? = null,
-    val description: String? = null,
+    var description: String? = null,
 
     var optionType: String? = BLANK_STRING,
 

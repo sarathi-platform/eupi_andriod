@@ -30,4 +30,10 @@ interface SubjectEntityDao {
     @Query("SELECT count(*) from $SUBJECT_TABLE where subjectId = :subjectId and userId = :userId")
     fun isSubjectPresentInDb(userId: String, subjectId: Int): Int
 
+    @Query("SELECT crpImageName from $SUBJECT_TABLE where userId = :userId")
+    fun getDidiImageUrlForSmallGroup(userId: String): List<String>
+
+    @Query("DELETE from $SUBJECT_TABLE where userId = :userId")
+    fun deleteSubjectsForUsers(userId: String)
+
 }

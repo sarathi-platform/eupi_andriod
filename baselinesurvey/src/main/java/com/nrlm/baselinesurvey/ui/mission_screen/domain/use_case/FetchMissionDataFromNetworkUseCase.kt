@@ -13,6 +13,10 @@ import com.nudge.core.enums.ApiStatus
 class FetchMissionDataFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
 ) {
+
+    fun saveSettingScreenOpen(){
+        repository.saveSettingScreenOpen()
+    }
     suspend operator fun invoke(): Boolean {
         try {
             if (!repository.isNeedToCallApi(SUBPATH_GET_MISSION)) {

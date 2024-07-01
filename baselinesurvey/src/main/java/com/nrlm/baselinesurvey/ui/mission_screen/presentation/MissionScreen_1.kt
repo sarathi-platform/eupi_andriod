@@ -40,9 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -55,12 +52,15 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import kotlin.system.exitProcess
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true)
 @Composable
-fun MissionScreen_1(
+fun MissionScreen(
     navController: NavController = rememberNavController(),
     viewModel: MissionViewModel = hiltViewModel()
 ) {
@@ -89,7 +89,7 @@ fun MissionScreen_1(
         viewModel.init()
     }
     BackHandler {
-        (context as? MainActivity)?.finish()
+        exitProcess(0)
     }
     Scaffold(
         modifier = Modifier,
@@ -118,7 +118,7 @@ fun MissionScreen_1(
                 },
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate(Graph.SETTING_GRAPH)
+                        navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),
@@ -196,7 +196,7 @@ fun MissionScreen_1(
                                 viewModel.getPendingActivityCountForMissionLive(mission.missionId)
                                     .observeAsState().value ?: 0
 
-                            MissonRowScreen_1(
+                            MissionRowScreen(
                                 mission = mission,
                                 missionDueDate = mission.startDate,
                                 viewModel = viewModel,
@@ -219,6 +219,6 @@ fun MissionScreen_1(
 
 @Preview
 @Composable
-fun MissionScreen_1Perview() {
-    MissionScreen_1()
+fun MissionScreenPreview() {
+    MissionScreen()
 }

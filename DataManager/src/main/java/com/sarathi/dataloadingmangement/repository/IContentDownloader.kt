@@ -12,4 +12,6 @@ interface IContentDownloader {
     fun getContentKeyFromContentConfig(referenceID: Int, referenceType: Int): List<String>
     suspend fun getDidiImagesUrl(): List<String>
 
+    suspend fun getDidiImageUrlForSmallGroup(): List<String>
+
 }

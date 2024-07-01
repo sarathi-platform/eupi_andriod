@@ -17,6 +17,7 @@ import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -57,6 +58,9 @@ class VoEndorsementScreenViewModel @Inject constructor(
     init {
         villageId = repository.prefRepo.getSelectedVillage().id
         fetchDidisFromDB()
+    }
+    fun getStateId():Int{
+        return repository.prefRepo.getStateId()
     }
 
     fun fetchDidisFromDB() {

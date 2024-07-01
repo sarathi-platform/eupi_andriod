@@ -5,6 +5,7 @@ import com.sarathi.dataloadingmangement.DIDI_IMAGE_ATTRIBUTE
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.entities.Content
 import javax.inject.Inject
 
@@ -12,6 +13,7 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
     private val contentDao: ContentDao,
     private val contentConfigDao: ContentConfigDao,
     private val attributeValueReferenceDao: AttributeValueReferenceDao,
+    private val subjectEntityDao: SubjectEntityDao,
     private val coreSharedPrefs: CoreSharedPrefs
 ) :
     IContentDownloader {
@@ -55,5 +57,8 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getDidiImageUrlForSmallGroup(): List<String> {
+        return subjectEntityDao.getDidiImageUrlForSmallGroup(coreSharedPrefs.getUniqueUserIdentifier())
+    }
 
 }

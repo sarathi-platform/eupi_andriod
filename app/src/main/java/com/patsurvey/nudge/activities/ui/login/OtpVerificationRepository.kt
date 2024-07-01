@@ -32,6 +32,10 @@ class OtpVerificationRepository @Inject constructor(
         prefRepo.saveAccessToken(token)
     }
 
+    fun saveLoggedInUserType(userType:String){
+        prefRepo.savePref(PREF_KEY_TYPE_NAME,userType)
+    }
+
     fun setIsUserBPC(typeName: String) {
         if (typeName.equals(BPC_USER_TYPE, true)) {
             prefRepo.setIsUserBPC(true)
@@ -50,9 +54,5 @@ class OtpVerificationRepository @Inject constructor(
 
     fun getMobileNumber(): String?{
        return prefRepo.getMobileNumber();
-    }
-    fun saveLoggedInUserType(userType: String) {
-        coreSharedPrefs.setUserType(userType)
-        prefRepo.savePref(PREF_KEY_TYPE_NAME, userType)
     }
 }

@@ -1,7 +1,7 @@
 package com.sarathi.missionactivitytask.constants
 
 object MissionActivityConstants {
-    const val MAT_GRAPH = "mat_graph"
+
     const val ARG_CONTENT_KEY = "content_key"
     const val ARG_CONTENT_TYPE = "content_type"
     const val ARG_CONTENT_TITLE = "content_title"
@@ -20,6 +20,7 @@ object MissionActivityConstants {
     const val DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME = "disbursment_summary_screen"
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"
+    const val ARG_TASK_ID_LIST = "task_id_list"
     const val ARG_MISSION_COMPLETED = "mission_completed"
     const val ARG_MISSION_NAME = "mission_name"
     const val ARG_ACTIVITY_NAME = "activity_name"

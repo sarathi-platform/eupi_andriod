@@ -35,7 +35,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0"
+        kotlinCompilerExtensionVersion = "1.4.1"
     }
     packagingOptions {
         resources {
@@ -87,7 +87,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     //Material
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material:material:1.5.3")
     implementation("androidx.compose.material3:material3:1.1.2")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))

@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -73,7 +74,6 @@ import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
@@ -88,7 +88,8 @@ fun DisbursementFormSummaryScreen(
     navController: NavController = rememberNavController(),
     viewModel: DisbursementFormSummaryScreenViewModel,
     activityId: Int,
-    missionId: Int
+    missionId: Int,
+    taskList: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -199,7 +200,8 @@ fun DisbursementFormSummaryScreen(
                             onClick = {
                                 navigateToAddImageScreen(
                                     navController = navController,
-                                    activityId = activityId
+                                    activityId = activityId,
+                                    taskIdList = taskList
                                 )
                             }
                         )
@@ -303,6 +305,7 @@ private fun MakeDisburesementRow(
                 .height(dimen_5_dp)
         )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
+            TextRow(text1 = "Mode: ", text2 = disbursementFormSummaryUiModel.mode)
             TextRow(
                 text1 = stringResource(R.string.mode),
                 text2 = disbursementFormSummaryUiModel.mode
@@ -325,22 +328,28 @@ private fun MakeDisburesementRow(
 @Composable
 private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier.padding(end = dimen_5_dp),
+                modifier = Modifier
+                    .weight(.2f),
                 text = text1,
                 style = newMediumTextStyle.copy(color = greyColor)
             )
         }
         if (text2.isNotBlank()) {
             if (isReadMode) {
-                TextWithReadMoreComponent(title = text1, contentData = text2)
+                TextWithReadMoreComponent(
+                    modifier = Modifier.weight(.8f),
+                    title = text1,
+                    contentData = text2
+                )
             } else {
                 Text(
-                    modifier = Modifier.padding(start = dimen_5_dp),
+                    modifier = Modifier.weight(.8f),
                     text = text2,
                     style = defaultTextStyle.copy(color = blueDark)
                 )

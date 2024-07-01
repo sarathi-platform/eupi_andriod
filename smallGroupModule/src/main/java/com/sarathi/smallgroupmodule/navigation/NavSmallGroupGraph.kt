@@ -8,9 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.value
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.SMALL_GROUP_GRAPH
 import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.ARG_SELECTED_DATE
 import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.ARG_SMALL_GROUP_ID
-import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.SMALL_GROUP_GRAPH
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceEditScreen
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceScreen
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.ui.SmallGroupAttendanceHistoryScreen
@@ -37,7 +37,9 @@ fun NavGraphBuilder.SmallGroupNavigation(
                 smallGroupId = it.arguments?.getInt(
                     ARG_SMALL_GROUP_ID
                 ) ?: 0
-            )
+            ) {
+                onSettingIconClick()
+            }
         }
 
         composable(

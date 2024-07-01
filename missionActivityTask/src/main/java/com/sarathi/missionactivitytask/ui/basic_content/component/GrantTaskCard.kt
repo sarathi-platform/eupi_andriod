@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -38,6 +37,7 @@ import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -60,7 +60,6 @@ import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
@@ -94,8 +93,7 @@ fun GrantTaskCard(
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(dimen_16_dp)
-            .clip(RoundedCornerShape(dimen_6_dp))
+            .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
                 color = if (taskStatus?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,

@@ -43,7 +43,7 @@ import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
-import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
+import com.patsurvey.nudge.navigation.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
