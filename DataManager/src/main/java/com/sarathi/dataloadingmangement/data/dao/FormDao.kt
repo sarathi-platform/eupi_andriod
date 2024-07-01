@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 
 @Dao
 interface FormDao {
@@ -45,17 +46,27 @@ interface FormDao {
         taskId: Int
     ): Int
 
-    @Query("select * from form_table where userId =:userId and isFormGenerated=:isFormGenerated and activityId=:activityId order by createdDate DESC")
+    @Query(
+        "select form_table.taskid,form_table.activityId,form_table.localReferenceId,form_table.formGenerateDate," +
+                "form_table.userId, form_table.missionId,form_table.subjectid, form_table.createdDate, form_table.formType,form_table.taskid," +
+                " form_table.surveyId,form_table.subjectType,form_table.id,form_table.isFormGenerated from form_table inner join task_table on form_table.taskid=task_table.taskId where form_table.userId =:userId and form_table.isFormGenerated=:isFormGenerated and form_table.activityId=:activityId  and task_table.userId=:userId and task_table.status!=:status order by createdDate DESC"
+    )
     suspend fun getFormSummaryData(
         userId: String,
         activityId: Int,
-        isFormGenerated: Boolean
+        isFormGenerated: Boolean,
+        status: String = SurveyStatusEnum.NOT_AVAILABLE.name
     ): List<FormEntity>
 
-    @Query("select * from form_table where userId =:userId and activityId=:activityId order by createdDate DESC")
+    @Query(
+        "select form_table.taskid,form_table.activityId,form_table.localReferenceId,form_table.formGenerateDate," +
+                "form_table.userId, form_table.missionId,form_table.subjectid, form_table.createdDate, form_table.formType,form_table.taskid," +
+                " form_table.surveyId,form_table.subjectType,form_table.id ,form_table.subjectType,form_table.isFormGenerated from form_table inner join task_table on form_table.taskid=task_table.taskId where form_table.userId =:userId and form_table.activityId=:activityId  and task_table.userId=:userId and task_table.status!=:status order by createdDate DESC"
+    )
     suspend fun getAllFormSummaryData(
         userId: String,
         activityId: Int,
+        status: String = SurveyStatusEnum.NOT_AVAILABLE.name
     ): List<FormEntity>
 
     @Query("Update  form_table  set isFormGenerated=:isFormGenerated , formGenerateDate=:generatedDate where userId =:userId and localReferenceId=:localReferenceId")
