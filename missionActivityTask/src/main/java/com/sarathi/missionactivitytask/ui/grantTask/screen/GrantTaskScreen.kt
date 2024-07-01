@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,11 @@ import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenVie
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import kotlinx.coroutines.delay
+
+private val function = {
+
+}
 
 @Composable
 fun GrantTaskScreen(
@@ -67,10 +73,12 @@ fun GrantTaskScreen(
     onSettingClick: () -> Unit
 ) {
     val context = LocalContext.current
-    LaunchedEffect(key1 = true) {
+    DisposableEffect(Unit) {
+
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitDataState)
+        onDispose {}
     }
     ToolBarWithMenuComponent(
         title = activityName,
@@ -204,6 +212,7 @@ fun GrantTaskScreen(
                             item {
                                 CustomVerticalSpacer()
                             }
+
                             itemsIndexed(
                                 items = itemsInCategory
                             ) { _, task ->
