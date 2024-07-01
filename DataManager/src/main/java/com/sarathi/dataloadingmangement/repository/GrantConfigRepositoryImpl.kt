@@ -25,5 +25,9 @@ class GrantConfigRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getAppLanguage(): String {
+        return coreSharedPrefs.getAppLanguage()
+    }
+
 
 }

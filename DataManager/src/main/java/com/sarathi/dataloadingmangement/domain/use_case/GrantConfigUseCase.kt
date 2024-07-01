@@ -25,11 +25,12 @@ class GrantConfigUseCase @Inject constructor(private val grantConfigRepositoryIm
         )
     }
 
-    private fun getGrantComponentValues(grantString: String): GrantComponentDTO? {
+    private suspend fun getGrantComponentValues(grantString: String): GrantComponentDTO? {
         val gson = Gson()
         val type = object :
-            TypeToken<GrantComponentDTO>() {}.type
-        return gson.fromJson<GrantComponentDTO>(grantString, type)
+            TypeToken<List<GrantComponentDTO>>() {}.type
+        return gson.fromJson<List<GrantComponentDTO>>(grantString, type)
+            .find { it.languageId == grantConfigRepositoryImpl.getAppLanguage() }
     }
 
 
