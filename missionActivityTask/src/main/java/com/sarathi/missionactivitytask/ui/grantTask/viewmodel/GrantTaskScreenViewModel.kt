@@ -1,16 +1,20 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CoreObserverManager
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -52,7 +56,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,
-    private val formUiConfigUseCase: GetFormUiConfigUseCase
+    private val formUiConfigUseCase: GetFormUiConfigUseCase,
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -75,7 +80,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
-
+        private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
+            withContext(Dispatchers.Main) {
+                mutableState.value = newValue
+            }
+        }
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -105,40 +114,31 @@ class GrantTaskScreenViewModel @Inject constructor(
             isActivityCompleted()
             isGenerateFormButtonEnable()
             taskUiModel.forEachIndexed { index, it ->
+
+             val uiComponent =   getUiComponentValues(
+                    taskId = it.taskId,
+                    taskStatus = it.status.toString(),
+                    subjectId = it.subjectId,
+                    formGeneratedCount = it.formGeneratedCount,
+                    componentType = ComponentEnum.Card.name
+                )
                 if (index == 0) {
-                    searchLabel.value = getUiComponentValues(
-                        taskId = it.taskId,
-                        taskStatus = it.status.toString(),
-                        subjectId = it.subjectId,
-                        formGeneratedCount = it.formGeneratedCount,
-                        componentType = ComponentEnum.Search.name
-                    )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
+                    searchLabel.value = uiComponent[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
                         ?: BLANK_STRING
 
-                    if ((getUiComponentValues(
-                            taskId = it.taskId,
-                            taskStatus = it.status.toString(),
-                            subjectId = it.subjectId,
-                            formGeneratedCount = it.formGeneratedCount,
-                            componentType = ComponentEnum.Card.name
-                        )[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
+                    if ((uiComponent[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
                     ) {
                         isFilerEnable.value = true
                     }
                 }
-                _taskList.value[it.taskId] =
-                    getUiComponentValues(
-                        taskId = it.taskId,
-                        taskStatus = it.status.toString(),
-                        subjectId = it.subjectId,
-                        formGeneratedCount = it.formGeneratedCount,
-                        componentType = ComponentEnum.Card.name
-                    )
+                _taskList.value[it.taskId] =uiComponent
+
             }
             getGrantConfig()
 
-            _filterList.value = _taskList.value
+            var _filterListt = _taskList.value
+            updateValueInMainThread(_filterList,_filterListt)
 
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
@@ -246,10 +246,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
     private suspend fun checkButtonValidation() {
-        isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
+        var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId
         ) && !isActivityCompleted.value
+        updateValueInMainThread(isButtonEnable,isButtonEnablee)
     }
 
     fun markActivityCompleteStatus() {
@@ -368,5 +369,32 @@ class GrantTaskScreenViewModel @Inject constructor(
         return taskListSanctionedEqualDisbursed.joinToString(DELEGATE_COMM)
     }
 
+    override fun refreshData() {
+        super.refreshData()
+        loadAllData(isRefresh = true)
+    }
+
+    private fun loadAllData(isRefresh: Boolean) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
+                // Temp method to be removed after baseline is migrated to Grant flow.
+                updateStatusForBaselineMission() { success ->
+                    CoreLogger.i(
+                        tag = "MissionScreenViewMode",
+                        msg = "updateStatusForBaselineMission: success: $success"
+                    )
+                    initTaskScreen() // Move this out of the lambda block once the above method is removed
+                }
+            }, isRefresh = isRefresh)
+        }
+    }
+
+    // Temp method to be removed after baseline is migrated to Grant flow.
+    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
+        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
+            onSuccess(it)
+        }
+    }
 
 }

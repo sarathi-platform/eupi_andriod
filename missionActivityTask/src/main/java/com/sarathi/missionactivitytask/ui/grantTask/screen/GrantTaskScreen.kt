@@ -1,7 +1,9 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,9 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomAppBar
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -24,11 +30,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -57,6 +65,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GrantTaskScreen(
     navController: NavController = rememberNavController(),
@@ -67,10 +76,26 @@ fun GrantTaskScreen(
     onSettingClick: () -> Unit
 ) {
     val context = LocalContext.current
-    LaunchedEffect(key1 = true) {
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.loaderState.value.isLoaderVisible,
+        {
+            if (isOnline(context)) {
+                viewModel.refreshData()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+        })
+    DisposableEffect(Unit) {
+
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitDataState)
+        onDispose {}
     }
     ToolBarWithMenuComponent(
         title = activityName,
@@ -172,6 +197,20 @@ fun GrantTaskScreen(
                             )
                         })
                 }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pullRefresh(pullRefreshState)
+                )
+                {
+                    PullRefreshIndicator(
+                        refreshing = viewModel.loaderState.value.isLoaderVisible,
+                        state = pullRefreshState,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .zIndex(1f),
+                        contentColor = blueDark,
+                    )
                 Spacer(modifier = Modifier.height(dimen_10_dp))
                 if (viewModel.isGroupByEnable.value) {
                     LazyColumn(
@@ -204,6 +243,7 @@ fun GrantTaskScreen(
                             item {
                                 CustomVerticalSpacer()
                             }
+
                             itemsIndexed(
                                 items = itemsInCategory
                             ) { _, task ->
@@ -216,7 +256,7 @@ fun GrantTaskScreen(
                         }
                     }
                 } else {
-                    if (viewModel.filterList.value.isNotEmpty()) {
+                    if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
                         LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                             itemsIndexed(
                                 items = viewModel.filterList.value.entries.toList()
@@ -229,6 +269,7 @@ fun GrantTaskScreen(
                             }
                         }
                     }
+                }
                 }
             }
         },
@@ -263,6 +304,11 @@ private fun TaskRowView(
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = GrantTaskCardModel(
+                    value = SurveyStatusEnum.NOT_AVAILABLE.name,
+                    label = BLANK_STRING,
+                    icon = null
+                )
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
