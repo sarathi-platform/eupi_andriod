@@ -8,10 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CoreObserverManager
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -53,7 +56,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,
-    private val formUiConfigUseCase: GetFormUiConfigUseCase
+    private val formUiConfigUseCase: GetFormUiConfigUseCase,
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -365,5 +369,32 @@ class GrantTaskScreenViewModel @Inject constructor(
         return taskListSanctionedEqualDisbursed.joinToString(DELEGATE_COMM)
     }
 
+    override fun refreshData() {
+        super.refreshData()
+        loadAllData(isRefresh = true)
+    }
+
+    private fun loadAllData(isRefresh: Boolean) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
+                // Temp method to be removed after baseline is migrated to Grant flow.
+                updateStatusForBaselineMission() { success ->
+                    CoreLogger.i(
+                        tag = "MissionScreenViewMode",
+                        msg = "updateStatusForBaselineMission: success: $success"
+                    )
+                    initTaskScreen() // Move this out of the lambda block once the above method is removed
+                }
+            }, isRefresh = isRefresh)
+        }
+    }
+
+    // Temp method to be removed after baseline is migrated to Grant flow.
+    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
+        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
+            onSuccess(it)
+        }
+    }
 
 }
