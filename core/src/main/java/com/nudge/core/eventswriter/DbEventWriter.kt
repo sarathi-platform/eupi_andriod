@@ -43,7 +43,7 @@ class DbEventWrite() : IEventWriter {
                             filePath = it.path ?: BLANK_STRING,
                             name = event.name,
                             type = event.type,
-                            status = event.status,
+                            status = EventSyncStatus.OPEN.eventSyncStatus,
                             imageEventId = event.id,
                             modifiedDate = System.currentTimeMillis().toDate()
                         )

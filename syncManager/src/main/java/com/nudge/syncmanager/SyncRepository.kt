@@ -7,23 +7,30 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.core.model.response.SyncImageStatusResponse
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.network.SyncApiService
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class SyncApiRepository @Inject constructor(
     val apiService: SyncApiService,
     private val eventDao: EventsDao,
     private val eventStatusDao: EventStatusDao,
-    private val prefRepo: CorePrefRepo
+    private val prefRepo: CorePrefRepo,
+    private val imageStatusDao: ImageStatusDao
 ) {
     suspend fun syncProducerEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
         val eventRequest: List<EventRequest> = events.map {
@@ -37,7 +44,11 @@ class SyncApiRepository @Inject constructor(
         return apiService.syncConsumerStatusApi(eventConsumerRequest)
     }
 
-    fun getPendingEventFromDb(batchLimit: Int, retryCount: Int, syncType: Int): List<Events> {
+    suspend fun getPendingEventFromDb(
+        batchLimit: Int,
+        retryCount: Int,
+        syncType: Int
+    ): List<Events> {
         return eventDao.getAllPendingEventList(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
@@ -50,7 +61,14 @@ class SyncApiRepository @Inject constructor(
         )
     }
 
-    fun getPendingEventCount(syncType: Int): Int {
+    suspend fun syncImageToServer(
+        image: MultipartBody.Part,
+        imagePayload: RequestBody
+    ): ApiResponseModel<List<SyncImageStatusResponse>> {
+        return apiService.syncImage(imageFile = image, imagePayload = imagePayload)
+    }
+
+    suspend fun getPendingEventCount(syncType: Int): Int {
         return eventDao.getSyncPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
@@ -61,7 +79,7 @@ class SyncApiRepository @Inject constructor(
         )
     }
 
-    fun updateSuccessEventStatus(context: Context, eventList: List<SyncEventResponse>) {
+    suspend fun updateSuccessEventStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
             eventDao.updateSuccessEventStatus(eventList)
             eventList.forEach {
@@ -86,7 +104,7 @@ class SyncApiRepository @Inject constructor(
 
     }
 
-    fun updateFailedEventStatus(context: Context, eventList: List<SyncEventResponse>) {
+    suspend fun updateFailedEventStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
             eventDao.updateFailedEventStatus(eventList)
             eventList.forEach {
@@ -110,7 +128,7 @@ class SyncApiRepository @Inject constructor(
         }
     }
 
-    fun updateEventConsumerStatus(context: Context, eventList: List<SyncEventResponse>) {
+    suspend fun updateEventConsumerStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
             eventDao.updateConsumerStatus(eventList)
             eventList.forEach {
@@ -135,6 +153,27 @@ class SyncApiRepository @Inject constructor(
     }
 
     fun getLoggedInMobileNumber():String = prefRepo.getMobileNumber()
+
+    suspend fun fetchImageStatusFromEventId(eventId: String): ImageStatusEntity {
+        return imageStatusDao.fetchImageStatusFromEventId(
+            mobileNumber = getLoggedInMobileNumber(),
+            eventId = eventId
+        )
+    }
+
+    suspend fun updateImageEventStatus(
+        eventId: String,
+        status: String,
+        errorMessage: String? = BLANK_STRING
+    ) {
+        imageStatusDao.updateImageEventStatus(
+            status = status,
+            eventId = eventId,
+            errorMessage = errorMessage ?: BLANK_STRING,
+            modifiedDate = System.currentTimeMillis().toDate(),
+            mobileNumber = getLoggedInMobileNumber()
+        )
+    }
 }
 
 

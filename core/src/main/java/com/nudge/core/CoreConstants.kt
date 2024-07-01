@@ -46,10 +46,6 @@ const val ZIP_MIME_TYPE = "application/zip"
 const val EXCEL_TYPE = "text/csv"
 const val REGENERATE_PREFIX = "regenerate_"
 const val SOMETHING_WENT_WRONG="Something Went Wrong"
-const val RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION="Response data list is empty"
-const val RESPONSE_DATA_IS_NULL_EXCEPTION="Response data is null"
-const val RESPONSE_STATUS_FAILED_EXCEPTION="Response status is failed"
-
 const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
@@ -67,6 +63,14 @@ const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val KOKBOROK_LANGUAGE_CODE="ky"
 const val IMAGE_EVENT_STRING = "IMAGE"
+
+// Header Constant
+const val KEY_HEADER_AUTH = "authorization"
+const val AUTH_TOKEN_PREFIX = "Bearer"
+const val KEY_HEADER_TYPE = "header_type"
+const val KEY_HEADER_MOBILE = "header_type_mobile"
+const val MULTIPART_FORM_DATA = "multipart/form-data"
+const val MULTIPART_IMAGE_PARAM_NAME = "imageFile"
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),
@@ -75,3 +79,4 @@ val eventWriters = listOf<IEventWriter>(
 )
 const val BATCH_DEFAULT_LIMIT = 5
 const val RETRY_DEFAULT_COUNT = 3
+const val SYNC_DATE_TIME_FORMAT = "yyyy-MM-dd"

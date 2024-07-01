@@ -896,7 +896,7 @@ fun BulletList(
 fun compressImage(imageUri: String, activity: Context,name:String): String? {
     var filename: String? = ""
     try {
-        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
+        val filePath = imageUri
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true

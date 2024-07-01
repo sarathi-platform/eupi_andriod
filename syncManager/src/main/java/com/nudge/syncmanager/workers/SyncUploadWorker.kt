@@ -2,6 +2,9 @@ package com.nudge.syncmanager.workers
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -11,17 +14,22 @@ import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.RESPONSE_DATA_IS_NULL_EXCEPTION
-import com.nudge.core.RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
-import com.nudge.core.RESPONSE_STATUS_FAILED_EXCEPTION
+import com.nudge.core.IMAGE_EVENT_STRING
+import com.nudge.core.MULTIPART_FORM_DATA
+import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
+import com.nudge.core.SYNC_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.datamodel.SyncImageUploadPayload
+import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
 import com.nudge.core.json
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.core.model.response.SyncImageStatusResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.SyncApiRepository
@@ -29,6 +37,11 @@ import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -38,18 +51,20 @@ class SyncUploadWorker @AssistedInject constructor(
     @Assisted val workerParams: WorkerParameters,
     private val syncApiRepository: SyncApiRepository
 ) : CoroutineWorker(appContext, workerParams) {
-    private val TAG=SyncUploadWorker::class.java.simpleName
+    private val TAG = SyncUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
     private val retryCount = RETRY_DEFAULT_COUNT
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
 
         if (runAttemptCount >= RETRY_DEFAULT_COUNT) {
-            return Result.failure(workDataOf(
-                WorkerKeys.ERROR_MSG to  "Failed: Producer Failed with Attempt Count"
-            ))
+            return Result.failure(
+                workDataOf(
+                    WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Attempt Count"
+                )
+            )
         }
-        val selectedSyncType= inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
+        val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
 
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
@@ -65,7 +80,8 @@ class SyncUploadWorker @AssistedInject constructor(
                 "doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount"
             )
 
-            var totalPendingEventCount = syncApiRepository.getPendingEventCount(syncType = selectedSyncType)
+            var totalPendingEventCount =
+                syncApiRepository.getPendingEventCount(syncType = selectedSyncType)
             CoreLogger.d(
                 applicationContext,
                 TAG,
@@ -121,9 +137,11 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: success totalPendingEventCount: $totalPendingEventCount"
             )
-            Result.success(workDataOf(
-                WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
-            ))
+            Result.success(
+                workDataOf(
+                    WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
+                )
+            )
         } catch (ex: Exception) {
             handleException(ex, mPendingEventList)
         } finally {
@@ -131,9 +149,11 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-    private fun processEventList(eventList: List<SyncEventResponse>) {
-        val eventSuccessList = eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
-        val eventFailedList = eventList.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }
+    private suspend fun processEventList(eventList: List<SyncEventResponse>) {
+        val eventSuccessList =
+            eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
+        val eventFailedList =
+            eventList.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }
 
         if (eventSuccessList.isNotEmpty()) {
             CoreLogger.d(
@@ -145,6 +165,12 @@ class SyncUploadWorker @AssistedInject constructor(
                 context = applicationContext,
                 eventList = eventSuccessList
             )
+
+            eventSuccessList.forEach { successEvent ->
+                if (successEvent.eventName.contains(IMAGE_EVENT_STRING)) {
+                    findImageEventAndImage(successEvent.clientId)
+                }
+            }
         }
 
         if (eventFailedList.isNotEmpty()) {
@@ -160,34 +186,40 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-    private fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
+    private suspend fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
         syncApiRepository.updateFailedEventStatus(
             context = applicationContext,
             eventList = createEventResponseList(
                 mPendingEventList,
-                RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
+                SyncException.RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION.message
             )
         )
     }
 
-    private fun handleNullApiResponse(mPendingEventList: List<Events>) {
+    private suspend fun handleNullApiResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Getting API response Null")
         syncApiRepository.updateFailedEventStatus(
             context = applicationContext,
-            eventList = createEventResponseList(mPendingEventList, RESPONSE_DATA_IS_NULL_EXCEPTION)
+            eventList = createEventResponseList(
+                mPendingEventList,
+                SyncException.RESPONSE_DATA_IS_NULL_EXCEPTION.message
+            )
         )
     }
 
-    private fun handleFailedApiResponse(mPendingEventList: List<Events>) {
+    private suspend fun handleFailedApiResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Getting API Failed")
         syncApiRepository.updateFailedEventStatus(
             context = applicationContext,
-            eventList = createEventResponseList(mPendingEventList, RESPONSE_STATUS_FAILED_EXCEPTION)
+            eventList = createEventResponseList(
+                mPendingEventList,
+                SyncException.RESPONSE_STATUS_FAILED_EXCEPTION.message
+            )
         )
     }
 
-    private fun handleException(ex: Exception, mPendingEventList: List<Events>): Result {
+    private suspend fun handleException(ex: Exception, mPendingEventList: List<Events>): Result {
         CoreLogger.e(
             applicationContext,
             TAG,
@@ -197,7 +229,7 @@ class SyncUploadWorker @AssistedInject constructor(
         )
 
         return if (runAttemptCount < RETRY_DEFAULT_COUNT) {
-             Result.retry()
+            Result.retry()
         } else {
             if (mPendingEventList.isNotEmpty()) {
                 syncApiRepository.updateFailedEventStatus(
@@ -208,21 +240,145 @@ class SyncUploadWorker @AssistedInject constructor(
                     )
                 )
             }
-             Result.failure(workDataOf(
-                 WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Exception: ${ex.message}"
-             ))
+            Result.failure(
+                workDataOf(
+                    WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Exception: ${ex.message}"
+                )
+            )
+        }
+    }
+
+
+    private suspend fun syncImageToServerAPI(
+        imageFile: File,
+        imageStatusEvent: ImageStatusEntity
+    ) {
+
+        try {
+            val imageRequest = imageFile
+                .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+            val multipartRequest = MultipartBody.Part.createFormData(
+                MULTIPART_IMAGE_PARAM_NAME,
+                imageStatusEvent.fileName,
+                imageRequest
+            )
+            val imagePayloadRequest = SyncImageUploadPayload(
+                createdBy = imageStatusEvent.createdBy,
+                imageEventClientId = imageStatusEvent.imageEventId ?: BLANK_STRING,
+                eventTopic = imageStatusEvent.type,
+                clientId = imageStatusEvent.id,
+                fileName = imageStatusEvent.fileName,
+                filePath = imageStatusEvent.filePath,
+                eventName = imageStatusEvent.name,
+                mobileNo = imageStatusEvent.mobileNumber
+            ).toString()
+                .toRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+
+            val response = syncApiRepository.syncImageToServer(
+                image = multipartRequest,
+                imagePayload = imagePayloadRequest
+            )
+            if (response.status == SUCCESS) {
+                response.data?.let { imageEventList ->
+                    if (imageEventList.isNotEmpty()) {
+                        handleSuccessImageStatus(imageEventList[0])
+                    } else handleFailedImageStatus(
+                        event = imageStatusEvent,
+                        errorMessage = SyncException.RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION.message
+                    )
+                } ?: handleFailedImageStatus(
+                    event = imageStatusEvent,
+                    errorMessage = SyncException.RESPONSE_DATA_IS_NULL_EXCEPTION.message
+                )
+            } else handleFailedImageStatus(
+                event = imageStatusEvent,
+                errorMessage = SyncException.RESPONSE_STATUS_FAILED_EXCEPTION.message
+            )
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                applicationContext,
+                TAG,
+                "syncImageToServerAPI: Exception: ${ex.message} :: ${imageStatusEvent.json()}",
+                ex,
+                true
+            )
+            handleFailedImageStatus(
+                event = imageStatusEvent,
+                errorMessage = ex.message ?: SOMETHING_WENT_WRONG
+            )
+        }
+    }
+
+
+    private suspend fun handleFailedImageStatus(event: ImageStatusEntity, errorMessage: String) {
+        CoreLogger.d(
+            applicationContext,
+            TAG,
+            "handleFailedImageStatus: ${event.json()} ::Message: $errorMessage"
+        )
+        syncApiRepository.updateImageEventStatus(
+            eventId = event.id,
+            errorMessage = errorMessage,
+            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+        )
+    }
+
+    private suspend fun handleSuccessImageStatus(imageResponse: SyncImageStatusResponse) {
+        CoreLogger.d(applicationContext, TAG, "handleSuccessImageStatus: ${imageResponse.json()} ")
+        syncApiRepository.updateImageEventStatus(
+            eventId = imageResponse.clientId,
+            errorMessage = BLANK_STRING,
+            status = imageResponse.status
+        )
+
+    }
+
+    private suspend fun findImageEventAndImage(
+        eventId: String
+    ) {
+        val imageStatusEvent =
+            syncApiRepository.fetchImageStatusFromEventId(eventId = eventId)
+        imageStatusEvent?.let {
+            if (it.status != EventSyncStatus.PRODUCER_IN_PROGRESS.name && it.status != EventSyncStatus.PRODUCER_SUCCESS.name && it.status != EventSyncStatus.CONSUMER_IN_PROGRESS.name && it.status != EventSyncStatus.CONSUMER_SUCCESS.name) {
+                CoreLogger.d(applicationContext, TAG, "findImageEventAndImage: ${it.json()} ")
+                try {
+                    val imageUri = it.filePath.toUri()
+                    if (imageUri != Uri.EMPTY) {
+                        val imageFile = imageUri.toFile()
+                        if (imageFile.exists() && imageFile.isFile) {
+                            syncImageToServerAPI(imageFile = imageFile, imageStatusEvent = it)
+                        } else
+                            handleFailedImageStatus(
+                                event = imageStatusEvent,
+                                errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
+                            )
+                    } else handleFailedImageStatus(
+                        event = imageStatusEvent,
+                        errorMessage = SyncException.IMAGE_EMPTY_URI_EXCEPTION.message
+                    )
+                } catch (e: Exception) {
+                    handleFailedImageStatus(
+                        event = imageStatusEvent,
+                        errorMessage = e.message
+                            ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
+                    )
+                }
+            }
         }
     }
 
 
 }
 
-fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<SyncEventResponse> {
-    val failedEventList= arrayListOf<SyncEventResponse>()
+fun createEventResponseList(
+    eventList: List<Events>,
+    errorMessage: String
+): List<SyncEventResponse> {
+    val failedEventList = arrayListOf<SyncEventResponse>()
     eventList.forEach {
         failedEventList.add(
             SyncEventResponse(
-                clientId =it.id,
+                clientId = it.id,
                 status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                 type = it.id,
                 mobileNumber = it.mobile_number,
@@ -240,26 +396,27 @@ fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<Sy
     return failedEventList
 }
 
+
 @SuppressLint("SimpleDateFormat")
 suspend fun fetchConsumerStatus(
     context: Context,
     syncApiRepository: SyncApiRepository,
     mobileNumber: String
 ) {
-    val date= SimpleDateFormat("yyyy-MM-dd").format(Date())
+    val date = SimpleDateFormat(SYNC_DATE_TIME_FORMAT).format(Date())
     val eventConsumerRequest = EventConsumerRequest(
         requestId = BLANK_STRING,
         mobile = mobileNumber,
         endDate = date,
         startDate = date
     )
-    val consumerAPIResponse= syncApiRepository.fetchConsumerEventStatus(eventConsumerRequest)
-    if(consumerAPIResponse.status == SUCCESS){
-            consumerAPIResponse.data?.let {
-                if(it.isNotEmpty()){
-                    syncApiRepository.updateEventConsumerStatus(context = context, eventList = it)
-                }
+    val consumerAPIResponse = syncApiRepository.fetchConsumerEventStatus(eventConsumerRequest)
+    if (consumerAPIResponse.status == SUCCESS) {
+        consumerAPIResponse.data?.let {
+            if (it.isNotEmpty()) {
+                syncApiRepository.updateEventConsumerStatus(context = context, eventList = it)
             }
+        }
     }
 }
 
