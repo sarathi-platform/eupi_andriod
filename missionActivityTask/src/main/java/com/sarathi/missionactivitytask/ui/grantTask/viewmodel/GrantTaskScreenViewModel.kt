@@ -35,7 +35,6 @@ import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -299,6 +298,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                 taskId = taskId,
                 status = status
             )
+            isGenerateFormButtonEnable()
         }
     }
 
@@ -309,7 +309,6 @@ class GrantTaskScreenViewModel @Inject constructor(
                 activityId = activityId
             )
             checkButtonValidation()
-            delay(500)
         }
     }
 
