@@ -17,6 +17,7 @@ import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import javax.inject.Inject
 
 class SurveySaveRepositoryImpl @Inject constructor(
@@ -89,6 +90,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         taskId: Int,
         subjectId: Int,
         tagId: String,
+        activityConfigId: Int,
         referenceId: String
     ): String {
         val result = ArrayList<String>()
@@ -110,10 +112,10 @@ class SurveySaveRepositoryImpl @Inject constructor(
             result.add(totalAmount.toString())
         } else {
 
-            surveyAnswerEntity?.optionItems?.forEach {
-                if (it.isSelected == true) {
-                    if (it.selectedValue?.isNotBlank() == true) {
-                        result.add(it.selectedValue ?: BLANK_STRING)
+            surveyAnswerEntity?.optionItems?.forEach { optionItem ->
+                if (optionItem.isSelected == true) {
+                    if (optionItem.selectedValue?.isNotBlank() == true) {
+                        result.add(optionItem.selectedValue ?: BLANK_STRING)
                     } else {
                         val optionUiModelList = getOptionsForModeAndNature(
                             activityConfigId = activityConfigId,
@@ -152,17 +154,44 @@ class SurveySaveRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllSaveAnswer(
+        activityConfigId: Int,
         surveyId: Int,
         taskId: Int,
-        sectionId: Int
+        sectionId: Int,
+        grantId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
-        return surveyAnswersDao.getSurveyAnswersForSummary(
+        val surveyAnswers = surveyAnswersDao.getSurveyAnswersForSummary(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             sectionId = sectionId,
             surveyId = surveyId,
             taskId = taskId
         )
+        surveyAnswers.forEachIndexed { index, surveyAnswerData ->
+            when (surveyAnswerData.questionType) {
+                QuestionType.MultiSelectDropDown.name,
+                QuestionType.SingleSelectDropDown.name -> {
+                    val optionUiModelList = getOptionsForModeAndNature(
+                        activityConfigId = activityConfigId,
+                        grantId = grantId,
+                        tag = surveyAnswerData.tagId,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = surveyAnswerData.questionId
+                    )
+                    surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
+                        val optionItem =
+                            optionUiModelList.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
+                        if (optionItem != null) {
+                            surveyAnswers[index].optionItems[optionIndex].description =
+                                optionItem.description
+                        }
+                    }
+                }
+            }
+        }
+        return surveyAnswers
     }
+
 
     override suspend fun deleteSurveyAnswer(
         sectionId: Int,
