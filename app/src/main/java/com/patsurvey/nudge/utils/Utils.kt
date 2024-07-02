@@ -13,7 +13,6 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -999,18 +998,6 @@ private fun calculateInSampleSize(
         inSampleSize++
     }
     return inSampleSize
-}
-
-private fun getRealPathFromURI(contentURI: String, activity: Context): String? {
-    val contentUri = Uri.parse(contentURI)
-    val cursor = activity.contentResolver.query(contentUri, null, null, null, null)
-    return if (cursor == null) {
-        contentUri.path
-    } else {
-        cursor.moveToFirst()
-        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-        cursor.getString(idx)
-    }
 }
 
 fun formatDateAndTime(page:String,lastSyncTime: String):String{

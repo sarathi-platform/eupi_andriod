@@ -529,7 +529,7 @@ fun exportLogFile(
 
 fun uriFromFile(context:Context, file:File,applicationID:String): Uri {
     try {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             FileProvider.getUriForFile(context, "$applicationID.provider", file)
         } else {
             Uri.fromFile(file)
@@ -671,4 +671,29 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
         )
     )
     coreSharedPrefs.setFileExported(false)
+}
+
+fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
+    val cursor = activity.contentResolver.query(contentURI, null, null, null, null)
+    return if (cursor == null) {
+        contentURI.path
+    } else {
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        cursor.getString(idx)
+    }
+}
+
+fun findImagesExistInPictureFolder(
+    appContext: Context,
+    applicationID: String,
+    mobileNo: String
+): Boolean {
+    val filePath =
+        File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)?.path + SARATHI_DIRECTORY_NAME + "/" + mobileNo)
+    return getAllFilesInDirectory(
+        appContext,
+        filePath.path,
+        applicationID = applicationID
+    ).isNotEmpty()
 }

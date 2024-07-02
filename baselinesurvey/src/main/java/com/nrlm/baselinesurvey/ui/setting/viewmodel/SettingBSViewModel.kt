@@ -6,7 +6,6 @@ import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
-import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -26,7 +25,9 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFile
+import com.nudge.core.findImagesExistInPictureFolder
 import com.nudge.core.getFirstName
+import com.nudge.core.getRealPathFromURI
 import com.nudge.core.json
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -95,22 +96,34 @@ class SettingBSViewModel @Inject constructor(
                     fileType = SUFFIX_EVENT_ZIP_FILE
                 )
 
-                // Image Files and Zip
-                val imageUri = exportAllOldImages(
+
+                val isImageExistInFolder = findImagesExistInPictureFolder(
                     appContext = BaselineCore.getAppContext(),
                     applicationID = BuildConfig.APPLICATION_ID,
-                    mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-                    timeInMillSec = System.currentTimeMillis().toString(),
-                    userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+                    mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
                 )
 
-                if(imageUri!=Uri.EMPTY) {
-                    imageUri?.let {
-                        fileUriList.add(it)
-                        BaselineLogger.d("SettingBSViewModel_URI", "Image File Uri: ${it.path}---------------")
-                    }
-                }
+                if (isImageExistInFolder) {
+                    // Image Files and Zip
+                    val imageUri = exportAllOldImages(
+                        appContext = BaselineCore.getAppContext(),
+                        applicationID = BuildConfig.APPLICATION_ID,
+                        mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                        timeInMillSec = System.currentTimeMillis().toString(),
+                        userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+                    )
 
+                    if (imageUri != Uri.EMPTY) {
+                        imageUri?.let {
+                            fileUriList.add(it)
+                            BaselineLogger.d(
+                                "SettingBSViewModel_URI",
+                                "Image File Uri: ${it.path}---------------"
+                            )
+                        }
+                    }
+
+                }
                 // Database File and URI
                 val dbUri = exportDbFile(
                     appContext = BaselineCore.getAppContext(),
@@ -126,24 +139,7 @@ class SettingBSViewModel @Inject constructor(
                     }
                 }
 
-                val eventFilePath =
-                    File(Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber())
-
-                if(eventFilePath.exists() && eventFilePath.isDirectory){
-                    val eventFiles= eventFilePath.listFiles()?.filter { it.isFile && it.name.contains("event") }
-                    if (eventFiles != null) {
-                        if(eventFiles.isNotEmpty()){
-                            eventFiles.forEach {
-                                fileAndDbZipList.add(Pair(it.name,it.toUri()))
-                            }
-                        }
-                    }
-                }
-
                 // Add Log File
-
-
-
                 val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
                     val logFileUri = uriFromFile(
@@ -166,6 +162,10 @@ class SettingBSViewModel @Inject constructor(
                 // Add Summary File
                 getSummaryFile()?.let {
                     fileAndDbZipList.add(it)
+                    BaselineLogger.d(
+                        "SettingBSViewModel",
+                        "Summary File Uri: ${it.second?.path}---------------"
+                    )
                 }
 
                 val zipFileName =
@@ -178,15 +178,33 @@ class SettingBSViewModel @Inject constructor(
                         fileAndDbZipList,
                         getUserMobileNumber()
                     )
-                    zipLogDbFileUri?.let {
-                        if (it != Uri.EMPTY) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                                fileUriList.add(it)
-                            else fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
-                                applicationID = BuildConfig.APPLICATION_ID,
-                                file = it.toFile()))
+                zipLogDbFileUri?.let {
+                    if (it != Uri.EMPTY) {
+                        val zipFile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            getRealPathFromURI(it, BaselineCore.getAppContext())?.let { it1 ->
+                                File(
+                                    it1
+                                )
+                            }
+                        } else it.toFile()
+
+                        BaselineLogger.d(
+                            "SettingBSViewModel",
+                            " Share Dialog Zip File :: ${zipFile?.name} :: ${zipFile?.path}"
+                        )
+
+                        zipFile?.let { file ->
+                            fileUriList.add(
+                                uriFromFile(
+                                    context = BaselineCore.getAppContext(),
+                                    applicationID = BuildConfig.APPLICATION_ID,
+                                    file = file
+                                )
+                            )
                         }
+
                     }
+                }
 
 
                 BaselineLogger.d("SettingBSViewModel", " Share Dialog Open ${fileUriList.json()}" )
