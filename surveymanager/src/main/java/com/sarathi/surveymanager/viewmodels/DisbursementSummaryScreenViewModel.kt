@@ -170,7 +170,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 }
             }
 
-        return if (selectedValues.isEmpty()) BLANK_STRING else selectedValues.joinToString(",")
+        return if (selectedValues.isEmpty()) BLANK_STRING else selectedValues.joinToString(", ")
     }
 
     fun deleteSurveyAnswer(referenceId: String, onDeleteSuccess: (deleteCount: Int) -> Unit) {

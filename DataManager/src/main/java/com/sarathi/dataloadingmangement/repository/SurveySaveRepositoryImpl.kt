@@ -114,7 +114,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
 
             surveyAnswerEntity?.optionItems?.forEach { optionItem ->
                 if (optionItem.isSelected == true) {
-                    if (optionItem.selectedValue?.isNotBlank() == true) {
+                    if (optionItem.selectedValue?.isNotBlank() == true && (surveyAnswerEntity.questionType != QuestionType.SingleSelectDropDown.name && surveyAnswerEntity.questionType != QuestionType.MultiSelectDropDown.name)) {
                         result.add(optionItem.selectedValue ?: BLANK_STRING)
                     } else {
                         val optionUiModelList = getOptionsForModeAndNature(
@@ -137,7 +137,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
                 }
             }
         }
-        return result.joinToString(",")
+        return result.joinToString(", ")
     }
 
     override suspend fun getSurveyAnswerImageKeys(
