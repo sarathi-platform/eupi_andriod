@@ -131,7 +131,8 @@ fun AddImageComponent(
                                 currentImageUri = getImageUri(
                                     context, "${fileNamePrefix}${
                                         System.currentTimeMillis()
-                                    }.png"
+                                    }.png",
+                                    true
                                 )
 
                                 cameraLauncher.launch(
@@ -168,9 +169,12 @@ fun AddImageComponent(
 
 }
 
-fun getImageUri(context: Context, fileName: String): Uri? {
-    val file =
-        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+fun getImageUri(context: Context, fileName: String, isNewImage:Boolean): Uri? {
+    var file = File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+  if(!isNewImage && !file.exists())
+  {
+      file=File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+  }
     return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
         uriFromFile(
             context, file,
@@ -185,7 +189,7 @@ fun getSavedImageUri(
     val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
     filePaths.forEach {
         if (it.isNotEmpty()) {
-            uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+            uriList.add(getImageUri(context = context, getFileNameFromURL(it),false))
         }
     }
     return uriList

@@ -76,7 +76,7 @@ data class FormEntity(
                 userId = userId,
                 missionId = 1,
                 activityId = formDetailResponse.activityId,
-                formGenerateDate = formDetailResponse.generatedDate,
+                formGenerateDate = formDetailResponse.generatedDate ?: BLANK_STRING,
                 isFormGenerated = formDetailResponse.formGenerated,
                 localReferenceId = formDetailResponse.localReferenceId,
                 createdDate = System.currentTimeMillis().toDate()

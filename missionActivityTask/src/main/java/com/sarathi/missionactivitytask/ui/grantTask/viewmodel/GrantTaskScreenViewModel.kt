@@ -123,7 +123,15 @@ class GrantTaskScreenViewModel @Inject constructor(
                     componentType = ComponentEnum.Card.name
                 )
                 if (index == 0) {
-                    searchLabel.value = uiComponent[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
+                    val searchUiComponent = getUiComponentValues(
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        subjectId = it.subjectId,
+                        formGeneratedCount = it.formGeneratedCount,
+                        componentType = ComponentEnum.Search.name
+                    )
+                    searchLabel.value =
+                        searchUiComponent[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
                         ?: BLANK_STRING
 
                     if ((uiComponent[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
