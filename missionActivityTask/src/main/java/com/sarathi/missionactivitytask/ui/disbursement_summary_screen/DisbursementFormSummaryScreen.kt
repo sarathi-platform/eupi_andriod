@@ -306,7 +306,6 @@ private fun MakeDisburesementRow(
                 .height(dimen_5_dp)
         )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            TextRow(text1 = "Mode: ", text2 = disbursementFormSummaryUiModel.mode)
             TextRow(
                 text1 = stringResource(R.string.mode),
                 text2 = disbursementFormSummaryUiModel.mode
@@ -470,10 +469,6 @@ fun HistorySummaryCard(
 
     BoxWithConstraints(
         modifier = modifier
-            .scrollable(
-                state = outerState,
-                Orientation.Vertical,
-            )
             .heightIn(min = 0.dp, maxCustomHeight)
     ) {
         Column(modifier = Modifier.background(white)) {
