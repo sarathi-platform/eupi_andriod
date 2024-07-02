@@ -51,6 +51,7 @@ import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.greyColor
@@ -210,9 +211,27 @@ fun GrantTaskCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimen_16_dp),
+                        .padding(top = dimen_5_dp)
+                ) {
+                    Divider(
+                        modifier = Modifier
+                            .height(dimen_1_dp)
+                            .weight(1f)
+
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = dimen_16_dp,
+                            end = dimen_16_dp,
+                            bottom = dimen_8_dp,
+                            top = dimen_8_dp
+                        ),
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
+
                     PrimarySecondaryButtonView(
                         modifier = Modifier.weight(1.0f),
                         secondaryButtonText?.value ?: BLANK_STRING,
@@ -235,12 +254,13 @@ fun GrantTaskCard(
                         modifier = Modifier
                             .height(dimen_1_dp)
                             .weight(1f)
+
                     )
                 }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimen_16_dp),
+                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
