@@ -32,12 +32,14 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         taskId: Int,
         subjectId: Int,
         tagId: String,
+        activityConfigId: Int,
         referenceId: String
     ): String {
         return repository.getSurveyAnswerForFormTag(
             taskId = taskId,
             subjectId = subjectId,
             tagId = tagId,
+            activityConfigId = activityConfigId,
             referenceId = referenceId
         )
     }
@@ -53,6 +55,8 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
             taskId = taskId,
             surveyId = surveyId,
             sectionId = sectionId,
+            activityConfigId = activityConfigId,
+            grantId = grantId
         )
     }
 

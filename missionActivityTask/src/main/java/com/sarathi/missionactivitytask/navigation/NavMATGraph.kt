@@ -420,6 +420,7 @@ fun NavGraphBuilder.MatNavigation(
         )) {
             DisbursementFormSummaryScreen(
                 navController = navController,
+                onSettingClick = onSettingIconClick,
                 viewModel = hiltViewModel(),
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,

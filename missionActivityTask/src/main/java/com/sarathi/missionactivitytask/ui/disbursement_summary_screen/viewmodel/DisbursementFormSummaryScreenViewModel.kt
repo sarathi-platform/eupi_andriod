@@ -19,10 +19,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
+import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -40,6 +42,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     private val getFormUiConfigUseCase: GetFormUiConfigUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    private val getActivityConfigUseCase: GetActivityConfigUseCase,
 ) :
     BaseViewModel() {
     private val _disbursementFormList =
@@ -48,6 +51,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     private val _formList =
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
     val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
+    var activityConfigUiModel: ActivityConfigUiModel? = null
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -65,6 +69,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     private fun initDisbursementSummaryScreen(activityId: Int, missionId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            getSurveyDetail(activityId = activityId)
             _formList.value =
                 getFormData(activityId, missionId).sortedByDescending {
                     it.date.toInMillisec(
@@ -84,7 +89,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         val fromData = formUseCase.getFormSummaryData(activityId = activityId)
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
-            val _data = getFormAttributeDate(form, activityId, missionId)
+            val _data = getFormAttributeDate(
+                form = form,
+                missionId = missionId,
+                activityId = activityId
+            )
 
             list.add(
                 DisbursementFormSummaryUiModel(
@@ -158,6 +167,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                 UiConfigAttributeType.TAG.name -> surveyAnswerUseCase.getAnswerForFormTag(
                     taskId = taskId,
                     subjectId = subjectId,
+                    activityConfigId = activityConfigUiModel?.activityConfigId ?: 0,
                     referenceId = referenceId,
                     tagId = getTaskAttributeValue(
                         cardAttribute.value, taskId
@@ -251,6 +261,9 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         )
     }
 
+    suspend fun getSurveyDetail(activityId: Int) {
+        activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
+    }
 
 }
 

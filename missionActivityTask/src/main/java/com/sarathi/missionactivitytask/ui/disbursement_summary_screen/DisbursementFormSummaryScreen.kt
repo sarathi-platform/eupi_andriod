@@ -89,7 +89,8 @@ fun DisbursementFormSummaryScreen(
     viewModel: DisbursementFormSummaryScreenViewModel,
     activityId: Int,
     missionId: Int,
-    taskList: String
+    taskList: String,
+    onSettingClick: () -> Unit,
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -211,7 +212,7 @@ fun DisbursementFormSummaryScreen(
 
 
         },
-        onSettingClick = {},
+        onSettingClick = { onSettingClick() },
         onContentUI = { a, b, c ->
             BoxWithConstraints(
                 modifier = Modifier

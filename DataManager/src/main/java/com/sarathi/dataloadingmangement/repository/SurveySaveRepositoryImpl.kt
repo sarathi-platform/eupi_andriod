@@ -115,7 +115,22 @@ class SurveySaveRepositoryImpl @Inject constructor(
                     if (it.selectedValue?.isNotBlank() == true) {
                         result.add(it.selectedValue ?: BLANK_STRING)
                     } else {
-                        result.add(it.description ?: BLANK_STRING)
+                        val optionUiModelList = getOptionsForModeAndNature(
+                            activityConfigId = activityConfigId,
+                            grantId = surveyAnswerEntity.grantId,
+                            tag = surveyAnswerEntity.tagId,
+                            surveyId = surveyAnswerEntity.surveyId,
+                            sectionId = surveyAnswerEntity.sectionId,
+                            questionId = surveyAnswerEntity.questionId
+                        )
+                        val optionUiModel =
+                            optionUiModelList.find { it.questionId == surveyAnswerEntity.questionId && it.optionId == optionItem.optionId }
+                        if (optionUiModel != null) {
+                            optionItem.description = optionUiModel.description
+                            result.add(optionItem.description ?: BLANK_STRING)
+                        } else {
+                            result.add(optionItem.description ?: BLANK_STRING)
+                        }
                     }
                 }
             }
