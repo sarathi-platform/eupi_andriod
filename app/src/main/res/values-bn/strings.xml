@@ -110,8 +110,16 @@
     <string name="transect_walk_sub_text_plural">%1$s পাড়া সম্পন্ন হয়েছে</string>
     <string name="social_mapping_sub_text_plural">%1$s দিদি শনাক্ত হয়েছে</string>
     <string name="wealth_ranking_sub_text_plural">%1$s দরিদ্র দিদি শনাক্ত হয়েছে</string>
-    <string name="pat_sub_text_singular">গ্রাম সংগঠন (VO) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে</string>
-    <string name="pat_sub_text_plural">গ্রাম সংগঠন (VO) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদিদের পাঠানো হয়েছে</string>
+
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">CLF অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে</item>
+        <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে</item>
+    </plurals>
+
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">CLF অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে</item>
+        <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে</item>
+    </plurals>
     <string name="vo_endorsement_sub_text_singular">%1$s অতি দরিদ্র দিদি অনুমোদিত</string>
     <string name="vo_endorsement_sub_text_plural">%1$s অতি দরিদ্র দিদিরা অনুমোদিত</string>
     <string name="empty_didis_string">কোন দিদি যোগ করা হয়নি</string>
@@ -276,7 +284,11 @@
     <string name="logout_no_internet_error_message">ইন্টারনেট উপলব্ধ নেই, অনুগ্রহ করে ইন্টারনেটের সাথে সংযোগ করুন</string>
     <string name="min_battery_text">(ন্যূনতম ৩০% প্রয়োজন)</string>
     <string name="do_not_close_app_message">অনুগ্রহ করে অ্যাপটি বা ফোনটি বন্ধ করবেন নাঅনুগ্রহ করে অ্যাপটি বন্ধ করবেন না বা ফোনটি বন্ধ করবেন না</string>
-    <string name="vo_endorsement_completed_village_banner_text">VO অনুমোদন সম্পন্ন হয়েছে</string>
+    <plurals name="vo_endorsement_completed_village_banner_text">
+        <item quantity="one">CLF অনুমোদন সম্পন্ন হয়েছে</item>
+        <item quantity="other">VO অনুমোদন সম্পন্ন হয়েছে</item>
+    </plurals>
+<!--    <string name="vo_endorsement_completed_village_banner_text">VO অনুমোদন সম্পন্ন হয়েছে</string>-->
     <string name="bpc_verification_completed_village_banner_text">BPC যাচাইকরণ সম্পন্ন হয়েছে</string>
     <string name="empty_tola_success_message">এই গ্রামে কোনো পাড়া নেই</string>
     <string name="total_poor_didis">মোট দরিদ্র দিদি</string>
@@ -310,7 +322,14 @@
     <string name="step_social_mapping">সামাজিক মানচিত্র</string>
     <string name="step_participatory_wealth_ranking">অংশগ্রহণমূলক সম্পদ র‌্যাঙ্কিং</string>
     <string name="step_pat_survey">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
-    <string name="step_vo_endorsement">গ্রাম সংগঠন (VO) অনুমোদন</string>
+    <plurals name="step_vo_endorsement">
+        <item quantity="one">সংঘ (CLF) অনুমোদন</item>
+        <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদন</item>
+    </plurals>
+    <plurals name="vo_endorsement">
+        <item quantity="one">সংঘ (CLF) অনুমোদন</item>
+        <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদন</item>
+    </plurals>
     <string name="step_bpc_verification">BPC প্রমাণীকরণ</string>
     <string name="profile_name">নাম</string>
     <string name="profile_email">ইমেইল</string>
