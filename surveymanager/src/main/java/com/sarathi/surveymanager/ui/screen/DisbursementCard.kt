@@ -21,8 +21,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -260,30 +261,59 @@ fun DisbursementCard(
 
 
 @Composable
-private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
-    Row(
-        verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+private fun TextRow(
+    text1: String,
+    text2: String,
+    isReadMode: Boolean = false
+) {
+    ConstraintLayout(
+        modifier = Modifier.fillMaxWidth()
     ) {
+        val (text1Ref, text2Ref) = createRefs()
+
         if (text1.isNotBlank()) {
-            Text(
-                modifier = Modifier.weight(.2f),
+            androidx.compose.material3.Text(
+                modifier = Modifier.constrainAs(text1Ref) {
+                    start.linkTo(parent.start)
+                    if (isReadMode) {
+                        top.linkTo(parent.top)
+                    } else {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    width = Dimension.fillToConstraints
+                },
                 text = text1,
-                style = defaultTextStyle.copy(color = greyColor)
+                style = newMediumTextStyle.copy(color = greyColor)
             )
         }
+
         if (text2.isNotBlank()) {
             if (isReadMode) {
                 TextWithReadMoreComponent(
-                    modifier = Modifier.weight(.8f),
+                    modifier = Modifier
+                        .padding(start = dimen_5_dp)
+                        .constrainAs(text2Ref) {
+                            start.linkTo(text1Ref.end)
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        },
                     title = text1,
                     contentData = text2
                 )
             } else {
-                Text(
-                    modifier = Modifier.weight(.8f),
+                androidx.compose.material3.Text(
+                    modifier = Modifier
+                        .padding(start = dimen_5_dp)
+                        .constrainAs(text2Ref) {
+                            start.linkTo(text1Ref.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        },
                     text = text2,
-                    textAlign = TextAlign.Start,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
             }
