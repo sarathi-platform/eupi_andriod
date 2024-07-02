@@ -308,8 +308,6 @@ private fun SubContainerView(
         if (!TextUtils.isEmpty(taskCard?.value)) {
             Text(
                 text = if (isNumberFormattingRequired) formatToIndianRupee(taskCard?.value!!) else taskCard?.value!!,
-                modifier = Modifier
-                    .padding(horizontal = dimen_1_dp),
                 color = blueDark,
                 style = newMediumTextStyle
             )

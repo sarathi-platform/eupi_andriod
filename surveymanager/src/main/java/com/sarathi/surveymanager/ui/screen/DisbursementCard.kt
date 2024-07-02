@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
@@ -63,7 +64,7 @@ fun DisbursementCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = dimen_10_dp, start = dimen_10_dp, end = dimen_10_dp),
+                    .padding(horizontal = dimen_10_dp, vertical = dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -134,9 +135,21 @@ fun DisbursementCard(
             if (subTitle5.isNotBlank()) {
                 Row(
                     modifier = Modifier
-                        .padding(start = dimen_10_dp, end = dimen_10_dp)
+                        .padding(horizontal = dimen_10_dp, vertical = dimen_10_dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    TextRow(text1 = stringResource(R.string.no_of_didi_s), text2 = subTitle5)
+                    Text(
+                        modifier = Modifier.padding(end = dimen_5_dp),
+                        text = stringResource(R.string.no_of_didi_s),
+                        style = defaultTextStyle.copy(color = greyColor)
+                    )
+                    if (subTitle1.isNotBlank()) {
+                        Text(
+                            text = subTitle5,
+                            style = defaultTextStyle.copy(color = blueDark)
+                        )
+                    }
                 }
             }
             if (isFormgenerated) {
@@ -196,8 +209,7 @@ fun DisbursementCard(
                             Text(
                                 modifier = Modifier.align(Alignment.CenterVertically),
                                 text = stringResource(R.string.edit),
-                                style = defaultTextStyle,
-                                color = blueDark,
+                                style = defaultTextStyle.copy(blueDark),
                             )
                         }
                     }
@@ -231,8 +243,7 @@ fun DisbursementCard(
                             )
                             Text(
                                 text = stringResource(R.string.delete),
-                                style = defaultTextStyle,
-                                color = blueDark,
+                                style = defaultTextStyle.copy(blueDark),
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
                         }
@@ -272,6 +283,7 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
                 Text(
                     modifier = Modifier.weight(.8f),
                     text = text2,
+                    textAlign = TextAlign.Start,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
             }
