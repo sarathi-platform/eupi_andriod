@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.checkStringNullOrEmpty
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -70,7 +71,8 @@ class ContentRepositoryImpl @Inject constructor(
                     contentRequests.add(
                         ContentRequest(
                             languageCode = DEFAULT_LANGUAGE_CODE,
-                            contentKey = key.split(DELEGATE_DOT).firstOrNull() ?: BLANK_STRING
+                            contentKey = getFileNameFromURL(key).split(DELEGATE_DOT).firstOrNull()
+                                ?: BLANK_STRING
                         )
                     )
                 }

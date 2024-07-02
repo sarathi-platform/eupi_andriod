@@ -164,9 +164,7 @@ fun LanguageList(viewModel: LanguageViewModel, context: Context) {
                             }else viewModel.languagePosition.value = i
                         }else{
                             viewModel.languagePosition.value = i
-                            if (item.langCode == KOKBOROK_LANGUAGE_CODE) {
-                                showCustomToast(context, context.getString(R.string.this_language_is_not_available_for_selection))
-                            }
+
                         }
                     }
                 }
