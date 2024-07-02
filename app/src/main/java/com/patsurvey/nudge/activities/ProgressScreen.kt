@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -52,7 +51,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,11 +60,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavHostController
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
-import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
@@ -98,7 +95,6 @@ import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PageFrom
@@ -368,21 +364,39 @@ fun ProgressScreen(
                                 val subText = when(step.orderNumber) {
                                     1 -> tolaCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.transect_walk_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.transect_walk_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.transect_walk_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.transect_walk_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     2 -> didiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.social_mapping_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.social_mapping_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.social_mapping_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.social_mapping_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     3 -> poorDidiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.wealth_ranking_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.wealth_ranking_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.wealth_ranking_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.wealth_ranking_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)
@@ -392,9 +406,15 @@ fun ProgressScreen(
                                     }
                                     5 -> endorsedDidiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.vo_endorsement_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.vo_endorsement_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.vo_endorsement_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.vo_endorsement_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     else -> ""
                                 }

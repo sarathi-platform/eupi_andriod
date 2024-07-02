@@ -1124,7 +1124,8 @@ class QuestionScreenViewModel @Inject constructor(
                         event.question.questionId?.let { answeredQuestionCount.add(it) }
                     }
                     totalQuestionCount.intValue =
-                        tempList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+                        tempList.filter { it.showQuestion && it.questionEntity?.type != QuestionType.AutoCalculation.name }
+                            .distinctBy { it.questionId }.size
 //                        delay(100)
 //                        withContext(Dispatchers.Main) {
                     isSectionCompleted.value =
@@ -1710,7 +1711,8 @@ class QuestionScreenViewModel @Inject constructor(
             }
             val qesList = questionEntityStateList.toList()
             totalQuestionCount.intValue =
-                qesList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+                qesList.filter { it.showQuestion && it.questionEntity?.type != QuestionType.AutoCalculation.name }
+                    .distinctBy { it.questionId }.size
             // Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
             isSectionCompleted.value =
                 answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue

@@ -335,7 +335,7 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
         if (text1.isNotBlank()) {
             Text(
                 modifier = Modifier
-                    .weight(.2f),
+                    .weight(.25f),
                 text = text1,
                 style = newMediumTextStyle.copy(color = greyColor)
             )
@@ -343,13 +343,13 @@ private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
         if (text2.isNotBlank()) {
             if (isReadMode) {
                 TextWithReadMoreComponent(
-                    modifier = Modifier.weight(.8f),
+                    modifier = Modifier.weight(.75f),
                     title = text1,
                     contentData = text2
                 )
             } else {
                 Text(
-                    modifier = Modifier.weight(.8f),
+                    modifier = Modifier.weight(.75f),
                     text = text2,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
