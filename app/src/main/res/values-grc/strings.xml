@@ -110,8 +110,6 @@
     <string name="transect_walk_sub_text_plural">%1$s gittimrangko matchotaha</string>
     <string name="social_mapping_sub_text_plural">%1$s ia indita Didi rang ko manaha</string>
     <string name="wealth_ranking_sub_text_plural">%1$s ia indita Kangal Onggipa Didi rangko manaha</string>
-    <string name="pat_sub_text_singular">%1$s indita kangalni ba kangalbatsranggipako Didi ko VO-chi rachakaniko dakna gita watataha</string>
-    <string name="pat_sub_text_plural">%1$s indita kangalni ba kangalbatsranggipako Didi rangko VO-chi rachakaniko dakna gita watataha</string>
     <string name="vo_endorsement_sub_text_singular">%1$s Kangalniba Kangalbatsranggipa Didiko ra.chakaha</string>
     <string name="vo_endorsement_sub_text_plural">%1$s Kangalniba Kangalbatsranggipa Didi rangko ra.chakaha</string>
     <string name="empty_didis_string">Darang Didi rangkoba on.dapa dongja</string>
@@ -177,7 +175,7 @@
     <string name="form_c_photo_button_text">Form C ko photo ka.bo</string>
     <string name="form_d_photo_button_text">Form D ko photo ka.bo</string>
     <string name="pat_completed_box_title">PAT Matchotaha</string>
-    <string name="didi_not_available_text_singular">Na.a ia {DIDI_NAME} ni PAT ko onatengaha</string>
+    <string name="didi_not_available_text_singular">Didi rang dongja</string>
     <string name="didi_not_available_text_plural">Didi rang dongja</string>
     <string name="send_for_vo_text">Gimikko VO chi ra.chakna gita onatbo</string>
     <string name="didi_pat_complete_text">Matchotgimin Didi rangni PAT</string>
@@ -279,9 +277,9 @@
     <string name="empty_tola_success_message">Ia song-o ge.sa gittim dongja</string>
     <string name="total_poor_didis">Chugimik kangalgipa Didi rang</string>
     <string name="total_ultra_poor_didis">Chugimik namen kangal onggipa didi rang</string>
-    <string name="wealth_ranking_sub_text_singular">%$s didi ko kangal ine masina gita manaha</string>
+    <string name="wealth_ranking_sub_text_singular">%1$s didi ko kangal ine masina gita manaha</string>
     <string name="social_mapping_sub_text_singular">%1$s Didi ko masina manaha</string>
-    <string name="transect_walk_sub_text_singular">Song/Gittim ko matchotaha</string>
+    <string name="transect_walk_sub_text_singular">%1$s Song/Gittim ko matchotaha</string>
     <string name="added_tolas_text_plural">Song/Gittim rangko on.dapaha</string>
     <string name="added_tolas_text_singular">Song/Gittim ko on.dapaha</string>
     <string name="take_photo_text">Photo Ka.bo</string>
@@ -391,6 +389,16 @@
     <string name="save_next_section_button_text">Save kabo aro Gipin Section ona re.angani</string>
     <string name="questions_data_tab_title">Singgiminrangni Data</string>
     <string name="section_information_tab_title">Section ni gimin uiatanirang</string>
+
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
+        <item quantity="other">%1$s indita kangalni ba kangalbatsranggipako Didi ko VO-chi rachakaniko dakna gita watataha</item>
+    </plurals>
+
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
+        <item quantity="other">%1$s indita kangalni ba kangalbatsranggipako Didi rangko VO-chi rachakaniko dakna gita watataha</item>
+    </plurals>
 
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->
