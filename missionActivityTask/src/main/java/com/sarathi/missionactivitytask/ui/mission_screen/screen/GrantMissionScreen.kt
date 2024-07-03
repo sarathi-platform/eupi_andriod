@@ -125,7 +125,8 @@ fun GrantMissionScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = dimen_5_dp)) {
-                    SearchWithFilterViewComponent(placeholderString = "Search",
+                    SearchWithFilterViewComponent(
+                        placeholderString = stringResource(id = R.string.search),
                         filterSelected = false,
                         modifier = Modifier.padding(horizontal = 10.dp),
                         showFilter = false,

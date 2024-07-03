@@ -169,7 +169,8 @@ fun ContentDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp)
             ) {
-                SearchWithFilterViewComponent(placeholderString = "Search",
+                SearchWithFilterViewComponent(
+                    placeholderString = stringResource(id = R.string.search),
                     filterSelected = viewModel.filterSelected.value,
                     modifier = Modifier.padding(horizontal = dimen_10_dp),
                     showFilter = true,

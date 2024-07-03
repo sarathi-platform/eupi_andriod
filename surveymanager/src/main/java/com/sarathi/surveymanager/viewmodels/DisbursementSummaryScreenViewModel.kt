@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.sarathi.dataloadingmangement.DELEGATE_COMM_WITH_SPACE
 import com.sarathi.dataloadingmangement.MANUAL_TASK_COMPLETION
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -170,7 +171,9 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 }
             }
 
-        return if (selectedValues.isEmpty()) BLANK_STRING else selectedValues.joinToString(", ")
+        return if (selectedValues.isEmpty()) BLANK_STRING else selectedValues.joinToString(
+            DELEGATE_COMM_WITH_SPACE
+        )
     }
 
     fun deleteSurveyAnswer(referenceId: String, onDeleteSuccess: (deleteCount: Int) -> Unit) {
