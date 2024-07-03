@@ -362,7 +362,11 @@ private fun calculateInSampleSize(
 
 }
 
-fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicationID: String): MutableList<Pair<String, Uri>> {
+fun getAllFilesInDirectory(
+    appContext: Context,
+    directoryPath: String?,
+    applicationID: String
+): List<Pair<String, Uri>> {
     val fileList: MutableList<Pair<String, Uri>> = ArrayList()
     val directory = File(directoryPath)
     if (directory.exists() && directory.isDirectory) {
@@ -690,7 +694,7 @@ fun findImagesExistInPictureFolder(
     mobileNo: String
 ): Boolean {
     val filePath =
-        File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)?.path + SARATHI_DIRECTORY_NAME + "/" + mobileNo)
+        File(appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path + SARATHI_DIRECTORY_NAME + "/" + mobileNo)
     return getAllFilesInDirectory(
         appContext,
         filePath.path,

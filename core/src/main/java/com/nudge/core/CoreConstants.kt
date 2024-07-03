@@ -47,6 +47,7 @@ const val SUFFIX_IMAGE_ZIP_FILE = "Image"
 const val SUFFIX_EVENT_ZIP_FILE = "file"
 
 const val ZIP_EXTENSION = "zip"
+const val SARATHI = "SARATHI"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),

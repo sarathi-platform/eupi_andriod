@@ -1,11 +1,9 @@
 package com.nrlm.baselinesurvey.ui.setting.viewmodel
 
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toFile
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -27,7 +25,6 @@ import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFile
 import com.nudge.core.findImagesExistInPictureFolder
 import com.nudge.core.getFirstName
-import com.nudge.core.getRealPathFromURI
 import com.nudge.core.json
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -37,7 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -180,29 +176,11 @@ class SettingBSViewModel @Inject constructor(
                     )
                 zipLogDbFileUri?.let {
                     if (it != Uri.EMPTY) {
-                        val zipFile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            getRealPathFromURI(it, BaselineCore.getAppContext())?.let { it1 ->
-                                File(
-                                    it1
-                                )
-                            }
-                        } else it.toFile()
-
+                        fileUriList.add(it)
                         BaselineLogger.d(
                             "SettingBSViewModel",
-                            " Share Dialog Zip File :: ${zipFile?.name} :: ${zipFile?.path}"
+                            "Share Dialog Zip File :: ${it.path}"
                         )
-
-                        zipFile?.let { file ->
-                            fileUriList.add(
-                                uriFromFile(
-                                    context = BaselineCore.getAppContext(),
-                                    applicationID = BuildConfig.APPLICATION_ID,
-                                    file = file
-                                )
-                            )
-                        }
-
                     }
                 }
 

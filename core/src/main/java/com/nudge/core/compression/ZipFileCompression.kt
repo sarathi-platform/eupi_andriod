@@ -1,5 +1,4 @@
 package com.nudge.core.compression
-
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -11,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
@@ -30,19 +30,19 @@ class ZipFileCompression : IFileCompressor {
         context: Context,
         extraUris: List<Pair<String, Uri?>>,
         mobileNo: String,
-        userName: String
+        userName: String,
+        moduleName: String
     ): Uri? {
 
         val zipFileName =
-            "${getFirstName(userName)}_${mobileNo}_Sarathi_${System.currentTimeMillis()}_"
+            "${getFirstName(userName)}_${mobileNo}_${SARATHI}_${moduleName}_${System.currentTimeMillis()}_"
 
         deleteOldFiles(
             context,
-            "${getFirstName(userName)}_${mobileNo}_Sarathi_",
+            "${getFirstName(userName)}_${mobileNo}_${SARATHI}_",
             mobileNo,
             SUFFIX_EVENT_ZIP_FILE,
-
-            )
+        )
 
         return compressData(
             context,
@@ -61,11 +61,11 @@ class ZipFileCompression : IFileCompressor {
         userName: String
     ): Uri? {
         val zipFileName =
-            "${getFirstName(userName)}_${mobileNo}_SARATHI_${System.currentTimeMillis()}_"
+            "${getFirstName(userName)}_${mobileNo}_${SARATHI}_${System.currentTimeMillis()}_"
 
         deleteOldFiles(
             context,
-            "${getFirstName(userName)}_${mobileNo}_Sarathi_",
+            "${getFirstName(userName)}_${mobileNo}_${SARATHI}_",
             mobileNo,
             SUFFIX_IMAGE_ZIP_FILE
         )
@@ -154,13 +154,13 @@ class ZipFileCompression : IFileCompressor {
                         CoreLogger.d(
                             context,
                             TAG,
-                            "deleteOldFiles -> file Deleted :" + file.getPath()
+                            "deleteOldFiles -> file Deleted :" + file.path
                         );
                     } else {
                         CoreLogger.d(
                             context,
                             TAG,
-                            "deleteOldFiles -> file not Deleted :" + file.getPath()
+                            "deleteOldFiles -> file not Deleted :" + file.path
                         );
                     }
                 }
@@ -255,7 +255,7 @@ class ZipFileCompression : IFileCompressor {
 
     }
 
-    private fun getFileUrisFromMediaStore(
+    override fun getFileUrisFromMediaStore(
         contentResolver: ContentResolver,
         extVolumeUri: Uri,
         filePathToZipped: String
@@ -335,11 +335,11 @@ class ZipFileCompression : IFileCompressor {
                     ) && it.first.contains(ZIP_EXTENSION)
                 }
 
-                contentResolver?.let { cr ->
+                contentResolver?.let { _ ->
                     filteredList.forEach { file ->
                         try {
                             file.second.let { uri ->
-                                contentResolver?.delete(uri, null, null)
+                                contentResolver.delete(uri, null, null)
                                 CoreLogger.d(
                                     context,
                                     TAG,
