@@ -9,16 +9,13 @@
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
     <plurals name="didis_added">
-        <item quantity="one">दीदी ज़ोड दी गई है</item>
-        <item quantity="other">दीदीयाँ ज़ोड दी गई है</item>
+        <item quantity="one">I kong la dep pynrung</item>
+        <item quantity="other">Ki Kong la dep pynrung</item>
     </plurals>
     <plurals name="poor_didis_pending_text">
-        <item quantity="one">गरीब दीदी बची हुई है</item>
-        <item quantity="other">गरीब दीदियाँ बची हुई है</item>
+        <item quantity="one">I kong ha ka kyrdan ba duk ba dang sahteng</item>
+        <item quantity="other">Ki Kong ha ka kyrdan ba duk ba dang sahteng</item>
     </plurals>
-
-
-    <!--   Updated 03-10-2023 -->
 
 
     <string name="mark_complete_text">Pyndep ka jingthep ia ka kyrteng dong</string>
@@ -88,7 +85,7 @@
     <string name="enter_otp_text">Thoh ia u OTP</string>
     <string name="otp_send_to_mobile_number_message">Ia u OTP la phah ha une %1$  nombor phone</string>
     <string name="otp_send_to_mobile_number_message_for_relogin">Ia u OTP la phah ha une {MOBILE_NUMBER} nombor phone</string>
-    <string name="otp_resend_to_mobile_number_message">Phah biang ia u OTP ha une %1$ nombor phone</string>
+    <string name="otp_resend_to_mobile_number_message">Phah biang ia u OTP ha une %1$s nombor phone</string>
     <string name="otp_resend_to_mobile_number_message_for_relogin">Phah biang ia u OTP ha une {MOBILE_NUMBER} nombor phone</string>
     <string name="delete_tola_text">Pyndam noh ia ka Dong</string>
     <string name="save_tola_text">Save</string>
@@ -100,8 +97,8 @@
     <string name="complete_didi_addition">Pyndep ka jingpynrung kyrteng</string>
     <string name="user_id_text">ID: </string>
     <string name="empty_tola_string">Khem pynrung ia ka kyrteng ka dong</string>
-    <string name="tola_conirmation_text_plural">Ka jingthep ia ka kyrteng ba thymmai jong %1$ ki dong ka long kaba jop</string>
-    <string name="tola_conirmation_text_singular">Ka jingthep ia ka kyrteng ba thymmai jong %1$ i dong ka long kaba jop</string>
+    <string name="tola_conirmation_text_plural">Ka jingthep ia ka kyrteng ba thymmai jong %1$s ki dong ka long kaba jop</string>
+    <string name="tola_conirmation_text_singular">Ka jingthep ia ka kyrteng ba thymmai jong %1$s i dong ka long kaba jop</string>
     <string name="complete_transect_walk_text">Pyndep ia ka jingiaid lyngba ka shnong</string>
     <string name="transect_walk_completed_message">La dep ia ka jingiaid lyngba ia ka shnong {VILLAGE_NAME}</string>
     <string name="wealth_ranking_completed_message">La pyndep ia ka jing iashimbynta ha kaba bynta ia ka kyrdan ka ioh ka kot ha ka shnong {VILLAGE_NAME}</string>
@@ -113,8 +110,6 @@
     <string name="transect_walk_sub_text_plural">La dep %1$s ka dong</string>
     <string name="social_mapping_sub_text_plural">%1$s ki kong la dep jied</string>
     <string name="wealth_ranking_sub_text_plural">%1$s ki kong baduk la dep jied</string>
-    <string name="pat_sub_text_singular">%1$s I kong baduk na baduk tam la phah ban mynjur da ka VO</string>
-    <string name="pat_sub_text_plural">%1$s ngut  ki kong baduk na baduk tam la phah ban mynjur da ka VO</string>
     <string name="vo_endorsement_sub_text_singular">%1$s I kong baduk na baduk tam la mynjur da ka VO</string>
     <string name="vo_endorsement_sub_text_plural">%1$s ngut ki kong baduk na baduk tam la mynjur da ka VO</string>
     <string name="empty_didis_string">Khlem thep ia ka kyrteng i kong</string>
@@ -284,7 +279,7 @@
     <string name="total_ultra_poor_didis">Ka jinhgdon jong Baroh ki kong ki baduk na kiba duk tam</string>
     <string name="wealth_ranking_sub_text_singular">%1$s i kong baduk la pynshisha</string>
     <string name="social_mapping_sub_text_singular">%1$s i kong ba la pynshisha</string>
-    <string name="transect_walk_sub_text_singular">Ki dong ba lah dep</string>
+    <string name="transect_walk_sub_text_singular">%1$s Ki dong ba lah dep</string>
     <string name="added_tolas_text_plural">La pynrung ia ki dong</string>
     <string name="added_tolas_text_singular">La pynrung ia ka dong</string>
     <string name="take_photo_text">Shon dur</string>
@@ -369,7 +364,7 @@
     <string name="pat_success_message_singular">Ka jinglum jingtip da ka PAT ia {TOTAL_COUNT} i kong ba pynrung thymmai la ai</string>
     <string name="total_pat_attempted_string">Baroh kiba la pyrshan ban pynrung ha ka PAT</string>
     <string name="didis_marked_as_not_available_string">I kong ba la kdew ba ym don</string>
-    <string name="able_bodied_women_flag_text">Don na ki riew kynthei ha ka longing ki ba biang ha ka dkhot met?</string>
+    <string name="able_bodied_women_flag_text">Don na ki riew kynthei ha ka \nlonging ki ba biang ha ka dkhot met?</string>
     <string name="something_went_wrong">Kaei kaei ka don kaba bakla.</string>
     <string name="score_comparison_section_1_text">Ka bynta 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Ka jing bym mynjur da ka VO ia kane ka shnong mynta!</string>
@@ -394,6 +389,16 @@
     <string name="save_next_section_button_text">Save &amp; Next Section</string>
     <string name="questions_data_tab_title">Ki jingkylli kiba don ki jingtip</string>
     <string name="section_information_tab_title">Ki bynta kiba don ki jingbatai</string>
+
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
+        <item quantity="other">%1$s I kong baduk na baduk tam la phah ban mynjur da ka VO</item>
+    </plurals>
+
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
+        <item quantity="other">%1$s ngut  ki kong baduk na baduk tam la phah ban mynjur da ka VO</item>
+    </plurals>
 
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->

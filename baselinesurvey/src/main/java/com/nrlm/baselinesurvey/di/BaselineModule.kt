@@ -6,6 +6,9 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepository
+import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepositoryImpl
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -135,7 +138,9 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivity
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -748,24 +753,48 @@ object BaselineModule {
         )
     }
 
-/*   @Singleton
-   @Provides
-   fun provideExportImportRepository(
-       prefRepo: PrefBSRepo,
-       nudgeBaselineDatabase: NudgeBaselineDatabase
-   ): ExportImportRepository {
-       return ExportImportRepositoryImpl(prefRepo, nudgeBaselineDatabase)
-   }
+    @Singleton
+    @Provides
+    fun provideUpdateBaselineStatusOnInitRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao,
+        grantMissionDao: MissionDao,
+        grantActivityDao: ActivityDao
+    ): UpdateBaselineStatusOnInitRepository {
+        return UpdateBaselineStatusOnInitRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            missionEntityDao = missionEntityDao,
+            missionActivityDao = missionActivityDao,
+            grantMissionDao = grantMissionDao,
+            grantActivityDao = grantActivityDao
+        )
+    }
 
     @Singleton
     @Provides
-    fun provideExportImportUseCase(repository: ExportImportRepository): ExportImportUseCase {
-        return ExportImportUseCase(
-            getExportOptionListUseCase = GetExportOptionListUseCase(repository),
-            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
-            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
-        )
-    }*/
+    fun provideUpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository: UpdateBaselineStatusOnInitRepository): UpdateBaselineStatusOnInitUseCase {
+        return UpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository)
+    }
+
+    /*   @Singleton
+       @Provides
+       fun provideExportImportRepository(
+           prefRepo: PrefBSRepo,
+           nudgeBaselineDatabase: NudgeBaselineDatabase
+       ): ExportImportRepository {
+           return ExportImportRepositoryImpl(prefRepo, nudgeBaselineDatabase)
+       }
+
+        @Singleton
+        @Provides
+        fun provideExportImportUseCase(repository: ExportImportRepository): ExportImportUseCase {
+            return ExportImportUseCase(
+                getExportOptionListUseCase = GetExportOptionListUseCase(repository),
+                clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
+                getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
+            )
+        }*/
 
 
 }

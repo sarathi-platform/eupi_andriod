@@ -17,11 +17,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.red
-import com.nudge.core.ui.theme.textColorDark
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -43,7 +43,7 @@ fun QuestionComponent(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = textColorDark,
+                            color = blueDark,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans

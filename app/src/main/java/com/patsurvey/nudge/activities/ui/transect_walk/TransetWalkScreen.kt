@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -172,7 +173,7 @@ fun TransectWalkScreen(
                         stringResource(
                             if (totalCountWithoutEmptyTola < 2)
                                 R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
-                            totalCountWithoutEmptyTola
+                            numberInEnglishFormat(totalCountWithoutEmptyTola, null)
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
@@ -244,7 +245,7 @@ fun TransectWalkScreen(
                                                     fontFamily = NotoSans
                                                 )
                                             ) {
-                                                append(" ${tolaList.filter { it.name != EMPTY_TOLA_NAME }.size}")
+                                                append(" ${tolaList.filter { it.name != EMPTY_TOLA_NAME }.size} ")
                                             }
                                             withStyle(
                                                 style = SpanStyle(

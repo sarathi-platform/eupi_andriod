@@ -20,6 +20,7 @@ import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getImagePathFromString
 import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.yellowBg
 import com.sarathi.surveymanager.R
 import java.io.File
@@ -28,7 +29,7 @@ import java.io.File
 fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: Uri) {
     Box(
         modifier = modifier
-            .border(width = 2.dp, shape = CircleShape, color = brownDark)
+            .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
             .clip(CircleShape)
             .width(55.dp)
             .height(55.dp)

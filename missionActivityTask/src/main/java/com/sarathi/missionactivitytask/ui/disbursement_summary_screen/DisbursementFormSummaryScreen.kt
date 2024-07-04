@@ -47,6 +47,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.formatToIndianRupee
@@ -89,7 +91,8 @@ fun DisbursementFormSummaryScreen(
     viewModel: DisbursementFormSummaryScreenViewModel,
     activityId: Int,
     missionId: Int,
-    taskList: String
+    taskList: String,
+    onSettingClick: () -> Unit,
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -110,7 +113,7 @@ fun DisbursementFormSummaryScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = "Disbursement summary",
+        title = stringResource(R.string.disbursement_summary),
         modifier = Modifier,
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
@@ -194,7 +197,7 @@ fun DisbursementFormSummaryScreen(
                             .padding(10.dp)
                     ) {
                         ButtonPositive(
-                            buttonTitle = "Attach physical form E",
+                            buttonTitle = stringResource(R.string.attach_physical_form_e),
                             isActive = true,
                             isArrowRequired = false,
                             onClick = {
@@ -211,7 +214,7 @@ fun DisbursementFormSummaryScreen(
 
 
         },
-        onSettingClick = {},
+        onSettingClick = { onSettingClick() },
         onContentUI = { a, b, c ->
             BoxWithConstraints(
                 modifier = Modifier
@@ -305,14 +308,17 @@ private fun MakeDisburesementRow(
                 .height(dimen_5_dp)
         )
         Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            TextRow(text1 = "Mode:", text2 = disbursementFormSummaryUiModel.mode)
             TextRow(
-                text1 = "Nature:",
+                text1 = stringResource(R.string.mode),
+                text2 = disbursementFormSummaryUiModel.mode
+            )
+            TextRow(
+                text1 = stringResource(R.string.nature),
                 text2 = disbursementFormSummaryUiModel.nature,
                 isReadMode = true
             )
             TextRow(
-                text1 = "Amount:",
+                text1 = stringResource(R.string.amount),
                 text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
             )
         }
@@ -322,30 +328,58 @@ private fun MakeDisburesementRow(
 }
 
 @Composable
-private fun TextRow(text1: String, text2: String, isReadMode: Boolean = false) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = if (isReadMode) Alignment.Top else Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+private fun TextRow(
+    text1: String,
+    text2: String,
+    isReadMode: Boolean = false
+) {
+    ConstraintLayout(
+        modifier = Modifier.fillMaxWidth()
     ) {
+        val (text1Ref, text2Ref) = createRefs()
+
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier
-                    .weight(.2f),
+                modifier = Modifier.constrainAs(text1Ref) {
+                    start.linkTo(parent.start)
+                    if (isReadMode) {
+                        top.linkTo(parent.top)
+                    } else {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    width = Dimension.fillToConstraints
+                },
                 text = text1,
                 style = newMediumTextStyle.copy(color = greyColor)
             )
         }
+
         if (text2.isNotBlank()) {
             if (isReadMode) {
                 TextWithReadMoreComponent(
-                    modifier = Modifier.weight(.8f),
+                    modifier = Modifier
+                        .padding(start = dimen_5_dp)
+                        .constrainAs(text2Ref) {
+                            start.linkTo(text1Ref.end)
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        },
                     title = text1,
                     contentData = text2
                 )
             } else {
                 Text(
-                    modifier = Modifier.weight(.8f),
+                    modifier = Modifier
+                        .padding(start = dimen_5_dp)
+                        .constrainAs(text2Ref) {
+                            start.linkTo(text1Ref.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        },
                     text = text2,
                     style = defaultTextStyle.copy(color = blueDark)
                 )
@@ -420,7 +454,8 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Didis", style = newMediumTextStyle.copy(color = blueDark)
+                    stringResource(R.string.didis),
+                    style = newMediumTextStyle.copy(color = blueDark)
                 )
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
@@ -464,10 +499,6 @@ fun HistorySummaryCard(
 
     BoxWithConstraints(
         modifier = modifier
-            .scrollable(
-                state = outerState,
-                Orientation.Vertical,
-            )
             .heightIn(min = 0.dp, maxCustomHeight)
     ) {
         Column(modifier = Modifier.background(white)) {

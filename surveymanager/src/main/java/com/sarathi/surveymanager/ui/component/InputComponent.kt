@@ -25,12 +25,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
-import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
 
@@ -66,6 +67,7 @@ fun InputComponent(
                 .fillMaxWidth()
                 .height(dimen_60_dp),
             value = txt.value,
+            textStyle = newMediumTextStyle.copy(blueDark),
             enabled = isEditable,
             onValueChange = {
                 if (it.length <= maxLength) {
@@ -112,11 +114,11 @@ fun InputComponent(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = placeholderGrey,
                 unfocusedBorderColor = borderGrey,
-                textColor = textColorDark
+                textColor = blueDark
             ),
         )
         if (hintMessage.isNotBlank()) {
-            Text(hintMessage, style = smallTextStyleMediumWeight, color = textColorDark)
+            Text(hintMessage, style = smallTextStyleMediumWeight, color = blueDark)
         }
 
     }

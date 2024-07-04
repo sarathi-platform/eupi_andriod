@@ -41,7 +41,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,11 +63,9 @@ import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
@@ -96,7 +93,7 @@ fun DigitalFormAScreen(
         if (fromScreen == ARG_FROM_SETTING)
             navController.popBackStack()
         else {
-            navController.navigate(NudgeNavigationGraph.HOME) {
+            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                 popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                     inclusive = true
                     saveState = false
@@ -466,7 +463,7 @@ fun DigitalFormAScreen(
                         if (fromScreen == ARG_FROM_SETTING)
                             navController.popBackStack()
                         else {
-                            navController.navigate(NudgeNavigationGraph.HOME) {
+                            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                                 popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                                     inclusive = true
                                     saveState = false

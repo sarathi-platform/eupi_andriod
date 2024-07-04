@@ -117,3 +117,5 @@ p
 @app/src/main/java/com/patsurvey/nudge/database/VillagesEntity.kt,3/7/37fc41982100a223c09837dc76314203f25307fe
 ƒ
 Sapp/src/main/java/com/patsurvey/nudge/model/dataModel/UserAndVillageDetailsModel.kt,0/5/05583dcdf242fdf474cf430a2f85a256d8d37046
+@
+app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164

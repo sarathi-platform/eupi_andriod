@@ -80,7 +80,14 @@ class DidiTabViewModel @Inject constructor(
                 }
 
             }
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
+            }
         }
+
+
     }
 
     private fun loadAllDataForDidiTab(isRefresh: Boolean) {

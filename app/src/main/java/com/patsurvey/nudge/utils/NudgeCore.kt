@@ -2,11 +2,10 @@ package com.patsurvey.nudge.utils
 
 import android.content.Context
 import android.content.Intent
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.MyApplication
-import com.patsurvey.nudge.data.prefs.PrefRepo
-import javax.inject.Inject
 
 object NudgeCore {
 
@@ -14,8 +13,17 @@ object NudgeCore {
 
     private var eventObserver: EventObserverInterface? = null
 
-    fun getVoNameForState(context:Context, stateId :Int,value: Int,formatArgs:Int?=null): String {
-      return  context.resources.getQuantityString(value,if (stateId == BENGAL_STATE_ID)BENGAL_STRING_VALUE else BENGAL_STRING_VALUE_OTHER,formatArgs)
+    fun getVoNameForState(
+        context: Context,
+        stateId: Int,
+        value: Int,
+        formatArgs: Int? = null
+    ): String {
+        return context.resources.getQuantityString(
+            value,
+            if (stateId == BENGAL_STATE_ID) BENGAL_STRING_VALUE else BENGAL_STRING_VALUE_OTHER,
+            numberInEnglishFormat(formatArgs ?: 0, null)
+        )
     }
 
 

@@ -32,25 +32,31 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         taskId: Int,
         subjectId: Int,
         tagId: String,
+        activityConfigId: Int,
         referenceId: String
     ): String {
         return repository.getSurveyAnswerForFormTag(
             taskId = taskId,
             subjectId = subjectId,
             tagId = tagId,
+            activityConfigId = activityConfigId,
             referenceId = referenceId
         )
     }
 
     suspend fun getAllSaveAnswer(
+        activityConfigId: Int,
         surveyId: Int,
         taskId: Int,
-        sectionId: Int
+        sectionId: Int,
+        grantId: Int
     ): List<SurveyAnswerFormSummaryUiModel> {
         return repository.getAllSaveAnswer(
             taskId = taskId,
             surveyId = surveyId,
-            sectionId = sectionId
+            sectionId = sectionId,
+            activityConfigId = activityConfigId,
+            grantId = grantId
         )
     }
 

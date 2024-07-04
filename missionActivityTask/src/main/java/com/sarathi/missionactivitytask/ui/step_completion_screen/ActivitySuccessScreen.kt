@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.textColorDark
@@ -50,6 +51,7 @@ fun ActivitySuccessScreen(
             .fillMaxSize()
             .then(modifier)
     ) {
+        if (isFromActivitySuccess) {
         KonfettiView(
             modifier = Modifier.fillMaxSize(),
             parties = listOf(
@@ -69,6 +71,7 @@ fun ActivitySuccessScreen(
                 }
             }
         )
+        }
 
         Column(
             Modifier
@@ -85,10 +88,14 @@ fun ActivitySuccessScreen(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    if (isFromActivitySuccess) {
+                        Text(text = "🎉", fontSize = 50.sp)
+                    } else {
                     Image(
                         painter = painterResource(id = R.drawable.ic_activity_complete),
                         contentDescription = null
                     )
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
                     Column(modifier = modifier.padding(horizontal = 10.dp)) {
                         Text(

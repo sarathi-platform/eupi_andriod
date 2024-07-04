@@ -88,7 +88,7 @@ fun MediaScreen(
                 }
             }
         ) { paddingValues ->
-            if (viewModel.contentUrl.value.isNotEmpty()) {
+            if (!viewModel.contentUrl.value.isNullOrEmpty()) {
                 if(fileType.uppercase(Locale.getDefault()) == FileType.TEXT.name){
                     TextViewer(viewModel.contentUrl.value,
                         Modifier

@@ -23,8 +23,18 @@ class RegenerateGrantEventUsecase @Inject constructor(
 
     suspend fun invoke() {
 
-        coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_" + coreSharedPrefs.getMobileNo()))
-        coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_" + coreSharedPrefs.getMobileNo()))
+        coreSharedPrefs.setBackupFileName(
+            getDefaultBackUpFileName(
+                "regenerate_" + coreSharedPrefs.getMobileNo(),
+                coreSharedPrefs.getUserType()
+            )
+        )
+        coreSharedPrefs.setImageBackupFileName(
+            getDefaultImageBackUpFileName(
+                "regenerate_" + coreSharedPrefs.getMobileNo(),
+                coreSharedPrefs.getUserType()
+            )
+        )
         writeMissionStatusEvent()
         writeActivityStatusEvent()
         writeTaskStatusEvent()

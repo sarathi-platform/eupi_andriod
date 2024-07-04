@@ -81,29 +81,29 @@ fun Long.toDateInMMDDYYFormat(
 }
 
 fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()): String {
-    val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+    val formatter = SimpleDateFormat(dateFormat, Locale.ENGLISH)
     formatter.timeZone = timeZone
     return formatter.format(this)
 }
 
 fun Long.toTimeDateString(): String {
     val dateTime = Date(this)
-    val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.ENGLISH)
     return format.format(dateTime)
 }
 
 fun Long.toDateString(): String {
     val dateTime = Date(this)
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
     return format.format(dateTime)
 }
 fun Long.toDateInMonthString(): String {
     val dateTime = Date(this)
-    val format = SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("dd/MMM/yyyy", Locale.ENGLISH)
     return format.format(dateTime)
 }
 fun String.toInMillisec(format: String): Long {
-    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
     val date = dateFormat.parse(this)
     val millis = date?.time
     return millis ?: 0
@@ -231,7 +231,27 @@ fun renameFile(context: Context, oldName: String, newName: String, mobileNumber:
     }
 }
 
-fun getDefaultBackUpFileName(mobileNo: String): String {
+fun getDefaultBackUpFileName(mobileNo: String, userType: String): String {
+    var fileName = LOCAL_BACKUP_FILE_NAME
+
+    if (userType != UPCM_USER)
+        fileName = fileName + SELECTION
+
+    return fileName + "_" + mobileNo + "_" + System.currentTimeMillis()
+        .toDateInMMDDYYFormat()
+}
+
+fun getDefaultImageBackUpFileName(mobileNo: String, userType: String): String {
+    var fileName = LOCAL_BACKUP__IMAGE_FILE_NAME
+
+    if (userType != UPCM_USER)
+        fileName = fileName + SELECTION
+
+    return fileName + "_" + mobileNo + "_" + System.currentTimeMillis()
+        .toDateInMMDDYYFormat()
+}
+
+/*fun getDefaultBackUpFileName(mobileNo: String): String {
     return LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
         .toDateInMMDDYYFormat()
 }
@@ -239,7 +259,7 @@ fun getDefaultBackUpFileName(mobileNo: String): String {
 fun getDefaultImageBackUpFileName(mobileNo: String): String {
     return LOCAL_BACKUP__IMAGE_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
         .toDateInMMDDYYFormat()
-}
+}*/
 
 fun compressImage(imageUri: String, activity: Context, name: String): String? {
     var filename: String? = ""
@@ -862,7 +882,7 @@ fun String.getDateTimeInMillis(): Long {
         val offsetDateTime = OffsetDateTime.parse(this, formatter)
         offsetDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ENGLISH)
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         val date = dateFormat.parse(this)
         date?.time ?: 0L
@@ -879,7 +899,7 @@ fun String.getDateInMillis(pattern: String = "yyyy-MM-dd"): Long {
         val zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault())
         zonedDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
+        val dateFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
         val date = dateFormat.parse(this)
         date?.time ?: 0L
     }
@@ -1034,12 +1054,14 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
     val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
     coreSharedPrefs.setBackupFileName(
         getDefaultBackUpFileName(
-            mobileNo
+            mobileNo,
+            coreSharedPrefs.getUserType() ?: BLANK_STRING
         )
     )
     coreSharedPrefs.setImageBackupFileName(
         getDefaultImageBackUpFileName(
-            mobileNo
+            mobileNo,
+            coreSharedPrefs.getUserType()
         )
     )
     coreSharedPrefs.setFileExported(false)
