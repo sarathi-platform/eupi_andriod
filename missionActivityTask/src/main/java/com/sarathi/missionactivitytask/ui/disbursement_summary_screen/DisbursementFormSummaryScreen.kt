@@ -32,11 +32,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -69,7 +71,7 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.lightBg
 import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
@@ -77,6 +79,7 @@ import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
+import com.sarathi.missionactivitytask.ui.components.FormSummaryDialog
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -155,7 +158,7 @@ fun DisbursementFormSummaryScreen(
                                 colorFilter = ColorFilter.tint(blueDark)
                             )
                             Text(
-                                stringResource(com.sarathi.missionactivitytask.R.string.share),
+                                stringResource(R.string.share),
                                 style = defaultTextStyle
                             )
                         }
@@ -270,6 +273,7 @@ private fun MakeDisburesementRow(
     disbursementFormSummaryUiModel: DisbursementFormSummaryUiModel,
     imageUri: Uri?
 ) {
+    val showDialog = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -279,7 +283,10 @@ private fun MakeDisburesementRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimen_4_dp),
+                .padding(horizontal = dimen_4_dp)
+                .clickable {
+                    showDialog.value = true
+                },
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -288,47 +295,41 @@ private fun MakeDisburesementRow(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = disbursementFormSummaryUiModel.subjectName,
                     style = defaultTextStyle.copy(blueDark),
                 )
-                Text(
-                    text = disbursementFormSummaryUiModel.villageName,
-                    style = smallTextStyle.copy(blueDark),
+                TextRow(
+                    text1 = stringResource(R.string.amount),
+                    text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
                 )
             }
-
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(dimen_5_dp)
-        )
-        Column(modifier = Modifier.padding(start = dimen_10_dp, end = dimen_10_dp)) {
-            TextRow(
-                text1 = stringResource(R.string.mode),
-                text2 = disbursementFormSummaryUiModel.mode
-            )
-            TextRow(
-                text1 = stringResource(R.string.nature),
-                text2 = disbursementFormSummaryUiModel.nature,
-                isReadMode = true
-            )
-            TextRow(
-                text1 = stringResource(R.string.amount),
-                text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_forward_ios_24),
+                contentDescription = null,
+                tint = blueDark,
             )
         }
-
+        if (showDialog.value) {
+            FormSummaryDialog(
+                imageUri = imageUri,
+                disbursementFormSummaryUiModel = disbursementFormSummaryUiModel,
+                positiveButtonTitle = stringResource(id = R.string.close),
+                onPositiveButtonClick = {
+                    // TODO: Handle positive button click
+                    showDialog.value = false
+                },
+                onNegativeButtonClick = { showDialog.value = false }
+            )
+        }
     }
-
 }
 
 @Composable
-private fun TextRow(
+fun TextRow(
     text1: String,
     text2: String,
     isReadMode: Boolean = false
@@ -351,7 +352,7 @@ private fun TextRow(
                     width = Dimension.fillToConstraints
                 },
                 text = text1,
-                style = newMediumTextStyle.copy(color = greyColor)
+                style = smallTextStyleWithNormalWeight.copy(color = greyColor)
             )
         }
 
@@ -381,7 +382,7 @@ private fun TextRow(
                             width = Dimension.fillToConstraints
                         },
                     text = text2,
-                    style = defaultTextStyle.copy(color = blueDark)
+                    style = newMediumTextStyle.copy(color = blueDark)
                 )
             }
         }
