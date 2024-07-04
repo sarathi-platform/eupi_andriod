@@ -272,11 +272,11 @@ fun getSanctionedAmountMessage(
     question: QuestionUiModel,
     sanctionedAmount: Int,
     remainingAmount: Int
-): String {
+): Int {
     if (sanctionedAmount != 0 && question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
-        return LocalContext.current.getString(R.string.amount_limit, remainingAmount)
+        return remainingAmount
     }
-    return BLANK_STRING
+    return 0
 
 }
 

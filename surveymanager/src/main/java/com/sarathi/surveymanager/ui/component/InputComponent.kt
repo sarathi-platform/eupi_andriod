@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -32,6 +33,7 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
+import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
 
@@ -45,11 +47,14 @@ fun InputComponent(
     hintText: String = BLANK_STRING,
     isMandatory: Boolean = true,
     isEditable: Boolean = true,
-    hintMessage: String = BLANK_STRING,
+    hintMessage: Int = 0,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
         mutableStateOf(defaultValue)
+    }
+    val remainingValue = remember(hintMessage) {
+        mutableStateOf(hintMessage)
     }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -117,8 +122,15 @@ fun InputComponent(
                 textColor = blueDark
             ),
         )
-        if (hintMessage.isNotBlank()) {
-            Text(hintMessage, style = smallTextStyleMediumWeight, color = blueDark)
+        if (hintMessage != 0) {
+            Text(
+                LocalContext.current.getString(
+                    R.string.amount_limit,
+                    remainingValue.value.minus(if (txt.value.isNotBlank()) txt.value.toInt() else 0)
+                ),
+                style = smallTextStyleMediumWeight,
+                color = blueDark
+            )
         }
 
     }
