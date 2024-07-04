@@ -14,7 +14,6 @@ import com.nrlm.baselinesurvey.ARG_COMPLETION_MESSAGE
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_FROM_SCREEN
 import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
-import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
@@ -38,7 +37,6 @@ import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
-import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
 
 
 fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
@@ -56,15 +54,12 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             },
             navArgument(name = ARG_MISSION_NAME) {
                 type = NavType.StringType
-            }, navArgument(name = ARG_MISSION_DATE) {
-                type = NavType.StringType
             }
         )) {
             MissionSummaryScreen(
                 navController = navController, missionId = it.arguments?.getInt(
                     ARG_MISSION_ID
-                ) ?: 0, missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: "",
-                missionDate = it.arguments?.getString(ARG_MISSION_DATE) ?: ""
+                ) ?: 0, missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: ""
             )
         }
 
@@ -211,18 +206,24 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 type = NavType.StringType
             }
         )) {
-            SearchScreens(viewModel = hiltViewModel(), navController = navController, surveyId = it
-                .arguments?.getInt(ARG_SURVEY_ID) ?: -1, surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1, fromScreen = it.arguments?.getString(
-                ARG_FROM_SCREEN) ?: ARG_FROM_SECTION_SCREEN)
+            SearchScreens(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                surveyId = it
+                    .arguments?.getInt(ARG_SURVEY_ID) ?: -1,
+                surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
+                fromScreen = it.arguments?.getString(
+                    ARG_FROM_SCREEN
+                ) ?: ARG_FROM_SECTION_SCREEN
+            )
         }
 
-        composable(route = HomeScreens.Home_SCREEN.route) {
-            MissionScreen(navController = navController, viewModel = hiltViewModel())
-        }
+//        composable(route = HomeScreens.Home_SCREEN.route) {
+//            MissionScreen(navController = navController, viewModel = hiltViewModel())
+//        }
 
         composable(route = HomeScreens.MISSION_SCREEN.route) {
             MissionScreen(navController = navController, viewModel = hiltViewModel())
-
         }
 
         composable(route = HomeScreens.BS_DIDI_DETAILS_SCREEN.route) {
@@ -262,7 +263,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigateBackToMissionScreen()
+                navController.navigateUp()
+                navController.navigateUp()
+                navController.navigateUp()
+//                navController.navigateBackToMissionScreen()
             }
         }
 

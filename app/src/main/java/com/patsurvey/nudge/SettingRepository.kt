@@ -74,8 +74,19 @@ class SettingRepository @Inject constructor(
 
 
             villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2).forEach {
-                coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
-                coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
+                coreSharedPrefs.setBackupFileName(
+                    getDefaultBackUpFileName(
+                        "regenerate_${it.id}_" + prefRepo.getMobileNumber(),
+                        coreSharedPrefs.getUserType() ?: BLANK_STRING
+                    )
+                )
+                coreSharedPrefs.setImageBackupFileName(
+                    getDefaultImageBackUpFileName(
+                        "regenerate_${it.id}_" + prefRepo.getMobileNumber(),
+                        coreSharedPrefs.getUserType() ?: BLANK_STRING
+                    )
+                )
+
                 if (prefRepo.isUserBPC()) {
                     generatePatEvents(it.id)
                     generateWorkFlowStatusEvent(it.id)
@@ -85,19 +96,30 @@ class SettingRepository @Inject constructor(
                     generateAddTolaEvent(it.id)
                     generateAddDidiEvent(it.id)
                     generateWealthRankingEvent(it.id)
-                    generatePatEvents(it.id)
-                    generateVOEvents(it.id)
-                    generateRankingEditEvent(it.id)
-                    generateWorkFlowStatusEvent(it.id)
-                    generateDidiImageEvent(it.id)
+                        generatePatEvents(it.id)
+                        generateVOEvents(it.id)
+                        generateRankingEditEvent(it.id)
+                        generateWorkFlowStatusEvent(it.id)
+                        generateDidiImageEvent(it.id)
+                    }
                 }
-            }
+
         } catch (exception: Exception) {
             NudgeLogger.e("RegenerateEvent", exception.message ?: "")
         } finally {
 
-            coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefRepo.getMobileNumber()))
-            coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefRepo.getMobileNumber()))
+            coreSharedPrefs.setBackupFileName(
+                getDefaultBackUpFileName(
+                    prefRepo.getMobileNumber(),
+                    coreSharedPrefs.getUserType()
+                )
+            )
+            coreSharedPrefs.setImageBackupFileName(
+                getDefaultImageBackUpFileName(
+                    prefRepo.getMobileNumber(),
+                    coreSharedPrefs.getUserType()
+                )
+            )
 
         }
 

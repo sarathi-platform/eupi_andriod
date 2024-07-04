@@ -5,6 +5,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
@@ -14,26 +15,31 @@ import javax.inject.Inject
 
 class ExportImportRepositoryImpl @Inject constructor(
     val prefBSRepo: PrefBSRepo,
+    val coreSharedPrefs: CoreSharedPrefs,
     val nudgeBaselineDatabase:NudgeBaselineDatabase,
     val nudgeDatabase: NudgeDatabase
 ):ExportImportRepository {
     override fun clearLocalData() {
         try {
+            val userId = prefBSRepo.getUniqueUserIdentifier()
 
-            nudgeBaselineDatabase.contentEntityDao().deleteContent()
-            nudgeBaselineDatabase.didiDao().deleteSurveyees(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.optionItemDao().deleteOptions(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-            nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefBSRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.apply {
+                contentEntityDao().deleteContent()
+                didiDao().deleteSurveyees(userId)
+                activityTaskEntityDao().deleteActivityTask(userId)
+                missionEntityDao().deleteMissions(userId)
+                missionActivityEntityDao().deleteActivities(userId)
+                optionItemDao().deleteOptions(userId)
+                questionEntityDao().deleteAllQuestions(userId)
+                sectionAnswerEntityDao().deleteAllSectionAnswer(userId)
+                inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(userId)
+                formQuestionResponseDao().deleteAllFormQuestions(userId)
+                didiSectionProgressEntityDao().deleteAllSectionProgress(userId)
+                villageListDao().deleteAllVilleges()
+                surveyEntityDao().deleteAllSurvey(userId)
+                didiInfoEntityDao().deleteAllDidiInfo(userId)
+            }
+
         }catch (ex:Exception){
             NudgeLogger.d("ExportImportRepositoryImpl","clearLocalData: ${ex.message}")
         }
@@ -42,6 +48,8 @@ class ExportImportRepositoryImpl @Inject constructor(
 
     override fun setAllDataSynced() {
         prefBSRepo.setDataSyncStatus(false)
+        coreSharedPrefs.setDataLoaded(isDataLoaded = false)
+        coreSharedPrefs.setDidiTabDataLoaded(false)
     }
 
     override fun getUserMobileNumber(): String {

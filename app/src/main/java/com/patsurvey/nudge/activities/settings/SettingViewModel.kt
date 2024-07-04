@@ -864,6 +864,8 @@ class SettingViewModel @Inject constructor(
 
     fun clearAccessToken() {
         prefRepo.saveAccessToken("")
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDataLoaded(false)
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setDidiTabDataLoaded(false)
         clearEventWriterFileName()
         prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
         prefRepo.saveSettingOpenFrom(0)
@@ -873,12 +875,13 @@ class SettingViewModel @Inject constructor(
     private fun clearEventWriterFileName() {
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
             getDefaultBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefRepo.getMobileNumber() ?: "", prefRepo?.getLoggedInUserType() ?: BLANK_STRING
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
             getDefaultImageBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefRepo.getMobileNumber() ?: "",
+                prefRepo?.getLoggedInUserType() ?: BLANK_STRING
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)

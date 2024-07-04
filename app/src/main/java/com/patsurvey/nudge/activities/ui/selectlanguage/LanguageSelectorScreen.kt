@@ -13,7 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,7 +39,12 @@ import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBorderBg
+import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
+import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
@@ -156,9 +164,7 @@ fun LanguageList(viewModel: LanguageViewModel, context: Context) {
                             }else viewModel.languagePosition.value = i
                         }else{
                             viewModel.languagePosition.value = i
-                            if (item.langCode == KOKBOROK_LANGUAGE_CODE) {
-                                showCustomToast(context, context.getString(R.string.this_language_is_not_available_for_selection))
-                            }
+
                         }
                     }
                 }

@@ -59,7 +59,7 @@ class ConfigRepository @Inject constructor(
         }
     }
 
-    fun getAccessToken(): String?{
+    fun getAccessToken(): String? {
         return prefRepo.getAccessToken()
     }
     fun getUserType(): String?{
@@ -72,5 +72,8 @@ class ConfigRepository @Inject constructor(
         addDefaultLanguage(languageListDao,baselineLanguageDao)
     }
 
+    fun getLoggedInUserType(): String {
+        return prefRepo.getLoggedInUserType()
+    }
 
 }

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,15 +12,15 @@ import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.UPCM_USER
-import kotlin.math.log
 
 @Composable
 fun HomeUserScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    prefRepo: PrefRepo
+    prefRepo: PrefRepo,
+    onSettingIconClick: () -> Unit
 ) {
-    if(prefRepo.getLoggedInUserType().equals(UPCM_USER)){
+    if(prefRepo.getLoggedInUserType().equals(UPCM_USER)) {
         DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
         if (prefRepo.isUserBPC()) {
@@ -60,6 +59,7 @@ fun HomeUserScreen(
             )
         }
     }
+
 
 
 }

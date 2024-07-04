@@ -13,9 +13,9 @@ import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_KEY_PAGE_FROM
 import com.nrlm.baselinesurvey.PREF_KEY_SELECTED_VILLAGE
 import com.nrlm.baselinesurvey.PREF_KEY_SETTING_OPEN_FROM
+import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
-import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.StrictModePermitter.permitDiskReads
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
@@ -174,7 +174,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getUniqueUserIdentifier(): String {
-        val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        val userType = prefs.getString(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
         val userMobile = prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
         return "${userType}_${userMobile}"
     }

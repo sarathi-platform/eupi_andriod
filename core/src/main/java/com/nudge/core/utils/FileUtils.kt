@@ -13,6 +13,8 @@ import android.webkit.MimeTypeMap
 import java.io.BufferedOutputStream
 import java.io.File
 import android.database.Cursor
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.uriFromFile
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -418,4 +420,16 @@ object FileUtils {
         val index = filename.lastIndexOf('/')
         return filename.substring(index + 1)
     }
+
+    fun getImageUri(context: Context, fileName: String): Uri? {
+        val file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+        return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+            uriFromFile(
+                context, file,
+                it
+            )
+        }
+    }
+
 }

@@ -12,7 +12,20 @@ class Core {
     private var mApplicationContext:Activity ?=null
     fun init(context: Context) {
         initializeFirebaseDb()
+        setContext(context)
     }
+
+    companion object {
+        private var mContext: Context? = null
+        fun getContext(): Context? {
+            return mContext
+        }
+
+        fun setContext(context: Context) {
+            mContext = context
+        }
+    }
+
 
     private fun initializeFirebaseDb() {
         db = Firebase.firestore

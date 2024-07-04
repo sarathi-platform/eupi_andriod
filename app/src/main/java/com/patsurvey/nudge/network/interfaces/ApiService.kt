@@ -208,4 +208,5 @@ interface ApiService {
 
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?
+
 }

@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
@@ -26,9 +25,6 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummar
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nudge.navigationmanager.graphs.HomeScreens
-import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MISSION_SUMMARY_GRAPH
-import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
 import com.nudge.navigationmanager.graphs.navigateToSurveyListWithParamsScreen
 
 
@@ -38,7 +34,6 @@ fun MissionSummaryScreen(
     navController: NavController,
     missionId: Int = 0,
     missionName: String,
-    missionDate: String,
     viewModel: MissionSummaryViewModel = hiltViewModel()
 ) {
     val activities =
@@ -72,7 +67,8 @@ fun MissionSummaryScreen(
                                 status = SectionStatus.COMPLETED
                             )
                         )
-                        navController.navigateBackToMissionScreen()
+                        navController.navigateUp()
+//                        navController.navigateBackToMissionScreen()
                     }
                 }
             }

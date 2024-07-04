@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
@@ -242,14 +243,26 @@ fun OtpVerificationScreen(
 
                         if (success){
                             if(userType.equals(UPCM_USER)){
-                                if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
+                                if (navController.graph.route?.equals(
+                                        NudgeNavigationGraph.HOME,
+                                        true
+                                    ) == true
+                                ) {
                                     navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {
                                             inclusive = true
                                         }
                                     }
-                                }else {
+                                } else if (navController.graph.route?.equals(
+                                        NudgeNavigationGraph.HOME_SUB_GRAPH,
+                                        true
+                                    ) == true
+                                ) {
+                                    navController.navigate(
+                                        HomeScreens.PROGRESS_SEL_SCREEN.route
+                                    )
+                                } else {
                                     navController.popBackStack()
                                     navController.navigate(
                                         NudgeNavigationGraph.HOME

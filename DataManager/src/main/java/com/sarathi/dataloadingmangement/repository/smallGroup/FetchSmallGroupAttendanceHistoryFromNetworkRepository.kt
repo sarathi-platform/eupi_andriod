@@ -1,0 +1,25 @@
+package com.sarathi.dataloadingmangement.repository.smallGroup
+
+import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
+import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail
+
+interface FetchSmallGroupAttendanceHistoryFromNetworkRepository {
+
+    suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int)
+
+    suspend fun saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse: AttendanceHistoryResponse)
+
+    suspend fun saveAttendanceToAttributeTable(
+        subjectDetails: DidiAttendanceDetail,
+        date: Long
+    ): Long
+
+    suspend fun saveAttendanceToAttributeReferenceTable(
+        subjectDetails: DidiAttendanceDetail,
+        date: Long,
+        refId: Long
+    )
+
+    suspend fun checkIfHistoryAvailable(subjectId: Int, date: Long): Int
+
+}

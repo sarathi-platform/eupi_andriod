@@ -6,6 +6,9 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepository
+import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepositoryImpl
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -138,6 +141,8 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CorePrefRepo
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -276,18 +281,18 @@ object BaselineModule {
         baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
-        activityTaskDao: ActivityTaskDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao
+        matActivityDao: ActivityDao,
+        baselineTaskDao: ActivityTaskDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
             prefBSRepo,
             baseLineApiService,
             surveyeeEntityDao,
             languageListDao,
-            activityTaskDao,
             missionActivityDao,
-            taskDao
+            matActivityDao,
+            baselineTaskDao
         )
     }
 
@@ -719,6 +724,7 @@ object BaselineModule {
         activityDao: MissionActivityDao,
         missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        matActivityDao: ActivityDao,
         baselineDatabase: NudgeBaselineDatabase
     ): EventWriterHelper {
         return EventWriterHelperImpl(
@@ -734,7 +740,8 @@ object BaselineModule {
             activityDao = activityDao,
             missionEntityDao = missionEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao,
-            baselineDatabase = baselineDatabase
+            baselineDatabase = baselineDatabase,
+            matActivityDao = matActivityDao
         )
     }
 
@@ -753,5 +760,29 @@ object BaselineModule {
             ),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
+    }
+
+    @Singleton
+    @Provides
+    fun provideUpdateBaselineStatusOnInitRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao,
+        grantMissionDao: MissionDao,
+        grantActivityDao: ActivityDao
+    ): UpdateBaselineStatusOnInitRepository {
+        return UpdateBaselineStatusOnInitRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            missionEntityDao = missionEntityDao,
+            missionActivityDao = missionActivityDao,
+            grantMissionDao = grantMissionDao,
+            grantActivityDao = grantActivityDao
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideUpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository: UpdateBaselineStatusOnInitRepository): UpdateBaselineStatusOnInitUseCase {
+        return UpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository)
     }
 }

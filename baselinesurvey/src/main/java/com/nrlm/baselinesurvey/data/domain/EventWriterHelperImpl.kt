@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
@@ -38,7 +39,6 @@ import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
-import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.StatusReferenceType
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
@@ -68,6 +68,7 @@ import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import kotlinx.coroutines.delay
 import java.io.File
 import java.util.UUID
@@ -85,6 +86,7 @@ class EventWriterHelperImpl @Inject constructor(
     private val taskDao: ActivityTaskDao,
     private val activityDao: MissionActivityDao,
     private val missionEntityDao: MissionEntityDao,
+    private val matActivityDao: ActivityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val baselineDatabase: NudgeBaselineDatabase
 ) : EventWriterHelper {
@@ -389,6 +391,14 @@ class EventWriterHelperImpl @Inject constructor(
             status = status.name,
             actualStartDate = System.currentTimeMillis().toDate().toString()
         )
+
+        // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
+        activityDao.updateActivityStatus(
+            userId = getBaseLineUserId(),
+            activityId = activityId,
+            missionId = missionId,
+            status = status.name
+        )
     }
 
     override suspend fun markTaskInProgress(
@@ -456,6 +466,13 @@ class EventWriterHelperImpl @Inject constructor(
             activityId = activityId,
             status = status.name,
             completedDate = System.currentTimeMillis().toDate().toString()
+        )
+        // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
+        activityDao.updateActivityStatus(
+            userId = getBaseLineUserId(),
+            activityId = activityId,
+            missionId = missionId,
+            status = status.name
         )
     }
 
@@ -756,8 +773,18 @@ class EventWriterHelperImpl @Inject constructor(
 
     private fun changeFileName(appContext: Context,prefix: String) {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(appContext)
-        coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
-        coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
+        coreSharedPrefs.setBackupFileName(
+            getDefaultBackUpFileName(
+                prefix + prefBSRepo.getMobileNumber(),
+                prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
+            )
+        )
+        coreSharedPrefs.setImageBackupFileName(
+            getDefaultImageBackUpFileName(
+                prefix + prefBSRepo.getMobileNumber(),
+                prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
+            )
+        )
         if (!TextUtils.isEmpty(prefix))
             coreSharedPrefs.setFileExported(false)
     }

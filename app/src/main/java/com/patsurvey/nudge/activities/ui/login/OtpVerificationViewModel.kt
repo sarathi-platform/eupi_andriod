@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
-    private val otpVerificationRepository: OtpVerificationRepository
+    private val otpVerificationRepository: OtpVerificationRepository,
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")

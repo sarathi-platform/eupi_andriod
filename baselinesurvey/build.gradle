@@ -126,6 +126,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
     implementation project(":core")
+    implementation project(':DataManager')
     implementation 'androidx.work:work-runtime-ktx:2.9.0'
     implementation project(':internetSpeedChecker')
 
@@ -189,6 +190,7 @@ dependencies {
     implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
     implementation "androidx.media3:media3-ui:1.1.1"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.1"
+    implementation(project(":syncManager"))
     implementation(project(":CommunicationModule"))
     implementation(project(":navigationManager"))
     implementation "com.airbnb.android:lottie-compose:6.1.0"

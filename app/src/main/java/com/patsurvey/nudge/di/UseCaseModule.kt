@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CorePrefRepo
@@ -46,6 +47,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -102,12 +104,14 @@ object UseCaseModule {
     fun providesExportImportScreenRepository(
         nudgeBaselineDatabase: NudgeBaselineDatabase,
         prefRepo: PrefBSRepo,
-        nudgeDatabase: NudgeDatabase
+        nudgeDatabase: NudgeDatabase,
+        coreSharedPrefs: CoreSharedPrefs
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
             prefBSRepo = prefRepo,
-            nudgeDatabase = nudgeDatabase
+            nudgeDatabase = nudgeDatabase,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
@@ -115,10 +119,11 @@ object UseCaseModule {
     @Singleton
     fun providesExportImportUseCase(
         repository: ExportImportRepository,
-        eventsWriterRepository: EventsWriterRepository
+        eventsWriterRepository: EventsWriterRepository,
+        deleteAllDataUsecase: DeleteAllGrantDataUseCase
     ): ExportImportUseCase {
         return ExportImportUseCase(
-            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
+            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository, deleteAllDataUsecase),
             getExportOptionListUseCase = GetExportOptionListUseCase(repository),
             getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)

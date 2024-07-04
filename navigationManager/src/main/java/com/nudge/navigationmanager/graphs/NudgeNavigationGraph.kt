@@ -1,7 +1,50 @@
 package com.nudge.navigationmanager.graphs
 
 import androidx.navigation.NavController
-import com.nudge.navigationmanager.routes.*
+import com.nudge.navigationmanager.routes.AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_LANGUAGE_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_LOGIN_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_OTP_VERIFICATION_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_PROFILE_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_SETTING_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_START_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_VIDEO_LIST_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.BACKUP_RECOVERY_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.BASELINE_DIDI_DETAILS_ROUTE_NAME
+import com.nudge.navigationmanager.routes.BASELINE_QUESTION_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.BASELINE_START_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.BPC_PROGRESS_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.BUG_LOGGING_ROUTE_NAME
+import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.DIDI_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.FORM_A_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.FORM_B_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.FORM_C_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.Final_Step_Complition_Screen_ROUTE_NAME
+import com.nudge.navigationmanager.routes.HOME_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.IMAGE_VIEWER_ROUTE_NAME
+import com.nudge.navigationmanager.routes.LANGUAGE_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.LOGIN_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.LOGOUT_HOME_ROUTE_NAME
+import com.nudge.navigationmanager.routes.MISSION_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.OTP_VERIFICATION_ROUTE_NAME
+import com.nudge.navigationmanager.routes.PDF_VIEWER_ROUTE_NAME
+import com.nudge.navigationmanager.routes.PROFILE_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.PROGRESS_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SEARCH_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SECTION_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SETTING_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SURVEYEE_LIST_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.Step_Complition_Screen_ROUTE_NAME
+import com.nudge.navigationmanager.routes.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.VIDEO_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.VILLAGE_SELECTION_ROUTE_NAME
+import com.nudge.navigationmanager.routes.VILLAGE_SELECTION_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.utils.NavigationParams
 
 object NudgeNavigationGraph {
@@ -9,17 +52,27 @@ object NudgeNavigationGraph {
     const val AUTHENTICATION = "auth_graph"
     val HOME = "home_graph"
     val BASE_HOME = "base_home_graph"
-    val DETAILS = "details_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_STEP_INDEX.value}}"
+    val HOME_SUB_GRAPH = "home_sub_graph"
+    val DETAILS =
+        "details_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_STEP_INDEX.value}}"
     val ADD_DIDI = "add_didi_graph/{${NavigationParams.ARG_DIDI_DETAILS_ID.value}}"
-    val SOCIAL_MAPPING = "social_mapping_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
-    val WEALTH_RANKING = "wealth_ranking/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
-    val PAT_SCREENS = "pat_screens/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val SOCIAL_MAPPING =
+        "social_mapping_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val WEALTH_RANKING =
+        "wealth_ranking/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val PAT_SCREENS =
+        "pat_screens/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
     val SETTING_GRAPH = "setting_graph"
     val LOGOUT_GRAPH = "logout_graph"
-    val VO_ENDORSEMENT_GRAPH = "vo_endorsement_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_IS_STEP_COMPLETE.value}}"
-    val BPC_GRAPH = "bpc_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
-     val MISSION_SUMMARY_GRAPH =
+    val VO_ENDORSEMENT_GRAPH =
+        "vo_endorsement_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_IS_STEP_COMPLETE.value}}"
+    val BPC_GRAPH =
+        "bpc_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}"
+    val MISSION_SUMMARY_GRAPH =
         "mission_summary_graph/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}"
+    val MAT_GRAPH = "mat_graph"
+    val SMALL_GROUP_GRAPH = "small_group_graph"
+
 }
 
 /**
@@ -49,7 +102,8 @@ fun NavController.navigateToFormTypeQuestionScreen(
 }
 
 fun NavController.navigateBackToMissionScreen() {
-    this.popBackStack(HomeScreens.Home_SCREEN.route, false)
+    this.navigateUp()
+    this.navigateUp()
 }
 fun NavController.navigateBackToSurveyeeListScreen() {
     this.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
@@ -125,7 +179,7 @@ sealed class HomeScreens(val route: String) {
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object BS_DIDI_DETAILS_SCREEN : HomeScreens(route = BASELINE_DIDI_DETAILS_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
-        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_MISSION_DATE.value}}")
+        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}")
 
     object Final_StepComplitionScreen :
         HomeScreens(route = "$Final_Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
@@ -136,8 +190,11 @@ sealed class HomeScreens(val route: String) {
     object FORM_QUESTION_SUMMARY_SCREEN : HomeScreens(
         route = "$FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_QUESTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}"
     )
+
     object SURVEYEE_LIST_SCREEN_WITH_PARAMS :
         HomeScreens(route = "$SURVEYEE_LIST_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
+
+    object DIDI_TAB_SCREEN : HomeScreens("didi_tab_screen")
 }
 
 sealed class SettingScreens(val route: String) {

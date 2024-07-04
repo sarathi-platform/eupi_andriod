@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     val prefRepo: PrefRepo,
-    val corePrefRepo: CorePrefRepo
+    val coreSharedPrefs: CoreSharedPrefs
 ) : BaseRepository() {
 
     suspend fun generateOtp(mobileNumber: String): ApiResponseModel<String> {
@@ -24,7 +24,7 @@ class LoginRepository @Inject constructor(
 
     fun saveMobileNumber(mobileNumber: String) {
         prefRepo.saveMobileNumber(mobileNumber)
-        corePrefRepo.savePref(PREF_MOBILE_NUMBER, mobileNumber)
+        coreSharedPrefs.setMobileNo(mobileNumber)
     }
 
 }

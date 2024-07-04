@@ -90,9 +90,12 @@ class SplashScreenViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                if (ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) == false) {
+                if (ex.message == null) {
                     splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
-                }
+                } else
+                    if ((ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) ?: true) == false) {
+                        splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                    }
                 onCatchError(ex)
                 withContext(Dispatchers.Main) {
                     callBack()

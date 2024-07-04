@@ -43,6 +43,9 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+        const val PREF_USER_TYPE = "pref_user_type"
+        const val UP_CM_USER = "Ultra Poor change maker (UPCM)"
+
     }
 
     val prefs: SharedPreferences by lazy {

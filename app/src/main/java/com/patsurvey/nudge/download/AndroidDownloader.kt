@@ -6,6 +6,7 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Build
 import android.os.Environment
+import android.webkit.MimeTypeMap
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
@@ -29,10 +30,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AndroidDownloader @Inject constructor(@ApplicationContext private val context: Context) : Downloader {
+class AndroidDownloader @Inject constructor(@ApplicationContext private val context: Context) :
+    Downloader {
 
     var job: Job? = null
-    val mContext:Context = context
+    val mContext: Context = context
     val _downloadStatus = MutableStateFlow<Map<Int, DownloadStatus>>(mapOf())
     val downloadStatus: StateFlow<Map<Int, DownloadStatus>> get() = _downloadStatus
 
@@ -57,7 +59,11 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
             .setMimeType(if (fileType == FileType.VIDEO) "video/mp4" else if (fileType == FileType.IMAGE) "image/jpeg" else "application/pdf")
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
 //            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_MOVIES, "${videoItem.id}.mp4")
+            .setDestinationInExternalFilesDir(
+                context,
+                Environment.DIRECTORY_MOVIES,
+                "${videoItem.id}.mp4"
+            )
         return downloadManager.enqueue(request)
 
     }
@@ -69,21 +75,34 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
             .setMimeType(if (fileType == FileType.VIDEO) "video/mp4" else if (fileType == FileType.IMAGE) "image/jpeg" else "application/pdf")
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
 //            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DCIM, "${getFileNameFromURL(imageUrl)}")
+            .setDestinationInExternalFilesDir(
+                context,
+                Environment.DIRECTORY_DCIM,
+                "${getFileNameFromURL(imageUrl)}"
+            )
         return downloadManager.enqueue(request)
     }
 
-    override fun downloadAuthorizedImageFile(imageUrl: String, fileType: FileType,prefRepo: PrefRepo): Long {
+    override fun downloadAuthorizedImageFile(
+        imageUrl: String,
+        fileType: FileType,
+        prefRepo: PrefRepo
+    ): Long {
         val request = DownloadManager.Request(imageUrl.toUri())
             .addRequestHeader(
                 KEY_HEADER_AUTH,
-                "Bearer " + (prefRepo.getAccessToken()!!))
+                "Bearer " + (prefRepo.getAccessToken()!!)
+            )
             .setTitle("Didi Images")
             .setDescription("Downloading")
             .setMimeType(if (fileType == FileType.VIDEO) "video/mp4" else if (fileType == FileType.IMAGE) "image/jpeg" else "application/pdf")
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
 //            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DCIM, "${getAuthImageFileNameFromURL(imageUrl)}")
+            .setDestinationInExternalFilesDir(
+                context,
+                Environment.DIRECTORY_DCIM,
+                "${getAuthImageFileNameFromURL(imageUrl)}"
+            )
         return downloadManager.enqueue(request)
     }
 
@@ -160,8 +179,8 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
         downloadId: Long,
         id: Int,
         downloadManager: DownloadManager,
-        onDownloadComplete:()->Unit,
-        onDownloadFailed:()->Unit,
+        onDownloadComplete: () -> Unit,
+        onDownloadFailed: () -> Unit,
     ) {
         var progress = 0
         var isDownloadFinished = false
@@ -195,7 +214,10 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                     it[id] = status
                                 }
                                 onDownloadComplete()
-                                NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> onDownloadComplete = downloadId: $downloadId, id: $id, status: $status, ")
+                                NudgeLogger.d(
+                                    "AndroidDownloader",
+                                    "checkDownloadStatus -> onDownloadComplete = downloadId: $downloadId, id: $id, status: $status, "
+                                )
                             }
 
                             DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {
@@ -212,7 +234,10 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                 _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
                                     it[id] = status
                                 }
-                                NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> onDownloadFailed = downloadId: $downloadId, id: $id, status: $status, ")
+                                NudgeLogger.d(
+                                    "AndroidDownloader",
+                                    "checkDownloadStatus -> onDownloadFailed = downloadId: $downloadId, id: $id, status: $status, "
+                                )
                                 onDownloadFailed()
                             }
                         }
@@ -249,5 +274,27 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
         return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
     }
 
+    fun downloadFile(context: Context, url: String, title: String): Long {
+        val request = DownloadManager.Request(url.toUri())
+            .setTitle(title)
+            .setDescription("Downloading")
+            .setMimeType(getMimeType(url))
+            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+            .setDestinationInExternalFilesDir(
+                context,
+                Environment.DIRECTORY_DCIM,
+                getFileNameFromURL(url)
+            )
+        return downloadManager.enqueue(request)
+    }
+
+    fun getMimeType(url: String?): String? {
+        var type: String? = null
+        val extension = MimeTypeMap.getFileExtensionFromUrl(url)
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+        }
+        return type
+    }
 
 }

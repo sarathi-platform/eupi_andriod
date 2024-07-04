@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.splash.domain.repository
 import android.text.TextUtils
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
+import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.base.BaseRepository
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
@@ -39,7 +40,6 @@ class SplashScreenRepositoryImpl @Inject constructor(
             val defaultLanguage = getDefaultLanguage()
             languageListDao.insertLanguage(defaultLanguage)
         }
-
     }
 
     override fun isLoggedIn(): Boolean {
@@ -108,12 +108,14 @@ class SplashScreenRepositoryImpl @Inject constructor(
         prefBSRepo.saveAppLanguageId(languageId)
         coreSharedPrefs.setBackupFileName(
             getDefaultBackUpFileName(
-                prefBSRepo.getMobileNumber() ?: BLANK_STRING
+                prefBSRepo.getMobileNumber() ?: BLANK_STRING,
+                prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
             )
         )
         coreSharedPrefs.setImageBackupFileName(
             getDefaultImageBackUpFileName(
-                prefBSRepo.getMobileNumber() ?: ""
+                prefBSRepo.getMobileNumber() ?: "",
+                prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
             )
         )
     }

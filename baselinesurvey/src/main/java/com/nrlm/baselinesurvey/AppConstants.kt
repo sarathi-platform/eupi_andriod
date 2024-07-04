@@ -309,7 +309,7 @@ const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."
 
 const val LIVELIHOOD_SOURCE_TAG = "Income Soruces"
 
-const val PREF_USER_TYPE = "pref_user_type"
+const val PREF_USER_TYPE = "userType"
 const val DELIMITER_TIME = ":"
 const val DELIMITER_YEAR = "/"
 const val DELIMITER_MULTISELECT_OPTIONS = ", "

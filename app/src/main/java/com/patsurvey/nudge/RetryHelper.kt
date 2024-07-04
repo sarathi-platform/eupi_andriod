@@ -1250,13 +1250,15 @@ object RetryHelper {
                             CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
                                 .setBackupFileName(
                                     getDefaultBackUpFileName(
-                                        prefRepo?.getMobileNumber() ?: ""
+                                        prefRepo?.getMobileNumber() ?: BLANK_STRING,
+                                        prefRepo?.getLoggedInUserType() ?: BLANK_STRING
                                     )
                                 )
                             CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
                                 .setImageBackupFileName(
                                     getDefaultImageBackUpFileName(
-                                        prefRepo?.getMobileNumber() ?: ""
+                                        prefRepo?.getMobileNumber() ?: BLANK_STRING,
+                                        prefRepo?.getLoggedInUserType() ?: BLANK_STRING
                                     )
                                 )
                         }

@@ -14,12 +14,15 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.model.MissionUiModel
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.nudge.navigationmanager.utils.NavigationParams
+import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -84,16 +87,23 @@ import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.SYNC_DATA
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.sarathi.missionactivitytask.navigation.MatNavigation
+import com.sarathi.smallgroupmodule.navigation.SmallGroupNavigation
+import com.sarathi.smallgroupmodule.ui.didiTab.presentation.DidiTabScreen
+
 
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
-        route = NudgeNavigationGraph.HOME,
+        route = NudgeNavigationGraph.HOME_SUB_GRAPH,
         startDestination = HomeScreens.PROGRESS_SEL_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SEL_SCREEN.route) {
-            HomeUserScreen(navController = navController, prefRepo = prefRepo)
+//            HomeNavScreen(prefRepo = prefRepo)
+            HomeUserScreen(navController = navController, prefRepo = prefRepo) {
+
+            }
         }
 
         composable(route = HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
@@ -136,6 +146,16 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 }
             )
         }
+
+        composable(route = HomeScreens.DIDI_TAB_SCREEN.route) {
+            DidiTabScreen(navHostController = navController,
+                onBackPressed = {
+                    finishActivity()
+                }) {
+                navController.navigateToSettingScreen()
+            }
+        }
+
         detailsNavGraph(navController = navController)
         addDidiNavGraph(navController = navController)
         socialMappingNavGraph(navController = navController)
@@ -143,11 +163,44 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
-        logoutGraph(navController =navController,prefRepo)
+        logoutGraph(navController = navController, prefRepo)
         bpcDidiListNavGraph(navController = navController)
         BSNavHomeGraph(navController)
+        MatNavigation(
+            navController = navController,
+            onSettingIconClick = { navController.navigateToSettingScreen() },
+            onBackPressed = {
+                finishActivity()
+            },
+            onNavigateToBaselineMission = { mission: MissionUiModel ->
+                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
+            }
+        )
+        SmallGroupNavigation(
+            navController = navController,
+            onSettingIconClick = { navController.navigateToSettingScreen() })
     }
 }
+
+fun finishActivity() {
+    (CoreAppDetails.getApplicationDetails()?.activity)?.finish()
+}
+
+fun NavHostController.navigateToSettingScreen() {
+    this.navigate(NudgeNavigationGraph.SETTING_GRAPH)
+}
+
+/*sealed class HomeScreens(val route: String) {
+    object PROGRESS_SCREEN : HomeScreens(route = "progress_screen")
+
+    object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
+
+    object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
+
+    object DIDI_TAB_SCREEN : HomeScreens("didi_tab_screen")
+
+    object VILLAGE_SELECTION_SCREEN : HomeScreens(route = "home_village_selection_screen")
+}*/
 
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
@@ -188,7 +241,7 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(NudgeNavigationGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                     popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false
@@ -281,7 +334,7 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(NudgeNavigationGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                     popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false

@@ -1,0 +1,30 @@
+package com.sarathi.dataloadingmangement.repository
+
+import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
+import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
+import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
+
+interface IMATStatusEventRepository {
+
+    suspend fun writeTaskStatusEvent(
+        taskEntity: ActivityTaskEntity,
+        subjectType: String
+    ): UpdateTaskStatusEventDto
+
+    suspend fun writeActivityStatusEvent(
+        activityEntity: ActivityEntity
+    ): UpdateActivityStatusEventDto
+
+    suspend fun writeMissionStatusEvent(
+        missionEntity: MissionEntity
+    ): UpdateMissionStatusEventDto
+
+    suspend fun getMissionEntity(missionId: Int): MissionEntity
+    suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity
+    suspend fun getActivityEntity(missionId: Int, activityId: Int): ActivityEntity?
+
+
+}

@@ -1,5 +1,6 @@
 package com.nudge.syncmanager.utils
 
+import com.nudge.core.enums.EventName
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -24,5 +25,18 @@ fun Long.toTimeDateString(): String {
     val dateTime = Date(this)
     val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
+}
+
+fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, String> {
+    return when (eventName) {
+
+        EventName.ADD_SECTION_PROGRESS_FOR_DIDI_EVENT -> {
+            emptyMap()
+        }
+
+        else -> {
+            emptyMap()
+        }
+    }
 }
 

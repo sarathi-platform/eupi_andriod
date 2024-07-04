@@ -48,12 +48,13 @@ class SettingBSRepositoryImpl(
             val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
             coreSharedPrefs.setBackupFileName(
                 getDefaultBackUpFileName(
-                    prefRepo.getMobileNumber() ?: BLANK_STRING
+                    prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    prefRepo.getLoggedInUserType() ?: BLANK_STRING
                 )
             )
             coreSharedPrefs.setImageBackupFileName(
                 getDefaultImageBackUpFileName(
-                    prefRepo.getMobileNumber() ?: ""
+                    prefRepo.getMobileNumber() ?: "", prefRepo.getLoggedInUserType() ?: BLANK_STRING
                 )
             )
             coreSharedPrefs.setFileExported(false)

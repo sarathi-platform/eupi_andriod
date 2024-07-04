@@ -416,10 +416,13 @@ fun VillageSelectionScreen(
 
 fun NavController.navigateToProgressScreen(){
     if (this.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
-            this.navigate(HomeScreens.PROGRESS_SEL_SCREEN.route){
+        this.navigate(HomeScreens.PROGRESS_SEL_SCREEN.route) {
             this.popUpTo(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
         }
-    }else{
+    } else if (this.graph.route?.equals(NudgeNavigationGraph.HOME_SUB_GRAPH, true) == true) {
+        this.popBackStack()
+        this.navigate(HomeScreens.PROGRESS_SEL_SCREEN.route)
+    } else {
         this.popBackStack()
         this.navigate(NudgeNavigationGraph.HOME)
     }
@@ -461,7 +464,12 @@ fun VillageAndVoBoxForBottomSheet(
                 if (isUserBPC) {
                     when (fetchBorderColorForVillage(stepId, statusId)) {
                         0, 2 -> showCustomToast(
-                            context, getVoNameForState(context,stateId,R.plurals.village_is_not_vo_endorsed_right_now)
+                            context,
+                            getVoNameForState(
+                                context,
+                                stateId,
+                                R.plurals.village_is_not_vo_endorsed_right_now
+                            )
                         )
 
                         else -> onVillageSeleted(index)

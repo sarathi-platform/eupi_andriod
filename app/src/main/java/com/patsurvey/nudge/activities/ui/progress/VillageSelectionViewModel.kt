@@ -10,6 +10,9 @@ import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -127,6 +130,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VillageSelectionViewModel @Inject constructor(
     val prefRepo: PrefRepo,
+    val coreSharedPrefs: CoreSharedPrefs,
     val apiService: ApiService,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
@@ -1575,14 +1579,35 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
                                 prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
-                                prefRepo.savePref(PREF_KEY_TYPE_STATE_ID,  it.villageList?.get(0)?.stateId?:4)
+                                prefRepo.savePref(
+                                    PREF_KEY_TYPE_STATE_ID,
+                                    it.villageList?.get(0)?.stateId ?: 4
+                                )
+
+
+                                coreSharedPrefs.setBackupFileName(
+                                    getDefaultBackUpFileName(
+                                        prefRepo.getMobileNumber(),
+                                        it.typeName ?: BLANK_STRING
+                                    )
+                                )
+                                coreSharedPrefs.setImageBackupFileName(
+                                    getDefaultImageBackUpFileName(
+                                        prefRepo.getMobileNumber(),
+                                        it.typeName ?: BLANK_STRING
+                                    )
+                                )
 
                                 villageListDao.insertAll(it.villageList ?: listOf())
-                                stateId.value= it.villageList?.get(0)?.stateId?:1
-                                if(it.typeName.equals(UPCM_USER)){
-                                    prefRepo.savePref(PREF_STATE_ID, it.referenceId.first().stateId ?: -1)
+                                stateId.value = it.villageList?.get(0)?.stateId ?: 1
+                                if (it.typeName.equals(UPCM_USER)) {
+                                    prefRepo.savePref(
+                                        PREF_STATE_ID,
+                                        it.referenceId.first().stateId ?: -1
+                                    )
                                 }
-                                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                                val localVillageList =
+                                    villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
                                 if (localVillageList.isNotEmpty()) {
                                     _villagList.emit(localVillageList)
                                 }
