@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.EventSyncStatus
 import com.nudge.core.EventsTable
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.toDate
@@ -45,7 +44,7 @@ data class Events (
     val status: String,
 
     @ColumnInfo("retry_count")
-    val retry_count: Int = 0,
+    var retry_count: Int = 0,
 
     @ColumnInfo("error_message")
     val error_message: String? = BLANK_STRING,

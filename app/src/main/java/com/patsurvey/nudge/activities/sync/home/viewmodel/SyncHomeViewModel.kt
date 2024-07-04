@@ -3,20 +3,28 @@ package com.patsurvey.nudge.activities.sync.home.viewmodel
 import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.BASELINE
+import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.SARATHI
+import com.nudge.core.SELECTION
+import com.nudge.core.UPCM_USER
+import com.nudge.core.enums.EventType
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.getFirstName
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.NudgeCore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -27,13 +35,14 @@ import javax.inject.Inject
 @HiltViewModel
 class SyncHomeViewModel @Inject constructor(
     val syncEventDetailUseCase: SyncEventDetailUseCase,
-    val prefRepo: PrefBSRepo
+    val prefRepo: PrefRepo
 ) : BaseViewModel()  {
     val selectedSyncType = mutableIntStateOf(SyncType.SYNC_ALL.ordinal)
     var syncWorkerInfoState: WorkInfo.State? = null
     val imageEventProgress = mutableFloatStateOf(0f)
     val dataEventProgress = mutableFloatStateOf(0f)
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
+    val lastSyncTime = mutableLongStateOf(0L)
     private val _loaderState = mutableStateOf(LoaderState(false))
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -43,6 +52,10 @@ class SyncHomeViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    init {
+        lastSyncTime.longValue = prefRepo.getPref(LAST_SYNC_TIME, 0L)
     }
    @SuppressLint("SuspiciousIndentation")
    fun syncAllPending(networkSpeed: NetworkSpeed) {
@@ -55,6 +68,8 @@ class SyncHomeViewModel @Inject constructor(
                         networkSpeed,
                         selectedSyncType.intValue
                     )
+                prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
+                lastSyncTime.longValue = prefRepo.getPref(LAST_SYNC_TIME, 0L)
             }catch (ex:Exception){
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext(),
@@ -89,5 +104,28 @@ class SyncHomeViewModel @Inject constructor(
             progState = 0f
         }
         return progState
+    }
+
+    fun findFailedEventAndWriteIntoFile() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val failedEventList =
+                syncEventDetailUseCase.getSyncEventsUseCase.getAllFailedEventListFromDB()
+            val moduleName =
+                if (syncEventDetailUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER) BASELINE else SELECTION
+            val eventFileName =
+                getFirstName(syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserName()) +
+                        "_${syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()}_" +
+                        "${SARATHI}_${moduleName}_FAILED_EVENTs_${System.currentTimeMillis()}"
+            if (failedEventList.isNotEmpty()) {
+                failedEventList.forEach {
+                    syncEventDetailUseCase.eventsWriterUseCase.writeFailedEventIntoEventFile(
+                        events = it,
+                        eventType = EventType.STATEFUL,
+                        fileNameWithoutExtension = eventFileName
+                    )
+                }
+
+            }
+        }
     }
 }

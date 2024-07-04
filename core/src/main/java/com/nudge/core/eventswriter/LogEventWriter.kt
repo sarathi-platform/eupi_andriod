@@ -34,4 +34,19 @@ class LogEventWriter() : IEventWriter {
     override suspend fun getEventWriteType(): EventWriterName {
         return EventWriterName.LOG_EVENT_WRITER
     }
+
+    override suspend fun addFailedEventIntoFile(
+        context: Context,
+        event: Events,
+        mobileNo: String,
+        uri: Uri?,
+        dependencyEntity: List<EventDependencyEntity>,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
+        eventDependencyDao: EventDependencyDao,
+        imageStatusDao: ImageStatusDao,
+        fileNameWithoutExtension: String
+    ) {
+        //("Not yet implemented")
+    }
 }

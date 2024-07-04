@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.Events
 import com.nudge.core.preference.CorePrefRepo
@@ -16,6 +17,18 @@ class SyncHomeRepositoryImpl(
 ):SyncHomeRepository {
     override fun getTotalEvents(): LiveData<List<Events>>{
         return eventsDao.getTotalSyncEvent(corePrefRepo.getMobileNumber())
+    }
+
+    override fun getAllFailedEventListFromDB(
+    ): List<Events> {
+        return eventsDao.fetchAllFailedEventList(
+            mobileNumber = corePrefRepo.getMobileNumber(),
+            status = listOf(
+                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                EventSyncStatus.CONSUMER_IN_PROGRESS.eventSyncStatus,
+                EventSyncStatus.CONSUMER_FAILED.eventSyncStatus
+            )
+        )
     }
 
 

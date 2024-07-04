@@ -26,5 +26,18 @@ interface IEventWriter {
 
     suspend fun getEventWriteType(): EventWriterName
 
+    suspend fun addFailedEventIntoFile(
+        context: Context,
+        event: Events,
+        mobileNo: String,
+        uri: Uri?,
+        dependencyEntity: List<EventDependencyEntity>,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
+        eventDependencyDao: EventDependencyDao,
+        imageStatusDao: ImageStatusDao,
+        fileNameWithoutExtension: String
+    )
+
 
 }

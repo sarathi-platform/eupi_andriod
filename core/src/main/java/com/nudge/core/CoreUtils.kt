@@ -162,12 +162,12 @@ fun renameFile(context: Context, oldName: String, newName: String, mobileNumber:
             }
 
             // Optionally, you can handle the renaming success or failure
-            if (newFileUri != null) {
-                return true
+            return if (newFileUri != null) {
+                true
                 // Renaming succeeded
                 // You can notify the user or take further action if needed
             } else {
-                return false
+                false
                 // Renaming failed
                 // You can notify the user or take further action if needed
             }

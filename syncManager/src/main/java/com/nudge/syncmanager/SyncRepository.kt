@@ -4,6 +4,7 @@ package com.nudge.syncmanager
 import android.content.Context
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -11,6 +12,7 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.request.EventRequest
@@ -81,6 +83,7 @@ class SyncApiRepository @Inject constructor(
 
     suspend fun updateSuccessEventStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
+            prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             eventDao.updateSuccessEventStatus(eventList)
             eventList.forEach {
                 eventStatusDao.insert(
@@ -106,8 +109,18 @@ class SyncApiRepository @Inject constructor(
 
     suspend fun updateFailedEventStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
+            CoreLogger.d(
+                context,
+                "updateFailedEventStatus",
+                "Failed Event Details1: ${eventList.json()}"
+            )
             eventDao.updateFailedEventStatus(eventList)
             eventList.forEach {
+                CoreLogger.d(
+                    context,
+                    "updateFailedEventStatus",
+                    "Failed Event Details: ${it.json()}"
+                )
                 eventStatusDao.insert(
                     EventStatusEntity(
                         clientId = it.clientId,
@@ -130,6 +143,7 @@ class SyncApiRepository @Inject constructor(
 
     suspend fun updateEventConsumerStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
+            prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             eventDao.updateConsumerStatus(eventList)
             eventList.forEach {
                 eventStatusDao.insert(
@@ -173,6 +187,9 @@ class SyncApiRepository @Inject constructor(
             modifiedDate = System.currentTimeMillis().toDate(),
             mobileNumber = getLoggedInMobileNumber()
         )
+    }
+    suspend fun findEventAndUpdateRetryCount(eventId: String) {
+        eventDao.findEventAndUpdateRetryCount(eventId = eventId)
     }
 }
 

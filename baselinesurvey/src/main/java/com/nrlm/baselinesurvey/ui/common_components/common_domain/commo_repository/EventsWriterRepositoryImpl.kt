@@ -331,6 +331,28 @@ class EventsWriterRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveFailedEventWithFileName(
+        event: Events,
+        eventDependencies: List<EventDependencyEntity>,
+        eventType: EventType,
+        fileNameWithoutExtension: String
+    ) {
+        try {
+            val selectedEventWriter = mutableListOf<EventWriterName>(
+                EventWriterName.FILE_EVENT_WRITER
+            )
+            val eventFormatter: IEventFormatter = getEventFormatter()
+            eventFormatter.saveAndFormatEventWithFileName(
+                event = event,
+                dependencyEntity = eventDependencies,
+                selectedEventWriters = selectedEventWriter,
+                fileNameWithoutExtension = fileNameWithoutExtension
+            )
+        } catch (exception: Exception) {
+            BaselineLogger.e("saveEventToMultipleSources", exception.message ?: "")
+        }
+    }
+
 
     override fun getEventFormatter(): IEventFormatter {
         return EventWriterFactory().createEventWriter(

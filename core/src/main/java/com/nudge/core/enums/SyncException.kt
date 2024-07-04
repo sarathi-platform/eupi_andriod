@@ -7,5 +7,6 @@ enum class SyncException(val message: String) {
     EXCEPTION_WHILE_FINDING_IMAGE("Exception while finding image"),
     IMAGE_FILE_IS_NOT_EXIST_EXCEPTION("Image file not exist"),
     IMAGE_EMPTY_URI_EXCEPTION("Image URI empty Exception"),
+    PRODUCER_RETRY_COUNT_EXCEEDED_EXCEPTION("Producer Retry Count Exceeded Exception"),
     SOMETHING_WENT_WRONG("Something Went Wrong")
 }

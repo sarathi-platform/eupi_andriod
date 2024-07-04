@@ -150,11 +150,13 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideSyncHomeUseCase(
-        repository: SyncHomeRepository
+        repository: SyncHomeRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): SyncEventDetailUseCase {
         return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
-            getSyncEventsUseCase = GetSyncEventsUseCase(repository)
+            getSyncEventsUseCase = GetSyncEventsUseCase(repository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 

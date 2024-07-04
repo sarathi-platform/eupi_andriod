@@ -85,6 +85,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
     }
 
+    override fun savePref(key: String, value: Long) {
+        prefs.edit().putLong(key, value).apply()
+    }
+
     override fun savePref(key: String, value: String) {
         prefs.edit().putString(key, value).apply()
     }

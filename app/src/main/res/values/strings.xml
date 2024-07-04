@@ -532,6 +532,7 @@
     <string name="sync_data">Data</string>
     <string name="sync_images">Images</string>
     <string name="sync_all_data" translatable="false">Sync All Data</string>
+    <string name="export_failed_event" translatable="false">Export Failed Event</string>
     <string name="sync_data_history" translatable="false">Sync Data History</string>
     <string name="sync_image_history" translatable="false">Sync Image History</string>
     <string name="consumer_success_event_count" translatable="false">Consumer Success Event Count</string>

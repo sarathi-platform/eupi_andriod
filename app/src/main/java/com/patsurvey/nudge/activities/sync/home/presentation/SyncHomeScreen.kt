@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -35,6 +38,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.json
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
@@ -45,8 +49,10 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.showCustomToast
+import java.text.SimpleDateFormat
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -150,18 +156,43 @@ fun SyncHomeScreen(
                     .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
                     .padding(vertical = dimensionResource(id = R.dimen.dp_15))
             ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(id = R.string.sync_all_data),
-                    isArrowRequired = false,
-                    isActive = true
-                ) {
-                    CoreLogger.d(
-                        context,
-                        "SyncHomeScreen",
-                        "Sync All Data Click: ${viewModel.selectedSyncType.intValue}"
-                    )
-                    startSyncProcess(context, viewModel)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        ) {
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            ButtonPositive(
+                                modifier = Modifier.weight(1f),
+                                buttonTitle = stringResource(id = R.string.export_failed_event),
+                                isActive = true,
+                                isArrowRequired = false,
+                                textColor = white,
+                            ) {
+                                viewModel.findFailedEventAndWriteIntoFile()
+                            }
+                        }
+                    }
+                    ButtonPositive(
+                        buttonTitle = stringResource(id = R.string.sync_all_data),
+                        isArrowRequired = false,
+                        isActive = true
+                    ) {
+                        viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
+
+                        CoreLogger.d(
+                            context,
+                            "SyncHomeScreen",
+                            "Sync All Data Click: ${viewModel.selectedSyncType.intValue}"
+                        )
+                        startSyncProcess(context, viewModel)
+                    }
                 }
+
             }
         }) {
         Column(
@@ -172,30 +203,35 @@ fun SyncHomeScreen(
 
         ) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Last Sync Time: ",
-                    style = mediumTextStyle,
-                    color = textColorDark
-                )
+            if (viewModel.lastSyncTime.longValue != 0L) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimen_10_dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Last Sync Time: ",
+                        style = mediumTextStyle,
+                        color = textColorDark
+                    )
 
-                Text(
-                    text = "${System.currentTimeMillis()}",
-                    style = mediumTextStyle,
-                    color = textColorDark
-                )
+                    Text(
+                        text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                        style = mediumTextStyle,
+                        color = textColorDark
+                    )
+                }
             }
 
 
             EventTypeCard(
                 title = stringResource(id = R.string.sync_data),
                 progress = viewModel.dataEventProgress.floatValue,
-                isProgressBarVisible = (viewModel.syncWorkerInfoState == WorkInfo.State.RUNNING || viewModel.syncWorkerInfoState == WorkInfo.State.ENQUEUED) && (viewModel.dataEventProgress.floatValue < 100),
+                isProgressBarVisible = ((viewModel.dataEventProgress.floatValue > 0
+                        && viewModel.dataEventProgress.floatValue < 1)
+                        && (viewModel.selectedSyncType.intValue == SyncType.SYNC_ALL.ordinal
+                        || viewModel.selectedSyncType.intValue == SyncType.SYNC_ONLY_DATA.ordinal)),
                 syncButtonTitle = stringResource(id = R.string.sync_only_data),
                 onSyncButtonClick = {
                     viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
@@ -213,7 +249,10 @@ fun SyncHomeScreen(
             EventTypeCard(
                 title = stringResource(id = R.string.sync_images),
                 progress = viewModel.imageEventProgress.floatValue,
-                isProgressBarVisible = (viewModel.syncWorkerInfoState == WorkInfo.State.RUNNING || viewModel.syncWorkerInfoState == WorkInfo.State.ENQUEUED) && (viewModel.imageEventProgress.floatValue < 100),
+                isProgressBarVisible = ((viewModel.imageEventProgress.floatValue > 0
+                        && viewModel.imageEventProgress.floatValue < 1)
+                        && (viewModel.selectedSyncType.intValue == SyncType.SYNC_ALL.ordinal
+                        || viewModel.selectedSyncType.intValue == SyncType.SYNC_ONLY_IMAGES.ordinal)),
                 onSyncButtonClick = {
                     viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
                     CoreLogger.d(

@@ -204,7 +204,6 @@ val TEMP_UNAVAILABLE_ERROR_MESSAGE = "Service are temporarily unavailable now"
 const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
-const val LAST_SYNC_TIME = "last_sync_time"
 
 const val SYNC_FAILED = "Online Sync Failed"
 const val SYNC_SUCCESSFULL = "Online Sync Successful"

@@ -93,6 +93,7 @@ import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.enums.EventName
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R

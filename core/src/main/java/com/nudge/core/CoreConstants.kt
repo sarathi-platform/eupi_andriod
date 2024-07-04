@@ -80,3 +80,5 @@ val eventWriters = listOf<IEventWriter>(
 const val BATCH_DEFAULT_LIMIT = 5
 const val RETRY_DEFAULT_COUNT = 3
 const val SYNC_DATE_TIME_FORMAT = "yyyy-MM-dd"
+const val SYNC_VIEW_DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss a"
+const val LAST_SYNC_TIME = "last_sync_time"

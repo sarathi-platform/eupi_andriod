@@ -12,4 +12,12 @@ interface IEventFormatter {
         selectedEventWriters: List<EventWriterName>,
         uri: Uri? = null
     )
+
+    suspend fun saveAndFormatEventWithFileName(
+        event: Events,
+        dependencyEntity: List<EventDependencyEntity>,
+        selectedEventWriters: List<EventWriterName>,
+        uri: Uri? = null,
+        fileNameWithoutExtension: String
+    )
 }

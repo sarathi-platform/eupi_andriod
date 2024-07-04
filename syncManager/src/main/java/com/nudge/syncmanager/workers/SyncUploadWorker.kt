@@ -57,13 +57,7 @@ class SyncUploadWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
 
-        if (runAttemptCount >= RETRY_DEFAULT_COUNT) {
-            return Result.failure(
-                workDataOf(
-                    WorkerKeys.ERROR_MSG to "Failed: Producer Failed with Attempt Count"
-                )
-            )
-        }
+
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
 
         return try {
@@ -108,8 +102,8 @@ class SyncUploadWorker @AssistedInject constructor(
                     TAG,
                     "doWork: pendingEvents List: ${mPendingEventList.json()}"
                 )
-                val apiResponse = syncApiRepository.syncProducerEventToServer(mPendingEventList)
 
+                val apiResponse = syncApiRepository.syncProducerEventToServer(mPendingEventList)
                 if (apiResponse.status == SUCCESS) {
                     apiResponse.data?.let { eventList ->
                         if (eventList.isNotEmpty()) {
@@ -143,7 +137,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
             )
         } catch (ex: Exception) {
-            handleException(ex, mPendingEventList)
+            handleException(Exception("Ex Failure issue"), mPendingEventList)
         } finally {
             DeviceBandwidthSampler.getInstance().stopSampling()
         }
@@ -229,6 +223,11 @@ class SyncUploadWorker @AssistedInject constructor(
         )
 
         return if (runAttemptCount < RETRY_DEFAULT_COUNT) {
+            if (mPendingEventList.isNotEmpty()) {
+                mPendingEventList.forEach {
+                    syncApiRepository.findEventAndUpdateRetryCount(it.id)
+                }
+            }
             Result.retry()
         } else {
             if (mPendingEventList.isNotEmpty()) {
@@ -236,7 +235,7 @@ class SyncUploadWorker @AssistedInject constructor(
                     context = applicationContext,
                     eventList = createEventResponseList(
                         mPendingEventList,
-                        ex.message ?: SOMETHING_WENT_WRONG
+                        "${SyncException.PRODUCER_RETRY_COUNT_EXCEEDED_EXCEPTION} :: ${ex.message ?: SOMETHING_WENT_WRONG}"
                     )
                 )
             }
@@ -339,7 +338,11 @@ class SyncUploadWorker @AssistedInject constructor(
         val imageStatusEvent =
             syncApiRepository.fetchImageStatusFromEventId(eventId = eventId)
         imageStatusEvent?.let {
-            if (it.status != EventSyncStatus.PRODUCER_IN_PROGRESS.name && it.status != EventSyncStatus.PRODUCER_SUCCESS.name && it.status != EventSyncStatus.CONSUMER_IN_PROGRESS.name && it.status != EventSyncStatus.CONSUMER_SUCCESS.name) {
+            if (it.status != EventSyncStatus.PRODUCER_IN_PROGRESS.name
+                && it.status != EventSyncStatus.PRODUCER_SUCCESS.name
+                && it.status != EventSyncStatus.CONSUMER_IN_PROGRESS.name
+                && it.status != EventSyncStatus.CONSUMER_SUCCESS.name
+            ) {
                 CoreLogger.d(applicationContext, TAG, "findImageEventAndImage: ${it.json()} ")
                 try {
                     val imageUri = it.filePath.toUri()

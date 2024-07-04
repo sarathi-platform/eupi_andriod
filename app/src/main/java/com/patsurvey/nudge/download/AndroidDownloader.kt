@@ -9,12 +9,12 @@ import android.os.Environment
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import com.nudge.core.KEY_HEADER_AUTH
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.utils.DownloadStatus
-import com.patsurvey.nudge.utils.KEY_HEADER_AUTH
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.getAuthImageFileNameFromURL
 import com.patsurvey.nudge.utils.getFileNameFromURL

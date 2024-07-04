@@ -35,7 +35,7 @@ interface EventsDao {
     @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber ORDER BY modified_date DESC LIMIT :batchLimit")
     fun getAllPendingEvent(status: List<String>,batchLimit:Int,retryCount: Int,mobileNumber:String): List<Events>
 
-    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber")
+    @Query("SELECT COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber")
     fun getTotalPendingEventCount(status: List<String>,mobileNumber:String): Int
 
     @Query("DELETE FROM events_table")
@@ -185,4 +185,21 @@ interface EventsDao {
             else -> 0
         }
     }
+
+    @Query("SELECT * FROM $EventsTable where id =:eventId")
+    fun getEventDetail(eventId: String): Events
+
+    @Query("UPDATE $EventsTable SET retry_count =:retryCount WHERE id =:eventId")
+    fun updateEventRetryCount(retryCount: Int, eventId: String)
+
+    @Transaction
+    fun findEventAndUpdateRetryCount(eventId: String) {
+        val eventDetail = getEventDetail(eventId)
+        eventDetail?.let {
+            updateEventRetryCount(it.retry_count++, eventId)
+        }
+    }
+
+    @Query("SELECT * FROM $EventsTable WHERE status IN (:status) and mobile_number =:mobileNumber")
+    fun fetchAllFailedEventList(mobileNumber: String, status: List<String>): List<Events>
 }

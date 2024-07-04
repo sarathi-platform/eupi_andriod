@@ -14,7 +14,7 @@ import com.nudge.core.eventWriters
 class JsonEventWriter(
     val context: Context,
     val eventsDao: EventsDao,
-    val eventStatusDao:EventStatusDao,
+    val eventStatusDao: EventStatusDao,
     val eventDependencyDao: EventDependencyDao,
     val imageStatusDao: ImageStatusDao
 ) : IEventFormatter {
@@ -45,6 +45,33 @@ class JsonEventWriter(
                     eventStatusDao = eventStatusDao,
                     imageStatusDao = imageStatusDao
                 )
+        }
+    }
+
+    override suspend fun saveAndFormatEventWithFileName(
+        event: Events,
+        dependencyEntity: List<EventDependencyEntity>,
+        selectedEventWriters: List<EventWriterName>,
+        uri: Uri?,
+        fileNameWithoutExtension: String
+    ) {
+        selectedEventWriters.forEach() { eventName ->
+
+            val eventWriter = eventWriters.filter {
+                it.getEventWriteType() == eventName
+            }
+            eventWriter.firstOrNull()?.addFailedEventIntoFile(
+                context = context,
+                event = event,
+                mobileNo = event.mobile_number,
+                uri = uri,
+                eventsDao = eventsDao,
+                eventDependencyDao = eventDependencyDao,
+                dependencyEntity = dependencyEntity,
+                eventStatusDao = eventStatusDao,
+                imageStatusDao = imageStatusDao,
+                fileNameWithoutExtension = fileNameWithoutExtension
+            )
         }
     }
 }
