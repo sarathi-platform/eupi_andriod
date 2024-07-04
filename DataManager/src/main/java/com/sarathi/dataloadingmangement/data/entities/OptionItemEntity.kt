@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.OPTION_TABLE
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
+import com.sarathi.dataloadingmangement.data.converters.IntConverter
 import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
 import com.sarathi.dataloadingmangement.model.survey.response.ConditionsDto
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
@@ -75,7 +76,8 @@ data class OptionItemEntity(
     @SerializedName("optionTag")
     @Expose
     @ColumnInfo(name = "optionTag")
-    val optionTag: Int = 0,
+    @TypeConverters(IntConverter::class)
+    val optionTag: List<Int> = listOf(),
 
     @SerializedName("conditions")
     @Expose
@@ -104,7 +106,7 @@ data class OptionItemEntity(
                 sectionId = 0,
                 contentEntities = listOf(),
                 conditional = false,
-                optionTag = 0,
+                optionTag = listOf(),
                 order = 0,
                 surveyId = 0
             )
@@ -134,7 +136,7 @@ data class OptionItemEntity(
                 order = optionsItem.order,
                 values = optionsItem.values,
                 conditions = optionsItem.conditions,
-                optionTag = optionsItem.tag ?: 0,
+                optionTag = optionsItem.tag ?: listOf(),
                 originalValue = optionsItem.originalValue,
                 contentEntities = optionsItem.contentList ?: listOf()
             )

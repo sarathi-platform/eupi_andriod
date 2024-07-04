@@ -170,7 +170,7 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
-            if (questionUiModel.tagId.toString() == DISBURSED_AMOUNT_TAG) {
+            if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
                 if (sanctionAmount != 0 && disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {

@@ -17,7 +17,7 @@ data class SaveAnswerEventOptionItemDto(
     val referenceId: String = "",
     @SerializedName("tag")
     @Expose
-    val tag: Int = 0,
+    val tag: List<Int> = listOf(),
     @SerializedName("optionDesc")
     @Expose
     val optionDesc: String = BLANK_STRING,

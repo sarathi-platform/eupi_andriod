@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.converters.IntConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -60,7 +61,8 @@ data class SurveyAnswerEntity(
     @SerializedName("tagId")
     @Expose
     @ColumnInfo(name = "tagId")
-    var tagId: Int,
+    @TypeConverters(IntConverter::class)
+    var tagId: List<Int>,
     @SerializedName("grantId")
     @Expose
     @ColumnInfo(name = "grantId")
@@ -124,7 +126,7 @@ data class SurveyAnswerEntity(
             questionAnswerResponse: QuestionAnswerResponseModel,
             userId: String,
             questionSummary: String,
-            questionTag: Int,
+            questionTag: List<Int>,
             optionsUiModel: List<OptionsUiModel>
 
         ): SurveyAnswerEntity {

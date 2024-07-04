@@ -44,10 +44,9 @@ class SurveySaveRepositoryImpl @Inject constructor(
         val surveyAnswerEntities = surveyAnswersDao.getSurveyAnswerForTag(
             taskId,
             subjectId,
-            tagId.toInt(),
             coreSharedPrefs.getUniqueUserIdentifier()
-        )
-        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+        ).filter { it.tagId.contains(tagId.toInt()) }
+        if (tagId == DISBURSED_AMOUNT_TAG.toString() || tagId == NO_OF_POOR_DIDI_TAG.toString()) {
             var totalAmount = 0
             surveyAnswerEntities.forEach { surveyAnswerEntity ->
 
@@ -87,10 +86,12 @@ class SurveySaveRepositoryImpl @Inject constructor(
             taskId = taskId,
             subjectId = subjectId,
             referenceId = referenceId,
-            tagId = tagId.toInt(),
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
-        )
-        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+        ).find { it.tagId.contains(tagId.toInt()) }
+        if (surveyAnswerEntity?.tagId?.contains(DISBURSED_AMOUNT_TAG) == true || surveyAnswerEntity?.tagId?.contains(
+                NO_OF_POOR_DIDI_TAG
+            ) == true || surveyAnswerEntity?.tagId?.contains(RECEIVED_AMOUNT_TAG) == true
+        ) {
             var totalAmount = 0
             surveyAnswerEntity?.optionItems?.forEach {
                 totalAmount += it.selectedValue?.toInt() ?: 0

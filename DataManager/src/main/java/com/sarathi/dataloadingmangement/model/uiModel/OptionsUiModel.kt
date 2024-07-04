@@ -25,7 +25,7 @@ data class OptionsUiModel(
     val order: Int = 0,
 
 
-    val optionTag: Int = 0,
+    val optionTag: List<Int> = listOf(),
 
     var isSelected: Boolean? = false,
 

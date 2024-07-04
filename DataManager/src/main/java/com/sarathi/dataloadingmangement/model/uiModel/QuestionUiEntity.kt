@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
 import androidx.room.TypeConverters
-
 import com.nudge.core.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.converters.IntConverter
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
 
@@ -43,8 +43,8 @@ class QuestionUiEntity(
 
     var isMandatory: Boolean = false,
 
-
-    var tag: Int = 0,
+    @TypeConverters(IntConverter::class)
+    var tag: List<Int> = listOf(),
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf(),
 

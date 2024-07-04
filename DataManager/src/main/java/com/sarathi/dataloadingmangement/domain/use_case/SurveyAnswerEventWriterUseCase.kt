@@ -46,6 +46,12 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
             listOf()
         )
+        writeEventInFile(
+            saveAnswerMoneyJournalEventDto,
+            EventName.FORM_RESPONSE_EVENT,
+            questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
+            listOf()
+        )
         questionUiModels.forEach { questionUiModel ->
             val saveAnswerEventDto = repository.writeSaveAnswerEvent(
                 questionUiModel,
