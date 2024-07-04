@@ -41,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -53,6 +54,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -73,6 +75,7 @@ import com.nudge.core.ui.theme.lightBg
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
+import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.missionactivitytask.R
@@ -80,6 +83,7 @@ import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.FormSummaryDialog
+import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -100,6 +104,9 @@ fun DisbursementFormSummaryScreen(
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    var searchString by remember {
+        mutableStateOf(BLANK_STRING)
+    }
     val innerFirstVisibleItemIndex by remember {
         derivedStateOf {
             innerState.firstVisibleItemIndex
@@ -219,50 +226,90 @@ fun DisbursementFormSummaryScreen(
         },
         onSettingClick = { onSettingClick() },
         onContentUI = { a, b, c ->
-            BoxWithConstraints(
-                modifier = Modifier
-                    .scrollable(
-                        state = rememberScrollableState {
-                            scope.launch {
-                                val toDown = it <= 0
-                                if (toDown) {
-                                    if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                        innerState.scrollBy(-it)
-                                    } else {
-                                        outerState.scrollBy(-it)
-                                    }
-                                } else {
-                                    if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
-                                        outerState.scrollBy(-it)
-                                    } else {
-                                        innerState.scrollBy(-it)
-                                    }
-                                }
-                            }
-                            it
-                        },
-                        Orientation.Vertical,
-                    )
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = 150.dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+            Column {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_10_dp)
                 ) {
-                    viewModel.formList.value.forEach {
-                        item {
-                            FormMainSummaryCard(
-                                maxCustomHeight = maxHeight,
-                                formDisburesmentMap = it,
-                                viewmodel = viewModel
+                    SearchWithFilterViewComponent(
+                        placeholderString = "Search Didi",
+                        showFilter = false,
+                        onFilterSelected = {
+                            /**
+                             * Not required as not filter available for this screen.
+                             **/
+                        },
+                        onSearchValueChange = { searchQuery ->
+                            viewModel.onEvent(
+                                SearchEvent.PerformSearch(
+                                    searchQuery,
+                                    false,
+                                    BLANK_STRING
+                                )
                             )
                         }
+                    )
+                }
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .scrollable(
+                            state = rememberScrollableState {
+                                scope.launch {
+                                    val toDown = it <= 0
+                                    if (toDown) {
+                                        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+                                            innerState.scrollBy(-it)
+                                        } else {
+                                            outerState.scrollBy(-it)
+                                        }
+                                    } else {
+                                        if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
+                                            outerState.scrollBy(-it)
+                                        } else {
+                                            innerState.scrollBy(-it)
+                                        }
+                                    }
+                                }
+                                it
+                            },
+                            Orientation.Vertical,
+                        )
+                ) {
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = 150.dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                    ) {
+                        if(viewModel.filterList.value.isNotEmpty()) {
+                            viewModel.filterList.value.forEach {
+                                item {
+                                    FormMainSummaryCard(
+                                        maxCustomHeight = maxHeight,
+                                        formDisburesmentMap = it,
+                                        viewmodel = viewModel
+                                    )
+                                }
+                            }
+                        }else{
+                            viewModel.formList.value.forEach {
+                                item {
+                                    FormMainSummaryCard(
+                                        maxCustomHeight = maxHeight,
+                                        formDisburesmentMap = it,
+                                        viewmodel = viewModel
+                                    )
+                                }
+                            }
+                        }
+
+
                     }
-
-
                 }
             }
+
         }
     )
 
