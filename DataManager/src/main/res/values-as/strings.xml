@@ -22,7 +22,7 @@
     <string name="activity_completed_unable_to_edit">"কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ বাবে আপুনি মুছিব নোৱাৰে "</string>
     <string name="refresh_failed_please_try_again">"ৰেফ্ৰস বিফল হৈছে, অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক! "</string>
     <string name="csg_disbursed">চিএচজি বিতৰণ কৰা হৈছে</string>
-    <string name="activity_completion_message">"আপুনি  সফলতাৰে %1 কাৰ্যকলাপ সম্পূৰ্ণ কৰিছে। "</string>
+    <string name="activity_completion_message">আপুনি  সফলতাৰে %1$s কাৰ্যকলাপ সম্পূৰ্ণ কৰিছে।</string>
     <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
     <string name="select">নিৰ্বাচন কৰক</string>
     <string name="edit_disable_message">"কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত মুছিব অনুমতি নাই "</string>
