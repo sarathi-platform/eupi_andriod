@@ -5,8 +5,11 @@ import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.DELEGATE_COMM
+import com.sarathi.dataloadingmangement.DELEGATE_COMM_WITH_SPACE
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.MODE_TAG
+import com.sarathi.dataloadingmangement.NATURE_TAG
 import com.sarathi.dataloadingmangement.NO_OF_POOR_DIDI_TAG
 import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
@@ -83,7 +86,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
 
             }
         }
-        return result.joinToString(",")
+        return result.joinToString(DELEGATE_COMM)
     }
 
     override suspend fun getSurveyAnswerForFormTag(
@@ -137,7 +140,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
                 }
             }
         }
-        return result.joinToString(", ")
+        return result.joinToString(DELEGATE_COMM_WITH_SPACE)
     }
 
     override suspend fun getSurveyAnswerImageKeys(
@@ -167,9 +170,8 @@ class SurveySaveRepositoryImpl @Inject constructor(
             taskId = taskId
         )
         surveyAnswers.forEachIndexed { index, surveyAnswerData ->
-            when (surveyAnswerData.questionType) {
-                QuestionType.MultiSelectDropDown.name,
-                QuestionType.SingleSelectDropDown.name -> {
+            if (surveyAnswerData.questionType == QuestionType.MultiSelectDropDown.name || surveyAnswerData.questionType == QuestionType.SingleSelectDropDown.name) {
+                if (surveyAnswerData.tagId.toString() == MODE_TAG || surveyAnswerData.tagId.toString() == NATURE_TAG) {
                     val optionUiModelList = getOptionsForModeAndNature(
                         activityConfigId = activityConfigId,
                         grantId = grantId,
@@ -187,9 +189,38 @@ class SurveySaveRepositoryImpl @Inject constructor(
                         }
                     }
                 }
+            } else {
+                val questionOptions = getSurveySectionQuestionOptionsForLanguage(
+                    sectionId = sectionId,
+                    surveyId = surveyId,
+                    referenceType = surveyAnswerData.referenceId
+                )
+                surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
+                    val optionItem =
+                        questionOptions.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
+                    if (optionItem != null) {
+                        surveyAnswers[index].optionItems[optionIndex].description =
+                            optionItem.description
+                    }
+                }
             }
+
         }
         return surveyAnswers
+    }
+
+    private fun getSurveySectionQuestionOptionsForLanguage(
+        sectionId: Int,
+        surveyId: Int,
+        referenceType: String,
+    ): List<OptionsUiModel> {
+        return optionItemDao.getSurveySectionQuestionOptionsForLanguage(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            referenceType = referenceType,
+            languageId = coreSharedPrefs.getSelectedLanguageCode()
+        )
     }
 
 
