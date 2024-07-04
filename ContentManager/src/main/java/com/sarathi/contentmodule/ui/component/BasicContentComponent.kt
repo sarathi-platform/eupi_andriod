@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,9 +33,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallTextStyle
-import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
@@ -74,7 +73,6 @@ private fun ContentView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(bottom = dimen_16_dp)
             .clickable {
                 onClick()
             }
@@ -88,7 +86,7 @@ private fun ContentView(
                     .size(60.dp)
                     .clip(shape = CircleShape)
                     .border(
-                        dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_100_dp)
+                        dimen_1_dp, color = blueDark, RoundedCornerShape(dimen_100_dp)
                     )
                     .background(color = Color.Transparent)
                     .fillMaxSize(),
@@ -116,12 +114,20 @@ fun ContentData(contentType: String) {
     when (contentType.toUpperCase()) {
         FileType.IMAGE.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
-            Image(painter = painter, contentDescription = null)
+            Image(
+                painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
+                    blueDark
+                )
+            )
         }
 
         FileType.AUDIO.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_audio_placeholder)
-            Image(painter = painter, contentDescription = null)
+            Image(
+                painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
+                    blueDark
+                )
+            )
         }
 
         FileType.VIDEO.name -> {
@@ -131,12 +137,20 @@ fun ContentData(contentType: String) {
         FileType.FILE.name -> {
             val painter: Painter =
                 painterResource(id = R.drawable.ic_file_place_holder_icon)
-            Image(painter = painter, contentDescription = null)
+            Image(
+                painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
+                    blueDark
+                )
+            )
         }
 
         FileType.TEXT.name -> {
             val painter: Painter = painterResource(id = R.drawable.baseline_text_fields_24)
-            Image(painter = painter, contentDescription = null)
+            Image(
+                painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
+                    blueDark
+                )
+            )
         }
     }
 }
@@ -158,6 +172,9 @@ fun ImageOverlay(resId: Int) {
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = "",
+                colorFilter = ColorFilter.tint(
+                    blueDark
+                )
             )
         }
 
@@ -171,8 +188,9 @@ fun ImageOverlay(resId: Int) {
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
-                tint = textColorDark,
-            )
+                tint = blueDark,
+
+                )
         }
     }
 }

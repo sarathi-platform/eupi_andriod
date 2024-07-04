@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
@@ -111,7 +112,7 @@ fun SecondaryButton(
 }
 
 @Composable
-fun ButtonComponent(title: String = "") {
+fun ButtonComponent(title: String = BLANK_STRING) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -187,7 +188,7 @@ fun ButtonPositiveComponent(
             androidx.compose.material.Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyColor,
-                style = /*buttonTextStyle*/TextStyle(
+                style = TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp

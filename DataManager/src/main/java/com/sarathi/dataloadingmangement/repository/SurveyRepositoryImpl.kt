@@ -127,7 +127,7 @@ class SurveyRepositoryImpl @Inject constructor(
         val options = Gson().fromJson<List<OptionsItem>>(
             if (question.tag.toString() == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
             type
-        ).filter { it.languageCode == coreSharedPrefs.getAppLanguage() }
+        )
         options?.forEach { option ->
             modeOrNatureOptions.add(
                 OptionsUiModel(

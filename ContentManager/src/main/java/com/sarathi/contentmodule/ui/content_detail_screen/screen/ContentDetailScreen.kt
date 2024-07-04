@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +23,9 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -37,21 +37,24 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.capitalizeFirstLetter
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dateRangeFieldColor
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
@@ -78,6 +81,7 @@ fun ContentDetailScreen(
     queLazyState: LazyListState = rememberLazyListState(),
     matId: Int,
     contentType: Int,
+    onSettingIconClicked: () -> Unit,
     onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
@@ -102,17 +106,36 @@ fun ContentDetailScreen(
         TopAppBar(title = {
             Row(modifier = Modifier) {
                 IconButton(
-                    onClick = { }, modifier = Modifier
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_sarathi_logo),
+                        painter = painterResource(id = R.drawable.arrow_left),
                         contentDescription = "Back Button",
                         tint = blueDark
                     )
                 }
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(bottom = 5.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.references,
+                            viewModel.filterContentList.value.size
+                        ),
+                        style = mediumTextStyle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = blueDark,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }, actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = { onSettingIconClicked() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.more_icon),
                     contentDescription = "more action button",
@@ -141,29 +164,36 @@ fun ContentDetailScreen(
                 .fillMaxSize()
                 .padding(top = 75.dp)
         ) {
-            SearchWithFilterViewComponent(placeholderString = "Search",
-                filterSelected = viewModel.filterSelected.value,
-                modifier = Modifier.padding(horizontal = dimen_10_dp),
-                showFilter = true,
-                onFilterSelected = {
-                    if (viewModel.filterContentList.value.isNotEmpty()) {
-                        viewModel.filterSelected.value = !it
-                    }
-                },
-                onSearchValueChange = { queryTerm ->
-                    viewModel.onEvent(
-                        SearchEvent.PerformSearch(
-                            queryTerm,
-                            false,
-                            ""
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
+                SearchWithFilterViewComponent(
+                    placeholderString = stringResource(id = R.string.search),
+                    filterSelected = viewModel.filterSelected.value,
+                    modifier = Modifier.padding(horizontal = dimen_10_dp),
+                    showFilter = true,
+                    onFilterSelected = {
+                        if (viewModel.filterContentList.value.isNotEmpty()) {
+                            viewModel.filterSelected.value = !it
+                        }
+                    },
+                    onSearchValueChange = { queryTerm ->
+                        viewModel.onEvent(
+                            SearchEvent.PerformSearch(
+                                queryTerm,
+                                viewModel.filterSelected.value,
+                                ""
+                            )
                         )
-                    )
-                })
-            Spacer(modifier = Modifier.height(dimen_16_dp))
+                    })
+            }
+
             if (viewModel.filterContentList.value.isNotEmpty()) {
                 BoxWithConstraints(
                     modifier = Modifier
-                        .padding(top = dimen_20_dp)
+                        .padding(top = dimen_10_dp)
                         .scrollable(
                             state = rememberScrollableState {
                                 scope.launch {
@@ -187,45 +217,50 @@ fun ContentDetailScreen(
                             Orientation.Vertical,
                         )
                 ) {
-                    if (viewModel.filterContentMap.values.isNotEmpty() && viewModel.filterSelected.value) {
+                    if (viewModel.filterSelected.value) {
                         LazyColumn(
                             state = outerState,
                             modifier = Modifier.padding(bottom = 50.dp)
                         ) {
-                            viewModel.filterContentMap.forEach { (category, itemsInCategory) ->
-                                item {
-                                    Text(
-                                        text = category.capitalizeFirstLetter(),
-                                        style = mediumTextStyle,
-                                        color = Color.Black,
-                                        modifier = Modifier.padding(
-                                            horizontal = dimen_16_dp,
-                                            vertical = dimen_5_dp
-                                        )
+                            itemsIndexed(items = viewModel.filterContentMap.keys.toList()) { index, fiterItem ->
+                                Text(
+                                    text = fiterItem.capitalizeFirstLetter(),
+                                    style = mediumTextStyle,
+                                    color = blueDark,
+                                    modifier = Modifier.padding(
+                                        start = dimen_18_dp, bottom = dimen_5_dp,
                                     )
-                                }
-                                item {
-                                    LazyVerticalGrid(
-                                        state = innerState,
-                                        modifier = Modifier.heightIn(
-                                            min = dimen_100_dp,
+                                )
+                                LazyVerticalGrid(
+                                    state = innerState,
+                                    modifier = Modifier
+                                        .heightIn(
+                                            min = 0.dp,
                                             max = maxHeight
-                                        ),
-                                        columns = GridCells.Fixed(4),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        itemsIndexed(
-                                            items = itemsInCategory
-                                        ) { _, item ->
-                                            ContentRowView(
-                                                item,
-                                                viewModel,
-                                                onNavigateToMediaScreen,
-                                                context
-                                            )
-                                        }
+                                        )
+                                        .padding(bottom = dimen_5_dp),
+                                    columns = GridCells.Fixed(4),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    itemsIndexed(
+                                        items = viewModel.filterContentMap.get(fiterItem)?.toList()
+                                            ?: listOf()
+                                    ) { _, item ->
+                                        ContentRowView(
+                                            item,
+                                            viewModel,
+                                            onNavigateToMediaScreen,
+                                            context
+                                        )
                                     }
                                 }
+                                if (viewModel.filterContentMap.keys.size != index + 1) {
+                                    Divider(
+                                        thickness = dimen_1_dp,
+                                        color = dateRangeFieldColor
+                                    )
+                                }
+
                             }
                         }
                     } else {
@@ -274,7 +309,7 @@ private fun ContentRowView(
             } else {
                 Toast.makeText(
                     context,
-                    "file not Exists ",
+                    context.getString(R.string.file_not_exists),
                     Toast.LENGTH_SHORT
                 ).show()
             }

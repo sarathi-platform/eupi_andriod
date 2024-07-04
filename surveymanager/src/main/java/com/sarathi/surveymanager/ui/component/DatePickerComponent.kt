@@ -31,9 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.nudge.core.DD_MMM_YYYY_FORMAT
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
@@ -171,6 +173,7 @@ fun DatePickerComponent(
                     .background(white, shape = RoundedCornerShape(8.dp))
                     .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp)),
                 onValueChange = { text = it },
+                textStyle = newMediumTextStyle.copy(blueDark),
                 placeholder = {
                     Text(
                         text = hintText,
@@ -214,7 +217,7 @@ fun DatePickerComponent(
                                 val calendar = Calendar.getInstance()
                                 calendar.set(selectedYear, selectedMonth, selectedDay)
                                 val dateFormat =
-                                    SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.getDefault())
+                                    SimpleDateFormat(DD_MMM_YYYY_FORMAT, Locale.ENGLISH)
                                 val formattedDate = dateFormat.format(calendar.time)
                                 text = formattedDate
                                 onAnswerSelection(text)
