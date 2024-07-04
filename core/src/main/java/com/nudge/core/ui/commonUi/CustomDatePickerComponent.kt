@@ -20,10 +20,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.nudge.core.R
 import com.nudge.core.getCurrentTimeInMillis
+import com.nudge.core.ui.theme.dimen_12_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.searchFieldBg
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +53,7 @@ fun CustomDatePickerComponent(
                     onClick = {
                         onConfirmButtonClicked()
                     },
-                    content = { Text("Ok") }
+                    content = { Text(stringResource(R.string.ok)) }
                 )
             }
         ) {
@@ -185,6 +189,8 @@ data class DatePickerProperties(
 )
 
 
-private val DatePickerTitlePadding = PaddingValues(start = 24.dp, end = 12.dp, top = 16.dp)
-private val DatePickerHeadlinePadding = PaddingValues(start = 24.dp, end = 12.dp, bottom = 12.dp)
+private val DatePickerTitlePadding =
+    PaddingValues(start = dimen_24_dp, end = dimen_12_dp, top = dimen_16_dp)
+private val DatePickerHeadlinePadding =
+    PaddingValues(start = dimen_24_dp, end = dimen_12_dp, bottom = dimen_12_dp)
 

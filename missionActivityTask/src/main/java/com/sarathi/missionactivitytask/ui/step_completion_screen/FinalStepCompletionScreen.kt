@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.missionactivitytask.R
@@ -32,7 +33,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun FinalStepCompletionScreen(
     navController: NavController = rememberNavController(),
-    message: String = "***Welcome to BaseLine Application***",
+    message: String = BLANK_STRING,
     onNavigateBack: () -> Unit
 ) {
 
@@ -84,6 +85,5 @@ fun FinalStepCompletionScreen(
                 style = largeTextStyle
             )
         }
-//        }
     }
 }

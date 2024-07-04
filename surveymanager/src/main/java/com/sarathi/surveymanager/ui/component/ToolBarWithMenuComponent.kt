@@ -67,7 +67,7 @@ fun ToolBarWithMenuComponent(
                             Icon(
                                 painter = painterResource(id = iconResId),
                                 contentDescription = "Back Button",
-                                tint = Color.Black
+                                tint = blueDark
                             )
                         }
                         Row(
@@ -79,7 +79,7 @@ fun ToolBarWithMenuComponent(
                             Text(
                                 text = title,
                                 style = mediumTextStyle,
-                                color = textColorDark,
+                                color = blueDark,
                                 textAlign = TextAlign.Center
                             )
                         }

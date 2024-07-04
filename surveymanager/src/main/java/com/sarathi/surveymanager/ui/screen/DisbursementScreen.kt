@@ -129,7 +129,7 @@ fun DisbursementSummaryScreen(
                                     withStyle(
                                         style = defaultSpanStyle.copy(blueDark)
                                     ) {
-                                        append("Sanctioned amount has been fully disbursed’")
+                                        append(stringResource(R.string.sanctioned_amount_has_been_fully_disbursed))
                                     }
                                 }
                             )

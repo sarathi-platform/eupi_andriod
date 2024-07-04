@@ -37,8 +37,9 @@ interface SurveyAnswersDao {
     ): Int
 
     @Query(
-        "select ques_answer_table.subjectId\n" +
-                ",ques_answer_table.taskId,\n" +
+        "select ques_answer_table.subjectId\n," +
+                "ques_answer_table.taskId,\n" +
+                "ques_answer_table.questionId,\n" +
                 "ques_answer_table.referenceId,\n" +
                 "ques_answer_table.sectionId,\n" +
                 "ques_answer_table.surveyId,\n" +
@@ -132,6 +133,7 @@ interface SurveyAnswersDao {
     fun getAllSurveyAnswerForUser(
         uniqueUserIdentifier: String
     ): List<SurveyAnswerEntity>
+
     @Query("Delete from ques_answer_table where userId =:userId ")
     fun deleteSurveyAnswerForUser(
         userId: String,

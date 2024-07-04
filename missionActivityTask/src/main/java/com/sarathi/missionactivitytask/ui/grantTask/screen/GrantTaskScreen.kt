@@ -45,6 +45,7 @@ import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -177,25 +178,32 @@ fun GrantTaskScreen(
                     }
                 }
                 if (isSearch) {
-                    SearchWithFilterViewComponent(
-                        placeholderString = viewModel.searchLabel.value,
-                        filterSelected = viewModel.isGroupByEnable.value,
-                        modifier = Modifier.padding(horizontal = 10.dp),
-                        showFilter = viewModel.isFilerEnable.value,
-                        onFilterSelected = {
-                            if (viewModel.filterList.value.isNotEmpty()) {
-                                viewModel.isGroupByEnable.value = !it
-                            }
-                        },
-                        onSearchValueChange = { queryTerm ->
-                            viewModel.onEvent(
-                                SearchEvent.PerformSearch(
-                                    queryTerm,
-                                    viewModel.isGroupByEnable.value,
-                                    BLANK_STRING
+
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = dimen_8_dp, end = dimen_8_dp, bottom = dimen_10_dp)
+                    ) {
+                        SearchWithFilterViewComponent(
+                            placeholderString = viewModel.searchLabel.value,
+                            filterSelected = viewModel.isGroupByEnable.value,
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            showFilter = viewModel.isFilerEnable.value,
+                            onFilterSelected = {
+                                if (viewModel.filterList.value.isNotEmpty()) {
+                                    viewModel.isGroupByEnable.value = !it
+                                }
+                            },
+                            onSearchValueChange = { queryTerm ->
+                                viewModel.onEvent(
+                                    SearchEvent.PerformSearch(
+                                        queryTerm,
+                                        viewModel.isGroupByEnable.value,
+                                        BLANK_STRING
+                                    )
                                 )
-                            )
-                        })
+                            })
+                    }
                 }
                 Box(
                     modifier = Modifier
@@ -211,65 +219,64 @@ fun GrantTaskScreen(
                             .zIndex(1f),
                         contentColor = blueDark,
                     )
-                Spacer(modifier = Modifier.height(dimen_10_dp))
-                if (viewModel.isGroupByEnable.value) {
-                    LazyColumn(
-                        modifier = Modifier.padding(bottom = dimen_50_dp)
-                    ) {
-                        viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
-                            item {
-                                Row(
-                                    horizontalArrangement = Arrangement.Start,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = dimen_6_dp)
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_vo_name_icon),
-                                        contentDescription = null,
+                    Spacer(modifier = Modifier.height(dimen_10_dp))
+                    if (viewModel.isGroupByEnable.value) {
+                        LazyColumn(
+                            modifier = Modifier.padding(bottom = dimen_50_dp)
+                        ) {
+                            viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
+                                item {
+                                    Row(
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier
-                                            .padding(horizontal = dimen_10_dp)
-                                            .size(25.dp),
-                                        colorFilter = ColorFilter.tint(blueDark)
-                                    )
+                                            .fillMaxWidth()
+                                            .padding(horizontal = dimen_6_dp)
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ic_vo_name_icon),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(horizontal = dimen_10_dp)
+                                                .size(25.dp),
+                                            colorFilter = ColorFilter.tint(blueDark)
+                                        )
 
-                                    Text(
-                                        text = category ?: BLANK_STRING,
-                                        style = defaultTextStyle.copy(color = blueDark)
-                                    )
+                                        Text(
+                                            text = category ?: BLANK_STRING,
+                                            style = defaultTextStyle.copy(color = blueDark)
+                                        )
+                                    }
+                                }
+                                item {
+                                    CustomVerticalSpacer()
+                                }
+                                itemsIndexed(
+                                    items = itemsInCategory
+                                ) { _, task ->
+                                    TaskRowView(viewModel, navController, task)
+                                    CustomVerticalSpacer()
+                                }
+                                item {
+                                    CustomVerticalSpacer(size = dimen_20_dp)
                                 }
                             }
-                            item {
-                                CustomVerticalSpacer()
-                            }
-
-                            itemsIndexed(
-                                items = itemsInCategory
-                            ) { _, task ->
-                                TaskRowView(viewModel, navController, task)
-                                CustomVerticalSpacer()
-                            }
-                            item {
-                                CustomVerticalSpacer(size = dimen_20_dp)
+                        }
+                    } else {
+                        if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
+                            LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+                                itemsIndexed(
+                                    items = viewModel.filterList.value.entries.toList()
+                                ) { _, task ->
+                                    TaskRowView(viewModel, navController, task)
+                                    CustomVerticalSpacer()
+                                }
+                                item {
+                                    CustomVerticalSpacer(size = dimen_20_dp)
+                                }
                             }
                         }
                     }
-                } else {
-                    if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-                        LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-                            itemsIndexed(
-                                items = viewModel.filterList.value.entries.toList()
-                            ) { _, task ->
-                                TaskRowView(viewModel, navController, task)
-                                CustomVerticalSpacer()
-                            }
-                            item {
-                                CustomVerticalSpacer(size = dimen_20_dp)
-                            }
-                        }
-                    }
-                }
                 }
             }
         },

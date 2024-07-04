@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FormDetailResponseModel(
     @SerializedName("generatedDate")
-    val generatedDate: String,
+    val generatedDate: String?,
     @SerializedName("formType")
     val formType: String,
     @SerializedName("subjectId")

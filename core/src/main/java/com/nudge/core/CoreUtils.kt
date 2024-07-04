@@ -81,29 +81,29 @@ fun Long.toDateInMMDDYYFormat(
 }
 
 fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()): String {
-    val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+    val formatter = SimpleDateFormat(dateFormat, Locale.ENGLISH)
     formatter.timeZone = timeZone
     return formatter.format(this)
 }
 
 fun Long.toTimeDateString(): String {
     val dateTime = Date(this)
-    val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.ENGLISH)
     return format.format(dateTime)
 }
 
 fun Long.toDateString(): String {
     val dateTime = Date(this)
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
     return format.format(dateTime)
 }
 fun Long.toDateInMonthString(): String {
     val dateTime = Date(this)
-    val format = SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("dd/MMM/yyyy", Locale.ENGLISH)
     return format.format(dateTime)
 }
 fun String.toInMillisec(format: String): Long {
-    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
     val date = dateFormat.parse(this)
     val millis = date?.time
     return millis ?: 0
@@ -882,7 +882,7 @@ fun String.getDateTimeInMillis(): Long {
         val offsetDateTime = OffsetDateTime.parse(this, formatter)
         offsetDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ENGLISH)
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         val date = dateFormat.parse(this)
         date?.time ?: 0L
@@ -899,7 +899,7 @@ fun String.getDateInMillis(pattern: String = "yyyy-MM-dd"): Long {
         val zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault())
         zonedDateTime.toInstant().toEpochMilli()
     } else {
-        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
+        val dateFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
         val date = dateFormat.parse(this)
         date?.time ?: 0L
     }

@@ -37,7 +37,6 @@ import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
-import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
@@ -101,14 +100,14 @@ fun MultiSelectSelectDropDown(
                 .onGloballyPositioned { coordinates ->
                     onGlobalPositioned(coordinates)
                 },
-            textStyle = newMediumTextStyle,
+            textStyle = newMediumTextStyle.copy(blueDark),
             singleLine = true,
             maxLines = 1,
             placeholder = {
                 Text(text = hint, style = newMediumTextStyle, color = placeholderGrey)
             },
             colors = TextFieldDefaults.textFieldColors(
-                textColor = textColorDark,
+                textColor = blueDark,
                 backgroundColor = Color.White,
                 focusedIndicatorColor = borderGrey,
                 unfocusedIndicatorColor = borderGrey,

@@ -3,8 +3,10 @@ package com.sarathi.missionactivitytask.ui.mission_screen.screen
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,10 +29,10 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.missionactivitytask.R
@@ -119,14 +121,21 @@ fun GrantMissionScreen(
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (isSearch) {
-                SearchWithFilterViewComponent(placeholderString = "Search",
-                    filterSelected = false,
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    showFilter = false,
-                    onFilterSelected = {},
-                    onSearchValueChange = { queryTerm ->
-                        onSearchValueChanged(queryTerm)
-                    })
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_5_dp)) {
+                    SearchWithFilterViewComponent(
+                        placeholderString = stringResource(id = R.string.search),
+                        filterSelected = false,
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        showFilter = false,
+                        onFilterSelected = {},
+                        onSearchValueChange = { queryTerm ->
+                            onSearchValueChanged(queryTerm)
+                        })
+                }
+
             }
 
             Box(
@@ -148,13 +157,13 @@ fun GrantMissionScreen(
                     LazyColumn {
                         items(viewModel.filterMissionList.value) { mission ->
                             BasicMissionCard(
-                                status = mission.missionStatus ?: BLANK_STRING,
-                                countStatusText = "Activities Completed",
+                                status = mission.missionStatus,
+                                countStatusText = context.getString(R.string.activities_completed),
                                 totalCount = mission.activityCount,
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,
                                 needToShowProgressBar = true,
-                                primaryButtonText = "Start",
+                                primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
                                     onNavigationToActivity(
                                         mission.description.contains(

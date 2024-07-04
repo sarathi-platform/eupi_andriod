@@ -80,7 +80,7 @@ fun StepsBoxGrantComponent(
     val curPercentage = animateFloatAsState(
         targetValue =
         (pendingCount / totalCount.toFloat()),
-        label = "",
+        label = BLANK_STRING,
         animationSpec = tween()
     )
     val dividerMargins = dimen_35_dp
