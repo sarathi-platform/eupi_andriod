@@ -48,14 +48,14 @@ fun InputComponent(
     isMandatory: Boolean = true,
     isEditable: Boolean = true,
     sanctionedAmount: Int = 0,
-    hintMessage: Int = 0,
+    remainingAmount: Int = 0,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
     val txt = remember {
         mutableStateOf(defaultValue)
     }
-    val remainingValue = remember(hintMessage) {
-        mutableStateOf(hintMessage)
+    val remainingValue = remember(remainingAmount) {
+        mutableStateOf(remainingAmount)
     }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -145,5 +145,6 @@ private fun getRemainingValue(remainValue: Int, sanctionedAmount: Int, existValu
 @Preview(showSystemUi = true)
 @Composable
 fun NumberTextComponentPreview() {
-    //InputComponent(onAnswerSelection = {}, isOnlyNumber = true)
+    InputComponent(onAnswerSelection = { _, _ ->
+    }, isOnlyNumber = true)
 }

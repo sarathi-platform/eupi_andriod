@@ -160,7 +160,7 @@ fun SurveyScreen(
                                 InputComponent(
                                     maxLength = 7,
                                     sanctionedAmount = sanctionedAmount,
-                                    hintMessage = getSanctionedAmountMessage(
+                                    remainingAmount = getSanctionedAmountMessage(
                                         question,
                                         sanctionedAmount = sanctionedAmount,
                                         remainingAmount = totalSubmittedAmount - getSelectedValueInInt(
