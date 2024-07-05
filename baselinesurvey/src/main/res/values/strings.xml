@@ -66,6 +66,11 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
+
     <string name="dada_name">Husband / Father\'s Name</string>
     <string name="dada">Husband / Father</string>
     <string name="enter">Enter</string>
@@ -149,6 +154,7 @@
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
