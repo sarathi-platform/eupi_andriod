@@ -20,5 +20,6 @@ data class QuestionAnswerResponseModel(
     @SerializedName("topicName") var topicName: String = BLANK_STRING,
     @SerializedName("clientId") var clientId: String = BLANK_STRING,
     @SerializedName("payload") var payload: String = BLANK_STRING,
+    @SerializedName("ansType") var ansType: String? = BLANK_STRING,
     @SerializedName("question") var question: QuestionResponsModel? = null
 )
