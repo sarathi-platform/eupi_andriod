@@ -17,9 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,8 +47,9 @@ fun InputComponent(
     hintText: String = BLANK_STRING,
     isMandatory: Boolean = true,
     isEditable: Boolean = true,
+    sanctionedAmount: Int = 0,
     hintMessage: Int = 0,
-    onAnswerSelection: (selectValue: String) -> Unit,
+    onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
     val txt = remember {
         mutableStateOf(defaultValue)
@@ -84,7 +85,7 @@ fun InputComponent(
                         txt.value = it
                     }
                 }
-                onAnswerSelection(txt.value)
+                onAnswerSelection(txt.value, remainingValue.value)
             },
             placeholder = {
                 androidx.compose.material3.Text(
@@ -113,7 +114,7 @@ fun InputComponent(
             keyboardActions = KeyboardActions(onDone = {
                 focusManager.clearFocus()
                 keyboardController?.hide()
-                onAnswerSelection(txt.value)
+                onAnswerSelection(txt.value, remainingValue.value)
             }),
             maxLines = 2,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -122,11 +123,11 @@ fun InputComponent(
                 textColor = blueDark
             ),
         )
-        if (hintMessage != 0) {
+        if (sanctionedAmount != 0) {
             Text(
-                LocalContext.current.getString(
+                stringResource(
                     R.string.amount_limit,
-                    remainingValue.value.minus(if (txt.value.isNotBlank()) txt.value.toInt() else 0)
+                    getRemainingValue(remainingValue.value, sanctionedAmount, txt.value)
                 ),
                 style = smallTextStyleMediumWeight,
                 color = blueDark
@@ -136,8 +137,13 @@ fun InputComponent(
     }
 }
 
+private fun getRemainingValue(remainValue: Int, sanctionedAmount: Int, existValue: String): Int {
+    val value = if (existValue.isNotBlank()) existValue.toInt() else 0
+    return sanctionedAmount - (value + remainValue)
+}
+
 @Preview(showSystemUi = true)
 @Composable
 fun NumberTextComponentPreview() {
-    InputComponent(onAnswerSelection = {}, isOnlyNumber = true)
+    //InputComponent(onAnswerSelection = {}, isOnlyNumber = true)
 }
