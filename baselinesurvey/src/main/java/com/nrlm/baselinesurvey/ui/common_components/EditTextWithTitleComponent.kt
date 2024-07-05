@@ -20,8 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.TextToolbar
+import androidx.compose.ui.platform.TextToolbarStatus
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -39,6 +42,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -54,12 +58,11 @@ fun EditTextWithTitleComponent(
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
+
     val txt = remember(resetResponse, showQuestion?.optionId) {
         mutableStateOf(defaultValue)
     }
-//    if (txt.value.isBlank()) {
-//        txt.value = defaultValue
-//    }
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -106,7 +109,7 @@ fun EditTextWithTitleComponent(
                         if (isOnlyNumber) {
                             if (onlyNumberField(it)) {
                                 if (it.length <= MAXIMUM_RANGE_LENGTH) {
-                                    txt.value = it
+                                    txt.value = numberInEnglishFormat(it)
                                 }
                             }
                         } else {
@@ -144,6 +147,21 @@ fun EditTextWithTitleComponent(
         }
     }
 
+}
+
+object EmptyTextToolbar : TextToolbar {
+    override val status: TextToolbarStatus = TextToolbarStatus.Hidden
+
+    override fun hide() {}
+
+    override fun showMenu(
+        rect: Rect,
+        onCopyRequested: (() -> Unit)?,
+        onPasteRequested: (() -> Unit)?,
+        onCutRequested: (() -> Unit)?,
+        onSelectAllRequested: (() -> Unit)?,
+    ) {
+    }
 }
 
 @Composable

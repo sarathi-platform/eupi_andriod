@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
@@ -92,6 +93,7 @@ import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nudge.core.enums.EventName
 import java.io.File
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
@@ -1296,6 +1298,16 @@ fun numberInEnglishFormat(number: Int, range: IntRange?): String {
     }
 
     return String.format(Locale.ENGLISH, "%s", mNumber)
+}
+
+fun numberInEnglishFormat(number: String): String {
+    if (TextUtils.isEmpty(number))
+        return BLANK_STRING
+
+    val formatter = NumberFormat.getInstance(Locale.ENGLISH)
+    val mNumber = formatter.parse(number)
+
+    return formatter.format(mNumber).replace(",", "")
 }
 
 fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
