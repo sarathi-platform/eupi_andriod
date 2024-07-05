@@ -501,5 +501,3 @@ fun FormWithNoneTypeQuestionComponent(
         }
     }
 }
-
-private const val NO_VALUE_ID = 2
