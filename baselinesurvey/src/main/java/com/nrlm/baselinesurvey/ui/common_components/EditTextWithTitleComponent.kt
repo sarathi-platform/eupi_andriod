@@ -20,11 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.TextToolbar
-import androidx.compose.ui.platform.TextToolbarStatus
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -145,22 +142,6 @@ fun EditTextWithTitleComponent(
             )
 
         }
-    }
-
-}
-
-object EmptyTextToolbar : TextToolbar {
-    override val status: TextToolbarStatus = TextToolbarStatus.Hidden
-
-    override fun hide() {}
-
-    override fun showMenu(
-        rect: Rect,
-        onCopyRequested: (() -> Unit)?,
-        onPasteRequested: (() -> Unit)?,
-        onCutRequested: (() -> Unit)?,
-        onSelectAllRequested: (() -> Unit)?,
-    ) {
     }
 }
 
