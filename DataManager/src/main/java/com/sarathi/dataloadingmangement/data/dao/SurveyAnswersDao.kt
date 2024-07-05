@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerUiModel
 
 
 @Dao
@@ -43,13 +44,16 @@ interface SurveyAnswersDao {
                 "ques_answer_table.referenceId,\n" +
                 "ques_answer_table.sectionId,\n" +
                 "ques_answer_table.surveyId,\n" +
-                "ques_answer_table.tagId,\n" +
+                " group_concat(tag_reference_table.value,',') as tagId," +
                 "ques_answer_table.optionItems,\n" +
                 "ques_answer_table.questionSummary,\n" +
                 "ques_answer_table.questionType,\n" +
                 "form_table.isFormGenerated\n" +
                 " from ques_answer_table " +
-                "left join form_table on ques_answer_table.referenceId =form_table.localReferenceId  where ques_answer_table.userId =:userId and ques_answer_table.taskId=:taskId and ques_answer_table.sectionId=:sectionId and ques_answer_table.surveyId=:surveyId"
+                "left join form_table on ques_answer_table.referenceId =form_table.localReferenceId" +
+                "  left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
+                "  where ques_answer_table.userId =:userId and ques_answer_table.taskId=:taskId and ques_answer_table.sectionId=:sectionId and ques_answer_table.surveyId=:surveyId " +
+                "and tag_reference_table.userId=:userId and tag_reference_table.referenceType='Question' group by ques_answer_table.questionId"
     )
     fun getSurveyAnswersForSummary(
         userId: String,
@@ -108,20 +112,57 @@ interface SurveyAnswersDao {
         taskId: Int
     ): Int
 
-    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId ")
+    @Query(
+        "select " +
+                "ques_answer_table.taskId,\n" +
+                "ques_answer_table.subjectId,\n" +
+                "ques_answer_table.questionId,\n" +
+                "ques_answer_table.referenceId,\n" +
+                "ques_answer_table.sectionId,\n" +
+                "ques_answer_table.surveyId,\n" +
+                " group_concat(tag_reference_table.value,',') as tagId," +
+                "ques_answer_table.optionItems,\n" +
+                "ques_answer_table.questionSummary,\n" +
+                "ques_answer_table.grantId,\n" +
+                "ques_answer_table.grantType,\n" +
+                "ques_answer_table.questionType\n" +
+                " from ques_answer_table " +
+                " left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
+                "where ques_answer_table.userId =:uniqueUserIdentifier and ques_answer_table.subjectId=:subjectId and ques_answer_table.taskId=:taskId " +
+                "and tag_reference_table.userId=:uniqueUserIdentifier and tag_reference_table.referenceType='Question'  group by ques_answer_table.questionId"
+    )
     fun getSurveyAnswerForTag(
         taskId: Int,
         subjectId: Int,
         uniqueUserIdentifier: String
-    ): List<SurveyAnswerEntity>
+    ): List<SurveyAnswerUiModel>
 
-    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId  and referenceId=:referenceId")
+    @Query(
+        "select " +
+                "ques_answer_table.taskId,\n" +
+                "ques_answer_table.subjectId,\n" +
+                "ques_answer_table.questionId,\n" +
+                "ques_answer_table.referenceId,\n" +
+                "ques_answer_table.sectionId,\n" +
+                "ques_answer_table.surveyId,\n" +
+                " group_concat(tag_reference_table.value,',') as tagId," +
+                "ques_answer_table.optionItems,\n" +
+                "ques_answer_table.questionSummary,\n" +
+                "ques_answer_table.grantId,\n" +
+                "ques_answer_table.grantType,\n" +
+                "ques_answer_table.questionType\n" +
+                " from ques_answer_table " +
+                " left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
+                "where ques_answer_table.userId =:uniqueUserIdentifier and ques_answer_table.subjectId=:subjectId and ques_answer_table.taskId=:taskId " +
+                "and ques_answer_table.referenceId=:referenceId " +
+                "and tag_reference_table.userId=:uniqueUserIdentifier and tag_reference_table.referenceType='Question' group by ques_answer_table.questionId"
+    )
     fun getSurveyAnswerForFormTag(
         taskId: Int,
         subjectId: Int,
         referenceId: String,
         uniqueUserIdentifier: String
-    ): List<SurveyAnswerEntity>
+    ): List<SurveyAnswerUiModel>
 
     @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and questionType=:questionType")
     fun getSurveyAnswerImageKeys(

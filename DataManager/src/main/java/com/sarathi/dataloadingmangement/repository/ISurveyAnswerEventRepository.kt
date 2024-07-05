@@ -14,7 +14,8 @@ interface ISurveyAnswerEventRepository {
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        sectionTagId: List<Int>
     ): SaveAnswerMoneyJorunalEventDto
 
     suspend fun writeSaveAnswerEvent(

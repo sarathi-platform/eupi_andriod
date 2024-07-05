@@ -24,7 +24,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        sectionTagId: List<Int>
     ): SaveAnswerMoneyJorunalEventDto {
 
         return SaveAnswerMoneyJorunalEventDto(
@@ -39,7 +40,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             localTaskId = taskLocalId ?: BLANK_STRING,
             grantId = grantId,
             grantType = grantType,
-            taskId = taskId
+            taskId = taskId,
+            tagId = sectionTagId
         )
 
 
@@ -147,7 +149,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                     SaveAnswerEventOptionItemDto(
                         optionId = optionItem.optionId ?: 0,
                         selectedValue = optionItem.description,
-                        tag = optionItem.optionTag,
                         optionDesc = optionItem.originalValue ?: BLANK_STRING,
                         referenceId = referenceId
 
@@ -158,7 +159,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                         SaveAnswerEventOptionItemDto(
                             optionId = optionItem.optionId ?: 0,
                             selectedValue = optionItem.selectedValue,
-                            tag = optionItem.optionTag,
                             optionDesc = optionItem.description ?: BLANK_STRING,
                             referenceId = referenceId
 

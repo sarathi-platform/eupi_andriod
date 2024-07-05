@@ -33,5 +33,8 @@ data class Sections(
     @SerializedName("originalValue")
     @Expose
     val originalValue: String = BLANK_STRING,
+    @SerializedName("tag")
+    @Expose
+    val tag: List<Int>? = listOf(),
 
 )

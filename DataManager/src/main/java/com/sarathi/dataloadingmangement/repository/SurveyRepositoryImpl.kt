@@ -135,7 +135,6 @@ class SurveyRepositoryImpl @Inject constructor(
                     surveyId = question.surveyId,
                     questionId = question.questionId,
                     optionId = option?.optionId,
-                    optionTag = option?.tag ?: listOf(),
                     optionType = option?.optionType,
                     originalValue = option?.originalValue,
                     isSelected = false,

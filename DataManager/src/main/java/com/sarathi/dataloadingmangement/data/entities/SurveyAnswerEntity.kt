@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.converters.IntConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -58,11 +57,6 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "taskId")
     var taskId: Int,
-    @SerializedName("tagId")
-    @Expose
-    @ColumnInfo(name = "tagId")
-    @TypeConverters(IntConverter::class)
-    var tagId: List<Int>,
     @SerializedName("grantId")
     @Expose
     @ColumnInfo(name = "grantId")
@@ -116,7 +110,6 @@ data class SurveyAnswerEntity(
                 questionSummary = question.questionSummary,
                 optionItems = question.options ?: listOf(),
                 subjectId = subjectId,
-                tagId = question.tagId,
                 grantId = grantId,
                 grantType = grantType
             )
@@ -126,7 +119,6 @@ data class SurveyAnswerEntity(
             questionAnswerResponse: QuestionAnswerResponseModel,
             userId: String,
             questionSummary: String,
-            questionTag: List<Int>,
             optionsUiModel: List<OptionsUiModel>
 
         ): SurveyAnswerEntity {
@@ -143,7 +135,6 @@ data class SurveyAnswerEntity(
                 questionSummary = questionSummary,
                 optionItems = optionsUiModel,
                 subjectId = questionAnswerResponse.subjectId,
-                tagId = questionTag,
                 grantId = questionAnswerResponse.grantId ?: DEFAULT_ID,
                 grantType = questionAnswerResponse.grantType ?: BLANK_STRING
             )

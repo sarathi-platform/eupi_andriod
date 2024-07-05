@@ -63,7 +63,6 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
                 SurveyAnswerEntity.getSurveyAnswerEntityFromQuestionAnswerResponse(
                     questionAnswerResponse = questionAnswerResponse,
                     questionSummary = questionEntity?.originalValue ?: BLANK_STRING,
-                    questionTag = questionEntity?.tag ?: listOf(),
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                     optionsUiModel = getOptionUiModels(
                         questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
@@ -128,7 +127,6 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
                     surveyId = surveyId,
                     questionId = questionId,
                     optionId = option?.optionId,
-                    optionTag = option?.tag ?: listOf(),
                     optionType = option?.optionType,
                     originalValue = option?.originalValue,
                     isSelected = false,

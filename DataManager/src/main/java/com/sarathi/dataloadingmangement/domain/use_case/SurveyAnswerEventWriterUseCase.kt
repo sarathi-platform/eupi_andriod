@@ -38,7 +38,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             taskLocalId,
             grantId,
             grantType,
-            taskId
+            taskId,
+            listOf()
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,

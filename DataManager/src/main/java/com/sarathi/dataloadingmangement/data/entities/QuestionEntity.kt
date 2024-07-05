@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
-import com.sarathi.dataloadingmangement.data.converters.IntConverter
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionList
@@ -77,12 +76,6 @@ data class QuestionEntity(
     @ColumnInfo(name = "isMandatory")
     var isMandatory: Boolean = false,
 
-
-    @SerializedName("tag")
-    @Expose
-    @ColumnInfo(name = "tag")
-    @TypeConverters(IntConverter::class)
-    var tag: List<Int> = listOf(),
     @SerializedName("tag")
     @Expose
     @ColumnInfo(name = "formId")
@@ -112,7 +105,6 @@ data class QuestionEntity(
                 order = question.order,
                 type = question.type,
                 isConditional = isCondition,
-                tag = question.attributeTag ?: listOf(),
                 contentEntities = question.contentList,
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
