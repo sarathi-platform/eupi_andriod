@@ -14,6 +14,7 @@ import com.nudge.core.toInMillisec
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.PdfGenerator
 import com.nudge.core.utils.PdfModel
+import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
@@ -21,10 +22,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -51,6 +54,10 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     private val _formList =
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
     val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
+
+    private val _filterList =
+        mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
+    val filterList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _filterList
     var activityConfigUiModel: ActivityConfigUiModel? = null
 
     override fun <T> onEvent(event: T) {
@@ -63,6 +70,9 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                 _loaderState.value = _loaderState.value.copy(
                     isLoaderVisible = event.showLoader
                 )
+            }
+            is SearchEvent.PerformSearch -> {
+                performSearchQuery(event.searchTerm)
             }
         }
     }
@@ -263,6 +273,25 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     suspend fun getSurveyDetail(activityId: Int) {
         activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
+    }
+
+    private fun performSearchQuery(
+        queryTerm: String
+    ) {
+        val filteredList = HashMap<Pair<String, String>, List<DisbursementFormSummaryUiModel>>()
+        if (queryTerm.isNotEmpty()) {
+            _formList.value.entries.forEach { task ->
+                val matchingItems = task.value.filter {
+                    it.subjectName.contains(queryTerm, ignoreCase = true)
+                }
+                if (matchingItems.isNotEmpty()) {
+                    filteredList[task.key] = matchingItems
+                }
+            }
+        } else {
+            filteredList.putAll(_formList.value)
+        }
+          _filterList.value = filteredList
     }
 
 }
