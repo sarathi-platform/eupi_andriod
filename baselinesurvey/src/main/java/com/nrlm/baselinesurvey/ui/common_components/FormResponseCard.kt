@@ -38,7 +38,9 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.HOUSEHOLD_INFO_TAG_CONSTANT
 import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG_CONSTANT
+import com.nrlm.baselinesurvey.NO
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.YES
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -615,9 +617,9 @@ fun DidiInfoCard(
                         Text(text = buildAnnotatedString {
                            var value = SHGFlag.fromInt(didiInfoEntity.isAdharCard ?: -1).name
                             var getAdharCardValue =""
-                            if (value == "YES")
+                            if (value == YES)
                                 getAdharCardValue = stringResource(R.string.option_yes)
-                            else if (value == "NO")
+                            else if (value == NO)
                                 getAdharCardValue = stringResource(R.string.option_no)
                             else getAdharCardValue
 
