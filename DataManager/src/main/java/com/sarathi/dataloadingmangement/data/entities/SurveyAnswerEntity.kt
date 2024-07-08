@@ -57,10 +57,6 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "taskId")
     var taskId: Int,
-    @SerializedName("tagId")
-    @Expose
-    @ColumnInfo(name = "tagId")
-    var tagId: Int,
     @SerializedName("grantId")
     @Expose
     @ColumnInfo(name = "grantId")
@@ -114,7 +110,6 @@ data class SurveyAnswerEntity(
                 questionSummary = question.questionSummary,
                 optionItems = question.options ?: listOf(),
                 subjectId = subjectId,
-                tagId = question.tagId,
                 grantId = grantId,
                 grantType = grantType
             )
@@ -124,7 +119,6 @@ data class SurveyAnswerEntity(
             questionAnswerResponse: QuestionAnswerResponseModel,
             userId: String,
             questionSummary: String,
-            questionTag: Int,
             optionsUiModel: List<OptionsUiModel>
 
         ): SurveyAnswerEntity {
@@ -141,7 +135,6 @@ data class SurveyAnswerEntity(
                 questionSummary = questionSummary,
                 optionItems = optionsUiModel,
                 subjectId = questionAnswerResponse.subjectId,
-                tagId = questionTag,
                 grantId = questionAnswerResponse.grantId ?: DEFAULT_ID,
                 grantType = questionAnswerResponse.grantType ?: BLANK_STRING
             )

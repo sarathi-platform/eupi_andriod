@@ -8,7 +8,7 @@ data class QuestionResponsModel(
     @SerializedName("questionId") var questionId: Int = 0,
     @SerializedName("questionType") var questionType: String = BLANK_STRING,
     @SerializedName("showQuestion") var showQuestion: Boolean = false,
-    @SerializedName("tag") var tag: String = BLANK_STRING,
+    @SerializedName("tag") var tag: List<Int> = listOf(),
     @SerializedName("formId") var formId: Int?,
     @SerializedName("options") var options: ArrayList<QuestionOptionsResponseModel> = arrayListOf()
 )

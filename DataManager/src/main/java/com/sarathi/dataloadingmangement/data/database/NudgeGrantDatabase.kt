@@ -8,11 +8,10 @@ import com.nudge.core.database.converters.DateConverter
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
-import com.sarathi.dataloadingmangement.data.converters.IntConverter
 import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.data.converters.StringConverter
-
+import com.sarathi.dataloadingmangement.data.converters.TagConverter
 import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -37,6 +36,7 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
@@ -65,6 +65,7 @@ import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
@@ -99,13 +100,13 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         DocumentEntity::class,
         SurveyLanguageAttributeEntity::class,
         SubjectEntity::class,
-        SmallGroupDidiMappingEntity::class
+        SmallGroupDidiMappingEntity::class,
+        TagReferenceEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
 )
 @TypeConverters(
-    IntConverter::class,
     QuestionsOptionsConverter::class,
     OptionQuestionConverter::class,
     StringConverter::class,
@@ -113,7 +114,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
     ContentListConverter::class,
     ContentMapConverter::class,
     ValuesDtoConverter::class,
-    DateConverter::class
+    DateConverter::class,
+    TagConverter::class
 
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
@@ -150,6 +152,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun subjectEntityDao(): SubjectEntityDao
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
+    abstract fun tagReferenceEntityDao(): TagReferenceEntityDao
 
     class NudgeDatabaseCallback : Callback()
 

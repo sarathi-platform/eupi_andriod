@@ -38,11 +38,20 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             taskLocalId,
             grantId,
             grantType,
-            taskId
+            taskId,
+            repository.getTagIdForSection(
+                sectionId = questionUiModels.firstOrNull()?.sectionId ?: -1
+            )
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,
             EventName.MONEY_JOURNAL_EVENT,
+            questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
+            listOf()
+        )
+        writeEventInFile(
+            saveAnswerMoneyJournalEventDto,
+            EventName.FORM_RESPONSE_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
             listOf()
         )

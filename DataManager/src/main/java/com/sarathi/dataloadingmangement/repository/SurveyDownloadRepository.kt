@@ -8,11 +8,13 @@ import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.ConditionDtoWithParentId
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
@@ -30,6 +32,7 @@ class SurveyDownloadRepository @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
     val optionItemDao: OptionItemDao,
     val questionEntityDao: QuestionEntityDao,
+    val tagReferenceEntityDao: TagReferenceEntityDao,
     val surveyLanguageAttributeDao: SurveyLanguageAttributeDao
 ) : ISurveyDownloadRepository {
     override suspend fun fetchSurveyFromNetwork(surveyRequest: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
@@ -73,6 +76,19 @@ class SurveyDownloadRepository @Inject constructor(
                     section.surveyLanguageAttributes,
                     section.sectionId,
                     LanguageAttributeReferenceType.SECTION.name
+                )
+                tagReferenceEntityDao.deleteTagReferenceEntityForTag(
+                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                    referenceId = section.sectionId,
+                    referenceType = LanguageAttributeReferenceType.SECTION.name
+                )
+                tagReferenceEntityDao.addTagReferenceEntity(
+                    TagReferenceEntity.getTagReferenceEntity(
+                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                        referenceType = LanguageAttributeReferenceType.SECTION.name,
+                        tags = section.tag ?: listOf(),
+                        referenceId = section.sectionId
+                    )
                 )
 
                 val contentLists = mutableListOf<ContentList>()
@@ -197,7 +213,19 @@ class SurveyDownloadRepository @Inject constructor(
                     )
                 }
                 //  Log.d("TAG", "saveQuestionAndOptionsToDb: question -> ${question.questionDisplay}")
-
+                tagReferenceEntityDao.deleteTagReferenceEntityForTag(
+                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                    referenceId = question.questionId ?: -1,
+                    referenceType = LanguageAttributeReferenceType.QUESTION.name
+                )
+                tagReferenceEntityDao.addTagReferenceEntity(
+                    TagReferenceEntity.getTagReferenceEntity(
+                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                        referenceId = question.questionId ?: -1,
+                        tags = question.attributeTag ?: listOf(),
+                        referenceType = LanguageAttributeReferenceType.QUESTION.name
+                    )
+                )
                 questionEntityDao.insertQuestion(
                     QuestionEntity.getQuestionEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -208,6 +236,7 @@ class SurveyDownloadRepository @Inject constructor(
                         sectionId = section.sectionId
                     )
                 )
+
                 deleteSurveyLanguageAttribute(
                     question.questionId ?: 0, LanguageAttributeReferenceType.QUESTION.name
                 )
