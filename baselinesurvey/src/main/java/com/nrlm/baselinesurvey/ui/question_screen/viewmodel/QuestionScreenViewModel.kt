@@ -41,6 +41,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.CalculatorUtils
+import com.nrlm.baselinesurvey.utils.DEFAULT_CALCULATION_RESULT
 import com.nrlm.baselinesurvey.utils.checkCondition
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
@@ -1742,10 +1743,10 @@ class QuestionScreenViewModel @Inject constructor(
         }
 
         val expression = netIncomeValue.joinToString("+")
-        if (expression != BLANK_STRING)
-            return CalculatorUtils.calculate(expression)
+        return if (expression != BLANK_STRING)
+            CalculatorUtils.calculate(expression)
         else
-            return 0.0f
+            DEFAULT_CALCULATION_RESULT
 
     }
 
