@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 
 interface IActivityRepository {
@@ -7,5 +8,7 @@ interface IActivityRepository {
     suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean
     suspend fun isAllActivityCompleted(missionId: Int): Boolean
     suspend fun updateMissionStatus(missionId: Int, status: String)
-
+    suspend fun getActiveForm(
+        formType: String
+    ): List<ActivityFormUIModel>
 }
