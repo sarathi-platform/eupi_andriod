@@ -59,7 +59,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
             subjectId,
             coreSharedPrefs.getUniqueUserIdentifier()
         ).filter { it.tagId.contains(tagId.toInt()) }
-        if (tagId == DISBURSED_AMOUNT_TAG.toString() || tagId == NO_OF_POOR_DIDI_TAG.toString()) {
+        if (tagId == DISBURSED_AMOUNT_TAG.toString() || tagId == RECEIVED_AMOUNT_TAG.toString() || tagId == NO_OF_POOR_DIDI_TAG.toString()) {
             var totalAmount = 0
             surveyAnswerEntities.forEach { surveyAnswerEntity ->
 
