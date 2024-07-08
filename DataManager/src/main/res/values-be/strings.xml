@@ -22,7 +22,7 @@
     <string name="refresh_failed_please_try_again">"रिफ्रेस फेलें जादों, अननानै फिन नाजा "</string>
     <string name="csg_disbursed">सि.एस.जि बिलायनाय जाबाय</string>
     <string name="activity_completion_message">"नोंथाङा जाफुंसारै %1$s हाबाफारिखौ फोजोबबाय "</string>
-    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
+    <string name="form_e_generated_successfully_for_didis">"%1$s आब'नि थाखाय जाफुंसारै र्फम E खौ दिहुनदोंमोन"</string>
     <string name="select">सायख\'</string>
     <string name="edit_disable_message">"खामानिया जाजुबनायनि उनाव सुजुनायखौ होनाय जानाय नङा "</string>
     <string name="submit">"जमा हो "</string>
@@ -31,7 +31,7 @@
     <string name="amount">बिबां:</string>
     <string name="nature">স্বভাব:</string>
     <string name="mode">"खान्थि "</string>
-    <string name="no_of_didi_s">Didis:</string>
+    <string name="no_of_didi_s">आब\'मोन :</string>
     <string name="edit">फोसाबनाय/सोदांनाय</string>
     <string name="add_image">"+ सावगारिखौ होफा "</string>
     <string name="are_you_sure_you_want_to_delete">"नोंथाङा थारैनो खोमोरनो लुबैदों ना "</string>
@@ -48,16 +48,16 @@
     <string name="attach_physical_form_e">फिसिकेल र्फम E खौ सरजाब</string>
     <string name="close">बन्द खालाम</string>
     <string name="didis">आब’मोन</string>
-    <string name="file_not_exists">"file not Exists "</string>
+    <string name="file_not_exists">"फाइलआ गैया "</string>
     <string name="activities_completed">"हाबाफारिफोरा गासैबो जाजुबबाय "</string>
     <string name="start">जागायजेन</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">"गनायथि होजानाय रांखौ आबुङै राननाय जाबाय "</string>
-    <string name="complete">Complete</string>
+    <string name="complete">"फोजोब "</string>
     <string name="references">References (%1$s)</string>
     <string name="are_you_sure">"नों थार नामा? "</string>
     <string name="do_you_want_to_exit_the_app">"नोंथाङा एपनिफ्राय ओंखारनो लुबैयो नामा? "</string>
     <string name="exit">"ओंखार "</string>
     <string name="cancel">"दान "</string>
-    <string name="search">Search</string>
+    <string name="search">"नागिर "</string>
 
 </resources>
