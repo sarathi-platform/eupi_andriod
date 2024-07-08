@@ -790,6 +790,21 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         }
                     }
 
+                } else {
+                    val location =
+                        questionAnswerResponseModel.location?.replace("{", "(")?.replace("}", ")")
+                            ?: BLANK_STRING
+                    val filePath = questionAnswerResponseModel.filePath.also {
+                        if (location != BLANK_STRING) {
+                            it + "|" + location
+                        } else {
+                            it
+                        }
+                    }
+                    surveyeeEntityDao.saveLocalImagePath(
+                        didiId = questionAnswerResponseModel.subjectId,
+                        path = filePath ?: BLANK_STRING
+                    )
                 }
             }
         } catch (exception: Exception) {
