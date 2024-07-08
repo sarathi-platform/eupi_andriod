@@ -54,7 +54,7 @@ fun InputComponent(
     val txt = remember {
         mutableStateOf(defaultValue)
     }
-    val remainingValue = remember(remainingAmount) {
+    val remainingValue = remember {
         mutableStateOf(remainingAmount)
     }
     val focusManager = LocalFocusManager.current
