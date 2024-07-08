@@ -592,11 +592,13 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideSaveSurveyAnswerEventRepository(
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        tagReferenceEntityDao: TagReferenceEntityDao
 
     ): ISurveyAnswerEventRepository {
         return SurveyAnswerEventRepositoryImpl(
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            tagReferenceEntityDao = tagReferenceEntityDao
         )
     }
 

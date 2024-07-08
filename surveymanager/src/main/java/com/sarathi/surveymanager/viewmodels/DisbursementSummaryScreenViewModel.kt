@@ -142,7 +142,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                     SurveyCardTag.SURVEY_DISBURSEMENT_TAG_DATE.tag
                 ) -> subTitle1 = selectedValue
 
-                survey.tagId.contains(SurveyCardTag.SURVEY_DISBURSEMENT_TAG_DATE.tag) || survey.tagId.contains(
+                survey.tagId.contains(SurveyCardTag.SURVEY_TAG_DISBURSED_AMOUNT.tag) || survey.tagId.contains(
                     SurveyCardTag.SURVEY_TAG__RECEIEVED_AMOUNT.tag
                 ) -> subTitle2 = selectedValue
 

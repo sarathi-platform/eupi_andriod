@@ -42,7 +42,7 @@ data class SaveAnswerMoneyJorunalEventDto(
     @Expose
     val localTaskId: String,
 
-    @SerializedName("localTaskId")
+    @SerializedName("tagId")
     @Expose
     val tagId: List<Int>,
 

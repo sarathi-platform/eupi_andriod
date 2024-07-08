@@ -80,12 +80,12 @@ class SurveyDownloadRepository @Inject constructor(
                 tagReferenceEntityDao.deleteTagReferenceEntityForTag(
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                     referenceId = section.sectionId,
-                    referenceType = "Section"
+                    referenceType = LanguageAttributeReferenceType.SECTION.name
                 )
                 tagReferenceEntityDao.addTagReferenceEntity(
                     TagReferenceEntity.getTagReferenceEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                        referenceType = "Section",
+                        referenceType = LanguageAttributeReferenceType.SECTION.name,
                         tags = section.tag ?: listOf(),
                         referenceId = section.sectionId
                     )
@@ -216,14 +216,14 @@ class SurveyDownloadRepository @Inject constructor(
                 tagReferenceEntityDao.deleteTagReferenceEntityForTag(
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                     referenceId = question.questionId ?: -1,
-                    referenceType = "Question"
+                    referenceType = LanguageAttributeReferenceType.QUESTION.name
                 )
                 tagReferenceEntityDao.addTagReferenceEntity(
                     TagReferenceEntity.getTagReferenceEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
                         referenceId = question.questionId ?: -1,
                         tags = question.attributeTag ?: listOf(),
-                        referenceType = "Question"
+                        referenceType = LanguageAttributeReferenceType.QUESTION.name
                     )
                 )
                 questionEntityDao.insertQuestion(

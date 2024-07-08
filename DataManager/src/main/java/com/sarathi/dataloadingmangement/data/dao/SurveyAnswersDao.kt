@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerUiModel
+import com.sarathi.dataloadingmangement.repository.LanguageAttributeReferenceType
 
 
 @Dao
@@ -53,13 +54,14 @@ interface SurveyAnswersDao {
                 "left join form_table on ques_answer_table.referenceId =form_table.localReferenceId" +
                 "  left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
                 "  where ques_answer_table.userId =:userId and ques_answer_table.taskId=:taskId and ques_answer_table.sectionId=:sectionId and ques_answer_table.surveyId=:surveyId " +
-                "and tag_reference_table.userId=:userId and tag_reference_table.referenceType='Question' group by ques_answer_table.questionId"
+                "and tag_reference_table.userId=:userId and tag_reference_table.referenceType=:referenceType group by ques_answer_table.id"
     )
     fun getSurveyAnswersForSummary(
         userId: String,
         taskId: Int,
         sectionId: Int,
-        surveyId: Int
+        surveyId: Int,
+        referenceType: String = LanguageAttributeReferenceType.QUESTION.name
     ): List<SurveyAnswerFormSummaryUiModel>
 
     @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId and referenceId=:referenceId")
@@ -129,12 +131,14 @@ interface SurveyAnswersDao {
                 " from ques_answer_table " +
                 " left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
                 "where ques_answer_table.userId =:uniqueUserIdentifier and ques_answer_table.subjectId=:subjectId and ques_answer_table.taskId=:taskId " +
-                "and tag_reference_table.userId=:uniqueUserIdentifier and tag_reference_table.referenceType='Question'  group by ques_answer_table.questionId"
+                "and tag_reference_table.userId=:uniqueUserIdentifier and tag_reference_table.referenceType=:referenceType group by ques_answer_table.id"
     )
     fun getSurveyAnswerForTag(
         taskId: Int,
         subjectId: Int,
-        uniqueUserIdentifier: String
+        uniqueUserIdentifier: String,
+        referenceType: String = LanguageAttributeReferenceType.QUESTION.name
+
     ): List<SurveyAnswerUiModel>
 
     @Query(
@@ -155,13 +159,14 @@ interface SurveyAnswersDao {
                 " left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
                 "where ques_answer_table.userId =:uniqueUserIdentifier and ques_answer_table.subjectId=:subjectId and ques_answer_table.taskId=:taskId " +
                 "and ques_answer_table.referenceId=:referenceId " +
-                "and tag_reference_table.userId=:uniqueUserIdentifier and tag_reference_table.referenceType='Question' group by ques_answer_table.questionId"
+                "and tag_reference_table.userId=:uniqueUserIdentifier and tag_reference_table.referenceType=:referenceType group by ques_answer_table.id"
     )
     fun getSurveyAnswerForFormTag(
         taskId: Int,
         subjectId: Int,
         referenceId: String,
-        uniqueUserIdentifier: String
+        uniqueUserIdentifier: String,
+        referenceType: String = LanguageAttributeReferenceType.QUESTION.name
     ): List<SurveyAnswerUiModel>
 
     @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and questionType=:questionType")

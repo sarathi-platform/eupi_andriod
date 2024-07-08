@@ -40,4 +40,6 @@ interface ISurveyAnswerEventRepository {
         grantType: String,
         taskId: Int
     ): DeleteAnswerEventDto
+
+    suspend fun getTagIdForSection(sectionId: Int): List<Int>
 }

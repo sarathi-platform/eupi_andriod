@@ -39,7 +39,9 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             grantId,
             grantType,
             taskId,
-            listOf()
+            repository.getTagIdForSection(
+                sectionId = questionUiModels.firstOrNull()?.sectionId ?: -1
+            )
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,
