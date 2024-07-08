@@ -50,6 +50,7 @@ class SurveyScreenViewModel @Inject constructor(
     private var grantID: Int = 0
     private var sanctionAmount: Int = 0
     var totalSubmittedAmount: Int = 0
+    var totalRemainingAmount: Int = 0
     private var granType: String = BLANK_STRING
     private var subjectType: String = BLANK_STRING
     private var referenceId: String = BLANK_STRING

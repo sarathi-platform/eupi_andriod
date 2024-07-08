@@ -21,7 +21,7 @@
     <string name="activity_completed_unable_to_edit">"हाबाफारिया जाजुबनायनि उनाव नों सुजुनो हाया "</string>
     <string name="refresh_failed_please_try_again">"रिफ्रेस फेलें जादों, अननानै फिन नाजा "</string>
     <string name="csg_disbursed">सि.एस.जि बिलायनाय जाबाय</string>
-    <string name="activity_completion_message">"नोंथाङा जाफुंसारै % 1 हाबाफारिखौ फोजोबबाय "</string>
+    <string name="activity_completion_message">"नोंथाङा जाफुंसारै %1$s हाबाफारिखौ फोजोबबाय "</string>
     <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
     <string name="select">सायख\'</string>
     <string name="edit_disable_message">"खामानिया जाजुबनायनि उनाव सुजुनायखौ होनाय जानाय नङा "</string>
@@ -38,7 +38,7 @@
     <string name="no">गैया</string>
     <string name="yes">नंगौ</string>
     <string name="amount_limit">रांनि सिमाया जाबाय %1$d</string>
-    <string name="amount_limit_message">बिबाङा गनायथि होनाय बिबांनिख्रुइ बांसिनः 1$d</string>
+    <string name="amount_limit_message">बिबाङा गनायथि होनाय बिबांनिख्रुइ बांसिनः %1$d</string>
     <string name="summary">गुदिखिथागुदिखिथा</string>
     <string name="form_e_generated">र्फम E सोरजिनाय</string>
     <string name="done">खालामनाय जाबाय</string>
