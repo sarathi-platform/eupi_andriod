@@ -43,9 +43,6 @@ data class OptionsItem(
     @Expose
     val conditions: List<ConditionsDto?>? = emptyList(),
 
-    @SerializedName("tag")
-    @Expose
-    val tag: Int? = 0,
     @SerializedName("contents")
     @Expose
     val contentList: List<ContentList>? = listOf(),

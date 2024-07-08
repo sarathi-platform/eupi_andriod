@@ -57,7 +57,7 @@ class EventWriterRepositoryImpl @Inject constructor(
                 requestPayload = (eventItem as SaveAnswerEventDto).json()
 
             }
-            EventName.MONEY_JOURNAL_EVENT -> {
+            EventName.MONEY_JOURNAL_EVENT, EventName.FORM_RESPONSE_EVENT -> {
                 requestPayload = (eventItem as SaveAnswerMoneyJorunalEventDto).json()
 
             }

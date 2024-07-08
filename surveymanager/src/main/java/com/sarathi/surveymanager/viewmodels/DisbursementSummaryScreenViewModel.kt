@@ -137,13 +137,23 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         surveyList.forEach { survey ->
             isFormGenerated = survey.isFormGenerated
             val selectedValue = getSelectedValue(survey.optionItems)
-            when (survey.tagId) {
-                SurveyCardTag.SURVEY_TAG_DATE.tag -> subTitle1 = selectedValue
-                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> subTitle2 = selectedValue
+            when {
+                survey.tagId.contains(SurveyCardTag.SURVEY_TAG_DATE.tag) || survey.tagId.contains(
+                    SurveyCardTag.SURVEY_DISBURSEMENT_TAG_DATE.tag
+                ) -> subTitle1 = selectedValue
 
-                SurveyCardTag.SURVEY_TAG_NATURE.tag -> subTitle3 = selectedValue
-                SurveyCardTag.SURVEY_TAG_MODE.tag -> subTitle4 = selectedValue
-                SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
+                survey.tagId.contains(SurveyCardTag.SURVEY_TAG_DISBURSED_AMOUNT.tag) || survey.tagId.contains(
+                    SurveyCardTag.SURVEY_TAG__RECEIEVED_AMOUNT.tag
+                ) -> subTitle2 = selectedValue
+
+                survey.tagId.contains(SurveyCardTag.SURVEY_TAG_NATURE.tag) -> subTitle3 =
+                    selectedValue
+
+                survey.tagId.contains(SurveyCardTag.SURVEY_TAG_MODE.tag) -> subTitle4 =
+                    selectedValue
+
+                survey.tagId.contains(SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag) -> subTitle5 =
+                    selectedValue
             }
         }
         val referenceId = surveyList.firstOrNull()?.referenceId ?: BLANK_STRING
@@ -277,7 +287,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         totalSubmittedAmount = 0
         taskList.value.entries.forEach {
             totalSubmittedAmount +=
-                it.value.filter { it.tagId == SurveyCardTag.SURVEY_TAG_AMOUNT.tag }
+                it.value.filter { it.tagId.contains(SurveyCardTag.SURVEY_TAG_DISBURSED_AMOUNT.tag) }
                     .sumOf { getSelectedValue(it.optionItems).toInt() } ?: 0
 
         }

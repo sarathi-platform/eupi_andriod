@@ -30,7 +30,7 @@ data class QuestionList(
 
     @SerializedName("tag")
     @Expose
-    var attributeTag: Int? = null,
+    var attributeTag: List<Int>? = null,
     @SerializedName("formId")
     @Expose
     var formId: Int? = null,
