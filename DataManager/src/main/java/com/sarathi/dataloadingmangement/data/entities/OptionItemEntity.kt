@@ -72,11 +72,6 @@ data class OptionItemEntity(
     @TypeConverters(ValuesDtoConverter::class)
     val values: List<ValuesDto>? = listOf(),
 
-    @SerializedName("optionTag")
-    @Expose
-    @ColumnInfo(name = "optionTag")
-    val optionTag: Int = 0,
-
     @SerializedName("conditions")
     @Expose
     @TypeConverters(ConditionsDtoConvertor::class)
@@ -104,7 +99,6 @@ data class OptionItemEntity(
                 sectionId = 0,
                 contentEntities = listOf(),
                 conditional = false,
-                optionTag = 0,
                 order = 0,
                 surveyId = 0
             )
@@ -134,7 +128,6 @@ data class OptionItemEntity(
                 order = optionsItem.order,
                 values = optionsItem.values,
                 conditions = optionsItem.conditions,
-                optionTag = optionsItem.tag ?: 0,
                 originalValue = optionsItem.originalValue,
                 contentEntities = optionsItem.contentList ?: listOf()
             )

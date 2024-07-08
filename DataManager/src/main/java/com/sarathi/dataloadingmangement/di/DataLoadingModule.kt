@@ -28,6 +28,7 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
@@ -232,6 +233,10 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideTagReferenceDao(db: NudgeGrantDatabase) = db.tagReferenceEntityDao()
+
+    @Provides
+    @Singleton
     fun provideSurveyLanguageAttributeDao(db: NudgeGrantDatabase) = db.surveyLanguageAttributeDao()
 
 
@@ -244,7 +249,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         optionItemDao: OptionItemDao,
         questionEntityDao: QuestionEntityDao,
-        surveyLanguageAttributeDao: SurveyLanguageAttributeDao
+        surveyLanguageAttributeDao: SurveyLanguageAttributeDao,
+        tagReferenceEntityDao: TagReferenceEntityDao
     ): ISurveyDownloadRepository {
         return SurveyDownloadRepository(
             dataLoadingApiService = dataLoadingApiService,
@@ -253,7 +259,8 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             optionItemDao = optionItemDao,
             questionEntityDao = questionEntityDao,
-            surveyLanguageAttributeDao = surveyLanguageAttributeDao
+            surveyLanguageAttributeDao = surveyLanguageAttributeDao,
+            tagReferenceEntityDao = tagReferenceEntityDao
 
         )
     }
@@ -586,11 +593,13 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideSaveSurveyAnswerEventRepository(
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        tagReferenceEntityDao: TagReferenceEntityDao
 
     ): ISurveyAnswerEventRepository {
         return SurveyAnswerEventRepositoryImpl(
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            tagReferenceEntityDao = tagReferenceEntityDao
         )
     }
 

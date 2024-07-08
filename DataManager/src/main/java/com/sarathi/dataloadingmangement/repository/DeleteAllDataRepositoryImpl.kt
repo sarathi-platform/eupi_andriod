@@ -82,6 +82,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
 
             smallGroupDidiMappingDao()
                 .deleteSmallGroupDidiMappingForUser(userId)
+            tagReferenceEntityDao().deleteTagReferenceEntityForUser(userId)
 
         }
     }

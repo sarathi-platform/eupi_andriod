@@ -63,13 +63,12 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
                 SurveyAnswerEntity.getSurveyAnswerEntityFromQuestionAnswerResponse(
                     questionAnswerResponse = questionAnswerResponse,
                     questionSummary = questionEntity?.originalValue ?: BLANK_STRING,
-                    questionTag = questionEntity?.tag ?: DEFAULT_ID,
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                     optionsUiModel = getOptionUiModels(
                         questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
                         optionItems,
                         questionAnswerResponse.question?.options ?: listOf(),
-                        questionAnswerResponse.question?.tag ?: BLANK_STRING,
+                        questionAnswerResponse.question?.tag ?: listOf(),
                         surveyId = questionAnswerResponse.surveyId,
                         sectionId = questionAnswerResponse.sectionId.toInt()
                     )
@@ -83,14 +82,14 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         questionId: Int,
         optionItems: List<OptionsUiModel>,
         optionsFromServer: List<QuestionOptionsResponseModel>,
-        tag: String,
+        tag: List<Int>,
         surveyId: Int,
         sectionId: Int
     ): List<OptionsUiModel> {
         val optionList = ArrayList<OptionsUiModel>()
         val mergedOptionItem = ArrayList<OptionsUiModel>()
         mergedOptionItem.addAll(optionItems)
-        if (tag == MODE_TAG || tag == NATURE_TAG) {
+        if (tag.contains(MODE_TAG) || tag.contains(NATURE_TAG)) {
             getOptionsForModeAndNature(tag, mergedOptionItem, sectionId, surveyId, questionId)
         }
         optionsFromServer.forEach { optionFromServer ->
@@ -107,7 +106,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
     }
 
     private fun getOptionsForModeAndNature(
-        tag: String,
+        tag: List<Int>,
         mergedOptionItem: ArrayList<OptionsUiModel>,
         sectionId: Int,
         surveyId: Int,
@@ -117,7 +116,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         val type =
             object : TypeToken<List<OptionsItem?>?>() {}.type
         val options = Gson().fromJson<List<OptionsItem>>(
-            if (tag == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
+            if (tag.contains(MODE_TAG)) grantConfig?.grantMode else grantConfig?.grantNature,
             type
 
         )
@@ -128,7 +127,6 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
                     surveyId = surveyId,
                     questionId = questionId,
                     optionId = option?.optionId,
-                    optionTag = option?.tag ?: DEFAULT_ID,
                     optionType = option?.optionType,
                     originalValue = option?.originalValue,
                     isSelected = false,
