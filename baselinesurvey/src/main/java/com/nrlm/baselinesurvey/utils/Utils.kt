@@ -1307,7 +1307,7 @@ fun numberInEnglishFormat(number: String): String {
     val formatter = NumberFormat.getInstance(Locale.ENGLISH)
     val mNumber = formatter.parse(number)
 
-    return formatter.format(mNumber).replace(",", "")
+    return formatter.format(mNumber).replace(CONDITIONS_DELIMITER, BLANK_STRING)
 }
 
 fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
