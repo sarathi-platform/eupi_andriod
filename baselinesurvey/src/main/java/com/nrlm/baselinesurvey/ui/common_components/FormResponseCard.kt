@@ -38,7 +38,9 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.HOUSEHOLD_INFO_TAG_CONSTANT
 import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG_CONSTANT
+import com.nrlm.baselinesurvey.NO
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.YES
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -592,12 +594,10 @@ fun DidiInfoCard(
                             imagePath = didiDetails.crpImageLocalPath
                         )
                     }
-
-
                     Spacer(modifier = Modifier.width(dimen_14_dp))
                     Column {
                         Text(text = buildAnnotatedString {
-                            append("Didi Name: ")
+                            append("${stringResource(R.string.didi_name)} :")
                             append(didiDetails.didiName)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
@@ -606,7 +606,7 @@ fun DidiInfoCard(
                                 .height(dimen_8_dp)
                         )
                         Text(text = buildAnnotatedString {
-                            append("Dada Name: ") //TODO Remove Hard coded strings
+                            append("${stringResource(R.string.dada_name_txt)} : ") //TODO Remove Hard coded strings
                             append(didiDetails.dadaName)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
@@ -615,8 +615,16 @@ fun DidiInfoCard(
                                 .height(dimen_8_dp)
                         )
                         Text(text = buildAnnotatedString {
-                            append("Aadhar Card: ")
-                            append(SHGFlag.fromInt(didiInfoEntity.isAdharCard ?: -1).name)
+                           var value = SHGFlag.fromInt(didiInfoEntity.isAdharCard ?: -1).name
+                            var getAdharCardValue =""
+                            if (value == YES)
+                                getAdharCardValue = stringResource(R.string.option_yes)
+                            else if (value == NO)
+                                getAdharCardValue = stringResource(R.string.option_no)
+                            else getAdharCardValue
+
+                            append("${stringResource(R.string.adhar_card_txt)} : ")
+                            append(getAdharCardValue)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -624,8 +632,15 @@ fun DidiInfoCard(
                                 .height(dimen_8_dp)
                         )
                         Text(text = buildAnnotatedString {
-                            append("VoterId Card: ")
-                            append(SHGFlag.fromInt(didiInfoEntity.isVoterCard ?: -1).name)
+                         var value =SHGFlag.fromInt(didiInfoEntity.isVoterCard ?: -1).name
+                            var getVoterCardValue =""
+                            if (value == "YES")
+                                getVoterCardValue = stringResource(R.string.option_yes)
+                            else if (value == "NO")
+                                getVoterCardValue = stringResource(R.string.option_no)
+                            else getVoterCardValue
+                            append("${stringResource(R.string.voterId_card_txt)} : ")
+                            append(getVoterCardValue)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -633,7 +648,7 @@ fun DidiInfoCard(
                                 .height(dimen_8_dp)
                         )
                         Text(text = buildAnnotatedString {
-                            append("Phone Number: ")
+                            append("${stringResource(R.string.phone_number_txt)} : ")
                             append(didiInfoEntity.phoneNumber)
                         }, style = smallTextStyleWithNormalWeight)
                     }

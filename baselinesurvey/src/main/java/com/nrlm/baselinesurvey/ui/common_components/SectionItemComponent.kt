@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -174,8 +175,9 @@ fun SectionItemComponent(
                         maxLines = 2,
                         style = defaultTextStyle
                     )
+
                     Text(
-                        text = "${sectionStateItem.section.questionSize} Questions",
+                        text = "${sectionStateItem.section.questionSize} ${stringResource(R.string.questions_data_tab_title)}",
                         color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else textColorDark //TODO Temporary change do not remove the commented part
                         /*if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if (sectionStateItem.sectionStatus.name.equals(
                                 SectionStatus.INPROGRESS.name
