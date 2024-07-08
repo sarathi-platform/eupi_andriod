@@ -336,7 +336,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
         uiConfigDao: UiConfigDao,
-        surveyAnswersDao: SurveyAnswersDao
+        surveyAnswersDao: SurveyAnswersDao,
+        activityConfigDao: ActivityConfigDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
@@ -344,8 +345,8 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
             uiConfigDao = uiConfigDao,
-            surveyAnswersDao = surveyAnswersDao
-
+            surveyAnswersDao = surveyAnswersDao,
+            activityConfigDao = activityConfigDao
         )
     }
 
