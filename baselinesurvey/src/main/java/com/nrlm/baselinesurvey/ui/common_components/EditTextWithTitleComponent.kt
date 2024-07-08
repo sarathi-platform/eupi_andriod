@@ -39,6 +39,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -54,12 +55,11 @@ fun EditTextWithTitleComponent(
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
+
     val txt = remember(resetResponse, showQuestion?.optionId) {
         mutableStateOf(defaultValue)
     }
-//    if (txt.value.isBlank()) {
-//        txt.value = defaultValue
-//    }
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -106,7 +106,7 @@ fun EditTextWithTitleComponent(
                         if (isOnlyNumber) {
                             if (onlyNumberField(it)) {
                                 if (it.length <= MAXIMUM_RANGE_LENGTH) {
-                                    txt.value = it
+                                    txt.value = numberInEnglishFormat(it)
                                 }
                             }
                         } else {
@@ -143,7 +143,6 @@ fun EditTextWithTitleComponent(
 
         }
     }
-
 }
 
 @Composable
