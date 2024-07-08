@@ -144,6 +144,15 @@ class SettingBSViewModel @Inject constructor(
                     SettingTagEnum.TRAINING_VIDEOS.name
                 )
             )
+        } else {
+            list.add(
+                SettingOptionModel(
+                    2,
+                    context.getString(R.string.forms),
+                    BLANK_STRING,
+                    SettingTagEnum.FORMS.name
+                )
+            )
         }
         list.add(
             SettingOptionModel(
@@ -176,6 +185,8 @@ class SettingBSViewModel @Inject constructor(
         _optionList.value=list
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
+        } else {
+            formEAvailable.value = activityFormList.value.isNotEmpty()
         }
     }
 
@@ -506,7 +517,6 @@ class SettingBSViewModel @Inject constructor(
             checkFormAAvailability(context = context, villageId = villageId)
             checkFormBAvailability(context = context, villageId = villageId)
             checkFormCAvailability(context = context, villageId = villageId)
-            formEAvailable.value = activityFormList.value.isNotEmpty()
         }
 
     }
