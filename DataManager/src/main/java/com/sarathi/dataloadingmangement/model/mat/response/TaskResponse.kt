@@ -19,5 +19,7 @@ data class TaskResponse(
     @SerializedName("taskData")
     val taskData: List<TaskData>?,
     @SerializedName("taskStatus")
-    val taskStatus: String
+    val taskStatus: String,
+    @SerializedName("localTaskId")
+    val localTaskId: String?
 )

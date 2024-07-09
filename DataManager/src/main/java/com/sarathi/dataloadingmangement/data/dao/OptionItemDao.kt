@@ -32,7 +32,6 @@ interface OptionItemDao {
                 " option_table.contentEntities,\n" +
                 " option_table.conditions,\n" +
                 " option_table.selectedValue,\n" +
-                " option_table.optionTag,\n" +
                 " option_table.selectedValueId,\n" +
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase\n" +

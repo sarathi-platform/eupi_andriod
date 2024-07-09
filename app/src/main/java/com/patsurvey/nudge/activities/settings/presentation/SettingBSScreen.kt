@@ -18,6 +18,8 @@ import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
@@ -36,8 +38,8 @@ fun SettingBSScreen(
 
     val loaderState = viewModel.loaderState
 
-    LaunchedEffect(key1 = true){
-     viewModel.initOptions(context)
+    LaunchedEffect(key1 = true) {
+        viewModel.initOptions(context)
     }
 
 
@@ -52,9 +54,9 @@ fun SettingBSScreen(
             },
             onPositiveButtonClick = {
                 viewModel.showLogoutDialog.value = false
-                viewModel.showLoader.value=true
+                viewModel.showLoader.value = true
                 viewModel.performLogout(context) {
-                    if (it){
+                    if (it) {
                         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
                             navController.navigate(AuthScreen.LOGIN.route)
                         } else {
@@ -64,52 +66,54 @@ fun SettingBSScreen(
                                 navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                             }
                         }
-                    }
-                    else showCustomToast(context, context.getString(R.string.something_went_wrong))
+                    } else showCustomToast(
+                        context,
+                        context.getString(R.string.something_went_wrong)
+                    )
                 }
             })
 
 
     }
 
-  if(!loaderState.value.isLoaderVisible) {
-      CommonSettingScreen(
-          title = stringResource(id = R.string.settings_screen_title),
-          versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-          optionList = viewModel.optionList.value ?: emptyList(),
-          isLoaderVisible = viewModel.showLoader.value,
-          onBackClick = {
-              navController.popBackStack()
-          },
-          expanded = expanded.value,
-          onItemClick = { _, option ->
-              when (option.tag) {
-                  SettingTagEnum.LANGUAGE.name -> {
-                      viewModel.saveLanguagePageFrom()
-                      navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
-                  }
+    if (!loaderState.value.isLoaderVisible) {
+        CommonSettingScreen(
+            title = stringResource(id = R.string.settings_screen_title),
+            versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            optionList = viewModel.optionList.value ?: emptyList(),
+            isLoaderVisible = viewModel.showLoader.value,
+            onBackClick = {
+                navController.popBackStack()
+            },
+            expanded = expanded.value,
+            onItemClick = { _, option ->
+                when (option.tag) {
+                    SettingTagEnum.LANGUAGE.name -> {
+                        viewModel.saveLanguagePageFrom()
+                        navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                    }
 
-                  SettingTagEnum.PROFILE.name -> {
-                      navController.navigate(SettingScreens.PROFILE_SCREEN.route)
+                    SettingTagEnum.PROFILE.name -> {
+                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
 
-                  }
+                    }
 
-                  SettingTagEnum.FORMS.name -> {
-                      expanded.value = !expanded.value
-                  }
+                    SettingTagEnum.FORMS.name -> {
+                        expanded.value = !expanded.value
+                    }
 
 
-                  SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
-                      viewModel.compressEventData(context.getString(R.string.share_export_file))
-                  }
+                    SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
+                        viewModel.compressEventData(context.getString(R.string.share_export_file))
+                    }
 
-                  SettingTagEnum.TRAINING_VIDEOS.name -> {
-                      navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
-                  }
+                    SettingTagEnum.TRAINING_VIDEOS.name -> {
+                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+                    }
 
-                  SettingTagEnum.BACKUP_RECOVERY.name -> {
-                      navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
-                  }
+                    SettingTagEnum.BACKUP_RECOVERY.name -> {
+                        navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
+                    }
 
                   SettingTagEnum.SHARE_LOGS.name -> {
                       viewModel.exportOnlyLogFile(context)
@@ -136,30 +140,41 @@ fun SettingBSScreen(
                           )
                   }
 
-                  DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
-                      viewModel.showLoaderForTime(500)
-                      if (viewModel.formBAvailable.value)
-                          navController.navigate(SettingScreens.FORM_B_SCREEN.route)
-                      else
-                          showToast(
-                              context,
-                              context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
-                          )
-                  }
+                    DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
+                        viewModel.showLoaderForTime(500)
+                        if (viewModel.formBAvailable.value)
+                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                        else
+                            showToast(
+                                context,
+                                context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
+                            )
+                    }
 
-                  DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
-                      viewModel.showLoaderForTime(500)
-                      if (viewModel.formCAvailable.value)
-                          navController.navigate(SettingScreens.FORM_C_SCREEN.route)
-                      else
-                          showToast(
-                              context,
-                              context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
-                          )
-                  }
-              }
-          }
-      )
-  }
+                    DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
+                        viewModel.showLoaderForTime(500)
+                        if (viewModel.formCAvailable.value)
+                            navController.navigate(SettingScreens.FORM_C_SCREEN.route)
+                        else
+                            showToast(
+                                context,
+                                context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
+                            )
+                    }
+
+                    DigitalFormEnum.DIGITAL_FORM_E.ordinal -> {
+                        viewModel.showLoaderForTime(500)
+                        if (viewModel.formBAvailable.value)
+                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                        else
+                            showToast(
+                                context,
+                                context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
+                            )
+                    }
+                }
+            }
+        )
+    }
 }
 

@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
@@ -45,6 +46,17 @@ class GetActivityRepositoryImpl @Inject constructor(
             missionId = missionId,
             status = status
         )
+    }
+
+    override suspend fun getActiveForm(
+        formType: String
+    ): List<ActivityFormUIModel> {
+        return activityDao.getActiveForm(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            languageCode = coreSharedPrefs.getSelectedLanguageCode(),
+            formType = formType
+        )
+
     }
 
 }

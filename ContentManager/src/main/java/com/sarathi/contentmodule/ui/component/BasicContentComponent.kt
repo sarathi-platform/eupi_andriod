@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.black1
@@ -33,6 +35,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
@@ -96,13 +99,12 @@ private fun ContentView(
             }
             if (contentTitle.isNotBlank()) {
                 Text(
+                    modifier = Modifier.width(dimen_60_dp),
+                    text = contentTitle,
+                    style = smallTextStyle.copy(color = blueDark),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    text = if (contentTitle.length > 10) contentTitle.substring(
-                        0,
-                        10
-                    ) else contentTitle,
-                    style = smallTextStyle.copy(color = blueDark)
+                    textAlign = TextAlign.Center
                 )
             }
         }

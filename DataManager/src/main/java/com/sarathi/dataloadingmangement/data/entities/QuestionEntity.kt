@@ -78,10 +78,6 @@ data class QuestionEntity(
 
     @SerializedName("tag")
     @Expose
-    @ColumnInfo(name = "tag")
-    var tag: Int = 0,
-    @SerializedName("tag")
-    @Expose
     @ColumnInfo(name = "formId")
     var formId: Int = 0,
     @TypeConverters(ContentListConverter::class)
@@ -109,7 +105,6 @@ data class QuestionEntity(
                 order = question.order,
                 type = question.type,
                 isConditional = isCondition,
-                tag = question.attributeTag ?: 0,
                 contentEntities = question.contentList,
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,

@@ -317,6 +317,8 @@ const val YEAR = "Years"
 const val MONTHS = "Months"
 const val HOURS = "Hours"
 const val MINUTE = "Minutes"
+const val YES = "YES"
+const val NO = "NO"
 
 const val LIVELIHOOD_SOURCE_TAG_CONSTANT = "Livelihood Sources"
 const val HOUSEHOLD_INFO_TAG_CONSTANT = "Household information"

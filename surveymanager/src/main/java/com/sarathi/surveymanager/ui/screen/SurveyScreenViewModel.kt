@@ -50,6 +50,7 @@ class SurveyScreenViewModel @Inject constructor(
     private var grantID: Int = 0
     private var sanctionAmount: Int = 0
     var totalSubmittedAmount: Int = 0
+    var totalRemainingAmount: Int = 0
     private var granType: String = BLANK_STRING
     private var subjectType: String = BLANK_STRING
     private var referenceId: String = BLANK_STRING
@@ -170,7 +171,7 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
-            if (questionUiModel.tagId.toString() == DISBURSED_AMOUNT_TAG) {
+            if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
                 if (sanctionAmount != 0 && disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {

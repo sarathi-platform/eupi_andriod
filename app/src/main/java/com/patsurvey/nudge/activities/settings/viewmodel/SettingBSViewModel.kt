@@ -67,6 +67,8 @@ import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openShareSheet
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,6 +84,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
+    private val getActivityUseCase: GetActivityUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo
@@ -98,11 +101,16 @@ class SettingBSViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
+    val formEAvailable = mutableStateOf(false)
+    val activityFormList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
+
+
     val loaderState: State<LoaderState> get() = _loaderState
     fun initOptions(context:Context) {
         applicationId.value= CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
         mAppContext = if(userType!= UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
+        getActivityForm()
 
         val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
         val settingOpenFrom=settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
@@ -503,6 +511,7 @@ class SettingBSViewModel @Inject constructor(
             checkFormAAvailability(context = context, villageId = villageId)
             checkFormBAvailability(context = context, villageId = villageId)
             checkFormCAvailability(context = context, villageId = villageId)
+            formEAvailable.value = activityFormList.value.isNotEmpty()
         }
 
     }
@@ -542,7 +551,7 @@ class SettingBSViewModel @Inject constructor(
                         moduleName = moduleNameAccToLoggedInUser(userType)
                     ) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
-                        openShareSheet(convertURIAccToOS(it) ,"", type = ZIP_MIME_TYPE)
+                        openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
                     }
 
 
@@ -634,6 +643,11 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
+    fun getActivityForm() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            activityFormList.value = getActivityUseCase.getActiveForm(formType = "form")
+        }
+    }
 
     fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()

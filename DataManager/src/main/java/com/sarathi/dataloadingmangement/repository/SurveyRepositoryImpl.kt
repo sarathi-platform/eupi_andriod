@@ -96,7 +96,7 @@ class SurveyRepositoryImpl @Inject constructor(
         grantId: Int
     ): List<OptionsUiModel> {
         var optionList = optionItems.filter { it.questionId == question.questionId }
-        if (question.tag.toString() == (MODE_TAG) || question.tag.toString() == NATURE_TAG) {
+        if (question.tag.contains(MODE_TAG) || question.tag.contains(NATURE_TAG)) {
 
             optionList = getOptionsForModeAndNature(activityConfigId, grantId, question)
         }
@@ -125,7 +125,7 @@ class SurveyRepositoryImpl @Inject constructor(
         val modeOrNatureOptions = ArrayList<OptionsUiModel>()
         val type = object : TypeToken<List<OptionsItem?>?>() {}.type
         val options = Gson().fromJson<List<OptionsItem>>(
-            if (question.tag.toString() == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
+            if (question.tag.contains(MODE_TAG)) grantConfig?.grantMode else grantConfig?.grantNature,
             type
         )
         options?.forEach { option ->
@@ -135,7 +135,6 @@ class SurveyRepositoryImpl @Inject constructor(
                     surveyId = question.surveyId,
                     questionId = question.questionId,
                     optionId = option?.optionId,
-                    optionTag = option?.tag ?: DEFAULT_ID,
                     optionType = option?.optionType,
                     originalValue = option?.originalValue,
                     isSelected = false,

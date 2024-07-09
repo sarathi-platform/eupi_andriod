@@ -109,7 +109,7 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                        if (sanctionedAmount == 0 || viewModel.totalSubmittedAmount <= sanctionedAmount) {
+                        if (sanctionedAmount == 0 || viewModel.totalRemainingAmount >= 0) {
                             viewModel.saveButtonClicked()
                             navController.popBackStack()
                         } else {
@@ -159,10 +159,14 @@ fun SurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     maxLength = 7,
-                                    hintMessage = getSanctionedAmountMessage(
+                                    sanctionedAmount = sanctionedAmount,
+                                    remainingAmount = getSanctionedAmountMessage(
                                         question,
                                         sanctionedAmount = sanctionedAmount,
-                                        remainingAmount = sanctionedAmount - totalSubmittedAmount
+                                        remainingAmount = totalSubmittedAmount - getSelectedValueInInt(
+                                            question.options?.firstOrNull()?.selectedValue
+                                                ?: BLANK_STRING, 0
+                                        )
                                     ),
                                     isMandatory = question.isMandatory,
                                     isEditable = viewModel.isActivityNotCompleted.value,
@@ -172,7 +176,8 @@ fun SurveyScreen(
                                     isOnlyNumber = true,
                                     hintText = question.options?.firstOrNull()?.description
                                         ?: BLANK_STRING
-                                ) { selectedValue ->
+                                ) { selectedValue, remainingAmout ->
+                                    viewModel.totalRemainingAmount = remainingAmout
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
                                 }
                             }
@@ -272,11 +277,11 @@ fun getSanctionedAmountMessage(
     question: QuestionUiModel,
     sanctionedAmount: Int,
     remainingAmount: Int
-): String {
-    if (sanctionedAmount != 0 && question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
-        return LocalContext.current.getString(R.string.amount_limit, remainingAmount)
+): Int {
+    if (sanctionedAmount != 0 && question.tagId.contains(DISBURSED_AMOUNT_TAG)) {
+        return remainingAmount
     }
-    return BLANK_STRING
+    return 0
 
 }
 
@@ -357,6 +362,10 @@ fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
     return valuesDtoList
 
 
+}
+
+private fun getSelectedValueInInt(selectedValue: String, sanctionedAmount: Int): Int {
+    return if (selectedValue.isNotBlank()) selectedValue.toInt() else sanctionedAmount
 }
 
 

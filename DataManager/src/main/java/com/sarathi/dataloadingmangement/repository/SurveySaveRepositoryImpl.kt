@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
@@ -58,10 +57,9 @@ class SurveySaveRepositoryImpl @Inject constructor(
         val surveyAnswerEntities = surveyAnswersDao.getSurveyAnswerForTag(
             taskId,
             subjectId,
-            tagId.toInt(),
             coreSharedPrefs.getUniqueUserIdentifier()
-        )
-        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+        ).filter { it.tagId.contains(tagId.toInt()) }
+        if (tagId == DISBURSED_AMOUNT_TAG.toString() || tagId == RECEIVED_AMOUNT_TAG.toString() || tagId == NO_OF_POOR_DIDI_TAG.toString()) {
             var totalAmount = 0
             surveyAnswerEntities.forEach { surveyAnswerEntity ->
 
@@ -102,10 +100,12 @@ class SurveySaveRepositoryImpl @Inject constructor(
             taskId = taskId,
             subjectId = subjectId,
             referenceId = referenceId,
-            tagId = tagId.toInt(),
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
-        )
-        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+        ).find { it.tagId.contains(tagId.toInt()) }
+        if (surveyAnswerEntity?.tagId?.contains(DISBURSED_AMOUNT_TAG) == true || surveyAnswerEntity?.tagId?.contains(
+                NO_OF_POOR_DIDI_TAG
+            ) == true || surveyAnswerEntity?.tagId?.contains(RECEIVED_AMOUNT_TAG) == true
+        ) {
             var totalAmount = 0
             surveyAnswerEntity?.optionItems?.forEach {
                 totalAmount += it.selectedValue?.toInt() ?: 0
@@ -171,7 +171,10 @@ class SurveySaveRepositoryImpl @Inject constructor(
         )
         surveyAnswers.forEachIndexed { index, surveyAnswerData ->
             if (surveyAnswerData.questionType == QuestionType.MultiSelectDropDown.name || surveyAnswerData.questionType == QuestionType.SingleSelectDropDown.name) {
-                if (surveyAnswerData.tagId.toString() == MODE_TAG || surveyAnswerData.tagId.toString() == NATURE_TAG) {
+                if (surveyAnswerData.tagId.contains(MODE_TAG) || surveyAnswerData.tagId.contains(
+                        NATURE_TAG
+                    )
+                ) {
                     val optionUiModelList = getOptionsForModeAndNature(
                         activityConfigId = activityConfigId,
                         grantId = grantId,
@@ -245,7 +248,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         sectionId: Int,
         surveyId: Int,
         questionId: Int,
-        tag: Int
+        tag: List<Int>
     ): List<OptionsUiModel> {
 
         val grantConfig =
@@ -253,7 +256,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         val modeOrNatureOptions = ArrayList<OptionsUiModel>()
         val type = object : TypeToken<List<OptionsItem?>?>() {}.type
         val options = Gson().fromJson<List<OptionsItem>>(
-            if (tag.toString() == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
+            if (tag.contains(MODE_TAG)) grantConfig?.grantMode else grantConfig?.grantNature,
             type
         )
         options?.forEach { option ->
@@ -263,7 +266,6 @@ class SurveySaveRepositoryImpl @Inject constructor(
                     surveyId = surveyId,
                     questionId = questionId,
                     optionId = option?.optionId,
-                    optionTag = option?.tag ?: DEFAULT_ID,
                     optionType = option?.optionType,
                     originalValue = option?.originalValue,
                     isSelected = false,
