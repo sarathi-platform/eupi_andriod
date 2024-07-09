@@ -149,7 +149,7 @@ class SettingBSViewModel @Inject constructor(
                     SettingTagEnum.TRAINING_VIDEOS.name
                 )
             )
-        } else if (formEAvailable.value) {
+        } else {
             list.add(
                 SettingOptionModel(
                     2,
