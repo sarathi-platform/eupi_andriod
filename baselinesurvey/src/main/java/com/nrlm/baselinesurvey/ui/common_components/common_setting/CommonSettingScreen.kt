@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_setting
 
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
@@ -36,7 +35,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,13 +54,13 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
-import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nudge.core.model.SettingOptionModel
 
 @Composable

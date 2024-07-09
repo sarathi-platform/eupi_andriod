@@ -22,7 +22,7 @@
     <string name="refresh_failed_please_try_again">"রিফ্রেশ হয়নি, আবার চেষ্টা করুন! "</string>
     <string name="csg_disbursed">CSG বিতরণ করা হয়েছে</string>
     <string name="activity_completion_message">"আপনি সফলভাবে %1s কার্যকলাপ সম্পন্ন করেছেন "</string>
-    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
+    <string name="form_e_generated_successfully_for_didis">"%1$s দিদিদের জন্য ফর্ম E সফলভাবে তৈরি হয়েছে "</string>
     <string name="select">নির্বাচন করুন</string>
     <string name="edit_disable_message">"কার্যকলাপ সম্পূর্ণ হওয়ার পরে এডিট করা যাবেনা "</string>
     <string name="submit">"জমা দিন "</string>
@@ -31,7 +31,7 @@
     <string name="amount">পরিমাণ:</string>
     <string name="nature">প্ৰকৃতি:</string>
     <string name="mode">প্রকার:</string>
-    <string name="no_of_didi_s">Didis:</string>
+    <string name="no_of_didi_s">দিদিরা:</string>
     <string name="edit">সম্পাদনা</string>
     <string name="add_image">"+ ছবি যোগ কর "</string>
     <string name="are_you_sure_you_want_to_delete">"আপনি ডিলিট করতে চান? "</string>
@@ -48,16 +48,16 @@
     <string name="attach_physical_form_e">প্রিন্ট করা ফর্ম E সংযুক্ত করুন</string>
     <string name="close">বন্ধ করুন</string>
     <string name="didis">দিদিরা</string>
-    <string name="file_not_exists">"file not Exists "</string>
+    <string name="file_not_exists">"ফাইল অস্তিত্ব নেই "</string>
     <string name="activities_completed">"কার্যক্রম সমাপ্ত হয়েছে "</string>
     <string name="start">"শুরু করুন "</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">"অনুমোদিত পরিমাণ সম্পূর্ণ বিতরণ করা হয়েছে "</string>
-    <string name="complete">Complete</string>
+    <string name="complete">"সমাপ্ত "</string>
     <string name="references">তথ্যসূত্র  (%1$s)</string>
     <string name="are_you_sure">"তুমি কি নিশ্চিত? "</string>
     <string name="do_you_want_to_exit_the_app">"আপনি কি অ্যাপ থেকে বেরোতে চান? "</string>
     <string name="exit">"বেরিয়ে যান "</string>
     <string name="cancel">"বাতিল করুন "</string>
-    <string name="search">Search</string>
+    <string name="search">"সার্চ করুন  "</string>
 
 </resources>

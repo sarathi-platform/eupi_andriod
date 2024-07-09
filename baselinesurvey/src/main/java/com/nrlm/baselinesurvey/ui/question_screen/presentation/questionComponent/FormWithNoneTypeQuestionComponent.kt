@@ -130,7 +130,7 @@ fun FormWithNoneTypeQuestionComponent(
 
     SideEffect {
         if (noneOptionValue != null) {
-            isNoneQuestionAnswered.value = true
+            isNoneQuestionAnswered.value = noneOptionValue?.selectedValueId?.isNotEmpty() ?: false
         }
 
     }

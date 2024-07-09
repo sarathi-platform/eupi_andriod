@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.data.entities
 
+import android.text.TextUtils
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -47,7 +48,8 @@ data class ActivityTaskEntity(
                 subjectId = task.subjectId,
                 startOffset = task.startOffset,
                 endOffset = task.endOffset,
-                localTaskId = UUID.randomUUID().toString(),
+                localTaskId = if (!TextUtils.isEmpty(task.localTaskId)) task.localTaskId
+                    ?: BLANK_STRING else UUID.randomUUID().toString(),
                 actualStartDate = task.actualStartDate ?: BLANK_STRING,
                 actualCompletedDate = task.actualEndDate ?: BLANK_STRING
             )
