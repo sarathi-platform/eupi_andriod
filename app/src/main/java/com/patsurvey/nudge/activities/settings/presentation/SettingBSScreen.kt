@@ -88,7 +88,7 @@ fun SettingBSScreen(
                 navController.popBackStack()
             },
             expanded = expanded.value,
-            activityForm = viewModel.activityFormList.value,
+            activityForm = viewModel.activityFormGenerateList.value,
             onItemClick = { _, option ->
                 when (option.tag) {
                     SettingTagEnum.LANGUAGE.name -> {
@@ -127,47 +127,59 @@ fun SettingBSScreen(
                 viewModel.showLogoutDialog.value = true
             },
             onParticularFormClick = { formIndex ->
-                when (formIndex) {
-                    DigitalFormEnum.DIGITAL_FORM_A.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.userType == UPCM_USER && viewModel.activityFormList.value.isNotEmpty()) {
-                            navigateToDisbursmentSummaryScreen(
-                                navController = navController,
-                                missionId = viewModel.activityFormList.value.get(0).missionId,
-                                activityId = viewModel.activityFormList.value.get(0).activityId,
-                                taskIdList = BLANK_STRING
-                            )
-                        } else if (viewModel.formAAvailable.value)
-                            navController.navigate(SettingScreens.FORM_A_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
-                            )
+                if (viewModel.userType == UPCM_USER && viewModel.formEAvailable.value) {
+                    if (viewModel.activityFormGenerateList.value.isNotEmpty()) {
+                        navigateToDisbursmentSummaryScreen(
+                            navController = navController,
+                            missionId = viewModel.activityFormGenerateList.value[formIndex].missionId,
+                            activityId = viewModel.activityFormGenerateList.value[formIndex].activityId,
+                            taskIdList = BLANK_STRING,
+                            isFromSettingScreen = true
+                        )
+                    } else {
+                        showToast(
+                            context,
+                            context.getString(R.string.no_data_form_e_not_generated_text)
+                        )
                     }
 
-                    DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.formBAvailable.value)
-                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
-                            )
-                    }
+                } else {
+                    when (formIndex) {
+                        DigitalFormEnum.DIGITAL_FORM_A.ordinal -> {
+                            viewModel.showLoaderForTime(500)
+                            if (viewModel.formAAvailable.value)
+                                navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                            else
+                                showToast(
+                                    context,
+                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
+                                )
+                        }
 
-                    DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.formCAvailable.value)
-                            navController.navigate(SettingScreens.FORM_C_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
-                            )
+                        DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
+                            viewModel.showLoaderForTime(500)
+                            if (viewModel.formBAvailable.value)
+                                navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                            else
+                                showToast(
+                                    context,
+                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
+                                )
+                        }
+
+                        DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
+                            viewModel.showLoaderForTime(500)
+                            if (viewModel.formCAvailable.value)
+                                navController.navigate(SettingScreens.FORM_C_SCREEN.route)
+                            else
+                                showToast(
+                                    context,
+                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
+                                )
+                        }
                     }
                 }
+
             }
         )
     }

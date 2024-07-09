@@ -101,6 +101,16 @@ class FormUseCase @Inject constructor(
         return repository.getNonGeneratedFormSummaryData(activityId)
     }
 
+    suspend fun getOnlyGeneratedFormSummaryData(
+        activityId: Int,
+        isFormGenerated: Boolean
+    ): List<FormEntity> {
+        return repository.getOnlyGeneratedFormSummaryData(
+            activityId = activityId,
+            isFormGenerated = isFormGenerated
+        )
+    }
+
     fun getFilePathUri(filePath: String): Uri? {
         return downloaderManager.getFilePathUri(filePath)
     }

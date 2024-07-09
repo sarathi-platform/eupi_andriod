@@ -148,6 +148,7 @@ fun GrantTaskScreen(
                                     navController = navController,
                                     activityId = activityId,
                                     missionId = missionId,
+                                    isFromSettingScreen = false,
                                     taskIdList = viewModel.getTaskListOfDisburesementAmountEqualSanctionedAmount()
                                 )
                             })

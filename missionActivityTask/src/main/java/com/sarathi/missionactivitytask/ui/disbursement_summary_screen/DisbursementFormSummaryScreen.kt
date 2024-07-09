@@ -100,6 +100,7 @@ fun DisbursementFormSummaryScreen(
     activityId: Int,
     missionId: Int,
     taskList: String,
+    isFormSettingScreen: Boolean,
     onSettingClick: () -> Unit,
 ) {
     val outerState = rememberLazyListState()
@@ -118,7 +119,8 @@ fun DisbursementFormSummaryScreen(
         viewModel.onEvent(
             InitDataEvent.InitDisbursmentScreenState(
                 activityId = activityId,
-                missionId = missionId
+                missionId = missionId,
+                isFormGenerated = isFormSettingScreen
             )
         )
     }
@@ -132,7 +134,7 @@ fun DisbursementFormSummaryScreen(
         onSearchValueChange = {},
         onRetry = {},
         onBottomUI = {
-            if (!viewModel.loaderState.value.isLoaderVisible) {
+            if (!isFormSettingScreen && !viewModel.loaderState.value.isLoaderVisible) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

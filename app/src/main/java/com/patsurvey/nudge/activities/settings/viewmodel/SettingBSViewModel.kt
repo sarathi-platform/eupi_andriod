@@ -67,6 +67,7 @@ import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openShareSheet
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -85,6 +86,7 @@ import javax.inject.Inject
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     private val getActivityUseCase: GetActivityUseCase,
+    private val formUseCase: FormUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo
@@ -102,7 +104,7 @@ class SettingBSViewModel @Inject constructor(
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
     val formEAvailable = mutableStateOf(false)
-    val activityFormList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
+    val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
 
 
     val loaderState: State<LoaderState> get() = _loaderState
@@ -110,8 +112,11 @@ class SettingBSViewModel @Inject constructor(
         applicationId.value= CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
         mAppContext = if(userType!= UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
-        getActivityForm()
-
+        getActivityFormGenerateList(onGetData = {
+            if (activityFormGenerateList.value.isNotEmpty()) {
+                checkFromEAvilable(activityFormGenerateList.value[0].activityId)
+            }
+        })
         val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
         val settingOpenFrom=settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
         val list = ArrayList<SettingOptionModel>()
@@ -144,7 +149,7 @@ class SettingBSViewModel @Inject constructor(
                     SettingTagEnum.TRAINING_VIDEOS.name
                 )
             )
-        } else {
+        } else if (formEAvailable.value) {
             list.add(
                 SettingOptionModel(
                     2,
@@ -186,7 +191,7 @@ class SettingBSViewModel @Inject constructor(
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
         } else {
-            formEAvailable.value = activityFormList.value.isNotEmpty()
+            formEAvailable.value = activityFormGenerateList.value.isNotEmpty()
         }
     }
 
@@ -648,9 +653,10 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun getActivityForm() {
+    fun getActivityFormGenerateList(onGetData: () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            activityFormList.value = getActivityUseCase.getActiveForm(formType = "form")
+            activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = "form")
+            onGetData()
         }
     }
 
@@ -662,5 +668,13 @@ class SettingBSViewModel @Inject constructor(
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return arrayListOf(uri)
         return arrayListOf(uriFromFile(mAppContext,uri.toFile(),applicationId.value))
+    }
+    fun checkFromEAvilable(activityId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            formEAvailable.value = formUseCase.getOnlyGeneratedFormSummaryData(
+                activityId = activityId,
+                isFormGenerated = true
+            ).isNotEmpty()
+        }
     }
 }
