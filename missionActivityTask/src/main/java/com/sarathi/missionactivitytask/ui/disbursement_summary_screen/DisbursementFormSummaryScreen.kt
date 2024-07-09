@@ -83,6 +83,7 @@ import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.navigation.navigateToPdfViewerScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.FormSummaryDialog
+import com.sarathi.missionactivitytask.ui.components.LoaderComponent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
@@ -122,6 +123,8 @@ fun DisbursementFormSummaryScreen(
         )
     }
 
+
+
     ToolBarWithMenuComponent(
         title = stringResource(R.string.disbursement_summary),
         modifier = Modifier,
@@ -129,191 +132,184 @@ fun DisbursementFormSummaryScreen(
         onSearchValueChange = {},
         onRetry = {},
         onBottomUI = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp)
-                    .background(white)
-            ) {
-                Column(
+            if (!viewModel.loaderState.value.isLoaderVisible) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimen_10_dp)
+                        .padding(dimen_10_dp)
+                        .background(white)
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = dimen_10_dp)
+                            .padding(horizontal = dimen_10_dp)
                     ) {
                         Row(
                             modifier = Modifier
-                                .weight(1.0f)
-                                .height(dimen_56_dp)
-                                .clickable {
-                                    viewModel.generateFormE(false, {})
-
-                                }
-                                .border(width = dimen_1_dp, color = borderGrey)
-                                .background(white),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                                .fillMaxWidth()
+                                .padding(vertical = dimen_10_dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_share_icon),
-                                contentDescription = "Negative Button",
-                                modifier = Modifier.padding(horizontal = dimen_2_dp),
-                                colorFilter = ColorFilter.tint(blueDark)
-                            )
-                            Text(
-                                stringResource(R.string.share),
-                                style = defaultTextStyle
-                            )
-                        }
-                        Row(
-                            modifier = Modifier
-                                .padding(start = dimen_10_dp)
-                                .weight(1.0f)
-                                .clickable {
-                                    viewModel.generateFormE(true) { filepath ->
-                                        navigateToPdfViewerScreen(
-                                            navController = navController,
-                                            filePath = getFileNameFromURL(filepath)
-                                        )
+                            Row(
+                                modifier = Modifier
+                                    .weight(1.0f)
+                                    .height(dimen_56_dp)
+                                    .clickable {
+                                        viewModel.generateFormE(false, {})
+
                                     }
-                                }
-                                .height(dimen_56_dp)
-                                .border(width = dimen_1_dp, color = borderGrey)
-                                .background(white),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_download_icon),
-                                contentDescription = "Negative Button",
-                                modifier = Modifier.padding(horizontal = dimen_2_dp),
-                                colorFilter = ColorFilter.tint(blueDark)
-                            )
-                            Text(
-                                stringResource(R.string.download),
-                                style = defaultTextStyle
-                            )
-
-                        }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    ) {
-                        ButtonPositive(
-                            buttonTitle = stringResource(R.string.attach_physical_form_e),
-                            isActive = true,
-                            isArrowRequired = false,
-                            onClick = {
-                                navigateToAddImageScreen(
-                                    navController = navController,
-                                    activityId = activityId,
-                                    taskIdList = taskList
+                                    .border(width = dimen_1_dp, color = borderGrey)
+                                    .background(white),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_share_icon),
+                                    contentDescription = "Negative Button",
+                                    modifier = Modifier.padding(horizontal = dimen_2_dp),
+                                    colorFilter = ColorFilter.tint(blueDark)
+                                )
+                                Text(
+                                    stringResource(R.string.share),
+                                    style = defaultTextStyle
                                 )
                             }
-                        )
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = dimen_10_dp)
+                                    .weight(1.0f)
+                                    .clickable {
+                                        viewModel.generateFormE(true) { filepath ->
+                                            navigateToPdfViewerScreen(
+                                                navController = navController,
+                                                filePath = getFileNameFromURL(filepath)
+                                            )
+                                        }
+                                    }
+                                    .height(dimen_56_dp)
+                                    .border(width = dimen_1_dp, color = borderGrey)
+                                    .background(white),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_download_icon),
+                                    contentDescription = "Negative Button",
+                                    modifier = Modifier.padding(horizontal = dimen_2_dp),
+                                    colorFilter = ColorFilter.tint(blueDark)
+                                )
+                                Text(
+                                    stringResource(R.string.download),
+                                    style = defaultTextStyle
+                                )
+
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                        ) {
+                            ButtonPositive(
+                                buttonTitle = stringResource(R.string.attach_physical_form_e),
+                                isActive = true,
+                                isArrowRequired = false,
+                                onClick = {
+                                    navigateToAddImageScreen(
+                                        navController = navController,
+                                        activityId = activityId,
+                                        taskIdList = taskList
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
-
-
         },
         onSettingClick = { onSettingClick() },
         onContentUI = { a, b, c ->
-            Column {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_10_dp)
-                ) {
-                    SearchWithFilterViewComponent(
-                        placeholderString = "Search Didi",
-                        showFilter = false,
-                        onFilterSelected = {
-                            /**
-                             * Not required as not filter available for this screen.
-                             **/
-                        },
-                        onSearchValueChange = { searchQuery ->
-                            viewModel.onEvent(
-                                SearchEvent.PerformSearch(
-                                    searchQuery,
-                                    false,
-                                    BLANK_STRING
+            LoaderComponent(
+                visible = viewModel.loaderState.value.isLoaderVisible,
+            )
+            if (!viewModel.loaderState.value.isLoaderVisible) {
+                Column {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 18.dp, end = 18.dp, bottom = dimen_10_dp)
+                    ) {
+                        SearchWithFilterViewComponent(
+                            placeholderString = "Search Didi",
+                            showFilter = false,
+                            onFilterSelected = {
+                                /**
+                                 * Not required as not filter available for this screen.
+                                 **/
+                            },
+                            onSearchValueChange = { searchQuery ->
+                                viewModel.onEvent(
+                                    SearchEvent.PerformSearch(
+                                        searchQuery,
+                                        false,
+                                        BLANK_STRING
+                                    )
                                 )
-                            )
-                        }
-                    )
-                }
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .scrollable(
-                            state = rememberScrollableState {
-                                scope.launch {
-                                    val toDown = it <= 0
-                                    if (toDown) {
-                                        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                            innerState.scrollBy(-it)
+                            }
+                        )
+                    }
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .scrollable(
+                                state = rememberScrollableState {
+                                    scope.launch {
+                                        val toDown = it <= 0
+                                        if (toDown) {
+                                            if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+                                                innerState.scrollBy(-it)
+                                            } else {
+                                                outerState.scrollBy(-it)
+                                            }
                                         } else {
-                                            outerState.scrollBy(-it)
-                                        }
-                                    } else {
-                                        if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
-                                            outerState.scrollBy(-it)
-                                        } else {
-                                            innerState.scrollBy(-it)
+                                            if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
+                                                outerState.scrollBy(-it)
+                                            } else {
+                                                innerState.scrollBy(-it)
+                                            }
                                         }
                                     }
-                                }
-                                it
-                            },
-                            Orientation.Vertical,
-                        )
-                ) {
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = 150.dp),
-                        verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                                    it
+                                },
+                                Orientation.Vertical,
+                            )
                     ) {
-                        if(viewModel.filterList.value.isNotEmpty()) {
-                            viewModel.filterList.value.forEach {
-                                item {
-                                    FormMainSummaryCard(
-                                        maxCustomHeight = maxHeight,
-                                        formDisburesmentMap = it,
-                                        viewmodel = viewModel
-                                    )
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = 150.dp),
+                            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                        ) {
+                            if (viewModel.filterList.value.isNotEmpty()) {
+                                viewModel.filterList.value.forEach {
+                                    item {
+                                        FormMainSummaryCard(
+                                            maxCustomHeight = maxHeight,
+                                            formDisburesmentMap = it,
+                                            viewmodel = viewModel
+                                        )
+                                    }
                                 }
                             }
-                        }else{
-                            viewModel.formList.value.forEach {
-                                item {
-                                    FormMainSummaryCard(
-                                        maxCustomHeight = maxHeight,
-                                        formDisburesmentMap = it,
-                                        viewmodel = viewModel
-                                    )
-                                }
-                            }
+
                         }
-
-
                     }
                 }
             }
 
-        }
-    )
-
+        })
 }
+
 
 @Composable
 private fun MakeDisburesementRow(

@@ -23,16 +23,16 @@
     <string name="refresh_failed_please_try_again">"ৰেফ্ৰস বিফল হৈছে, অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক! "</string>
     <string name="csg_disbursed">চিএচজি বিতৰণ কৰা হৈছে</string>
     <string name="activity_completion_message">আপুনি  সফলতাৰে %1$s কাৰ্যকলাপ সম্পূৰ্ণ কৰিছে।</string>
-    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
+    <string name="form_e_generated_successfully_for_didis">"%1$ৰ বাইদেউৰ সফলতাৰে Form E প্ৰস্তুত হৈছে "</string>
     <string name="select">নিৰ্বাচন কৰক</string>
     <string name="edit_disable_message">"কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত মুছিব অনুমতি নাই "</string>
     <string name="submit">"জমা  কৰক "</string>
     <string name="delete">মচি পেলাওক</string>
     <string name="date">তাৰিখ:</string>
     <string name="amount">পৰিমাণ:</string>
-    <string name="nature">Nature:</string>
+    <string name="nature">প্ৰকৃতি:</string>
     <string name="mode">পদ্ধতি:</string>
-    <string name="no_of_didi_s">Didis:</string>
+    <string name="no_of_didi_s">"বাইদেউ: "</string>
     <string name="edit">এদিত</string>
     <string name="add_image">+ ছবি যোগ কৰক</string>
     <string name="are_you_sure_you_want_to_delete">"আপুনি মুছিব বিচৰাটো নিশ্চিত নেকি? "</string>
@@ -48,16 +48,16 @@
     <string name="disbursement_summary">বিতৰণ সাৰাংশ</string>
     <string name="attach_physical_form_e">ফিজিকেল ফর্ম E সংযুক্ত কৰক।</string>
     <string name="didis">বাইদেউসকল</string>
-    <string name="file_not_exists">"file not Exists "</string>
+    <string name="file_not_exists">"ফাইলৰ অস্তিত্ব নাই "</string>
     <string name="activities_completed">"কাৰ্যকলাপ সম্পূৰ্ণ হৈছে "</string>
     <string name="start">আৰম্ভ কৰক</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">"অনুমোদিত পৰিমাণ সম্পূৰ্ণৰূপে বিতৰণ কৰা হৈছে "</string>
-    <string name="complete">Complete</string>
+    <string name="complete">"সম্পূৰ্ণ "</string>
     <string name="references">প্ৰসংগসমূহ  (%1$s)</string>
     <string name="are_you_sure">"আপুনি নিশ্চিত নে?  "</string>
     <string name="do_you_want_to_exit_the_app">"আপুনি এপ্পটোৰ পৰা প্ৰস্থান কৰিব বিচাৰে নেকি? "</string>
     <string name="exit">"প্ৰস্থান "</string>
     <string name="cancel">"বাতিল কৰা "</string>
-    <string name="search">Search</string>
+    <string name="search">"সন্ধান কৰক "</string>
 
 </resources>

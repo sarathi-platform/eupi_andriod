@@ -17,6 +17,6 @@ interface TagReferenceEntityDao {
     @Query("Delete from tag_reference_table where userId=:userId and referenceId=:referenceId and referenceType=:referenceType")
     fun deleteTagReferenceEntityForTag(userId: String, referenceId: Int, referenceType: String)
 
-    @Query("select value from tag_reference_table where userId=:userId and referenceId=:referenceId and referenceType=:referenceType ")
+    @Query("select value as newValue from tag_reference_table where userId=:userId and referenceId=:referenceId and referenceType=:referenceType ")
     fun getTagIds(referenceId: Int, referenceType: String, userId: String): List<Int>
 }

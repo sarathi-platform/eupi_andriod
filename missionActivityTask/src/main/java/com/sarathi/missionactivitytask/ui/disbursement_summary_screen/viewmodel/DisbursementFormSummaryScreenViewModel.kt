@@ -22,12 +22,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
-import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -53,7 +51,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     val disbursementFormList: State<List<DisbursementFormSummaryUiModel>> get() = _disbursementFormList
     private val _formList =
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
-    val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
+    private val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
 
     private val _filterList =
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
@@ -86,6 +84,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                         DD_MMM_YYYY_FORMAT
                     )
                 }.groupBy { Pair(it.date, it.voName) }
+            _filterList.value = _formList.value
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

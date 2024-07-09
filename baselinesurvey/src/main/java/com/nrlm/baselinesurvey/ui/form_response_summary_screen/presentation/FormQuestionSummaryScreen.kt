@@ -69,7 +69,7 @@ fun FormQuestionSummaryScreen(
                 contentColor = textColorDark,
                 title = {
                     Text(
-                        text = "Summary",
+                        text = stringResource(R.string.summary_text ),
                         style = h6Bold,
                         color = textColorDark
                     ) //TODO Remove Hard coded strings
