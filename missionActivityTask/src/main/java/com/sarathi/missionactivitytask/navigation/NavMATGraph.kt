@@ -57,7 +57,7 @@ import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysical
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
-import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
+import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
@@ -77,7 +77,7 @@ fun NavGraphBuilder.MatNavigation(
     ) {
 
         composable(route = MATHomeScreens.MissionScreen.route) {
-            GrantMissionScreen(
+            MissionScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
                 onBackPressed = onBackPressed
