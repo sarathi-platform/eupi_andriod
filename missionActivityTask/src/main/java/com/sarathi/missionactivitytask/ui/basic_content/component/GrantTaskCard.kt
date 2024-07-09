@@ -60,30 +60,30 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun GrantTaskCard(
-    title: GrantTaskCardModel?,
-    subTitle1: GrantTaskCardModel?,
-    subtitle2: GrantTaskCardModel?,
-    subtitle3: GrantTaskCardModel?,
-    subtitle4: GrantTaskCardModel?,
-    subtitle5: GrantTaskCardModel?,
-    primaryButtonText: GrantTaskCardModel?,
+    title: TaskCardModel?,
+    subTitle1: TaskCardModel?,
+    subtitle2: TaskCardModel?,
+    subtitle3: TaskCardModel?,
+    subtitle4: TaskCardModel?,
+    subtitle5: TaskCardModel?,
+    primaryButtonText: TaskCardModel?,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
-    secondaryButtonText: GrantTaskCardModel?,
-    status: GrantTaskCardModel?,
+    secondaryButtonText: TaskCardModel?,
+    status: TaskCardModel?,
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isActivityCompleted: Boolean,
     isHamletIcon: Boolean = false,
-    formGeneratedCount: GrantTaskCardModel?,
+    formGeneratedCount: TaskCardModel?,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember(status?.value) {
@@ -305,7 +305,7 @@ fun GrantTaskCard(
 
 @Composable
 private fun SubContainerView(
-    taskCard: GrantTaskCardModel?,
+    taskCard: TaskCardModel?,
     isNumberFormattingRequired: Boolean = false
 ) {
     Row(

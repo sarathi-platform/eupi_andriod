@@ -546,7 +546,7 @@ fun navigateToAddImageScreen(navController: NavController, activityId: Int, task
     navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdListWithNullable")
 }
 
-fun navigateToTaskScreen(
+fun navigateToGrantTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,

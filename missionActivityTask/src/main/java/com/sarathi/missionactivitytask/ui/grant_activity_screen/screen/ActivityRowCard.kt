@@ -18,7 +18,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
+import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
 @Composable
@@ -63,12 +63,14 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     painter = getActivityIcon(index = index)
                 ) {
-                    navigateToTaskScreen(
+                    if (activity.activityType == "Grant") {
+                        navigateToGrantTaskScreen(
                         navController,
                         missionId = activity.missionId,
                         activityId = activity.activityId,
                         activityName = activity.description
                     )
+                }
                 }
             }
             item {

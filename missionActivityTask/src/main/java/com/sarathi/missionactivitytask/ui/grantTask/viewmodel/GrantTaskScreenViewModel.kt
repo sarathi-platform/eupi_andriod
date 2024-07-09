@@ -1,6 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
@@ -11,7 +11,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
@@ -21,49 +20,43 @@ import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityC
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class GrantTaskScreenViewModel @Inject constructor(
-    private val getTaskUseCase: GetTaskUseCase,
-    private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
-    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
-    private val getActivityConfigUseCase: GetActivityConfigUseCase,
-    private val grantConfigUseCase: GrantConfigUseCase,
-    private val fetchContentUseCase: FetchContentUseCase,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
-    private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase,
+    getTaskUseCase: GetTaskUseCase,
+    surveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    getActivityConfigUseCase: GetActivityConfigUseCase,
+    fetchContentUseCase: FetchContentUseCase,
+    taskStatusUseCase: UpdateTaskStatusUseCase,
+    eventWriterUseCase: MATStatusEventWriterUseCase,
+    getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,
     private val formUiConfigUseCase: GetFormUiConfigUseCase,
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    fetchAllDataUseCase: FetchAllDataUseCase,
 ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
     getActivityUiConfigUseCase,
     getActivityConfigUseCase,
-    grantConfigUseCase,
     fetchContentUseCase,
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    formUseCase,
-    formUiConfigUseCase,
     fetchAllDataUseCase
 ) {
-    private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
-        withContext(Dispatchers.Main) {
-            mutableState.value = newValue
-        }
-    }
+    var isGenerateFormButtonEnable = mutableStateOf(false)
+    var isGenerateFormButtonVisible = mutableStateOf(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDataState -> {
-                initTaskScreen()
+            is InitDataEvent.InitGrantTaskScreenState -> {
+                initGrantTaskScreen(event.missionId, event.activityId)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -75,23 +68,22 @@ class GrantTaskScreenViewModel @Inject constructor(
         }
     }
 
+    private fun initGrantTaskScreen(missionId: Int, activityId: Int) {
 
-    private suspend fun checkButtonValidation() {
-        var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
-            missionId = missionId,
-            activityId = activityId
-        ) && !isActivityCompleted.value
-        updateValueInMainThread(isButtonEnable, isButtonEnablee)
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            isGenerateFormButtonEnable(missionId, activityId)
+
+        }
     }
 
 
-    private suspend fun isGenerateFormButtonEnable() {
+    private suspend fun isGenerateFormButtonEnable(missionId: Int, activityId: Int) {
         isGenerateFormButtonVisible.value =
             formUiConfigUseCase.getFormUiConfig(missionId = missionId, activityId = activityId)
                 .isNotEmpty()
         if (isGenerateFormButtonVisible.value) {
             isGenerateFormButtonEnable.value =
-                formUseCase.getNonGeneratedFormSummaryData(activityId)
+                formUseCase.getNonGeneratedFormSummaryData(this.activityId)
                     .isNotEmpty() && !isActivityCompleted.value
 
         }

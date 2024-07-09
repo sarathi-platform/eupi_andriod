@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.isOnline
@@ -50,18 +49,17 @@ import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
-import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
+import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -69,12 +67,15 @@ import com.sarathi.surveymanager.ui.component.ButtonPositive
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskScreen(
-    navController: NavController = rememberNavController(),
-    viewModel: GrantTaskScreenViewModel = hiltViewModel(),
+    navController: NavController,
+    viewModel: TaskScreenViewModel = hiltViewModel(),
     missionId: Int,
     activityName: String,
     activityId: Int,
-
+    secondaryButtonText: String,
+    isSecondaryButtonEnable: Boolean = false,
+    onSecondaryButtonClick: () -> Unit,
+    isSecondaryButtonVisible: Boolean = false,
     onSettingClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -138,20 +139,14 @@ fun TaskScreen(
                             )
                         })
 
-                    if (viewModel.isGenerateFormButtonVisible.value) {
+                    if (isSecondaryButtonVisible) {
                         Spacer(modifier = Modifier.width(10.dp))
                         ButtonPositive(modifier = Modifier.weight(0.5f),
-                            buttonTitle = stringResource(id = R.string.generate_form_e),
-                            isActive = viewModel.isGenerateFormButtonEnable.value,
+                            buttonTitle = secondaryButtonText,
+                            isActive = isSecondaryButtonEnable,
                             isArrowRequired = false,
-                            onClick = {
-                                navigateToDisbursmentSummaryScreen(
-                                    navController = navController,
-                                    activityId = activityId,
-                                    missionId = missionId,
-                                    taskIdList = viewModel.getTaskListOfDisburesementAmountEqualSanctionedAmount()
-                                )
-                            })
+                            onClick = onSecondaryButtonClick
+                        )
                     }
                 }
             }
@@ -287,9 +282,9 @@ fun TaskScreen(
 
 @Composable
 private fun TaskRowView(
-    viewModel: GrantTaskScreenViewModel,
+    viewModel: TaskScreenViewModel,
     navController: NavController,
-    task: MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>
+    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
 ) {
     GrantTaskCard(
         onPrimaryButtonClick = { subjectName ->
@@ -312,7 +307,7 @@ private fun TaskRowView(
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = GrantTaskCardModel(
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = TaskCardModel(
                     value = SurveyStatusEnum.NOT_AVAILABLE.name,
                     label = BLANK_STRING,
                     icon = null

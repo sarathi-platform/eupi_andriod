@@ -2,10 +2,15 @@ package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
+import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -17,8 +22,30 @@ fun GrantTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
-    TaskScreen(missionId = missionId, activityId = activityId, activityName = activityName) {
+    DisposableEffect(Unit) {
+
+        viewModel.onEvent(InitDataEvent.InitGrantTaskScreenState(missionId, activityId))
+        onDispose {}
 
     }
+    TaskScreen(
+        missionId = missionId,
+        activityId = activityId,
+        activityName = activityName,
+        onSettingClick = onSettingClick,
+        onSecondaryButtonClick = {
+            navigateToDisbursmentSummaryScreen(
+                navController = navController,
+                activityId = activityId,
+                missionId = missionId,
+                taskIdList = viewModel.getTaskListOfDisburesementAmountEqualSanctionedAmount()
+            )
+        },
+        isSecondaryButtonEnable = viewModel.isGenerateFormButtonEnable.value,
+        secondaryButtonText = stringResource(id = R.string.generate_form_e),
+        isSecondaryButtonVisible = viewModel.isGenerateFormButtonVisible.value,
+        navController = navController
+
+    )
 }
 

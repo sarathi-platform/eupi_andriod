@@ -6,5 +6,7 @@ data class ActivityUiModel(
     val description: String,
     val status: String,
     val taskCount: Int,
-    val pendingTaskCount: Int
+    val pendingTaskCount: Int,
+    val activityType: String,
+    val activityTypeId: Int
 )

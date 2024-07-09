@@ -36,15 +36,20 @@ interface ActivityDao {
     suspend fun getActivityCount(userId: String, activityId: Int): Int
 
     @Query(
-        "select activity_table.missionId,activity_table.activityId,  activity_language_attribute_table.description,  activity_table.status , \n" +
+        "select activity_table.missionId,activity_table.activityId," +
+                "activity_language_attribute_table.description, " +
+                "activity_table.status , \n" +
+                "activity_config_table.activityType , \n" +
+                "activity_config_table.activityTypeId , \n" +
                 "count(task_table.taskId) as taskCount,\n" +
                 " SUM(CASE WHEN task_table.status  in(:surveyStatus)  THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
                 "left join task_table on activity_table.activityId = task_table.activityId \n" +
+                "left join activity_config_table on activity_table.activityId = activity_config_table.activityId \n" +
                 " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 " +
                 "and activity_table.userId =:userId and activity_table.missionId=:missionId  " +
-                "and activity_language_attribute_table.userId=:userId and task_table.userId=:userId group by task_table.activityId "
+                "and activity_language_attribute_table.userId=:userId and task_table.userId=:userId and activity_config_table.userId=:userId group by task_table.activityId "
     )
     suspend fun getActivities(
         userId: String,

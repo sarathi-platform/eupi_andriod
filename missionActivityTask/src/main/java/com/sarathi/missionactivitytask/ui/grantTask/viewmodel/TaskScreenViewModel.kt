@@ -12,27 +12,22 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
-import com.sarathi.dataloadingmangement.DELEGATE_COMM
-import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -50,35 +45,31 @@ open class TaskScreenViewModel @Inject constructor(
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
-    private val grantConfigUseCase: GrantConfigUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val formUseCase: FormUseCase,
-    private val formUiConfigUseCase: GetFormUiConfigUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
-    private var missionId = 0
-    private var activityId = 0
+    var missionId = 0
+    var activityId = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList =
-        mutableStateOf<HashMap<Int, HashMap<String, GrantTaskCardModel>>>(hashMapOf())
-    private val taskList: State<HashMap<Int, HashMap<String, GrantTaskCardModel>>> get() = _taskList
+        mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
+    val taskList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _taskList
     private val _filterList =
-        mutableStateOf<HashMap<Int, HashMap<String, GrantTaskCardModel>>>(hashMapOf())
-    val filterList: State<HashMap<Int, HashMap<String, GrantTaskCardModel>>> get() = _filterList
+        mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
+    val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isDisbursement: Boolean = false
     var isGroupByEnable = mutableStateOf(false)
     var isFilerEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
-    var isGenerateFormButtonEnable = mutableStateOf(false)
-    var isGenerateFormButtonVisible = mutableStateOf(false)
+
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
-    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
+    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
 
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
@@ -113,7 +104,6 @@ open class TaskScreenViewModel @Inject constructor(
             isContentScreenEmpty()
             getSurveyDetail()
             isActivityCompleted()
-            isGenerateFormButtonEnable()
             taskUiModel.forEachIndexed { index, it ->
 
                 val uiComponent = getUiComponentValues(
@@ -144,7 +134,6 @@ open class TaskScreenViewModel @Inject constructor(
                 _taskList.value[it.taskId] = uiComponent
 
             }
-            getGrantConfig()
 
             var _filterListt = _taskList.value
             updateValueInMainThread(_filterList, _filterListt)
@@ -164,12 +153,12 @@ open class TaskScreenViewModel @Inject constructor(
         formGeneratedCount: Int = 0,
         subjectId: Int,
         componentType: String
-    ): HashMap<String, GrantTaskCardModel> {
-        val cardAttributesWithValue = HashMap<String, GrantTaskCardModel>()
+    ): HashMap<String, TaskCardModel> {
+        val cardAttributesWithValue = HashMap<String, TaskCardModel>()
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
-            GrantTaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
+            TaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name] =
-            GrantTaskCardModel(
+            TaskCardModel(
                 value = formGeneratedCount.toString(),
                 label = BLANK_STRING,
                 icon = null
@@ -180,19 +169,19 @@ open class TaskScreenViewModel @Inject constructor(
         val cardConfig = activityConfig.filter { it.componentType == componentType }
         cardConfig.forEach { cardAttribute ->
             cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {
-                UiConfigAttributeType.STATIC.name -> getGrantTaskCardModel(
+                UiConfigAttributeType.STATIC.name -> getTaskCardModel(
                     value = cardAttribute.value,
                     activityUiConfig = cardAttribute
                 )
 
-                UiConfigAttributeType.DYNAMIC.name, UiConfigAttributeType.ATTRIBUTE.name -> getGrantTaskCardModel(
+                UiConfigAttributeType.DYNAMIC.name, UiConfigAttributeType.ATTRIBUTE.name -> getTaskCardModel(
                     value = getTaskAttributeValue(
                         cardAttribute.value,
                         taskId
                     ), activityUiConfig = cardAttribute
                 )
 
-                UiConfigAttributeType.TAG.name -> getGrantTaskCardModel(
+                UiConfigAttributeType.TAG.name -> getTaskCardModel(
                     activityUiConfig = cardAttribute, value = surveyAnswerUseCase.getAnswerForTag(
                         taskId,
                         subjectId,
@@ -204,7 +193,7 @@ open class TaskScreenViewModel @Inject constructor(
 
 
                 else -> {
-                    getGrantTaskCardModel(activityUiConfig = cardAttribute, BLANK_STRING)
+                    getTaskCardModel(activityUiConfig = cardAttribute, BLANK_STRING)
                 }
             }
 
@@ -234,7 +223,7 @@ open class TaskScreenViewModel @Inject constructor(
     private fun performSearchQuery(
         queryTerm: String, isFilterApplied: Boolean, fromScreen: String
     ) {
-        val filteredList = HashMap<Int, HashMap<String, GrantTaskCardModel>>()
+        val filteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
         if (queryTerm.isNotEmpty()) {
             taskList.value.entries.forEach { task ->
                 if (task.value[GrantTaskCardSlots.GRANT_SEARCH_ON.name]?.value?.lowercase()
@@ -275,13 +264,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun getGrantConfig() {
-        activityConfigUiModel?.activityConfigId?.let {
-            val grantConfigs = grantConfigUseCase.getGrantConfig(it)
-            isDisbursement = grantConfigs.isNotEmpty()
 
-        }
-    }
 
     fun getFilePathUri(filePath: String): Uri? {
         return fetchContentUseCase.getFilePathUri(filePath)
@@ -308,7 +291,6 @@ open class TaskScreenViewModel @Inject constructor(
                 taskId = taskId,
                 status = status
             )
-            isGenerateFormButtonEnable()
         }
     }
 
@@ -338,11 +320,11 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
 
-    private fun getGrantTaskCardModel(
+    private fun getTaskCardModel(
         activityUiConfig: UiConfigModel,
         value: String
-    ): GrantTaskCardModel {
-        return GrantTaskCardModel(
+    ): TaskCardModel {
+        return TaskCardModel(
             label = activityUiConfig.label,
             value = value,
             icon = getFilePathUri(activityUiConfig.icon ?: BLANK_STRING)
@@ -350,33 +332,9 @@ open class TaskScreenViewModel @Inject constructor(
 
     }
 
-    private suspend fun isGenerateFormButtonEnable() {
-        isGenerateFormButtonVisible.value =
-            formUiConfigUseCase.getFormUiConfig(missionId = missionId, activityId = activityId)
-                .isNotEmpty()
-        if (isGenerateFormButtonVisible.value) {
-            isGenerateFormButtonEnable.value =
-                formUseCase.getNonGeneratedFormSummaryData(activityId)
-                    .isNotEmpty() && !isActivityCompleted.value
-
-        }
-    }
 
 
-    fun getTaskListOfDisburesementAmountEqualSanctionedAmount(): String {
-        val taskListSanctionedEqualDisbursed = ArrayList<String>()
-        if (activityConfigUiModel?.taskCompletion == SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED) {
-            taskList.value.entries.forEach { task ->
 
-                if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
-                    taskListSanctionedEqualDisbursed.add(task.key.toString())
-                }
-            }
-        } else {
-            return BLANK_STRING
-        }
-        return taskListSanctionedEqualDisbursed.joinToString(DELEGATE_COMM)
-    }
 
     override fun refreshData() {
         super.refreshData()
