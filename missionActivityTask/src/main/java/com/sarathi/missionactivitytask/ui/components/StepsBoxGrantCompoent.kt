@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.components
 
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -30,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
@@ -70,7 +71,7 @@ fun StepsBoxGrantComponent(
     subTitle: String,
     stepNo: Int,
     index: Int,
-    painter: Painter,
+    imageUri: Uri?,
     totalCount: Int = 0,
     pendingCount: Int = 0,
     isCompleted: Boolean = false,
@@ -121,23 +122,24 @@ fun StepsBoxGrantComponent(
                     .padding(end = dimen_16_dp, start = dimen_8_dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    //  tint = if (isCompleted) stepIconCompleted else blueDark,
-                    modifier = Modifier
-                        .constrainAs(iconContainer) {
-                            start.linkTo(parent.start)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                        }
-                        .size(48.dp)
-                        .padding(
-                            top = if (isCompleted) 0.dp else dimen_6_dp,
-                            start = if (isCompleted) 0.dp else dimen_4_dp
-                        )
-                )
 
+                if (imageUri != null) {
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .constrainAs(iconContainer) {
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            }
+                            .size(48.dp)
+                            .padding(
+                                top = if (isCompleted) 0.dp else dimen_6_dp,
+                                start = if (isCompleted) 0.dp else dimen_4_dp
+                            )
+                    )
+                }
 
                 Column(
                     modifier = Modifier
@@ -317,6 +319,6 @@ fun StepBoxPreview() {
         stepNo = 1,
         index = 1,
         isCompleted = false,
-        painter = painterResource(id = R.drawable.ic_mission_inprogress),
-        onclick = {})
+        imageUri = Uri.EMPTY
+    ) {}
 }
