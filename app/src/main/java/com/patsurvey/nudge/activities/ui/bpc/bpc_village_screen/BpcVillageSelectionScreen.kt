@@ -384,13 +384,13 @@ fun BpcVillageSelectionScreen(
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
                                         navController.popBackStack()
-                                        navController.navigate(NudgeNavigationGraph.HOME)
+                                        navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH)
                                     }
                                 }
                             } else {
                                 viewModel.updateSelectedVillage(villageList = villages)
                                 navController.popBackStack()
-                                navController.navigate(NudgeNavigationGraph.HOME)
+                                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH)
                             }
 
                         }
@@ -444,7 +444,8 @@ fun BpcVillageAndVoBoxForBottomSheet(
                             context,
                             stateId,
                             R.plurals.village_is_not_vo_endorsed_right_now
-                        ))
+                        )
+                    )
 
                     else -> onVillageSeleted(index)
                 }

@@ -45,7 +45,6 @@ import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -79,6 +78,9 @@ fun SyncHomeScreen(
     val totalDataEventCount = remember {
         mutableStateOf(0)
     }
+    val isNetworkAvailable = remember {
+        mutableStateOf(false)
+    }
 
     val successDataEventCount = remember {
         mutableStateOf(0)
@@ -92,6 +94,18 @@ fun SyncHomeScreen(
 
     val successImageEventCount = remember {
         mutableStateOf(0)
+    }
+
+    DisposableEffect(key1 = lifeCycleOwner) {
+        viewModel.isOnline.observe(lifeCycleOwner) { isOnline ->
+            isNetworkAvailable.value = isOnline
+            if (isOnline) {
+                viewModel.fetchLastSyncDateTimeFromServer(isOnline)
+            }
+        }
+        onDispose {
+            viewModel.isOnline.removeObservers(lifeCycleOwner)
+        }
     }
 
     DisposableEffect(key1 = lifeCycleOwner) {
@@ -191,7 +205,7 @@ fun SyncHomeScreen(
                             "SyncHomeScreen",
                             "Sync All Data Click: ${viewModel.selectedSyncType.intValue}"
                         )
-                        startSyncProcess(context, viewModel)
+                        startSyncProcess(context, viewModel, isNetworkAvailable.value)
                     }
                 }
 
@@ -242,32 +256,35 @@ fun SyncHomeScreen(
                         "SyncHomeScreen",
                         "Sync Only Data Click: ${viewModel.selectedSyncType.intValue}"
                     )
-                    startSyncProcess(context, viewModel)
+                    startSyncProcess(context, viewModel, isNetworkAvailable.value)
                 },
                 onCardClick = {
 
                 }
             )
-            EventTypeCard(
-                title = stringResource(id = R.string.sync_images),
-                progress = viewModel.imageEventProgress.floatValue,
-                isProgressBarVisible = ((viewModel.imageEventProgress.floatValue > 0
-                        && viewModel.imageEventProgress.floatValue < 1)
-                        && (viewModel.selectedSyncType.intValue == SyncType.SYNC_ALL.ordinal
-                        || viewModel.selectedSyncType.intValue == SyncType.SYNC_ONLY_IMAGES.ordinal)),
-                onSyncButtonClick = {
-                    viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
-                    CoreLogger.d(
-                        context,
-                        "SyncHomeScreen",
-                        "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
-                    )
-                    startSyncProcess(context, viewModel)
-                },
-                syncButtonTitle = stringResource(id = R.string.sync_only_images),
-                onCardClick = {
-                }
-            )
+
+            if (totalImageEventCount.value > 0) {
+                EventTypeCard(
+                    title = stringResource(id = R.string.sync_images),
+                    progress = viewModel.imageEventProgress.floatValue,
+                    isProgressBarVisible = ((viewModel.imageEventProgress.floatValue > 0
+                            && viewModel.imageEventProgress.floatValue < 1)
+                            && (viewModel.selectedSyncType.intValue == SyncType.SYNC_ALL.ordinal
+                            || viewModel.selectedSyncType.intValue == SyncType.SYNC_ONLY_IMAGES.ordinal)),
+                    onSyncButtonClick = {
+                        viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
+                        CoreLogger.d(
+                            context,
+                            "SyncHomeScreen",
+                            "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
+                        )
+                        startSyncProcess(context, viewModel, isNetworkAvailable.value)
+                    },
+                    syncButtonTitle = stringResource(id = R.string.sync_only_images),
+                    onCardClick = {
+                    }
+                )
+            }
             when (uploadWorkerInfo?.state) {
                 WorkInfo.State.RUNNING -> {
                     viewModel.findFailedEventList()
@@ -326,9 +343,10 @@ fun SyncHomeScreen(
 
 private fun startSyncProcess(
     context: Context,
-    viewModel: SyncHomeViewModel
+    viewModel: SyncHomeViewModel,
+    isNetworkAvailable: Boolean
 ) {
-    if ((context as MainActivity).isOnline.value) {
+    if (isNetworkAvailable) {
         showCustomToast(context, context.getString(R.string.sync_started))
         viewModel.syncAllPending(
             networkSpeed = ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength()

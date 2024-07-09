@@ -239,7 +239,7 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
-                    viewModel.validateOtp(context) { userType,success, message ->
+                    viewModel.validateOtp { userType, success, message ->
 
                         if (success){
                             if(userType.equals(UPCM_USER)){

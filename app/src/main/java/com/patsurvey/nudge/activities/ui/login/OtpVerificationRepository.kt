@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import com.google.gson.Gson
+import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.model.response.LastSyncResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -9,6 +11,7 @@ import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.OtpVerificationModel
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
@@ -54,5 +57,13 @@ class OtpVerificationRepository @Inject constructor(
 
     fun getMobileNumber(): String?{
        return prefRepo.getMobileNumber();
+    }
+
+    suspend fun fetchLastDateTimeFromServer(): ApiResponseModel<LastSyncResponseModel> {
+        return apiInterface.fetchLastSyncStatus(getMobileNumber() ?: BLANK_STRING)
+    }
+
+    fun saveLastSyncDateTime(syncDateTime: Long) {
+        prefRepo.savePref(LAST_SYNC_TIME, syncDateTime)
     }
 }

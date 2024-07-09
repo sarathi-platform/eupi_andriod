@@ -5,6 +5,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.KEY_HEADER_MOBILE
 import com.nudge.core.KEY_HEADER_TYPE
+import com.nudge.core.model.response.LastSyncResponseModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
@@ -208,5 +209,9 @@ interface ApiService {
 
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?
+
+    @GET("/sync-server/lastSync/status")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchLastSyncStatus(@Query("mobile") mobileNumber: String): ApiResponseModel<LastSyncResponseModel>
 
 }

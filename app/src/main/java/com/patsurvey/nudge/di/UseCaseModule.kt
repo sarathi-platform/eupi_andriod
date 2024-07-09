@@ -7,10 +7,11 @@ import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
-import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
@@ -37,6 +38,7 @@ import com.patsurvey.nudge.activities.sync.history.domain.use_case.GetSyncHistor
 import com.patsurvey.nudge.activities.sync.history.domain.use_case.SyncHistoryUseCase
 import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepository
 import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepositoryImpl
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.FetchLastSyncDateForNetwork
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetSyncEventsUseCase
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetUserDetailsSyncUseCase
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
@@ -145,10 +147,12 @@ object UseCaseModule {
     fun provideSyncHomeRepository(
         corePrefRepo: CorePrefRepo,
         eventsDao: EventsDao,
+        syncApiService: SyncApiService
     ): SyncHomeRepository {
         return SyncHomeRepositoryImpl(
             corePrefRepo = corePrefRepo,
-            eventsDao = eventsDao
+            eventsDao = eventsDao,
+            syncApiService = syncApiService
         )
     }
 
@@ -161,7 +165,8 @@ object UseCaseModule {
         return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
             getSyncEventsUseCase = GetSyncEventsUseCase(repository),
-            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
+            fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository)
         )
     }
 

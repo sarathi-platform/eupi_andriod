@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.login
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
@@ -11,7 +10,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.UPCM_USER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +29,7 @@ class OtpVerificationViewModel @Inject constructor(
     private val _villageList= MutableStateFlow<List<VillageEntity>?>(emptyList())
     val villageList=_villageList.asStateFlow()
 
-    fun validateOtp(context: Context, onOtpResponse: (userType:String,success: Boolean, message: String) -> Unit) {
+    fun validateOtp(onOtpResponse: (userType: String, success: Boolean, message: String) -> Unit) {
         showLoader.value = true
         val otpNum = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -42,6 +40,7 @@ class OtpVerificationViewModel @Inject constructor(
                     otpVerificationRepository.saveLoggedInUserType(userType = it.typeName ?: BLANK_STRING)
                     otpVerificationRepository.setIsUserBPC(it.typeName ?: "")
                     showLoader.value = false
+                    getLastSyncDateTimeFromServer()
                     withContext(Dispatchers.Main) {
                         onOtpResponse(it.typeName?: CRP_USER_TYPE,true,response.message)
                     }
@@ -79,5 +78,18 @@ class OtpVerificationViewModel @Inject constructor(
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
+    }
+
+    fun getLastSyncDateTimeFromServer() {
+        job = CoroutineScope(Dispatchers.IO).launch {
+            val response = otpVerificationRepository.fetchLastDateTimeFromServer()
+            if (response.status == SUCCESS) {
+                response.data?.lastSyncDate?.let {
+                    if (it > 0) {
+                        otpVerificationRepository.saveLastSyncDateTime(it)
+                    }
+                }
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.asLiveData
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -35,6 +36,7 @@ import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.openShareSheet
@@ -47,13 +49,14 @@ import javax.inject.Inject
 @HiltViewModel
 class SyncHomeViewModel @Inject constructor(
     val syncEventDetailUseCase: SyncEventDetailUseCase,
-    val prefRepo: PrefRepo
+    val prefRepo: PrefRepo,
+    val connectionMonitor: ConnectionMonitorV2,
 ) : BaseViewModel()  {
+    val isOnline = connectionMonitor.isConnected.asLiveData()
     val selectedSyncType = mutableIntStateOf(SyncType.SYNC_ALL.ordinal)
     var syncWorkerInfoState: WorkInfo.State? = null
     val imageEventProgress = mutableFloatStateOf(0f)
     val dataEventProgress = mutableFloatStateOf(0f)
-    val isExportFailedEventButtonVisible = mutableStateOf(false)
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
     val lastSyncTime = mutableLongStateOf(0L)
     private val _failedEventList = mutableStateOf<List<Events>>(emptyList())
@@ -70,9 +73,6 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    init {
-        lastSyncTime.longValue = prefRepo.getPref(LAST_SYNC_TIME, 0L)
-    }
    @SuppressLint("SuspiciousIndentation")
    fun syncAllPending(networkSpeed: NetworkSpeed) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -167,6 +167,15 @@ class SyncHomeViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _failedEventList.value =
                 syncEventDetailUseCase.getSyncEventsUseCase.getAllFailedEventListFromDB()
+        }
+    }
+
+    fun fetchLastSyncDateTimeFromServer(isOnline: Boolean) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (isOnline)
+                syncEventDetailUseCase.fetchLastSyncDateForNetwork.invoke()
+
+            lastSyncTime.longValue = prefRepo.getPref(LAST_SYNC_TIME, 0L)
         }
     }
 }

@@ -9,8 +9,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
-import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
-import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph

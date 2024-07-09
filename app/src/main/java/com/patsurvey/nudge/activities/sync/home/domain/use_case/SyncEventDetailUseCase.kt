@@ -5,5 +5,6 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_cas
 data class SyncEventDetailUseCase(
     val getUserDetailsSyncUseCase: GetUserDetailsSyncUseCase,
     val getSyncEventsUseCase: GetSyncEventsUseCase,
-    val eventsWriterUseCase: EventsWriterUserCase
+    val eventsWriterUseCase: EventsWriterUserCase,
+    val fetchLastSyncDateForNetwork: FetchLastSyncDateForNetwork
 )

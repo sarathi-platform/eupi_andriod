@@ -34,6 +34,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
+import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
@@ -68,7 +69,7 @@ fun EventTypeCard(
                     color = Color.Transparent,
                 )
         ) {
-            val (titleText,circularProgressBar,progressBar,countText,syncButton) = createRefs()
+            val (titleText, circularProgressBar, progressBar, countText, syncButton, descText) = createRefs()
             Text(
                 text = title,
                 style = mediumTextStyle,
@@ -129,28 +130,47 @@ fun EventTypeCard(
                         start.linkTo(parent.start)
                     }
             )
-            if (syncButtonTitle.isNotEmpty()) {
-
-                Button(
-                    onClick = {
-                        onSyncButtonClick()
-                    },
-                    colors = ButtonDefaults.buttonColors(blueDark),
-                    modifier = Modifier
-                        .padding(top = dimen_10_dp)
-                        .constrainAs(syncButton) {
-                            end.linkTo(parent.end)
-                            top.linkTo(progressBar.bottom)
-                        }
-                ) {
+            progress?.let { per ->
+                if (per >= 1) {
                     Text(
-                        text = syncButtonTitle,
-                        color = white,
-                        modifier = Modifier,
-                        style = newMediumTextStyle
+                        text = "Synced",
+                        style = smallTextStyle,
+                        color = greenDark,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(dimen_8_dp)
+                            .constrainAs(descText) {
+                                top.linkTo(progressBar.bottom)
+                                start.linkTo(parent.start)
+                            }
                     )
                 }
+
+                if (syncButtonTitle.isNotEmpty() && per < 1) {
+                    Button(
+                        onClick = {
+                            onSyncButtonClick()
+                        },
+                        colors = ButtonDefaults.buttonColors(blueDark),
+                        modifier = Modifier
+                            .padding(top = dimen_10_dp)
+                            .constrainAs(syncButton) {
+                                end.linkTo(parent.end)
+                                top.linkTo(progressBar.bottom)
+                            }
+                    ) {
+                        Text(
+                            text = syncButtonTitle,
+                            color = white,
+                            modifier = Modifier,
+                            style = newMediumTextStyle
+                        )
+                    }
+                }
             }
+
+
         }
     }
 
