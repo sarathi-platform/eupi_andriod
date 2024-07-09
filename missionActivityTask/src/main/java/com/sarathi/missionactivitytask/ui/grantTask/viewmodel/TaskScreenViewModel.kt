@@ -104,7 +104,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun initTaskScreen() {
+    fun initTaskScreen() {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
