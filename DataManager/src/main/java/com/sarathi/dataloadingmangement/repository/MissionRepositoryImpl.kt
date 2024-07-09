@@ -75,7 +75,8 @@ class MissionRepositoryImpl @Inject constructor(
         //TODO Temp Code for merging only.
         var surveyResponseModel: ApiResponseModel<List<ProgrameResponse>>? = null
         val testSurvey =
-            CoreAppDetails.getContext()?.resources?.openRawResource(R.raw.mission_response).use {
+            CoreAppDetails.getApplicationContext().resources?.openRawResource(R.raw.mission_response)
+                .use {
                 val type: Type =
                     object : TypeToken<ApiResponseModel<List<ProgrameResponse>>>() {}.type
                 surveyResponseModel =

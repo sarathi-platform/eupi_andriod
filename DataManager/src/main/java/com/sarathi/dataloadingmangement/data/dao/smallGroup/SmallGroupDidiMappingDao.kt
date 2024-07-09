@@ -77,7 +77,7 @@ interface SmallGroupDidiMappingDao {
             getAllMappingForUserForUiByDate(userId, lastEntryDate)
         } catch (ex: Exception) {
             CoreLogger.e(
-                CoreAppDetails.getContext()!!,
+                CoreAppDetails.getApplicationContext(),
                 "SmallGroupDidiMappingDao",
                 "getAllMappingForUserByDate exception: ${ex.message}",
                 ex,
@@ -100,7 +100,7 @@ interface SmallGroupDidiMappingDao {
             getAllMappingForUserForUiByDateAndSmallGroupId(userId, smallGroupId, lastEntryDate)
         } catch (ex: Exception) {
             CoreLogger.e(
-                CoreAppDetails.getContext()!!,
+                CoreAppDetails.getApplicationContext(),
                 "SmallGroupDidiMappingDao",
                 "getAllMappingForUserByDateAndSmallGroupId exception: ${ex.message}",
                 ex,
@@ -126,7 +126,7 @@ interface SmallGroupDidiMappingDao {
             )
         } catch (ex: Exception) {
             CoreLogger.e(
-                CoreAppDetails.getContext()!!,
+                CoreAppDetails.getApplicationContext(),
                 "SmallGroupDidiMappingDao",
                 "getAllLatestMappingForSmallGroup exception: ${ex.message}",
                 ex,
@@ -149,7 +149,7 @@ interface SmallGroupDidiMappingDao {
             )
         } catch (ex: Exception) {
             CoreLogger.e(
-                CoreAppDetails.getContext()!!,
+                CoreAppDetails.getApplicationContext(),
                 "SmallGroupDidiMappingDao",
                 "getAllLatestMappingForSmallGroup exception: ${ex.message}",
                 ex,

@@ -27,6 +27,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_0_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_22_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_2_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
@@ -121,7 +122,7 @@ fun EventTypeCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = dimen_20_dp)
+                    .padding(top = dimen_22_dp)
                     .constrainAs(countText) {
                         top.linkTo(titleText.bottom)
                         end.linkTo(progressBar.end)

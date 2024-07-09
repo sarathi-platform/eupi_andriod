@@ -141,6 +141,7 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import dagger.Module

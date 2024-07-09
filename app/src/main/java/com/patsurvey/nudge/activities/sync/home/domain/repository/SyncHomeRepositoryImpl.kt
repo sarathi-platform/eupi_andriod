@@ -16,13 +16,13 @@ class SyncHomeRepositoryImpl(
     val eventsDao: EventsDao
 ):SyncHomeRepository {
     override fun getTotalEvents(): LiveData<List<Events>>{
-        return eventsDao.getTotalSyncEvent(corePrefRepo.getMobileNumber())
+        return eventsDao.getTotalSyncEvent(corePrefRepo.getMobileNo())
     }
 
     override fun getAllFailedEventListFromDB(
     ): List<Events> {
         return eventsDao.fetchAllFailedEventList(
-            mobileNumber = corePrefRepo.getMobileNumber(),
+            mobileNumber = corePrefRepo.getMobileNo(),
             status = listOf(
                 EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                 EventSyncStatus.CONSUMER_IN_PROGRESS.eventSyncStatus,
@@ -33,7 +33,7 @@ class SyncHomeRepositoryImpl(
 
 
     override fun getUserMobileNumber(): String {
-        return corePrefRepo.getMobileNumber()
+        return corePrefRepo.getMobileNo()
     }
 
     override fun getUserID(): String {

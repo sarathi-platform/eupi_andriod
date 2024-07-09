@@ -3,7 +3,9 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -578,14 +580,18 @@ class DataLoadingModule {
         @ApplicationContext context: Context,
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao
 
     ): IEventWriterRepository {
         return EventWriterRepositoryImpl(
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             coreSharedPrefs = coreSharedPrefs,
-            context = context
+            context = context,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

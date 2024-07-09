@@ -166,14 +166,16 @@ fun SyncHomeScreen(
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            ButtonPositive(
-                                modifier = Modifier.weight(1f),
-                                buttonTitle = stringResource(id = R.string.export_failed_event),
-                                isActive = true,
-                                isArrowRequired = false,
-                                textColor = white,
-                            ) {
-                                viewModel.findFailedEventAndWriteIntoFile()
+                            if (viewModel.failedEventList.value.isNotEmpty()) {
+                                ButtonPositive(
+                                    modifier = Modifier.weight(1f),
+                                    buttonTitle = stringResource(id = R.string.export_failed_event),
+                                    isActive = true,
+                                    isArrowRequired = false,
+                                    textColor = white,
+                                ) {
+                                    viewModel.findFailedEventAndWriteIntoFile()
+                                }
                             }
                         }
                     }
@@ -266,18 +268,25 @@ fun SyncHomeScreen(
                 onCardClick = {
                 }
             )
-            when(uploadWorkerInfo?.state){
-                WorkInfo.State.RUNNING -> CoreLogger.d(
+            when (uploadWorkerInfo?.state) {
+                WorkInfo.State.RUNNING -> {
+                    viewModel.findFailedEventList()
+                    CoreLogger.d(
                     context,
                     "SyncHomeScreen",
                     "Worker Status: RUNNING :: ${System.currentTimeMillis()}"
                 )
 
-                WorkInfo.State.ENQUEUED -> CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Worker Status: ENQUEUED :: ${System.currentTimeMillis()}"
-                )
+                }
+
+                WorkInfo.State.ENQUEUED -> {
+                    viewModel.findFailedEventList()
+                    CoreLogger.d(
+                        context,
+                        "SyncHomeScreen",
+                        "Worker Status: ENQUEUED :: ${System.currentTimeMillis()}"
+                    )
+                }
 
                 WorkInfo.State.SUCCEEDED -> CoreLogger.d(
                     context,

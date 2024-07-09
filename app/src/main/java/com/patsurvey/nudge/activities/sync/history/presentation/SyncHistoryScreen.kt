@@ -18,8 +18,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -179,7 +177,7 @@ fun SyncHistoryScreen(
                     .padding(top = dimen_14_dp)
                     .background(searchFieldBg)
             ) {
-                DateRangePicker(
+                /*DateRangePicker(
                     state = state, showModeToggle = false, colors = DatePickerDefaults.colors(
                         containerColor = searchFieldBg,
                         todayDateBorderColor = blueDark,
@@ -188,7 +186,7 @@ fun SyncHistoryScreen(
                         selectedDayContentColor = white
                     ), dateValidator = { selectedDate ->
                         selectedDate < System.currentTimeMillis()
-                    })
+                    })*/
 
                 Box(
                     modifier = Modifier

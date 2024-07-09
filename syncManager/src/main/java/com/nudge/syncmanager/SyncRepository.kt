@@ -58,7 +58,7 @@ class SyncApiRepository @Inject constructor(
             ),
             batchLimit = batchLimit,
             retryCount = retryCount,
-            mobileNumber = prefRepo.getMobileNumber(),
+            mobileNumber = prefRepo.getMobileNo(),
             syncType = syncType
         )
     }
@@ -76,7 +76,7 @@ class SyncApiRepository @Inject constructor(
                 EventSyncStatus.OPEN.eventSyncStatus,
                 EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
             ),
-            mobileNumber = prefRepo.getMobileNumber(),
+            mobileNumber = prefRepo.getMobileNo(),
             syncType = syncType
         )
     }
@@ -126,7 +126,7 @@ class SyncApiRepository @Inject constructor(
                         clientId = it.clientId,
                         errorMessage = it.errorMessage.ifEmpty { SOMETHING_WENT_WRONG },
                         status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-                        mobileNumber = prefRepo.getMobileNumber(),
+                        mobileNumber = prefRepo.getMobileNo(),
                         createdBy = prefRepo.getUserId(),
                         eventStatusId = 0
                     )
@@ -151,7 +151,7 @@ class SyncApiRepository @Inject constructor(
                         clientId = it.clientId,
                         errorMessage = it.errorMessage,
                         status = it.status,
-                        mobileNumber = prefRepo.getMobileNumber(),
+                        mobileNumber = prefRepo.getMobileNo(),
                         createdBy = prefRepo.getUserId(),
                         eventStatusId = 0
                     )
@@ -166,7 +166,7 @@ class SyncApiRepository @Inject constructor(
         }
     }
 
-    fun getLoggedInMobileNumber():String = prefRepo.getMobileNumber()
+    fun getLoggedInMobileNumber(): String = prefRepo.getMobileNo()
 
     suspend fun fetchImageStatusFromEventId(eventId: String): ImageStatusEntity {
         return imageStatusDao.fetchImageStatusFromEventId(

@@ -1,7 +1,9 @@
 package com.sarathi.smallgroupmodule.di
 
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.EventWriterHelper
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
@@ -212,14 +214,18 @@ class SmallGroupModule {
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
         subjectEntityDao: SubjectEntityDao,
-        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        imageStatusDao: ImageStatusDao,
+        eventStatusDao: EventStatusDao
     ): EventWriterHelper {
         return EventWriterHelperImpl(
             coreSharedPrefs = coreSharedPrefs,
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             subjectEntityDao = subjectEntityDao,
-            smallGroupDidiMappingDao = smallGroupDidiMappingDao
+            smallGroupDidiMappingDao = smallGroupDidiMappingDao,
+            imageStatusDao = imageStatusDao,
+            eventStatusDao = eventStatusDao
         )
     }
 

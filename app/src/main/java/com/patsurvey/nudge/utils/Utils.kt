@@ -1551,7 +1551,7 @@ fun isFilePathExists(context: Context, filePath: String): Boolean {
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
 }
 
-fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String,) {
+fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
     if(fileUriList?.isNotEmpty() == true){
         try {
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)

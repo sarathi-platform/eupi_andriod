@@ -4,7 +4,9 @@ import android.content.Context
 import android.net.Uri
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventFormatterName
@@ -37,7 +39,9 @@ class EventWriterRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
-    val coreSharedPrefs: CoreSharedPrefs
+    val coreSharedPrefs: CoreSharedPrefs,
+    private val eventStatusDao: EventStatusDao,
+    private val imageStatusDao: ImageStatusDao
 ) :
     IEventWriterRepository {
     override suspend fun <T> createAndSaveEvent(
@@ -113,8 +117,6 @@ class EventWriterRepositoryImpl @Inject constructor(
             request_payload = requestPayload,
             status = EventSyncStatus.OPEN.name,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = BLANK_STRING,
             metadata = MetadataDto(
                 mission = surveyName,
@@ -159,7 +161,9 @@ class EventWriterRepositoryImpl @Inject constructor(
             context,
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao = eventDependencyDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

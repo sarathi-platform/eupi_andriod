@@ -137,7 +137,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
             )
         } catch (ex: Exception) {
-            handleException(Exception("Ex Failure issue"), mPendingEventList)
+            handleException(ex, mPendingEventList)
         } finally {
             DeviceBandwidthSampler.getInstance().stopSampling()
         }

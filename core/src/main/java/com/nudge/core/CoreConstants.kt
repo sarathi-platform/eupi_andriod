@@ -64,6 +64,7 @@ const val SELECTION = "SELECTION"
 
 const val ZIP_EXTENSION = "zip"
 const val EVENT_STRING="event"
+const val FAILED_EVENT_STRING = "failed"
 
 const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"

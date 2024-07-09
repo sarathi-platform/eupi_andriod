@@ -29,14 +29,14 @@ import java.util.logging.Level
 
 object CoreLogger {
 
-    fun d(context: Context = CoreAppDetails.getContext()!!, tag: String, msg: String) {
+    fun d(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.FINE.intValue(), tag, msg)
             Log.d(tag, msg)
         }
     }
 
-    fun i(context: Context = CoreAppDetails.getContext()!!, tag: String, msg: String) {
+    fun i(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.INFO.intValue(), tag, msg)
             if (DEBUG) Log.i(tag, msg)
@@ -51,7 +51,7 @@ object CoreLogger {
     }
 
     fun e(
-        context: Context = CoreAppDetails.getContext()!!,
+        context: Context = CoreAppDetails.getApplicationContext(),
         tag: String,
         msg: String,
         ex: Throwable?,

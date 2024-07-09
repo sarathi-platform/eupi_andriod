@@ -40,6 +40,8 @@ import com.nudge.navigationmanager.routes.SEARCH_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SECTION_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SETTING_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SURVEYEE_LIST_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SYNC_HISTORY_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SYNC_HOME_ROUTE_NAME
 import com.nudge.navigationmanager.routes.Step_Complition_Screen_ROUTE_NAME
 import com.nudge.navigationmanager.routes.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.VIDEO_SCREEN_ROUTE_NAME

@@ -1,14 +1,12 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import com.google.gson.Gson
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(

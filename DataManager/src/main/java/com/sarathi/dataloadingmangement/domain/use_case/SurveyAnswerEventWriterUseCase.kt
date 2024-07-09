@@ -117,7 +117,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 uriList?.forEach { uri ->
                     compressImage(
                         uri.path ?: BLANK_STRING,
-                        CoreAppDetails.getContext()!!,
+                        CoreAppDetails.getApplicationContext(),
                         getFileNameFromURL(uri.path ?: BLANK_STRING)
                     )
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(

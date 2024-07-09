@@ -217,7 +217,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun savePref(key: String, value: Long) {
-        TODO("Not yet implemented")
+        prefs.edit().putLong(key, value).apply()
     }
 
     override fun savePref(key: String, value: Float) {
