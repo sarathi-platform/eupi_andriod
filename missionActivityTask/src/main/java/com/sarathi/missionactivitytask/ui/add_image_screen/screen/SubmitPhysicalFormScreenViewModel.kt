@@ -14,7 +14,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +31,7 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val documentEventWriterUseCase: DocumentEventWriterUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
 ) : BaseViewModel() {

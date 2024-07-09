@@ -13,7 +13,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
@@ -33,7 +33,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     getActivityConfigUseCase: GetActivityConfigUseCase,
     fetchContentUseCase: FetchContentUseCase,
-    taskStatusUseCase: UpdateTaskStatusUseCase,
+    taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     eventWriterUseCase: MATStatusEventWriterUseCase,
     getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,

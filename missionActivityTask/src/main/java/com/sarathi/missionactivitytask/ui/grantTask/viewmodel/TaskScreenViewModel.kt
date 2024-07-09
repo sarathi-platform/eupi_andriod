@@ -18,7 +18,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
@@ -46,7 +46,7 @@ open class TaskScreenViewModel @Inject constructor(
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,

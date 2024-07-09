@@ -3,7 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import javax.inject.Inject
 
-class UpdateTaskStatusUseCase @Inject constructor(private val repository: ITaskStatusRepository) {
+class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val repository: ITaskStatusRepository) {
     suspend fun markTaskCompleted(taskId: Int) {
         return repository.markCompleteTaskStatus(taskId = taskId)
     }
