@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -33,7 +34,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     getActivityConfigUseCase: GetActivityConfigUseCase,
     fetchContentUseCase: FetchContentUseCase,
-    taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     eventWriterUseCase: MATStatusEventWriterUseCase,
     getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,
@@ -50,6 +51,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     getActivityUseCase,
     fetchAllDataUseCase
 ) {
+    var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     var isGenerateFormButtonEnable = mutableStateOf(false)
     var isGenerateFormButtonVisible = mutableStateOf(false)
 
@@ -71,6 +73,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private fun initGrantTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            taskUiList.value =
+                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             isGenerateFormButtonEnable(missionId, activityId)
 
         }

@@ -50,13 +50,14 @@ import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
-import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
+import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
@@ -76,6 +77,7 @@ fun TaskScreen(
     isSecondaryButtonEnable: Boolean = false,
     onSecondaryButtonClick: () -> Unit,
     isSecondaryButtonVisible: Boolean = false,
+    taskList: List<TaskUiModel>? = null,
     onSettingClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -97,7 +99,7 @@ fun TaskScreen(
 
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setMissionActivityId(missionId, activityId)
-        viewModel.onEvent(InitDataEvent.InitDataState)
+        viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
         onDispose {}
     }
     ToolBarWithMenuComponent(
@@ -286,7 +288,7 @@ private fun TaskRowView(
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
 ) {
-    GrantTaskCard(
+    TaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModel?.let {
                 if (subjectName.isNotBlank()) {
@@ -331,8 +333,14 @@ private fun TaskRowView(
         subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
         subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
         subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
-        formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name],
-        isActivityCompleted = viewModel.isActivityCompleted.value
+        isActivityCompleted = viewModel.isActivityCompleted.value,
+        isNotAvailableButtonEnable = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
+            "true"
+        ),
+        isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
+            "true"
+        )
+
     )
 }
 

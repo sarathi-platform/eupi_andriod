@@ -68,7 +68,7 @@ import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
-fun GrantTaskCard(
+fun TaskCard(
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -83,7 +83,9 @@ fun GrantTaskCard(
     modifier: Modifier = Modifier,
     isActivityCompleted: Boolean,
     isHamletIcon: Boolean = false,
-    formGeneratedCount: TaskCardModel?,
+    isNotAvailableButtonEnable: Boolean = false,
+    isShowSecondaryStatusIcon: Boolean = false,
+    secondaryStatusIcon: Int = R.drawable.ic_green_file,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember(status?.value) {
@@ -162,11 +164,15 @@ fun GrantTaskCard(
                             .padding(horizontal = dimen_5_dp),
                         color = greyColor
                     )
-                } else if (taskStatus?.value == StatusEnum.INPROGRESS.name) {
-                    if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
-                            "0"
+                } else if (taskStatus.value == StatusEnum.INPROGRESS.name) {
+                    if (isShowSecondaryStatusIcon) {
+                        Icon(
+                            painter = painterResource(id = secondaryStatusIcon),
+                            contentDescription = "Green Icon",
+                            tint = greenOnline,
+                            modifier = Modifier.size(22.dp)
                         )
-                    ) {
+                    } else {
                         Text(
                             text = stringResource(id = R.string.in_progress),
                             style = defaultTextStyle,
@@ -174,13 +180,7 @@ fun GrantTaskCard(
                                 .padding(horizontal = dimen_5_dp),
                             color = unmatchedOrangeColor
                         )
-                    } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_green_file),
-                            contentDescription = "Green Icon",
-                            tint = greenOnline,
-                            modifier = Modifier.size(22.dp)
-                        )
+                    }
 
                     }
 
@@ -241,7 +241,8 @@ fun GrantTaskCard(
                         onPrimaryButtonClick,
                         title?.value ?: BLANK_STRING,
                         isActivityCompleted,
-                        taskStatus
+                        taskStatus,
+                        isNotAvailableButtonEnable
                     )
                 }
             } else {
@@ -294,14 +295,14 @@ fun GrantTaskCard(
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,
-                            taskStatus
+                            taskStatus,
+                            isNotAvailableButtonEnable
                         )
                     }
                 }
             }
         }
     }
-}
 
 @Composable
 private fun SubContainerView(
@@ -357,13 +358,15 @@ private fun PrimarySecondaryButtonView(
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     title: String,
     isActivityCompleted: Boolean,
-    taskStatus: MutableState<String?>
+    taskStatus: MutableState<String?>,
+    isNotAvailableButtonEnable: Boolean
 
 ) {
     val context = LocalContext.current
-    if (secondaryButtonText.isNotBlank() && !taskMarkedNotAvailable.value) {
+    if (secondaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = secondaryButtonText,
+            enabled = isNotAvailableButtonEnable,
             isIcon = false,
             onClick = {
                 if (!isActivityCompleted) {

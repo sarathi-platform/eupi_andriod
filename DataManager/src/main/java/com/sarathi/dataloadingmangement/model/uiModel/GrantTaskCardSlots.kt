@@ -15,7 +15,7 @@ enum class GrantTaskCardSlots(val type: String) {
     GRANT_SEARCH_ON(type = "text"),
     GRANT_GROUP_BY(type = "text"),
     GRANT_TASK_STATUS(type = "text"),
-    GRANT_TASK_FORM_GENERATED_COUNT(type = "text"),
+    GRANT_TASK_SECOND_STATUS_AVAILABLE(type = "text"),
     GRANT_SEARCH_LABEL(type = "text"),
 
 }

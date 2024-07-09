@@ -23,6 +23,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
@@ -41,7 +42,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class TaskScreenViewModel @Inject constructor(
-    private val getTaskUseCase: GetTaskUseCase,
+    val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
@@ -62,7 +63,6 @@ open class TaskScreenViewModel @Inject constructor(
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    var isDisbursement: Boolean = false
     var isGroupByEnable = mutableStateOf(false)
     var isFilerEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
@@ -70,7 +70,7 @@ open class TaskScreenViewModel @Inject constructor(
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
-
+    var taskUiModel: List<TaskUiModel>? = null
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
             mutableState.value = newValue
@@ -79,8 +79,8 @@ open class TaskScreenViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDataState -> {
-                initTaskScreen()
+            is InitDataEvent.InitTaskScreenState -> {
+                initTaskScreen(event.taskList)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -95,22 +95,24 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun initTaskScreen() {
+    fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
-            val taskUiModel =
-                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            taskUiModel = if (taskList.isNullOrEmpty()) getTaskUseCase.getActiveTasks(
+                missionId = missionId,
+                activityId = activityId
+            ) else taskList
             isContentScreenEmpty()
             getSurveyDetail()
             isActivityCompleted()
-            taskUiModel.forEachIndexed { index, it ->
+            taskUiModel?.forEachIndexed { index, it ->
 
                 val uiComponent = getUiComponentValues(
                     taskId = it.taskId,
                     taskStatus = it.status.toString(),
                     subjectId = it.subjectId,
-                    formGeneratedCount = it.formGeneratedCount,
+                    isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
                     componentType = ComponentEnum.Card.name
                 )
                 if (index == 0) {
@@ -118,7 +120,7 @@ open class TaskScreenViewModel @Inject constructor(
                         taskId = it.taskId,
                         taskStatus = it.status.toString(),
                         subjectId = it.subjectId,
-                        formGeneratedCount = it.formGeneratedCount,
+                        isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
                         componentType = ComponentEnum.Search.name
                     )
                     searchLabel.value =
@@ -150,16 +152,16 @@ open class TaskScreenViewModel @Inject constructor(
     private suspend fun getUiComponentValues(
         taskId: Int,
         taskStatus: String,
-        formGeneratedCount: Int = 0,
+        isTaskSecondaryStatusEnable: Boolean?,
         subjectId: Int,
         componentType: String
     ): HashMap<String, TaskCardModel> {
         val cardAttributesWithValue = HashMap<String, TaskCardModel>()
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
             TaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
-        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name] =
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name] =
             TaskCardModel(
-                value = formGeneratedCount.toString(),
+                value = isTaskSecondaryStatusEnable.toString(),
                 label = BLANK_STRING,
                 icon = null
             )
@@ -351,7 +353,7 @@ open class TaskScreenViewModel @Inject constructor(
                         tag = "MissionScreenViewMode",
                         msg = "updateStatusForBaselineMission: success: $success"
                     )
-                    initTaskScreen() // Move this out of the lambda block once the above method is removed
+                    initTaskScreen(taskUiModel) // Move this out of the lambda block once the above method is removed
                 }
             }, isRefresh = isRefresh)
         }
