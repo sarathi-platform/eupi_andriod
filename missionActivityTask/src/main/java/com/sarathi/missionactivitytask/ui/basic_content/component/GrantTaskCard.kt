@@ -75,6 +75,7 @@ fun GrantTaskCard(
     subtitle3: GrantTaskCardModel?,
     subtitle4: GrantTaskCardModel?,
     subtitle5: GrantTaskCardModel?,
+    subtitle6: GrantTaskCardModel?,
     primaryButtonText: GrantTaskCardModel?,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     secondaryButtonText: GrantTaskCardModel?,
@@ -204,6 +205,7 @@ fun GrantTaskCard(
             ) {
                 SubContainerView(subtitle3)
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
+                SubContainerView(subtitle6, isNumberFormattingRequired = true)
                 SubContainerView(subtitle5, isNumberFormattingRequired = true)
             }
 
