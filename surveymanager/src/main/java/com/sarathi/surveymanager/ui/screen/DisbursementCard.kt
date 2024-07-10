@@ -2,16 +2,22 @@ package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,6 +54,7 @@ fun DisbursementCard(
     subTitle3: String = BLANK_STRING,
     subTitle4: String = BLANK_STRING,
     subTitle5: String = BLANK_STRING,
+    isActivityCompleted: Boolean = false,
     onEditSurvey: () -> Unit,
     onDeleteSurvey: () -> Unit,
     isFormgenerated: Boolean
@@ -182,76 +189,103 @@ fun DisbursementCard(
                     thickness = dimen_1_dp,
                     color = uncheckedTrackColor
                 )
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp), horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    TextButton(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimen_10_dp)
-                        .weight(1f),
-                        onClick = {
-                            onEditSurvey()
-                        }) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_edit_icon),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = dimen_4_dp)
-                                    .size(dimen_16_dp)
-                                    .align(Alignment.CenterVertically),
-                                colorFilter = ColorFilter.tint(blueDark)
-                            )
-                            Text(
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                                text = stringResource(R.string.edit),
-                                style = defaultTextStyle.copy(blueDark),
-                            )
-                        }
-                    }
-
-                    Divider(
-                        color = uncheckedTrackColor,
+                if (isActivityCompleted) {
+                    Row(
                         modifier = Modifier
                             .height(48.dp)
-                            .width(1.dp)
-                    )
-                    TextButton(
-                        modifier = Modifier
+                            .padding(horizontal = dimen_10_dp)
+                            .clickable {
+                                onEditSurvey()
+                            }, verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.task_view),
+                            modifier = Modifier
+                                .padding(horizontal = dimen_5_dp)
+                                .absolutePadding(bottom = 3.dp),
+                            color = blueDark,
+                            style = newMediumTextStyle,
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "",
+                            tint = blueDark,
+                        )
+                    }
+                } else {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(48.dp), horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        TextButton(modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = dimen_10_dp)
                             .weight(1f),
-                        onClick = {
-                            onDeleteSurvey()
-                        }) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_delete_icon),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = dimen_4_dp)
-                                    .size(dimen_16_dp)
-                                    .align(Alignment.CenterVertically),
-                                colorFilter = ColorFilter.tint(blueDark)
-                            )
-                            Text(
-                                text = stringResource(R.string.delete),
-                                style = defaultTextStyle.copy(blueDark),
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
+                            onClick = {
+                                onEditSurvey()
+                            }) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_edit_icon),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(end = dimen_4_dp)
+                                        .size(dimen_16_dp)
+                                        .align(Alignment.CenterVertically),
+                                    colorFilter = ColorFilter.tint(blueDark)
+                                )
+                                Text(
+                                    modifier = Modifier.align(Alignment.CenterVertically),
+                                    text = stringResource(R.string.edit),
+                                    style = defaultTextStyle.copy(blueDark),
+                                )
+                            }
+                        }
+
+                        Divider(
+                            color = uncheckedTrackColor,
+                            modifier = Modifier
+                                .height(48.dp)
+                                .width(1.dp)
+                        )
+                        TextButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = dimen_10_dp)
+                                .weight(1f),
+                            onClick = {
+                                onDeleteSurvey()
+                            }) {
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_delete_icon),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(end = dimen_4_dp)
+                                        .size(dimen_16_dp)
+                                        .align(Alignment.CenterVertically),
+                                    colorFilter = ColorFilter.tint(blueDark)
+                                )
+                                Text(
+                                    text = stringResource(R.string.delete),
+                                    style = defaultTextStyle.copy(blueDark),
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
+
                         }
 
                     }
-
                 }
+
 
             }
         }
