@@ -53,7 +53,7 @@ data class QuestionList(
     val isMandatory: Boolean = false,
     @SerializedName("languages")
     @Expose
-    val surveyLanguageAttributes: List<SurveyLanguageAttributes>,
+    val surveyLanguageAttributes: List<SurveyLanguageAttributes>?,
     @SerializedName("originalValue")
     @Expose
     val originalValue: String = BLANK_STRING,
