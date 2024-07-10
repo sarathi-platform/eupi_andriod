@@ -27,7 +27,7 @@ interface ActivityConfigDao {
     @Query("Select  * from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId")
     fun getActivityConfigUiModel(userId: String): List<ActivityConfigEntity>?
 
-    @Query("Select icon from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId")
+    @Query("Select icon from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId and icon <> ''")
     fun getAllActivityIconsKey(userId: String): List<String>?
 
     @Query("Delete from activity_config_table where activityId=:activityId and userId=:userId")

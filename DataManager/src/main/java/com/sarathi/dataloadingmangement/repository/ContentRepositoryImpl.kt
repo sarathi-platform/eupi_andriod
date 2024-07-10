@@ -64,7 +64,7 @@ class ContentRepositoryImpl @Inject constructor(
         activityConfigDao.getAllActivityIconsKey(coreSharedPrefs.getUniqueUserIdentifier())?.forEach {
             contentRequests.add(
                 ContentRequest(
-                    languageCode = DEFAULT_LANGUAGE_CODE,
+                    languageCode = coreSharedPrefs.getAppLanguage(),
                     contentKey = it
                 )
             )

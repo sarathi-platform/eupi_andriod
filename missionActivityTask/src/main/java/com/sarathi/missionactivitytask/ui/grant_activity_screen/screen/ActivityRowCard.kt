@@ -18,7 +18,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel.ActivityScreenViewModel
+import com.sarathi.missionactivitytask.utils.getFilePathUri
 
 @Composable
 fun ActivityRowCard(
@@ -26,7 +26,6 @@ fun ActivityRowCard(
     navController: NavController,
     contents: List<BasicContent> = listOf(),
     activities: List<ActivityUiModel>,
-    viewModel: ActivityScreenViewModel,
     onContentData: (contentValue: String, contentKey: String, contentType: String, contentTitle: String) -> Unit
 ) {
     Column {
@@ -61,7 +60,7 @@ fun ActivityRowCard(
                     totalCount = activity.taskCount,
                     index = index,
                     isDividerVisible = index != activities.lastIndex,
-                    imageUri = viewModel.getFilePathUri(activity.icon ?: BLANK_STRING)
+                    imageUri = getFilePathUri(activity.icon ?: BLANK_STRING)
                 ) {
                     navigateToTaskScreen(
                         navController,

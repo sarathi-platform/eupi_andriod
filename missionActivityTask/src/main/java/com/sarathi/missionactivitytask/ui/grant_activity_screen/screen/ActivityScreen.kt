@@ -73,7 +73,6 @@ fun ActivityScreen(
                     missionId = missionId,
                     activities = viewModel.activityList.value,
                     navController = navController,
-                    viewModel = viewModel,
                 ) { contentValue, contentKey, contentType, contentTitle ->
 
                     if (viewModel.isFilePathExists(contentValue) || contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {

@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
-import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -67,10 +66,6 @@ class ActivityScreenViewModel @Inject constructor(
         return fetchContentUseCase.isFilePathExists(filePath)
     }
 
-    fun getFilePathUri(filePath: String): Uri? {
-        return fetchContentUseCase.getFilePathUri(filePath)
-    }
-
     private suspend fun checkButtonValidation() {
         isButtonEnable.value =
             !isMissionCompleted && getActivityUseCase.isAllActivityCompleted(missionId = missionId)
@@ -84,11 +79,11 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
 
-    fun getContentValue(actvityUiList : List<ActivityUiModel>) {
+    fun getContentValue(actvityUiList: List<ActivityUiModel>) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-          actvityUiList.forEach {
-              it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
-          }
+            actvityUiList.forEach {
+                it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
+            }
         }
     }
 }
