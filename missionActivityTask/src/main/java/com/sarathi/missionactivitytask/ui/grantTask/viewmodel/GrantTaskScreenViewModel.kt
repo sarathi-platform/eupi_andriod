@@ -19,7 +19,6 @@ import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
-import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,15 +55,10 @@ class GrantTaskScreenViewModel @Inject constructor(
     var isGenerateFormButtonVisible = mutableStateOf(false)
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitGrantTaskScreenState -> {
                 initGrantTaskScreen(event.missionId, event.activityId)
-            }
-
-            is LoaderEvent.UpdateLoaderState -> {
-                _loaderState.value = _loaderState.value.copy(
-                    isLoaderVisible = event.showLoader
-                )
             }
 
         }
@@ -76,7 +70,6 @@ class GrantTaskScreenViewModel @Inject constructor(
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             isGenerateFormButtonEnable(missionId, activityId)
-
         }
     }
 
@@ -87,7 +80,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                 .isNotEmpty()
         if (isGenerateFormButtonVisible.value) {
             isGenerateFormButtonEnable.value =
-                formUseCase.getNonGeneratedFormSummaryData(this.activityId)
+                formUseCase.getNonGeneratedFormSummaryData(activityId)
                     .isNotEmpty() && !isActivityCompleted.value
 
         }

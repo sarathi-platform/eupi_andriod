@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
@@ -20,6 +21,7 @@ import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
+import java.util.Locale
 
 @Composable
 fun ActivityRowCard(
@@ -63,7 +65,10 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     painter = getActivityIcon(index = index)
                 ) {
-                    if (activity.activityType == "Grant") {
+                    if (activity.activityType.lowercase() == ActivityTypeEnum.GRANT.name.lowercase(
+                            Locale.ENGLISH
+                        )
+                    ) {
                         navigateToGrantTaskScreen(
                         navController,
                         missionId = activity.missionId,

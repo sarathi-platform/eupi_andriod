@@ -22,7 +22,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -31,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
@@ -62,14 +61,13 @@ import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewCompone
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
-import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskScreen(
     navController: NavController,
-    viewModel: TaskScreenViewModel = hiltViewModel(),
+    viewModel: TaskScreenViewModel,
     missionId: Int,
     activityName: String,
     activityId: Int,
@@ -95,12 +93,9 @@ fun TaskScreen(
             }
 
         })
-    DisposableEffect(Unit) {
-
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+    LaunchedEffect(taskList?.size) {
         viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
-        onDispose {}
     }
     ToolBarWithMenuComponent(
         title = activityName,
@@ -334,7 +329,7 @@ private fun TaskRowView(
         subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
         subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
-        isNotAvailableButtonEnable = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
+        isNotAvailableButtonEnable = task.value[GrantTaskCardSlots.GRANT_TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
             "true"
         ),
         isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(

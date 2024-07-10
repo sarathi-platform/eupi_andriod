@@ -2,7 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -22,10 +22,9 @@ fun GrantTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
-    DisposableEffect(Unit) {
+    LaunchedEffect(Unit) {
 
         viewModel.onEvent(InitDataEvent.InitGrantTaskScreenState(missionId, activityId))
-        onDispose {}
 
     }
     TaskScreen(
@@ -33,6 +32,7 @@ fun GrantTaskScreen(
         activityId = activityId,
         activityName = activityName,
         onSettingClick = onSettingClick,
+        viewModel = viewModel,
         onSecondaryButtonClick = {
             navigateToDisbursmentSummaryScreen(
                 navController = navController,
@@ -44,7 +44,7 @@ fun GrantTaskScreen(
         isSecondaryButtonEnable = viewModel.isGenerateFormButtonEnable.value,
         secondaryButtonText = stringResource(id = R.string.generate_form_e),
         isSecondaryButtonVisible = viewModel.isGenerateFormButtonVisible.value,
-        taskList = viewModel.taskUiList.value,
+        taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController
 
     )

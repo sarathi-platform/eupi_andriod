@@ -113,6 +113,7 @@ open class TaskScreenViewModel @Inject constructor(
                     taskStatus = it.status.toString(),
                     subjectId = it.subjectId,
                     isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
+                    isNAButtonEnable = it.isNotAvailableButton,
                     componentType = ComponentEnum.Card.name
                 )
                 if (index == 0) {
@@ -121,8 +122,10 @@ open class TaskScreenViewModel @Inject constructor(
                         taskStatus = it.status.toString(),
                         subjectId = it.subjectId,
                         isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
-                        componentType = ComponentEnum.Search.name
-                    )
+                        componentType = ComponentEnum.Search.name,
+                        isNAButtonEnable = it.isNotAvailableButton,
+
+                        )
                     searchLabel.value =
                         searchUiComponent[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
                             ?: BLANK_STRING
@@ -153,6 +156,7 @@ open class TaskScreenViewModel @Inject constructor(
         taskId: Int,
         taskStatus: String,
         isTaskSecondaryStatusEnable: Boolean?,
+        isNAButtonEnable: Boolean?,
         subjectId: Int,
         componentType: String
     ): HashMap<String, TaskCardModel> {
@@ -162,6 +166,12 @@ open class TaskScreenViewModel @Inject constructor(
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name] =
             TaskCardModel(
                 value = isTaskSecondaryStatusEnable.toString(),
+                label = BLANK_STRING,
+                icon = null
+            )
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_NOT_AVAILABLE_ENABLE.name] =
+            TaskCardModel(
+                value = isNAButtonEnable.toString(),
                 label = BLANK_STRING,
                 icon = null
             )

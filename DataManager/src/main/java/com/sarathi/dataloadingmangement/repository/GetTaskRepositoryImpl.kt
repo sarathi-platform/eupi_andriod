@@ -37,7 +37,8 @@ class GetTaskRepositoryImpl @Inject constructor(
                         taskId = taskUiModelV1.taskId,
                         subjectId = taskUiModelV1.subjectId,
                         status = taskUiModelV1.status,
-                        isTaskSecondaryStatusEnable = false
+                        isTaskSecondaryStatusEnable = false,
+                        isNotAvailableButton = true
                     )
                 )
             } else {
@@ -47,7 +48,8 @@ class GetTaskRepositoryImpl @Inject constructor(
                         taskId = taskUiModelV1.taskId,
                         subjectId = taskUiModelV1.subjectId,
                         status = taskUiModelV1.status,
-                        isTaskSecondaryStatusEnable = isTaskSecondaryStatusEnable
+                        isTaskSecondaryStatusEnable = isTaskSecondaryStatusEnable,
+                        isNotAvailableButton = isTaskSecondaryStatusEnable
                     )
                 )
 

@@ -6,7 +6,6 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.generateUUID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
-import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
@@ -15,6 +14,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.download_manager.FileType
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
