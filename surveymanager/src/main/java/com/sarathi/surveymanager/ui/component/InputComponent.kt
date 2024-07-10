@@ -31,6 +31,7 @@ import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.surveymanager.R
@@ -130,7 +131,7 @@ fun InputComponent(
                     getRemainingValue(remainingValue.value, sanctionedAmount, txt.value)
                 ),
                 style = smallTextStyleMediumWeight,
-                color = blueDark
+                color = red
             )
         }
 
