@@ -335,6 +335,7 @@ private fun TaskRowView(
         subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
         subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
         subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
+        subtitle6 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_8.name],
         formGeneratedCount = task.value[GrantTaskCardSlots.GRANT_TASK_FORM_GENERATED_COUNT.name],
         isActivityCompleted = viewModel.isActivityCompleted.value
     )
