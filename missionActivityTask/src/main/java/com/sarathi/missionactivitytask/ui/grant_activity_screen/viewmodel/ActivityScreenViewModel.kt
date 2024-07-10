@@ -24,7 +24,7 @@ class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
-    private val eventWriterUseCase: MATStatusEventWriterUseCase
+    private val eventWriterUseCase: MATStatusEventWriterUseCase,
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
@@ -49,6 +49,7 @@ class ActivityScreenViewModel @Inject constructor(
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _activityList.value = getActivityUseCase.getActivities(missionId)
+            getContentValue(_activityList.value)
             checkButtonValidation()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -75,6 +76,14 @@ class ActivityScreenViewModel @Inject constructor(
             taskStatusUseCase.markMissionCompleted(missionId = missionId)
             eventWriterUseCase.updateMissionStatus(missionId = missionId, surveyName = "CSG")
 
+        }
+    }
+
+    fun getContentValue(actvityUiList: List<ActivityUiModel>) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            actvityUiList.forEach {
+                it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
+            }
         }
     }
 }
