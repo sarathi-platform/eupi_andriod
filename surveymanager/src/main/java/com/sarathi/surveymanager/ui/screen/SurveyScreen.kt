@@ -304,6 +304,9 @@ private fun saveInputTypeAnswer(
                 DISBURSED_AMOUNT_TAG
             )
         ) {
+            if (selectedValue.all { it == ZERO }) {
+                question.options?.firstOrNull()?.selectedValue = BLANK_STRING
+            }
             question.options?.firstOrNull()?.isSelected = !selectedValue.all { it == ZERO }
         } else {
             question.options?.firstOrNull()?.isSelected = true
