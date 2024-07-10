@@ -433,11 +433,12 @@ suspend fun exportDbFiles(
     return uriList
 }
 
+
 fun getAllFilesInDirectory(
     appContext: Context,
     directoryPath: String?,
     applicationID: String
-): MutableList<Pair<String, Uri>> {
+): List<Pair<String, Uri>> {
     val fileList: MutableList<Pair<String, Uri>> = ArrayList()
     val directory = File(directoryPath)
     if (directory.exists() && directory.isDirectory) {
@@ -1090,4 +1091,30 @@ fun Boolean.getAttendanceFromBoolean(): String {
 
 fun String?.getBooleanValueFromAttendance(): Boolean {
     return this?.equals(ATTENDANCE_PRESENT) ?: false
+}
+
+
+fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
+    val cursor = activity.contentResolver.query(contentURI, null, null, null, null)
+    return if (cursor == null) {
+        contentURI.path
+    } else {
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        cursor.getString(idx)
+    }
+}
+
+fun findImagesExistInPictureFolder(
+    appContext: Context,
+    applicationID: String,
+    mobileNo: String
+): Boolean {
+    val filePath =
+        File(appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path + SARATHI_DIRECTORY_NAME + "/" + mobileNo)
+    return getAllFilesInDirectory(
+        appContext,
+        filePath.path,
+        applicationID = applicationID
+    ).isNotEmpty()
 }

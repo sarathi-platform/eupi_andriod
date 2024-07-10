@@ -1,5 +1,4 @@
 package com.nudge.core.compression
-
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -155,13 +154,13 @@ class ZipFileCompression : IFileCompressor {
                         CoreLogger.d(
                             context,
                             TAG,
-                            "deleteOldFiles -> file Deleted :" + file.getPath()
+                            "deleteOldFiles -> file Deleted :" + file.path
                         );
                     } else {
                         CoreLogger.d(
                             context,
                             TAG,
-                            "deleteOldFiles -> file not Deleted :" + file.getPath()
+                            "deleteOldFiles -> file not Deleted :" + file.path
                         );
                     }
                 }
@@ -336,11 +335,11 @@ class ZipFileCompression : IFileCompressor {
                     ) && it.first.contains(ZIP_EXTENSION)
                 }
 
-                contentResolver?.let { cr ->
+                contentResolver?.let { _ ->
                     filteredList.forEach { file ->
                         try {
                             file.second.let { uri ->
-                                contentResolver?.delete(uri, null, null)
+                                contentResolver.delete(uri, null, null)
                                 CoreLogger.d(
                                     context,
                                     TAG,

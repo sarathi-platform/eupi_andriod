@@ -15,7 +15,6 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -1055,7 +1054,7 @@ private fun getRealPathFromURI(contentURI: String, activity: Context): String? {
     }
 }
 
-fun formatDateAndTime(page: String, lastSyncTime: String): String {
+fun formatDateAndTime(page:String,lastSyncTime: String):String{
     return try {
         val currentTime = if (lastSyncTime.isEmpty()) 0L else lastSyncTime.toLong()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
