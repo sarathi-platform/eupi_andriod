@@ -114,7 +114,7 @@ class SettingBSViewModel @Inject constructor(
         mAppContext = if(userType!= UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
         getActivityFormGenerateList(onGetData = {
             if (activityFormGenerateList.value.isNotEmpty()) {
-                checkFromEAvilable(activityFormGenerateList.value)
+                checkFromEAvailable(activityFormGenerateList.value)
             }
         })
         val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
@@ -665,15 +665,15 @@ class SettingBSViewModel @Inject constructor(
             return arrayListOf(uri)
         return arrayListOf(uriFromFile(mAppContext,uri.toFile(),applicationId.value))
     }
-    private fun checkFromEAvilable(activityFormUIModelList: List<ActivityFormUIModel>) {
+    private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
         if (activityFormUIModelList.isNotEmpty()) {
             CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
                 activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
-                    val isFromEAvilable = formUseCase.getOnlyGeneratedFormSummaryData(
+                    val isFromEAvailable = formUseCase.getOnlyGeneratedFormSummaryData(
                         activityId = activityFormUIModel.activityId,
                         isFormGenerated = true
                     ).isNotEmpty()
-                    formEAvailable.value = Pair(index, isFromEAvilable)
+                    formEAvailable.value = Pair(index, isFromEAvailable)
                 }
             }
 
