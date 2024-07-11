@@ -328,13 +328,15 @@ private fun TaskRowView(
         subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
         subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
         subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
+        subtitle6 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
         isNotAvailableButtonEnable = task.value[GrantTaskCardSlots.GRANT_TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
             "true"
         ),
         isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
-        )
+        ),
+
 
     )
 }

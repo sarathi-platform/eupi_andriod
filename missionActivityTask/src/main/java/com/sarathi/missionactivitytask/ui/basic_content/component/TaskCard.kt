@@ -75,7 +75,7 @@ fun TaskCard(
     subtitle3: TaskCardModel?,
     subtitle4: TaskCardModel?,
     subtitle5: TaskCardModel?,
-    subtitle6: GrantTaskCardModel?,
+    subtitle6: TaskCardModel?,
     primaryButtonText: TaskCardModel?,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     secondaryButtonText: TaskCardModel?,
