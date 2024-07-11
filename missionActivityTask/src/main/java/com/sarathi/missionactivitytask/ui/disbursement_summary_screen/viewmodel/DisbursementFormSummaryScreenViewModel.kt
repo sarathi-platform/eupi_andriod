@@ -60,8 +60,12 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDisbursmentScreenState -> {
-                initDisbursementSummaryScreen(event.activityId, event.missionId)
+            is InitDataEvent.InitDisbursmentFormSummaryScreenState -> {
+                initDisbursementSummaryScreen(
+                    event.activityId,
+                    event.missionId,
+                    event.isFormSettingScreen
+                )
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -69,17 +73,26 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
             is SearchEvent.PerformSearch -> {
                 performSearchQuery(event.searchTerm)
             }
         }
     }
 
-    private fun initDisbursementSummaryScreen(activityId: Int, missionId: Int) {
+    private fun initDisbursementSummaryScreen(
+        activityId: Int,
+        missionId: Int,
+        isFormGenerated: Boolean
+    ) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             getSurveyDetail(activityId = activityId)
             _formList.value =
-                getFormData(activityId, missionId).sortedByDescending {
+                getFormData(
+                    activityId = activityId,
+                    missionId = missionId,
+                    isFormGenerated = isFormGenerated
+                ).sortedByDescending {
                     it.date.toInMillisec(
                         DD_MMM_YYYY_FORMAT
                     )
@@ -93,9 +106,13 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     private suspend fun getFormData(
         activityId: Int,
-        missionId: Int
+        missionId: Int,
+        isFormGenerated: Boolean,
     ): List<DisbursementFormSummaryUiModel> {
-        val fromData = formUseCase.getFormSummaryData(activityId = activityId)
+        val fromData = if (isFormGenerated) formUseCase.getOnlyGeneratedFormSummaryData(
+            activityId = activityId,
+            isFormGenerated = isFormGenerated
+        ) else formUseCase.getFormSummaryData(activityId = activityId)
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
             val _data = getFormAttributeDate(
@@ -290,7 +307,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         } else {
             filteredList.putAll(_formList.value)
         }
-          _filterList.value = filteredList
+        _filterList.value = filteredList
     }
 
 }

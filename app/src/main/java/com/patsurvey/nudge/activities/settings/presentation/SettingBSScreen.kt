@@ -10,6 +10,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.UPCM_USER
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
@@ -21,6 +23,7 @@ import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
+import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import java.util.Locale
 
 @Composable
@@ -76,6 +79,7 @@ fun SettingBSScreen(
 
     if (!loaderState.value.isLoaderVisible) {
         CommonSettingScreen(
+            userType = viewModel.userType,
             title = stringResource(id = R.string.settings_screen_title),
             versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             optionList = viewModel.optionList.value ?: emptyList(),
@@ -84,6 +88,7 @@ fun SettingBSScreen(
                 navController.popBackStack()
             },
             expanded = expanded.value,
+            activityForm = viewModel.activityFormGenerateList.value,
             onItemClick = { _, option ->
                 when (option.tag) {
                     SettingTagEnum.LANGUAGE.name -> {
@@ -122,51 +127,59 @@ fun SettingBSScreen(
                 viewModel.showLogoutDialog.value = true
             },
             onParticularFormClick = { formIndex ->
-                when (formIndex) {
-                    DigitalFormEnum.DIGITAL_FORM_A.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.formAAvailable.value)
-                            navController.navigate(SettingScreens.FORM_A_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
-                            )
+                if (viewModel.userType == UPCM_USER) {
+                    if ((viewModel.formEAvailable.value.first == formIndex && viewModel.formEAvailable.value.second) && viewModel.activityFormGenerateList.value.isNotEmpty()) {
+                        navigateToDisbursmentSummaryScreen(
+                            navController = navController,
+                            missionId = viewModel.activityFormGenerateList.value[formIndex].missionId,
+                            activityId = viewModel.activityFormGenerateList.value[formIndex].activityId,
+                            taskIdList = BLANK_STRING,
+                            isFromSettingScreen = true
+                        )
+                    } else {
+                        showToast(
+                            context,
+                            context.getString(R.string.no_data_form_e_not_generated_text)
+                        )
                     }
 
-                    DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.formBAvailable.value)
-                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
-                            )
-                    }
+                } else {
+                    when (formIndex) {
+                        DigitalFormEnum.DIGITAL_FORM_A.ordinal -> {
+                            viewModel.showLoaderForTime(500)
+                            if (viewModel.formAAvailable.value)
+                                navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                            else
+                                showToast(
+                                    context,
+                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
+                                )
+                        }
 
-                    DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.formCAvailable.value)
-                            navController.navigate(SettingScreens.FORM_C_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
-                            )
-                    }
+                        DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
+                            viewModel.showLoaderForTime(500)
+                            if (viewModel.formBAvailable.value)
+                                navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                            else
+                                showToast(
+                                    context,
+                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
+                                )
+                        }
 
-                    DigitalFormEnum.DIGITAL_FORM_E.ordinal -> {
-                        viewModel.showLoaderForTime(500)
-                        if (viewModel.formBAvailable.value)
-                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
-                        else
-                            showToast(
-                                context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
-                            )
+                        DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
+                            viewModel.showLoaderForTime(500)
+                            if (viewModel.formCAvailable.value)
+                                navController.navigate(SettingScreens.FORM_C_SCREEN.route)
+                            else
+                                showToast(
+                                    context,
+                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
+                                )
+                        }
                     }
                 }
+
             }
         )
     }

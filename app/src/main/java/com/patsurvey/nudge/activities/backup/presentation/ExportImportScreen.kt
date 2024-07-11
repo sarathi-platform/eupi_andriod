@@ -55,6 +55,7 @@ fun ExportImportScreen(
         }
 
     CommonSettingScreen(
+        userType = viewModel.loggedInUserType.value,
         title = stringResource(id = R.string.backup_recovery),
         versionText = BLANK_STRING,
         optionList = viewModel.optionList.value,
@@ -105,7 +106,8 @@ fun ExportImportScreen(
         onLogoutClick = {},
         onParticularFormClick = {index->},
         isLoaderVisible = false,
-        expanded = false
+        expanded = false,
+        activityForm = listOf()
     )
 
     if(viewModel.showLoadConfirmationDialog.value){

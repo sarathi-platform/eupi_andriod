@@ -1,17 +1,8 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
-import android.net.Uri
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.CoreObserverManager
-import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
-import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -20,65 +11,48 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
-import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
-import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
-import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
-import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
-import com.sarathi.missionactivitytask.utils.event.LoaderEvent
-import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 @HiltViewModel
 class GrantTaskScreenViewModel @Inject constructor(
-    private val getTaskUseCase: GetTaskUseCase,
-    private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
-    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
-    private val getActivityConfigUseCase: GetActivityConfigUseCase,
-    private val grantConfigUseCase: GrantConfigUseCase,
-    private val fetchContentUseCase: FetchContentUseCase,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
-    private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase,
+    getTaskUseCase: GetTaskUseCase,
+    surveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    getActivityConfigUseCase: GetActivityConfigUseCase,
+    fetchContentUseCase: FetchContentUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    eventWriterUseCase: MATStatusEventWriterUseCase,
+    getActivityUseCase: GetActivityUseCase,
     private val formUseCase: FormUseCase,
     private val formUiConfigUseCase: GetFormUiConfigUseCase,
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
-) : BaseViewModel() {
-    private var missionId = 0
-    private var activityId = 0
-    var activityConfigUiModel: ActivityConfigUiModel? = null
-    private val _taskList =
-        mutableStateOf<HashMap<Int, HashMap<String, GrantTaskCardModel>>>(hashMapOf())
-    private val taskList: State<HashMap<Int, HashMap<String, GrantTaskCardModel>>> get() = _taskList
-    private val _filterList =
-        mutableStateOf<HashMap<Int, HashMap<String, GrantTaskCardModel>>>(hashMapOf())
-    val filterList: State<HashMap<Int, HashMap<String, GrantTaskCardModel>>> get() = _filterList
-    val searchLabel = mutableStateOf<String>(BLANK_STRING)
-    val isButtonEnable = mutableStateOf<Boolean>(false)
-    var isDisbursement: Boolean = false
-    var isGroupByEnable = mutableStateOf(false)
-    var isFilerEnable = mutableStateOf(false)
-    var isActivityCompleted = mutableStateOf(false)
+    fetchAllDataUseCase: FetchAllDataUseCase,
+) : TaskScreenViewModel(
+    getTaskUseCase,
+    surveyAnswerUseCase,
+    getActivityUiConfigUseCase,
+    getActivityConfigUseCase,
+    fetchContentUseCase,
+    taskStatusUseCase,
+    eventWriterUseCase,
+    getActivityUseCase,
+    fetchAllDataUseCase
+) {
+    var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     var isGenerateFormButtonEnable = mutableStateOf(false)
     var isGenerateFormButtonVisible = mutableStateOf(false)
-    var matId = mutableStateOf<Int>(0)
-    var contentCategory = mutableStateOf<Int>(0)
-    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
@@ -87,29 +61,21 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
-            is InitDataEvent.InitDataState -> {
-                initTaskScreen()
+            is InitDataEvent.InitGrantTaskScreenState -> {
+                initGrantTaskScreen(event.missionId, event.activityId)
             }
 
-            is LoaderEvent.UpdateLoaderState -> {
-                _loaderState.value = _loaderState.value.copy(
-                    isLoaderVisible = event.showLoader
-                )
-            }
-
-            is SearchEvent.PerformSearch -> {
-                performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
-            }
         }
     }
 
-    private fun initTaskScreen() {
+    private fun initGrantTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
-            val taskUiModel =
+            taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            isGenerateFormButtonEnable(missionId, activityId)
             isContentScreenEmpty()
             getSurveyDetail()
             isActivityCompleted()
@@ -283,74 +249,8 @@ class GrantTaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun getFilePathUri(filePath: String): Uri? {
-        return fetchContentUseCase.getFilePathUri(filePath)
-    }
 
-    fun updateTaskAvailableStatus(
-        taskId: Int,
-        status: String,
-    ) {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            if (status == SurveyStatusEnum.NOT_AVAILABLE.name) {
-                taskStatusUseCase.markTaskNotAvailable(taskId = taskId)
-            }
-            taskStatusUseCase.markActivityInProgress(missionId, activityId)
-            taskStatusUseCase.markMissionInProgress(missionId)
-            eventWriterUseCase.markMATStatus(
-                missionId = missionId,
-                activityId = activityId,
-                taskId = taskId,
-                subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
-                surveyName = "CSG"
-            )
-            getTaskUseCase.updateTaskStatus(
-                taskId = taskId,
-                status = status
-            )
-            isGenerateFormButtonEnable()
-        }
-    }
-
-    fun isActivityCompleted() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
-                missionId = missionId,
-                activityId = activityId
-            )
-            checkButtonValidation()
-        }
-    }
-
-    private suspend fun isContentScreenEmpty() {
-        val isContentEmpty = fetchContentUseCase.getContentCount(
-            matId = activityId,
-            contentCategory = ContentCategoryEnum.ACTIVITY.ordinal
-        ) == 0
-        if (isContentEmpty) {
-            matId.value = missionId
-            contentCategory.value = ContentCategoryEnum.MISSION.ordinal
-        } else {
-            matId.value = activityId
-            contentCategory.value = ContentCategoryEnum.ACTIVITY.ordinal
-        }
-
-    }
-
-
-    private fun getGrantTaskCardModel(
-        activityUiConfig: UiConfigModel,
-        value: String
-    ): GrantTaskCardModel {
-        return GrantTaskCardModel(
-            label = activityUiConfig.label,
-            value = value,
-            icon = getFilePathUri(activityUiConfig.icon ?: BLANK_STRING)
-        )
-
-    }
-
-    private suspend fun isGenerateFormButtonEnable() {
+    private suspend fun isGenerateFormButtonEnable(missionId: Int, activityId: Int) {
         isGenerateFormButtonVisible.value =
             formUiConfigUseCase.getFormUiConfig(missionId = missionId, activityId = activityId)
                 .isNotEmpty()
@@ -378,32 +278,5 @@ class GrantTaskScreenViewModel @Inject constructor(
         return taskListSanctionedEqualDisbursed.joinToString(DELEGATE_COMM)
     }
 
-    override fun refreshData() {
-        super.refreshData()
-        loadAllData(isRefresh = true)
-    }
-
-    private fun loadAllData(isRefresh: Boolean) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
-                // Temp method to be removed after baseline is migrated to Grant flow.
-                updateStatusForBaselineMission() { success ->
-                    CoreLogger.i(
-                        tag = "MissionScreenViewMode",
-                        msg = "updateStatusForBaselineMission: success: $success"
-                    )
-                    initTaskScreen() // Move this out of the lambda block once the above method is removed
-                }
-            }, isRefresh = isRefresh)
-        }
-    }
-
-    // Temp method to be removed after baseline is migrated to Grant flow.
-    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
-        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
-            onSuccess(it)
-        }
-    }
 
 }
