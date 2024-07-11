@@ -31,6 +31,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,7 +55,7 @@ import kotlinx.coroutines.launch
 fun FormTypeQuestionComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
-    question: QuestionEntity?,
+//    question: QuestionEntity?,
 //    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     maxCustomHeight: Dp,
 //    contests: List<ContentEntity?>? = listOf(),
@@ -217,4 +218,18 @@ private fun isPublicInfraSectionForm(surveyId: Int, sectionId: Int, questionId: 
     return surveyId == 2 && sectionId == 2 && (questionIds.contains(
         questionId
     ))
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FormTypeQuestionComponentPreview() {
+   FormTypeQuestionComponent(
+       questionIndex = 1,
+//       question = ,
+       maxCustomHeight = 100.dp,
+       onAnswerSelection = {},
+       questionDetailExpanded = {}
+   ) {
+
+   }
 }

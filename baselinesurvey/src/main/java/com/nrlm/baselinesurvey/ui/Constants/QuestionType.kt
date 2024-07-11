@@ -18,13 +18,13 @@ enum class QuestionType {
     InputNumberEditText,        //h
     Calculation,          //autocalculation same
     SingleValueForm,       // not availble
-    DidiDetails,
-    YesNoButton,
-    PhoneNumber,
+    DidiDetails,                 //done
+    YesNoButton,              //not availble
+    PhoneNumber,                //not availble
     HrsMinPicker,          //hh
     YrsMonthPicker,        //h
-    Image,
-    FormWithNone,
+    Image,                    //ask
+    FormWithNone,                 //done
     AutoCalculation;              //done
 
 

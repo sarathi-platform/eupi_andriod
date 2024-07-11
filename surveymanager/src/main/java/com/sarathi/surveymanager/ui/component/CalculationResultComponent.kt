@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.NotoSans
@@ -114,4 +115,13 @@ fun CalculationResultComponent(
 
 
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun CalculationResultComponentPreview() {
+    CalculationResultComponent(
+
+    )
 }

@@ -290,9 +290,7 @@ fun SurveyScreen(
                             }
                             QuestionType.Toggle.name -> {
 //                                RadioOptionTypeComponent(
-//
-//
-//                                )
+//   )
 
                             }
 
@@ -319,6 +317,7 @@ fun SurveyScreen(
 //                                )
 
                             }
+                            QuestionType.FormWithNone.name->{}
 
 
                         }

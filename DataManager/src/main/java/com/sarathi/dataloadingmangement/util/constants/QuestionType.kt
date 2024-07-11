@@ -11,7 +11,8 @@ enum class QuestionType {
     MultiSelect,
     Grid,
     Toggle,
-    DidiDetails
+    DidiDetails,
+    FormWithNone
 
 
 

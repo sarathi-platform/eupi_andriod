@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.NotoSans
@@ -67,4 +69,11 @@ fun OutlineButtonWithIconComponent(
             )
         }
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun OutlineButtonWithIconComponentPreview() {
+   OutlineButtonWithIconComponent(textColor = lightGray2, iconTintColor = lightGray2) {
+
+   }
 }

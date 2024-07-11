@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.greenActiveIcon
@@ -77,5 +78,14 @@ fun RadioButtonOptionComponent(
     }
 
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun RadioButtonOptionComponentPreview() {
+//   RadioButtonOptionComponent(index =1 ,
+//       selectedIndex = 1,) {
+//
+//   }
+//}
 
 

@@ -30,6 +30,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.NotoSans
@@ -48,7 +49,7 @@ fun RadioOptionTypeComponent(
     isMandatory: Boolean = false,
     isContent: Boolean = false,
     selectedValue: String = "",
-    onInfoButtonClicked: () -> Unit,
+//    onInfoButtonClicked: () -> Unit,
     onOptionSelected: (optionValue: String, optionId: Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
@@ -102,7 +103,6 @@ fun RadioOptionTypeComponent(
                         Modifier
                             .size(dimen_18_dp)
                             .clickable {
-                                onInfoButtonClicked()
                             },
 
                         tint = blueDark
@@ -134,4 +134,9 @@ fun RadioOptionTypeComponent(
         }
 
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RadioOptionTypeComponentPreview() {
 }
