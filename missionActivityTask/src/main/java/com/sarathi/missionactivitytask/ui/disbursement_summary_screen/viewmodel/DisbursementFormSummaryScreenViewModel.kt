@@ -51,7 +51,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     val disbursementFormList: State<List<DisbursementFormSummaryUiModel>> get() = _disbursementFormList
     private val _formList =
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
-    val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
+    private val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
 
     private val _filterList =
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
@@ -84,6 +84,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                         DD_MMM_YYYY_FORMAT
                     )
                 }.groupBy { Pair(it.date, it.voName) }
+            _filterList.value = _formList.value
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

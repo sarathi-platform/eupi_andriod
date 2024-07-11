@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
@@ -17,6 +18,7 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
             activityId = activityId
         )
     }
+
     suspend fun isAllActivityCompleted(missionId: Int): Boolean {
         return activityRepositoryImpl.isAllActivityCompleted(
             missionId = missionId,
@@ -28,6 +30,12 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
             missionId = missionId,
             status = SurveyStatusEnum.COMPLETED.name
         )
+    }
+
+    suspend fun getActiveForm(
+        formType: String = "form"
+    ): List<ActivityFormUIModel> {
+        return activityRepositoryImpl.getActiveForm(formType = formType)
     }
 
 

@@ -32,4 +32,6 @@ data class ActivityConfig(
     val formConfig: List<FormConfigResponse?>,
     @SerializedName("taskCompletion")
     val taskCompletion: String?,
+    @SerializedName("icon")
+    val icon: String?,
 )

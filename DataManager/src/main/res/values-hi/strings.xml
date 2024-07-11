@@ -23,7 +23,7 @@
     <string name="refresh_failed_please_try_again">ताज़ा करें विफल, कृपया पुनः प्रयास करें!</string>
     <string name="csg_disbursed">CSG वितरित</string>
     <string name="activity_completion_message">आपने %1s गतिविधि सफलतापूर्वक पूर्ण कर ली है.</string>
-    <string name="form_e_generated_successfully_for_didis">%1$s didis के लिए प्रपत्र E सफलतापूर्वक जनरेट किया गया</string>
+    <string name="form_e_generated_successfully_for_didis">"फॉर्म E %1$s दीदियों के लिए सफलतापूर्वक तैयार किया गया  "</string>
     <string name="select">चुनना</string>
     <string name="edit_disable_message">गतिविधि पूर्ण होने के बाद संपादन की अनुमति नहीं है</string>
     <string name="submit">जमा करें</string>
@@ -48,16 +48,16 @@
     <string name="disbursement_summary">Disbursement summary</string>
     <string name="attach_physical_form_e">Attach physical form E</string>
     <string name="didis">Didis</string>
-    <string name="file_not_exists">"file not Exists "</string>
+    <string name="file_not_exists">"फाइल उपलब्ध नही है  "</string>
     <string name="activities_completed">Activities Completed</string>
     <string name="start">Start</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">Sanctioned amount has been fully disbursed</string>
-    <string name="complete">Complete</string>
+    <string name="complete">"पूर्ण  "</string>
     <string name="references">मुंख\'नायफोर  (%1$s)</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
-    <string name="search">Search</string>
+    <string name="search">"खोजे  "</string>
 
 </resources>

@@ -22,7 +22,7 @@
     <string name="refresh_failed_please_try_again">"Refresh Failed, Tai waisa khlai phidi! "</string>
     <string name="csg_disbursed">CSG rang yapharjak</string>
     <string name="activity_completion_message">"Nwng kaham khe no %1s Tangmung no pairikha "</string>
-    <string name="form_e_generated_successfully_for_didis">Form E  generated successfully for %1$s didis</string>
+    <string name="form_e_generated_successfully_for_didis">"Form-E kaham kheno khlai bai kha %1$s Aibi rokni "</string>
     <string name="select">"Chongdi "</string>
     <string name="edit_disable_message">"Tangmung khlai mani yagulo tei kokmithing maya "</string>
     <string name="submit">"Submit "</string>
@@ -31,7 +31,7 @@
     <string name="amount">Rang:</string>
     <string name="nature">Tongraida:</string>
     <string name="mode">Raida:</string>
-    <string name="no_of_didi_s">Didis:</string>
+    <string name="no_of_didi_s">Aibi:</string>
     <string name="edit">Edit</string>
     <string name="add_image">+ Manphili tisadi</string>
     <string name="are_you_sure_you_want_to_delete">"Nwng kubui de delete khlai na muchung? "</string>
@@ -48,16 +48,16 @@
     <string name="attach_physical_form_e">Form E bojapbwsa no thepa di</string>
     <string name="close">Close</string>
     <string name="didis">Aibi</string>
-    <string name="file_not_exists">"file not Exists "</string>
+    <string name="file_not_exists">"Abo hai file krwi "</string>
     <string name="activities_completed">"Khlaimung Paihjak "</string>
     <string name="start">"Chengdi "</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">"Sanction ni rang jotono yapharjakha "</string>
-    <string name="complete">Complete</string>
+    <string name="complete">"Paihjak "</string>
     <string name="references">Yasikaima  (%1$s)</string>
     <string name="are_you_sure">"Kubui da? "</string>
     <string name="do_you_want_to_exit_the_app">"Nwng app kholop na da muchungkha? "</string>
     <string name="exit">"Ongkhorlam "</string>
     <string name="cancel">"Mwthakma "</string>
-    <string name="search">Search</string>
+    <string name="search">"Naitukdi "</string>
 
 </resources>
