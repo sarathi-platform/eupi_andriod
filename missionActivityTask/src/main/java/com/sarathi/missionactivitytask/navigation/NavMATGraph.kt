@@ -32,6 +32,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_ACTIVITY
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_SETTING_SCREEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
@@ -416,6 +417,9 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = BLANK_STRING
+            },
+            navArgument(name = ARG_IS_FROM_SETTING_SCREEN) {
+                type = NavType.BoolType
             }
         )) {
             DisbursementFormSummaryScreen(
@@ -424,6 +428,7 @@ fun NavGraphBuilder.MatNavigation(
                 viewModel = hiltViewModel(),
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
+                isFormSettingScreen = it.arguments?.getBoolean(ARG_IS_FROM_SETTING_SCREEN) ?: false,
                 taskList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
@@ -468,11 +473,15 @@ fun navigateToContentDetailScreen(
 }
 
 fun navigateToDisbursmentSummaryScreen(
-    navController: NavController, activityId: Int, missionId: Int, taskIdList: String
+    navController: NavController,
+    activityId: Int,
+    missionId: Int,
+    taskIdList: String,
+    isFromSettingScreen: Boolean
 ) {
     var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
 
-    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable/$isFromSettingScreen")
 }
 
 fun navigateToSurveyScreen(

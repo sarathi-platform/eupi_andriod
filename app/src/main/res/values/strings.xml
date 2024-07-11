@@ -345,6 +345,7 @@
     <string name="no_data_form_a_not_generated_text">No Data! Form A not generated</string>
     <string name="no_data_form_b_not_generated_text">No Data! Form B not generated</string>
     <string name="no_data_form_c_not_generated_text">No Data! Form C not generated</string>
+    <string name="no_data_form_e_not_generated_text" translatable="false">No Data! Form E not generated</string>
     <string name="no_form_available_yet_text">No Form available yet.</string>
     <string name="digital_form_a_title">Digital Form A</string>
     <string name="digital_form_b_title">Digital Form B</string>
