@@ -36,6 +36,7 @@ import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
+import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
@@ -67,7 +68,6 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
-import com.patsurvey.nudge.utils.openShareSheet
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -250,7 +250,7 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 NudgeLogger.d("SettingBSViewModel", "Share Dialog Open ${fileUriList.json()}")
-                openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
+                openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
@@ -520,7 +520,12 @@ class SettingBSViewModel @Inject constructor(
                         moduleName = moduleNameAccToLoggedInUser(userType)
                     ) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
-                        openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
+                        openShareSheet(
+                            convertURIAccToOS(it),
+                            "",
+                            type = ZIP_MIME_TYPE,
+                            context = mAppContext
+                        )
                     }
 
 

@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
@@ -17,6 +18,7 @@ import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.ZIP_EXTENSION
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.getFirstName
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.CoreLogger
 import java.io.File
@@ -465,12 +467,17 @@ class ZipFileCompression : IFileCompressor {
                         zipFile = zippedFilePath.toUri()
                     )
                 }
-                return zippedFilePath.toUri();
+                return uriFromFile(
+                    context = context,
+                    file = zippedFilePath,
+                    applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
+                        ?: BLANK_STRING
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
-            return null;
+            return null
         }
 
     }

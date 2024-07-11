@@ -6,8 +6,6 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -58,6 +56,7 @@ import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+
 
 private const val TAG = "CoreUtils"
 
@@ -662,7 +661,7 @@ fun exportLogFile(
 
 fun uriFromFile(context: Context?, file: File, applicationID: String): Uri {
     try {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (context != null) {
                 FileProvider.getUriForFile(context, "$applicationID.provider", file)
             } else {
@@ -672,8 +671,10 @@ fun uriFromFile(context: Context?, file: File, applicationID: String): Uri {
             Uri.fromFile(file)
         }
     } catch (ex: Exception) {
+        if (context != null) {
+            CoreLogger.e(context, "uriFromFile", "exception", ex)
+        }
         return Uri.EMPTY
-        Log.e("uriFromFile", "exception", ex)
     }
 }
 
@@ -925,43 +926,39 @@ fun generateUUID(): String {
 fun openShareSheet(fileUriList: ArrayList<Uri>, title: String, type: String, context: Context) {
     if (fileUriList.isNotEmpty()) {
         try {
-
-
+            printAllUrisFromList(fileUriList, context)
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Log.d(TAG, "openShareSheetDetails Version: ${Build.VERSION.SDK_INT} ")
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-                val resInfoList: List<ResolveInfo> =
-                    context.packageManager
-                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
 
-                for (resolveInfo in resInfoList) {
-                    val packageName = resolveInfo.activityInfo.packageName
+            val packageName = context.packageName
+            Log.d(TAG, "openShareSheetDetails: ${packageName} :: ${fileUriList[0]}")
                     context.grantUriPermission(
                         packageName,
                         fileUriList[0],
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
-                }
-            } else {
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-            }
+
+
             startExternalApp(chooserIntent, context)
         } catch (ex: Exception) {
-            CoreLogger.d(context, "ImportDbFile", "Import completed")
+            CoreLogger.e(context, "OpenShareSheet", "OpenShareSheet Exception :", ex = ex)
         }
     }
 }
 
 fun startExternalApp(intent: Intent, context: Context) {
     try {
-        CoreLogger.d(context, "ImportDbFile", "Import completed")
+        CoreLogger.d(context, "StartExternalApp", "Share External App Started")
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         context.startActivity(intent)
     } catch (ex: Exception) {
-        CoreLogger.d(context, "ImportDbFile", "Import completed")
+        CoreLogger.e(context, "StartExternalApp", "Share External App Exception : ", ex = ex)
     }
 }
 
@@ -1117,4 +1114,30 @@ fun findImagesExistInPictureFolder(
         filePath.path,
         applicationID = applicationID
     ).isNotEmpty()
+}
+
+fun printAllUrisFromList(fileUriList: ArrayList<Uri>, context: Context) {
+    fileUriList.forEach {
+        if (it != Uri.EMPTY) {
+            convertFileUriToContentUri(it, context = context)
+            Log.d(TAG, "printAllUrisFromList: ${it.path}")
+        }
+    }
+}
+
+fun convertFileUriToContentUri(_uri: Uri, context: Context) {
+    var filePath: String? = null
+    Log.d("", "URI = $_uri")
+    if ("content" == _uri.scheme) {
+        val cursor: Cursor? = context.contentResolver
+            .query(_uri, arrayOf(MediaStore.Files.FileColumns.DATA), null, null, null)
+        cursor?.moveToFirst()
+        filePath = cursor?.getString(0)
+        cursor?.close()
+        Log.d("", "Chosen path 1 = $filePath")
+
+    } else {
+        filePath = _uri!!.path
+    }
+    Log.d("", "Chosen path = $filePath")
 }
