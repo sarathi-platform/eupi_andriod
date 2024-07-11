@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
@@ -49,6 +49,7 @@ class ActivityScreenViewModel @Inject constructor(
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _activityList.value = getActivityUseCase.getActivities(missionId)
+            getContentValue(_activityList.value)
             checkButtonValidation()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -75,6 +76,14 @@ class ActivityScreenViewModel @Inject constructor(
             taskStatusUseCase.markMissionCompleted(missionId = missionId)
             eventWriterUseCase.updateMissionStatus(missionId = missionId, surveyName = "CSG")
 
+        }
+    }
+
+    fun getContentValue(actvityUiList: List<ActivityUiModel>) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            actvityUiList.forEach {
+                it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
+            }
         }
     }
 }

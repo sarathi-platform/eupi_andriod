@@ -40,8 +40,8 @@ import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
-import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.utils.ContentShape
+import com.sarathi.dataloadingmangement.download_manager.FileType
 
 
 @Composable
