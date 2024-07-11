@@ -45,11 +45,17 @@ import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
+import com.sarathi.surveymanager.ui.component.FormTypeQuestionComponent
+import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
+import com.sarathi.surveymanager.ui.component.RadioOptionTypeComponent
+import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeDropDownComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
+import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import kotlinx.coroutines.launch
 
 @Composable
@@ -248,14 +254,73 @@ fun SurveyScreen(
                                                 options.isSelected = true
                                             } else {
                                                 options.isSelected = false
-                                            }
-
-
-                                        }
+                                            } }
                                         viewModel.checkButtonValidation()
                                     }
                                 )
                             }
+
+                            QuestionType.AutoCalculation.name -> {
+                                CalculationResultComponent(
+                                    title = question.questionDisplay,
+//                                    defaultValue = questionScreenViewModel.calculatedResult.value[question.questionId!!]
+//                                        ?: BLANK_STRING
+                                )
+                            }
+                            QuestionType.RadioButton.name ->
+                                { RadioQuestionBoxComponent(
+                                questionIndex = index,
+                                maxCustomHeight = maxHeight,
+                                optionItemEntityList = listOf()!!,
+                                onAnswerSelection = { questionIndex, optionItem ->
+                                },
+                                )
+                            }
+                            QuestionType.MultiSelect.name,
+                                QuestionType.Grid.name ->
+                            {
+                                GridTypeComponent(
+                                    questionIndex = index,
+                                    maxCustomHeight = maxHeight,
+                                    optionItemEntityList = listOf(),
+                                    selectedOptionIndices =listOf() ,
+                                    onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
+                                    }
+                                ) {}
+                            }
+                            QuestionType.Toggle.name -> {
+//                                RadioOptionTypeComponent(
+//
+//
+//                                )
+
+                            }
+
+                            QuestionType.DidiDetails.name ->
+                            {
+//                                FormTypeQuestionComponent(
+//                                    question = question.questionEntity,
+////                                    showQuestionState = question,
+//                                    questionIndex = index,
+////                                    itemCount = itemCount,
+//                                    maxCustomHeight = maxHeight,
+////                                    summaryValue = summaryValue.toString(),
+//                                    onAnswerSelection = { questionIndex ->
+//                                        //TODO need to be dynamic.
+//
+//                                    },
+//                                    questionDetailExpanded = {
+//
+//                                    },
+//                                    onViewSummaryClicked = { questionId ->
+//
+//                                    }
+//
+//                                )
+
+                            }
+
+
                         }
                     }
 

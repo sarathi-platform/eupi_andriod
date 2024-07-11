@@ -383,8 +383,6 @@
     <string name="mission">मिशन</string>
     <string name="x_didi_pending">%s %s बाकी</string>
     <string name="save">सेव करेंं</string>
-
-
     <string name="name_comparision">नाम</string>
     <string name="age_comparision">उम्र</string>
     <string name="relationship_comparision">संबंध</string>
@@ -406,7 +404,6 @@
     <string name="add_didi_details_label">जानकारी जोड़ें</string>
     <string name="household_information_comparision">घर की जानकारी</string>
     <string name="total_income_lable">कुल आय: ₹</string>
-    //aa
     <string name="influence_type_comparision_and_label">प्रभाव प्रकार</string>
     <string name="acess_to_public_transportation_comparision">सार्वजनिक परिवहन की उपलब्धता</string>
     <string name="to_the_block_office_comparision">गाँव से ब्लॉक कार्यालय तक</string>

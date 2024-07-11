@@ -1,7 +1,5 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
-
-
 class QuestionUiModel(
     var questionId: Int,
     var isMandatory: Boolean,

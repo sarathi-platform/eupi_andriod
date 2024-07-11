@@ -1,31 +1,32 @@
 package com.nrlm.baselinesurvey.ui.Constants
 
 enum class QuestionType {
-    RadioButton,
-    SingleSelect,
+    RadioButton,   //done
+    SingleSelect,   // not
     MultiSelect,
-    Form,
-    List,
-    Grid,
-    Input,
-    InputText,
-    SingleSelectDropdown,
-    SingleSelectDropDown,
-    MultiSelectDropdown,
-    MultiSelectDropDown,
-    Toggle,
-    InputNumber,
-    InputNumberEditText,
-    Calculation,
-    SingleValueForm,
+    Form,              //didi detail same
+    List,   // not
+    Grid,    //done
+    Input,    //h
+    InputText,   //h
+    SingleSelectDropdown,   //h
+    SingleSelectDropDown,    //h
+    MultiSelectDropdown,    //h
+    MultiSelectDropDown,     //h
+    Toggle,                //done
+    InputNumber,               //h
+    InputNumberEditText,        //h
+    Calculation,          //autocalculation same
+    SingleValueForm,       // not availble
     DidiDetails,
     YesNoButton,
     PhoneNumber,
-    HrsMinPicker,
-    YrsMonthPicker,
+    HrsMinPicker,          //hh
+    YrsMonthPicker,        //h
     Image,
     FormWithNone,
-    AutoCalculation;
+    AutoCalculation;              //done
+
 
     companion object {
         fun getQuestionTypeFromName(name: String): QuestionType? {
