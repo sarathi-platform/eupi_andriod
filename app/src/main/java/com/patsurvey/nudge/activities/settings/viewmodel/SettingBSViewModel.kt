@@ -103,7 +103,7 @@ class SettingBSViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
-    val formEAvailable = mutableStateOf(false)
+    var formEAvailable = mutableStateOf(Pair<Int, Boolean>(0, false))
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
 
 
@@ -114,7 +114,7 @@ class SettingBSViewModel @Inject constructor(
         mAppContext = if(userType!= UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
         getActivityFormGenerateList(onGetData = {
             if (activityFormGenerateList.value.isNotEmpty()) {
-                checkFromEAvilable(activityFormGenerateList.value[0].activityId)
+                checkFromEAvilable(activityFormGenerateList.value)
             }
         })
         val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
@@ -185,13 +185,9 @@ class SettingBSViewModel @Inject constructor(
             )
         )
 
-
-
         _optionList.value=list
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
-        } else {
-            formEAvailable.value = activityFormGenerateList.value.isNotEmpty()
         }
     }
 
@@ -669,12 +665,20 @@ class SettingBSViewModel @Inject constructor(
             return arrayListOf(uri)
         return arrayListOf(uriFromFile(mAppContext,uri.toFile(),applicationId.value))
     }
-    fun checkFromEAvilable(activityId: Int) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            formEAvailable.value = formUseCase.getOnlyGeneratedFormSummaryData(
-                activityId = activityId,
-                isFormGenerated = true
-            ).isNotEmpty()
+    private fun checkFromEAvilable(activityFormUIModelList: List<ActivityFormUIModel>) {
+        if (activityFormUIModelList.isNotEmpty()) {
+            CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
+                    val isFromEAvilable = formUseCase.getOnlyGeneratedFormSummaryData(
+                        activityId = activityFormUIModel.activityId,
+                        isFormGenerated = true
+                    ).isNotEmpty()
+                    formEAvailable.value = Pair(index, isFromEAvilable)
+                }
+            }
+
+        } else {
+            formEAvailable.value = Pair(0, false)
         }
     }
 }

@@ -60,11 +60,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDisbursmentScreenState -> {
+            is InitDataEvent.InitDisbursmentFormSummaryScreenState -> {
                 initDisbursementSummaryScreen(
                     event.activityId,
                     event.missionId,
-                    event.isFormGenerated
+                    event.isFormSettingScreen
                 )
             }
 

@@ -127,8 +127,8 @@ fun SettingBSScreen(
                 viewModel.showLogoutDialog.value = true
             },
             onParticularFormClick = { formIndex ->
-                if (viewModel.userType == UPCM_USER && viewModel.formEAvailable.value) {
-                    if (viewModel.activityFormGenerateList.value.isNotEmpty()) {
+                if (viewModel.userType == UPCM_USER) {
+                    if ((viewModel.formEAvailable.value.first == formIndex && viewModel.formEAvailable.value.second) && viewModel.activityFormGenerateList.value.isNotEmpty()) {
                         navigateToDisbursmentSummaryScreen(
                             navController = navController,
                             missionId = viewModel.activityFormGenerateList.value[formIndex].missionId,

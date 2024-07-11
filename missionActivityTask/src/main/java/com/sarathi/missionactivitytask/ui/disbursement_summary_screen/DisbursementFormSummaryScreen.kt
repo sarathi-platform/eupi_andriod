@@ -117,10 +117,10 @@ fun DisbursementFormSummaryScreen(
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(
-            InitDataEvent.InitDisbursmentScreenState(
+            InitDataEvent.InitDisbursmentFormSummaryScreenState(
                 activityId = activityId,
                 missionId = missionId,
-                isFormGenerated = isFormSettingScreen
+                isFormSettingScreen = isFormSettingScreen
             )
         )
     }
