@@ -80,11 +80,12 @@ class GrantTaskScreenViewModel @Inject constructor(
     var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
-        private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
-            withContext(Dispatchers.Main) {
-                mutableState.value = newValue
-            }
+    private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
+        withContext(Dispatchers.Main) {
+            mutableState.value = newValue
         }
+    }
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -115,7 +116,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             isGenerateFormButtonEnable()
             taskUiModel.forEachIndexed { index, it ->
 
-             val uiComponent =   getUiComponentValues(
+                val uiComponent = getUiComponentValues(
                     taskId = it.taskId,
                     taskStatus = it.status.toString(),
                     subjectId = it.subjectId,
@@ -132,7 +133,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                     )
                     searchLabel.value =
                         searchUiComponent[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
-                        ?: BLANK_STRING
+                            ?: BLANK_STRING
 
                     if ((uiComponent[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
@@ -140,13 +141,13 @@ class GrantTaskScreenViewModel @Inject constructor(
                         isFilerEnable.value = true
                     }
                 }
-                _taskList.value[it.taskId] =uiComponent
+                _taskList.value[it.taskId] = uiComponent
 
             }
             getGrantConfig()
 
             var _filterListt = _taskList.value
-            updateValueInMainThread(_filterList,_filterListt)
+            updateValueInMainThread(_filterList, _filterListt)
 
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
@@ -258,7 +259,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             missionId = missionId,
             activityId = activityId
         ) && !isActivityCompleted.value
-        updateValueInMainThread(isButtonEnable,isButtonEnablee)
+        updateValueInMainThread(isButtonEnable, isButtonEnablee)
     }
 
     fun markActivityCompleteStatus() {

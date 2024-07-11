@@ -101,6 +101,8 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
+    implementation(project(":ContentManager"))
+    implementation(project(":navigationManager"))
     implementation("androidx.compose.material3:material3:1.0.0-alpha12")
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
