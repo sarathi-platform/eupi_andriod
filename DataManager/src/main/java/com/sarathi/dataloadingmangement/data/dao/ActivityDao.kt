@@ -163,7 +163,7 @@ interface ActivityDao {
     @Query("Select * from activity_table where userId=:userId and isActive=1 ")
     suspend fun getAllActivityForUser(userId: String): List<ActivityEntity>
 
-    @Query("Select activity_table.activityId as activityId,activity_table.missionId as missionId,activity_language_attribute_table.description as  description  from activity_table inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  inner join form_ui_config_table on form_ui_config_table.activityId=activity_table.activityId where form_ui_config_table.userId=:userId and form_ui_config_table.componentType=:formType and activity_language_attribute_table.languageCode=:languageCode group by activity_table.activityId")
+    @Query("Select activity_table.activityId as activityId,activity_table.missionId as missionId,activity_language_attribute_table.description as  description ,form_ui_config_table.componentType as formType from activity_table inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  inner join form_ui_config_table on form_ui_config_table.activityId=activity_table.activityId where form_ui_config_table.userId=:userId and form_ui_config_table.componentType=:formType and activity_language_attribute_table.languageCode=:languageCode group by activity_table.activityId")
     suspend fun getActiveForm(
         userId: String,
         languageCode: String,

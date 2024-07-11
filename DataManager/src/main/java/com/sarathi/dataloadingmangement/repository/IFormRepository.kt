@@ -28,6 +28,11 @@ interface IFormRepository {
     ): Int
 
     suspend fun getNonGeneratedFormSummaryData(activityId: Int): List<FormEntity>
+    suspend fun getOnlyGeneratedFormSummaryData(
+        activityId: Int,
+        isFormGenerated: Boolean
+    ): List<FormEntity>
+
     suspend fun getAllFormSummaryData(activityId: Int): List<FormEntity>
 
 

@@ -61,15 +61,19 @@ import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nudge.core.UPCM_USER
 import com.nudge.core.model.SettingOptionModel
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 
 @Composable
 fun CommonSettingScreen(
+    userType: String,
     title:String,
     versionText:String,
     optionList:List<SettingOptionModel>,
     expanded: Boolean,
     onBackClick:()->Unit,
+    activityForm: List<ActivityFormUIModel>,
     isLoaderVisible:Boolean=false,
     onItemClick:(Int,SettingOptionModel)->Unit,
     isScreenHaveLogoutButton:Boolean=true,
@@ -78,9 +82,18 @@ fun CommonSettingScreen(
 ){
 
     val formList = mutableListOf<String>()
-    formList.add(stringResource(R.string.digital_form_a_title))
-    formList.add(stringResource(R.string.digital_form_b_title))
-    formList.add(stringResource(R.string.digital_form_c_title))
+    if (userType != UPCM_USER) {
+        formList.add(stringResource(R.string.digital_form_a_title))
+        formList.add(stringResource(R.string.digital_form_b_title))
+        formList.add(stringResource(R.string.digital_form_c_title))
+    } else {
+        if (activityForm.isNotEmpty()) {
+            activityForm.forEach {
+                formList.add("${it.description} - ${it.formType}")
+            }
+        }
+    }
+
 
     Scaffold(
         backgroundColor = white,
@@ -193,6 +206,7 @@ fun CommonSettingScreenPreview(){
         SettingOptionModel(2,"Forms","",""),
         SettingOptionModel(3,"Language","",""))
     CommonSettingScreen(
+        userType = UPCM_USER,
         title = "Setting",
         versionText = "Version 978",
         list,
@@ -200,6 +214,7 @@ fun CommonSettingScreenPreview(){
         onItemClick = { index, item -> },
         expanded = true,
         onLogoutClick = {},
+        activityForm = listOf(),
         onParticularFormClick = { index -> })
 }
 
