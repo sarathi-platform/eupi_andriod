@@ -11,6 +11,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -50,6 +51,7 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_35_dp
 import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.dividerColor
@@ -139,6 +141,8 @@ fun StepsBoxGrantComponent(
                                 start = if (isCompleted) 0.dp else dimen_4_dp
                             )
                     )
+                } else {
+                    Spacer(modifier = Modifier.width(dimen_50_dp))
                 }
 
                 Column(

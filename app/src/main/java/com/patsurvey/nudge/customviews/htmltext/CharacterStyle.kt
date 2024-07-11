@@ -1,4 +1,4 @@
-package com.ireward.htmlcompose
+package com.patsurvey.nudge.customviews.htmltext
 
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
