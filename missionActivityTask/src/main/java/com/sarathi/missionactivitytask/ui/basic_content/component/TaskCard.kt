@@ -48,6 +48,7 @@ import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_22_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -171,7 +172,7 @@ fun TaskCard(
                             painter = painterResource(id = secondaryStatusIcon),
                             contentDescription = "Green Icon",
                             tint = greenOnline,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(dimen_22_dp)
                         )
                     } else {
                         Text(
