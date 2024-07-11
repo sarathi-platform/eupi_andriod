@@ -67,8 +67,8 @@ data class SectionEntity(
                 sectionName = section.originalValue,
                 sectionOrder = section.sectionOrder,
                 sectionIcon = section.sectionIcon,
-                questionSize = section.questionList.size,
-                contentEntities = section.contentList
+                questionSize = section.questionList?.size ?: 0,
+                contentEntities = section.contentList ?: listOf()
             )
 
         }

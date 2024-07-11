@@ -59,13 +59,13 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
-import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.component.ButtonPositive
 import com.sarathi.contentmodule.ui.component.SearchWithFilterViewComponent
 import com.sarathi.contentmodule.ui.content_detail_screen.viewmodel.ContentDetailViewModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.download_manager.FileType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.launch

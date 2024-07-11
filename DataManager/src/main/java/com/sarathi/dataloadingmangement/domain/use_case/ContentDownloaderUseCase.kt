@@ -3,8 +3,8 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import android.util.Log
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.utils.CoreLogger
-import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import com.sarathi.dataloadingmangement.download_manager.FileType
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
