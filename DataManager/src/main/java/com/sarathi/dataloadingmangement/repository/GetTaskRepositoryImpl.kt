@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -15,14 +16,46 @@ class GetTaskRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao,
     private val subjectAttributeDao: SubjectAttributeDao,
     private val coreSharedPrefs: CoreSharedPrefs,
+    private val formDao: FormDao,
     private val activityDao: ActivityDao
 ) : ITaskRepository {
     override suspend fun getActiveTask(missionId: Int, activityId: Int): List<TaskUiModel> {
-        return taskDao.getActiveTask(
+        val taskList = taskDao.getActiveTask(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             missionId = missionId,
             activityId = activityId
         )
+        val resultTaskList = ArrayList<TaskUiModel>()
+        taskList.forEachIndexed { index, taskUiModelV1 ->
+            val formData = formDao.getFormDataForTask(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                taskId = taskUiModelV1.taskId
+            )
+            if (formData.isNullOrEmpty()) {
+                resultTaskList.add(
+                    TaskUiModel(
+                        taskId = taskUiModelV1.taskId,
+                        subjectId = taskUiModelV1.subjectId,
+                        status = taskUiModelV1.status,
+                        isTaskSecondaryStatusEnable = false,
+                        isNotAvailableButton = true
+                    )
+                )
+            } else {
+                val isTaskSecondaryStatusEnable = formData.filter { !it.isFormGenerated }.isEmpty()
+                resultTaskList.add(
+                    TaskUiModel(
+                        taskId = taskUiModelV1.taskId,
+                        subjectId = taskUiModelV1.subjectId,
+                        status = taskUiModelV1.status,
+                        isTaskSecondaryStatusEnable = isTaskSecondaryStatusEnable,
+                        isNotAvailableButton = isTaskSecondaryStatusEnable
+                    )
+                )
+
+            }
+        }
+        return resultTaskList
     }
 
     override suspend fun getTaskAttributes(taskId: Int): List<SubjectAttributes> {

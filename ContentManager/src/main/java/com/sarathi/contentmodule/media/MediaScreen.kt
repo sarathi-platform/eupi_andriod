@@ -47,8 +47,8 @@ import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.textColorDark
-import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.ui.component.MediaToolbarComponent
+import com.sarathi.dataloadingmangement.download_manager.FileType
 import java.io.File
 import java.util.Locale
 

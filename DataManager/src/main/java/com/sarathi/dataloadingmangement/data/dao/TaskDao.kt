@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModelV1
 
 
 @Dao
@@ -34,16 +34,15 @@ interface TaskDao {
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
     @Query(
-        "SELECT task_table.taskId,task_table.subjectId, task_table.status,\n" +
-                "SUM(CASE WHEN form_table.isFormGenerated  =1 THEN 1 ELSE 0 END) AS formGeneratedCount\n" +
-                " FROM task_table left join form_table on task_table.taskId= form_table.taskid\n" +
+        "SELECT task_table.taskId,task_table.subjectId, task_table.status\n" +
+                " FROM task_table " +
                 " where task_table.missionId=:missionId  and task_table.activityId = :activityId and task_table.userId=:userId and isActive=1 group by task_table.taskId"
     )
     suspend fun getActiveTask(
         userId: String,
         missionId: Int,
         activityId: Int
-    ): List<TaskUiModel>
+    ): List<TaskUiModelV1>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive=1 ")
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>

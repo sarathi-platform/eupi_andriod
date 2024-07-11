@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -23,8 +23,8 @@ import javax.inject.Inject
 class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
-    private val eventWriterUseCase: MATStatusEventWriterUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val eventWriterUseCase: MATStatusEventWriterUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
