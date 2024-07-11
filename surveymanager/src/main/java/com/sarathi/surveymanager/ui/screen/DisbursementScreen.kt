@@ -170,6 +170,7 @@ fun DisbursementSummaryScreen(
                                                 subTitle4 = surveyData.subTittle4,
                                                 subTitle5 = surveyData.subTittle5,
                                                 isFormgenerated = surveyData.isFormGenerated,
+                                                isActivityCompleted = viewModel.isActivityCompleted.value,
                                                 onEditSurvey = {
                                                     onNavigateSurveyScreen(
                                                         surveyData.referenceId,

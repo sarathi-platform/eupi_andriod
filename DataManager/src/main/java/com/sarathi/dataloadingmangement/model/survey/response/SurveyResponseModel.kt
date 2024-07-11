@@ -21,11 +21,11 @@ data class SurveyResponseModel(
 
     @SerializedName("contents")
     @Expose
-    val contentList: List<ContentList>,
+    val contentList: List<ContentList>?,
 
     @SerializedName("languages")
     @Expose
-    val surveyLanguageAttributes: List<SurveyLanguageAttributes>,
+    val surveyLanguageAttributes: List<SurveyLanguageAttributes>?,
 
     @SerializedName("endDate")
     @Expose
@@ -47,7 +47,7 @@ data class SurveyResponseModel(
     val subject: String,
     @SerializedName("sections")
     @Expose
-    val sections: List<Sections>,
+    val sections: List<Sections>?,
     @SerializedName("originalValue")
     @Expose
     val originalValue: String? = BLANK_STRING,

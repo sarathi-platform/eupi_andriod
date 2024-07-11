@@ -26,7 +26,8 @@ data class ActivityConfigEntity(
     var subject: String,
     var taskCompletion: String,
     var activityId: Int,
-    var missionId: Int
+    var missionId: Int,
+    var icon: String,
 
 ) {
     companion object {
@@ -47,7 +48,8 @@ data class ActivityConfigEntity(
                 subject = activityConfig.subject,
                 activityId = activityId,
                 missionId = missionId,
-                taskCompletion = activityConfig.taskCompletion ?: BLANK_STRING
+                taskCompletion = activityConfig.taskCompletion ?: BLANK_STRING,
+                icon = activityConfig.icon ?: BLANK_STRING
             )
 
         }

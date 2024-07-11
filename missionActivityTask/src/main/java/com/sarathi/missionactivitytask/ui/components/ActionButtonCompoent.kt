@@ -60,6 +60,7 @@ import com.nudge.core.ui.theme.white
 @Composable
 fun PrimaryButton(
     text: String,
+    enabled: Boolean = true,
     onClick: () -> Unit,
     modifier: Modifier,
     color: ButtonColors = ButtonDefaults.buttonColors(
@@ -69,6 +70,7 @@ fun PrimaryButton(
     isIcon: Boolean = true
 ){
         Button(
+            enabled = enabled,
             onClick = onClick,
             shape = RoundedCornerShape(roundedCornerRadiusDefault),
             colors = color,
