@@ -142,7 +142,7 @@ fun StepsBoxGrantComponent(
                         shape = CircleShape
                     ) // Set the circular background
                     .clip(CircleShape) // Clip the content to a circular shape
-                    .padding(6.dp) //
+                    .padding(dimen_6_dp) //
                 if (imageUri != null) {
                     AsyncImage(
                         model = imageUri,
