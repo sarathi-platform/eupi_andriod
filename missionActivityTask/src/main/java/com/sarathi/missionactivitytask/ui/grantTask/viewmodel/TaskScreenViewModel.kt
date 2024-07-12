@@ -63,8 +63,8 @@ open class TaskScreenViewModel @Inject constructor(
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    var isGroupByEnable = mutableStateOf(false)
-    var isFilerEnable = mutableStateOf(false)
+    var isGroupByEnable = mutableStateOf(true)
+    var isFilterEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
 
     var matId = mutableStateOf<Int>(0)
@@ -140,7 +140,7 @@ open class TaskScreenViewModel @Inject constructor(
                     if ((uiComponent[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
                     ) {
-                        isFilerEnable.value = true
+                        isFilterEnable.value = true
                     }
                 }
                 _taskList.value[it.taskId] = uiComponent
