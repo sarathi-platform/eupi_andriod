@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
@@ -91,9 +92,17 @@ class GrantTaskScreenViewModel @Inject constructor(
         val taskListSanctionedEqualDisbursed = ArrayList<String>()
         if (activityConfigUiModel?.taskCompletion == SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED) {
             taskList.value.entries.forEach { task ->
-
-                if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
-                    taskListSanctionedEqualDisbursed.add(task.key.toString())
+                try {
+                    if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
+                        taskListSanctionedEqualDisbursed.add(task.key.toString())
+                    }
+                } catch (exception: Exception) {
+                    CoreLogger.e(
+                        tag = "TaskList",
+                        msg = exception?.localizedMessage ?: BLANK_STRING,
+                        stackTrace = true,
+                        ex = exception
+                    )
                 }
             }
         } else {
