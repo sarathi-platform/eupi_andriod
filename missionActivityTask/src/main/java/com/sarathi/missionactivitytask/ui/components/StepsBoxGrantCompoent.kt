@@ -11,6 +11,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -49,6 +50,7 @@ import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_35_dp
 import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
@@ -56,6 +58,7 @@ import com.nudge.core.ui.theme.dividerColor
 import com.nudge.core.ui.theme.greenLight
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.iconBackgroundgrayColor
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallerTextStyle
@@ -122,23 +125,32 @@ fun StepsBoxGrantComponent(
                     .padding(end = dimen_16_dp, start = dimen_8_dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
+                val constraintModifier = Modifier
+                    .constrainAs(iconContainer) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
 
+                    .size(dimen_48_dp)
+                    .padding(
+                        top = if (isCompleted) 0.dp else dimen_6_dp,
+                        start = if (isCompleted) 0.dp else dimen_4_dp
+                    )
+                    .background(
+                        color = iconBackgroundgrayColor,
+                        shape = CircleShape
+                    ) // Set the circular background
+                    .clip(CircleShape) // Clip the content to a circular shape
+                    .padding(6.dp) //
                 if (imageUri != null) {
                     AsyncImage(
                         model = imageUri,
                         contentDescription = null,
-                        modifier = Modifier
-                            .constrainAs(iconContainer) {
-                                start.linkTo(parent.start)
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                            }
-                            .size(48.dp)
-                            .padding(
-                                top = if (isCompleted) 0.dp else dimen_6_dp,
-                                start = if (isCompleted) 0.dp else dimen_4_dp
-                            )
+                        modifier = constraintModifier,
                     )
+                } else {
+                    Spacer(modifier = constraintModifier)
                 }
 
                 Column(
