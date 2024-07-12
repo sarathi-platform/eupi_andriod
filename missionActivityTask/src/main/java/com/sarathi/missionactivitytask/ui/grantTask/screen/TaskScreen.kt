@@ -35,10 +35,13 @@ import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.isOnline
+import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -75,6 +78,7 @@ fun TaskScreen(
     isSecondaryButtonEnable: Boolean = false,
     onSecondaryButtonClick: () -> Unit,
     isSecondaryButtonVisible: Boolean = false,
+    isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
     onSettingClick: () -> Unit
 ) {
@@ -93,10 +97,15 @@ fun TaskScreen(
             }
 
         })
+
+    val linearProgressState = rememberCustomProgressState()
+
     LaunchedEffect(taskList?.size) {
         viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
+
+
     ToolBarWithMenuComponent(
         title = activityName,
         modifier = Modifier.fillMaxSize(),
@@ -138,7 +147,8 @@ fun TaskScreen(
 
                     if (isSecondaryButtonVisible) {
                         Spacer(modifier = Modifier.width(10.dp))
-                        ButtonPositive(modifier = Modifier.weight(0.5f),
+                        ButtonPositive(
+                            modifier = Modifier.weight(0.5f),
                             buttonTitle = secondaryButtonText,
                             isActive = isSecondaryButtonEnable,
                             isArrowRequired = false,
@@ -202,8 +212,7 @@ fun TaskScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
-                )
-                {
+                ) {
                     PullRefreshIndicator(
                         refreshing = viewModel.loaderState.value.isLoaderVisible,
                         state = pullRefreshState,
@@ -213,10 +222,23 @@ fun TaskScreen(
                         contentColor = blueDark,
                     )
                     Spacer(modifier = Modifier.height(dimen_10_dp))
-                    if (viewModel.isGroupByEnable.value) {
-                        LazyColumn(
-                            modifier = Modifier.padding(bottom = dimen_50_dp)
-                        ) {
+                    LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+                        if (viewModel.isProgressEnable.value) {
+                            item {
+                                CustomVerticalSpacer()
+                            }
+                            item {
+                                CustomLinearProgressIndicator(
+                                    modifier = Modifier
+                                        .padding(dimen_16_dp),
+                                    progressState = linearProgressState
+                                )
+                            }
+                            item {
+                                CustomVerticalSpacer()
+                            }
+                        }
+                        if (viewModel.isGroupByEnable.value) {
                             viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                                 item {
                                     Row(
@@ -254,10 +276,9 @@ fun TaskScreen(
                                     CustomVerticalSpacer(size = dimen_20_dp)
                                 }
                             }
-                        }
-                    } else {
-                        if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-                            LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+
+                        } else {
+                            if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
                                 itemsIndexed(
                                     items = viewModel.filterList.value.entries.toList()
                                 ) { _, task ->
@@ -338,6 +359,6 @@ private fun TaskRowView(
         ),
 
 
-    )
+        )
 }
 

@@ -60,6 +60,7 @@ import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
+import com.sarathi.dataloadingmangement.data.entities.SectionStatusEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
@@ -101,7 +102,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         SurveyLanguageAttributeEntity::class,
         SubjectEntity::class,
         SmallGroupDidiMappingEntity::class,
-        TagReferenceEntity::class
+        TagReferenceEntity::class,
+        SectionStatusEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false

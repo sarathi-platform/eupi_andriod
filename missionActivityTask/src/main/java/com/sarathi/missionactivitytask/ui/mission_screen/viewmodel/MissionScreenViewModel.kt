@@ -111,4 +111,7 @@ class MissionScreenViewModel @Inject constructor(
             }
         }
     }
+
+    //TODO Temp code remove after data is fetched from API
+    fun getStateId() = fetchAllDataUseCase.getStateId()
 }

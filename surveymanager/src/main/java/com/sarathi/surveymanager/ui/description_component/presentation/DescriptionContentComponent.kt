@@ -32,8 +32,8 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
-import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.download_manager.FileType
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.surveymanager.R

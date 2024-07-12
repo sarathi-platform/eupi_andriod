@@ -65,6 +65,10 @@ open class TaskScreenViewModel @Inject constructor(
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isGroupByEnable = mutableStateOf(false)
     var isFilerEnable = mutableStateOf(false)
+
+    var isProgressEnable = mutableStateOf(true)
+    val isTaskProgressBarVisible = mutableStateOf(false)
+
     var isActivityCompleted = mutableStateOf(false)
 
     var matId = mutableStateOf<Int>(0)
@@ -136,6 +140,7 @@ open class TaskScreenViewModel @Inject constructor(
                     ) {
                         isFilerEnable.value = true
                     }
+//                    isProgressEnable.value =
                 }
                 _taskList.value[it.taskId] = uiComponent
 

@@ -2,6 +2,7 @@ package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -26,6 +27,7 @@ import com.nudge.core.ui.theme.progressIndicatorColor
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.trackColor
+import java.util.concurrent.atomic.AtomicInteger
 
 @Composable
 fun CustomLinearProgressIndicator(
@@ -38,15 +40,19 @@ fun CustomLinearProgressIndicator(
 
 ) {
 
-    val progress = remember {
+    val progress = remember(progressState.key.value.get()) {
         progressState.getProgressAsState()
     }
 
-    val progressText = remember {
+    val progressText = remember(progressState.key.value.get()) {
         progressState.getProgressTextAsState()
     }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
         LinearProgressIndicator(
             modifier = Modifier
                 .weight(1f)
@@ -78,16 +84,20 @@ class CustomProgressState(
     private val mProgress = mutableStateOf(initialValue)
     private val mProgressText = mutableStateOf(progressText)
 
+    val key = mutableStateOf(AtomicInteger(0))
+
     fun getProgressAsState() = mProgress
 
     fun getProgressTextAsState() = mProgressText
 
     fun updateProgress(updatedProgress: Float) {
         mProgress.value = updatedProgress
+        key.value.set(key.value.incrementAndGet())
     }
 
     fun updateProgressText(progressText: String) {
         mProgressText.value = progressText
+        key.value.set(key.value.incrementAndGet())
     }
 
     fun updateCompleteProgressState(stateValues: Pair<State<Float>, State<String>>) {

@@ -4,14 +4,27 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.missionactivitytask.utils.LoaderState
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class BaseViewModel : ViewModel() {
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
+
+    val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+
     abstract fun <T> onEvent(event: T)
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
@@ -27,6 +40,26 @@ abstract class BaseViewModel : ViewModel() {
     fun loaderState(): LoaderState = loaderState.value
 
     open fun refreshData() {
+    }
+
+    fun ViewModel.ioViewModelScope(
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        viewModelScope.launch(context = ioDispatcher + exceptionHandler, start = start) {
+            block()
+        }
+    }
+
+    fun ViewModel.launchViewModelScope(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+
+        viewModelScope.launch(context = context, start = start) {
+            block()
+        }
     }
 
 }

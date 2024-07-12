@@ -12,6 +12,9 @@ sealed class MATHomeScreens(val route: String) {
     object GrantTaskScreen :
         MATHomeScreens(route = "${MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
 
+    object SurveyTaskScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+
     object ContentDetailScreen :
         MATHomeScreens(route = "${MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MAT_ID}}/{${MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY}}")
 
