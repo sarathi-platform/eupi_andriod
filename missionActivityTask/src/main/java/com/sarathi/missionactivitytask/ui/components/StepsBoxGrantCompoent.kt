@@ -52,6 +52,7 @@ import com.nudge.core.ui.theme.dimen_35_dp
 import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.dividerColor
@@ -132,7 +133,7 @@ fun StepsBoxGrantComponent(
                         bottom.linkTo(parent.bottom)
                     }
 
-                    .size(dimen_48_dp)
+                    .size(dimen_56_dp)
                     .padding(
                         top = if (isCompleted) 0.dp else dimen_6_dp,
                         start = if (isCompleted) 0.dp else dimen_4_dp
@@ -142,7 +143,7 @@ fun StepsBoxGrantComponent(
                         shape = CircleShape
                     ) // Set the circular background
                     .clip(CircleShape) // Clip the content to a circular shape
-                    .padding(dimen_6_dp) //
+                    .padding(dimen_8_dp) //
                 if (imageUri != null) {
                     AsyncImage(
                         model = imageUri,
