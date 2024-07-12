@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository
 import android.util.Log
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
@@ -286,6 +287,14 @@ class MissionRepositoryImpl @Inject constructor(
                     task.id,
                     sharedPrefs.getUniqueUserIdentifier()
                 )
+                updateTaskAttributes(
+                    missionId,
+                    activityId,
+                    task.id,
+                    task.taskData ?: listOf(),
+                    task.subjectId,
+                    subject
+                )
             }
 
         }
@@ -423,4 +432,48 @@ class MissionRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    private fun updateTaskAttributes(
+        missionId: Int,
+        activityId: Int,
+        id: Int,
+        taskData: List<TaskData>,
+        subjectId: Int,
+        subject: String
+    ) {
+        subjectAttributeDao.updateSubjectAttribute(
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+                missionId = missionId,
+                activityId = activityId,
+                taskId = id,
+                subjectId = subjectId,
+                subjectType = subject,
+        )
+
+        val referenceId = subjectAttributeDao.getReferenceId(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId,
+            taskId = id,
+        )
+
+        taskData.forEach {
+            val rowUpdated = attributeValueReferenceDao.updateAttributeValueReference(
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    parentReferenceId = referenceId.toLong(),
+                    key = it.key,
+                    value = it.value ?: BLANK_STRING,
+                )
+
+            if(rowUpdated == 0) {
+                attributeValueReferenceDao.insertAttributesValueReferences(
+                    AttributeValueReferenceEntity.getAttributeValueReferenceEntity(
+                        userId = sharedPrefs.getUniqueUserIdentifier(),
+                        parentReferenceId = referenceId.toLong(),
+                        taskData = it,
+                    )
+                )
+            }
+        }
+    }
+
 }

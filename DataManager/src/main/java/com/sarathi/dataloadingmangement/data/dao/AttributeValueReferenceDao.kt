@@ -41,4 +41,12 @@ interface AttributeValueReferenceDao {
 
     @Query("Delete from attribute_value_reference_table where userId=:userId")
     fun deleteAttributeValueReferenceForUser(userId: String)
+
+    @Query("UPDATE attribute_value_reference_table SET `value` = :value WHERE userId = :userId AND parentReferenceId = :parentReferenceId AND `key` = :key")
+    fun updateAttributeValueReference(
+        userId: String,
+        parentReferenceId: Long,
+        key: String,
+        value: String,
+    ): Int
 }
