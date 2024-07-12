@@ -1,7 +1,11 @@
-package com.ireward.htmlcompose
+package com.nrlm.baselinesurvey.ui.htmltext
 
 import android.graphics.Typeface
-import android.text.style.*
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
+import android.text.style.SubscriptSpan
+import android.text.style.SuperscriptSpan
+import android.text.style.TypefaceSpan
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle

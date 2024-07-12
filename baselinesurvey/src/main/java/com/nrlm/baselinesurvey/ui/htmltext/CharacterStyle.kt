@@ -1,4 +1,4 @@
-package com.ireward.htmlcompose
+package com.nrlm.baselinesurvey.ui.htmltext
 
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
