@@ -16,7 +16,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -33,7 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SurveyScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchSurveyDataFromDB,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
@@ -174,7 +174,9 @@ class SurveyScreenViewModel @Inject constructor(
             if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (sanctionAmount != 0 && disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {
+                if (sanctionAmount != 0 && (disbursedAmount
+                        ?: 0) + totalRemainingAmount > sanctionAmount
+                ) {
                     isButtonEnable.value = false
                     return
                 }

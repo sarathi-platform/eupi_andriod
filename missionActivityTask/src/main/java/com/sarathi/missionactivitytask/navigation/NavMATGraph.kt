@@ -32,6 +32,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_ACTIVITY
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_SETTING_SCREEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
@@ -57,7 +58,7 @@ import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysical
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
-import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
+import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
@@ -77,7 +78,7 @@ fun NavGraphBuilder.MatNavigation(
     ) {
 
         composable(route = MATHomeScreens.MissionScreen.route) {
-            GrantMissionScreen(
+            MissionScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
                 onBackPressed = onBackPressed
@@ -416,6 +417,9 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.StringType
                 nullable = true
                 defaultValue = BLANK_STRING
+            },
+            navArgument(name = ARG_IS_FROM_SETTING_SCREEN) {
+                type = NavType.BoolType
             }
         )) {
             DisbursementFormSummaryScreen(
@@ -424,6 +428,7 @@ fun NavGraphBuilder.MatNavigation(
                 viewModel = hiltViewModel(),
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
+                isFormSettingScreen = it.arguments?.getBoolean(ARG_IS_FROM_SETTING_SCREEN) ?: false,
                 taskList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
@@ -468,11 +473,15 @@ fun navigateToContentDetailScreen(
 }
 
 fun navigateToDisbursmentSummaryScreen(
-    navController: NavController, activityId: Int, missionId: Int, taskIdList: String
+    navController: NavController,
+    activityId: Int,
+    missionId: Int,
+    taskIdList: String,
+    isFromSettingScreen: Boolean
 ) {
     var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
 
-    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
+    navController.navigate("$DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable/$isFromSettingScreen")
 }
 
 fun navigateToSurveyScreen(
@@ -546,7 +555,7 @@ fun navigateToAddImageScreen(navController: NavController, activityId: Int, task
     navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdListWithNullable")
 }
 
-fun navigateToTaskScreen(
+fun navigateToGrantTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,

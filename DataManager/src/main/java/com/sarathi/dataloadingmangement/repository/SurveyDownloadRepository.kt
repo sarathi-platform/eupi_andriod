@@ -66,7 +66,7 @@ class SurveyDownloadRepository @Inject constructor(
             )
 
 
-            surveyApiResponse.sections.forEach { section ->
+            surveyApiResponse.sections?.forEach { section ->
                 deleteSurveyLanguageAttribute(
                     section.sectionId,
                     LanguageAttributeReferenceType.SECTION.name
@@ -97,7 +97,7 @@ class SurveyDownloadRepository @Inject constructor(
                     section.sectionId,
                     surveyApiResponse.surveyId,
                 )
-                contentLists.addAll(section.contentList)
+                contentLists.addAll(section.contentList ?: listOf())
                 sectionEntityDao.insertSection(
                     SectionEntity.getSectionEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -110,7 +110,7 @@ class SurveyDownloadRepository @Inject constructor(
                 val conditionDtoWithParentIdList =
                     mutableListOf<ConditionDtoWithParentId>()
 
-                section.questionList.forEach { question ->
+                section.questionList?.forEach { question ->
 
                     conditionDtoWithParentIdList.add(ConditionDtoWithParentId(question!!, 0))
                 }
@@ -127,11 +127,11 @@ class SurveyDownloadRepository @Inject constructor(
     }
 
     private fun saveSurveyLanguageAttributes(
-        surveyLanguageAttributes: List<SurveyLanguageAttributes>,
+        surveyLanguageAttributes: List<SurveyLanguageAttributes>?,
         referenceId: Int,
         referenceType: String
     ) {
-        surveyLanguageAttributes.forEach {
+        surveyLanguageAttributes?.forEach {
             surveyLanguageAttributeDao.insertSurveyLanguageAttribute(
                 SurveyLanguageAttributeEntity.getSurveyLanguageAttributeEntity(
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),

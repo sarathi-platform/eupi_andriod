@@ -345,6 +345,7 @@
     <string name="no_data_form_a_not_generated_text">No Data! Form A not generated</string>
     <string name="no_data_form_b_not_generated_text">No Data! Form B not generated</string>
     <string name="no_data_form_c_not_generated_text">No Data! Form C not generated</string>
+    <string name="no_data_form_e_not_generated_text" translatable="false">No Data! Form E not generated</string>
     <string name="no_form_available_yet_text">No Form available yet.</string>
     <string name="digital_form_a_title">Digital Form A</string>
     <string name="digital_form_b_title">Digital Form B</string>
@@ -423,10 +424,10 @@
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
     <string name="delete_and_retake">Delete &amp; Retake</string>
     <string name="if_more_than_5_pages_please_uload_last_page">If more than 5 pages, please upload the last page.</string>
-        <plurals name="vo_endorsement_completed">
-            <item quantity="one">CLF Endorsement \nCompleted</item>
-            <item quantity="other">VO Endorsement \nCompleted</item>
-        </plurals>
+    <plurals name="vo_endorsement_completed">
+        <item quantity="one">CLF Endorsement \nCompleted</item>
+        <item quantity="other">VO Endorsement \nCompleted</item>
+    </plurals>
     <string name="no_didis_available_to_add_or_replace">No Didis available to add or replace.</string>
     <string name="online_sync_successful">Online Sync Successful</string>
     <string name="sync_failed">Sync Failed</string>
@@ -442,14 +443,14 @@
     <string name="pat_selected_status_text">PAT Selected</string>
     <string name="pat_rejected_status_text">PAT Rejected</string>
 
-        <plurals name="vo_selected_status_text">
-            <item quantity="one">CLF Endorsed</item>
-            <item quantity="other">VO Endorsed</item>
-        </plurals>
-     <plurals name="vo_rejected_status_text">
-            <item quantity="one">CLF Rejected</item>
-            <item quantity="other">VO Rejected</item>
-        </plurals>
+    <plurals name="vo_selected_status_text">
+        <item quantity="one">CLF Endorsed</item>
+        <item quantity="other">VO Endorsed</item>
+    </plurals>
+    <plurals name="vo_rejected_status_text">
+        <item quantity="one">CLF Rejected</item>
+        <item quantity="other">VO Rejected</item>
+    </plurals>
     <string name="pat_not_available_status_text">PAT Not Available</string>
     <string name="cannot_delete_tola_message_text">Cannot delete this Para / Tola as Didis are assigned to it</string>
 
@@ -466,9 +467,9 @@
     <string name="pat_summary_not_available_empty_text">No didi marked as not available</string>
     <string name="pat_summary_completed_empty_text">No didi whose PAT was completed</string>
     <plurals name="vo_summary_rejected_empty_text">
-                <item quantity="one">No didi rejected by CLF</item>
-                <item quantity="other">No didi rejected by VO</item>
-            </plurals>
+        <item quantity="one">No didi rejected by CLF</item>
+        <item quantity="other">No didi rejected by VO</item>
+    </plurals>
     <plurals name="vo_summary_endorsed_empty_text">
         <item quantity="one">No didi endorsed by CLF</item>
         <item quantity="other">No didi endorsed by VO</item>

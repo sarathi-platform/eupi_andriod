@@ -16,7 +16,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
@@ -39,7 +39,7 @@ import javax.inject.Inject
 class DisbursementSummaryScreenViewModel @Inject constructor(
     private val grantConfigUseCase: GrantConfigUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
-    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
