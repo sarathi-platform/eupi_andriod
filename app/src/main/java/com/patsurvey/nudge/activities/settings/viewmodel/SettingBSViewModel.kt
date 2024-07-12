@@ -67,7 +67,6 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
-import com.patsurvey.nudge.utils.openShareSheet
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
@@ -644,7 +643,7 @@ class SettingBSViewModel @Inject constructor(
     }
     private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
         if (activityFormUIModelList.isNotEmpty()) {
-            CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
                 activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
                     val isFromEAvailable = formUseCase.getOnlyGeneratedFormSummaryData(
                         activityId = activityFormUIModel.activityId,
