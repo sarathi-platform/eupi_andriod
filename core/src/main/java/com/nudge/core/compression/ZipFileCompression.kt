@@ -441,38 +441,46 @@ class ZipFileCompression : IFileCompressor {
         } else {
             try {
 
-                val commonFilePath: File = Environment.getExternalStoragePublicDirectory("")
+
 
                 val zippedFileDirectoryPath =
-                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME+"/"+folderName)
-
+                    File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        "$SARATHI_DIRECTORY_NAME/$folderName"
+                    )
                 if (!zippedFileDirectoryPath.exists()) {
                     zippedFileDirectoryPath.mkdirs()
                 }
                 val zippedFilePath = File(zippedFileDirectoryPath, zipFileName + extension)
 
 
-                val directoryPathToBeZipped = File(commonFilePath.path + "/" + filePathToZipped)
+                val directoryPathToBeZipped = File(
+                    Environment.getExternalStoragePublicDirectory(
+                        BLANK_STRING
+                    ), filePathToZipped
+                )
 
                 val s: List<Pair<String, Uri>>? = directoryPathToBeZipped.listFiles()?.filter { it.isFile && !it.name.contains("zip") }?.map {
                     Pair(it.name, it.toUri())
                 }
+                val zipFileUri = uriFromFile(
+                    context = context,
+                    applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
+                        ?: BLANK_STRING,
+                    file = zippedFilePath
+                )
                 if (s != null) {
+
                     val filesToBeZipped = ArrayList<Pair<String, Uri?>>()
                     filesToBeZipped.addAll(s)
                     filesToBeZipped.addAll(extraUris.filter { !it.first.contains("zip") })
                     ZipManager.zip(
                         context = context,
                         files = filesToBeZipped,
-                        zipFile = zippedFilePath.toUri()
+                        zipFile = zipFileUri
                     )
                 }
-                return uriFromFile(
-                    context = context,
-                    file = zippedFilePath,
-                    applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
-                        ?: BLANK_STRING
-                )
+                return zipFileUri
             } catch (e: Exception) {
                 e.printStackTrace()
 

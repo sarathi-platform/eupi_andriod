@@ -56,7 +56,7 @@ const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
 const val SUFFIX_IMAGE_ZIP_FILE = "Image"
 const val SUFFIX_EVENT_ZIP_FILE = "file"
-const val BASELINE = "BASELINE-GRANT"
+const val BASELINE = "BASELINE_GRANT"
 const val HAMLET = "HAMLET"
 const val SELECTION = "SELECTION"
 

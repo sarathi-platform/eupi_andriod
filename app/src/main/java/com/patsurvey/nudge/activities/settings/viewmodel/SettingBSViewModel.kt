@@ -32,7 +32,6 @@ import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
 import com.nudge.core.findImagesExistInPictureFolder
 import com.nudge.core.getFirstName
-import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
@@ -235,11 +234,7 @@ class SettingBSViewModel @Inject constructor(
                 val zipLogDbFileUri = compression.compressData(
                     context = mAppContext,
                     zipFileName = zipFileName,
-                    filePathToZipped = Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber() + "/${
-                        moduleNameAccToLoggedInUser(
-                            userType
-                        )
-                    }",
+                    filePathToZipped = Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber(),
                     extraUris = fileAndDbZipList,
                     folderName = getUserMobileNumber()
                 )
@@ -249,7 +244,9 @@ class SettingBSViewModel @Inject constructor(
                     }
                 }
 
-                NudgeLogger.d("SettingBSViewModel", "Share Dialog Open ${fileUriList.json()}")
+                fileUriList.forEach {
+                    NudgeLogger.d("SettingBSViewModel", "Share Dialog Open Zip Files: ${it.path}")
+                }
                 openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))

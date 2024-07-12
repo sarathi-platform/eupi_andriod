@@ -661,14 +661,11 @@ fun exportLogFile(
 
 fun uriFromFile(context: Context?, file: File, applicationID: String): Uri {
     try {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (context != null) {
-                FileProvider.getUriForFile(context, "$applicationID.provider", file)
-            } else {
-                return Uri.EMPTY
-            }
+
+        return if (context != null) {
+            FileProvider.getUriForFile(context, "$applicationID.provider", file)
         } else {
-            Uri.fromFile(file)
+            Uri.EMPTY
         }
     } catch (ex: Exception) {
         if (context != null) {
@@ -926,24 +923,11 @@ fun generateUUID(): String {
 fun openShareSheet(fileUriList: ArrayList<Uri>, title: String, type: String, context: Context) {
     if (fileUriList.isNotEmpty()) {
         try {
-            printAllUrisFromList(fileUriList, context)
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
-            Log.d(TAG, "openShareSheetDetails Version: ${Build.VERSION.SDK_INT} ")
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-
-            val packageName = context.packageName
-            Log.d(TAG, "openShareSheetDetails: ${packageName} :: ${fileUriList[0]}")
-                    context.grantUriPermission(
-                        packageName,
-                        fileUriList[0],
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-
-
+            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             startExternalApp(chooserIntent, context)
         } catch (ex: Exception) {
             CoreLogger.e(context, "OpenShareSheet", "OpenShareSheet Exception :", ex = ex)
@@ -1108,7 +1092,7 @@ fun findImagesExistInPictureFolder(
     mobileNo: String
 ): Boolean {
     val filePath =
-        File(appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path + SARATHI_DIRECTORY_NAME + "/" + mobileNo)
+        File(appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path) //+ SARATHI_DIRECTORY_NAME + "/" + mobileNo)
     return getAllFilesInDirectory(
         appContext,
         filePath.path,
@@ -1116,14 +1100,6 @@ fun findImagesExistInPictureFolder(
     ).isNotEmpty()
 }
 
-fun printAllUrisFromList(fileUriList: ArrayList<Uri>, context: Context) {
-    fileUriList.forEach {
-        if (it != Uri.EMPTY) {
-            convertFileUriToContentUri(it, context = context)
-            Log.d(TAG, "printAllUrisFromList: ${it.path}")
-        }
-    }
-}
 
 fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     var filePath: String? = null
