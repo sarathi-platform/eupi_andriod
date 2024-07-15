@@ -87,7 +87,7 @@ android {
                     appIcon: "@mipmap/ic_launcher_uat",
                     appIconRound: "@mipmap/ic_launcher_uat_round"
             ]
-            buildConfigField 'String', 'BASE_URL', '"https://dev.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://staging.eupi-sarthi.in"'
         }
         production{
             versionName prodVersion
