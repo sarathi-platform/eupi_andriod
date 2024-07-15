@@ -6,8 +6,6 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -58,6 +56,7 @@ import java.util.TimeZone
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
+
 
 private const val TAG = "CoreUtils"
 
@@ -433,11 +432,12 @@ suspend fun exportDbFiles(
     return uriList
 }
 
+
 fun getAllFilesInDirectory(
     appContext: Context,
     directoryPath: String?,
     applicationID: String
-): MutableList<Pair<String, Uri>> {
+): List<Pair<String, Uri>> {
     val fileList: MutableList<Pair<String, Uri>> = ArrayList()
     val directory = File(directoryPath)
     if (directory.exists() && directory.isDirectory) {
@@ -661,18 +661,17 @@ fun exportLogFile(
 
 fun uriFromFile(context: Context?, file: File, applicationID: String): Uri {
     try {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (context != null) {
-                FileProvider.getUriForFile(context, "$applicationID.provider", file)
-            } else {
-                return Uri.EMPTY
-            }
+
+        return if (context != null) {
+            FileProvider.getUriForFile(context, "$applicationID.provider", file)
         } else {
-            Uri.fromFile(file)
+            Uri.EMPTY
         }
     } catch (ex: Exception) {
+        if (context != null) {
+            CoreLogger.e(context, "uriFromFile", "exception", ex)
+        }
         return Uri.EMPTY
-        Log.e("uriFromFile", "exception", ex)
     }
 }
 
@@ -924,43 +923,26 @@ fun generateUUID(): String {
 fun openShareSheet(fileUriList: ArrayList<Uri>, title: String, type: String, context: Context) {
     if (fileUriList.isNotEmpty()) {
         try {
-
-
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-                val resInfoList: List<ResolveInfo> =
-                    context.packageManager
-                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
-
-                for (resolveInfo in resInfoList) {
-                    val packageName = resolveInfo.activityInfo.packageName
-                    context.grantUriPermission(
-                        packageName,
-                        fileUriList[0],
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                }
-            } else {
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-            }
+            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             startExternalApp(chooserIntent, context)
         } catch (ex: Exception) {
-            CoreLogger.d(context, "ImportDbFile", "Import completed")
+            CoreLogger.e(context, "OpenShareSheet", "OpenShareSheet Exception :", ex = ex)
         }
     }
 }
 
 fun startExternalApp(intent: Intent, context: Context) {
     try {
-        CoreLogger.d(context, "ImportDbFile", "Import completed")
+        CoreLogger.d(context, "StartExternalApp", "Share External App Started")
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         context.startActivity(intent)
     } catch (ex: Exception) {
-        CoreLogger.d(context, "ImportDbFile", "Import completed")
+        CoreLogger.e(context, "StartExternalApp", "Share External App Exception : ", ex = ex)
     }
 }
 
@@ -1090,4 +1072,48 @@ fun Boolean.getAttendanceFromBoolean(): String {
 
 fun String?.getBooleanValueFromAttendance(): Boolean {
     return this?.equals(ATTENDANCE_PRESENT) ?: false
+}
+
+
+fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
+    val cursor = activity.contentResolver.query(contentURI, null, null, null, null)
+    return if (cursor == null) {
+        contentURI.path
+    } else {
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        cursor.getString(idx)
+    }
+}
+
+fun findImagesExistInPictureFolder(
+    appContext: Context,
+    applicationID: String,
+    mobileNo: String
+): Boolean {
+    val filePath =
+        File(appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path) //+ SARATHI_DIRECTORY_NAME + "/" + mobileNo)
+    return getAllFilesInDirectory(
+        appContext,
+        filePath.path,
+        applicationID = applicationID
+    ).isNotEmpty()
+}
+
+
+fun convertFileUriToContentUri(_uri: Uri, context: Context) {
+    var filePath: String? = null
+    Log.d("", "URI = $_uri")
+    if ("content" == _uri.scheme) {
+        val cursor: Cursor? = context.contentResolver
+            .query(_uri, arrayOf(MediaStore.Files.FileColumns.DATA), null, null, null)
+        cursor?.moveToFirst()
+        filePath = cursor?.getString(0)
+        cursor?.close()
+        Log.d("", "Chosen path 1 = $filePath")
+
+    } else {
+        filePath = _uri!!.path
+    }
+    Log.d("", "Chosen path = $filePath")
 }

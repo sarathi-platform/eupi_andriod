@@ -1,11 +1,11 @@
 package com.sarathi.missionactivitytask.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.missionactivitytask.utils.LoaderState
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,7 +28,12 @@ abstract class BaseViewModel : ViewModel() {
     abstract fun <T> onEvent(event: T)
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
-        Log.e("Error", e.message ?: BLANK_STRING)
+        CoreLogger.e(
+            tag = "MAT",
+            msg = e?.localizedMessage ?: com.nudge.core.BLANK_STRING,
+            stackTrace = true,
+            ex = e
+        )
         onCatchError(e)
     }
 

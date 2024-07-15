@@ -64,12 +64,11 @@ open class TaskScreenViewModel @Inject constructor(
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isGroupByEnable = mutableStateOf(false)
-    var isFilerEnable = mutableStateOf(false)
+    var isFilterEnable = mutableStateOf(false)
+    var isActivityCompleted = mutableStateOf(false)
 
     var isProgressEnable = mutableStateOf(true)
     val isTaskProgressBarVisible = mutableStateOf(false)
-
-    var isActivityCompleted = mutableStateOf(false)
 
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
@@ -111,24 +110,30 @@ open class TaskScreenViewModel @Inject constructor(
             isContentScreenEmpty()
             getSurveyDetail()
             isActivityCompleted()
-            taskUiModel?.forEachIndexed { index, it ->
+            val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
+                missionId = missionId, activityId = activityId
+            )
 
+            taskUiModel?.forEachIndexed { index, it ->
                 val uiComponent = getUiComponentValues(
                     taskId = it.taskId,
                     taskStatus = it.status.toString(),
-                    subjectId = it.subjectId,
                     isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
                     isNAButtonEnable = it.isNotAvailableButton,
-                    componentType = ComponentEnum.Card.name
+                    subjectId = it.subjectId,
+                    componentType = ComponentEnum.Card.name,
+                    activityConfig
                 )
+
                 if (index == 0) {
                     val searchUiComponent = getUiComponentValues(
                         taskId = it.taskId,
                         taskStatus = it.status.toString(),
-                        subjectId = it.subjectId,
                         isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
-                        componentType = ComponentEnum.Search.name,
                         isNAButtonEnable = it.isNotAvailableButton,
+                        subjectId = it.subjectId,
+                        componentType = ComponentEnum.Search.name,
+                        activityConfig
 
                         )
                     searchLabel.value =
@@ -138,7 +143,8 @@ open class TaskScreenViewModel @Inject constructor(
                     if ((uiComponent[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
                     ) {
-                        isFilerEnable.value = true
+                        isGroupByEnable.value = true
+                        isFilterEnable.value = true
                     }
 //                    isProgressEnable.value =
                 }
@@ -164,7 +170,8 @@ open class TaskScreenViewModel @Inject constructor(
         isTaskSecondaryStatusEnable: Boolean?,
         isNAButtonEnable: Boolean?,
         subjectId: Int,
-        componentType: String
+        componentType: String,
+        activityConfig: List<UiConfigModel>
     ): HashMap<String, TaskCardModel> {
         val cardAttributesWithValue = HashMap<String, TaskCardModel>()
         cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
@@ -181,9 +188,7 @@ open class TaskScreenViewModel @Inject constructor(
                 label = BLANK_STRING,
                 icon = null
             )
-        val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
-            missionId = missionId, activityId = activityId
-        )
+
         val cardConfig = activityConfig.filter { it.componentType == componentType }
         cardConfig.forEach { cardAttribute ->
             cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {

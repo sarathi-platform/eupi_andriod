@@ -105,7 +105,6 @@ fun TaskScreen(
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
 
-
     ToolBarWithMenuComponent(
         title = activityName,
         modifier = Modifier.fillMaxSize(),
@@ -191,7 +190,7 @@ fun TaskScreen(
                             placeholderString = viewModel.searchLabel.value,
                             filterSelected = viewModel.isGroupByEnable.value,
                             modifier = Modifier.padding(horizontal = 10.dp),
-                            showFilter = viewModel.isFilerEnable.value,
+                            showFilter = viewModel.isFilterEnable.value,
                             onFilterSelected = {
                                 if (viewModel.filterList.value.isNotEmpty()) {
                                     viewModel.isGroupByEnable.value = !it
@@ -212,7 +211,8 @@ fun TaskScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
-                ) {
+                )
+                {
                     PullRefreshIndicator(
                         refreshing = viewModel.loaderState.value.isLoaderVisible,
                         state = pullRefreshState,
@@ -238,7 +238,7 @@ fun TaskScreen(
                                 CustomVerticalSpacer()
                             }
                         }
-                        if (viewModel.isGroupByEnable.value) {
+                        if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
                             viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                                 item {
                                     Row(
@@ -357,8 +357,6 @@ private fun TaskRowView(
         isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
         ),
-
-
-        )
+    )
 }
 
