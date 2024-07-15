@@ -353,7 +353,7 @@ class ExportImportViewModel @Inject constructor(
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
 
-                val dtoList = generateDtoList()
+                val dtoList = getSaveAnswerEvents()
                 val dtoSaveFormList = generateDtoSaveFormList()
                 val sectionList = sectionEntityDao.getSectionsT(
                     prefBSRepo.getUniqueUserIdentifier(),
@@ -380,7 +380,7 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
-    private suspend fun generateDtoList(): List<SaveAnswerEventDto> {
+    private suspend fun getSaveAnswerEvents(): List<SaveAnswerEventDto> {
         val eventsList = eventWriterHelperImpl.generateResponseEvent()
         val payloadList = eventsList.map { it.request_payload }
         val dtoList = ArrayList<SaveAnswerEventDto>()
