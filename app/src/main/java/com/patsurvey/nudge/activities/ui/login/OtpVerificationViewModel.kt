@@ -11,7 +11,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.UPCM_USER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +39,7 @@ class OtpVerificationViewModel @Inject constructor(
                 response.data?.let {
                     otpVerificationRepository.saveAccessToken(it.token)
                     otpVerificationRepository.saveLoggedInUserType(userType = it.typeName ?: BLANK_STRING)
-                    otpVerificationRepository.setIsUserBPC(it.typeName ?: "")
+                    otpVerificationRepository.setIsUserBPC(it.typeName ?: BLANK_STRING)
                     showLoader.value = false
                     withContext(Dispatchers.Main) {
                         onOtpResponse(it.typeName?: CRP_USER_TYPE,true,response.message)
