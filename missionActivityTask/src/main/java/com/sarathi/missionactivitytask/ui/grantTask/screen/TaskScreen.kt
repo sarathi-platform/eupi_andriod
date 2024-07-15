@@ -181,7 +181,7 @@ fun TaskScreen(
                             placeholderString = viewModel.searchLabel.value,
                             filterSelected = viewModel.isGroupByEnable.value,
                             modifier = Modifier.padding(horizontal = 10.dp),
-                            showFilter = viewModel.isFilerEnable.value,
+                            showFilter = viewModel.isFilterEnable.value,
                             onFilterSelected = {
                                 if (viewModel.filterList.value.isNotEmpty()) {
                                     viewModel.isGroupByEnable.value = !it
@@ -213,7 +213,7 @@ fun TaskScreen(
                         contentColor = blueDark,
                     )
                     Spacer(modifier = Modifier.height(dimen_10_dp))
-                    if (viewModel.isGroupByEnable.value) {
+                    if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
                         LazyColumn(
                             modifier = Modifier.padding(bottom = dimen_50_dp)
                         ) {

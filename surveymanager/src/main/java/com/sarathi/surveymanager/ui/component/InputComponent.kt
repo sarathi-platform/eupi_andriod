@@ -55,9 +55,7 @@ fun InputComponent(
     val txt = remember {
         mutableStateOf(defaultValue)
     }
-    val remainingValue = remember {
-        mutableStateOf(remainingAmount)
-    }
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -86,7 +84,7 @@ fun InputComponent(
                         txt.value = it
                     }
                 }
-                onAnswerSelection(txt.value, remainingValue.value)
+                onAnswerSelection(txt.value, remainingAmount)
             },
             placeholder = {
                 androidx.compose.material3.Text(
@@ -115,7 +113,7 @@ fun InputComponent(
             keyboardActions = KeyboardActions(onDone = {
                 focusManager.clearFocus()
                 keyboardController?.hide()
-                onAnswerSelection(txt.value, remainingValue.value)
+                onAnswerSelection(txt.value, remainingAmount)
             }),
             maxLines = 2,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -128,7 +126,7 @@ fun InputComponent(
             Text(
                 stringResource(
                     R.string.amount_limit,
-                    getRemainingValue(remainingValue.value, sanctionedAmount, txt.value)
+                    getRemainingValue(remainingAmount, sanctionedAmount, defaultValue)
                 ),
                 style = smallTextStyleMediumWeight,
                 color = red

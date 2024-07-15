@@ -9,6 +9,8 @@
         <item quantity="other">Poor Didis Pending</item>
     </plurals>
 
+    <string name="search_village">Search Village</string>
+
     <string name="mark_complete_text">तला दाजाबदेरनायखौ फोजोब</string>
     <string name="go_back_text">थांफिन</string>
     <string name="progress_item_text">जौगानाय एबा दावगानाय</string>
@@ -55,7 +57,116 @@
     <string name="not_added">दाजाबदेरनाय जायाखै</string>
     <string name="mark_as_completed">फोजोबनायनि सिन</string>
     <string name="village_text">गामि</string>
-    <string name="vo_name">VO नि मुं</string>
+    <plurals name="vo_name">
+        <item quantity="one">CLF Name</item>
+        <item quantity="other">VO Name</item>
+    </plurals>
+    <plurals name="seletc_village_screen_text">
+        <item quantity="one">Select Village &amp; CLF</item>
+        <item quantity="other">Select Village &amp; VO</item>
+    </plurals>
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didi sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didis sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_screen_title">
+        <item quantity="one">List of Didis for CLF Endorsement</item>
+        <item quantity="other">List of Didis for VO Endorsement</item>
+    </plurals>
+    <plurals name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">
+        <item quantity="one">You are sending %1$s PAT completed Didis for CLF Endorsement</item>
+        <item quantity="other">You are sending %1$s PAT completed Didis for VO Endorsementt</item>
+    </plurals>
+    <plurals name="send_all_for_vo_endorsement">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed_message">
+        <item quantity="one">CLF Endorsement for {VILLAGE_NAME} \nis completed</item>
+        <item quantity="other">VO Endorsement for {VILLAGE_NAME} \nis completed</item>
+    </plurals>
+    <plurals name="send_for_vo_text">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+    <plurals name="total_no_of_ultra_poor">
+        <item quantity="one">Total no. Ultra-Poor families endorsed by CLF:</item>
+        <item quantity="other">Total no. Ultra-Poor families endorsed by VO:</item>
+    </plurals>
+    <plurals name="final_list_of_user">
+        <item quantity="one">Final list of Ultra Poor families endorsed by CLF (Village Organization)</item>
+        <item quantity="other">Final list of Ultra Poor families endorsed by VO (Village Organization)</item>
+    </plurals>
+    <plurals name="no_didis_availble_for_vo_endorsement">
+        <item quantity="one">No Didis available for CLF Endorsement.</item>
+        <item quantity="other">No Didis available for VO Endorsement.</item>
+    </plurals>
+    <plurals name="vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+    <plurals name="summary_vo_endoresement_text_plural">
+        <item quantity="one">Didis sent for CLF Endorsement</item>
+        <item quantity="other">Didis sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="didis_endorsed_by_vo_plural">
+        <item quantity="one">Didis Endorsed by CLF</item>
+        <item quantity="other">Didis Endorsed by VO</item>
+    </plurals>
+    <plurals name="didi_endorsed_by_vo_singular">
+        <item quantity="one">Didi Endorsed by CLF</item>
+        <item quantity="other">Didi Endorsed by VO</item>
+    </plurals>
+    <plurals name="summary_vo_endoresement_text_singular">
+        <item quantity="one">Didi sent for CLF Endorsement</item>
+        <item quantity="other">Didi sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed_village_banner_text">
+        <item quantity="one">CLF Endorsement completed</item>
+        <item quantity="other">VO Endorsement completed</item>
+    </plurals>
+    <plurals name="step_vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed">
+        <item quantity="one">CLF Endorsement \nCompleted</item>
+        <item quantity="other">VO Endorsement \nCompleted</item>
+    </plurals>
+    <plurals name="vo_selected_status_text">
+        <item quantity="one">CLF Endorsed</item>
+        <item quantity="other">VO Endorsed</item>
+    </plurals>
+    <plurals name="vo_rejected_status_text">
+        <item quantity="one">CLF Rejected</item>
+        <item quantity="other">VO Rejected</item>
+    </plurals>
+    <plurals name="vo_summary_rejected_empty_text">
+        <item quantity="one">No didi rejected by CLF</item>
+        <item quantity="other">No didi rejected by VO</item>
+    </plurals>
+    <plurals name="vo_summary_endorsed_empty_text">
+        <item quantity="one">No didi endorsed by CLF</item>
+        <item quantity="other">No didi endorsed by VO</item>
+    </plurals>
+    <plurals name="village_is_not_vo_endorsed_right_now">
+        <item quantity="one">Village is not CLF Endorsed Right Now!</item>
+        <item quantity="other">Village is not VO Endorsed Right Now!</item>
+    </plurals>
+    <plurals name="vo_endorsement_not_started">
+        <item quantity="one">CLF Endorsement is not started</item>
+        <item quantity="other">VO Endorsement is not started</item>
+    </plurals>
+    <plurals name="vo">
+        <item quantity="one">CLF: </item>
+        <item quantity="other">VO: </item>
+    </plurals>
+
+
     <string name="total">गासै</string>
     <string name="participation_date_wealth_ranking">खालार</string>
     <string name="add_didi">आब’ सोफादेर</string>
@@ -84,7 +195,7 @@
     <string name="cancel_tola_text">दानगारनाय</string>
     <string name="get_location_text">लकेसन मोननो</string>
     <string name="location_unavailable">मेला लकेसन नङा</string>
-    <string name="seletc_village_screen_text">VO आरो गामि सायख’</string>
+    <!--    <string name="seletc_village_screen_text">VO आरो गामि सायख’</string>-->
     <string name="complete_didi_addition">आब’ सोफादेरनायखौ फोजोब</string>
     <string name="user_id_text">“ID/सिनायथि”</string>
     <string name="empty_tola_string">तला दाजाबदेरनाय जायाखै</string>
@@ -101,8 +212,8 @@
     <string name="transect_walk_sub_text_plural">%1$s तलास खालामनाय जाबाय</string>
     <string name="social_mapping_sub_text_plural">%1$s आब’मोनखौ सिनायथिनाय जाबाय</string>
     <string name="wealth_ranking_sub_text_plural">%1$s गोरिब आब’मोनखौ सिनायथिनाय जाबाय</string>
-    <string name="pat_sub_text_singular">%1$s जोबोद गोरिब आब’नि VO गनायथि थाखाय दैथायनाय जाबाय</string>
-    <string name="pat_sub_text_plural">%1$s जोबोद गोरिब आब’मोननि VO गनायथिनि थाखाय दैथायनाय जाबाय</string>
+    <!--    <string name="pat_sub_text_singular">%1$s जोबोद गोरिब आब’नि VO गनायथि थाखाय दैथायनाय जाबाय</string>-->
+    <!--    <string name="pat_sub_text_plural">%1$s जोबोद गोरिब आब’मोननि VO गनायथिनि थाखाय दैथायनाय जाबाय</string>-->
     <string name="vo_endorsement_sub_text_singular">%1$s जोबोद गोरिब आब’ गनायथि मोनबाय</string>
     <string name="vo_endorsement_sub_text_plural">%1$s जोबोद गोरिब आब’मोन गनायथि मोनबाय</string>
     <string name="empty_didis_string">रावबो आब’मोनखौ सोफादेरनाय जायाखै</string>
@@ -155,22 +266,22 @@
     <string name="confirmation_dialog_titile">नोंथाङा रोखा ना?</string>
     <string name="section_1_text">खोन्दो 1:</string>
     <string name="section_2_text">खोन्दो 2:</string>
-    <string name="vo_endorsement_screen_title">VO गनायथिनि थाखाय आब’मोननि फारिलाइ</string>
+    <!--    <string name="vo_endorsement_screen_title">VO गनायथिनि थाखाय आब’मोननि फारिलाइ</string>-->
     <string name="start_endorsement">गनायथि होनायखौ जागाय</string>
     <string name="pat_completed">PAT फोजोबनाय जाबाय</string>
     <string name="didi_not_available">मेला आब’ गैया</string>
     <string name="are_you_sure">नोंथाङा रोखा ना?</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis">नोंथाङा %1$s गोदान आब’मोननि थाखाय वेल्थ रेंकिंखौ गथायदों</string>
-    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">नोंथाङा आब’मोननि %1$s PAT फोजोबनायखौ VO गनायथिनि थाखाय दैथायदों</string>
-    <string name="send_all_for_vo_endorsement">VO गनायथिनि थाखाय गासिबो दैथाय</string>
+    <!--    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">नोंथाङा आब’मोननि %1$s PAT फोजोबनायखौ VO गनायथिनि थाखाय दैथायदों</string>-->
+    <!--    <string name="send_all_for_vo_endorsement">VO गनायथिनि थाखाय गासिबो दैथाय</string>-->
     <string name="pat_survey_completed_message">{VILLAGE_NAME} नि थाखाय PAT सार्भे फोजोबनाय जाबाय</string>
-    <string name="vo_endorsement_completed_message">{VILLAGE_NAME} नि थाखाय VO गनायथि फोजोबनाय जाबाय</string>
+    <!--    <string name="vo_endorsement_completed_message">{VILLAGE_NAME} नि थाखाय VO गनायथि फोजोबनाय जाबाय</string>-->
     <string name="form_c_photo_button_text">फर्म-C नि सावगारि ला</string>
     <string name="form_d_photo_button_text">फर्म-D नि सावगारि ला</string>
     <string name="pat_completed_box_title">PAT फोजोबनाय जाबाय</string>
     <string name="didi_not_available_text_singular">मेला आब’ गैया</string>
     <string name="didi_not_available_text_plural">आब’मोन मेला नङा</string>
-    <string name="send_for_vo_text">VO गनायथिनि थाखाय गासिबो दैथाय</string>
+    <!--    <string name="send_for_vo_text">VO गनायथिनि थाखाय गासिबो दैथाय</string>-->
     <string name="didi_pat_complete_text">आब’मोननि PAT फोजोबनाय जाबाय</string>
     <string name="didi_endorsed_text_plural">आब’मोनखौ गनायथि होनाय जाबाय</string>
     <string name="didi_endorsed_text_singula">आब’खौ गनायथि होनाय जाबाय</string>
@@ -197,8 +308,8 @@
     <string name="size">साइज</string>
     <string name="syncing">Syncing</string>
     <string name="continue_pat">सोलिफु PAT</string>
-    <string name="pat_completion_dialog_message_plural">नोंथाङा आब’मोननि {COUNT} PAT फोजोबनायखौ VO गनायथिनि थाखाय दैथायदों</string>
-    <string name="pat_completion_dialog_message_singular">नोंथाङा आब’नि {COUNT} PAT फोजोबनायखौ VO गनायथिनि थाखाय दैथायदों</string>
+    <!--    <string name="pat_completion_dialog_message_plural">नोंथाङा आब’मोननि {COUNT} PAT फोजोबनायखौ VO गनायथिनि थाखाय दैथायदों</string>-->
+    <!--    <string name="pat_completion_dialog_message_singular">नोंथाङा आब’नि {COUNT} PAT फोजोबनायखौ VO गनायथिनि थाखाय दैथायदों</string>-->
     <string name="vo_endorsement_completion_dialog_message_plural">नोंथाङा आब’मोननि गनायथि मोननाय {COUNT} नि थाखाय जोबथा गथायनायखौ मावगासिनो</string>
     <string name="vo_endorsement_completion_dialog_message_singular">नोंथाङा आब’नि गनायथि मोननाय {COUNT} नि थाखाय जोबथा गथायनायखौ मावगासिनो</string>
     <string name="form_picture_screen_title">फर्मनि इमेजफोरखौ सोफादेर</string>
@@ -208,15 +319,15 @@
     <string name="wealth_ranking_status_complete_text">वेल्थ रेंकिं फोजोबनाय जाबाय – गोरिब नङा</string>
     <string name="pat_in_progress_status_text">PAT सार्भेनि खामानि आवगायगासिनो</string>
     <string name="pat_completed_status_text">PAT सार्भेनि खामानि फोजोबनाय जाबाय</string>
-    <string name="vo_endorsement_status_text">VO गनायथि फोजोबनाय जाबाय</string>
-    <string name="no_didis_availble_for_vo_endorsement">VO गनायथिनि थाखाय मेला आब’मोन गैया</string>
+    <!--    <string name="vo_endorsement_status_text">VO गनायथि फोजोबनाय जाबाय</string>-->
+    <!--    <string name="no_didis_availble_for_vo_endorsement">VO गनायथिनि थाखाय मेला आब’मोन गैया</string>-->
     <string name="step_1">आगान 1</string>
     <string name="sync_status">BPC नायबिजिरनाय</string>
     <string name="step_2">आगान 2</string>
     <string name="step_3">आगान 3</string>
     <string name="step_4">आगान 4</string>
     <string name="step_5">आगान 5</string>
-    <string name="vo_endorsement">VO गनायथि</string>
+    <!--    <string name="vo_endorsement">VO गनायथि</string>-->
     <string name="close">बन्द खालाम</string>
     <string name="add_more">अधिक जोड़े</string>
     <string name="bpc_didi_screen_title">फोरमान खालामनो थाखाय दिदिस दं</string>
@@ -233,7 +344,7 @@
     <string name="summary_tolas_added_text_plural">मोहल्ला  ज़ोड़ा  गया</string>
     <string name="summary_didis_mobilised_text_plural">मोबिलाइज दीदी</string>
     <string name="summary_wealth_ranking_text_plural">धन रैंकिंग में जो दीदीयाँ  गरीब अंकित की गई</string>
-    <string name="summary_vo_endoresement_text_plural">दीदीयां जो VO अनुमोदन के लिए भेजे  गए</string>
+    <!--    <string name="summary_vo_endoresement_text_plural">दीदीयां जो VO अनुमोदन के लिए भेजे  गए</string>-->
     <string name="unmatched_text">मिलान नहीं हुआ</string>
     <string name="matched_text">मिलान पूर्ण</string>
     <string name="review_and_submit_button_text">समीक्षा करें और जमा करे</string>
@@ -241,9 +352,9 @@
     <string name="showing_text">दिखाया जा रहा है</string>
     <string name="result_text_singular">परिणाम</string>
     <string name="result_text_plural">परिणाम</string>
-    <string name="didis_endorsed_by_vo_plural">VO  द्वारा अनुमोदित दीदियाँ</string>
-    <string name="didi_endorsed_by_vo_singular">VO द्वारा अनुमोदित दीदी</string>
-    <string name="summary_vo_endoresement_text_singular">दीदी जो VO अनुमोदन के लिए भेजी   गयीं</string>
+    <!--    <string name="didis_endorsed_by_vo_plural">VO  द्वारा अनुमोदित दीदियाँ</string>-->
+    <!--    <string name="didi_endorsed_by_vo_singular">VO द्वारा अनुमोदित दीदी</string>-->
+    <!--    <string name="summary_vo_endoresement_text_singular">दीदी जो VO अनुमोदन के लिए भेजी   गयीं</string>-->
     <string name="summary_wealth_ranking_text_singular">सहभागी धन रैंकिंग में जो दीदी  गरीब अंकित  किए गए</string>
     <string name="summary_didis_mobilised_text_singular">संघटित  दीदी</string>
     <string name="summary_tolas_added_text_singular">मोहल्ला जोड़े  गए</string>
@@ -265,7 +376,7 @@
     <string name="logout_no_internet_error_message">इनटारनेट गैया, इनटारनेट फोनांजाबथाय खालाम</string>
     <string name="min_battery_text">(खमैबो 30% नांगौ)</string>
     <string name="do_not_close_app_message">अननानै app बन्द एबा फनखौ अफ खालामनाङाअननानै app एबा फनखौ बन्द खालामनाङा</string>
-    <string name="vo_endorsement_completed_village_banner_text">VO गनायथि फोजोबनाय जाबाय</string>
+    <!--    <string name="vo_endorsement_completed_village_banner_text">VO गनायथि फोजोबनाय जाबाय</string>-->
     <string name="bpc_verification_completed_village_banner_text">BPC सत्यापन पूर्ण हुआ</string>
     <string name="empty_tola_success_message">इस गाँव  में कोई मोहल्ला नहीं है</string>
     <string name="total_poor_didis">कुल गरीब  दीदीयाँ</string>
@@ -278,7 +389,7 @@
     <string name="take_photo_text">फट’ ला</string>
     <string name="retake_photo_text">फट’ लाफिन</string>
     <string name="previous_step_not_complete_messgae_text">आगोलनि आगान फोजोबनाय जायाखै</string>
-    <string name="vo_endorsement_inprogress_village_banner_text">VO गनायथिनि खामानिया आवगायगासिनो</string>
+    <!--    <string name="vo_endorsement_inprogress_village_banner_text">VO गनायथिनि खामानिया आवगायगासिनो</string>-->
     <string name="latest_status_text">“जोबथा मानदान्दा:”</string>
     <string name="ranking_text_rich">धोनि</string>
     <string name="ranking_text_medium">गेजेरारि</string>
@@ -289,8 +400,8 @@
     <string name="pat_completed_for_didi_plural">%1$s आब’मोननि थाखाय PAT फोजोबनाय जाबाय</string>
     <string name="pat_marked_not_available_singular">%1$s आब’ मेला नङा दिन्थिसिन होनाय जाबाय</string>
     <string name="pat_marked_not_available_plural">%1$s आब’मोन मेला नङा दिन्थिसिन होनाय जाबाय</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s जोबोद गोरिब आबमोननि VO गनायथिनि थाखाय दैथायनाय जाबाय</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s जोबोद गोरिब आबमोननि VO गनायथिनि थाखाय दैथायनाय जाबाय</string>
+    <!--    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s जोबोद गोरिब आबमोननि VO गनायथिनि थाखाय दैथायनाय जाबाय</string>-->
+    <!--    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s जोबोद गोरिब आबमोननि VO गनायथिनि थाखाय दैथायनाय जाबाय</string>-->
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s जोबोद गोरिब आब’नि BPM गनायथिनि थाखाय दैथायनाय जाबाय</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s जोबोद गोरिब आबमोननि BPM गनायथिनि थाखाय दैथायनाय जाबाय</string>
     <string name="link_form_c">लिंक फर्म-C</string>
@@ -299,7 +410,7 @@
     <string name="step_social_mapping">समाजारि मानसावगारि</string>
     <string name="step_participatory_wealth_ranking">बाहागो लानो गोनां सम्पद रेंकिं</string>
     <string name="step_pat_survey">PAT सार्भे</string>
-    <string name="step_vo_endorsement">VO गनायथि</string>
+    <!--    <string name="step_vo_endorsement">VO गनायथि</string>-->
     <string name="step_bpc_verification">BPC नायबिजिरनाय</string>
     <string name="profile_name">मुं</string>
     <string name="profile_email">इ-मेइल</string>
@@ -314,7 +425,7 @@
     <string name="match_percentage_should_be_more_than_70">70% निख्रुइ गोरोबनाय % बारा जानांगोन</string>
     <string name="delete_and_retake">खोमोर आरो लाफिन</string>
     <string name="if_more_than_5_pages_please_uload_last_page">5 बिलाइनिख्रुइ बाराब्ला, जोबथा बिलाइखौ आपलोड खालाम</string>
-    <string name="vo_endorsement_completed">VO गनायथि \n फोजोबनाय जाबाय</string>
+    <!--    <string name="vo_endorsement_completed">VO गनायथि \n फोजोबनाय जाबाय</string>-->
     <string name="no_didis_available_to_add_or_replace">सोदेरफानो एबा सोस्लायनो मेला आब’मोन गैया</string>
     <string name="online_sync_successful">अनलाइन Sync जाफुंसारबाय</string>
     <string name="sync_failed">Sync फेलें जाबाय</string>
@@ -327,8 +438,8 @@
     <string name="add_more_list_empty_string">सोदेरफानो एबा सोस्लायनो मेला आब’ गैया</string>
     <string name="pat_selected_status_text">PAT सायख’जाबय</string>
     <string name="pat_rejected_status_text">PAT दानगार जाबाय</string>
-    <string name="vo_selected_status_text">VO गनायथि मोनबाय</string>
-    <string name="vo_rejected_status_text">VO दानगार जाबाय</string>
+    <!--    <string name="vo_selected_status_text">VO गनायथि मोनबाय</string>-->
+    <!--    <string name="vo_rejected_status_text">VO दानगार जाबाय</string>-->
     <string name="pat_not_available_status_text">PAT बायब्रुस नङा</string>
     <string name="cannot_delete_tola_message_text">आबमोनहा गथायनाय हिसाबै बे तलाखौ दानगारनो हाया</string>
     <string name="max_5_pages_can_be_captured">बांसिनै 5 बिलाइ capture खालामनो हायो</string>
@@ -343,8 +454,8 @@
     <string name="wealth_ranking_summary_empty_text">{CATEGORY} महरै रावबो आब’खौ सिन होनाय जायाखै</string>
     <string name="pat_summary_not_available_empty_text">रावबो आबखौ मेला नङा होनना सिन होनाय जायाखै</string>
     <string name="pat_summary_completed_empty_text">रावबो आब’वा PAT आबुं खालामाखैमोन</string>
-    <string name="vo_summary_rejected_empty_text">VO नि दारै रावबो आब’वा दानगार जायाखै</string>
-    <string name="vo_summary_endorsed_empty_text">VO नि दारै रावबो आब’वा गनायथि मोनाखै</string>
+    <!--    <string name="vo_summary_rejected_empty_text">VO नि दारै रावबो आब’वा दानगार जायाखै</string>-->
+    <!--    <string name="vo_summary_endorsed_empty_text">VO नि दारै रावबो आब’वा गनायथि मोनाखै</string>-->
     <string name="social_mapping_complete_status_text">समाजारि मानसावगारि बानायनाय जाबाय</string>
     <string name="page_name_text">बिलाइ</string>
     <string name="storage_permission_dialog_prompt_message">संरैखा बिथोन नांगौ, अननानै बिथोन गनायथि हो</string>
@@ -361,7 +472,7 @@
     <string name="able_bodied_women_flag_text">नख \'राव देहा गोनां \n आयजोफोर दं नामा?</string>
     <string name="something_went_wrong">माबा गोरोन्थि जादों</string>
     <string name="score_comparison_section_1_text">खोन्दो 1</string>
-    <string name="village_is_not_vo_endorsed_right_now">गामिया दा VO गनायथि होजायाखै!</string>
+    <!--    <string name="village_is_not_vo_endorsed_right_now">गामिया दा VO गनायथि होजायाखै!</string>-->
     <string name="refresh_failed_please_try_again">रिफ्रेस खालामनाया फेलें जादों, अन्नानै फिन नाजा!</string>
     <string name="reference_of_forms">"प्रपत्रों का संदर्भ : "</string>
     <string name="link_of_a">फॉर्म ए के लिए लिंक</string>

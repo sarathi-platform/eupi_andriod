@@ -22,6 +22,8 @@ import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
@@ -34,6 +36,7 @@ import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
@@ -69,7 +72,6 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -129,12 +131,12 @@ class ExportImportViewModel @Inject constructor(
     }
 
     fun clearLocalDatabase(onPageChange: () -> Unit) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 val result = exportImportUseCase.clearLocalDBExportUseCase.invoke()
                 if (result) {
                     exportImportUseCase.clearLocalDBExportUseCase.setAllDataSyncStatus()
-                    withContext(Dispatchers.Main) {
+                    withContext(CoreDispatchers.mainDispatcher) {
                         onPageChange()
                     }
                 }
@@ -199,7 +201,7 @@ class ExportImportViewModel @Inject constructor(
     fun exportLocalImages() {
         BaselineLogger.d("ExportImportViewModel", "exportLocalImages ----")
         try {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(CoreDispatchers.ioDispatcher).launch {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 val imageZipUri = exportAllOldImages(
                     appContext = mAppContext,
@@ -223,7 +225,7 @@ class ExportImportViewModel @Inject constructor(
     fun exportOnlyLogFile(context: Context) {
         BaselineLogger.d("ExportImportViewModel", "exportOnlyLogFile: ----")
         try {
-            CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 val logFile = BSLogWriter.buildLogFile(appContext = mAppContext) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -254,7 +256,7 @@ class ExportImportViewModel @Inject constructor(
     fun compressEventData(title: String) {
         BaselineLogger.d("ExportImportViewModel", "compressEventData ----")
 
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 val compression = ZipFileCompression()
@@ -322,7 +324,7 @@ class ExportImportViewModel @Inject constructor(
     fun regenerateEvents(title: String) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
 
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 if (loggedInUserType.value == UPCM_USER) {
 
@@ -332,13 +334,13 @@ class ExportImportViewModel @Inject constructor(
                     settingRepository.regenerateAllEvent(coreSharedPrefs = coreSharedPrefs)
                 }
                 compressEventData(title)
-                withContext(Dispatchers.Main) {
+                withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
-                withContext(Dispatchers.Main) {
+                withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             }
@@ -347,155 +349,172 @@ class ExportImportViewModel @Inject constructor(
     }
 
     fun exportBaseLineQnA(context: Context) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                val eventsList = eventWriterHelperImpl.generateResponseEvent()
-                val payloadList = eventsList.map { it.request_payload }
-                val dtoList = ArrayList<SaveAnswerEventDto>()
-                payloadList.forEach { payload ->
-                    try {
-                        val dto = Gson().fromJson(payload, SaveAnswerEventDto::class.java)
-                        dtoList.add(dto)
-                    } catch (e: Exception) {
-                        BaselineLogger.e(
-                            "ExportImportViewModel",
-                            "Exception CSV SAVE ANSWER generate: ${e.message} ---------------",
-                            e
-                        )
-                    }
-                }
-                val formQuestionEvents = eventWriterHelperImpl.generateFormTypeEventsForCSV()
-                val payloadFormQuestionEventsList = formQuestionEvents.map { it.request_payload }
-                val dtoSaveFormList = ArrayList<SaveAnswerEventForFormQuestionDto>()
-                payloadFormQuestionEventsList.forEach { payload ->
-                    try {
-                        val dto =
-                            Gson().fromJson(payload, SaveAnswerEventForFormQuestionDto::class.java)
-                        dtoSaveFormList.add(dto)
-                    } catch (e: Exception) {
-                        BaselineLogger.e(
-                            "ExportImportViewModel",
-                            "Exception CSV SAVE ANSWER FORM generate: ${e.message} ---------------",
-                            e
-                        )
-                    }
-                }
+
+                val dtoList = getSaveAnswerEvents()
+                val dtoSaveFormList = generateDtoSaveFormList()
                 val sectionList = sectionEntityDao.getSectionsT(
                     prefBSRepo.getUniqueUserIdentifier(),
                     DEFAULT_LANGUAGE_ID
                 )
                 val surveeList =
                     surveyeeEntityDao.getAllDidiForQNA(prefBSRepo.getUniqueUserIdentifier())
-                val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
 
-                baseLineQnATableCSV.addAll(
-                    dtoList.toCSVSave(
-                        sectionList,
-                        surveeList,
-                        optionItemDao,
-                        questionEntityDao,
-                        prefBSRepo.getUniqueUserIdentifier()
-                    )
-                )
-                baseLineQnATableCSV.addAll(
-                    dtoSaveFormList.toCsv(
-                        sectionList,
-                        surveeList,
-                        optionItemDao,
-                        questionEntityDao,
-                        prefBSRepo.getUniqueUserIdentifier()
-                    )
-                )
-                /*BaseLine*/
-                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }
-                val baseLineQnATableCSVGroupBySectionId = baseLineListQnaCSV
-                    .groupBy { it.sectionId }
-                    .toList()
-                    .sortedBy { it.first }
-                    .flatMap { it.second.sortedBy { it.orderId } }
-                val baseLineMap = baseLineQnATableCSVGroupBySectionId.groupBy { it.subjectId }
-                val baseLineListQna = ArrayList<BaseLineQnATableCSV>()
-                baseLineMap.forEach {
-                    baseLineListQna.addAll(it.value)
-                }
-                /*Hamlet */
-                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2 }
-                val hamletQnATableCSVGroupBySectionId = hamletListQnaCSV
-                    .groupBy { it.sectionId }
-                    .toList()
-                    .sortedBy { it.first }
-                    .flatMap { it.second.sortedBy { it.orderId } }
-                val hamletMap = hamletQnATableCSVGroupBySectionId.groupBy { it.subjectId }
-                val hamletListQna = ArrayList<BaseLineQnATableCSV>()
-                hamletMap.forEach {
-                    hamletListQna.addAll(it.value)
-                }
+                val baseLineQnATableCSV =
+                    buildBaseLineQnATableCSV(dtoList, dtoSaveFormList, sectionList, surveeList)
 
-                val title = "${
-                    prefBSRepo.getPref(
-                        PREF_KEY_NAME,
-                        BLANK_STRING
-                    ) ?: BLANK_STRING
-                }-${prefBSRepo.getMobileNumber()}"
+                val baseLineListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 1)
+                val hamletListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 2)
 
-                val listPath: ArrayList<Uri>? = ArrayList()
-                if (!baseLineListQna.toCsvR().isNullOrEmpty()) {
-                    val baseLinePath = generateCsv(
-                        title = "Baseline - $title",
-                        baseLineListQna = baseLineListQna.toCsvR(),
-                        hamletListQna = null
-                    )
-                    baseLinePath?.let {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            listPath?.add(it)
-                        else listPath?.add(
-                            uriFromFile(
-                                applicationID = applicationId.value,
-                                context = context,
-                                file = it.toFile()
-                            )
-                        )
-                    }
-                }
-
-                if (!hamletListQna.toCsv().isNullOrEmpty()) {
-                    val hamletPath = generateCsv(
-                        title = "Hamlet - $title",
-                        baseLineListQna = null,
-                        hamletListQna = hamletListQna.toCsv()
-                    )
-                    hamletPath?.let {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            listPath?.add(it)
-                        else listPath?.add(
-                            uriFromFile(
-                                applicationID = applicationId.value,
-                                context = context,
-                                file = it.toFile()
-                            )
-                        )
-                    }
-                }
+                val title = generateTitle()
+                val listPath = generateCsvFiles(baseLineListQna, hamletListQna, title, context)
 
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
+
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                exception.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    showCustomToast(
-                        context,
-                        context.getString(R.string.no_data_available_at_the_moment)
-                    )
-                }
-                BaselineLogger.e(
-                    "ExportImportViewModel",
-                    "Exception CSV generate work: ${exception.message} ---------------",
-                    exception
-                )
-                onEvent(LoaderEvent.UpdateLoaderState(false))
+                handleError(exception, context)
             }
         }
+    }
+
+    private suspend fun getSaveAnswerEvents(): List<SaveAnswerEventDto> {
+        val eventsList = eventWriterHelperImpl.generateResponseEvent()
+        val payloadList = eventsList.map { it.request_payload }
+        val dtoList = ArrayList<SaveAnswerEventDto>()
+        payloadList.forEach { payload ->
+            try {
+                val dto = Gson().fromJson(payload, SaveAnswerEventDto::class.java)
+                dtoList.add(dto)
+            } catch (e: Exception) {
+                BaselineLogger.e(
+                    "ExportImportViewModel",
+                    "Exception CSV SAVE ANSWER generate: ${e.message} ---------------",
+                    e
+                )
+            }
+        }
+        return dtoList
+    }
+
+    private suspend fun generateDtoSaveFormList(): List<SaveAnswerEventForFormQuestionDto> {
+        val formQuestionEvents = eventWriterHelperImpl.generateFormTypeEventsForCSV()
+        val payloadFormQuestionEventsList = formQuestionEvents.map { it.request_payload }
+        val dtoSaveFormList = ArrayList<SaveAnswerEventForFormQuestionDto>()
+        payloadFormQuestionEventsList.forEach { payload ->
+            try {
+                val dto = Gson().fromJson(payload, SaveAnswerEventForFormQuestionDto::class.java)
+                dtoSaveFormList.add(dto)
+            } catch (e: Exception) {
+                BaselineLogger.e(
+                    "ExportImportViewModel",
+                    "Exception CSV SAVE ANSWER FORM generate: ${e.message} ---------------",
+                    e
+                )
+            }
+        }
+        return dtoSaveFormList
+    }
+
+    private suspend fun buildBaseLineQnATableCSV(
+        dtoList: List<SaveAnswerEventDto>,
+        dtoSaveFormList: List<SaveAnswerEventForFormQuestionDto>,
+        sectionList: List<SectionEntity>,
+        surveeList: List<SurveyeeEntity>
+    ): List<BaseLineQnATableCSV> {
+        val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
+        baseLineQnATableCSV.addAll(
+            dtoList.toCSVSave(
+                sectionList,
+                surveeList,
+                optionItemDao,
+                questionEntityDao,
+                prefBSRepo.getUniqueUserIdentifier()
+            )
+        )
+        baseLineQnATableCSV.addAll(
+            dtoSaveFormList.toCsv(
+                sectionList,
+                surveeList,
+                optionItemDao,
+                questionEntityDao,
+                prefBSRepo.getUniqueUserIdentifier()
+            )
+        )
+        return baseLineQnATableCSV
+    }
+
+    private fun groupAndSortBySurveyId(
+        baseLineQnATableCSV: List<BaseLineQnATableCSV>,
+        surveyId: Int
+    ): List<BaseLineQnATableCSV> {
+        val filteredList = baseLineQnATableCSV.filter { it.surveyId == surveyId }
+        val groupedAndSorted = filteredList
+            .groupBy { it.sectionId }
+            .toList()
+            .sortedBy { it.first }
+            .flatMap { it.second.sortedBy { it.orderId } }
+        return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }
+    }
+
+    private fun generateTitle(): String {
+        return "${
+            prefBSRepo.getPref(
+                PREF_KEY_NAME,
+                BLANK_STRING
+            ) ?: BLANK_STRING
+        }-${prefBSRepo.getMobileNumber()}"
+    }
+
+    private suspend fun generateCsvFiles(
+        baseLineListQna: List<BaseLineQnATableCSV>,
+        hamletListQna: List<BaseLineQnATableCSV>,
+        title: String,
+        context: Context
+    ): ArrayList<Uri>? {
+        val listPath: ArrayList<Uri>? = ArrayList()
+        if (!baseLineListQna.toCsvR().isNullOrEmpty()) {
+            val baseLinePath = generateCsv("Baseline - $title", baseLineListQna.toCsvR(), null)
+            baseLinePath?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) listPath?.add(it)
+                else listPath?.add(
+                    uriFromFile(
+                        applicationID = applicationId.value,
+                        context = context,
+                        file = it.toFile()
+                    )
+                )
+            }
+        }
+        if (!hamletListQna.toCsv().isNullOrEmpty()) {
+            val hamletPath = generateCsv("Hamlet - $title", null, hamletListQna.toCsv())
+            hamletPath?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) listPath?.add(it)
+                else listPath?.add(
+                    uriFromFile(
+                        applicationID = applicationId.value,
+                        context = context,
+                        file = it.toFile()
+                    )
+                )
+            }
+        }
+        return listPath
+    }
+
+    private suspend fun handleError(exception: Exception, context: Context) {
+        exception.printStackTrace()
+        withContext(CoreDispatchers.mainDispatcher) {
+            showCustomToast(context, context.getString(R.string.no_data_available_at_the_moment))
+        }
+        BaselineLogger.e(
+            "ExportImportViewModel",
+            "Exception CSV generate work: ${exception.message} ---------------",
+            exception
+        )
+        onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 
     suspend fun generateCsv(
@@ -546,7 +565,7 @@ class ExportImportViewModel @Inject constructor(
     }
 
     fun markAllActivityInProgress(context: Context) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher).launch {
 
             val userId = prefBSRepo.getUniqueUserIdentifier()
 
@@ -582,7 +601,7 @@ class ExportImportViewModel @Inject constructor(
                 )
             }
 
-            withContext(Dispatchers.Main) {
+            withContext(CoreDispatchers.mainDispatcher) {
                 showCustomToast(
                     context,
                     context.getString(R.string.all_activities_marked_as_in_progress)
