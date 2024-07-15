@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -43,7 +44,6 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
-import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 
 
 @Composable
@@ -56,7 +56,7 @@ fun SearchWithFilterViewComponent(
     onSearchValueChange: (String) -> Unit
 ) {
     var searchString by remember {
-        mutableStateOf(BLANK_STRING)
+        mutableStateOf("")
     }
 
     val focusManager = LocalFocusManager.current
@@ -129,39 +129,49 @@ fun SearchWithFilterViewComponent(
                         }
                     }
                 )
-                if (showFilter) {
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Card(modifier = Modifier
-                        .height(/*dimensionResource(id = R.dimen.filter_image_height)*/40.dp)
-                        .width(/*dimensionResource(id = R.dimen.filter_image_width)*/40.dp)
-                        .background(
-                            color = if (!filterSelected) white else blueDark,
-                            shape = RoundedCornerShape(
-                                roundedCornerRadiusDefault
-                            )
-                        )
-                        .border(
-                            1.dp,
-                            color = (if (!filterSelected) Color.LightGray else blueDark),
-                            shape = RoundedCornerShape(roundedCornerRadiusDefault)
-                        )
-                        .clip(RoundedCornerShape(roundedCornerRadiusDefault))
-                        .clickable {
-                            focusManager.clearFocus()
-                            onFilterSelected(filterSelected)
-                        }) {
-                        AppImageView(
-                            resource = if (!filterSelected) R.drawable.ic_search_filter_unselected
-                            else R.drawable.ic_search_filter_selected,
-                            modifier = Modifier
-                                .background(
-                                    if (!filterSelected) Color.White else blueDark
-                                )
-                                .padding(horizontal = 10.dp, vertical = 10.dp)
-                        )
-                    }
-                }
+                ShowFilterUI(showFilter, filterSelected, focusManager, onFilterSelected)
             }
+        }
+    }
+}
+
+@Composable
+private fun ShowFilterUI(
+    showFilter: Boolean,
+    filterSelected: Boolean,
+    focusManager: FocusManager,
+    onFilterSelected: (Boolean) -> Unit
+) {
+    if (showFilter) {
+        Spacer(modifier = Modifier.width(20.dp))
+        Card(modifier = Modifier
+            .height(/*dimensionResource(id = R.dimen.filter_image_height)*/40.dp)
+            .width(/*dimensionResource(id = R.dimen.filter_image_width)*/40.dp)
+            .background(
+                color = if (!filterSelected) white else blueDark,
+                shape = RoundedCornerShape(
+                    roundedCornerRadiusDefault
+                )
+            )
+            .border(
+                1.dp,
+                color = (if (!filterSelected) Color.LightGray else blueDark),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault)
+            )
+            .clip(RoundedCornerShape(roundedCornerRadiusDefault))
+            .clickable {
+                focusManager.clearFocus()
+                onFilterSelected(filterSelected)
+            }) {
+            AppImageView(
+                resource = if (!filterSelected) R.drawable.ic_search_filter_unselected
+                else R.drawable.ic_search_filter_selected,
+                modifier = Modifier
+                    .background(
+                        if (!filterSelected) Color.White else blueDark
+                    )
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
+            )
         }
     }
 }

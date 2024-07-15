@@ -1,5 +1,6 @@
 package com.sarathi.contentmodule.media
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -16,6 +17,7 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -52,13 +55,14 @@ import com.sarathi.dataloadingmangement.download_manager.FileType
 import java.io.File
 import java.util.Locale
 
+@SuppressLint("SourceLockedOrientationActivity")
 @Composable
 fun MediaScreen(
     fileType: String, key: String, navController: NavController = rememberNavController(),
     viewModel: MediaScreenViewModel, contentTitle: String,
 ) {
     val activity = getActivity()
-    var isToolbarVisible = remember { mutableStateOf(true) }
+    val isToolbarVisible = remember { mutableStateOf(true) }
     LaunchedEffect(key1 = true) {
         viewModel.initData(key)
     }
@@ -74,9 +78,6 @@ fun MediaScreen(
                     MediaToolbarComponent(
                         title = contentTitle,
                         modifier = Modifier,
-                        onDownloadClick = {
-
-                        },
                         onBackIconClick = {
                             if (activity != null) {
                                 activity.requestedOrientation =
@@ -88,59 +89,67 @@ fun MediaScreen(
                 }
             }
         ) { paddingValues ->
-            if (!viewModel.contentUrl.value.isNullOrEmpty()) {
-                if(fileType.uppercase(Locale.getDefault()) == FileType.TEXT.name){
-                    TextViewer(viewModel.contentUrl.value,
-                        Modifier
-                            .clickable { isToolbarVisible.value = !isToolbarVisible.value }
-                            .padding(
-                                vertical = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 15.dp,
-                                horizontal = 15.dp
-                            ))
-                }
-                val filePathUri = viewModel.getFilePathUri(viewModel.contentUrl.value)
-                filePathUri?.let {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 0.dp)
-                            .clickable { isToolbarVisible.value = !isToolbarVisible.value },
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        when (fileType.uppercase(Locale.getDefault())) {
-                            FileType.VIDEO.name,
-                            FileType.AUDIO.name -> {
-                                VideoPlayer(uri = filePathUri,
-                                    onPlayerViewClick = { isToolbarVisible.value = !isToolbarVisible.value }
-                                )
-                            }
-
-                            FileType.IMAGE.name -> {
-                                ZoomableImage(uri = filePathUri)
-                            }
-
-                            FileType.FILE.name -> {
-                                viewModel.getFilePath(viewModel.contentUrl.value)
-                                    ?.let { it1 -> PdfViewer(it1) }
-                            }
-                        }
-                    }
-                }
-            }
+            MediaTypeCard(viewModel, fileType, isToolbarVisible, paddingValues)
         }
 
     }
     BackHandler {
-        if (activity != null) {
-            if (activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            }
+        if (activity != null && activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         navController.popBackStack()
     }
 
+}
+
+@Composable
+private fun MediaTypeCard(
+    viewModel: MediaScreenViewModel,
+    fileType: String,
+    isToolbarVisible: MutableState<Boolean>,
+    paddingValues: PaddingValues
+) {
+    if (!viewModel.contentUrl.value.isNullOrEmpty()) {
+        if (fileType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
+            TextViewer(viewModel.contentUrl.value,
+                Modifier
+                    .clickable { isToolbarVisible.value = !isToolbarVisible.value }
+                    .padding(
+                        vertical = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 15.dp,
+                        horizontal = 15.dp
+                    ))
+        }
+        val filePathUri = viewModel.getFilePathUri(viewModel.contentUrl.value)
+        filePathUri?.let {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 0.dp)
+                    .clickable { isToolbarVisible.value = !isToolbarVisible.value },
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                when (fileType.uppercase(Locale.getDefault())) {
+                    FileType.VIDEO.name,
+                    FileType.AUDIO.name -> {
+                        VideoPlayer(uri = filePathUri,
+                            onPlayerViewClick = { isToolbarVisible.value = !isToolbarVisible.value }
+                        )
+                    }
+
+                    FileType.IMAGE.name -> {
+                        ZoomableImage(uri = filePathUri)
+                    }
+
+                    FileType.FILE.name -> {
+                        viewModel.getFilePath(viewModel.contentUrl.value)
+                            ?.let { it1 -> PdfViewer(it1) }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -193,7 +202,7 @@ fun ZoomableImage(uri: Uri) {
             .clip(RectangleShape) // Clip the box content
             .fillMaxSize() // Give the size you want...
             .pointerInput(Unit) {
-                detectTransformGestures { centroid, pan, zoom, rotation ->
+                detectTransformGestures { _, _, zoom, _ ->
                     scale.value *= zoom
                 }
             }

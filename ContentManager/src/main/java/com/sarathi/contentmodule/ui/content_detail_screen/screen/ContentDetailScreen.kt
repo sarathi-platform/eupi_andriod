@@ -68,6 +68,7 @@ import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.download_manager.FileType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -78,7 +79,6 @@ fun ContentDetailScreen(
     viewModel: ContentDetailViewModel = hiltViewModel(),
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyGridState = rememberLazyGridState(),
-    queLazyState: LazyListState = rememberLazyListState(),
     matId: Int,
     contentType: Int,
     onSettingIconClicked: () -> Unit,
@@ -92,23 +92,40 @@ fun ContentDetailScreen(
                 contentCategory = contentType
             )
         )
-
     }
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val innerFirstVisibleItemIndex by remember {
-        derivedStateOf {
-            innerState.firstVisibleItemIndex
-        }
-    }
+    val innerFirstVisibleItemIndex by remember { derivedStateOf { innerState.firstVisibleItemIndex } }
 
-    Scaffold(containerColor = white, topBar = {
-        TopAppBar(title = {
+    Scaffold(
+        containerColor = white,
+        topBar = { ContentTopBar(navController, viewModel, onSettingIconClicked) },
+        bottomBar = { ContentBottomBar(navController) }
+    ) { innerPadding ->
+        ContentBody(
+            viewModel,
+            outerState,
+            innerState,
+            innerFirstVisibleItemIndex,
+            scope,
+            context,
+            onNavigateToMediaScreen,
+            Modifier.padding(innerPadding)
+        )
+    }
+}
+
+@Composable
+fun ContentTopBar(
+    navController: NavController,
+    viewModel: ContentDetailViewModel,
+    onSettingIconClicked: () -> Unit
+) {
+    TopAppBar(
+        title = {
             Row(modifier = Modifier) {
-                IconButton(
-                    onClick = { navController.popBackStack() },
-                    modifier = Modifier
-                ) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         painter = painterResource(id = R.drawable.arrow_left),
                         contentDescription = "Back Button",
@@ -134,7 +151,8 @@ fun ContentDetailScreen(
                     )
                 }
             }
-        }, actions = {
+        },
+        actions = {
             IconButton(onClick = { onSettingIconClicked() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.more_icon),
@@ -143,151 +161,182 @@ fun ContentDetailScreen(
                     modifier = Modifier.padding(dimen_10_dp)
                 )
             }
-        }, backgroundColor = Color.White, elevation = dimen_10_dp
-        )
-    }, bottomBar = {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            ButtonPositive(
-                buttonTitle = stringResource(R.string.go_back), isActive = true, isLeftArrow = true
+        },
+        backgroundColor = Color.White,
+        elevation = dimen_10_dp
+    )
+}
 
-            ) {
-                navController.popBackStack()
-            }
+@Composable
+fun ContentBottomBar(navController: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
+        ButtonPositive(
+            buttonTitle = stringResource(R.string.go_back),
+            isActive = true,
+            isLeftArrow = true
+        ) {
+            navController.popBackStack()
         }
-    }) {
+    }
+}
+
+@Composable
+fun ContentBody(
+    viewModel: ContentDetailViewModel,
+    outerState: LazyListState,
+    innerState: LazyGridState,
+    innerFirstVisibleItemIndex: Int,
+    scope: CoroutineScope,
+    context: Context,
+    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(top = 75.dp)
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 75.dp)
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
         ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+            SearchWithFilterViewComponent(
+                placeholderString = stringResource(id = R.string.search),
+                filterSelected = viewModel.filterSelected.value,
+                modifier = Modifier.padding(horizontal = dimen_10_dp),
+                showFilter = true,
+                onFilterSelected = {
+                    if (viewModel.filterContentList.value.isNotEmpty()) {
+                        viewModel.filterSelected.value = !it
+                    }
+                },
+                onSearchValueChange = { queryTerm ->
+                    viewModel.onEvent(
+                        SearchEvent.PerformSearch(
+                            queryTerm,
+                            viewModel.filterSelected.value,
+                            ""
+                        )
+                    )
+                }
+            )
+        }
+
+        if (viewModel.filterContentList.value.isNotEmpty()) {
+            ContentList(
+                viewModel,
+                outerState,
+                innerState,
+                innerFirstVisibleItemIndex,
+                scope,
+                context,
+                onNavigateToMediaScreen
+            )
+        }
+    }
+}
+
+@Composable
+fun ContentList(
+    viewModel: ContentDetailViewModel,
+    outerState: LazyListState,
+    innerState: LazyGridState,
+    innerFirstVisibleItemIndex: Int,
+    scope: CoroutineScope,
+    context: Context,
+    onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit
+) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .padding(top = dimen_10_dp)
+            .scrollable(
+                state = rememberScrollableState {
+                    scope.launch {
+                        contentScrollState(it, outerState, innerState, innerFirstVisibleItemIndex)
+                    }
+                    it
+                },
+                Orientation.Vertical,
+            )
+    ) {
+        if (viewModel.filterSelected.value) {
+            LazyColumn(
+                state = outerState,
+                modifier = Modifier.padding(bottom = 50.dp)
             ) {
-                SearchWithFilterViewComponent(
-                    placeholderString = stringResource(id = R.string.search),
-                    filterSelected = viewModel.filterSelected.value,
-                    modifier = Modifier.padding(horizontal = dimen_10_dp),
-                    showFilter = true,
-                    onFilterSelected = {
-                        if (viewModel.filterContentList.value.isNotEmpty()) {
-                            viewModel.filterSelected.value = !it
-                        }
-                    },
-                    onSearchValueChange = { queryTerm ->
-                        viewModel.onEvent(
-                            SearchEvent.PerformSearch(
-                                queryTerm,
-                                viewModel.filterSelected.value,
-                                ""
+                itemsIndexed(items = viewModel.filterContentMap.keys.toList()) { index, filterItem ->
+                    Text(
+                        text = filterItem.capitalizeFirstLetter(),
+                        style = mediumTextStyle,
+                        color = blueDark,
+                        modifier = Modifier.padding(
+                            start = dimen_18_dp, bottom = dimen_5_dp,
+                        )
+                    )
+                    LazyVerticalGrid(
+                        state = innerState,
+                        modifier = Modifier
+                            .heightIn(min = 0.dp, max = maxHeight)
+                            .padding(bottom = dimen_5_dp),
+                        columns = GridCells.Fixed(4),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        itemsIndexed(
+                            items = viewModel.filterContentMap[filterItem]?.toList() ?: listOf()
+                        ) { _, item ->
+                            ContentRowView(
+                                item,
+                                viewModel,
+                                onNavigateToMediaScreen,
+                                context
                             )
-                        )
-                    })
-            }
-
-            if (viewModel.filterContentList.value.isNotEmpty()) {
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .padding(top = dimen_10_dp)
-                        .scrollable(
-                            state = rememberScrollableState {
-                                scope.launch {
-                                    val toDown = it <= 0
-                                    if (toDown) {
-                                        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                            innerState.scrollBy(-it)
-                                        } else {
-                                            outerState.scrollBy(-it)
-                                        }
-                                    } else {
-                                        if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
-                                            outerState.scrollBy(-it)
-                                        } else {
-                                            innerState.scrollBy(-it)
-                                        }
-                                    }
-                                }
-                                it
-                            },
-                            Orientation.Vertical,
-                        )
-                ) {
-                    if (viewModel.filterSelected.value) {
-                        LazyColumn(
-                            state = outerState,
-                            modifier = Modifier.padding(bottom = 50.dp)
-                        ) {
-                            itemsIndexed(items = viewModel.filterContentMap.keys.toList()) { index, fiterItem ->
-                                Text(
-                                    text = fiterItem.capitalizeFirstLetter(),
-                                    style = mediumTextStyle,
-                                    color = blueDark,
-                                    modifier = Modifier.padding(
-                                        start = dimen_18_dp, bottom = dimen_5_dp,
-                                    )
-                                )
-                                LazyVerticalGrid(
-                                    state = innerState,
-                                    modifier = Modifier
-                                        .heightIn(
-                                            min = 0.dp,
-                                            max = maxHeight
-                                        )
-                                        .padding(bottom = dimen_5_dp),
-                                    columns = GridCells.Fixed(4),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    itemsIndexed(
-                                        items = viewModel.filterContentMap.get(fiterItem)?.toList()
-                                            ?: listOf()
-                                    ) { _, item ->
-                                        ContentRowView(
-                                            item,
-                                            viewModel,
-                                            onNavigateToMediaScreen,
-                                            context
-                                        )
-                                    }
-                                }
-                                if (viewModel.filterContentMap.keys.size != index + 1) {
-                                    Divider(
-                                        thickness = dimen_1_dp,
-                                        color = dateRangeFieldColor
-                                    )
-                                }
-
-                            }
-                        }
-                    } else {
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(4),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            itemsIndexed(
-                                items = viewModel.filterContentList.value
-                            ) { index, item ->
-                                ContentRowView(
-                                    item,
-                                    viewModel,
-                                    onNavigateToMediaScreen,
-                                    context
-                                )
-                            }
                         }
                     }
-
+                    if (viewModel.filterContentMap.keys.size != index + 1) {
+                        Divider(thickness = dimen_1_dp, color = dateRangeFieldColor)
+                    }
+                }
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                itemsIndexed(items = viewModel.filterContentList.value) { _, item ->
+                    ContentRowView(item, viewModel, onNavigateToMediaScreen, context)
                 }
             }
         }
     }
-
-
 }
+
+private suspend fun contentScrollState(
+    it: Float,
+    outerState: LazyListState,
+    innerState: LazyGridState,
+    innerFirstVisibleItemIndex: Int
+) {
+    val toDown = it <= 0
+    if (toDown) {
+        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+            innerState.scrollBy(-it)
+        } else {
+            outerState.scrollBy(-it)
+        }
+    } else {
+        if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
+            outerState.scrollBy(-it)
+        } else {
+            innerState.scrollBy(-it)
+        }
+    }
+}
+
 
 @Composable
 private fun ContentRowView(
@@ -298,7 +347,6 @@ private fun ContentRowView(
 ) {
     BasicContentComponent(contentType = item.contentType,
         contentTitle = item.contentName,
-        contentValue = item.contentValue,
         onClick = {
             if (viewModel.isFilePathExists(item.contentValue) || item.contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
                 onNavigateToMediaScreen(

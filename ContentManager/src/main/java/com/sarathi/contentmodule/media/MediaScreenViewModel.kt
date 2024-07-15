@@ -37,6 +37,7 @@ class MediaScreenViewModel @Inject constructor(
     }
 
     override fun <T> onEvent(event: T) {
+        // Use to create and update event on screen
     }
 
 }

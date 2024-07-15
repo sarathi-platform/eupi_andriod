@@ -27,8 +27,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.black1
 import com.nudge.core.ui.theme.blueDark
@@ -40,16 +42,12 @@ import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
-import com.sarathi.contentmodule.utils.ContentShape
 import com.sarathi.dataloadingmangement.download_manager.FileType
 
 
 @Composable
 fun BasicContentComponent(
     contentType: String = BLANK_STRING,
-    contentUrl: String = BLANK_STRING,
-    contentValue: String = BLANK_STRING,
-    contentShape: ContentShape = ContentShape.CIRCLE,
     isLimitContentData: Boolean = false,
     totalContent: Int = 0,
     contentTitle: String = BLANK_STRING,
@@ -113,7 +111,7 @@ private fun ContentView(
 
 @Composable
 fun ContentData(contentType: String) {
-    when (contentType.toUpperCase()) {
+    when (contentType.toUpperCase(Locale.current)) {
         FileType.IMAGE.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
             Image(

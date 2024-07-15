@@ -30,8 +30,7 @@ import com.sarathi.contentmodule.media.getActivity
 fun MediaToolbarComponent(
     title: String,
     modifier: Modifier = Modifier,
-    onBackIconClick: () -> Unit,
-    onDownloadClick: () -> Unit
+    onBackIconClick: () -> Unit
 ) {
     val activity = getActivity()
     val configuration = LocalConfiguration.current
@@ -84,13 +83,6 @@ fun MediaToolbarComponent(
                     contentDescription = "Full Screen"
                 )
             }
-
-//            IconButton(
-//                onClick = { onDownloadClick() },
-//                modifier = Modifier
-//            ) {
-//                Icon(painterResource(id = R.drawable.baseline_download_for_offline_24), contentDescription = "Download Button")
-//            }
         }
     }
 }
@@ -101,8 +93,5 @@ fun MediaToolbarComponent(
 fun ToolbarComponentPreview() {
     MediaToolbarComponent(title = "Setting", modifier = Modifier,
         onBackIconClick = { /* Handle back icon click */ },
-        onDownloadClick = {
-            // Handle download
-        }
     )
 }

@@ -41,7 +41,6 @@ fun ButtonPositive(
     isArrowRequired: Boolean = true,
     isLeftArrow: Boolean = false,
     isActive: Boolean = false,
-    textColor: Color = Color.White,
     iconTintColor: Color = Color.White,
     onClick: () -> Unit
 ) {
@@ -79,25 +78,42 @@ fun ButtonPositive(
                         .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
                 )
             }
-            Text(
-                text = buttonTitle,
-                color = if (isActive) white else greyBorder,
-                style = /*buttonTextStyle*/TextStyle(
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
-                ),
-                textAlign = TextAlign.Center
+            TextViewWithIcon(
+                buttonTitle = buttonTitle,
+                isActive = isActive,
+                isArrowRequired = isArrowRequired,
+                isLeftArrow = isLeftArrow,
+                iconTintColor = iconTintColor
             )
-            if (isArrowRequired && !isLeftArrow) {
-                Icon(
-                    Icons.Default.ArrowForward,
-                    contentDescription = "Positive Button",
-                    tint = if (isActive) iconTintColor else greyBorder,
-                    modifier = Modifier
-                        .absolutePadding(top = 2.dp, left = 2.dp)
-                )
-            }
         }
+    }
+}
+
+@Composable
+private fun TextViewWithIcon(
+    buttonTitle: String,
+    isActive: Boolean,
+    isArrowRequired: Boolean,
+    isLeftArrow: Boolean,
+    iconTintColor: Color
+) {
+    Text(
+        text = buttonTitle,
+        color = if (isActive) white else greyBorder,
+        style = TextStyle(
+            fontFamily = NotoSans,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp
+        ),
+        textAlign = TextAlign.Center
+    )
+    if (isArrowRequired && !isLeftArrow) {
+        Icon(
+            Icons.Default.ArrowForward,
+            contentDescription = "Positive Button",
+            tint = if (isActive) iconTintColor else greyBorder,
+            modifier = Modifier
+                .absolutePadding(top = 2.dp, left = 2.dp)
+        )
     }
 }

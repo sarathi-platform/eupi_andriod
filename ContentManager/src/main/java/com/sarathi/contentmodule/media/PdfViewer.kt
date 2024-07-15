@@ -5,7 +5,6 @@ import android.os.Environment
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
 import com.nudge.core.BLANK_STRING
@@ -50,8 +49,7 @@ import java.io.File
 fun PdfViewer(
     modifier: Modifier = Modifier,
     navController: NavController,
-    filePath: String,
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp)
+    filePath: String
 ) {
 
     val context = LocalContext.current
@@ -121,16 +119,16 @@ fun PdfViewer(
         ) {
 
             AndroidView(
-                factory = { ctx ->
+                factory = { _ ->
                     pdfView.fromUri(nonUpdatedUri)
                         .enableDoubletap(true)
                         .enableSwipe(true)
                         .defaultPage(0)
                         .enableAnnotationRendering(false)
-                        .onPageChange { page, _ ->
+                        .onPageChange { _, _ ->
                             // Handle page change if needed
                         }
-                        .onLoad { totalPages ->
+                        .onLoad { _ ->
                             // Handle load event if needed
                         }
                         .load()
@@ -158,9 +156,8 @@ fun PdfViewer(
                 .clip(RectangleShape) // Clip the box content
                 .fillMaxSize() // Give the size you want...
                 .pointerInput(Unit) {
-                    detectTransformGestures { centroid, pan, zoom, rotation ->
+                    detectTransformGestures { _, _, zoom, _ ->
                         scale.value *= zoom
-//                    rotationState.value += rotation
                     }
                 }
                 .then(modifier)
@@ -175,7 +172,7 @@ fun PdfViewer(
                         rotationZ = rotationState.value
                     ),
                 contentDescription = null,
-                painter = rememberImagePainter(request)
+                painter = rememberAsyncImagePainter(request)
             )
         }
     }

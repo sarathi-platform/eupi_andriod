@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.CoreDispatchers
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.ui.viewmodel.BaseViewModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -36,7 +37,7 @@ class ContentDetailViewModel @Inject constructor(
             }
 
             is SearchEvent.PerformSearch -> {
-                performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
+                performSearchQuery(event.searchTerm, event.isFilterApplied)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -54,14 +55,14 @@ class ContentDetailViewModel @Inject constructor(
             _filterContentList.value = fetchContentUseCase.getContentData(matId, contentCategory)
             filterContentMap = contentList.value.groupBy { it.contentType }
 
-            withContext(Dispatchers.Main) {
+            withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    fun performSearchQuery(
-        queryTerm: String, isFilterApplied: Boolean, fromScreen: String
+    private fun performSearchQuery(
+        queryTerm: String, isFilterApplied: Boolean
     ) {
         val filteredList = ArrayList<Content>()
         if (queryTerm.isNotEmpty()) {
