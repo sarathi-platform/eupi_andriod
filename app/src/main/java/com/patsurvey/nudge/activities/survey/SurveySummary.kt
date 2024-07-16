@@ -120,6 +120,7 @@ fun SurveySummary(
             }
         }
 
+        surveySummaryViewModel.fetchStepStatus(stepId)
 
     }
     BackHandler {
@@ -130,7 +131,7 @@ fun SurveySummary(
         } else if (showDialog.value) {
             showDialog.value = !showDialog.value
         } else {
-            if (isStepComplete) {
+            if (surveySummaryViewModel.isStepCompleted.value) {
                 navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                     popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
@@ -671,7 +672,7 @@ fun SurveySummary(
         }
 
         if(surveySummaryViewModel.repository.prefRepo.isUserBPC()){
-            if (!isStepComplete || showDidiListForStatus.first) {
+            if (!surveySummaryViewModel.isStepCompleted.value || showDidiListForStatus.first) {
                 BottomButtonBox(
                     modifier = Modifier
                         .constrainAs(bottomActionBox) {
@@ -698,7 +699,7 @@ fun SurveySummary(
                 )
             }
         }else{
-            if (!isStepComplete || showDidiListForStatus.first) {
+            if (!surveySummaryViewModel.isStepCompleted.value || showDidiListForStatus.first) {
                 BottomButtonBox(
                     modifier = Modifier
                         .constrainAs(bottomActionBox) {
