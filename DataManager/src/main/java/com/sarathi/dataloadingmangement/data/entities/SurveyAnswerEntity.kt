@@ -131,7 +131,7 @@ data class SurveyAnswerEntity(
                 referenceId = questionAnswerResponse.localReferenceId,
                 questionType = questionAnswerResponse.question?.questionType ?: BLANK_STRING,
                 taskId = questionAnswerResponse.taskId,
-                answerValue = "",
+                answerValue = BLANK_STRING,
                 questionSummary = questionSummary,
                 optionItems = optionsUiModel,
                 subjectId = questionAnswerResponse.subjectId,

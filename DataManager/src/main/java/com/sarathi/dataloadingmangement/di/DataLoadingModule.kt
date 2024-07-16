@@ -633,7 +633,8 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         dataLoadingApiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
-        grantConfigDao: GrantConfigDao
+        grantConfigDao: GrantConfigDao,
+        taskDao: TaskDao,
     ): ISurveySaveNetworkRepository {
         return SurveySaveNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
@@ -642,8 +643,8 @@ class DataLoadingModule {
             optionItemDao = optionItemDao,
             dataLoadingApiService = dataLoadingApiService,
             surveyAnswersDao = surveyAnswersDao,
-            grantConfigDao = grantConfigDao
-
+            grantConfigDao = grantConfigDao,
+            taskDao = taskDao
         )
     }
 
