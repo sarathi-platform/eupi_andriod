@@ -128,7 +128,11 @@ fun SettingBSScreen(
             },
             onParticularFormClick = { formIndex ->
                 if (viewModel.userType == UPCM_USER) {
-                    if ((viewModel.formEAvailable.value.first == formIndex && viewModel.formEAvailable.value.second) && viewModel.activityFormGenerateList.value.isNotEmpty()) {
+                    if (isFromEAvailable(
+                            fomIndex = formIndex,
+                            pairFromEList = viewModel.formEAvailable.value
+                        ) && viewModel.activityFormGenerateList.value.isNotEmpty()
+                    ) {
                         navigateToDisbursmentSummaryScreen(
                             navController = navController,
                             missionId = viewModel.activityFormGenerateList.value[formIndex].missionId,
@@ -183,5 +187,11 @@ fun SettingBSScreen(
             }
         )
     }
+}
+
+private fun isFromEAvailable(fomIndex: Int, pairFromEList: List<Pair<Int, Boolean>>): Boolean {
+    val pairData = pairFromEList.filter { it.first == fomIndex && it.second }
+    return pairData.isNotEmpty()
+
 }
 
