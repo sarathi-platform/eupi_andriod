@@ -19,7 +19,11 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
     IContentDownloader {
     override suspend fun getContentDataFromDb(): List<Content> = contentDao.getContentData()
     override suspend fun getSpecificContentDataFromDb(contentKeys: List<String>): List<Content> {
-        return contentDao.getContentData(contentKeys, coreSharedPrefs.getUniqueUserIdentifier())
+        return contentDao.getContentData(
+            contentKeys,
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            coreSharedPrefs.getAppLanguage()
+        )
     }
 
     override suspend fun getContentValue(contentKey: String): String {
@@ -37,12 +41,17 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
         return contentDao.getLimitedData(
             limit,
             contentKeys,
-            coreSharedPrefs.getUniqueUserIdentifier()
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            coreSharedPrefs.getAppLanguage()
         )
     }
 
     override suspend fun getContentCount(contentKeys: List<String>): Int {
-        return contentDao.getContentCount(contentKeys, coreSharedPrefs.getUniqueUserIdentifier())
+        return contentDao.getContentCount(
+            contentKeys,
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            coreSharedPrefs.getAppLanguage()
+        )
     }
 
     override fun getContentKeyFromContentConfig(
