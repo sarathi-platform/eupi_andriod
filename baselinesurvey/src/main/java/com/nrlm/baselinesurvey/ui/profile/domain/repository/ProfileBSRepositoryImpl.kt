@@ -17,11 +17,12 @@ class ProfileBSRepositoryImpl(private val prefBSRepo: PrefBSRepo):ProfileBSRepos
     }
 
     override fun getUserMobileNumber(): String {
-        return prefBSRepo.getPref(PREF_KEY_IDENTITY_NUMBER, BLANK_STRING)?: BLANK_STRING
+        return prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)?: BLANK_STRING
 
     }
 
     override fun getUserIdentityNumber(): String {
-        return prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)?: BLANK_STRING
+        return prefBSRepo.getPref(PREF_KEY_IDENTITY_NUMBER, BLANK_STRING)?: BLANK_STRING
     }
+
 }
