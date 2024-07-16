@@ -103,7 +103,7 @@ class SettingBSViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
-    val formEAvailable = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
+    val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
 
 
@@ -653,11 +653,11 @@ class SettingBSViewModel @Inject constructor(
                     ).isNotEmpty()
                     pairFormList.add(Pair(index, isFromEAvailable))
                 }
-                formEAvailable.value = pairFormList
+                formEAvailableList.value = pairFormList
             }
 
         } else {
-            formEAvailable.value = emptyList()
+            formEAvailableList.value = emptyList()
         }
     }
 }

@@ -130,7 +130,7 @@ fun SettingBSScreen(
                 if (viewModel.userType == UPCM_USER) {
                     if (isFromEAvailable(
                             fomIndex = formIndex,
-                            pairFromEList = viewModel.formEAvailable.value
+                            pairFromEList = viewModel.formEAvailableList.value
                         ) && viewModel.activityFormGenerateList.value.isNotEmpty()
                     ) {
                         navigateToDisbursmentSummaryScreen(
