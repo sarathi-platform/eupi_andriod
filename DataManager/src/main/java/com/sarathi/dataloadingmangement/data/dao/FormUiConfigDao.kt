@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.sarathi.dataloadingmangement.FORM_E
 import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 
 
@@ -17,7 +18,7 @@ interface FormUiConfigDao {
         uniqueUserIdentifier: String,
         activityId: Int,
         missionId: Int,
-        formType: String = "form"
+        formType: String = FORM_E
     ): List<FormUiConfigEntity>
 
     @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier and activityId=:activityId and missionId=:missionId and componentType=:formType")
@@ -25,7 +26,7 @@ interface FormUiConfigDao {
         uniqueUserIdentifier: String,
         activityId: Int,
         missionId: Int,
-        formType: String = "form"
+        formType: String = FORM_E
     )
 
     @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier ")

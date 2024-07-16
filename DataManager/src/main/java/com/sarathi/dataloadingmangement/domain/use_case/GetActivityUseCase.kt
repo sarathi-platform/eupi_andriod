@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.FORM_E
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
@@ -33,7 +34,7 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
     }
 
     suspend fun getActiveForm(
-        formType: String = "form"
+        formType: String = FORM_E
     ): List<ActivityFormUIModel> {
         return activityRepositoryImpl.getActiveForm(formType = formType)
     }
