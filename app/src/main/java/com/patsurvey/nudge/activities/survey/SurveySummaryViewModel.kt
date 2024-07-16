@@ -40,7 +40,6 @@ import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -92,6 +91,7 @@ class SurveySummaryViewModel @Inject constructor(
     val inclusiveQuesCount = mutableStateOf(0)
     val isVOEndorsementComplete = mutableStateOf(false)
     val villageEntity = mutableStateOf<VillageEntity?>(null)
+    val isStepCompleted = mutableStateOf(false)
 
     init {
         if (repository.prefRepo.isUserBPC()) {
@@ -1073,6 +1073,16 @@ class SurveySummaryViewModel @Inject constructor(
 
             repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
         }
+    }
+
+    fun fetchStepStatus(stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+
+            isStepCompleted.value = repository.isStepCompleted(stepId)
+
+
+        }
+
     }
 
 

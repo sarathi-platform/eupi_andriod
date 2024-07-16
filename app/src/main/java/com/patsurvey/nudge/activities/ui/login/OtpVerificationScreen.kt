@@ -242,7 +242,7 @@ fun OtpVerificationScreen(
                     viewModel.validateOtp(context) { userType,success, message ->
 
                         if (success){
-                            if(userType.equals(UPCM_USER)){
+                            if (userType == UPCM_USER) {
                                 if (navController.graph.route?.equals(
                                         NudgeNavigationGraph.HOME,
                                         true

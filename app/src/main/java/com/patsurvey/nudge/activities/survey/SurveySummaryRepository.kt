@@ -355,6 +355,10 @@ class SurveySummaryRepository @Inject constructor(
         }
     }
 
-
-
+    suspend fun isStepCompleted(stepId: Int): Boolean {
+        return stepsListDao.isStepComplete(
+            id = stepId,
+            villageId = prefRepo.getSelectedVillage().id
+        ) == StepStatus.COMPLETED.ordinal
+    }
 }
