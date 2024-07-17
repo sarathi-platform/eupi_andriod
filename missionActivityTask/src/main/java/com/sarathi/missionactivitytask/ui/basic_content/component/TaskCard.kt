@@ -204,9 +204,9 @@ fun TaskCard(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
+                SubContainerView(subtitle6, isNumberFormattingRequired = false)
                 SubContainerView(subtitle3)
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
-                SubContainerView(subtitle6, isNumberFormattingRequired = false)
                 SubContainerView(subtitle5, isNumberFormattingRequired = true)
             }
 

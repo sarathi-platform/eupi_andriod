@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -30,6 +31,7 @@ import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.red
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -52,6 +54,7 @@ fun DisbursementSummaryScreen(
     onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int, grantId: Int, grantType: String, sanctionedAmount: Int, totalSubmittedAmount: Int) -> Unit,
     onNavigateSuccessScreen: (mag: String) -> Unit
 ) {
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
         viewModel.setPreviousScreenData(
@@ -172,6 +175,11 @@ fun DisbursementSummaryScreen(
                                                 isFormgenerated = surveyData.isFormGenerated,
                                                 isActivityCompleted = viewModel.isActivityCompleted.value,
                                                 onEditSurvey = {
+                                                    CoreLogger.d(
+                                                        context,
+                                                        "DisbursementSummaryScreen",
+                                                        "Disbursement_Edit: ${surveyData.referenceId}"
+                                                    )
                                                     onNavigateSurveyScreen(
                                                         surveyData.referenceId,
                                                         activityConfigId,
@@ -212,6 +220,11 @@ fun DisbursementSummaryScreen(
                                                     referenceId = it
                                                 ) { deleteCount ->
                                                     viewModel.onEvent(InitDataEvent.InitDataState)
+                                                    CoreLogger.d(
+                                                        context,
+                                                        "DisbursementSummaryScreen",
+                                                        "Disbursement_Delete: ${viewModel.showDialog.value.second}"
+                                                    )
                                                 }
                                             }
                                             viewModel.showDialog.value = Pair(false, BLANK_STRING)
