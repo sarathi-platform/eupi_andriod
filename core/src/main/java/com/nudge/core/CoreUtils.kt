@@ -368,6 +368,11 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             out = FileOutputStream(path)
             val success = scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, out)
             return if (success == true) {
+                CoreLogger.d(
+                    context = activity,
+                    "compressImage",
+                    msg = "Image Compress Success $filename"
+                )
                 path
             } else BLANK_STRING
         } catch (e: FileNotFoundException) {
