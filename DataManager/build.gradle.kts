@@ -90,6 +90,5 @@ dependencies {
     implementation("androidx.compose.material:material:1.5.3")
     implementation("androidx.compose.material3:material3:1.1.2")
 
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
 }
