@@ -127,5 +127,21 @@ interface SubjectAttributeDao {
         subjectIds: List<Int>,
     ): List<SmallGroupAttendanceHistoryModel>
 
+    @Query("UPDATE subject_attribute_table SET subjectType = :subjectType,  missionId = :missionId, activityId = :activityId WHERE taskId = :taskId AND userId = :userId AND subjectId = :subjectId")
+     fun updateSubjectAttribute(
+        userId: String,
+        taskId: Int,
+        subjectId: Int,
+        subjectType: String,
+        missionId: Int,
+        activityId: Int,
+    ): Int
+
+    @Query("SELECT id FROM subject_attribute_table WHERE userId = :userId AND taskId = :taskId AND subjectId = :subjectId")
+    fun getReferenceId(
+        userId: String,
+        taskId: Int,
+        subjectId: Int
+    ): Int
 
 }
