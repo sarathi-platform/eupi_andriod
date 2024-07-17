@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -48,22 +49,17 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.weight_20_percent
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
+import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @Composable
 fun FormTypeQuestionComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
-//    question: QuestionEntity?,
-//    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     maxCustomHeight: Dp,
-//    contests: List<ContentEntity?>? = listOf(),
     itemCount: Int = 0,
     summaryValue: String = BLANK_STRING,
-    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int) -> Unit,
-//    onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
     onViewSummaryClicked: (questionId: Int) -> Unit
 ) {
@@ -122,13 +118,13 @@ fun FormTypeQuestionComponent(
                                         text = "${questionIndex + 1}. ", style = defaultTextStyle,
                                         color = textColorDark
                                     )
-//                                    HtmlText(
-//                                        text = "${question?.questionDisplay}",
-//                                        style = defaultTextStyle,
-//                                        color = textColorDark,
-//                                        overflow = TextOverflow.Ellipsis,
-//                                        softWrap = true
-//                                    )
+                                    HtmlText(
+                                        text = "",
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = true
+                                    )
                                 }
                             }
                             item {
@@ -225,7 +221,6 @@ private fun isPublicInfraSectionForm(surveyId: Int, sectionId: Int, questionId: 
 fun FormTypeQuestionComponentPreview() {
    FormTypeQuestionComponent(
        questionIndex = 1,
-//       question = ,
        maxCustomHeight = 100.dp,
        onAnswerSelection = {},
        questionDetailExpanded = {}

@@ -33,11 +33,13 @@ fun RadioButtonOptionComponent(
     optionsItem: OptionItemEntity,
     onOptionSelected: (OptionItemEntity) -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(6.dp))
-        .padding(horizontal = 10.dp)
-        .then(modifier)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(6.dp))
+            .padding(horizontal = 10.dp)
+            .then(modifier)
+    ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.TopStart,
@@ -47,8 +49,8 @@ fun RadioButtonOptionComponent(
                     .fillMaxWidth()
                     .height(110.dp),
 //                buttonTitle = optionsItem.display ?: "",
-                textColor = if(selectedIndex == index) Color.White else blueDark,
-                buttonBackgroundColor = if(selectedIndex == index) blueDark else Color.White,
+                textColor = if (selectedIndex == index) Color.White else blueDark,
+                buttonBackgroundColor = if (selectedIndex == index) blueDark else Color.White,
                 buttonBorderColor = if (selectedIndex == index) {
                     blueDark
                 } else {
@@ -72,20 +74,13 @@ fun RadioButtonOptionComponent(
                 onOptionSelected(optionsItem)
             }
         }
-        Spacer(modifier = Modifier
-            .fillMaxWidth()
-            .height(5.dp))
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(5.dp)
+        )
     }
 
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun RadioButtonOptionComponentPreview() {
-//   RadioButtonOptionComponent(index =1 ,
-//       selectedIndex = 1,) {
-//
-//   }
-//}
 
 

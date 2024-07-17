@@ -37,10 +37,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -49,6 +53,7 @@ import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
@@ -56,6 +61,7 @@ import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.repository.ResultType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
+import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -74,12 +80,6 @@ fun GridTypeComponent(
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
-    val innerFirstVisibleItemIndex by remember {
-        derivedStateOf {
-            innerState.firstVisibleItemIndex
-        }
-    }
-
     val selectedIndices = remember { mutableStateOf(mutableSetOf<Int>()) }
     selectedIndices.value.clear()
     selectedIndices.value.addAll(selectedOptionIndices)
@@ -114,155 +114,98 @@ fun GridTypeComponent(
             .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight)
     ) {
 
-            Card(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = defaultCardElevation
-                ),
-                shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(white)
-                    .clickable {
-                    }
-                    .then(modifier)
-            ) {
-                Column(modifier = Modifier.background(white)) {
-                    Column(
-                        Modifier.padding(top = dimen_16_dp),
-                        verticalArrangement = Arrangement.spacedBy(
-                            dimen_18_dp
-                        )
+        Card(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = defaultCardElevation
+            ),
+            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(white)
+                .clickable {
+                }
+                .then(modifier)
+        ) {
+            Column(modifier = Modifier.background(white)) {
+                Column(
+                    Modifier.padding(top = dimen_16_dp),
+                    verticalArrangement = Arrangement.spacedBy(
+                        dimen_18_dp
+                    )
+                ) {
+                    LazyColumn(
+                        state = outerState,
+                        modifier = Modifier
+                            .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
                     ) {
-                        LazyColumn(
-                            state = outerState,
-                            modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
-                        ) {
-                            item {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = dimen_16_dp)
+                        item {
+                            Row(
+                                modifier = Modifier.padding(horizontal = dimen_16_dp)
+                            ) {
+                                    HtmlText(
+                                        text = "${questionIndex + 1}. ",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
+
+                                    HtmlText(
+                                        text = "",   // question.questionDisplay
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(dimen_10_dp))
+                        }
+
+                        item {
+                            if (optionItemEntityList?.isNotEmpty() == true) {
+                                LazyVerticalGrid(
+                                    userScrollEnabled = false,
+                                    state = innerState,
+                                    columns = GridCells.Fixed(2),
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
+                                        .heightIn(
+                                            min = 110.dp,
+                                            max = maxCustomHeight + manualMaxHeight
+                                        ),
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-//                                    HtmlText(
-//                                        text = "${questionIndex + 1}. ",
-//                                        style = TextStyle(
-//                                            fontFamily = NotoSans,
-//                                            fontWeight = FontWeight.SemiBold,
-//                                            fontSize = 14.sp,
-//                                            color = textColorDark
-//                                        ),
-//                                    )
-
-//                                    HtmlText(
-//                                        text = "",   // question.questionDisplay
-//                                        style = TextStyle(
-//                                            fontFamily = NotoSans,
-//                                            fontWeight = FontWeight.SemiBold,
-//                                            fontSize = 14.sp,
-//                                            color = textColorDark
-//                                        ),
-//                                    )
-                                }
-                            }
-                            item {
-                                Spacer(modifier = Modifier.height(dimen_10_dp))
-                            }
-
-                            item {
-                                if (optionItemEntityList?.isNotEmpty() == true) {
-                                    LazyVerticalGrid(
-                                        userScrollEnabled = false,
-                                        state = innerState,
-                                        columns = GridCells.Fixed(2),
-                                        modifier = Modifier
-                                            .wrapContentWidth()
-                                            .padding(horizontal = dimen_16_dp)
-                                            .heightIn(
-                                                min = 110.dp,
-                                                max = maxCustomHeight + manualMaxHeight
-                                            ),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        itemsIndexed(optionItemEntityList.sortedBy { it.optionId }
-                                            ?: emptyList()) { _index, optionItem ->
-                                            if (optionItem.optionType?.equals(
-                                                    QuestionType.Grid.name,
-                                                    true
-                                                ) == true
-                                                || optionItem.optionType?.equals(
-                                                    QuestionType.MultiSelect.name,
-                                                    true
-                                                ) == true
-                                            ) {
-                                                GridOptionCard(
-                                                    optionItem = optionItem,
-                                                    index = _index,
-                                                    isEnabled = areOptionsEnabled,
-                                                    selectedIndex = selectedIndices.value.toList()
-                                                ) { selectedOptionId ->
-                                                    if (isEditAllowed) {
-                                                        if (areOptionsEnabled) {
-                                                            try {
-                                                                if (optionItemEntityList.find { it.optionId == selectedOptionId }
-                                                                        ?.conditions?.map { it?.resultType }
-                                                                        ?.contains(ResultType.NoneMarked.name) == true) {
-
-                                                                    if (!selectedIndices.value.contains(
-                                                                            selectedOptionId
-                                                                        )
-                                                                    ) {
-                                                                        selectedIndices.value.add(
-                                                                            selectedOptionId
-                                                                        )
-//
-                                                                        selectedIndices.value.clear()
-                                                                        selectedIndices.value.add(
-                                                                            selectedOptionId
-                                                                        )
-                                                                        selectedOptionsItem.clear()
-//
-                                                                    } else {
-                                                                        selectedIndices.value.remove(
-                                                                            selectedOptionId
-                                                                        )
-//
-                                                                    }
-                                                                } else {
-                                                                    if (!selectedIndices.value.contains(
-                                                                            selectedOptionId
-                                                                        )
-                                                                    ) {
-                                                                        selectedIndices.value.add(
-                                                                            selectedOptionId
-                                                                        )
-//
-                                                                    } else {
-                                                                        selectedIndices.value.remove(
-                                                                            selectedOptionId
-                                                                        )
-//
-                                                                    }
-                                                                }
-
-                                                                optionItemEntityList.forEach { optionItemEntity ->
-                                                                    if (selectedIndices.value.contains(
-                                                                            optionItemEntity.optionId
-                                                                        )
-                                                                    ) {
-//
-                                                                    }
-                                                                }
-
-                                                                onAnswerSelection(
-                                                                    questionIndex,
-                                                                    selectedOptionsItem.toList(),
-                                                                    selectedOptionIndices
-                                                                )
-                                                            } catch (ex: Exception) {
-//
-                                                            }
-                                                        } else {
-                                                            if (optionItem.conditions?.map { it?.resultType }
+                                    itemsIndexed(optionItemEntityList.sortedBy { it.optionId }
+                                        ?: emptyList()) { _index, optionItem ->
+                                        if (optionItem.optionType?.equals(
+                                                QuestionType.Grid.name,
+                                                true
+                                            ) == true
+                                            || optionItem.optionType?.equals(
+                                                QuestionType.MultiSelect.name,
+                                                true
+                                            ) == true
+                                        ) {
+                                            GridOptionCard(
+                                                optionItem = optionItem,
+                                                index = _index,
+                                                isEnabled = areOptionsEnabled,
+                                                selectedIndex = selectedIndices.value.toList()
+                                            ) { selectedOptionId ->
+                                                if (isEditAllowed) {
+                                                    if (areOptionsEnabled) {
+                                                        try {
+                                                            if (optionItemEntityList.find { it.optionId == selectedOptionId }
+                                                                    ?.conditions?.map { it?.resultType }
                                                                     ?.contains(ResultType.NoneMarked.name) == true) {
+
                                                                 if (!selectedIndices.value.contains(
                                                                         selectedOptionId
                                                                     )
@@ -271,53 +214,98 @@ fun GridTypeComponent(
                                                                         selectedOptionId
                                                                     )
 //
+                                                                    selectedIndices.value.clear()
+                                                                    selectedIndices.value.add(
+                                                                        selectedOptionId
+                                                                    )
+                                                                    selectedOptionsItem.clear()
+//
                                                                 } else {
                                                                     selectedIndices.value.remove(
                                                                         selectedOptionId
                                                                     )
-//                                                                    selectedOptionsItem.remove(
-//                                                                        optionItemEntityList[optionItemEntityList.getIndexById(
-//                                                                            selectedOptionId
-//                                                                        )]
-//                                                                    )
                                                                 }
-
-
-                                                                onAnswerSelection(
-                                                                    questionIndex,
-                                                                    selectedOptionsItem.toList(),
-                                                                    selectedOptionIndices
-                                                                )
+                                                            } else {
+                                                                if (!selectedIndices.value.contains(
+                                                                        selectedOptionId
+                                                                    )
+                                                                ) {
+                                                                    selectedIndices.value.add(
+                                                                        selectedOptionId
+                                                                    )
+                                                                } else {
+                                                                    selectedIndices.value.remove(
+                                                                        selectedOptionId
+                                                                    )
+                                                                }
                                                             }
+
+                                                            optionItemEntityList.forEach { optionItemEntity ->
+                                                                if (selectedIndices.value.contains(
+                                                                        optionItemEntity.optionId
+                                                                    )
+                                                                ) {
+                                                                }
+                                                            }
+
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                selectedOptionsItem.toList(),
+                                                                selectedOptionIndices
+                                                            )
+                                                        } catch (ex: Exception) {
+//
                                                         }
                                                     } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
-                                                        )
+                                                        if (optionItem.conditions?.map { it?.resultType }
+                                                                ?.contains(ResultType.NoneMarked.name) == true) {
+                                                            if (!selectedIndices.value.contains(
+                                                                    selectedOptionId
+                                                                )
+                                                            ) {
+                                                                selectedIndices.value.add(
+                                                                    selectedOptionId
+                                                                )
+                                                            } else {
+                                                                selectedIndices.value.remove(
+                                                                    selectedOptionId
+                                                                )
+                                                            }
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                selectedOptionsItem.toList(),
+                                                                selectedOptionIndices
+                                                            )
+                                                        }
                                                     }
+                                                } else {
+                                                    showCustomToast(
+                                                        context,
+                                                        context.getString(R.string.edit_disable_message)
+                                                    )
                                                 }
-                                                Spacer(modifier = Modifier.height(4.dp))
                                             }
+                                            Spacer(modifier = Modifier.height(4.dp))
                                         }
-
                                     }
+
                                 }
                             }
-                            item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 10.dp)
-                                )
-
-                            }
                         }
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 10.dp)
+                            )
 
+                        }
                     }
+
                 }
             }
         }
+    }
 
 }
 

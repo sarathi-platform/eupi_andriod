@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -51,7 +51,6 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
-import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -78,10 +77,6 @@ fun RadioQuestionBoxComponent(
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
-    val optionDetailVisibilityState = remember {
-        mutableStateOf(false)
-    }
-
     val context = LocalContext.current
 
     BoxWithConstraints(
@@ -92,100 +87,102 @@ fun RadioQuestionBoxComponent(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-            Card(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = defaultCardElevation
-                ),
-                shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = minHeight, max = maxHeight)
-                    .background(white)
-                    .clickable {
+        Card(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = defaultCardElevation
+            ),
+            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = minHeight, max = maxHeight)
+                .background(white)
+                .clickable {
 
-                    }
-                    .then(modifier)
-            ) {
-                Column(modifier = Modifier.background(white)) {
+                }
+                .then(modifier)
+        ) {
+            Column(modifier = Modifier.background(white)) {
 
-                    Column(
-                        Modifier.padding(top = dimen_16_dp),
-                        verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
+                Column(
+                    Modifier.padding(top = dimen_16_dp),
+                    verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
+                ) {
+                    LazyColumn(
+                        state = outerState,
+                        modifier = Modifier
+                            .heightIn(min = 110.dp, max = maxCustomHeight)
                     ) {
-                        LazyColumn(
-                            state = outerState,
-                            modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight)
-                        ) {
 
-                            item {
+                        item {
 
-                                Row(modifier = Modifier
+                            Row(
+                                modifier = Modifier
                                     .padding(bottom = 10.dp)
-                                    .padding(horizontal = dimen_16_dp)) {
-                                    Text(
-                                        text = "${questionIndex + 1}. ", style = defaultTextStyle,
-                                        color = textColorDark
+                                    .padding(horizontal = dimen_16_dp)
+                            ) {
+                                Text(
+                                    text = "${questionIndex + 1}. ", style = defaultTextStyle,
+                                    color = textColorDark
+                                )
+                                    HtmlText(
+                                        text = "",
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = true
                                     )
-//                                    HtmlText(
-//                                        text = "",
-//                                        style = defaultTextStyle,
-//                                        color = textColorDark,
-//                                        overflow = TextOverflow.Ellipsis,
-//                                        softWrap = true
-//                                    )
-                                }
                             }
-                            item {
-                                if (optionItemEntityList?.isNotEmpty() == true) {
-                                    LazyVerticalGrid(
-                                        userScrollEnabled = false,
-                                        state = innerState,
-                                        columns = GridCells.Fixed(2),
-                                        modifier = Modifier
-                                            .wrapContentWidth()
-                                            .padding(horizontal = dimen_16_dp)
-                                            .heightIn(min = 110.dp, max = maxCustomHeight)
-                                    ) {
-                                        itemsIndexed(
-                                            optionItemEntityList ?: emptyList()
-                                        ) { _index: Int, optionsItem: OptionItemEntity ->
-                                            if (optionsItem.optionType.equals(QuestionType.RadioButton.name)) {
-                                                RadioButtonOptionComponent(
-                                                    index = _index,
-                                                    optionsItem = optionsItem,
-                                                    selectedIndex = selectedIndex
-                                                ) {
-                                                    if (isEditAllowed) {
-                                                        selectedIndex = _index
-                                                        onAnswerSelection(
-                                                            questionIndex,
-                                                            optionsItem
-                                                        )
-                                                    } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
-                                                        )
-                                                    }
+                        }
+                        item {
+                            if (optionItemEntityList?.isNotEmpty() == true) {
+                                LazyVerticalGrid(
+                                    userScrollEnabled = false,
+                                    state = innerState,
+                                    columns = GridCells.Fixed(2),
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
+                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                ) {
+                                    itemsIndexed(
+                                        optionItemEntityList ?: emptyList()
+                                    ) { _index: Int, optionsItem: OptionItemEntity ->
+                                        if (optionsItem.optionType.equals(QuestionType.RadioButton.name)) {
+                                            RadioButtonOptionComponent(
+                                                index = _index,
+                                                optionsItem = optionsItem,
+                                                selectedIndex = selectedIndex
+                                            ) {
+                                                if (isEditAllowed) {
+                                                    selectedIndex = _index
+                                                    onAnswerSelection(
+                                                        questionIndex,
+                                                        optionsItem
+                                                    )
+                                                } else {
+                                                    showCustomToast(
+                                                        context,
+                                                        context.getString(R.string.edit_disable_message)
+                                                    )
                                                 }
                                             }
                                         }
                                     }
-                                } else {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(dimen_10_dp)
-                                    )
                                 }
-                            }
-                            item {
+                            } else {
                                 Spacer(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
                                 )
+                            }
+                        }
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(dimen_10_dp)
+                            )
                         }
                     }
                 }
@@ -202,11 +199,9 @@ fun RadioQuestionBoxComponentPreview(
     ) {
     val option1 = OptionItemEntity(
         optionId = 1,
-//        display = "YES",
         weight = 1,
         summary = "YES",
         optionValue = 1,
-        // optionImage = R.drawable.icon_check,
         optionImage = "",
         optionType = "",
         surveyId = 1,
@@ -216,11 +211,9 @@ fun RadioQuestionBoxComponentPreview(
 
     val option2 = OptionItemEntity(
         optionId = 2,
-//        display = "NO",
         weight = 0,
         summary = "NO",
         optionValue = 0,
-        // optionImage = R.drawable.icon_close,
         optionImage = "",
         optionType = "",
         surveyId = 1,

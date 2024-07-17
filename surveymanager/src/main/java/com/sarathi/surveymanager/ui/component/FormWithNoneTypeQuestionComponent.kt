@@ -66,6 +66,7 @@ import com.nudge.core.ui.theme.weight_60_percent
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.surveymanager.R
+import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,25 +77,11 @@ fun FormWithNoneTypeQuestionComponent(
     itemCount: Int = 0,
     summaryValue: String = "",
     isEditAllowed: Boolean = true,
-//    onAnswerSelection: (questionIndex: Int, isNoneMarkedForForm: Boolean, isFormOpened: Boolean) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     val innerGridState: LazyGridState = rememberLazyGridState()
-//    val no = stringResource(id = R.string.option_no)
-
-
-
-    val isNoneMarked = remember {
-        mutableStateOf(true)
-    }
-
-    val isNoneQuestionAnswered = remember {
-        mutableStateOf(false)
-    }
-
-
     val context = LocalContext.current
 
 
@@ -170,13 +157,13 @@ fun FormWithNoneTypeQuestionComponent(
                                                 style = defaultTextStyle,
                                                 color = textColorDark
                                             )
-//                                            HtmlText(
-//                                                text = "${showQuestionState.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }?.optionItemEntity?.display}",
-//                                                style = defaultTextStyle,
-//                                                color = textColorDark,
-//                                                overflow = TextOverflow.Ellipsis,
-//                                                softWrap = true
-//                                            )
+                                            HtmlText(
+                                                text ="",
+                                                style = defaultTextStyle,
+                                                color = textColorDark,
+                                                overflow = TextOverflow.Ellipsis,
+                                                softWrap = true
+                                            )
                                         }
                                     }
                                     item {
