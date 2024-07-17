@@ -6,8 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -24,6 +28,8 @@ import javax.inject.Inject
 class MissionScreenViewModel @Inject constructor(
     private val fetchAllDataUseCase: FetchAllDataUseCase,
     @ApplicationContext val context: Context,
+    private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList
@@ -72,6 +78,7 @@ class MissionScreenViewModel @Inject constructor(
 
     private fun initMissionScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateMissionActivityStatus()
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
             _filterMissionList.value = _missionList.value
             withContext(Dispatchers.Main) {
@@ -109,6 +116,16 @@ class MissionScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 callBack()
             }
+        }
+    }
+
+    private suspend fun updateMissionActivityStatus(){
+        val missionList = updateMissionActivityTaskStatusUseCase.reCheckMissionStatus()
+        missionList.forEach {
+            matStatusEventWriterUseCase.updateMissionStatus(
+                surveyName = BLANK_STRING,
+                missionEntity = it
+            )
         }
     }
 }

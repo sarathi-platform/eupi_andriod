@@ -109,16 +109,8 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                        if (sanctionedAmount == 0 || viewModel.totalRemainingAmount >= 0) {
                             viewModel.saveButtonClicked()
                             navController.popBackStack()
-                        } else {
-                            showCustomToast(
-                                context = context,
-                                context.getString(R.string.amount_limit_message, sanctionedAmount)
-                            )
-
-                        }
                     }
                 )
             }

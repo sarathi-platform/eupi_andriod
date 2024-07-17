@@ -129,4 +129,7 @@ interface MissionDao {
         )
     }
 
+    @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId and isActive=1")
+    suspend fun getActiveMissions(userId: String): List<MissionEntity>
+
 }
