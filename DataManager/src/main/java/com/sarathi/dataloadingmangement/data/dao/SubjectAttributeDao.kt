@@ -17,7 +17,10 @@ interface SubjectAttributeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSubjectAttribute(subjectAttributeEntity: SubjectAttributeEntity): Long
 
-    @Query("select attribute_value_reference_table.`key`, attribute_value_reference_table.value from subject_attribute_table inner join attribute_value_reference_table on subject_attribute_table.id = attribute_value_reference_table.parentReferenceId where subject_attribute_table.taskId =:taskId and userId = :userId")
+    @Query(
+        "select attribute_value_reference_table.`key`, attribute_value_reference_table.value from subject_attribute_table inner join attribute_value_reference_table on subject_attribute_table.id = attribute_value_reference_table.parentReferenceId " +
+                "where subject_attribute_table.taskId =:taskId and subject_attribute_table.userId = :userId and attribute_value_reference_table.userId = :userId"
+    )
     fun getSubjectAttributes(userId: String, taskId: Int): List<SubjectAttributes>
 
     @Query("select subject_attribute_table.id, subject_attribute_table.subjectId, subject_attribute_table.subjectType, subject_attribute_table.attribute, subject_attribute_table.date, attribute_value_reference_table.`key`,attribute_value_reference_table.value,attribute_value_reference_table.valueType from subject_attribute_table join attribute_value_reference_table on subject_attribute_table.id = attribute_value_reference_table.parentReferenceId where subject_attribute_table.userId = :userId and subject_attribute_table.subjectId in (:subjectIds) and subject_attribute_table.attribute = 'Attendance' and subject_attribute_table.isActive = 1 and subject_attribute_table.date BETWEEN :startDate and :endDate")

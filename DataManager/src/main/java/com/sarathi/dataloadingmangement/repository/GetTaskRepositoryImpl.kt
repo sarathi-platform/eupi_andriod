@@ -59,7 +59,10 @@ class GetTaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTaskAttributes(taskId: Int): List<SubjectAttributes> {
-        return subjectAttributeDao.getSubjectAttributes(taskId)
+        return subjectAttributeDao.getSubjectAttributes(
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            taskId
+        )
     }
 
     override suspend fun getTask(taskId: Int): ActivityTaskEntity {
