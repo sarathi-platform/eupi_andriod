@@ -76,8 +76,6 @@ fun AddImageComponent(
     filePaths: List<String> = listOf(),
     fileNamePrefix: String,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
-
-
     ) {
     val context = LocalContext.current
     val innerState: LazyGridState = rememberLazyGridState()
@@ -87,7 +85,6 @@ fun AddImageComponent(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-
                 imageList = (imageList + currentImageUri)
                 onImageSelection(currentImageUri?.path ?: BLANK_STRING, false)
             }

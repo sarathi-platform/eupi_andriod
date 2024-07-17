@@ -250,20 +250,16 @@ fun getDefaultImageBackUpFileName(mobileNo: String, userType: String): String {
         .toDateInMMDDYYFormat()
 }
 
-/*fun getDefaultBackUpFileName(mobileNo: String): String {
-    return LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
-        .toDateInMMDDYYFormat()
-}
-
-fun getDefaultImageBackUpFileName(mobileNo: String): String {
-    return LOCAL_BACKUP__IMAGE_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
-        .toDateInMMDDYYFormat()
-}*/
 
 fun compressImage(imageUri: String, activity: Context, name: String): String? {
-    var filename: String? = ""
+    val filename: String?
     try {
-        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
+        val filePath = imageUri
+        CoreLogger.d(
+            context = activity,
+            tag = "compressImage : Image Path:",
+            msg = filePath
+        )
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -297,12 +293,22 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
         try {
             bmp = BitmapFactory.decodeFile(filePath, options)
         } catch (exception: OutOfMemoryError) {
-            exception.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = exception,
+                tag = "compressImage : OutOfMemoryError 1",
+                msg = exception.message ?: BLANK_STRING
+            )
         }
         try {
             scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888)
         } catch (exception: OutOfMemoryError) {
-            exception.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = exception,
+                tag = "compressImage : OutOfMemoryError",
+                msg = exception.message ?: BLANK_STRING
+            )
         }
         val ratioX = actualWidth / options.outWidth.toFloat()
         val ratioY = actualHeight / options.outHeight.toFloat()
@@ -345,7 +351,12 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
                 )
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = e,
+                tag = "compressImage : IOException",
+                msg = e.message ?: BLANK_STRING
+            )
         }
         val out: FileOutputStream
         filename = name
@@ -360,10 +371,20 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
                 path
             } else BLANK_STRING
         } catch (e: FileNotFoundException) {
-            e.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = e,
+                tag = "compressImage : FileNotFoundException",
+                msg = e.message ?: BLANK_STRING
+            )
         }
-    } catch (e: java.lang.Exception) {
-        e.printStackTrace()
+    } catch (e: Exception) {
+        CoreLogger.e(
+            context = activity,
+            ex = e,
+            tag = "compressImage",
+            msg = e.message ?: BLANK_STRING
+        )
     }
     return BLANK_STRING
 }
