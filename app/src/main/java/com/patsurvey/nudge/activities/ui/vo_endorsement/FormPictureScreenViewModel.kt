@@ -39,7 +39,6 @@ import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
@@ -186,10 +185,7 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun saveFormPath(formPath: String, formName: String){
-
-        Log.d("FormPictureScreen_saveFormPath", "prefKey: ${PREF_FORM_PATH}_${formName}, formPath: $formPath ")
-        repository.prefRepo.savePref(getFormPathKey(formName)
-            /*"${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_$formName"*/, formPath)
+        repository.prefRepo.savePref(getFormPathKey(formName), formPath)
     }
 
     fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
@@ -559,9 +555,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
 
     fun getFormPathKey(subPath: String): String {
-        //val subPath formPictureScreenViewModel.pageItemClicked.value
-        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${repository.prefRepo.getSelectedVillage().id}_${subPath}"
+        return "${PREF_FORM_PATH}_${subPath}"
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
