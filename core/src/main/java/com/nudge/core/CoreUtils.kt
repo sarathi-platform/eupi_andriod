@@ -59,6 +59,7 @@ import java.util.logging.Level
 
 
 private const val TAG = "CoreUtils"
+private const val COMPRESS_IMAGE_TAG = "Compress Image"
 
 fun Long.toDate(
     dateFormat: Long = System.currentTimeMillis(),
@@ -257,7 +258,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
         val filePath = imageUri
         CoreLogger.d(
             context = activity,
-            tag = "compressImage : Image Path:",
+            tag = "$TAG: Image Path:",
             msg = filePath
         )
         var scaledBitmap: Bitmap? = null
@@ -296,7 +297,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             CoreLogger.e(
                 context = activity,
                 ex = exception,
-                tag = "compressImage : OutOfMemoryError 1",
+                tag = "$COMPRESS_IMAGE_TAG : OutOfMemoryError 1",
                 msg = exception.message ?: BLANK_STRING
             )
         }
@@ -306,7 +307,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             CoreLogger.e(
                 context = activity,
                 ex = exception,
-                tag = "compressImage : OutOfMemoryError",
+                tag = "$COMPRESS_IMAGE_TAG : OutOfMemoryError",
                 msg = exception.message ?: BLANK_STRING
             )
         }
@@ -354,7 +355,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             CoreLogger.e(
                 context = activity,
                 ex = e,
-                tag = "compressImage : IOException",
+                tag = "$COMPRESS_IMAGE_TAG : IOException",
                 msg = e.message ?: BLANK_STRING
             )
         }
@@ -370,7 +371,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             return if (success == true) {
                 CoreLogger.d(
                     context = activity,
-                    "compressImage",
+                    tag = COMPRESS_IMAGE_TAG,
                     msg = "Image Compress Success $filename"
                 )
                 path
@@ -379,7 +380,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             CoreLogger.e(
                 context = activity,
                 ex = e,
-                tag = "compressImage : FileNotFoundException",
+                tag = "$COMPRESS_IMAGE_TAG : FileNotFoundException",
                 msg = e.message ?: BLANK_STRING
             )
         }
@@ -387,7 +388,7 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
         CoreLogger.e(
             context = activity,
             ex = e,
-            tag = "compressImage",
+            tag = COMPRESS_IMAGE_TAG,
             msg = e.message ?: BLANK_STRING
         )
     }
