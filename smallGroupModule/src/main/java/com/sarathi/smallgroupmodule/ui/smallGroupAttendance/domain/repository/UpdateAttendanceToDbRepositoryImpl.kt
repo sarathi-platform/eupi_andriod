@@ -37,8 +37,9 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
 
     override suspend fun getOldRefForAttendanceAttribute(state: SubjectAttendanceState): Int {
         return subjectAttributeDao.getOldRefForAttendanceAttribute(
-            state.subjectId,
-            state.date.toString()
+            subjectId = state.subjectId,
+            date = state.date.toString(),
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 
@@ -118,7 +119,8 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
             subjectIds = subjectIds,
             subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
             attributeType = AttributesType.ATTRIBUTE_ATTENDANCE.attributeType,
-            date = selectedDate.toString()
+            date = selectedDate.toString(),
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 
@@ -126,7 +128,9 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
         finalAttendanceStateList: List<SubjectAttendanceState>,
         referenceIdMap: Map<Int, Int>
     ) {
-        attributeValueReferenceDao.removeAttendanceAttributeFromReferenceTable(referenceIdMap.values.map { it })
+        attributeValueReferenceDao.removeAttendanceAttributeFromReferenceTable(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            parentRefIds = referenceIdMap.values.map { it })
     }
 
     override suspend fun softDeleteAttendanceFromSubjectAttributeTable(
@@ -137,7 +141,8 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
         subjectAttributeDao.softDeleteAttendanceFromSubjectAttributeTable(
             subjectIds, subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
             attributeType = AttributesType.ATTRIBUTE_ATTENDANCE.attributeType,
-            date = selectedDate.toString()
+            date = selectedDate.toString(),
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 
