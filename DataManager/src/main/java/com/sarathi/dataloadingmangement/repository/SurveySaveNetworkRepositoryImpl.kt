@@ -13,6 +13,7 @@ import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
@@ -30,6 +31,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
     private val optionItemDao: OptionItemDao,
     private val dataLoadingApiService: DataLoadingApiService,
     private val grantConfigDao: GrantConfigDao,
+    private val taskDao: TaskDao,
     private val coreSharedPrefs: CoreSharedPrefs,
 ) : ISurveySaveNetworkRepository {
     override suspend fun getSurveyAnswerFromNetwork(surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>> {
@@ -70,7 +72,9 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
                         questionAnswerResponse.question?.options ?: listOf(),
                         questionAnswerResponse.question?.tag ?: listOf(),
                         surveyId = questionAnswerResponse.surveyId,
-                        sectionId = questionAnswerResponse.sectionId.toInt()
+                        sectionId = questionAnswerResponse.sectionId.toInt(),
+                        grantId = questionAnswerResponse.grantId ?: 0,
+                        taskId = questionAnswerResponse.taskId
                     )
 
                 )
@@ -84,13 +88,23 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         optionsFromServer: List<QuestionOptionsResponseModel>,
         tag: List<Int>,
         surveyId: Int,
-        sectionId: Int
+        sectionId: Int,
+        grantId: Int,
+        taskId: Int
     ): List<OptionsUiModel> {
         val optionList = ArrayList<OptionsUiModel>()
         val mergedOptionItem = ArrayList<OptionsUiModel>()
         mergedOptionItem.addAll(optionItems)
         if (tag.contains(MODE_TAG) || tag.contains(NATURE_TAG)) {
-            getOptionsForModeAndNature(tag, mergedOptionItem, sectionId, surveyId, questionId)
+            getOptionsForModeAndNature(
+                tag,
+                mergedOptionItem,
+                sectionId,
+                surveyId,
+                questionId,
+                grantId = grantId,
+                taskId = taskId
+            )
         }
         optionsFromServer.forEach { optionFromServer ->
             val selectedOption =
@@ -110,9 +124,14 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         mergedOptionItem: ArrayList<OptionsUiModel>,
         sectionId: Int,
         surveyId: Int,
-        questionId: Int
+        questionId: Int,
+        grantId: Int,
+        taskId: Int
     ) {
-        val grantConfig = grantConfigDao.getGrantModeNature()
+        val grantConfig = grantConfigDao.getGrantConfigWithGrantId(
+            activityConfigId = getActivityConfigId(taskId),
+            grantId = grantId
+        )
         val type =
             object : TypeToken<List<OptionsItem?>?>() {}.type
         val options = Gson().fromJson<List<OptionsItem>>(
@@ -138,6 +157,17 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
             )
 
         }
+    }
+
+    private fun getActivityConfigId(taskId: Int): Int {
+        val activityId = taskDao.getTaskById(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            taskId = taskId
+        ).activityId
+        return activityConfigDao.getActivityConfigWithSection(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId
+        ).activityConfigId
     }
 
 }

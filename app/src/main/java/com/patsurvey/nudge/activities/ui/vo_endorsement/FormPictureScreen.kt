@@ -935,8 +935,6 @@ private fun handleImageCapture(
 ) {
     viewModal.photoUri = uri
 
-//    viewModal.cameraExecutor.shutdown()
-
     if (viewModal.shouldShowCamera.value.first == FORM_C) {
         if (viewModal.retakeImageIndex.value != -1) {
             Log.d("FormPictureScreen_handleImageCapture", "photoPath: ${photoPath}")
