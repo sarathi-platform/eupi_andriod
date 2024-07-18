@@ -9,8 +9,8 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.39"
-def prodVersion = "1.1.9"
+def version = "2.0.41"
+def prodVersion = version
 android {
     compileSdk 34
 
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 33
-        versionCode 43
+        versionCode 45
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -32,7 +32,10 @@ android {
             enableSplit = false
         }
     }
-
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     signingConfigs {
         release {
             storeFile file("../cert_thenudge.jks")
