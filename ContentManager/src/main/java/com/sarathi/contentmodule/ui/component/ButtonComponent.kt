@@ -17,13 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
@@ -36,7 +36,7 @@ fun ButtonComponent(title: String = BLANK_STRING) {
         Box(
             modifier = Modifier
                 .padding(start = dimen_16_dp, end = dimen_16_dp)
-                .size(60.dp)
+                .size(dimen_60_dp)
                 .clip(shape = CircleShape)
                 .border(
                     dimen_1_dp, color = blueDark, RoundedCornerShape(dimen_100_dp)
