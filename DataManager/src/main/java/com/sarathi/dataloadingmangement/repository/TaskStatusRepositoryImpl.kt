@@ -140,9 +140,11 @@ class TaskStatusRepositoryImpl @Inject constructor(
                             missionId = missionEntity.missionId,
                             status = SurveyStatusEnum.COMPLETED.name
                         )
-                        updatedActivities.add(
-                            activity.copy(status = SurveyStatusEnum.COMPLETED.name)
-                        )
+                        if (activity.status != SurveyStatusEnum.COMPLETED.name) {
+                            updatedActivities.add(
+                                activity.copy(status = SurveyStatusEnum.COMPLETED.name)
+                            )
+                        }
                     }
                 }
         }
@@ -197,9 +199,11 @@ class TaskStatusRepositoryImpl @Inject constructor(
                     missionId = missionEntity.missionId,
                     status = SurveyStatusEnum.COMPLETED.name
                 )
-                updatedMission.add(
-                    missionEntity.copy(status = SurveyStatusEnum.COMPLETED.name)
-                )
+                if (missionEntity.status != SurveyStatusEnum.COMPLETED.name) {
+                    updatedMission.add(
+                        missionEntity.copy(status = SurveyStatusEnum.COMPLETED.name)
+                    )
+                }
             }
         }
     return updatedMission
