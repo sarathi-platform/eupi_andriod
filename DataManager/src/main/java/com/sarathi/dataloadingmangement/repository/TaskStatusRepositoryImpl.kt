@@ -112,28 +112,19 @@ class TaskStatusRepositoryImpl @Inject constructor(
                         )
 
                         if (pendingTaskCount > 0) {
-                            val activeActivityEntity = activityDao
-                                .getActiveActivitiesStatus(
+                            if (activity.status == SurveyStatusEnum.COMPLETED.name) {
+                                activityDao.updateActivityStatus(
                                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                                     missionId = missionEntity.missionId,
                                     activityId = activity.activityId,
+                                    status = SurveyStatusEnum.INPROGRESS.name
                                 )
-                            if (activeActivityEntity != null) {
-                                if (activeActivityEntity.status != SurveyStatusEnum.INPROGRESS.name || activeActivityEntity.status != SurveyStatusEnum.NOT_STARTED.name ) {
-                                    activityDao.updateActivityStatus(
-                                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                        missionId = missionEntity.missionId,
-                                        activityId = activity.activityId,
-                                        status = SurveyStatusEnum.INPROGRESS.name
-                                    )
-                                    if (activity.status != SurveyStatusEnum.INPROGRESS.name) {
-
-                                        updatedActivities.add(
-                                            activity.copy(status = SurveyStatusEnum.INPROGRESS.name)
-                                        )
-                                    }
-                                }
+                                updatedActivities.add(
+                                    activity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                                )
                             }
+
+
                         }
                     } else {
                         activityDao.updateActivityStatus(
@@ -175,24 +166,19 @@ class TaskStatusRepositoryImpl @Inject constructor(
                         )
                     )
                 if (pendingActivityCount > 0) {
-                    val activeMissionEntity = missionDao.getActiveMission(
-                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                        missionId = missionEntity.missionId
-                    )
-                    if (activeMissionEntity != null) {
-                        if (activeMissionEntity.status != SurveyStatusEnum.INPROGRESS.name || activeMissionEntity.status != SurveyStatusEnum.NOT_STARTED.name) {
-                            missionDao.updateMissionStatus(
-                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                missionId = missionEntity.missionId,
-                                status = SurveyStatusEnum.INPROGRESS.name
-                            )
-                            if (missionEntity.status != SurveyStatusEnum.INPROGRESS.name) {
-                                updatedMission.add(
-                                    missionEntity.copy(status = SurveyStatusEnum.INPROGRESS.name)
-                                )
-                            }
-                        }
+
+                    if (missionEntity.status == SurveyStatusEnum.COMPLETED.name) {
+                        missionDao.updateMissionStatus(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            missionId = missionEntity.missionId,
+                            status = SurveyStatusEnum.INPROGRESS.name
+                        )
+                        updatedMission.add(
+                            missionEntity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                        )
                     }
+
+
                 }
             } else {
                 missionDao.updateMissionStatus(
@@ -207,7 +193,7 @@ class TaskStatusRepositoryImpl @Inject constructor(
                 }
             }
         }
-    return updatedMission
+        return updatedMission
     }
 
 
