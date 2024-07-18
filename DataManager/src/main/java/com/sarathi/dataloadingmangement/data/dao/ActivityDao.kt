@@ -170,5 +170,10 @@ interface ActivityDao {
         formType: String
     ): List<ActivityFormUIModel>
 
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId=:missionId and isActive=1")
+    suspend fun getActiveActivities(userId: String, missionId: Int): List<ActivityEntity>
+
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId=:missionId and activityId=:activityId and isActive=1")
+    suspend fun getActiveActivitiesStatus(userId: String, missionId: Int, activityId: Int): ActivityEntity?
 
 }
