@@ -130,20 +130,14 @@ fun ExportImportScreen(
                         if (viewModel.loggedInUserType.value == UPCM_USER) {
                             navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                                 launchSingleTop = true
-//                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
-//                                    inclusive = true
-//                                }
                             }
-                            /*navController.navigate(route = NudgeNavigationGraph.HOME) {
-                                launchSingleTop = true
-                                popUpTo(AuthScreen.START_SCREEN.route) {
-                                    inclusive = true
-                                }
-                            }*/
                         } else {
                             when (navController.graph.route) {
                                 NudgeNavigationGraph.ROOT -> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
                                 NudgeNavigationGraph.HOME -> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                                NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
+                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                )
                                 else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                             }
                         }
