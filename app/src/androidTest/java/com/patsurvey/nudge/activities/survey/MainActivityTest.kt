@@ -102,23 +102,23 @@ class MainActivityTest {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        viewModel = MainActivityViewModel(
-            prefRepo = prefRepo,
-            apiService = apiInterface,
-            casteListDao = casteListDao,
-            tolaDao = tolaDao,
-            didiDao = didiDao,
-            villegeListDao = villageListDao,
-            answerDao = answerDao,
-            numericAnswerDao = numericAnswerDao,
-            questionDao = questionListDao,
-            trainingVideoDao = trainingVideoDao,
-            bpcSummaryDao = bpcSummaryDao,
-            poorDidiListDao = poorDidiListDao,
-            stepsListDao = stepsListDao,
-            languageListDao = languageListDao,
-            connectionMonitor = connectionMonitor
-        )
+//        viewModel = MainActivityViewModel(
+//            prefRepo = prefRepo,
+//            apiService = apiInterface,
+//            casteListDao = casteListDao,
+//            tolaDao = tolaDao,
+//            didiDao = didiDao,
+//            villegeListDao = villageListDao,
+//            answerDao = answerDao,
+//            numericAnswerDao = numericAnswerDao,
+//            questionDao = questionListDao,
+//            trainingVideoDao = trainingVideoDao,
+//            bpcSummaryDao = bpcSummaryDao,
+//            poorDidiListDao = poorDidiListDao,
+//            stepsListDao = stepsListDao,
+//            languageListDao = languageListDao,
+//            connectionMonitor = connectionMonitor
+//        )
         launchActivity<MainActivity>().use { scenario ->
             scenario.moveToState(Lifecycle.State.CREATED)
         }
