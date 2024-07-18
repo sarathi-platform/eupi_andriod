@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.google.android.gms.common.api.ApiException
 import com.nudge.core.SUCCESS
+import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
 
 class FetchUserDetailsUseCase(private val repository: IDataLoadingScreenRepository) {
