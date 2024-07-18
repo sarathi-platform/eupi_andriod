@@ -110,27 +110,29 @@ class TaskStatusRepositoryImpl @Inject constructor(
                                 SurveyStatusEnum.INPROGRESS.name
                             )
                         )
-                        val pendingActivityCount = activityDao
-                            .countActivityByStatus(
-                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                missionId = missionEntity.missionId,
-                                statuses = listOf(
-                                    SurveyStatusEnum.NOT_STARTED.name,
-                                    SurveyStatusEnum.INPROGRESS.name
-                                )
-                            )
-                        if (pendingTaskCount > 0 && pendingActivityCount > 0) {
-                            activityDao.updateActivityStatus(
-                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                missionId = missionEntity.missionId,
-                                activityId = activity.activityId,
-                                status = SurveyStatusEnum.INPROGRESS.name
-                            )
-                            if (activity.status != SurveyStatusEnum.INPROGRESS.name) {
 
-                                updatedActivities.add(
-                                    activity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                        if (pendingTaskCount > 0) {
+                            val activeActivityEntity = activityDao
+                                .getActiveActivitiesStatus(
+                                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                                    missionId = missionEntity.missionId,
+                                    activityId = activity.activityId,
                                 )
+                            if (activeActivityEntity != null) {
+                                if (activeActivityEntity.status != SurveyStatusEnum.INPROGRESS.name || activeActivityEntity.status != SurveyStatusEnum.NOT_STARTED.name ) {
+                                    activityDao.updateActivityStatus(
+                                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                                        missionId = missionEntity.missionId,
+                                        activityId = activity.activityId,
+                                        status = SurveyStatusEnum.INPROGRESS.name
+                                    )
+                                    if (activity.status != SurveyStatusEnum.INPROGRESS.name) {
+
+                                        updatedActivities.add(
+                                            activity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                                        )
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -157,12 +159,12 @@ class TaskStatusRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
         ).forEach { missionEntity ->
             val totalActivityCount = activityDao
-                .getAllActivityCount(
+                .getActiveActivities(
                     coreSharedPrefs.getUniqueUserIdentifier(),
                     missionId = missionEntity.missionId
                 )
 
-            if (totalActivityCount > 0) {
+            if (totalActivityCount.isNotEmpty()) {
                 val pendingActivityCount = activityDao
                     .countActivityByStatus(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -172,25 +174,24 @@ class TaskStatusRepositoryImpl @Inject constructor(
                             SurveyStatusEnum.INPROGRESS.name
                         )
                     )
-                val pendingMissionCount = missionDao
-                    .countMissionByStatus(
+                if (pendingActivityCount > 0) {
+                    val activeMissionEntity = missionDao.getActiveMission(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                        missionId = missionEntity.missionId,
-                        statuses = listOf(
-                            SurveyStatusEnum.NOT_STARTED.name,
-                            SurveyStatusEnum.INPROGRESS.name
-                        )
+                        missionId = missionEntity.missionId
                     )
-                if (pendingActivityCount > 0 && pendingMissionCount > 0) {
-                    missionDao.updateMissionStatus(
-                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                        missionId = missionEntity.missionId,
-                        status = SurveyStatusEnum.INPROGRESS.name
-                    )
-                    if (missionEntity.status != SurveyStatusEnum.INPROGRESS.name) {
-                        updatedMission.add(
-                            missionEntity.copy(status = SurveyStatusEnum.INPROGRESS.name)
-                        )
+                    if (activeMissionEntity != null) {
+                        if (activeMissionEntity.status != SurveyStatusEnum.INPROGRESS.name || activeMissionEntity.status != SurveyStatusEnum.NOT_STARTED.name) {
+                            missionDao.updateMissionStatus(
+                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                                missionId = missionEntity.missionId,
+                                status = SurveyStatusEnum.INPROGRESS.name
+                            )
+                            if (missionEntity.status != SurveyStatusEnum.INPROGRESS.name) {
+                                updatedMission.add(
+                                    missionEntity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                                )
+                            }
+                        }
                     }
                 }
             } else {

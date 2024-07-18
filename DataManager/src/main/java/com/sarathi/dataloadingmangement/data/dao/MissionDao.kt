@@ -139,4 +139,10 @@ interface MissionDao {
         statuses: List<String>
     ): Int
 
+    @Query("Select * from mission_table where missionId=:missionId and userId=:userId and isActive=1")
+    suspend fun getActiveMission(
+        userId: String,
+        missionId: Int
+    ): MissionEntity?
+
 }
