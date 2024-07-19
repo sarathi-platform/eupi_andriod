@@ -1,31 +1,31 @@
 package com.nrlm.baselinesurvey.ui.Constants
 
 enum class QuestionType {
-    RadioButton,   //done
-    SingleSelect,   // not
+    RadioButton,
+    SingleSelect,
     MultiSelect,
-    Form,              //didi detail same
-    List,   // not
-    Grid,    //done
-    Input,    //h
-    InputText,   //h
-    SingleSelectDropdown,   //h
-    SingleSelectDropDown,    //h
-    MultiSelectDropdown,    //h
-    MultiSelectDropDown,     //h
-    Toggle,                //done
-    InputNumber,               //h
-    InputNumberEditText,        //h
-    Calculation,          //autocalculation same
-    SingleValueForm,       // not availble
-    DidiDetails,                 //done
-    YesNoButton,              //not availble
-    PhoneNumber,                //not availble
-    HrsMinPicker,          //hh
-    YrsMonthPicker,        //h
-    Image,                    //ask
-    FormWithNone,                 //done
-    AutoCalculation;              //done
+    Form,
+    List,
+    Grid,
+    Input,
+    InputText,
+    SingleSelectDropdown,
+    SingleSelectDropDown,
+    MultiSelectDropdown,
+    MultiSelectDropDown,
+    Toggle,
+    InputNumber,
+    InputNumberEditText,
+    Calculation,
+    SingleValueForm,
+    DidiDetails,
+    YesNoButton,
+    PhoneNumber,
+    HrsMinPicker,
+    YrsMonthPicker,
+    Image,
+    FormWithNone,
+    AutoCalculation;
 
 
     companion object {
