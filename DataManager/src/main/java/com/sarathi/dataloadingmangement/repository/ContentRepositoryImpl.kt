@@ -8,6 +8,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.DELEGATE_DOT
+import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -25,7 +26,8 @@ class ContentRepositoryImpl @Inject constructor(
     val contentConfigDao: ContentConfigDao,
     val uiConfigDao: UiConfigDao,
     val coreSharedPrefs: CoreSharedPrefs,
-    val surveyAnswersDao: SurveyAnswersDao
+    val surveyAnswersDao: SurveyAnswersDao,
+    val activityConfigDao: ActivityConfigDao
 ) : IContentRepository {
     override suspend fun fetchContentsFromServer(contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>> {
         return apiInterface.fetchContentData(contentMangerRequest)
@@ -55,6 +57,14 @@ class ContentRepositoryImpl @Inject constructor(
             contentRequests.add(
                 ContentRequest(
                     languageCode = DEFAULT_LANGUAGE_CODE,
+                    contentKey = it
+                )
+            )
+        }
+        activityConfigDao.getAllActivityIconsKey(coreSharedPrefs.getUniqueUserIdentifier())?.forEach {
+            contentRequests.add(
+                ContentRequest(
+                    languageCode = coreSharedPrefs.getAppLanguage(),
                     contentKey = it
                 )
             )

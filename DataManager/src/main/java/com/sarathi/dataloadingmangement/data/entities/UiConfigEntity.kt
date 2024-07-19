@@ -40,7 +40,7 @@ data class UiConfigEntity(
                 key = attributes.key,
                 type = attributes.type,
                 value = attributes.value,
-                componentType = attributes.componentType,
+                componentType = attributes.componentType ?: BLANK_STRING,
                 missionId = missionId,
                 activityId = activityId,
                 language = attributes.languageCode ?: "en",

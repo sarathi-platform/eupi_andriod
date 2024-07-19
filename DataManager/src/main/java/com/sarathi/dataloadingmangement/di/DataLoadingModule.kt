@@ -345,7 +345,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
         uiConfigDao: UiConfigDao,
-        surveyAnswersDao: SurveyAnswersDao
+        surveyAnswersDao: SurveyAnswersDao,
+        activityConfigDao: ActivityConfigDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
@@ -353,8 +354,8 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
             uiConfigDao = uiConfigDao,
-            surveyAnswersDao = surveyAnswersDao
-
+            surveyAnswersDao = surveyAnswersDao,
+            activityConfigDao = activityConfigDao
         )
     }
 
@@ -638,7 +639,8 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         dataLoadingApiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
-        grantConfigDao: GrantConfigDao
+        grantConfigDao: GrantConfigDao,
+        taskDao: TaskDao,
     ): ISurveySaveNetworkRepository {
         return SurveySaveNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
@@ -647,8 +649,8 @@ class DataLoadingModule {
             optionItemDao = optionItemDao,
             dataLoadingApiService = dataLoadingApiService,
             surveyAnswersDao = surveyAnswersDao,
-            grantConfigDao = grantConfigDao
-
+            grantConfigDao = grantConfigDao,
+            taskDao = taskDao
         )
     }
 

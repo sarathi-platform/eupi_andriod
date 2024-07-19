@@ -38,7 +38,7 @@ class OtpVerificationViewModel @Inject constructor(
                 response.data?.let {
                     otpVerificationRepository.saveAccessToken(it.token)
                     otpVerificationRepository.saveLoggedInUserType(userType = it.typeName ?: BLANK_STRING)
-                    otpVerificationRepository.setIsUserBPC(it.typeName ?: "")
+                    otpVerificationRepository.setIsUserBPC(it.typeName ?: BLANK_STRING)
                     showLoader.value = false
                     getLastSyncDateTimeFromServer()
                     withContext(Dispatchers.Main) {

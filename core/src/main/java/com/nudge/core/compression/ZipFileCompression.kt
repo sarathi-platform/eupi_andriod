@@ -1,5 +1,4 @@
 package com.nudge.core.compression
-
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -11,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
@@ -18,6 +18,7 @@ import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.ZIP_EXTENSION
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.getFirstName
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.CoreLogger
 import java.io.File
@@ -155,13 +156,13 @@ class ZipFileCompression : IFileCompressor {
                         CoreLogger.d(
                             context,
                             TAG,
-                            "deleteOldFiles -> file Deleted :" + file.getPath()
+                            "deleteOldFiles -> file Deleted :" + file.path
                         );
                     } else {
                         CoreLogger.d(
                             context,
                             TAG,
-                            "deleteOldFiles -> file not Deleted :" + file.getPath()
+                            "deleteOldFiles -> file not Deleted :" + file.path
                         );
                     }
                 }
@@ -336,11 +337,11 @@ class ZipFileCompression : IFileCompressor {
                     ) && it.first.contains(ZIP_EXTENSION)
                 }
 
-                contentResolver?.let { cr ->
+                contentResolver?.let { _ ->
                     filteredList.forEach { file ->
                         try {
                             file.second.let { uri ->
-                                contentResolver?.delete(uri, null, null)
+                                contentResolver.delete(uri, null, null)
                                 CoreLogger.d(
                                     context,
                                     TAG,
@@ -416,6 +417,11 @@ class ZipFileCompression : IFileCompressor {
                         val id = cursor.getLong(idIndex)
                         val displayName = cursor.getString(displayNameIndex)
                         if(!displayName.contains("zip")) {
+                            CoreLogger.d(
+                                context = context,
+                                tag = "compressData",
+                                msg = "Files: $displayName"
+                            )
                             fileUris.add(
                                 Pair(
                                     first = displayName,
@@ -440,38 +446,60 @@ class ZipFileCompression : IFileCompressor {
         } else {
             try {
 
-                val commonFilePath: File = Environment.getExternalStoragePublicDirectory("")
+
 
                 val zippedFileDirectoryPath =
-                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME+"/"+folderName)
-
+                    File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        "$SARATHI_DIRECTORY_NAME/$folderName"
+                    )
                 if (!zippedFileDirectoryPath.exists()) {
                     zippedFileDirectoryPath.mkdirs()
                 }
                 val zippedFilePath = File(zippedFileDirectoryPath, zipFileName + extension)
 
 
-                val directoryPathToBeZipped = File(commonFilePath.path + "/" + filePathToZipped)
+                val directoryPathToBeZipped = File(
+                    Environment.getExternalStoragePublicDirectory(
+                        BLANK_STRING
+                    ), filePathToZipped
+                )
 
                 val s: List<Pair<String, Uri>>? = directoryPathToBeZipped.listFiles()?.filter { it.isFile && !it.name.contains("zip") }?.map {
                     Pair(it.name, it.toUri())
                 }
+                val zipFileUri = uriFromFile(
+                    context = context,
+                    applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
+                        ?: BLANK_STRING,
+                    file = zippedFilePath
+                )
                 if (s != null) {
+
                     val filesToBeZipped = ArrayList<Pair<String, Uri?>>()
                     filesToBeZipped.addAll(s)
                     filesToBeZipped.addAll(extraUris.filter { !it.first.contains("zip") })
+                    filesToBeZipped?.let {
+                        it.forEach { file ->
+                            CoreLogger.d(
+                                context = context,
+                                tag = "compressData",
+                                msg = "Files: ${file.first}"
+                            )
+                        }
+                    }
                     ZipManager.zip(
                         context = context,
                         files = filesToBeZipped,
-                        zipFile = zippedFilePath.toUri()
+                        zipFile = zipFileUri
                     )
                 }
-                return zippedFilePath.toUri();
+                return zipFileUri
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
-            return null;
+            return null
         }
 
     }

@@ -118,7 +118,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                     navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                 },
                 onBackClick = {
-
+                    navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
                 }
             )
         }

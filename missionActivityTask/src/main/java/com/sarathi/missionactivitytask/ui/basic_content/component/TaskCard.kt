@@ -48,6 +48,7 @@ import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_22_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -60,30 +61,33 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
-fun GrantTaskCard(
-    title: GrantTaskCardModel?,
-    subTitle1: GrantTaskCardModel?,
-    subtitle2: GrantTaskCardModel?,
-    subtitle3: GrantTaskCardModel?,
-    subtitle4: GrantTaskCardModel?,
-    subtitle5: GrantTaskCardModel?,
-    primaryButtonText: GrantTaskCardModel?,
+fun TaskCard(
+    title: TaskCardModel?,
+    subTitle1: TaskCardModel?,
+    subtitle2: TaskCardModel?,
+    subtitle3: TaskCardModel?,
+    subtitle4: TaskCardModel?,
+    subtitle5: TaskCardModel?,
+    subtitle6: TaskCardModel?,
+    primaryButtonText: TaskCardModel?,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
-    secondaryButtonText: GrantTaskCardModel?,
-    status: GrantTaskCardModel?,
+    secondaryButtonText: TaskCardModel?,
+    status: TaskCardModel?,
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isActivityCompleted: Boolean,
     isHamletIcon: Boolean = false,
-    formGeneratedCount: GrantTaskCardModel?,
+    isNotAvailableButtonEnable: Boolean = false,
+    isShowSecondaryStatusIcon: Boolean = false,
+    secondaryStatusIcon: Int = R.drawable.ic_green_file,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember(status?.value) {
@@ -162,11 +166,15 @@ fun GrantTaskCard(
                             .padding(horizontal = dimen_5_dp),
                         color = greyColor
                     )
-                } else if (taskStatus?.value == StatusEnum.INPROGRESS.name) {
-                    if (TextUtils.isEmpty(formGeneratedCount?.value) || formGeneratedCount?.value.equals(
-                            "0"
+                } else if (taskStatus.value == StatusEnum.INPROGRESS.name) {
+                    if (isShowSecondaryStatusIcon) {
+                        Icon(
+                            painter = painterResource(id = secondaryStatusIcon),
+                            contentDescription = "Green Icon",
+                            tint = greenOnline,
+                            modifier = Modifier.size(dimen_22_dp)
                         )
-                    ) {
+                    } else {
                         Text(
                             text = stringResource(id = R.string.in_progress),
                             style = defaultTextStyle,
@@ -174,13 +182,7 @@ fun GrantTaskCard(
                                 .padding(horizontal = dimen_5_dp),
                             color = unmatchedOrangeColor
                         )
-                    } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_green_file),
-                            contentDescription = "Green Icon",
-                            tint = greenOnline,
-                            modifier = Modifier.size(22.dp)
-                        )
+                    }
 
                     }
 
@@ -202,6 +204,7 @@ fun GrantTaskCard(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
+                SubContainerView(subtitle6, isNumberFormattingRequired = false)
                 SubContainerView(subtitle3)
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
                 SubContainerView(subtitle5, isNumberFormattingRequired = true)
@@ -241,7 +244,8 @@ fun GrantTaskCard(
                         onPrimaryButtonClick,
                         title?.value ?: BLANK_STRING,
                         isActivityCompleted,
-                        taskStatus
+                        taskStatus,
+                        isNotAvailableButtonEnable
                     )
                 }
             } else {
@@ -294,18 +298,18 @@ fun GrantTaskCard(
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,
-                            taskStatus
+                            taskStatus,
+                            isNotAvailableButtonEnable
                         )
                     }
                 }
             }
         }
     }
-}
 
 @Composable
 private fun SubContainerView(
-    taskCard: GrantTaskCardModel?,
+    taskCard: TaskCardModel?,
     isNumberFormattingRequired: Boolean = false
 ) {
     Row(
@@ -357,13 +361,15 @@ private fun PrimarySecondaryButtonView(
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     title: String,
     isActivityCompleted: Boolean,
-    taskStatus: MutableState<String?>
+    taskStatus: MutableState<String?>,
+    isNotAvailableButtonEnable: Boolean
 
 ) {
     val context = LocalContext.current
-    if (secondaryButtonText.isNotBlank() && !taskMarkedNotAvailable.value) {
+    if (secondaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = secondaryButtonText,
+            enabled = isNotAvailableButtonEnable,
             isIcon = false,
             onClick = {
                 if (!isActivityCompleted) {
@@ -392,9 +398,12 @@ private fun PrimarySecondaryButtonView(
     if (primaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = primaryButtonText,
-            color = ButtonDefaults.buttonColors(
+            color = if (!taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
                 containerColor = blueDark,
                 contentColor = white
+            ) else ButtonDefaults.buttonColors(
+                containerColor = languageItemActiveBg,
+                contentColor = blueDark
             ),
             onClick = {
                 taskMarkedNotAvailable.value = false

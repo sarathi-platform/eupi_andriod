@@ -20,9 +20,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
         const val PREF_PRODUCER_WORKER_ID= "producer_worker_id"
-        const val PREF_MOBILE_NO_NAME = "mobileNo"
-        const val PREF_USER_TYPE = "userType"
 
+        const val PREF_MOBILE_NO_NAME = "pref_mobile_number"
+        const val PREF_USER_TYPE = "type_name"
         const val PREF_KEY_NAME = "key_name"
         const val PREF_KEY_EMAIL = "key_email"
         const val PREF_KEY_IDENTITY_NUMBER = "key_identity_number"
@@ -30,10 +30,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_STATE_ID = "stateId"
-
         const val PREF_KEY_USER_NAME = "key_user_name"
-
-        //        const val PREF_USER_TYPE = "pref_user_type"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
         const val PREF_KEY_LANGUAGE_ID = "language_id"

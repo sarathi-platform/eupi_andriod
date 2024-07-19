@@ -2,6 +2,7 @@ package com.nudge.core.utils
 
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.database.DatabaseUtils
 import android.net.Uri
 import android.os.Environment
@@ -10,11 +11,10 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
-import java.io.BufferedOutputStream
-import java.io.File
-import android.database.Cursor
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.uriFromFile
+import java.io.BufferedOutputStream
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -423,13 +423,23 @@ object FileUtils {
 
     fun getImageUri(context: Context, fileName: String): Uri? {
         val file =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+            findImageFile(context, fileName)
         return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
             uriFromFile(
                 context, file,
                 it
             )
         }
+    }
+
+    fun findImageFile(context: Context, fileName: String): File {
+        var file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+        if (!file.exists()) {
+            file =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+        }
+        return file
     }
 
 }
