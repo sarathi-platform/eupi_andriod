@@ -67,6 +67,7 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
+import com.sarathi.dataloadingmangement.FORM_E
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
@@ -102,7 +103,7 @@ class SettingBSViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
-    var formEAvailable = mutableStateOf(Pair<Int, Boolean>(0, false))
+    val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
 
 
@@ -627,7 +628,7 @@ class SettingBSViewModel @Inject constructor(
 
     fun getActivityFormGenerateList(onGetData: () -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = "form")
+            activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = FORM_E)
             onGetData()
         }
     }
@@ -644,17 +645,19 @@ class SettingBSViewModel @Inject constructor(
     private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
         if (activityFormUIModelList.isNotEmpty()) {
             CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+                val pairFormList = ArrayList<Pair<Int, Boolean>>()
                 activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
                     val isFromEAvailable = formUseCase.getOnlyGeneratedFormSummaryData(
                         activityId = activityFormUIModel.activityId,
                         isFormGenerated = true
                     ).isNotEmpty()
-                    formEAvailable.value = Pair(index, isFromEAvailable)
+                    pairFormList.add(Pair(index, isFromEAvailable))
                 }
+                formEAvailableList.value = pairFormList
             }
 
         } else {
-            formEAvailable.value = Pair(0, false)
+            formEAvailableList.value = emptyList()
         }
     }
 }

@@ -32,9 +32,6 @@ import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
-import com.sarathi.dataloadingmangement.NO_OF_POOR_DIDI_TAG
-import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
-import com.sarathi.dataloadingmangement.ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -109,16 +106,8 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                        if (sanctionedAmount == 0 || viewModel.totalRemainingAmount >= 0) {
                             viewModel.saveButtonClicked()
                             navController.popBackStack()
-                        } else {
-                            showCustomToast(
-                                context = context,
-                                context.getString(R.string.amount_limit_message, sanctionedAmount)
-                            )
-
-                        }
                     }
                 )
             }
@@ -298,19 +287,7 @@ private fun saveInputTypeAnswer(
     if (TextUtils.isEmpty(selectedValue)) {
         question.options?.firstOrNull()?.isSelected = false
     } else {
-        if (question.tagId.contains(NO_OF_POOR_DIDI_TAG) || question.tagId.contains(
-                RECEIVED_AMOUNT_TAG
-            ) || question.tagId.contains(
-                DISBURSED_AMOUNT_TAG
-            )
-        ) {
-            if (selectedValue.all { it == ZERO }) {
-                question.options?.firstOrNull()?.selectedValue = BLANK_STRING
-            }
-            question.options?.firstOrNull()?.isSelected = !selectedValue.all { it == ZERO }
-        } else {
-            question.options?.firstOrNull()?.isSelected = true
-        }
+        question.options?.firstOrNull()?.isSelected = true
     }
     question.options?.firstOrNull()?.selectedValue = selectedValue
     viewModel.checkButtonValidation()

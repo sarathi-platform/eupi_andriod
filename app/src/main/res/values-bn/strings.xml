@@ -65,40 +65,41 @@
     <string name="mark_as_completed">সম্পন্ন হিসাবে চিহ্নিত করুন</string>
     <string name="village_text">গ্রাম</string>
     <plurals name="vo_name">
-        <item quantity="one">CLF Name</item>
+        <item quantity="one">গ্রাম সংগঠন (CLF) নাম</item>
         <item quantity="other">গ্রাম সংগঠন (VO) নাম</item>
     </plurals>
     <plurals name="seletc_village_screen_text">
-        <item quantity="one">Select Village &amp; CLF</item>
-        <item quantity="other">Select Village &amp; VO</item>
+        <item quantity="one">গ্রাম এবং সংঘ (CLF) নির্বাচন </item>
+        <item quantity="other">গ্রাম এবং সংঘ (VO) নির্বাচন </item>
     </plurals>
     <plurals name="pat_sub_text_singular">
-        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
-        <item quantity="other">%1$s Ultra Poor Didi sent for VO Endorsement</item>
+        <item quantity="one"> গ্রাম সংগঠন (CLF) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদিদের পাঠানো হয়েছে</item>
+        <item quantity="other"> গ্রাম সংগঠন (VO) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদিদের পাঠানো হয়েছে</item>
+
     </plurals>
     <plurals name="pat_sub_text_plural">
-        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
-        <item quantity="other">%1$s Ultra Poor Didis sent for VO Endorsement</item>
+        <item quantity="one">%1$s অতি দরিদ্র দিদিদের CLF অনুমোদনের জন্য পাঠানো হয়েছে</item>
+        <item quantity="other">%1$s অতি দরিদ্র দিদিদের VO অনুমোদনের জন্য পাঠানো হয়েছে</item>
     </plurals>
     <plurals name="vo_endorsement_screen_title">
         <item quantity="one">List of Didis for CLF Endorsement</item>
         <item quantity="other">List of Didis for VO Endorsement</item>
     </plurals>
     <plurals name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">
-        <item quantity="one">You are sending %1$s PAT completed Didis for CLF Endorsement</item>
-        <item quantity="other">You are sending %1$s PAT completed Didis for VO Endorsementt</item>
+        <item quantity="one">আপনি CLF অনুমোদনের জন্য %1$s PAT সম্পন্ন দিদিদের পাঠাচ্ছেন</item>
+        <item quantity="other">আপনি VO অনুমোদনের জন্য %1$s PAT সম্পন্ন দিদিদের পাঠাচ্ছেন</item>
     </plurals>
     <plurals name="send_all_for_vo_endorsement">
-        <item quantity="one">Send All For CLF Endorsement</item>
-        <item quantity="other">Send All For VO Endorsement</item>
+        <item quantity="one">CLF অনুমোদনের জন্য সকলকে পাঠান</item>
+        <item quantity="other">VO অনুমোদনের জন্য সকলকে পাঠান</item>
     </plurals>
     <plurals name="vo_endorsement_completed_message">
-        <item quantity="one">CLF Endorsement for {VILLAGE_NAME} \nis completed</item>
-        <item quantity="other">VO Endorsement for {VILLAGE_NAME} \nis completed</item>
+        <item quantity="one">{VILLAGE_NAME} এর জন্য CLF অনুমোদন \nসম্পূর্ণ হয়েছে</item>
+        <item quantity="other">{VILLAGE_NAME} এর জন্য VO অনুমোদন \nসম্পূর্ণ হয়েছে</item>
     </plurals>
     <plurals name="send_for_vo_text">
-        <item quantity="one">Send All For CLF Endorsement</item>
-        <item quantity="other">Send All For VO Endorsement</item>
+        <item quantity="one">CLF অনুমোদনের জন্য সকলকে পাঠান</item>
+        <item quantity="other">VO অনুমোদনের জন্য সকলকে পাঠান</item>
     </plurals>
     <plurals name="total_no_of_ultra_poor">
         <item quantity="one">Total no. Ultra-Poor families endorsed by CLF:</item>
@@ -109,56 +110,56 @@
         <item quantity="other">Final list of Ultra Poor families endorsed by VO (Village Organization)</item>
     </plurals>
     <plurals name="no_didis_availble_for_vo_endorsement">
-        <item quantity="one">No Didis available for CLF Endorsement.</item>
-        <item quantity="other">No Didis available for VO Endorsement.</item>
+        <item quantity="one">গ্রাম সংগঠনের (CLF) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না.</item>
+        <item quantity="other">গ্রাম সংগঠনের (VO) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না.</item>
     </plurals>
     <plurals name="vo_endorsement">
-        <item quantity="one">CLF Endorsement</item>
-        <item quantity="other">VO Endorsement</item>
+        <item quantity="one">গ্রাম সংগঠন (CLF) অনুমোদন</item>
+        <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদন</item>
     </plurals>
     <plurals name="summary_vo_endoresement_text_plural">
-        <item quantity="one">Didis sent for CLF Endorsement</item>
-        <item quantity="other">Didis sent for VO Endorsement</item>
+        <item quantity="one">দিদিদের গ্রামের সংগঠন (CLF) অনুমোদনের জন্য পাঠিয়েছেন</item>
+        <item quantity="other">দিদিদের গ্রামের সংগঠন (VO) অনুমোদনের জন্য পাঠিয়েছেন</item>
     </plurals>
     <plurals name="didis_endorsed_by_vo_plural">
-        <item quantity="one">Didis Endorsed by CLF</item>
-        <item quantity="other">Didis Endorsed by VO</item>
+        <item quantity="one">দিদিরা CLF দ্বারা অনুমোদিত</item>
+        <item quantity="other">দিদিরা VO দ্বারা অনুমোদিত</item>
     </plurals>
     <plurals name="didi_endorsed_by_vo_singular">
-        <item quantity="one">Didi Endorsed by CLF</item>
-        <item quantity="other">Didi Endorsed by VO</item>
+        <item quantity="one">দিদি CLF দ্বারা অনুমোদিত</item>
+        <item quantity="other">দিদি VO দ্বারা অনুমোদিত</item>
     </plurals>
     <plurals name="summary_vo_endoresement_text_singular">
-        <item quantity="one">Didi sent for CLF Endorsement</item>
-        <item quantity="other">Didi sent for VO Endorsement</item>
+        <item quantity="one">দিদি গ্রাম সংগঠনের (CLF) অনুমোদনের জন্য পাঠিয়েছেন</item>
+        <item quantity="other">দিদি গ্রাম সংগঠনের (VO) অনুমোদনের জন্য পাঠিয়েছেন</item>
     </plurals>
     <plurals name="step_vo_endorsement">
-        <item quantity="one">CLF Endorsement</item>
-        <item quantity="other">VO Endorsement</item>
+        <item quantity="one">গ্রাম সংগঠন (CLF) অনুমোদন</item>
+        <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদন</item>
     </plurals>
     <plurals name="vo_endorsement_completed">
-        <item quantity="one">CLF Endorsement \nCompleted</item>
-        <item quantity="other">VO Endorsement \nCompleted</item>
+        <item quantity="one">CLF অনুমোদন \nসম্পন্ন হয়েছে</item>
+        <item quantity="other">VO অনুমোদন \nসম্পন্ন হয়েছে</item>
     </plurals>
     <plurals name="vo_selected_status_text">
-        <item quantity="one">CLF Endorsed</item>
-        <item quantity="other">VO Endorsed</item>
+        <item quantity="one">CLF অনুমোদন করুন</item>
+        <item quantity="other">VO অনুমোদন করুন</item>
     </plurals>
     <plurals name="vo_rejected_status_text">
-        <item quantity="one">CLF Rejected</item>
-        <item quantity="other">VO Rejected</item>
+        <item quantity="one">CLF বাতিল করুন</item>
+        <item quantity="other">VO বাতিল করুন</item>
     </plurals>
     <plurals name="vo_summary_rejected_empty_text">
-        <item quantity="one">No didi rejected by CLF</item>
-        <item quantity="other">No didi rejected by VO</item>
+        <item quantity="one">কোনো দিদি গ্রাম সংগঠন (CLF) দ্বারা খারিজ হয়নি</item>
+        <item quantity="other">কোনো দিদি গ্রাম সংগঠন (VO) দ্বারা খারিজ হয়নি</item>
     </plurals>
     <plurals name="vo_summary_endorsed_empty_text">
-        <item quantity="one">No didi endorsed by CLF</item>
-        <item quantity="other">No didi endorsed by VO</item>
+        <item quantity="one">কোনো দিদি গ্রাম সংগঠন (CLF) দ্বারা অনুমোদিত হয়নি </item>
+        <item quantity="other">কোনো দিদি গ্রাম সংগঠন (VO) দ্বারা অনুমোদিত হয়নি </item>
     </plurals>
     <plurals name="village_is_not_vo_endorsed_right_now">
-        <item quantity="one">Village is not CLF Endorsed Right Now!</item>
-        <item quantity="other">Village is not VO Endorsed Right Now!</item>
+        <item quantity="one">এই গ্রাম এখনো CLF অনুমোদিত হয়নি !</item>
+        <item quantity="other">এই গ্রাম এখনো VO অনুমোদিত হয়নি !</item>
     </plurals>
     <plurals name="vo_endorsement_not_started">
         <item quantity="one">CLF Endorsement is not started</item>
@@ -385,7 +386,7 @@
         <item quantity="one">CLF অনুমোদন সম্পন্ন হয়েছে</item>
         <item quantity="other">VO অনুমোদন সম্পন্ন হয়েছে</item>
     </plurals>
-<!--    <string name="vo_endorsement_completed_village_banner_text">VO অনুমোদন সম্পন্ন হয়েছে</string>-->
+    <!--    <string name="vo_endorsement_completed_village_banner_text">VO অনুমোদন সম্পন্ন হয়েছে</string>-->
     <string name="bpc_verification_completed_village_banner_text">BPC যাচাইকরণ সম্পন্ন হয়েছে</string>
     <string name="empty_tola_success_message">এই গ্রামে কোনো পাড়া নেই</string>
     <string name="total_poor_didis">মোট দরিদ্র দিদি</string>
@@ -504,6 +505,4 @@
     <string name="recover_old_data">পুরানো ডেটা পুনরুদ্ধার করুন</string>
     <string name="this_language_is_not_available_for_selection">এই ভাষা নির্বাচনের জন্য উপলব্ধ নয়</string>
     <string name="change_language">ভাষা পরিবর্তন করুন</string>
-
-
 </resources>

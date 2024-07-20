@@ -3,8 +3,11 @@ package com.sarathi.contentmodule.ui.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.utils.event.LoaderEvent
 import com.sarathi.contentmodule.utils.state.LoaderState
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import kotlinx.coroutines.CoroutineExceptionHandler
 
 abstract class BaseViewModel : ViewModel() {
@@ -17,6 +20,13 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun onCatchError(e: Throwable) {
+        CoreAppDetails.getContext()?.applicationContext?.let {
+            CoreLogger.d(
+                context = it,
+                tag = "BaseViewModel->",
+                msg = e.message ?: BLANK_STRING
+            )
+        }
         onEvent(LoaderEvent.UpdateLoaderState(false))
 
     }

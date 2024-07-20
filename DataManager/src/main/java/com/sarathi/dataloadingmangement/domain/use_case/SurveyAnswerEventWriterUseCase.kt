@@ -7,6 +7,7 @@ import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -116,9 +117,12 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
 
                 uriList?.forEach { uri ->
                     compressImage(
-                        uri.path ?: BLANK_STRING,
-                        CoreAppDetails.getContext()!!,
-                        getFileNameFromURL(uri.path ?: BLANK_STRING)
+                        imageUri = findImageFile(
+                            CoreAppDetails.getContext()?.applicationContext!!,
+                            getFileNameFromURL(uri.path ?: BLANK_STRING)
+                        ).absolutePath,
+                        activity = CoreAppDetails.getContext()!!,
+                        name = getFileNameFromURL(uri.path ?: BLANK_STRING)
                     )
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(
                         it,

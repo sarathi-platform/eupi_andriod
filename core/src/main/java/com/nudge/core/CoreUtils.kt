@@ -59,6 +59,7 @@ import java.util.logging.Level
 
 
 private const val TAG = "CoreUtils"
+private const val COMPRESS_IMAGE_TAG = "Compress Image"
 
 fun Long.toDate(
     dateFormat: Long = System.currentTimeMillis(),
@@ -250,20 +251,16 @@ fun getDefaultImageBackUpFileName(mobileNo: String, userType: String): String {
         .toDateInMMDDYYFormat()
 }
 
-/*fun getDefaultBackUpFileName(mobileNo: String): String {
-    return LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
-        .toDateInMMDDYYFormat()
-}
-
-fun getDefaultImageBackUpFileName(mobileNo: String): String {
-    return LOCAL_BACKUP__IMAGE_FILE_NAME + "_" + mobileNo + "_" + System.currentTimeMillis()
-        .toDateInMMDDYYFormat()
-}*/
 
 fun compressImage(imageUri: String, activity: Context, name: String): String? {
-    var filename: String? = ""
+    val filename: String?
     try {
-        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
+        val filePath = imageUri
+        CoreLogger.d(
+            context = activity,
+            tag = "$TAG: Image Path:",
+            msg = filePath
+        )
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -297,12 +294,22 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
         try {
             bmp = BitmapFactory.decodeFile(filePath, options)
         } catch (exception: OutOfMemoryError) {
-            exception.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = exception,
+                tag = "$COMPRESS_IMAGE_TAG : OutOfMemoryError 1",
+                msg = exception.message ?: BLANK_STRING
+            )
         }
         try {
             scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888)
         } catch (exception: OutOfMemoryError) {
-            exception.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = exception,
+                tag = "$COMPRESS_IMAGE_TAG : OutOfMemoryError",
+                msg = exception.message ?: BLANK_STRING
+            )
         }
         val ratioX = actualWidth / options.outWidth.toFloat()
         val ratioY = actualHeight / options.outHeight.toFloat()
@@ -345,7 +352,12 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
                 )
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = e,
+                tag = "$COMPRESS_IMAGE_TAG : IOException",
+                msg = e.message ?: BLANK_STRING
+            )
         }
         val out: FileOutputStream
         filename = name
@@ -357,13 +369,28 @@ fun compressImage(imageUri: String, activity: Context, name: String): String? {
             out = FileOutputStream(path)
             val success = scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, out)
             return if (success == true) {
+                CoreLogger.d(
+                    context = activity,
+                    tag = COMPRESS_IMAGE_TAG,
+                    msg = "Image Compress Success $filename"
+                )
                 path
             } else BLANK_STRING
         } catch (e: FileNotFoundException) {
-            e.printStackTrace()
+            CoreLogger.e(
+                context = activity,
+                ex = e,
+                tag = "$COMPRESS_IMAGE_TAG : FileNotFoundException",
+                msg = e.message ?: BLANK_STRING
+            )
         }
-    } catch (e: java.lang.Exception) {
-        e.printStackTrace()
+    } catch (e: Exception) {
+        CoreLogger.e(
+            context = activity,
+            ex = e,
+            tag = COMPRESS_IMAGE_TAG,
+            msg = e.message ?: BLANK_STRING
+        )
     }
     return BLANK_STRING
 }
