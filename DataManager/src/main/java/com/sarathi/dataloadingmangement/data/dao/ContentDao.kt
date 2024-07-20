@@ -24,14 +24,23 @@ interface ContentDao {
     @Query("SELECT * FROM $CONTENT_TABLE_NAME ")
     fun getContentData(): List<Content>
 
-    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys) and userId=:userId")
-    fun getContentData(contentKeys: List<String>, userId: String): List<Content>
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys) and userId=:userId and languageCode=:languageCode group by contentKey")
+    fun getContentData(
+        contentKeys: List<String>,
+        userId: String,
+        languageCode: String
+    ): List<Content>
 
-    @Query("SELECT * FROM $CONTENT_TABLE_NAME  where contentKey in (:contentKeys) and userId=:userId LIMIT :limit")
-    fun getLimitedData(limit: Int, contentKeys: List<String>, userId: String): List<Content>
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME  where contentKey in (:contentKeys) and userId=:userId and languageCode=:languageCode group by contentKey LIMIT :limit")
+    fun getLimitedData(
+        limit: Int,
+        contentKeys: List<String>,
+        userId: String,
+        languageCode: String
+    ): List<Content>
 
-    @Query("SELECT count(*) FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys)  and userId=:userId")
-    fun getContentCount(contentKeys: List<String>, userId: String): Int
+    @Query("SELECT count(*) FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys)  and userId=:userId and languageCode=:languageCode group by contentKey")
+    fun getContentCount(contentKeys: List<String>, userId: String, languageCode: String): Int
 
     @Query("DELETE FROM $CONTENT_TABLE_NAME where userId=:userId")
     fun deleteContent(userId: String)

@@ -4,10 +4,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -24,7 +26,9 @@ class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
-    private val eventWriterUseCase: MATStatusEventWriterUseCase
+    private val eventWriterUseCase: MATStatusEventWriterUseCase,
+    private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
@@ -51,6 +55,7 @@ class ActivityScreenViewModel @Inject constructor(
             _activityList.value = getActivityUseCase.getActivities(missionId)
             getContentValue(_activityList.value)
             checkButtonValidation()
+            updateActivityStatus()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -84,6 +89,23 @@ class ActivityScreenViewModel @Inject constructor(
             actvityUiList.forEach {
                 it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
             }
+        }
+    }
+
+    private suspend fun updateActivityStatus(){
+        val updateActivityStatusList = updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
+        val updateMissionStatusList = updateMissionActivityTaskStatusUseCase.reCheckMissionStatus()
+        updateActivityStatusList.forEach {
+            matStatusEventWriterUseCase.updateActivityStatus(
+                surveyName = BLANK_STRING,
+                activityEntity = it
+            )
+        }
+        updateMissionStatusList.forEach {
+            matStatusEventWriterUseCase.updateMissionStatus(
+                surveyName = BLANK_STRING,
+                missionEntity = it
+            )
         }
     }
 }

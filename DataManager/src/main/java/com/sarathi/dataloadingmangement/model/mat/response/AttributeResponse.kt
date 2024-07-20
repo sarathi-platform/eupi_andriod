@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class AttributeResponse(
     @SerializedName("componentType")
-    val componentType: String,
+    val componentType: String?,
     @SerializedName("key")
     val key: String,
     @SerializedName("type")

@@ -3,7 +3,9 @@ package com.sarathi.missionactivitytask.viewmodels
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.missionactivitytask.utils.LoaderState
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -24,6 +26,13 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun onCatchError(e: Throwable) {
+        CoreAppDetails.getContext()?.applicationContext?.let {
+            CoreLogger.d(
+                context = it,
+                tag = "BaseViewModel->",
+                msg = e.message ?: BLANK_STRING
+            )
+        }
         onEvent(LoaderEvent.UpdateLoaderState(false))
 
     }

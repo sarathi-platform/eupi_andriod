@@ -160,7 +160,6 @@ class PatDidiSummaryViewModel @Inject constructor(
                 metadata = updatedMetaData?.json()
             )
 
-            //TODO Remove delay and fix cropping issue without delay
             delay(500)
             val compressedDidi = compressImage(
                 photoPath,
@@ -169,8 +168,6 @@ class PatDidiSummaryViewModel @Inject constructor(
             )
             patDidiSummaryRepository.uri = File(compressedDidi).toUri()
             patDidiSummaryRepository.writeImageEventIntoLogFile(imageUploadEvent, dependsOn)
-
-
         }
     }
 
