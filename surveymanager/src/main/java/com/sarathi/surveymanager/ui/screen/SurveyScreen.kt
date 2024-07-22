@@ -26,10 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
@@ -61,7 +62,7 @@ fun SurveyScreen(
     taskId: Int,
     subjectType: String,
     referenceId: String,
-    subjectName: String,
+    toolbarTitle: String,
     activityConfigId: Int,
     grantId: Int,
     grantType: String,
@@ -90,7 +91,7 @@ fun SurveyScreen(
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     ToolBarWithMenuComponent(
-        title = subjectName,
+        title = toolbarTitle,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
@@ -143,6 +144,7 @@ fun SurveyScreen(
                         .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
+                    item { CustomVerticalSpacer() }
                     itemsIndexed(
                         items = viewModel.questionUiModel.value
                     ) { index, question ->
@@ -211,7 +213,8 @@ fun SurveyScreen(
                                 }
                             }
 
-                            QuestionType.SingleSelectDropDown.name -> {
+                            QuestionType.SingleSelectDropDown.name,
+                            QuestionType.DropDown.name -> {
                                 TypeDropDownComponent(
                                     isEditAllowed = viewModel.isActivityNotCompleted.value,
                                     title = question.questionDisplay,
@@ -251,31 +254,47 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                 )
                             }
-                            QuestionType.RadioButton.name ->
-                                { RadioQuestionBoxComponent(
-                                questionIndex = index,
-                                maxCustomHeight = maxHeight,
-                                optionItemEntityList = listOf()!!,
-                                onAnswerSelection = { questionIndex, optionItem ->
-                                },
+
+                            QuestionType.RadioButton.name -> {
+                                RadioQuestionBoxComponent(
+                                    questionIndex = index,
+                                    questionDisplay = question.questionDisplay,
+                                    isRequiredField = question.isMandatory,
+                                    maxCustomHeight = maxHeight,
+                                    optionUiModelList = question.options.value(),
+                                    onAnswerSelection = { questionIndex, optionItem ->
+
+                                    },
+                                    questionDetailExpanded = {
+
+                                    }
                                 )
                             }
+
                             QuestionType.MultiSelect.name,
-                                QuestionType.Grid.name ->
-                            {
+                            QuestionType.Grid.name -> {
                                 GridTypeComponent(
                                     questionIndex = index,
+                                    questionDisplay = question.questionDisplay,
+                                    isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
-                                    optionItemEntityList = listOf(),
-                                    selectedOptionIndices =listOf() ,
+                                    optionUiModelList = question.options.value(),
+                                    selectedOptionIndices = listOf(),
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
+
+                                    },
+                                    questionDetailExpanded = {
+
                                     }
-                                ) {}
+                                )
                             }
+
                             QuestionType.Toggle.name -> {
                             }
                         }
                     }
+
+                    item { CustomVerticalSpacer() }
                 }
             }
         },

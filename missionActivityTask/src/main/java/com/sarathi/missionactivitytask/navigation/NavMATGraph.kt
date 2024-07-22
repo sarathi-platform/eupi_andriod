@@ -47,6 +47,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SU
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID_LIST
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOOLBAR_TITLE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
@@ -69,6 +70,7 @@ import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.sarathi.surveymanager.ui.screen.sectionScreen.SectionScreen
+import java.util.UUID
 import com.nudge.core.model.MissionUiModel as CoreMissionUiModel
 
 
@@ -275,7 +277,7 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_SUBJECT_TYPE) {
                     type = NavType.StringType
                 },
-                navArgument(name = ARG_SUBJECT_NAME) {
+                navArgument(name = ARG_TOOLBAR_TITLE) {
                     type = NavType.StringType
                 },
                 navArgument(name = ARG_REFERENCE_ID) {
@@ -313,8 +315,8 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
-                subjectName = it.arguments?.getString(
-                    ARG_SUBJECT_NAME
+                toolbarTitle = it.arguments?.getString(
+                    ARG_TOOLBAR_TITLE
                 ) ?: BLANK_STRING,
                 referenceId = it.arguments?.getString(
                     ARG_REFERENCE_ID
@@ -393,7 +395,7 @@ fun NavGraphBuilder.MatNavigation(
                         ) ?: 0, subjectType = it.arguments?.getString(
                             ARG_SUBJECT_TYPE
                         ) ?: BLANK_STRING,
-                        subjectName = it.arguments?.getString(ARG_SUBJECT_NAME) ?: BLANK_STRING,
+                        toolbarName = it.arguments?.getString(ARG_SUBJECT_NAME) ?: BLANK_STRING,
                         referenceId = referenceId,
                         activityConfigId = activityConfigId,
                         grantId = grantId,
@@ -554,8 +556,21 @@ fun NavGraphBuilder.MatNavigation(
                 onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
 
                 },
-                onNavigateToQuestionScreen = { surveyId, sectionId, taskId ->
-
+                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId ->
+                    navigateToSurveyScreen(
+                        navController = navController,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        taskId = taskId,
+                        subjectType = subjectType,
+                        toolbarName = sectionName,
+                        activityConfigId = activityConfigId,
+                        grantId = 0,
+                        grantType = "Survey",
+                        referenceId = UUID.randomUUID().toString(),
+                        sanctionedAmount = 0,
+                        totalSubmittedAmount = 0
+                    )
                 }
             )
         }
@@ -589,7 +604,7 @@ fun navigateToSurveyScreen(
     sectionId: Int,
     taskId: Int,
     subjectType: String,
-    subjectName: String,
+    toolbarName: String,
     referenceId: String,
     activityConfigId: Int,
     grantId: Int,
@@ -597,7 +612,7 @@ fun navigateToSurveyScreen(
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$referenceId/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$referenceId/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
 }
 
 fun navigateToGrantSurveySummaryScreen(

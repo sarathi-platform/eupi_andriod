@@ -107,7 +107,7 @@ fun SectionScreen(
         contentType: String,
         contentTitle: String
     ) -> Unit,
-    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int) -> Unit
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -292,7 +292,14 @@ fun SectionScreen(
                                             }
                                         },
                                         onSectionItemClicked = { sectionId ->
-                                            onNavigateToQuestionScreen(surveyId, sectionId, taskId)
+                                            onNavigateToQuestionScreen(
+                                                surveyId,
+                                                sectionId,
+                                                taskId,
+                                                section.sectionName,
+                                                subjectType,
+                                                activityConfigId
+                                            )
                                         }
                                     )
 

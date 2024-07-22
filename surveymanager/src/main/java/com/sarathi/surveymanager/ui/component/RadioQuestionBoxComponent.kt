@@ -14,19 +14,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -34,24 +29,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
-import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
-import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
-import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
 
@@ -60,11 +51,14 @@ import kotlinx.coroutines.launch
 fun RadioQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
-    optionItemEntityList: List<OptionItemEntity>?,
+    questionDisplay: String,
+    isRequiredField: Boolean = true,
+    optionUiModelList: List<OptionsUiModel>,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
-    onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItem: OptionsUiModel) -> Unit,
+    questionDetailExpanded: (index: Int) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
@@ -120,22 +114,42 @@ fun RadioQuestionBoxComponent(
                                     .padding(bottom = 10.dp)
                                     .padding(horizontal = dimen_16_dp)
                             ) {
-                                Text(
-                                    text = "${questionIndex + 1}. ", style = defaultTextStyle,
-                                    color = textColorDark
+                                QuestionComponent(
+                                    title = "${questionIndex + 1}. $questionDisplay",
+                                    isRequiredField = isRequiredField
                                 )
-                                    HtmlText(
-                                        text = "",
-                                        style = defaultTextStyle,
-                                        color = textColorDark,
-                                        overflow = TextOverflow.Ellipsis,
-                                        softWrap = true
-                                    )
                             }
                         }
                         item {
-                            if (optionItemEntityList?.isNotEmpty() == true) {
-                                LazyVerticalGrid(
+                            if (optionUiModelList?.isNotEmpty() == true) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    optionUiModelList.forEachIndexed { _index, option ->
+                                        RadioButtonOptionComponent(
+                                            modifier = Modifier.weight(1f),
+                                            index = _index,
+                                            optionsItem = option,
+                                            selectedIndex = selectedIndex
+                                        ) {
+                                            if (isEditAllowed) {
+                                                selectedIndex = _index
+                                                onAnswerSelection(
+                                                    questionIndex,
+                                                    option
+                                                )
+                                            } else {
+                                                showCustomToast(
+                                                    context,
+                                                    context.getString(R.string.edit_disable_message)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                                /*LazyVerticalGrid(
                                     userScrollEnabled = false,
                                     state = innerState,
                                     columns = GridCells.Fixed(2),
@@ -145,19 +159,19 @@ fun RadioQuestionBoxComponent(
                                         .heightIn(min = 110.dp, max = maxCustomHeight)
                                 ) {
                                     itemsIndexed(
-                                        optionItemEntityList ?: emptyList()
-                                    ) { _index: Int, optionsItem: OptionItemEntity ->
-                                        if (optionsItem.optionType.equals(QuestionType.RadioButton.name)) {
+                                        optionUiModelList ?: emptyList()
+                                    ) { _index: Int, option: OptionsUiModel ->
+                                        if (option.optionType.equals(QuestionType.RadioButton.name)) {
                                             RadioButtonOptionComponent(
                                                 index = _index,
-                                                optionsItem = optionsItem,
+                                                optionsItem = option,
                                                 selectedIndex = selectedIndex
                                             ) {
                                                 if (isEditAllowed) {
                                                     selectedIndex = _index
                                                     onAnswerSelection(
                                                         questionIndex,
-                                                        optionsItem
+                                                        option
                                                     )
                                                 } else {
                                                     showCustomToast(
@@ -168,7 +182,7 @@ fun RadioQuestionBoxComponent(
                                             }
                                         }
                                     }
-                                }
+                                }*/
                             } else {
                                 Spacer(
                                     modifier = Modifier
@@ -194,30 +208,7 @@ fun RadioQuestionBoxComponent(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun RadioQuestionBoxComponentPreview(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
+) {
 
-    ) {
-    val option1 = OptionItemEntity(
-        optionId = 1,
-        weight = 1,
-        summary = "YES",
-        optionValue = 1,
-        optionImage = "",
-        optionType = "",
-        surveyId = 1,
-        questionId = 1,
-        id = 1
-    )
-
-    val option2 = OptionItemEntity(
-        optionId = 2,
-        weight = 0,
-        summary = "NO",
-        optionValue = 0,
-        optionImage = "",
-        optionType = "",
-        surveyId = 1,
-        questionId = 1,
-        id = 1
-    )
 }

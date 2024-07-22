@@ -31,6 +31,7 @@ object MissionActivityConstants {
     const val ARG_GRANT_TYPE = "grant_type"
     const val ARG_SUBJECT_TYPE = "subject_type"
     const val ARG_SUBJECT_NAME = "subject_name"
+    const val ARG_TOOLBAR_TITLE = "toolbar_title"
 
     const val ARG_SURVEY_ID = "survey_id"
     const val ARG_REFERENCE_ID = "referenceId"

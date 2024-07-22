@@ -14,14 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.greenActiveIcon
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 
 @SuppressLint("SuspiciousIndentation")
@@ -30,8 +29,8 @@ fun RadioButtonOptionComponent(
     modifier: Modifier = Modifier,
     index: Int,
     selectedIndex: Int,
-    optionsItem: OptionItemEntity,
-    onOptionSelected: (OptionItemEntity) -> Unit
+    optionsItem: OptionsUiModel,
+    onOptionSelected: (OptionsUiModel) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -48,7 +47,7 @@ fun RadioButtonOptionComponent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(110.dp),
-//                buttonTitle = optionsItem.display ?: "",
+                buttonTitle = optionsItem.description ?: "",
                 textColor = if (selectedIndex == index) Color.White else blueDark,
                 buttonBackgroundColor = if (selectedIndex == index) blueDark else Color.White,
                 buttonBorderColor = if (selectedIndex == index) {
@@ -69,7 +68,7 @@ fun RadioButtonOptionComponent(
                 icon = if (index == 0)
                     painterResource(id = R.drawable.icon_check)
                 else
-                    painterResource(id = R.drawable.icon_check)
+                    painterResource(id = R.drawable.icon_close)
             ) {
                 onOptionSelected(optionsItem)
             }
