@@ -882,6 +882,10 @@ fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
 
+fun <T> List<T>?.value(): List<T> {
+    return this ?: emptyList()
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()

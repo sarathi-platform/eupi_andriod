@@ -14,7 +14,7 @@ object MissionActivityConstants {
     const val SURVEY_SCREEN_ROUTE_NAME = "survey_screen"
     const val GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME = "grant_survey_summary_screen"
     const val ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME = "add_image_screen_screen"
-    const val SECTION_SCREEN_ROUTE_NAME = "mat_section_screen"
+    const val MAT_SECTION_SCREEN_ROUTE_NAME = "mat_section_screen"
     const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
     const val ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME = "activity_completion_screen"
     const val MISSION_FINAL_STEP_SCREEN_ROUTE_NAME = "mission_final_step_screen"

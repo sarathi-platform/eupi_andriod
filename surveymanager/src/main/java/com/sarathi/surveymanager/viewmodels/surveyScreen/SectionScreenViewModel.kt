@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.viewmodels.surveyScreen
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.sarathi.dataloadingmangement.data.entities.Content
@@ -9,6 +10,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +29,10 @@ class SectionScreenViewModel @Inject constructor(
     private val _sectionList = mutableStateOf<List<SectionUiModel>>(mutableListOf())
     val sectionList: State<List<SectionUiModel>> get() = _sectionList
 
+    private val _sectionStatusMap: MutableState<MutableMap<Int, String>> =
+        mutableStateOf(mutableMapOf())
+    val sectionStatusMap: State<Map<Int, String>> get() = _sectionStatusMap
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataStateWithCallBack -> {
@@ -44,7 +50,11 @@ class SectionScreenViewModel @Inject constructor(
     private fun initSectionScreen(callBack: () -> Unit) {
         ioViewModelScope {
             _sectionList.value = getSectionListUseCase.invoke(surveyId)
-            callBack()
+            _sectionStatusMap.value =
+                getSectionListUseCase.getSectionStatusMap(surveyId, taskId).toMutableMap()
+            withContext(mainDispatcher) {
+                callBack()
+            }
         }
     }
 

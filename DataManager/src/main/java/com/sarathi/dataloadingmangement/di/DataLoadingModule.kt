@@ -23,6 +23,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -242,6 +243,9 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyLanguageAttributeDao(db: NudgeGrantDatabase) = db.surveyLanguageAttributeDao()
 
+    @Provides
+    @Singleton
+    fun provideSectionStatusEntityDao(db: NudgeGrantDatabase) = db.sectionStatusEntityDao()
 
     @Provides
     @Singleton
@@ -848,11 +852,13 @@ class DataLoadingModule {
     @Singleton
     fun provideSectionListRepository(
         coreSharedPrefs: CoreSharedPrefs,
-        sectionEntityDao: SectionEntityDao
+        sectionEntityDao: SectionEntityDao,
+        sectionSectionEntityDao: SectionStatusEntityDao
     ): SectionListRepository {
         return SectionListRepositoryImpl(
             coreSharedPrefs,
-            sectionEntityDao
+            sectionEntityDao,
+            sectionSectionEntityDao
         )
     }
 

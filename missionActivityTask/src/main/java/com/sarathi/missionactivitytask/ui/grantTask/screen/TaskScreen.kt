@@ -212,8 +212,7 @@ fun TaskScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
-                )
-                {
+                ) {
                     PullRefreshIndicator(
                         refreshing = viewModel.loaderState.value.isLoaderVisible,
                         state = pullRefreshState,

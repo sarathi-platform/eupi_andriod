@@ -139,6 +139,18 @@ fun <T> List<T>.produceLinearProgressTextState(
 }
 
 @Composable
+fun <T> List<T>.produceLinearProgressTextState(
+    initialValue: String = BLANK_STRING,
+    predicate1: (T) -> Boolean,
+): State<String> {
+    val list = this
+    return produceState(initialValue = initialValue) {
+        value =
+            "${list.filter(predicate1).size.toFloat()}/${list.size.toFloat()}"
+    }
+}
+
+@Composable
 fun <T> getUpdatedValuesForProgressState(
     list: List<T>,
     initialValue1: Float,
@@ -156,5 +168,22 @@ fun <T> getUpdatedValuesForProgressState(
     )
 }
 
+@Composable
+fun <T> getUpdatedValuesForProgressState(
+    list: List<T>,
+    initialValue1: Float,
+    initialValue2: String,
+    predicate1: (T) -> Boolean
+): Pair<State<Float>, State<String>> {
+    return Pair(
+        list.produceLinearProgressState(initialValue = initialValue1, predicate = predicate1),
+        list.produceLinearProgressTextState(
+            initialValue = initialValue2,
+            predicate1 = predicate1
+        )
+    )
+}
+
 
 const val DEFAULT_PROGRESS_VALUE = 0F
+const val DEFAULT_PROGRESS_TEXT_VALUE = "0"

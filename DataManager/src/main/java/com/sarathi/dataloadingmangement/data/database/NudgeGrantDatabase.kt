@@ -31,6 +31,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -150,11 +151,12 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun grantConfigDao(): GrantConfigDao
     abstract fun surveyLanguageAttributeDao(): SurveyLanguageAttributeDao
 
-
     abstract fun subjectEntityDao(): SubjectEntityDao
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
     abstract fun tagReferenceEntityDao(): TagReferenceEntityDao
+
+    abstract fun sectionStatusEntityDao(): SectionStatusEntityDao
 
     class NudgeDatabaseCallback : Callback()
 

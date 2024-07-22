@@ -8,5 +8,5 @@ data class SectionUiModel(
     val sectionOrder: Int,
     val sectionDetails: String,
     val sectionIcon: String,
-    val questionSize: Int,
+    val questionSize: Int
 )

@@ -18,7 +18,6 @@ import com.sarathi.contentmodule.media.PdfViewer
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME
@@ -26,6 +25,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TITLE
@@ -52,6 +52,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
@@ -496,7 +497,7 @@ fun NavGraphBuilder.MatNavigation(
         }
 
         composable(
-            route = MATHomeScreens.MATSectionScreen.route,
+            route = MATHomeScreens.SectionScreen.route,
             arguments = listOf(
                 navArgument(name = ARG_TASK_ID) {
                     type = NavType.IntType
@@ -516,7 +517,7 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_SANCTIONED_AMOUNT) {
                     type = NavType.IntType
                 },
-                navArgument(name = ARG_ACTIVITY_NAME) {
+                navArgument(name = ARG_ACTIVITY_TYPE) {
                     type = NavType.StringType
                 }
             )
@@ -528,7 +529,7 @@ fun NavGraphBuilder.MatNavigation(
                 taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
                 subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
                 subjectName = it.arguments?.getString(ARG_SUBJECT_NAME).value(),
-                activityName = it.arguments?.getString(ARG_ACTIVITY_NAME).value(),
+                activityType = it.arguments?.getString(ARG_ACTIVITY_NAME).value(),
                 activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
                 sanctionedAmount = it.arguments?.getInt(ARG_SANCTIONED_AMOUNT).value(),
                 onNavigateToGrantSurveySummaryScreen = { navController, surveyId, sectionId, taskId, subjectType, subjectName, activityConfigId, sanctionedAmount ->
@@ -551,6 +552,9 @@ fun NavGraphBuilder.MatNavigation(
                     )
                 },
                 onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
+
+                },
+                onNavigateToQuestionScreen = { surveyId, sectionId, taskId ->
 
                 }
             )
@@ -606,9 +610,6 @@ fun navigateToGrantSurveySummaryScreen(
     activityConfigId: Int,
     sanctionedAmount: Int?,
 ) {
-    println(navController.graph)
-    println("MATHomeScreens.DisbursementSurveyScreen.route: ${MATHomeScreens.DisbursementSurveyScreen.route}")
-    println("actualRoute: $GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
     navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
 }
 
@@ -622,10 +623,7 @@ fun navigateToSectionScreen(
     activityConfigId: Int,
     sanctionedAmount: Int?,
 ) {
-    println(navController.graph)
-    println("MATHomeScreens.MATSectionScreen.route: ${MATHomeScreens.MATSectionScreen.route}")
-    println("actualPath: ${MissionActivityConstants.SECTION_SCREEN_ROUTE_NAME}/$surveyId/$taskId/$subjectType/$subjectName/$activityType/$activityConfigId/$sanctionedAmount")
-    navController.navigate("${MissionActivityConstants.SECTION_SCREEN_ROUTE_NAME}/$surveyId/$taskId/$subjectType/$subjectName/$activityType/$activityConfigId/$sanctionedAmount")
+    navController.navigate("$MAT_SECTION_SCREEN_ROUTE_NAME/$surveyId/$taskId/$activityType/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
 }
 
 

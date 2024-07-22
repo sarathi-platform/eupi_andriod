@@ -28,8 +28,8 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -50,7 +50,10 @@ import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
+import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_TEXT_VALUE
+import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.ui.commonUi.customVerticalSpacer
+import com.nudge.core.ui.commonUi.getUpdatedValuesForProgressState
 import com.nudge.core.ui.commonUi.rememberCustomButtonVisibilityState
 import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
@@ -64,6 +67,7 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ComplexSearchComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -72,6 +76,7 @@ import com.sarathi.surveymanager.ui.description_component.presentation.ModelBott
 import com.sarathi.surveymanager.viewmodels.surveyScreen.SectionScreenViewModel
 import getColorForComponent
 import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun SectionScreen(
@@ -82,7 +87,7 @@ fun SectionScreen(
     taskId: Int,
     subjectType: String,
     subjectName: String,
-    activityName: String,
+    activityType: String,
     activityConfigId: Int,
     sanctionedAmount: Int,
     onNavigateToGrantSurveySummaryScreen: (
@@ -101,7 +106,8 @@ fun SectionScreen(
         navController: NavController, contentKey: String,
         contentType: String,
         contentTitle: String
-    ) -> Unit
+    ) -> Unit,
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -129,21 +135,19 @@ fun SectionScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val buttonVisibilityKey: State<Boolean> = remember {
-        derivedStateOf {
-            true
-        }
+    val buttonVisibilityKey: MutableState<Boolean> = remember {
+        mutableStateOf(sectionScreenViewModel.sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name })
     }
 
     val linearProgressState = rememberCustomProgressState()
 
     LaunchedEffect(key1 = true) {
         //TODO fetch section from db
-        sectionScreenViewModel
         sectionScreenViewModel.setSurveyDetails(surveyId, taskId, subjectType, activityConfigId)
         sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
+
             // Navigate to Grant Survey Summary Screen if it is grant type activity
-            if (activityName.toLowerCase() != ActivityTypeEnum.SURVEY.name.toLowerCase() && sectionScreenViewModel.sectionList.value.size == 1) {
+            if (activityType.toLowerCase() != ActivityTypeEnum.SURVEY.name.toLowerCase() && sectionScreenViewModel.sectionList.value.size == 1) {
                 val sectionId: Int? =
                     sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
                 sectionId?.let {
@@ -159,6 +163,9 @@ fun SectionScreen(
                     )
                 }
             }
+            buttonVisibilityKey.value =
+                sectionScreenViewModel.sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name }
+            sectionScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         })
 
     }
@@ -170,12 +177,22 @@ fun SectionScreen(
             showBottomButtonState.hide()
     }
 
+    val sectionStatusValues = sectionScreenViewModel.sectionStatusMap.value.values.toList()
+    val completeProgress = getUpdatedValuesForProgressState(
+        sectionStatusValues,
+        DEFAULT_PROGRESS_VALUE,
+        DEFAULT_PROGRESS_TEXT_VALUE
+    ) {
+        it == SurveyStatusEnum.COMPLETED.name
+    }
+
+    linearProgressState.updateCompleteProgressState(completeProgress)
 
     ToolBarWithMenuComponent(
-        title = "",
+        title = subjectName,
         modifier = Modifier
             .then(modifier),
-        onBackIconClick = { /*TODO*/ },
+        onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = { },
         onBottomUI = {
             ButtonComponentWithVisibility(
@@ -190,25 +207,10 @@ fun SectionScreen(
         onContentUI = { paddingValues ->
 
             Column {
-                Box {
-
-                    PullRefreshIndicator(
-                        refreshing = sectionScreenViewModel.loaderState.value.isLoaderVisible,
-                        state = pullRefreshState,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .zIndex(1f),
-                        contentColor = blueDark,
-                    )
-
-
-                }
-
                 ModelBottomSheetDescriptionContentComponent(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
-                        .pullRefresh(pullRefreshState),
+                        .padding(paddingValues),
                     sheetContent = {
 
                         DescriptionContentComponent(
@@ -241,46 +243,65 @@ fun SectionScreen(
                     sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp)
                 ) {
 
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
+                    Box(
                         modifier = Modifier
-                            .padding(
-                                horizontal = dimen_16_dp
-                            )
-                            .padding(top = dimen_16_dp)
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
                     ) {
 
-                        item {
-                            ComplexSearchComponent {
+                        PullRefreshIndicator(
+                            refreshing = sectionScreenViewModel.loaderState.value.isLoaderVisible,
+                            state = pullRefreshState,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .zIndex(1f),
+                            contentColor = blueDark,
+                        )
+
+                        if (!sectionScreenViewModel.loaderState.value.isLoaderVisible) {
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
+                                modifier = Modifier
+                                    .padding(
+                                        horizontal = dimen_16_dp
+                                    )
+                            ) {
+
+                                item {
+                                    ComplexSearchComponent {
 //                                navController.navigateToSearchScreen(surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
+                                    }
+                                }
+
+                                item {
+                                    CustomLinearProgressIndicator(
+                                        progressState = linearProgressState
+                                    )
+                                }
+
+                                itemsIndexed(sectionScreenViewModel.sectionList.value) { index, section ->
+
+                                    SectionItemComponent(
+                                        sectionId = section.sectionId,
+                                        sectionUiEntity = section,
+                                        sectionStatus = sectionScreenViewModel.sectionStatusMap.value[section.sectionId]
+                                            ?: SurveyStatusEnum.INPROGRESS.name,
+                                        onDetailIconClicked = { sectionId ->
+                                            coroutineScope.launch {
+                                                sheetState.show()
+                                            }
+                                        },
+                                        onSectionItemClicked = { sectionId ->
+                                            onNavigateToQuestionScreen(surveyId, sectionId, taskId)
+                                        }
+                                    )
+
+                                }
+
+                                customVerticalSpacer()
                             }
                         }
 
-                        item {
-                            CustomLinearProgressIndicator(
-                                progressState = linearProgressState
-                            )
-                        }
-
-                        itemsIndexed(sectionScreenViewModel.sectionList.value) { index, section ->
-
-                            SectionItemComponent(
-                                sectionId = section.sectionId,
-                                sectionUiEntity = section,
-                                sectionStatus = SurveyStatusEnum.INPROGRESS.name, //TODO Fetch Dynamically From Db
-                                onDetailIconClicked = { sectionId ->
-                                    coroutineScope.launch {
-                                        sheetState.show()
-                                    }
-                                },
-                                onSectionItemClicked = { sectionId ->
-//                                    onNavigateSurveyScreen()
-                                }
-                            )
-
-                        }
-
-                        customVerticalSpacer()
                     }
 
                 }
@@ -402,7 +423,7 @@ fun SectionItemComponent(
                     )
 
                     Text(
-                        text = "1 Questions",
+                        text = "${sectionUiEntity.questionSize} Questions",
                         color = getColorForComponent(
                             sectionStatus,
                             ComponentName.SECTION_BOX_TEXT_COLOR
