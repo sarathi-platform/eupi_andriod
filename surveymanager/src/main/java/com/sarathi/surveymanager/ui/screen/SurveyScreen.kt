@@ -42,8 +42,11 @@ import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
+import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
+import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeDropDownComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
@@ -237,18 +240,42 @@ fun SurveyScreen(
                                                 options.isSelected = true
                                             } else {
                                                 options.isSelected = false
-                                            }
-
-
-                                        }
+                                            } }
                                         viewModel.checkButtonValidation()
                                     }
                                 )
                             }
+
+                            QuestionType.AutoCalculation.name -> {
+                                CalculationResultComponent(
+                                    title = question.questionDisplay,
+                                )
+                            }
+                            QuestionType.RadioButton.name ->
+                                { RadioQuestionBoxComponent(
+                                questionIndex = index,
+                                maxCustomHeight = maxHeight,
+                                optionItemEntityList = listOf()!!,
+                                onAnswerSelection = { questionIndex, optionItem ->
+                                },
+                                )
+                            }
+                            QuestionType.MultiSelect.name,
+                                QuestionType.Grid.name ->
+                            {
+                                GridTypeComponent(
+                                    questionIndex = index,
+                                    maxCustomHeight = maxHeight,
+                                    optionItemEntityList = listOf(),
+                                    selectedOptionIndices =listOf() ,
+                                    onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
+                                    }
+                                ) {}
+                            }
+                            QuestionType.Toggle.name -> {
+                            }
                         }
                     }
-
-
                 }
             }
         },
