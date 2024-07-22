@@ -1547,38 +1547,6 @@ fun isFilePathExists(context: Context, filePath: String): Boolean {
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
 }
 
-fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
-    if(fileUriList?.isNotEmpty() == true){
-        try {
-            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            shareIntent.setType(type)
-            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
-            val chooserIntent = Intent.createChooser(shareIntent, title)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-                val resInfoList: List<ResolveInfo> =
-                    BaselineCore.getAppContext().packageManager
-                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
-
-                for (resolveInfo in resInfoList) {
-                    val packageName = resolveInfo.activityInfo.packageName
-                    BaselineCore.getAppContext().grantUriPermission(
-                        packageName,
-                        fileUriList[0],
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                }
-            }else{
-                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
-            }
-            BaselineCore.startExternalApp(chooserIntent)
-        }catch (ex:Exception){
-            BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
-        }
-    }
-
-}
 
 
 

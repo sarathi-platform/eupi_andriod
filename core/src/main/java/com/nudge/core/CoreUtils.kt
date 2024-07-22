@@ -1052,7 +1052,7 @@ fun formatToIndianRupee(amount: String): String {
             formattedAmount
         }
     } catch (ex: Exception) {
-        CoreAppDetails.getApplicationContext()
+        CoreAppDetails.getContext()
             ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
         return amount
     }
