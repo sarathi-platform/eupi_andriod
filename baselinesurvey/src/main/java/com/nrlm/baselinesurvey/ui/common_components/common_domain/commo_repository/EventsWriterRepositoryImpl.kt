@@ -205,7 +205,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
-                        mission = mission.missionName ?: BLANK_STRING,
+                        mission = mission?.missionName ?: BLANK_STRING,
                         depends_on = listOf(),
                         request_payload_size = requestPayload.json().getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, eventName)
@@ -242,7 +242,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
-                        mission = mission.missionName ?: BLANK_STRING,
+                        mission = mission?.missionName ?: BLANK_STRING,
                         depends_on = listOf(),
                         request_payload_size = requestPayload.json().getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, eventName)
@@ -279,7 +279,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
-                        mission = mission.missionName ?: BLANK_STRING,
+                        mission = mission?.missionName ?: BLANK_STRING,
                         depends_on = listOf(),
                         request_payload_size = requestPayload.json().getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, eventName)

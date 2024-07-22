@@ -353,9 +353,9 @@ class EventWriterHelperImpl @Inject constructor(
         val mission = missionEntityDao.getMission(getBaseLineUserId(), missionId)
 
         val mUpdateMissionStatusEventDto = UpdateMissionStatusEventDto(
-            missionId = mission.missionId,
-            actualStartDate = mission.actualStartDate,
-            completedDate = mission.actualCompletedDate,
+            missionId = mission?.missionId ?: 0,
+            actualStartDate = mission?.actualStartDate ?: BLANK_STRING,
+            completedDate = mission?.actualCompletedDate ?: BLANK_STRING,
             referenceType = StatusReferenceType.MISSION.name,
             status = status
         )
@@ -436,7 +436,7 @@ class EventWriterHelperImpl @Inject constructor(
                 markActivityInProgress(missionId, activityId, status)
             }
         }
-        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
+        missionEntity?.let {
             if (missionEntity.status == null) {
                 markMissionInProgress(missionId, SectionStatus.INPROGRESS)
             } else {
@@ -536,14 +536,16 @@ class EventWriterHelperImpl @Inject constructor(
                 eventList.add(activityStatusUpdateEvent)
             }
         }
-        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
-            if (missionEntity.status == null) {
-                val missionStatusUpdateEvent =
-                    createMissionStatusUpdateEvent(missionId, SectionStatus.INPROGRESS)
-                eventList.add(missionStatusUpdateEvent)
-            } else {
-                val missionStatusUpdateEvent = createMissionStatusUpdateEvent(missionId, status)
-                eventList.add(missionStatusUpdateEvent)
+        missionEntity?.let {
+            if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
+                if (missionEntity.status == null) {
+                    val missionStatusUpdateEvent =
+                        createMissionStatusUpdateEvent(missionId, SectionStatus.INPROGRESS)
+                    eventList.add(missionStatusUpdateEvent)
+                } else {
+                    val missionStatusUpdateEvent = createMissionStatusUpdateEvent(missionId, status)
+                    eventList.add(missionStatusUpdateEvent)
+                }
             }
         }
         return eventList

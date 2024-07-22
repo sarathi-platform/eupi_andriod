@@ -33,7 +33,7 @@ interface MissionEntityDao {
     suspend fun getMissions(userId: String): List<MissionEntity>
 
     @Query("SELECT * FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
-    suspend fun getMission(userId: String, missionId: Int): MissionEntity
+    suspend fun getMission(userId: String, missionId: Int): MissionEntity?
 
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
     suspend fun getMissionCount(userId: String, missionId: Int): Int
