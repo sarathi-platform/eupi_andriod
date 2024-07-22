@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.json
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
@@ -20,7 +21,10 @@ class MATStatusEventWriterUseCase(
             taskEntity = taskEntity, subjectType = subjectType
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.TASKS_STATUS_EVENT, EventType.STATEFUL, surveyName
+            EventName.TASKS_STATUS_EVENT,
+            EventType.STATEFUL,
+            surveyName,
+            requestPayload = saveAnswerEventDto.json()
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -38,10 +42,10 @@ class MATStatusEventWriterUseCase(
             activityEntity
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto,
             EventName.ACTIVITIES_STATUS_EVENT,
             EventType.STATEFUL,
-            surveyName
+            surveyName,
+            requestPayload = saveAnswerEventDto.json()
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -86,10 +90,10 @@ class MATStatusEventWriterUseCase(
 
         val saveAnswerEventDto = repository.writeMissionStatusEvent(missionEntity)
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto,
             EventName.MISSIONS_STATUS_EVENT,
             EventType.STATEFUL,
-            surveyName = surveyName
+            surveyName = surveyName,
+            requestPayload = saveAnswerEventDto.json()
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

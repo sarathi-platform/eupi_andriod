@@ -20,16 +20,6 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
-import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
-import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
-import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
-import com.sarathi.dataloadingmangement.model.events.SaveDocumentEventDto
-import com.sarathi.dataloadingmangement.model.events.SaveFormAnswerEventDto
-import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
-import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
-import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
-import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -40,71 +30,16 @@ class EventWriterRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     IEventWriterRepository {
-    override suspend fun <T> createAndSaveEvent(
-        eventItem: T,
+    override suspend fun createAndSaveEvent(
         eventName: EventName,
         eventType: EventType,
         surveyName: String,
+        requestPayload: String
     ): Events? {
 
         if (eventType != EventType.STATEFUL)
             return Events.getEmptyEvent()
-        var requestPayload = ""
 
-        when (eventName) {
-
-            EventName.GRANT_SAVE_RESPONSE_EVENT -> {
-                requestPayload = (eventItem as SaveAnswerEventDto).json()
-
-            }
-            EventName.MONEY_JOURNAL_EVENT, EventName.FORM_RESPONSE_EVENT -> {
-                requestPayload = (eventItem as SaveAnswerMoneyJorunalEventDto).json()
-
-            }
-            EventName.GRANT_DELETE_RESPONSE_EVENT -> {
-                requestPayload = (eventItem as DeleteAnswerEventDto).json()
-
-            }
-
-            EventName.TASKS_STATUS_EVENT -> {
-                requestPayload = (eventItem as UpdateTaskStatusEventDto).json()
-            }
-
-            EventName.ACTIVITIES_STATUS_EVENT -> {
-                requestPayload = (eventItem as UpdateActivityStatusEventDto).json()
-            }
-
-            EventName.MISSIONS_STATUS_EVENT -> {
-                requestPayload = (eventItem as UpdateMissionStatusEventDto).json()
-
-            }
-            EventName.UPDATE_FORM_DETAILS_EVENT -> {
-                requestPayload = (eventItem as SaveFormAnswerEventDto).json()
-
-            }
-
-            EventName.UPLOAD_DOCUMENT_EVENT -> {
-                requestPayload = (eventItem as SaveDocumentEventDto).json()
-
-            }
-
-            EventName.ADD_SECTION_PROGRESS_FOR_DIDI_EVENT,
-            EventName.UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT -> {
-
-                requestPayload = (eventItem as SectionStatusUpdateEventDto).json()
-            }
-
-            EventName.SAVE_SUBJECT_ATTENDANCE_EVENT,
-            EventName.DELETE_SUBJECT_ATTENDANCE_EVENT -> {
-                requestPayload = (eventItem as SaveAttendanceEventDto).json()
-            }
-
-            else -> {
-                requestPayload = ""
-            }
-
-
-        }
         val event = Events(
             name = eventName.name,
             type = eventName.topicName,

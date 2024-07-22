@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.json
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
@@ -16,10 +17,10 @@ class FormEventWriterUseCase @Inject constructor(
 
         val saveAnswerEventDto = repository.getSaveFormAnswerEventDto(formEntity)
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto,
-            EventName.UPDATE_FORM_DETAILS_EVENT,
-            EventType.STATEFUL,
-            surveyName = surveyName
+            eventName = EventName.UPDATE_FORM_DETAILS_EVENT,
+            eventType = EventType.STATEFUL,
+            surveyName = surveyName,
+            requestPayload = saveAnswerEventDto.json()
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

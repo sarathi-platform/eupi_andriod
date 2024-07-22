@@ -6,6 +6,7 @@ import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
@@ -48,13 +49,15 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerMoneyJournalEventDto,
             EventName.MONEY_JOURNAL_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            listOf()
+            listOf(),
+            requestPayload = saveAnswerMoneyJournalEventDto.json()
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,
             EventName.FORM_RESPONSE_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            listOf()
+            listOf(),
+            requestPayload = saveAnswerMoneyJournalEventDto.json()
         )
         questionUiModels.forEach { questionUiModel ->
             val saveAnswerEventDto = repository.writeSaveAnswerEvent(
@@ -89,7 +92,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 saveAnswerEventDto,
                 EventName.GRANT_SAVE_RESPONSE_EVENT,
                 questionUiModel.surveyName,
-                uriList
+                uriList,
+                requestPayload = saveAnswerEventDto.json()
             )
         }
     }
@@ -98,13 +102,14 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         eventItem: T,
         eventName: EventName,
         surveyName: String,
-        uriList: List<Uri>?
+        uriList: List<Uri>?,
+        requestPayload: String
     ) {
         eventWriterRepositoryImpl.createAndSaveEvent(
-            eventItem,
             eventName,
             EventType.STATEFUL,
-            surveyName
+            surveyName,
+            requestPayload = requestPayload
         )
             ?.let {
 
@@ -162,7 +167,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerMoneyJournalEventDto,
             EventName.GRANT_DELETE_RESPONSE_EVENT,
             surveyName ?: BLANK_STRING,
-            uriList
+            uriList,
+            requestPayload = saveAnswerMoneyJournalEventDto.json()
         )
     }
 

@@ -4,6 +4,7 @@ import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
@@ -31,10 +32,10 @@ class DocumentEventWriterUseCase @Inject constructor(
             activityId = activityId
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto,
             EventName.UPLOAD_DOCUMENT_EVENT,
             EventType.STATEFUL,
-            surveyName = ""
+            surveyName = BLANK_STRING,
+            requestPayload = saveAnswerEventDto.json()
         )?.let { event ->
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

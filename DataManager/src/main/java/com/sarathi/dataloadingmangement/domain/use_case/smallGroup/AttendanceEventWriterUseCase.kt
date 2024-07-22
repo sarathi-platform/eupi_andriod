@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case.smallGroup
 import com.nudge.core.SMALL_GROUP_ATTENDANCE_MISSION
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.json
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
 import javax.inject.Inject
@@ -19,9 +20,9 @@ class AttendanceEventWriterUseCase @Inject constructor(
 
         activeAttendanceHistory.forEach { saveAttendanceEventDto ->
             val event = eventWriterRepositoryImpl.createAndSaveEvent(
-                eventItem = saveAttendanceEventDto,
                 eventName = EventName.SAVE_SUBJECT_ATTENDANCE_EVENT,
-                surveyName = SMALL_GROUP_ATTENDANCE_MISSION
+                surveyName = SMALL_GROUP_ATTENDANCE_MISSION,
+                requestPayload = saveAttendanceEventDto.json()
             )
             event?.let {
                 eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -37,9 +38,9 @@ class AttendanceEventWriterUseCase @Inject constructor(
             attendanceEventWriterRepository.getAllDeletedAttendanceForUser()
         deletedAttendanceHistory.forEach { saveAttendanceEventDto ->
             val event = eventWriterRepositoryImpl.createAndSaveEvent(
-                eventItem = saveAttendanceEventDto,
                 eventName = EventName.DELETE_SUBJECT_ATTENDANCE_EVENT,
-                surveyName = SMALL_GROUP_ATTENDANCE_MISSION
+                surveyName = SMALL_GROUP_ATTENDANCE_MISSION,
+                requestPayload = saveAttendanceEventDto.json()
             )
             event?.let {
                 eventWriterRepositoryImpl.saveEventToMultipleSources(
