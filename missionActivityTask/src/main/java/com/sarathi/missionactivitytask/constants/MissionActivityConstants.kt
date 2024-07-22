@@ -14,7 +14,7 @@ object MissionActivityConstants {
     const val SURVEY_SCREEN_ROUTE_NAME = "survey_screen"
     const val GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME = "grant_survey_summary_screen"
     const val ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME = "add_image_screen_screen"
-
+    const val SECTION_SCREEN_ROUTE_NAME = "mat_section_screen"
     const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
     const val ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME = "activity_completion_screen"
     const val MISSION_FINAL_STEP_SCREEN_ROUTE_NAME = "mission_final_step_screen"
@@ -37,6 +37,7 @@ object MissionActivityConstants {
     const val ARG_SECTION_ID = "section_id"
     const val ARG_SUBJECT_ID = "subject_id"
     const val ARG_ACTIVITY_CONFIG_ID = "activity_config_id"
+    const val ARG_ACTIVITY_TYPE = "activity_type"
     const val ARG_SANCTIONED_AMOUNT = "sanctioned_amount"
     const val ARG_TOTAL_SUBMITTED_AMOUNT = "total_submitted_amount"
     const val ARG_ACTIVITY_MASSAGE = "activity_massage"

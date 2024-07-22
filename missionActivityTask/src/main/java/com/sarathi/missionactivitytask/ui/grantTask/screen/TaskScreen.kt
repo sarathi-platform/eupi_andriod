@@ -48,6 +48,7 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
@@ -57,8 +58,8 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSectionScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -308,17 +309,38 @@ private fun TaskRowView(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModel?.let {
                 if (subjectName.isNotBlank()) {
-                    navigateToGrantSurveySummaryScreen(
+                    val sanctionedAmount = try {
+                        task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                            ?: DEFAULT_ID
+                    } catch (ex: Exception) {
+                        CoreLogger.e(
+                            tag = TAG,
+                            msg = "TaskRowView: exception -> ${ex.message}",
+                            ex = ex,
+                            stackTrace = true
+                        )
+                        DEFAULT_ID
+                    }
+                    navigateToSectionScreen(
                         navController,
                         taskId = task.key,
                         surveyId = it.surveyId,
-                        sectionId = it.sectionId,
                         subjectType = it.subject,
                         subjectName = subjectName,
+                        activityType = viewModel.activityType,
                         activityConfigId = it.activityConfigId,
-                        sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                            ?: DEFAULT_ID,
+                        sanctionedAmount = sanctionedAmount,
                     )
+//                    navigateToGrantSurveySummaryScreen(
+//                        navController,
+//                        taskId = task.key,
+//                        surveyId = it.surveyId,
+//                        sectionId = it.sectionId,
+//                        subjectType = it.subject,
+//                        subjectName = subjectName,
+//                        activityConfigId = it.activityConfigId,
+//                        sanctionedAmount = sanctionedAmount,
+//                    )
                 }
 
             }
@@ -360,3 +382,4 @@ private fun TaskRowView(
     )
 }
 
+const val TAG = "TaskScreen"

@@ -49,6 +49,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetwo
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -86,6 +87,8 @@ import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionListRepository
+import com.sarathi.dataloadingmangement.repository.SectionListRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -841,4 +844,23 @@ class DataLoadingModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideSectionListRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        sectionEntityDao: SectionEntityDao
+    ): SectionListRepository {
+        return SectionListRepositoryImpl(
+            coreSharedPrefs,
+            sectionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSectionListUseCase(
+        sectionListRepository: SectionListRepository
+    ): GetSectionListUseCase {
+        return GetSectionListUseCase(sectionListRepository)
+    }
 }

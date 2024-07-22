@@ -20,8 +20,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -48,10 +46,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
-import com.nudge.core.ui.commonUi.CustomSpacer
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomButtonVisibilityState
 import com.nudge.core.ui.commonUi.rememberCustomProgressState
@@ -61,21 +59,19 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_30_dp
-import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.smallerTextStyle
+import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ComplexSearchComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.description_component.presentation.DescriptionContentComponent
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
-import com.sarathi.surveymanager.utils.state.SectionUiModel
 import com.sarathi.surveymanager.viewmodels.surveyScreen.SectionScreenViewModel
 import getColorForComponent
 import kotlinx.coroutines.launch
-
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun SectionScreen(
@@ -83,14 +79,24 @@ fun SectionScreen(
     sectionScreenViewModel: SectionScreenViewModel,
     navController: NavController,
     surveyId: Int,
-    sectionId: Int,
     taskId: Int,
     subjectType: String,
     subjectName: String,
+    activityName: String,
     activityConfigId: Int,
     sanctionedAmount: Int,
-    onNavigateSurveyScreen: (referenceId: String, activityConfigId: Int, grantId: Int, grantType: String, sanctionedAmount: Int, totalSubmittedAmount: Int) -> Unit,
-    onNavigateSuccessScreen: () -> Unit,
+    onNavigateToGrantSurveySummaryScreen: (
+        navController: NavController,
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        subjectType: String,
+        subjectName: String,
+        activityConfigId: Int,
+        sanctionedAmount: Int?,
+    ) -> Unit,
+    onNavigateSuccessScreen: (msg: String) -> Unit,
+    onSettingClick: () -> Unit,
     onNavigateToMediaScreen: (
         navController: NavController, contentKey: String,
         contentType: String,
@@ -132,7 +138,29 @@ fun SectionScreen(
     val linearProgressState = rememberCustomProgressState()
 
     LaunchedEffect(key1 = true) {
-        //TODO Init Data for Sections and navigate to question screen if no section.
+        //TODO fetch section from db
+        sectionScreenViewModel
+        sectionScreenViewModel.setSurveyDetails(surveyId, taskId, subjectType, activityConfigId)
+        sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
+            // Navigate to Grant Survey Summary Screen if it is grant type activity
+            if (activityName.toLowerCase() != ActivityTypeEnum.SURVEY.name.toLowerCase() && sectionScreenViewModel.sectionList.value.size == 1) {
+                val sectionId: Int? =
+                    sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                sectionId?.let {
+                    onNavigateToGrantSurveySummaryScreen(
+                        navController,
+                        surveyId,
+                        sectionId,
+                        taskId,
+                        subjectType,
+                        subjectName,
+                        activityConfigId,
+                        sanctionedAmount
+                    )
+                }
+            }
+        })
+
     }
 
     LaunchedEffect(key1 = buttonVisibilityKey) {
@@ -154,11 +182,11 @@ fun SectionScreen(
                 showButtonComponentState = showBottomButtonState,
                 buttonTitle = "Complete Survey", isActive = true,
                 onClick = {
-                    onNavigateSuccessScreen()
+                    onNavigateSuccessScreen("Baseline for $subjectName")
                 }
             )
         },
-        onSettingClick = { },
+        onSettingClick = onSettingClick,
         onContentUI = { paddingValues ->
 
             Column {
@@ -222,7 +250,7 @@ fun SectionScreen(
                             .padding(top = dimen_16_dp)
                     ) {
 
-                        stickyHeader {
+                        item {
                             ComplexSearchComponent {
 //                                navController.navigateToSearchScreen(surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
                             }
@@ -234,11 +262,12 @@ fun SectionScreen(
                             )
                         }
 
-                        itemsIndexed(emptyList<SectionUiModel>()) { index, section ->
+                        itemsIndexed(sectionScreenViewModel.sectionList.value) { index, section ->
 
                             SectionItemComponent(
                                 sectionId = section.sectionId,
                                 sectionUiEntity = section,
+                                sectionStatus = SurveyStatusEnum.INPROGRESS.name, //TODO Fetch Dynamically From Db
                                 onDetailIconClicked = { sectionId ->
                                     coroutineScope.launch {
                                         sheetState.show()
@@ -268,6 +297,7 @@ fun SectionItemComponent(
     modifier: Modifier = Modifier,
     sectionId: Int,
     sectionUiEntity: SectionUiModel,
+    sectionStatus: String,
     onDetailIconClicked: (sectionId: Int) -> Unit,
     onSectionItemClicked: (sectionId: Int) -> Unit
 ) {
@@ -290,7 +320,7 @@ fun SectionItemComponent(
                 .border(
                     width = 1.dp,
                     color = getColorForComponent(
-                        sectionUiEntity.sectionStatus,
+                        sectionStatus,
                         ComponentName.SECTION_BOX_BORDER_COLOR
                     ),
                     shape = RoundedCornerShape(6.dp)
@@ -311,7 +341,7 @@ fun SectionItemComponent(
                     .fillMaxWidth()
                     .background(
                         color = getColorForComponent(
-                            sectionUiEntity.sectionStatus,
+                            sectionStatus,
                             ComponentName.SECTION_BOX_CONTAINER_COLOR
                         )
                     )
@@ -335,7 +365,7 @@ fun SectionItemComponent(
                             .clip(CircleShape)
                             .background(
                                 color = getColorForComponent(
-                                    sectionUiEntity.sectionStatus,
+                                    sectionStatus,
                                     ComponentName.SECTION_BOX_ICON_CONTAINER_COLOR
                                 ),
                                 shape = CircleShape
@@ -359,7 +389,7 @@ fun SectionItemComponent(
                     Text(
                         text = sectionUiEntity.sectionName,
                         color = getColorForComponent(
-                            sectionUiEntity.sectionStatus,
+                            sectionStatus,
                             ComponentName.SECTION_BOX_TEXT_COLOR
                         ),
                         modifier = Modifier
@@ -374,7 +404,7 @@ fun SectionItemComponent(
                     Text(
                         text = "1 Questions",
                         color = getColorForComponent(
-                            sectionUiEntity.sectionStatus,
+                            sectionStatus,
                             ComponentName.SECTION_BOX_TEXT_COLOR
                         ),
                         modifier = Modifier
@@ -388,7 +418,7 @@ fun SectionItemComponent(
 
                 }
 
-                if (sectionUiEntity.contentEntities.isNotEmpty()) {
+                /*if (sectionUiEntity.contentEntities.isNotEmpty()) {
 
                     IconButton(
                         onClick = { onDetailIconClicked(sectionId) },
@@ -412,14 +442,14 @@ fun SectionItemComponent(
 
                     CustomSpacer(size = dimen_30_dp)
 
-                }
+                }*/
 
             }
 
         }
 
         if (TextUtils.equals(
-                sectionUiEntity.sectionStatus.toLowerCase(),
+                sectionStatus.toLowerCase(),
                 SurveyStatusEnum.COMPLETED.name.toLowerCase()
             )
         ) {

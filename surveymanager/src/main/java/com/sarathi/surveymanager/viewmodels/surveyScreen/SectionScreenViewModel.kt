@@ -3,17 +3,20 @@ package com.sarathi.surveymanager.viewmodels.surveyScreen
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SectionScreenViewModel @Inject constructor(
-
+    val getSectionListUseCase: GetSectionListUseCase
 ) : BaseViewModel() {
 
     private var surveyId: Int = 0
-    private var sectionId: Int = 0
     private var taskId: Int = 0
     private var subjectType: String = ""
     private var activityConfigId: Int = 0
@@ -21,8 +24,28 @@ class SectionScreenViewModel @Inject constructor(
     private val _contentList = mutableStateOf<List<Content>>(emptyList())
     val contentList: State<List<Content>> get() = _contentList
 
+    private val _sectionList = mutableStateOf<List<SectionUiModel>>(mutableListOf())
+    val sectionList: State<List<SectionUiModel>> get() = _sectionList
+
     override fun <T> onEvent(event: T) {
-        TODO("Not yet implemented")
+        when (event) {
+            is InitDataEvent.InitDataStateWithCallBack -> {
+                initSectionScreen(callBack = event.callBack)
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
+            }
+        }
+    }
+
+    private fun initSectionScreen(callBack: () -> Unit) {
+        ioViewModelScope {
+            _sectionList.value = getSectionListUseCase.invoke(surveyId)
+            callBack()
+        }
     }
 
     override fun refreshData() {
@@ -30,15 +53,13 @@ class SectionScreenViewModel @Inject constructor(
 
     }
 
-    fun setPreviousScreenData(
+    fun setSurveyDetails(
         surveyId: Int,
-        sectionId: Int,
         taskId: Int,
         subjectType: String,
         activityConfigId: Int,
     ) {
         this.surveyId = surveyId
-        this.sectionId = sectionId
         this.taskId = taskId
         this.subjectType = subjectType
         this.activityConfigId = activityConfigId

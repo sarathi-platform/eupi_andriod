@@ -54,6 +54,7 @@ open class TaskScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
+    var activityType: String? = null
     var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
@@ -237,6 +238,14 @@ open class TaskScreenViewModel @Inject constructor(
     fun setMissionActivityId(missionId: Int, activityId: Int) {
         this.missionId = missionId
         this.activityId = activityId
+        getActivityType(missionId, activityId)
+    }
+
+    private fun getActivityType(missionId: Int, activityId: Int) {
+        ioViewModelScope {
+            activityType = getActivityUseCase.getTypeForActivity(missionId, activityId)
+        }
+
     }
 
     suspend fun getSurveyDetail() {
