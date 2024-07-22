@@ -1148,3 +1148,7 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     }
     Log.d("", "Chosen path = $filePath")
 }
+
+fun getQuestionNumber(questionIndex: Int): String {
+    return "${questionIndex + 1}. "
+}

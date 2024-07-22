@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -143,7 +144,8 @@ fun GridTypeComponent(
                                 modifier = Modifier.padding(horizontal = dimen_16_dp)
                             ) {
                                 QuestionComponent(
-                                    title = "${questionIndex + 1}. $questionDisplay",
+                                    title = questionDisplay,
+                                    questionNumber = getQuestionNumber(questionIndex),
                                     isRequiredField = isRequiredField
                                 )
                             }

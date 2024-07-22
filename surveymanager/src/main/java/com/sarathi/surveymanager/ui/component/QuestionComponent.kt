@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.component
 
+import android.text.TextUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import com.nudge.core.ui.theme.red
 fun QuestionComponent(
     isRequiredField: Boolean = true,
     title: String = BLANK_STRING,
+    questionNumber: String = BLANK_STRING,
     subTitle: String = BLANK_STRING
 ) {
     Column(modifier = Modifier
@@ -37,8 +39,11 @@ fun QuestionComponent(
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
+            if (!TextUtils.isEmpty(questionNumber)) {
+                Text(text = questionNumber)
+            }
             Text(modifier = Modifier.fillMaxWidth(.9f),
                 text = buildAnnotatedString {
                     withStyle(

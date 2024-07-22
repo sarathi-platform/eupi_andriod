@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -115,7 +116,8 @@ fun RadioQuestionBoxComponent(
                                     .padding(horizontal = dimen_16_dp)
                             ) {
                                 QuestionComponent(
-                                    title = "${questionIndex + 1}. $questionDisplay",
+                                    title = questionDisplay,
+                                    questionNumber = getQuestionNumber(questionIndex),
                                     isRequiredField = isRequiredField
                                 )
                             }
