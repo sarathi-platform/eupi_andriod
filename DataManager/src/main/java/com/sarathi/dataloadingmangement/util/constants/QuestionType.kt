@@ -10,14 +10,5 @@ enum class QuestionType {
     RadioButton,
     MultiSelect,
     Grid,
-    Toggle,
-    DidiDetails,
-    FormWithNone
-
-
-
-
-    //radio
-    //multi selected
-    // radio
+    Toggle
 }
