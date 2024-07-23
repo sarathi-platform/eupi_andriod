@@ -37,10 +37,12 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_26_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.constants.Constants.ALPHA_10
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 import com.sarathi.dataloadingmangement.download_manager.FileType
 
@@ -172,13 +174,13 @@ fun ImageOverlay(resId: Int, modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(black1.copy(.10f))
+                .background(black1.copy(ALPHA_10))
         ) {
             Image(
                 painter = painter,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds,
-                contentDescription = "",
+                contentDescription = BLANK_STRING,
                 colorFilter = ColorFilter.tint(
                     blueDark
                 )
@@ -187,7 +189,7 @@ fun ImageOverlay(resId: Int, modifier: Modifier = Modifier) {
 
         Box(
             modifier = Modifier
-                .size(26.dp)
+                .size(dimen_26_dp)
                 .clip(shape = CircleShape)
                 .background(color = white),
             contentAlignment = Alignment.Center

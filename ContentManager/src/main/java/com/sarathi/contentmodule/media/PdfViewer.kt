@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -39,10 +38,14 @@ import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.pdfViewerBg
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.uriFromFile
+import com.sarathi.contentmodule.constants.Constants.MAX_ZOOM_VALUE
+import com.sarathi.contentmodule.constants.Constants.MIN_ZOOM_VALUE
+import com.sarathi.contentmodule.constants.Constants.ZERO
 import java.io.File
 
 @Composable
@@ -115,7 +118,7 @@ fun PdfViewer(
                 .fillMaxWidth()
                 .background(pdfViewerBg)
                 .padding(it)
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = dimen_10_dp)
         ) {
 
             AndroidView(
@@ -123,7 +126,7 @@ fun PdfViewer(
                     pdfView.fromUri(nonUpdatedUri)
                         .enableDoubletap(true)
                         .enableSwipe(true)
-                        .defaultPage(0)
+                        .defaultPage(ZERO)
                         .enableAnnotationRendering(false)
                         .onPageChange { _, _ ->
                             // Handle page change if needed
@@ -167,8 +170,8 @@ fun PdfViewer(
                     .align(Alignment.Center) // keep the image centralized into the Box
                     .graphicsLayer(
                         // adding some zoom limits (min 50%, max 200%)
-                        scaleX = maxOf(.5f, minOf(3f, scale.value)),
-                        scaleY = maxOf(.5f, minOf(3f, scale.value)),
+                        scaleX = maxOf(MIN_ZOOM_VALUE, minOf(MAX_ZOOM_VALUE, scale.value)),
+                        scaleY = maxOf(MIN_ZOOM_VALUE, minOf(MAX_ZOOM_VALUE, scale.value)),
                         rotationZ = rotationState.value
                     ),
                 contentDescription = null,

@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -49,7 +48,14 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_15_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.textColorDark
+import com.sarathi.contentmodule.constants.Constants.MAX_ZOOM_VALUE
+import com.sarathi.contentmodule.constants.Constants.MIN_ZOOM_VALUE
+import com.sarathi.contentmodule.constants.Constants.ZERO
 import com.sarathi.contentmodule.ui.component.MediaToolbarComponent
 import com.sarathi.dataloadingmangement.download_manager.FileType
 import java.io.File
@@ -81,7 +87,11 @@ fun MediaScreen(
         Scaffold(
             topBar = {
 
-                    AnimatedVisibility(visible = isToolbarVisible.value, enter = fadeIn()+ expandVertically(), exit = fadeOut()+ shrinkVertically()) {
+                AnimatedVisibility(
+                    visible = isToolbarVisible.value,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
                     MediaToolbarComponent(
                         title = contentTitle,
                         modifier = Modifier,
@@ -101,7 +111,9 @@ fun MediaScreen(
 
     }
     BackHandler {
-        if (activity != null && activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (activity != null
+            && activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        ) {
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         navController.popBackStack()
@@ -122,8 +134,9 @@ private fun MediaTypeCard(
                 Modifier
                     .clickable { isToolbarVisible.value = !isToolbarVisible.value }
                     .padding(
-                        vertical = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 15.dp,
-                        horizontal = 15.dp
+                        vertical = paddingValues.calculateTopPadding()
+                                + if (isToolbarVisible.value) dimen_20_dp else dimen_15_dp,
+                        horizontal = dimen_15_dp
                     ))
         }
         val filePathUri = viewModel.getFilePathUri(viewModel.contentUrl.value)
@@ -131,7 +144,10 @@ private fun MediaTypeCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = paddingValues.calculateTopPadding() + if (isToolbarVisible.value) 20.dp else 0.dp)
+                    .padding(
+                        top = paddingValues.calculateTopPadding()
+                                + if (isToolbarVisible.value) dimen_20_dp else dimen_0_dp
+                    )
                     .clickable { isToolbarVisible.value = !isToolbarVisible.value },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -223,12 +239,12 @@ fun ZoomableImage(uri: Uri, modifier: Modifier = Modifier) {
         Image(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(dimen_16_dp)
                 .align(Alignment.Center) // keep the image centralized into the Box
                 .graphicsLayer(
                     // adding some zoom limits (min 50%, max 200%)
-                    scaleX = maxOf(.5f, minOf(3f, scale.value)),
-                    scaleY = maxOf(.5f, minOf(3f, scale.value)),
+                    scaleX = maxOf(MIN_ZOOM_VALUE, minOf(MAX_ZOOM_VALUE, scale.value)),
+                    scaleY = maxOf(MIN_ZOOM_VALUE, minOf(MAX_ZOOM_VALUE, scale.value)),
                 ),
             contentDescription = null,
             painter = imagePainter,
@@ -246,7 +262,7 @@ fun PdfViewer(pdfFile: File, modifier: Modifier = Modifier) {
         factory = { context ->
             PDFView(context, null).apply {
                 fromFile(pdfFile)
-                    .defaultPage(0)
+                    .defaultPage(ZERO)
                     .enableSwipe(true)
                     .swipeHorizontal(false)
                     .enableDoubletap(true)
