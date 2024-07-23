@@ -41,11 +41,21 @@ fun QuestionComponent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top
         ) {
-            if (!TextUtils.isEmpty(questionNumber)) {
-                Text(text = questionNumber)
-            }
-            Text(modifier = Modifier.fillMaxWidth(.9f),
+            Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = buildAnnotatedString {
+                    if (!TextUtils.isEmpty(questionNumber)) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = blueDark,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans
+                            )
+                        ) {
+                            append(questionNumber)
+                        }
+                    }
                     withStyle(
                         style = SpanStyle(
                             color = blueDark,

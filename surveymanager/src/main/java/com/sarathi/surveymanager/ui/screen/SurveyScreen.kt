@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -273,15 +275,19 @@ fun SurveyScreen(
 
                             QuestionType.MultiSelect.name,
                             QuestionType.Grid.name -> {
+                                val selectedOptionIndices = remember {
+                                    mutableStateOf(mutableListOf<Int>())
+                                }
                                 GridTypeComponent(
                                     questionIndex = index,
                                     questionDisplay = question.questionDisplay,
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
                                     optionUiModelList = question.options.value(),
-                                    selectedOptionIndices = listOf(),
+                                    selectedOptionIndices = selectedOptionIndices.value,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
-
+                                        selectedOptionIndices.value.clear()
+                                        selectedOptionIndices.value.addAll(selectedIndeciesCount)
                                     },
                                     questionDetailExpanded = {
 
