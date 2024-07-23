@@ -4,11 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 
 @Composable
 fun BaselineSurveyScreen(
     navController: NavController = rememberNavController(),
     viewModel: BaselineSurveyScreenViewModel,
+    missionId: Int,
+    activityId: Int,
     surveyId: Int,
     sectionId: Int,
     taskId: Int,
@@ -38,9 +41,22 @@ fun BaselineSurveyScreen(
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
-
+            viewModel.updateSectionStatus(
+                missionId,
+                surveyId,
+                sectionId,
+                taskId,
+                SurveyStatusEnum.INPROGRESS.name
+            )
         },
         onSubmitButtonClick = {
+            viewModel.updateSectionStatus(
+                missionId,
+                surveyId,
+                sectionId,
+                taskId,
+                SurveyStatusEnum.COMPLETED.name
+            )
             navController.popBackStack()
         }
     )

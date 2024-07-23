@@ -18,6 +18,8 @@ class SectionScreenViewModel @Inject constructor(
     val getSectionListUseCase: GetSectionListUseCase
 ) : BaseViewModel() {
 
+    private var missionId: Int = 0
+    private var activityId: Int = 0
     private var surveyId: Int = 0
     private var taskId: Int = 0
     private var subjectType: String = ""
@@ -51,7 +53,8 @@ class SectionScreenViewModel @Inject constructor(
         ioViewModelScope {
             _sectionList.value = getSectionListUseCase.invoke(surveyId)
             _sectionStatusMap.value =
-                getSectionListUseCase.getSectionStatusMap(surveyId, taskId).toMutableMap()
+                getSectionListUseCase.getSectionStatusMap(missionId, surveyId, taskId)
+                    .toMutableMap()
             withContext(mainDispatcher) {
                 callBack()
             }
@@ -64,11 +67,15 @@ class SectionScreenViewModel @Inject constructor(
     }
 
     fun setSurveyDetails(
+        missionId: Int,
+        activityId: Int,
         surveyId: Int,
         taskId: Int,
         subjectType: String,
         activityConfigId: Int,
     ) {
+        this.missionId = missionId
+        this.activityId = activityId
         this.surveyId = surveyId
         this.taskId = taskId
         this.subjectType = subjectType

@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -87,6 +88,7 @@ fun TypeDropDownComponent(
 
             }
         )
+        CustomVerticalSpacer()
     }
 
 

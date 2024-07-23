@@ -49,13 +49,8 @@ import coil.compose.AsyncImage
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
-import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
-import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_TEXT_VALUE
-import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.ui.commonUi.customVerticalSpacer
-import com.nudge.core.ui.commonUi.getUpdatedValuesForProgressState
 import com.nudge.core.ui.commonUi.rememberCustomButtonVisibilityState
-import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -83,6 +78,8 @@ fun SectionScreen(
     modifier: Modifier = Modifier,
     sectionScreenViewModel: SectionScreenViewModel,
     navController: NavController,
+    missionId: Int,
+    activityId: Int,
     surveyId: Int,
     taskId: Int,
     subjectType: String,
@@ -107,7 +104,7 @@ fun SectionScreen(
         contentType: String,
         contentTitle: String
     ) -> Unit,
-    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int) -> Unit
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -139,11 +136,16 @@ fun SectionScreen(
         mutableStateOf(sectionScreenViewModel.sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name })
     }
 
-    val linearProgressState = rememberCustomProgressState()
-
     LaunchedEffect(key1 = true) {
         //TODO fetch section from db
-        sectionScreenViewModel.setSurveyDetails(surveyId, taskId, subjectType, activityConfigId)
+        sectionScreenViewModel.setSurveyDetails(
+            missionId = missionId,
+            activityId = activityId,
+            surveyId = surveyId,
+            taskId = taskId,
+            subjectType = subjectType,
+            activityConfigId = activityConfigId
+        )
         sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
 
             // Navigate to Grant Survey Summary Screen if it is grant type activity
@@ -165,6 +167,7 @@ fun SectionScreen(
             }
             buttonVisibilityKey.value =
                 sectionScreenViewModel.sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name }
+
             sectionScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         })
 
@@ -177,16 +180,6 @@ fun SectionScreen(
             showBottomButtonState.hide()
     }
 
-    val sectionStatusValues = sectionScreenViewModel.sectionStatusMap.value.values.toList()
-    val completeProgress = getUpdatedValuesForProgressState(
-        sectionStatusValues,
-        DEFAULT_PROGRESS_VALUE,
-        DEFAULT_PROGRESS_TEXT_VALUE
-    ) {
-        it == SurveyStatusEnum.COMPLETED.name
-    }
-
-    linearProgressState.updateCompleteProgressState(completeProgress)
 
     ToolBarWithMenuComponent(
         title = subjectName,
@@ -273,11 +266,12 @@ fun SectionScreen(
                                     }
                                 }
 
-                                item {
+                                // TODO handle progress correctly.
+                                /*item {
                                     CustomLinearProgressIndicator(
                                         progressState = linearProgressState
                                     )
-                                }
+                                }*/
 
                                 itemsIndexed(sectionScreenViewModel.sectionList.value) { index, section ->
 
@@ -298,7 +292,9 @@ fun SectionScreen(
                                                 taskId,
                                                 section.sectionName,
                                                 subjectType,
-                                                activityConfigId
+                                                activityConfigId,
+                                                missionId,
+                                                activityId
                                             )
                                         }
                                     )

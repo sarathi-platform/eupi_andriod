@@ -284,7 +284,7 @@ fun SurveyScreen(
                                         }
                                         question.options?.get(optionItemIndex)?.isSelected = true
                                         onAnswerSelect(question)
-
+                                        viewModel.checkButtonValidation()
                                     }
                                 )
                             }
@@ -303,7 +303,7 @@ fun SurveyScreen(
                                             isSelected
 
                                         onAnswerSelect(question)
-
+                                        viewModel.checkButtonValidation()
                                     },
                                     questionDetailExpanded = {
 

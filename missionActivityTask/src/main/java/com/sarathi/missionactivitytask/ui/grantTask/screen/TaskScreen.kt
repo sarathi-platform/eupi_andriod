@@ -223,7 +223,7 @@ fun TaskScreen(
                     )
                     Spacer(modifier = Modifier.height(dimen_10_dp))
                     LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-                        if (viewModel.isProgressEnable.value) {
+                        if (/*viewModel.isProgressEnable.value*/false) {
                             item {
                                 CustomVerticalSpacer()
                             }
@@ -302,7 +302,7 @@ fun TaskScreen(
 private fun TaskRowView(
     viewModel: TaskScreenViewModel,
     navController: NavController,
-    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
+    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
@@ -322,6 +322,8 @@ private fun TaskRowView(
                     }
                     navigateToSectionScreen(
                         navController,
+                        missionId = viewModel.missionId,
+                        activityId = viewModel.activityId,
                         taskId = task.key,
                         surveyId = it.surveyId,
                         subjectType = it.subject,

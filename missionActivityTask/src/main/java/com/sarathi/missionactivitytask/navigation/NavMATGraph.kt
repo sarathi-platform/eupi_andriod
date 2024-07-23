@@ -439,7 +439,6 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_TOOLBAR_TITLE) {
                     type = NavType.StringType
                 },
-
                 navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
                     type = NavType.IntType
                 },
@@ -455,11 +454,19 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_TOTAL_SUBMITTED_AMOUNT) {
                     type = NavType.IntType
                 },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
+                }
             ),
         ) {
             BaselineSurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID).value(),
                 taskId = it.arguments?.getInt(
                     ARG_TASK_ID
                 ) ?: 0,
@@ -490,9 +497,8 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
                 totalSubmittedAmount = it.arguments?.getInt(
                     ARG_TOTAL_SUBMITTED_AMOUNT
-                ) ?: 0,
-
-                )
+                ) ?: 0
+            )
         }
         composable(
             route = MATHomeScreens.DisbursementSurveyScreen.route, arguments = listOf(
@@ -676,12 +682,20 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_TYPE) {
                     type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
                 }
             )
         ) {
             SectionScreen(
                 sectionScreenViewModel = hiltViewModel(),
                 navController = navController,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID).value(),
                 surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
                 taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
                 subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
@@ -711,9 +725,11 @@ fun NavGraphBuilder.MatNavigation(
                 onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
 
                 },
-                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId ->
+                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId ->
                     navigateToSurveyScreen(
                         navController = navController,
+                        missionId = missionId,
+                        activityId = activityId,
                         surveyId = surveyId,
                         sectionId = sectionId,
                         taskId = taskId,
@@ -754,6 +770,8 @@ fun navigateToDisbursmentSummaryScreen(
 
 fun navigateToSurveyScreen(
     navController: NavController,
+    missionId: Int,
+    activityId: Int,
     surveyId: Int,
     sectionId: Int,
     taskId: Int,
@@ -765,7 +783,7 @@ fun navigateToSurveyScreen(
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
 }
 
 fun navigateToGrantSurveyScreen(
@@ -799,6 +817,8 @@ fun navigateToGrantSurveySummaryScreen(
 
 fun navigateToSectionScreen(
     navController: NavController,
+    missionId: Int,
+    activityId: Int,
     surveyId: Int,
     taskId: Int,
     subjectType: String,
@@ -807,7 +827,7 @@ fun navigateToSectionScreen(
     activityConfigId: Int,
     sanctionedAmount: Int?,
 ) {
-    navController.navigate("$MAT_SECTION_SCREEN_ROUTE_NAME/$surveyId/$taskId/$activityType/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
+    navController.navigate("$MAT_SECTION_SCREEN_ROUTE_NAME/$surveyId/$taskId/$activityType/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount/$activityId/$missionId")
 }
 
 

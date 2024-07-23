@@ -24,10 +24,12 @@ class SectionListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSectionStatusForTask(
+        missionId: Int,
         surveyId: Int,
         taskId: Int,
     ): List<SectionStatusEntity> {
         return sectionStatusEntityDao.getStatusForTask(
+            missionId = missionId,
             surveyId,
             taskId,
             coreSharedPrefs.getUniqueUserIdentifier()

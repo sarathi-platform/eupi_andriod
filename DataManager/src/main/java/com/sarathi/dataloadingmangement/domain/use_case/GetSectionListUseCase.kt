@@ -15,9 +15,9 @@ class GetSectionListUseCase @Inject constructor(
 
     }
 
-    suspend fun getSectionStatusMap(surveyId: Int, taskId: Int): Map<Int, String> {
+    suspend fun getSectionStatusMap(missionId: Int, surveyId: Int, taskId: Int): Map<Int, String> {
         val statusMap: MutableMap<Int, String> = HashMap<Int, String>()
-        sectionListRepository.getSectionStatusForTask(surveyId, taskId).forEach {
+        sectionListRepository.getSectionStatusForTask(missionId, surveyId, taskId).forEach {
             statusMap[it.sectionId] = it.sectionStatus ?: SurveyStatusEnum.INPROGRESS.name
         }
 

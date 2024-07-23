@@ -10,6 +10,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -26,11 +28,13 @@ class BaselineSurveyScreenViewModel @Inject constructor(
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase
 ) : SurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -58,6 +62,26 @@ class BaselineSurveyScreenViewModel @Inject constructor(
                 grantType = granType,
                 taskId = taskId,
                 uriList = ArrayList()
+            )
+        }
+    }
+
+    fun updateSectionStatus(
+        missionId: Int,
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        status: String
+    ) {
+        ioViewModelScope {
+            sectionStatusUpdateUseCase.invoke(
+                missionId = missionId,
+                surveyId = surveyId,
+                sectionId = sectionId,
+                taskId = taskId, status = status
+            )
+            sectionStatusEventWriterUserCase.invoke(
+
             )
         }
     }
