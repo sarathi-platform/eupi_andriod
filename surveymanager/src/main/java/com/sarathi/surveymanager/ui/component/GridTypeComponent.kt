@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,20 +67,15 @@ fun GridTypeComponent(
     areOptionsEnabled: Boolean = true,
     isRequiredField: Boolean = true,
     questionIndex: Int,
-    selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
-    onAnswerSelection: (questionIndex: Int, optionItems: List<OptionsUiModel>, selectedIndeciesCount: List<Int>) -> Unit,
+    onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
-
-    val selectedOptionIds: MutableState<MutableSet<Int>> = remember {
-        mutableStateOf(selectedOptionIndices.toMutableSet())
-    }
 
     val context = LocalContext.current
 
@@ -156,30 +150,19 @@ fun GridTypeComponent(
                                         ),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-                                    itemsIndexed(optionUiModelList.sortedBy { it.optionId }
-                                        ?: emptyList()) { _index, optionItem ->
-                                        //TODO uncomment this if check when option type is available from server
+                                    itemsIndexed(
+                                        optionUiModelList
+                                            ?: emptyList()
+                                    ) { _index, optionItem ->
 
                                         GridOptionCard(
                                             optionItem = optionItem,
                                             isEnabled = areOptionsEnabled,
-                                            isOptionSelected = selectedOptionIds.value.contains(
-                                                optionItem.optionId
-                                            )
-                                        ) { selectedOptionId ->
+                                            isOptionSelected = optionItem.isSelected.value()
+                                        ) { selectedOptionId, isSelected ->
 
-                                            if (!selectedOptionIds.value.contains(selectedOptionId)) {
-                                                selectedOptionIds.value.add(selectedOptionId)
-                                            } else {
-                                                selectedOptionIds.value.remove(selectedOptionId)
-                                            }
-                                            onAnswerSelection(
-                                                questionIndex,
-                                                optionUiModelList.filter {
-                                                    selectedOptionIds.value.contains(it.optionId)
-                                                },
-                                                selectedOptionIds.value.toList()
-                                            )
+                                            onAnswerSelection(_index, isSelected)
+
                                         }
                                         Spacer(modifier = Modifier.height(4.dp))
                                     }
@@ -235,10 +218,10 @@ fun GridOptionCard(
     optionItem: OptionsUiModel,
     isEnabled: Boolean = true,
     isOptionSelected: Boolean = false,
-    onOptionSelected: (Int) -> Unit
+    onOptionSelected: (Int, isSelected: Boolean) -> Unit
 ) {
 
-    val isSelected = remember(optionItem.optionId) {
+    val isSelected = remember {
         mutableStateOf(isOptionSelected)
     }
 
@@ -250,7 +233,7 @@ fun GridOptionCard(
             .background(if (isSelected.value) blueDark else languageItemActiveBg)
             .clickable {
                 isSelected.value = !isSelected.value
-                onOptionSelected(optionItem.optionId ?: -1)
+                onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
             }
             .then(modifier)) {
         Box(

@@ -49,7 +49,7 @@ fun RadioButtonOptionComponent(
                 buttonTitle = optionsItem.description ?: "",
                 textColor = if (optionsItem.isSelected == true) Color.White else blueDark,
                 buttonBackgroundColor = if (optionsItem.isSelected != true) Color.White else blueDark,
-                buttonBorderColor = if (optionsItem.isSelected != true) Color.White else blueDark,
+                buttonBorderColor = blueDark,
                 iconTintColor = if (optionsItem.isSelected == true) {
                     white
                 } else {

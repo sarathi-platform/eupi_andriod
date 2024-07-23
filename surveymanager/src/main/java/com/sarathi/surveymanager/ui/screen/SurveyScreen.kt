@@ -25,6 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
@@ -222,6 +224,11 @@ fun SurveyScreen(
                                 TypeDropDownComponent(
                                     isEditAllowed = viewModel.isActivityNotCompleted.value,
                                     title = question.questionDisplay,
+                                    questionNumber = if (TextUtils.equals(
+                                            grantType.toLowerCase(),
+                                            ActivityTypeEnum.SURVEY.name.toLowerCase()
+                                        )
+                                    ) getQuestionNumber(index) else BLANK_STRING,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
                                     onAnswerSelection = { selectedValue ->
@@ -277,9 +284,6 @@ fun SurveyScreen(
                                         question.options?.get(optionItemIndex)?.isSelected = true
                                         onAnswerSelect(question)
 
-                                    },
-                                    questionDetailExpanded = {
-
                                     }
                                 )
                             }
@@ -292,8 +296,11 @@ fun SurveyScreen(
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
                                     optionUiModelList = question.options.value(),
-                                    selectedOptionIndices = listOf(),
-                                    onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
+                                    onAnswerSelection = { selectedOptionIndex, isSelected ->
+
+                                        question.options?.get(selectedOptionIndex)?.isSelected =
+                                            isSelected
+
                                         onAnswerSelect(question)
 
                                     },
