@@ -1294,6 +1294,9 @@ fun numberInEnglishFormat(number: String): String {
     if (TextUtils.isEmpty(number))
         return BLANK_STRING
 
+    if (number.all { it == '0' })
+        return number
+
     val formatter = NumberFormat.getInstance(Locale.ENGLISH)
     val mNumber = formatter.parse(number)
 
