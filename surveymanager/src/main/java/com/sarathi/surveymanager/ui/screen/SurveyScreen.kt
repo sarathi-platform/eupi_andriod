@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -55,7 +54,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SurveyScreen(
-    navController: NavController = rememberNavController(),
+    navController: NavController,
     viewModel: SurveyScreenViewModel,
     surveyId: Int,
     sectionId: Int,
@@ -67,6 +66,7 @@ fun SurveyScreen(
     grantId: Int,
     grantType: String,
     sanctionedAmount: Int,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit
 ) {
@@ -173,6 +173,7 @@ fun SurveyScreen(
                                 ) { selectedValue, remainingAmout ->
                                     viewModel.totalRemainingAmount = remainingAmout
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
+                                    onAnswerSelect(question)
                                 }
                             }
 
@@ -188,6 +189,7 @@ fun SurveyScreen(
                                         ?: BLANK_STRING
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
+                                    onAnswerSelect(question)
 
                                 }
                             }
@@ -210,6 +212,8 @@ fun SurveyScreen(
                                         isDeleted
                                     )
                                     viewModel.checkButtonValidation()
+                                    onAnswerSelect(question)
+
                                 }
                             }
 
@@ -225,6 +229,8 @@ fun SurveyScreen(
                                             option.isSelected = selectedValue.id == option.optionId
                                         }
                                         viewModel.checkButtonValidation()
+                                        onAnswerSelect(question)
+
                                     }
                                 )
                             }
@@ -245,6 +251,8 @@ fun SurveyScreen(
                                                 options.isSelected = false
                                             } }
                                         viewModel.checkButtonValidation()
+                                        onAnswerSelect(question)
+
                                     }
                                 )
                             }
@@ -262,12 +270,14 @@ fun SurveyScreen(
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
                                     optionUiModelList = question.options.value(),
-                                    onAnswerSelection = { questionIndex, optionItem ->
+                                    onAnswerSelection = { questionIndex, optionItemIndex ->
+                                        question.options?.forEachIndexed { index, _ ->
+                                            question.options?.get(index)?.isSelected = false
+                                        }
+                                        question.options?.get(optionItemIndex)?.isSelected = true
+                                        onAnswerSelect(question)
 
                                     },
-                                    questionDetailExpanded = {
-
-                                    }
                                 )
                             }
 
@@ -281,6 +291,7 @@ fun SurveyScreen(
                                     optionUiModelList = question.options.value(),
                                     selectedOptionIndices = listOf(),
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
+                                        onAnswerSelect(question)
 
                                     },
                                     questionDetailExpanded = {

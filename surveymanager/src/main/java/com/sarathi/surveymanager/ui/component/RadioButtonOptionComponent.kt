@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.greenActiveIcon
-import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -48,14 +47,10 @@ fun RadioButtonOptionComponent(
                     .fillMaxWidth()
                     .height(110.dp),
                 buttonTitle = optionsItem.description ?: "",
-                textColor = if (selectedIndex == index) Color.White else blueDark,
-                buttonBackgroundColor = if (selectedIndex == index) blueDark else Color.White,
-                buttonBorderColor = if (selectedIndex == index) {
-                    blueDark
-                } else {
-                    lightGray2
-                },
-                iconTintColor = if (selectedIndex == index) {
+                textColor = if (optionsItem.isSelected == true) Color.White else blueDark,
+                buttonBackgroundColor = if (optionsItem.isSelected != true) Color.White else blueDark,
+                buttonBorderColor = if (optionsItem.isSelected != true) Color.White else blueDark,
+                iconTintColor = if (optionsItem.isSelected == true) {
                     white
                 } else {
                     //TODO need to remove this condition when get image from backend
