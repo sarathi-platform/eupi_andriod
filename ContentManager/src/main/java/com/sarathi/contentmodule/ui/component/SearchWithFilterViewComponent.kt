@@ -49,10 +49,10 @@ import com.sarathi.contentmodule.R
 @Composable
 fun SearchWithFilterViewComponent(
     placeholderString: String,
+    onFilterSelected: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     filterSelected: Boolean = false,
     showFilter: Boolean = true,
-    onFilterSelected: (Boolean) -> Unit,
     onSearchValueChange: (String) -> Unit
 ) {
     var searchString by remember {

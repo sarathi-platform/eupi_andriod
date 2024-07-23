@@ -58,8 +58,13 @@ import java.util.Locale
 @SuppressLint("SourceLockedOrientationActivity")
 @Composable
 fun MediaScreen(
-    fileType: String, key: String, navController: NavController = rememberNavController(),
-    viewModel: MediaScreenViewModel, contentTitle: String,
+    fileType: String,
+    key: String,
+    viewModel: MediaScreenViewModel,
+    contentTitle: String,
+    modifier: Modifier = Modifier,
+    navController: NavController = rememberNavController()
+
 ) {
     val activity = getActivity()
     val isToolbarVisible = remember { mutableStateOf(true) }
@@ -67,7 +72,9 @@ fun MediaScreen(
         viewModel.initData(key)
     }
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         color = MaterialTheme.colorScheme.background
     ) {
 
@@ -153,7 +160,11 @@ private fun MediaTypeCard(
 }
 
 @Composable
-fun VideoPlayer(uri: Uri, onPlayerViewClick: () -> Unit) {
+fun VideoPlayer(
+    uri: Uri,
+    onPlayerViewClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -172,7 +183,8 @@ fun VideoPlayer(uri: Uri, onPlayerViewClick: () -> Unit) {
 
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .then(modifier),
         contentAlignment = Alignment.Center
     ) {
         AndroidView(factory = {
@@ -189,7 +201,7 @@ fun VideoPlayer(uri: Uri, onPlayerViewClick: () -> Unit) {
 }
 
 @Composable
-fun ZoomableImage(uri: Uri) {
+fun ZoomableImage(uri: Uri, modifier: Modifier = Modifier) {
     val scale = remember { mutableStateOf(1f) }
     val imagePainter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -206,6 +218,7 @@ fun ZoomableImage(uri: Uri) {
                     scale.value *= zoom
                 }
             }
+            .then(modifier)
     ) {
         Image(
             modifier = Modifier
@@ -225,9 +238,11 @@ fun ZoomableImage(uri: Uri) {
 }
 
 @Composable
-fun PdfViewer(pdfFile: File) {
+fun PdfViewer(pdfFile: File, modifier: Modifier = Modifier) {
     AndroidView(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         factory = { context ->
             PDFView(context, null).apply {
                 fromFile(pdfFile)
@@ -250,6 +265,6 @@ fun getActivity(): Activity? {
 }
 
 @Composable
-fun TextViewer(contentValue: String, modifier: Modifier) {
+fun TextViewer(contentValue: String, modifier: Modifier = Modifier) {
     Text(text = contentValue, modifier = modifier.fillMaxSize(), style = defaultTextStyle, color = textColorDark)
 }

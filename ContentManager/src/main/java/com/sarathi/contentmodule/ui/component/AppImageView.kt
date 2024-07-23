@@ -10,8 +10,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
 fun AppImageView(
-    modifier: Modifier = Modifier,
     @DrawableRes resource: Int,
+    modifier: Modifier = Modifier,
     colorFilter: ColorFilter? = null
 ) {
     AndroidView(

@@ -110,11 +110,12 @@ private fun ContentView(
 }
 
 @Composable
-fun ContentData(contentType: String) {
+fun ContentData(contentType: String, modifier: Modifier = Modifier) {
     when (contentType.toUpperCase(Locale.current)) {
         FileType.IMAGE.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
             Image(
+                modifier = Modifier.then(modifier),
                 painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
                     blueDark
                 )
@@ -124,6 +125,7 @@ fun ContentData(contentType: String) {
         FileType.AUDIO.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_audio_placeholder)
             Image(
+                modifier = Modifier.then(modifier),
                 painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
                     blueDark
                 )
@@ -131,13 +133,16 @@ fun ContentData(contentType: String) {
         }
 
         FileType.VIDEO.name -> {
-            ImageOverlay(resId = R.drawable.ic_video_placeholder)
+            ImageOverlay(
+                resId = R.drawable.ic_video_placeholder
+            )
         }
 
         FileType.FILE.name -> {
             val painter: Painter =
                 painterResource(id = R.drawable.ic_file_place_holder_icon)
             Image(
+                modifier = Modifier.then(modifier),
                 painter = painter, contentDescription = null, colorFilter = ColorFilter.tint(
                     blueDark
                 )
@@ -156,10 +161,12 @@ fun ContentData(contentType: String) {
 }
 
 @Composable
-fun ImageOverlay(resId: Int) {
+fun ImageOverlay(resId: Int, modifier: Modifier = Modifier) {
     val painter: Painter = painterResource(id = resId)
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         contentAlignment = Alignment.Center
     ) {
         Box(

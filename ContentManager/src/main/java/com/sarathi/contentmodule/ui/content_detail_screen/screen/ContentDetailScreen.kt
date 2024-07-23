@@ -75,13 +75,14 @@ import java.util.Locale
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ContentDetailScreen(
+    matId: Int,
+    contentType: Int,
+    onSettingIconClicked: () -> Unit,
+    modifier: Modifier = Modifier,
     navController: NavController = rememberNavController(),
     viewModel: ContentDetailViewModel = hiltViewModel(),
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyGridState = rememberLazyGridState(),
-    matId: Int,
-    contentType: Int,
-    onSettingIconClicked: () -> Unit,
     onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
@@ -99,8 +100,15 @@ fun ContentDetailScreen(
     val innerFirstVisibleItemIndex by remember { derivedStateOf { innerState.firstVisibleItemIndex } }
 
     Scaffold(
+        modifier = Modifier.then(modifier),
         containerColor = white,
-        topBar = { ContentTopBar(navController, viewModel, onSettingIconClicked) },
+        topBar = {
+            ContentTopBar(
+                navController = navController,
+                viewModel = viewModel,
+                onSettingIconClicked = onSettingIconClicked
+            )
+        },
         bottomBar = { ContentBottomBar(navController) }
     ) { innerPadding ->
         ContentBody(
@@ -120,11 +128,12 @@ fun ContentDetailScreen(
 fun ContentTopBar(
     navController: NavController,
     viewModel: ContentDetailViewModel,
+    modifier: Modifier = Modifier,
     onSettingIconClicked: () -> Unit
 ) {
     TopAppBar(
         title = {
-            Row(modifier = Modifier) {
+            Row(modifier = Modifier.then(modifier)) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         painter = painterResource(id = R.drawable.arrow_left),
@@ -168,11 +177,12 @@ fun ContentTopBar(
 }
 
 @Composable
-fun ContentBottomBar(navController: NavController) {
+fun ContentBottomBar(navController: NavController, modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
+            .then(modifier)
     ) {
         ButtonPositive(
             buttonTitle = stringResource(R.string.go_back),
@@ -229,13 +239,13 @@ fun ContentBody(
 
         if (viewModel.filterContentList.value.isNotEmpty()) {
             ContentList(
-                viewModel,
-                outerState,
-                innerState,
-                innerFirstVisibleItemIndex,
-                scope,
-                context,
-                onNavigateToMediaScreen
+                viewModel = viewModel,
+                outerState = outerState,
+                innerState = innerState,
+                innerFirstVisibleItemIndex = innerFirstVisibleItemIndex,
+                scope = scope,
+                context = context,
+                onNavigateToMediaScreen = onNavigateToMediaScreen
             )
         }
     }
@@ -249,6 +259,7 @@ fun ContentList(
     innerFirstVisibleItemIndex: Int,
     scope: CoroutineScope,
     context: Context,
+    modifier: Modifier = Modifier,
     onNavigateToMediaScreen: (fileType: String, key: String, title: String) -> Unit
 ) {
     BoxWithConstraints(
@@ -263,6 +274,7 @@ fun ContentList(
                 },
                 Orientation.Vertical,
             )
+            .then(modifier)
     ) {
         if (viewModel.filterSelected.value) {
             LazyColumn(

@@ -19,6 +19,7 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 fun BaseContentScreen(
     matId: Int,
     contentScreenCategory: Int,
+    modifier: Modifier = Modifier,
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
     onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean, contentTitle: String) -> Unit
 ) {
@@ -30,6 +31,7 @@ fun BaseContentScreen(
         LazyRow(
             modifier = Modifier
                 .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_5_dp)
+                .then(modifier)
         ) {
             itemsIndexed(viewModel.contentList.value.take(4)) { index, item ->
                 BasicContentComponent(

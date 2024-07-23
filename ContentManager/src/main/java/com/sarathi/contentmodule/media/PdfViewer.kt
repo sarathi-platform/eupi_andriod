@@ -47,9 +47,9 @@ import java.io.File
 
 @Composable
 fun PdfViewer(
-    modifier: Modifier = Modifier,
     navController: NavController,
-    filePath: String
+    filePath: String,
+    modifier: Modifier = Modifier
 ) {
 
     val context = LocalContext.current
@@ -147,7 +147,7 @@ fun PdfViewer(
     @Composable
     fun ZoomableImage(
         request: ImageRequest,
-        modifier: Modifier
+        modifier: Modifier = Modifier
     ) {
         val scale = remember { mutableStateOf(1f) }
         val rotationState = remember { mutableStateOf(1f) }

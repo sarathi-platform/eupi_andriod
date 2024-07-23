@@ -36,8 +36,8 @@ import com.nudge.core.ui.theme.white
 
 @Composable
 fun ButtonPositive(
-    modifier: Modifier = Modifier,
     buttonTitle: String,
+    modifier: Modifier = Modifier,
     isArrowRequired: Boolean = true,
     isLeftArrow: Boolean = false,
     isActive: Boolean = false,

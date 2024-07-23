@@ -28,10 +28,11 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
-fun ButtonComponent(title: String = BLANK_STRING) {
+fun ButtonComponent(modifier: Modifier = Modifier, title: String = BLANK_STRING) {
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
