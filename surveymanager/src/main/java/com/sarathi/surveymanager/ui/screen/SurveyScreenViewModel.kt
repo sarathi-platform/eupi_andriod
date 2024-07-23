@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class SurveyScreenViewModel @Inject constructor(
+open class SurveyScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
@@ -104,14 +104,7 @@ class SurveyScreenViewModel @Inject constructor(
     fun saveAnswerIntoDB() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             questionUiModel.value.forEach { question ->
-                saveSurveyAnswerUseCase.saveSurveyAnswer(
-                    question,
-                    taskEntity?.subjectId ?: DEFAULT_ID,
-                    taskId = taskId,
-                    referenceId = referenceId,
-                    grantId = grantID,
-                    grantType = granType
-                )
+                saveQuestionAnswerIntoDb(question)
 
             }
             if (sanctionAmount != 0) {
@@ -168,6 +161,17 @@ class SurveyScreenViewModel @Inject constructor(
 
         }
 
+    }
+
+    protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
+        saveSurveyAnswerUseCase.saveSurveyAnswer(
+            question,
+            taskEntity?.subjectId ?: DEFAULT_ID,
+            taskId = taskId,
+            referenceId = referenceId,
+            grantId = grantID,
+            grantType = granType
+        )
     }
 
 
@@ -239,5 +243,9 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun getPrefixFileName(question: QuestionUiModel): String {
         return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
+    }
+
+    open fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
+
     }
 }

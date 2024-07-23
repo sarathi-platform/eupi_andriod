@@ -58,8 +58,7 @@ fun RadioQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
-    onAnswerSelection: (questionIndex: Int, optionItem: OptionsUiModel) -> Unit,
-    questionDetailExpanded: (index: Int) -> Unit
+    onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()
@@ -123,7 +122,7 @@ fun RadioQuestionBoxComponent(
                             }
                         }
                         item {
-                            if (optionUiModelList?.isNotEmpty() == true) {
+                            if (optionUiModelList.isNotEmpty()) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -140,7 +139,7 @@ fun RadioQuestionBoxComponent(
                                                 selectedIndex = _index
                                                 onAnswerSelection(
                                                     questionIndex,
-                                                    option
+                                                    selectedIndex
                                                 )
                                             } else {
                                                 showCustomToast(
@@ -151,40 +150,6 @@ fun RadioQuestionBoxComponent(
                                         }
                                     }
                                 }
-                                /*LazyVerticalGrid(
-                                    userScrollEnabled = false,
-                                    state = innerState,
-                                    columns = GridCells.Fixed(2),
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight)
-                                ) {
-                                    itemsIndexed(
-                                        optionUiModelList ?: emptyList()
-                                    ) { _index: Int, option: OptionsUiModel ->
-                                        if (option.optionType.equals(QuestionType.RadioButton.name)) {
-                                            RadioButtonOptionComponent(
-                                                index = _index,
-                                                optionsItem = option,
-                                                selectedIndex = selectedIndex
-                                            ) {
-                                                if (isEditAllowed) {
-                                                    selectedIndex = _index
-                                                    onAnswerSelection(
-                                                        questionIndex,
-                                                        option
-                                                    )
-                                                } else {
-                                                    showCustomToast(
-                                                        context,
-                                                        context.getString(R.string.edit_disable_message)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }*/
                             } else {
                                 Spacer(
                                     modifier = Modifier

@@ -18,15 +18,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -57,7 +54,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SurveyScreen(
-    navController: NavController = rememberNavController(),
+    navController: NavController,
     viewModel: SurveyScreenViewModel,
     surveyId: Int,
     sectionId: Int,
@@ -69,6 +66,7 @@ fun SurveyScreen(
     grantId: Int,
     grantType: String,
     sanctionedAmount: Int,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit
 ) {
@@ -175,6 +173,7 @@ fun SurveyScreen(
                                 ) { selectedValue, remainingAmout ->
                                     viewModel.totalRemainingAmount = remainingAmout
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
+                                    onAnswerSelect(question)
                                 }
                             }
 
@@ -190,6 +189,7 @@ fun SurveyScreen(
                                         ?: BLANK_STRING
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
+                                    onAnswerSelect(question)
 
                                 }
                             }
@@ -212,6 +212,8 @@ fun SurveyScreen(
                                         isDeleted
                                     )
                                     viewModel.checkButtonValidation()
+                                    onAnswerSelect(question)
+
                                 }
                             }
 
@@ -227,6 +229,8 @@ fun SurveyScreen(
                                             option.isSelected = selectedValue.id == option.optionId
                                         }
                                         viewModel.checkButtonValidation()
+                                        onAnswerSelect(question)
+
                                     }
                                 )
                             }
@@ -247,6 +251,8 @@ fun SurveyScreen(
                                                 options.isSelected = false
                                             } }
                                         viewModel.checkButtonValidation()
+                                        onAnswerSelect(question)
+
                                     }
                                 )
                             }
@@ -264,7 +270,12 @@ fun SurveyScreen(
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
                                     optionUiModelList = question.options.value(),
-                                    onAnswerSelection = { questionIndex, optionItem ->
+                                    onAnswerSelection = { questionIndex, optionItemIndex ->
+                                        question.options?.forEachIndexed { index, _ ->
+                                            question.options?.get(index)?.isSelected = false
+                                        }
+                                        question.options?.get(optionItemIndex)?.isSelected = true
+                                        onAnswerSelect(question)
 
                                     },
                                     questionDetailExpanded = {
@@ -275,19 +286,16 @@ fun SurveyScreen(
 
                             QuestionType.MultiSelect.name,
                             QuestionType.Grid.name -> {
-                                val selectedOptionIndices = remember {
-                                    mutableStateOf(mutableListOf<Int>())
-                                }
                                 GridTypeComponent(
                                     questionIndex = index,
                                     questionDisplay = question.questionDisplay,
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
                                     optionUiModelList = question.options.value(),
-                                    selectedOptionIndices = selectedOptionIndices.value,
+                                    selectedOptionIndices = listOf(),
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
-                                        selectedOptionIndices.value.clear()
-                                        selectedOptionIndices.value.addAll(selectedIndeciesCount)
+                                        onAnswerSelect(question)
+
                                     },
                                     questionDetailExpanded = {
 
