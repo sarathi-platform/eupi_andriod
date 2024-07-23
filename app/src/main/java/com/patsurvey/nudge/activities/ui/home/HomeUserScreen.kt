@@ -20,7 +20,7 @@ fun HomeUserScreen(
     prefRepo: PrefRepo,
     onSettingIconClick: () -> Unit
 ) {
-    if(prefRepo.getLoggedInUserType().equals(UPCM_USER)) {
+    if (prefRepo.getLoggedInUserType() == UPCM_USER) {
         DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
         if (prefRepo.isUserBPC()) {
