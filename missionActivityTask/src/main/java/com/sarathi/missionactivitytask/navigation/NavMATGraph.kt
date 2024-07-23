@@ -340,7 +340,8 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
                 onAnswerSelect = { questionUiModel ->
 
-                }
+                },
+                onSubmitButtonClick = {}
             )
         }
         composable(

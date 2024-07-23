@@ -45,16 +45,16 @@ open class SurveyScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
-    private var taskId: Int = 0
+    var taskId: Int = 0
     private var activityConfigId: Int = 0
-    private var grantID: Int = 0
+    var grantID: Int = 0
     private var sanctionAmount: Int = 0
     var totalSubmittedAmount: Int = 0
     var totalRemainingAmount: Int = 0
-    private var granType: String = BLANK_STRING
-    private var subjectType: String = BLANK_STRING
-    private var referenceId: String = BLANK_STRING
-    private var taskEntity: ActivityTaskEntity? = null
+    var granType: String = BLANK_STRING
+    var subjectType: String = BLANK_STRING
+    var referenceId: String = BLANK_STRING
+    var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
     val isActivityNotCompleted = mutableStateOf<Boolean>(false)
@@ -101,7 +101,7 @@ open class SurveyScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAnswerIntoDB() {
+    fun saveAllAnswerIntoDB() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             questionUiModel.value.forEach { question ->
                 saveQuestionAnswerIntoDb(question)
@@ -201,7 +201,7 @@ open class SurveyScreenViewModel @Inject constructor(
 
     fun saveButtonClicked() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveAnswerIntoDB()
+            saveAllAnswerIntoDB()
         }
     }
 

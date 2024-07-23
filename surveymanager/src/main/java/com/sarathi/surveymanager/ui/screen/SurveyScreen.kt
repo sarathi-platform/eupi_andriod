@@ -68,6 +68,7 @@ fun SurveyScreen(
     sanctionedAmount: Int,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     totalSubmittedAmount: Int,
+    onSubmitButtonClick: () -> Unit,
     onSettingClick: () -> Unit
 ) {
     val outerState = rememberLazyListState()
@@ -110,8 +111,8 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                            viewModel.saveButtonClicked()
-                            navController.popBackStack()
+                        onSubmitButtonClick()
+
                     }
                 )
             }
