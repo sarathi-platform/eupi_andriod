@@ -436,12 +436,10 @@ class EventWriterHelperImpl @Inject constructor(
                 markActivityInProgress(missionId, activityId, status)
             }
         }
-        missionEntity?.let {
-            if (missionEntity.status == null) {
-                markMissionInProgress(missionId, SectionStatus.INPROGRESS)
-            } else {
-                markMissionInProgress(missionId, status)
-            }
+        if (missionEntity?.status == null) {
+            markMissionInProgress(missionId, SectionStatus.INPROGRESS)
+        } else {
+            markMissionInProgress(missionId, status)
         }
     }
 

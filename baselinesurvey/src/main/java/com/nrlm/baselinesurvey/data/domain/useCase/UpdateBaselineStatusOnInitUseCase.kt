@@ -15,26 +15,24 @@ class UpdateBaselineStatusOnInitUseCase @Inject constructor(
         try {
             val mUserId = updateBaselineStatusOnInitRepository.getUserId()
             val mission = updateBaselineStatusOnInitRepository.getBaselineMission()
-            mission?.let {
-                mission.apply {
-                    updateBaselineStatusOnInitRepository.updateBaselineMissionStatusForGrant(
-                        missionId = missionId, status = status,
+            mission?.apply {
+                updateBaselineStatusOnInitRepository.updateBaselineMissionStatusForGrant(
+                    missionId = missionId, status = status,
+                    userId = mUserId
+                )
+
+                val activities = updateBaselineStatusOnInitRepository.getActivitiesForMission(
+                    mUserId, missionId
+                )
+                activities.forEach { activity ->
+                    updateBaselineStatusOnInitRepository.updateBaselineActivityStatusForGrant(
+                        missionId = missionId,
+                        activityId = activity.activityId,
+                        status = activity.status ?: SectionStatus.NOT_STARTED.name,
                         userId = mUserId
                     )
-
-                    val activities = updateBaselineStatusOnInitRepository.getActivitiesForMission(
-                        mUserId, missionId
-                    )
-                    activities.forEach { activity ->
-                        updateBaselineStatusOnInitRepository.updateBaselineActivityStatusForGrant(
-                            missionId = missionId,
-                            activityId = activity.activityId,
-                            status = activity.status ?: SectionStatus.NOT_STARTED.name,
-                            userId = mUserId
-                        )
-                    }
-                    onSuccess(true)
                 }
+                onSuccess(true)
             }
         } catch (ex: Exception) {
             CoreLogger.e(tag = tag, msg = "invoke: exception -> $ex", ex = ex, stackTrace = true)
