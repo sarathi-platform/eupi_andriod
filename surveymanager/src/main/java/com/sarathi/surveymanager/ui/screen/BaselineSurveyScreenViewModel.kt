@@ -1,6 +1,8 @@
 package com.sarathi.surveymanager.ui.screen
 
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -45,8 +47,18 @@ class BaselineSurveyScreenViewModel @Inject constructor(
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
             saveQuestionAnswerIntoDb(currentQuestionUiModel)
+            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
+                questionUiModel = currentQuestionUiModel,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = subjectType,
+                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                referenceId = referenceId,
+                grantId = grantID,
+                grantType = granType,
+                taskId = taskId,
+                uriList = ArrayList()
+            )
         }
     }
 }

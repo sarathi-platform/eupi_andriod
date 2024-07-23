@@ -39,6 +39,10 @@ fun GrantSurveyScreen(
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
+        },
+        onSubmitButtonClick = {
+            viewModel.saveButtonClicked()
+            navController.popBackStack()
         }
     )
 

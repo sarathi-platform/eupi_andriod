@@ -39,6 +39,9 @@ fun BaselineSurveyScreen(
         onAnswerSelect = { questionUiModel ->
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
 
+        },
+        onSubmitButtonClick = {
+            navController.popBackStack()
         }
     )
 
