@@ -46,14 +46,12 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             )
         )
         writeEventInFile(
-            saveAnswerMoneyJournalEventDto,
             EventName.MONEY_JOURNAL_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
             listOf(),
             requestPayload = saveAnswerMoneyJournalEventDto.json()
         )
         writeEventInFile(
-            saveAnswerMoneyJournalEventDto,
             EventName.FORM_RESPONSE_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
             listOf(),
@@ -89,7 +87,6 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             }
 
             writeEventInFile(
-                saveAnswerEventDto,
                 EventName.GRANT_SAVE_RESPONSE_EVENT,
                 questionUiModel.surveyName,
                 uriList,
@@ -98,8 +95,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         }
     }
 
-    private suspend fun <T> writeEventInFile(
-        eventItem: T,
+    private suspend fun writeEventInFile(
         eventName: EventName,
         surveyName: String,
         uriList: List<Uri>?,
@@ -164,7 +160,6 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             taskId
         )
         writeEventInFile(
-            saveAnswerMoneyJournalEventDto,
             EventName.GRANT_DELETE_RESPONSE_EVENT,
             surveyName ?: BLANK_STRING,
             uriList,
