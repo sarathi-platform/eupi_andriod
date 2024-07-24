@@ -29,7 +29,7 @@ interface SectionStatusEntityDao {
         userId: String
     ): SectionStatusEntity
 
-    @Query("UPDATE $SECTION_STATUS_TABLE_NAME SET missionId = :missionId and sectionStatus = :sectionStatus where surveyId = :surveyId and taskId = :taskId and sectionId = :sectionId and userId = :userId")
+    @Query("UPDATE $SECTION_STATUS_TABLE_NAME SET sectionStatus = :sectionStatus where missionId = :missionId and surveyId = :surveyId and taskId = :taskId and sectionId = :sectionId and userId = :userId")
     suspend fun updateSectionStatusForTask(
         missionId: Int,
         surveyId: Int,

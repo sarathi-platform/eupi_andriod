@@ -19,7 +19,7 @@ fun BaselineSurveyScreen(
     toolbarTitle: String,
     activityConfigId: Int,
     grantId: Int,
-    grantType: String,
+    activityType: String,
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit
@@ -35,18 +35,22 @@ fun BaselineSurveyScreen(
         toolbarTitle = toolbarTitle,
         activityConfigId = activityConfigId,
         grantId = grantId,
-        grantType = grantType,
+        grantType = activityType,
         sanctionedAmount = sanctionedAmount,
         totalSubmittedAmount = totalSubmittedAmount,
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
+            viewModel.updateTaskStatus(taskId)
             viewModel.updateSectionStatus(
                 missionId,
                 surveyId,
                 sectionId,
                 taskId,
-                SurveyStatusEnum.INPROGRESS.name
+                SurveyStatusEnum.INPROGRESS.name,
+                callBack = {
+                    //No Implementation required here.
+                }
             )
         },
         onSubmitButtonClick = {
@@ -56,8 +60,9 @@ fun BaselineSurveyScreen(
                 sectionId,
                 taskId,
                 SurveyStatusEnum.COMPLETED.name
-            )
-            navController.popBackStack()
+            ) {
+                navController.popBackStack()
+            }
         }
     )
 

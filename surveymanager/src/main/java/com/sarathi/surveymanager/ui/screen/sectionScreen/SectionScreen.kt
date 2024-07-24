@@ -28,9 +28,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -132,12 +129,8 @@ fun SectionScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val buttonVisibilityKey: MutableState<Boolean> = remember {
-        mutableStateOf(sectionScreenViewModel.sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name })
-    }
 
     LaunchedEffect(key1 = true) {
-        //TODO fetch section from db
         sectionScreenViewModel.setSurveyDetails(
             missionId = missionId,
             activityId = activityId,
@@ -165,16 +158,15 @@ fun SectionScreen(
                     )
                 }
             }
-            buttonVisibilityKey.value =
-                sectionScreenViewModel.sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name }
 
+            sectionScreenViewModel.checkButtonValidation()
             sectionScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         })
 
     }
 
-    LaunchedEffect(key1 = buttonVisibilityKey) {
-        if (buttonVisibilityKey.value)
+    LaunchedEffect(key1 = sectionScreenViewModel.buttonVisibilityKey) {
+        if (sectionScreenViewModel.buttonVisibilityKey.value)
             showBottomButtonState.show()
         else
             showBottomButtonState.hide()
@@ -185,14 +177,19 @@ fun SectionScreen(
         title = subjectName,
         modifier = Modifier
             .then(modifier),
+        paddingTop = dimen_8_dp,
         onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = { },
         onBottomUI = {
             ButtonComponentWithVisibility(
                 showButtonComponentState = showBottomButtonState,
-                buttonTitle = "Complete Survey", isActive = true,
+                buttonTitle = "Complete Survey",
+                isActive = sectionScreenViewModel.isButtonEnable.value,
                 onClick = {
-                    onNavigateSuccessScreen("Baseline for $subjectName")
+                    sectionScreenViewModel.updateTaskStatus(taskId)
+                    navController.navigateUp()
+                    //Change this to proper navigation
+//                    onNavigateSuccessScreen("Baseline for $subjectName")
                 }
             )
         },

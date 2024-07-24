@@ -43,12 +43,12 @@ open class SurveyScreenViewModel @Inject constructor(
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
-    private var surveyId: Int = 0
-    private var sectionId: Int = 0
+    var surveyId: Int = 0
+    var sectionId: Int = 0
     var taskId: Int = 0
-    private var activityConfigId: Int = 0
+    var activityConfigId: Int = 0
     var grantID: Int = 0
-    private var sanctionAmount: Int = 0
+    var sanctionAmount: Int = 0
     var totalSubmittedAmount: Int = 0
     var totalRemainingAmount: Int = 0
     var granType: String = BLANK_STRING

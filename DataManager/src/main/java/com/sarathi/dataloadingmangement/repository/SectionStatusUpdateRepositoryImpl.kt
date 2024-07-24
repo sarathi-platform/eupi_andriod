@@ -17,7 +17,14 @@ class SectionStatusUpdateRepositoryImpl @Inject constructor(
         taskId: Int,
         status: String
     ) {
-        if (isStatusAvailableForTaskSection(missionId, surveyId, sectionId, taskId)) {
+        val isStatusAvailableForSection = sectionStatusEntityDao.isStatusAvailableForSection(
+            missionId = missionId,
+            surveyId = surveyId,
+            sectionId = sectionId,
+            taskId = taskId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+        if (isStatusAvailableForSection > 0) {
             updateSectionStatusForTask(missionId, surveyId, sectionId, taskId, status)
         } else {
             addSectionStatusForTask(missionId, surveyId, sectionId, taskId, status)
@@ -67,13 +74,15 @@ class SectionStatusUpdateRepositoryImpl @Inject constructor(
         sectionId: Int,
         taskId: Int
     ): Boolean {
-        return sectionStatusEntityDao.isStatusAvailableForSection(
+        val a = sectionStatusEntityDao.isStatusAvailableForSection(
             missionId = missionId,
             surveyId = surveyId,
             sectionId = sectionId,
             taskId = taskId,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
-        ) > 0
+        )
+        println("isStatusAvailableForTaskSection: $a")
+        return a > 0
     }
 
 }

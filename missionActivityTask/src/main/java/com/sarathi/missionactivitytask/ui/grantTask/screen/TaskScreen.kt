@@ -41,7 +41,6 @@ import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -225,17 +224,11 @@ fun TaskScreen(
                     LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                         if (/*viewModel.isProgressEnable.value*/false) {
                             item {
-                                CustomVerticalSpacer()
-                            }
-                            item {
                                 CustomLinearProgressIndicator(
                                     modifier = Modifier
-                                        .padding(dimen_16_dp),
+                                        .padding(dimen_10_dp),
                                     progressState = linearProgressState
                                 )
-                            }
-                            item {
-                                CustomVerticalSpacer()
                             }
                         }
                         if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {

@@ -114,7 +114,6 @@ fun SurveyScreen(
                     isLeftArrow = false,
                     onClick = {
                         onSubmitButtonClick()
-
                     }
                 )
             }
@@ -231,6 +230,7 @@ fun SurveyScreen(
                                         )
                                     ) getQuestionNumber(index) else BLANK_STRING,
                                     isMandatory = question.isMandatory,
+                                    showQuestionInCard = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
                                     sources = getOptionsValueDto(question.options ?: listOf()),
                                     onAnswerSelection = { selectedValue ->
                                         question.options?.forEach { option ->

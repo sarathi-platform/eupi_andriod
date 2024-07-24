@@ -3,9 +3,13 @@ package com.sarathi.surveymanager.viewmodels.surveyScreen
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -15,14 +19,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SectionScreenViewModel @Inject constructor(
-    val getSectionListUseCase: GetSectionListUseCase
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val eventWriterUseCase: MATStatusEventWriterUseCase,
 ) : BaseViewModel() {
 
     private var missionId: Int = 0
     private var activityId: Int = 0
     private var surveyId: Int = 0
     private var taskId: Int = 0
-    private var subjectType: String = ""
+    private var subjectType: String = BLANK_STRING
     private var activityConfigId: Int = 0
 
     private val _contentList = mutableStateOf<List<Content>>(emptyList())
@@ -34,6 +40,11 @@ class SectionScreenViewModel @Inject constructor(
     private val _sectionStatusMap: MutableState<MutableMap<Int, String>> =
         mutableStateOf(mutableMapOf())
     val sectionStatusMap: State<Map<Int, String>> get() = _sectionStatusMap
+
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+
+    val buttonVisibilityKey: MutableState<Boolean> =
+        mutableStateOf(sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name })
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -92,6 +103,27 @@ class SectionScreenViewModel @Inject constructor(
         content?.let {
             callNavigation(content.contentType, content.contentValue)
         }
+    }
+
+    fun updateTaskStatus(taskId: Int) {
+        ioViewModelScope {
+            val task = eventWriterUseCase.getTaskEntity(taskId)
+            val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
+            surveyEntity?.let { survey ->
+                taskStatusUseCase.markTaskCompleted(taskId)
+                eventWriterUseCase.updateTaskStatus(task, survey.surveyName, subjectType)
+            }
+
+        }
+    }
+
+    fun checkButtonValidation() {
+
+        buttonVisibilityKey.value =
+            sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name }
+        isButtonEnable.value =
+            sectionList.value.size == sectionStatusMap.value.size && sectionStatusMap.value.values.toList()
+                .all { it == SurveyStatusEnum.COMPLETED.name }
 
     }
 

@@ -147,9 +147,22 @@ open class TaskScreenViewModel @Inject constructor(
                         isGroupByEnable.value = true
                         isFilterEnable.value = true
                     }
-//                    isProgressEnable.value =
+                    val progressUiComponent = getUiComponentValues(
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
+                        isNAButtonEnable = it.isNotAvailableButton,
+                        subjectId = it.subjectId,
+                        componentType = ComponentEnum.Progress.name,
+                        activityConfig = activityConfig
+                    )
+
+                    isProgressEnable.value =
+                        progressUiComponent[GrantTaskCardSlots.GRANT_TASK_PROGRESS.name]?.value != null
                 }
-                _taskList.value[it.taskId] = uiComponent
+
+                if (uiComponent[GrantTaskCardSlots.GRANT_TASK_TITLE.name]?.value?.isNotEmpty() == true)
+                    _taskList.value[it.taskId] = uiComponent
 
             }
 

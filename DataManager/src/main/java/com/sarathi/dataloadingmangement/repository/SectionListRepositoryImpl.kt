@@ -4,18 +4,21 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SectionStatusEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import javax.inject.Inject
 
 class SectionListRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
+    val surveyEntityDao: SurveyEntityDao,
     val sectionEntityDao: SectionEntityDao,
     val sectionStatusEntityDao: SectionStatusEntityDao
 ) : SectionListRepository {
 
 
-    override fun getSectionListForSurvey(surveyId: Int): List<SectionUiModel> {
+    override suspend fun getSectionListForSurvey(surveyId: Int): List<SectionUiModel> {
         return sectionEntityDao.getAllSectionForSurveyInLanguage(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,
@@ -34,6 +37,13 @@ class SectionListRepositoryImpl @Inject constructor(
             taskId,
             coreSharedPrefs.getUniqueUserIdentifier()
         ).value()
+    }
+
+    override suspend fun getSurveyEntity(surveyId: Int): SurveyEntity? {
+        return surveyEntityDao.getSurveyDetailForLanguage(
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            surveyId
+        )
     }
 
 }

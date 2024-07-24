@@ -1,12 +1,13 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.repository.SectionListRepository
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
 class GetSectionListUseCase @Inject constructor(
-    private val sectionListRepository: SectionListRepository
+    private val sectionListRepository: SectionListRepository,
 ) {
 
     suspend operator fun invoke(surveyId: Int): List<SectionUiModel> {
@@ -22,6 +23,10 @@ class GetSectionListUseCase @Inject constructor(
         }
 
         return statusMap
+    }
+
+    suspend fun getSurveyEntity(surveyId: Int): SurveyEntity? {
+        return sectionListRepository.getSurveyEntity(surveyId)
     }
 
 }

@@ -462,6 +462,7 @@ fun NavGraphBuilder.MatNavigation(
                 }
             ),
         ) {
+
             BaselineSurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
@@ -489,7 +490,7 @@ fun NavGraphBuilder.MatNavigation(
                 grantId = it.arguments?.getInt(
                     ARG_GRANT_ID
                 ) ?: 0,
-                grantType = it.arguments?.getString(
+                activityType = it.arguments?.getString(
                     ARG_GRANT_TYPE
                 ) ?: BLANK_STRING,
                 sanctionedAmount = it.arguments?.getInt(
@@ -737,7 +738,7 @@ fun NavGraphBuilder.MatNavigation(
                         toolbarName = sectionName,
                         activityConfigId = activityConfigId,
                         grantId = 0,
-                        grantType = "Survey",
+                        activityType = "Survey",
                         sanctionedAmount = 0,
                         totalSubmittedAmount = 0
                     )
@@ -779,11 +780,11 @@ fun navigateToSurveyScreen(
     toolbarName: String,
     activityConfigId: Int,
     grantId: Int,
-    grantType: String,
+    activityType: String,
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
 }
 
 fun navigateToGrantSurveyScreen(

@@ -7,6 +7,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -19,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +36,8 @@ class BaselineSurveyScreenViewModel @Inject constructor(
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase
+    private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
+    private val getSectionListUseCase: GetSectionListUseCase
 ) : SurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -66,12 +69,29 @@ class BaselineSurveyScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateTaskStatus(taskId: Int) {
+        ioViewModelScope {
+            val surveyEntity = getSectionListUseCase.getSurveyEntity(super.surveyId)
+            surveyEntity?.let { survey ->
+                taskStatusUseCase.markTaskCompleted(taskId)
+                super.taskEntity?.let { t ->
+                    matStatusEventWriterUseCase.updateTaskStatus(
+                        t,
+                        survey.surveyName,
+                        subjectType
+                    )
+                }
+            }
+        }
+    }
+
     fun updateSectionStatus(
         missionId: Int,
         surveyId: Int,
         sectionId: Int,
         taskId: Int,
-        status: String
+        status: String,
+        callBack: () -> Unit
     ) {
         ioViewModelScope {
             sectionStatusUpdateUseCase.invoke(
@@ -80,9 +100,12 @@ class BaselineSurveyScreenViewModel @Inject constructor(
                 sectionId = sectionId,
                 taskId = taskId, status = status
             )
-            sectionStatusEventWriterUserCase.invoke(
-
+            sectionStatusEventWriterUserCase(
+                surveyId, sectionId, taskId, status
             )
+            withContext(mainDispatcher) {
+                callBack()
+            }
         }
     }
 }
