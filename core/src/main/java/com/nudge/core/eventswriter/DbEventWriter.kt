@@ -14,6 +14,7 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.toDate
 
@@ -41,8 +42,8 @@ class DbEventWrite() : IEventWriter {
                             createdBy = event.createdBy,
                             fileName = it.toFile().name,
                             filePath = it.path ?: BLANK_STRING,
-                            name = event.name,
-                            type = event.type,
+                            name = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                            type = EventName.BLOB_UPLOAD_TOPIC.topicName,
                             status = EventSyncStatus.OPEN.eventSyncStatus,
                             imageEventId = event.id,
                             modifiedDate = System.currentTimeMillis().toDate()

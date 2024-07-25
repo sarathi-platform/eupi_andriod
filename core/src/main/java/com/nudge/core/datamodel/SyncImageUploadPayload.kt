@@ -10,5 +10,5 @@ data class SyncImageUploadPayload(
     @SerializedName("mobile_no") val mobileNo: String,
     @SerializedName("file_name") val fileName: String,
     @SerializedName("file_path") val filePath: String,
-    @SerializedName("image_event_client_id") val imageEventClientId: String,
+    @SerializedName("file_event_client_id") val fileEventClientId: String,
 )
