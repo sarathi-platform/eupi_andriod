@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
@@ -93,13 +94,15 @@ object UseCaseModule {
         nudgeBaselineDatabase: NudgeBaselineDatabase,
         prefRepo: PrefBSRepo,
         nudgeDatabase: NudgeDatabase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        syncManagerDatabase: SyncManagerDatabase
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
             prefBSRepo = prefRepo,
             nudgeDatabase = nudgeDatabase,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            syncManagerDatabase = syncManagerDatabase
         )
     }
 
