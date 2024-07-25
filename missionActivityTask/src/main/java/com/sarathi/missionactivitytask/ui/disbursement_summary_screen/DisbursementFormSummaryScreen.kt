@@ -134,7 +134,7 @@ fun DisbursementFormSummaryScreen(
         onSearchValueChange = {},
         onRetry = {},
         onBottomUI = {
-            if (!isFormSettingScreen && !viewModel.loaderState.value.isLoaderVisible) {
+            if (!viewModel.loaderState.value.isLoaderVisible) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -207,23 +207,25 @@ fun DisbursementFormSummaryScreen(
 
                             }
                         }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp)
-                        ) {
-                            ButtonPositive(
-                                buttonTitle = stringResource(R.string.attach_physical_form_e),
-                                isActive = true,
-                                isArrowRequired = false,
-                                onClick = {
-                                    navigateToAddImageScreen(
-                                        navController = navController,
-                                        activityId = activityId,
-                                        taskIdList = taskList
-                                    )
-                                }
-                            )
+                        if (!isFormSettingScreen) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                            ) {
+                                ButtonPositive(
+                                    buttonTitle = stringResource(R.string.attach_physical_form_e),
+                                    isActive = true,
+                                    isArrowRequired = false,
+                                    onClick = {
+                                        navigateToAddImageScreen(
+                                            navController = navController,
+                                            activityId = activityId,
+                                            taskIdList = taskList
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
