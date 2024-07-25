@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
@@ -17,7 +18,8 @@ class ExportImportRepositoryImpl @Inject constructor(
     val prefBSRepo: PrefBSRepo,
     val coreSharedPrefs: CoreSharedPrefs,
     val nudgeBaselineDatabase:NudgeBaselineDatabase,
-    val nudgeDatabase: NudgeDatabase
+    val nudgeDatabase: NudgeDatabase,
+    val syncManagerDatabase: SyncManagerDatabase
 ):ExportImportRepository {
     override fun clearLocalData() {
         try {
@@ -87,6 +89,17 @@ class ExportImportRepositoryImpl @Inject constructor(
             prefBSRepo.savePref(LAST_UPDATE_TIME, 0L)
         }catch (ex:Exception){
             NudgeLogger.d("ExportImportRepositoryImpl","clearSelectionLocalDB: ${ex.message}")
+        }
+    }
+
+    override fun clearAPIStatusTableData() {
+        try {
+            syncManagerDatabase.apply {
+                apiStatusDao().deleteApiStatus()
+            }
+        } catch (ex: Exception) {
+            NudgeLogger.d("ExportImportRepositoryImpl", "clearAPIStatusTableData: ${ex.message}")
+
         }
     }
 
