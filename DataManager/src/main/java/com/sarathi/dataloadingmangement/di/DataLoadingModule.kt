@@ -858,11 +858,14 @@ class DataLoadingModule {
     @Singleton
     fun provideSectionListRepository(
         coreSharedPrefs: CoreSharedPrefs,
+        surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         sectionSectionEntityDao: SectionStatusEntityDao
+
     ): SectionListRepository {
         return SectionListRepositoryImpl(
             coreSharedPrefs,
+            surveyEntityDao,
             sectionEntityDao,
             sectionSectionEntityDao
         )
