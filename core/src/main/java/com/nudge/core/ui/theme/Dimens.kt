@@ -6,6 +6,7 @@ val defaultCardElevation = 10.dp
 val roundedCornerRadiusDefault = 6.dp
 val defaultBottomBarPadding = 70.dp
 
+val dimen_05_dp = 0.5.dp
 val dimen_0_dp = 0.dp
 val dimen_1_dp = 1.dp
 val dimen_2_dp = 2.dp

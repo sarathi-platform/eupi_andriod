@@ -143,3 +143,4 @@ val dateRangeFieldColor = Color(0xFFD9D9D9)
 
 val deleteButtonBg = Color(0xFFFF0000)
 val iconBackgroundgrayColor = Color(0xFFF2F2F2)
+val incomeCardBorderColor = Color(0xFFDBCDB1)
