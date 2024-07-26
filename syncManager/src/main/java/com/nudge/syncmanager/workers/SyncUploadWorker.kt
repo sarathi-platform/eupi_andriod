@@ -2,9 +2,6 @@ package com.nudge.syncmanager.workers
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
-import androidx.core.net.toFile
-import androidx.core.net.toUri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -261,21 +258,29 @@ class SyncUploadWorker @AssistedInject constructor(
                 imageStatusEvent.fileName,
                 imageRequest
             )
-            val imagePayloadRequest = SyncImageUploadPayload(
+            val imagePayloadRequest = listOf(
+                SyncImageUploadPayload(
                 createdBy = imageStatusEvent.createdBy,
-                imageEventClientId = imageStatusEvent.imageEventId ?: BLANK_STRING,
+                    fileEventClientId = imageStatusEvent.imageEventId ?: BLANK_STRING,
                 eventTopic = imageStatusEvent.type,
                 clientId = imageStatusEvent.id,
                 fileName = imageStatusEvent.fileName,
                 filePath = imageStatusEvent.filePath,
                 eventName = imageStatusEvent.name,
                 mobileNo = imageStatusEvent.mobileNumber
-            ).toString()
-                .toRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+                )
+            ).json()
 
+            val multipartData =
+                imagePayloadRequest.toRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+            CoreLogger.d(
+                context = applicationContext,
+                TAG,
+                "syncImageToServerAPI: SyncImageAPI Request: ${imagePayloadRequest.json()} :: $multipartData",
+            )
             val response = syncApiRepository.syncImageToServer(
                 image = multipartRequest,
-                imagePayload = imagePayloadRequest
+                imagePayload = multipartData
             )
             if (response.status == SUCCESS) {
                 response.data?.let { imageEventList ->
@@ -345,21 +350,17 @@ class SyncUploadWorker @AssistedInject constructor(
             ) {
                 CoreLogger.d(applicationContext, TAG, "findImageEventAndImage: ${it.json()} ")
                 try {
-                    val imageUri = it.filePath.toUri()
-                    if (imageUri != Uri.EMPTY) {
-                        val imageFile = imageUri.toFile()
-                        if (imageFile.exists() && imageFile.isFile) {
-                            syncImageToServerAPI(imageFile = imageFile, imageStatusEvent = it)
-                        } else
-                            handleFailedImageStatus(
-                                event = imageStatusEvent,
-                                errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
-                            )
-                    } else handleFailedImageStatus(
-                        event = imageStatusEvent,
-                        errorMessage = SyncException.IMAGE_EMPTY_URI_EXCEPTION.message
-                    )
+                    val imageFile = File(it.filePath)
+                    if (imageFile.exists() && imageFile.isFile) {
+                        syncImageToServerAPI(imageFile = imageFile, imageStatusEvent = it)
+                    } else
+                        handleFailedImageStatus(
+                            event = imageStatusEvent,
+                            errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
+                        )
+
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     handleFailedImageStatus(
                         event = imageStatusEvent,
                         errorMessage = e.message

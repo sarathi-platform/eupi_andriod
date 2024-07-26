@@ -78,7 +78,7 @@ const val AUTH_TOKEN_PREFIX = "Bearer"
 const val KEY_HEADER_TYPE = "header_type"
 const val KEY_HEADER_MOBILE = "header_type_mobile"
 const val MULTIPART_FORM_DATA = "multipart/form-data"
-const val MULTIPART_IMAGE_PARAM_NAME = "imageFile"
+const val MULTIPART_IMAGE_PARAM_NAME = "files"
 
 const val SUCCESS = "SUCCESS"
 const val FAIL = "FAIL"

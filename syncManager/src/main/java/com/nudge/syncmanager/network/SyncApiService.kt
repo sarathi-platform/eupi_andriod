@@ -29,11 +29,11 @@ interface SyncApiService {
             : ApiResponseModel<List<SyncEventResponse>>
 
     @Multipart
-    @POST("sync-server/sync/saveImageEvent")
+    @POST("sync-server/sync/upload/file-event")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun syncImage(
         @Part imageFile: MultipartBody.Part,
-        @Part("imagePayload") imagePayload: RequestBody
+        @Part("fileEvents") imagePayload: RequestBody
     ): ApiResponseModel<List<SyncImageStatusResponse>>
 
 
