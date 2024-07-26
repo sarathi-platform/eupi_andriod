@@ -427,6 +427,10 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         return prefBSRepo.getUniqueUserIdentifier()
     }
 
+    override fun getUserId(): String {
+        return prefBSRepo.getUserId()
+    }
+
     override suspend fun deleteResponseForQuestion(
         surveyId: Int,
         sectionId: Int,
