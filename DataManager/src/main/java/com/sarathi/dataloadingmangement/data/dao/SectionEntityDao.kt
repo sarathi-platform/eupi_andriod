@@ -7,6 +7,7 @@ import com.sarathi.dataloadingmangement.SECTION_TABLE
 import com.sarathi.dataloadingmangement.SURVEY_LANGUAGE_ATTRIBUTE_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
+import com.sarathi.dataloadingmangement.repository.LanguageAttributeReferenceType
 
 @Dao
 interface SectionEntityDao {
@@ -21,11 +22,12 @@ interface SectionEntityDao {
         surveyId: Int,
     ): SectionEntity
 
-    @Query("Select sectionTable.sectionId, sectionTable.userId, sectionTable.surveyId, langAttrTable.description as sectionName, sectionTable.sectionOrder, sectionTable.sectionDetails, sectionTable.sectionIcon, sectionTable.questionSize from $SECTION_TABLE as sectionTable join $SURVEY_LANGUAGE_ATTRIBUTE_TABLE_NAME as langAttrTable on sectionTable.sectionId = langAttrTable.referenceId where sectionTable.userId=:userId and sectionTable.surveyId = :surveyId and langAttrTable.userId = :userId and langAttrTable.languageCode = :languageCode and langAttrTable.referenceType = 'SECTION' order by sectionTable.sectionOrder ASC")
+    @Query("Select sectionTable.sectionId, sectionTable.userId, sectionTable.surveyId, langAttrTable.description as sectionName, sectionTable.sectionOrder, sectionTable.sectionDetails, sectionTable.sectionIcon, sectionTable.questionSize from $SECTION_TABLE as sectionTable join $SURVEY_LANGUAGE_ATTRIBUTE_TABLE_NAME as langAttrTable on sectionTable.sectionId = langAttrTable.referenceId where sectionTable.userId=:userId and sectionTable.surveyId = :surveyId and langAttrTable.userId = :userId and langAttrTable.languageCode = :languageCode and langAttrTable.referenceType = :referenceType order by sectionTable.sectionOrder ASC")
     fun getAllSectionForSurveyInLanguage(
         userId: String,
         surveyId: Int,
-        languageCode: String
+        languageCode: String,
+        referenceType: String = LanguageAttributeReferenceType.SECTION.name
     ): List<SectionUiModel>
 
     @Query("Delete from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId ")

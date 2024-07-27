@@ -74,15 +74,14 @@ class SectionStatusUpdateRepositoryImpl @Inject constructor(
         sectionId: Int,
         taskId: Int
     ): Boolean {
-        val a = sectionStatusEntityDao.isStatusAvailableForSection(
+
+        return sectionStatusEntityDao.isStatusAvailableForSection(
             missionId = missionId,
             surveyId = surveyId,
             sectionId = sectionId,
             taskId = taskId,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
-        )
-        println("isStatusAvailableForTaskSection: $a")
-        return a > 0
+        ) > 0
     }
 
 }
