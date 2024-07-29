@@ -1,9 +1,9 @@
-package com.sarathi.contentmodule.ui.content_screen.viewmodel
+package com.sarathi.contentmodule.ui.contentscreen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.sarathi.contentmodule.constants.Constants.CONTENT_LIMIT_DATA
-import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.contentmodule.ui.contentscreen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.ui.viewmodel.BaseViewModel
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent

@@ -3,7 +3,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.utils.CoreLogger
-import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.contentmodule.ui.contentscreen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase

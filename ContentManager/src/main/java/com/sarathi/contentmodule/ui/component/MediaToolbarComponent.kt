@@ -79,7 +79,12 @@ fun MediaToolbarComponent(
                 modifier = Modifier
             ) {
                 Icon(
-                    painter = painterResource(id = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) R.drawable.content_fullscreen else R.drawable.content_fullscreen_exit_24),
+                    painter = painterResource(
+                        id = if (configuration.orientation
+                            == Configuration.ORIENTATION_LANDSCAPE
+                        ) R.drawable.content_fullscreen
+                        else R.drawable.content_fullscreen_exit_24
+                    ),
                     contentDescription = "Full Screen"
                 )
             }

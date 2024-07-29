@@ -3,7 +3,7 @@ package com.sarathi.contentmodule.media
 import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
-import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.contentmodule.ui.contentscreen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope

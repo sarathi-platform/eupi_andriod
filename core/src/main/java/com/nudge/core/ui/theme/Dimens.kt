@@ -1,6 +1,7 @@
 package com.nudge.core.ui.theme
 
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 val defaultCardElevation = 10.dp
 val roundedCornerRadiusDefault = 6.dp
@@ -53,6 +54,8 @@ val weight_50_percent = 0.5f
 val weight_60_percent = 0.6f
 val weight_80_percent = 0.8f
 val weight_100_percent = 1f
+
+val text_size_14_sp = 14.sp
 
 
 

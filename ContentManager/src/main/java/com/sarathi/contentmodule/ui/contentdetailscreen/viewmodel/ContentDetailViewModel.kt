@@ -1,11 +1,11 @@
-package com.sarathi.contentmodule.ui.content_detail_screen.viewmodel
+package com.sarathi.contentmodule.ui.contentdetailscreen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.nudge.core.CoreDispatchers
-import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.contentmodule.ui.contentscreen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.ui.viewmodel.BaseViewModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.data.entities.Content

@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.ui.content_screen.domain.usecase
+package com.sarathi.contentmodule.ui.contentscreen.domain.usecase
 
 import android.net.Uri
 import com.sarathi.dataloadingmangement.data.entities.Content

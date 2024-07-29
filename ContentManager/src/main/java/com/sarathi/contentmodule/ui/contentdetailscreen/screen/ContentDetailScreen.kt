@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.ui.content_detail_screen.screen
+package com.sarathi.contentmodule.ui.contentdetailscreen.screen
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -59,10 +59,11 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.constants.Constants.FOUR
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.component.ButtonPositive
 import com.sarathi.contentmodule.ui.component.SearchWithFilterViewComponent
-import com.sarathi.contentmodule.ui.content_detail_screen.viewmodel.ContentDetailViewModel
+import com.sarathi.contentmodule.ui.contentdetailscreen.viewmodel.ContentDetailViewModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.download_manager.FileType
@@ -295,7 +296,7 @@ fun ContentList(
                         modifier = Modifier
                             .heightIn(min = 0.dp, max = maxHeight)
                             .padding(bottom = dimen_5_dp),
-                        columns = GridCells.Fixed(4),
+                        columns = GridCells.Fixed(FOUR),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         itemsIndexed(
@@ -316,7 +317,7 @@ fun ContentList(
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
+                columns = GridCells.Fixed(FOUR),
                 horizontalArrangement = Arrangement.Center
             ) {
                 itemsIndexed(items = viewModel.filterContentList.value) { _, item ->
@@ -360,7 +361,9 @@ private fun ContentRowView(
     BasicContentComponent(contentType = item.contentType,
         contentTitle = item.contentName,
         onClick = {
-            if (viewModel.isFilePathExists(item.contentValue) || item.contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {
+            if (viewModel.isFilePathExists(item.contentValue) ||
+                item.contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name
+            ) {
                 onNavigateToMediaScreen(
                     item.contentType,
                     item.contentKey,

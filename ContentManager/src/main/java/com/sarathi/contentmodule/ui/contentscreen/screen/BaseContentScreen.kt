@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.ui.content_screen.screen
+package com.sarathi.contentmodule.ui.contentscreen.screen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,8 +10,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.contentmodule.constants.Constants.CONTENT_THRESHOLD_VALUE
+import com.sarathi.contentmodule.constants.Constants.FOUR
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
-import com.sarathi.contentmodule.ui.content_screen.viewmodel.BaseContentScreenViewModel
+import com.sarathi.contentmodule.ui.contentscreen.viewmodel.BaseContentScreenViewModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 
@@ -21,7 +22,10 @@ fun BaseContentScreen(
     contentScreenCategory: Int,
     modifier: Modifier = Modifier,
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
-    onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean, contentTitle: String) -> Unit
+    onClick: (
+        contentValue: String, contentKey: String, contentType: String,
+        isLimitContentData: Boolean, contentTitle: String
+    ) -> Unit
 ) {
     LaunchedEffect(key1 = matId) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -33,7 +37,7 @@ fun BaseContentScreen(
                 .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_5_dp)
                 .then(modifier)
         ) {
-            itemsIndexed(viewModel.contentList.value.take(4)) { index, item ->
+            itemsIndexed(viewModel.contentList.value.take(FOUR)) { index, item ->
                 BasicContentComponent(
                     contentType = item.contentType,
                     contentTitle = item.contentName,

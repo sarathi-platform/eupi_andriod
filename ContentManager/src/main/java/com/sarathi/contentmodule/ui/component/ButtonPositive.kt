@@ -22,14 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.languageItemActiveBg
-import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.text_size_14_sp
 import com.nudge.core.ui.theme.white
 
 
@@ -102,7 +105,7 @@ private fun TextViewWithIcon(
         style = TextStyle(
             fontFamily = NotoSans,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp
+            fontSize = text_size_14_sp
         ),
         textAlign = TextAlign.Center
     )
@@ -112,7 +115,7 @@ private fun TextViewWithIcon(
             contentDescription = "Positive Button",
             tint = if (isActive) iconTintColor else greyBorder,
             modifier = Modifier
-                .absolutePadding(top = 2.dp, left = 2.dp)
+                .absolutePadding(top = dimen_2_dp, left = dimen_2_dp)
         )
     }
 }
