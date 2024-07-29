@@ -4,6 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.util.LoaderState
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,10 +28,24 @@ abstract class BaseViewModel : ViewModel() {
     abstract fun <T> onEvent(event: T)
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
+        CoreLogger.e(
+            tag = "SurveyModule",
+            msg = e?.localizedMessage ?: BLANK_STRING,
+            stackTrace = true,
+            ex = e
+        )
+
         onCatchError(e)
     }
 
     open fun onCatchError(e: Throwable) {
+        CoreAppDetails.getContext()?.applicationContext?.let {
+            CoreLogger.d(
+                context = it,
+                tag = "BaseViewModel->",
+                msg = e.message ?: com.sarathi.dataloadingmangement.BLANK_STRING
+            )
+        }
         onEvent(LoaderEvent.UpdateLoaderState(false))
 
     }

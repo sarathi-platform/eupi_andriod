@@ -37,15 +37,21 @@ interface ActivityDao {
     suspend fun getActivityCount(userId: String, activityId: Int): Int
 
     @Query(
-        "select activity_table.missionId,activity_table.activityId,  activity_language_attribute_table.description,  activity_table.status , \n" +
+        "select activity_table.missionId,activity_table.activityId," +
+                "activity_language_attribute_table.description, " +
+                "activity_table.status , \n" +
+                "activity_config_table.activityType , \n" +
+                "activity_config_table.activityTypeId , \n" +
+                "activity_config_table.icon , \n" +
                 "count(task_table.taskId) as taskCount,\n" +
                 " SUM(CASE WHEN task_table.status  in(:surveyStatus)  THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
                 "left join task_table on activity_table.activityId = task_table.activityId \n" +
+                "left join activity_config_table on activity_table.activityId = activity_config_table.activityId \n" +
                 " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 " +
                 "and activity_table.userId =:userId and activity_table.missionId=:missionId  " +
-                "and activity_language_attribute_table.userId=:userId and task_table.userId=:userId group by task_table.activityId "
+                "and activity_language_attribute_table.userId=:userId and task_table.userId=:userId and activity_config_table.userId=:userId group by task_table.activityId "
     )
     suspend fun getActivities(
         userId: String,
@@ -157,12 +163,17 @@ interface ActivityDao {
     @Query("Select * from activity_table where userId=:userId and isActive=1 ")
     suspend fun getAllActivityForUser(userId: String): List<ActivityEntity>
 
-    @Query("Select activity_table.activityId as activityId,activity_table.missionId as missionId,activity_language_attribute_table.description as  description  from activity_table inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  inner join form_ui_config_table on form_ui_config_table.activityId=activity_table.activityId where form_ui_config_table.userId=:userId and form_ui_config_table.componentType=:formType and activity_language_attribute_table.languageCode=:languageCode group by activity_table.activityId")
+    @Query("Select activity_table.activityId as activityId,activity_table.missionId as missionId,mission_language_table.description as missionName,activity_language_attribute_table.description as  description ,form_ui_config_table.componentType as formType from activity_table inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  inner join form_ui_config_table on form_ui_config_table.activityId=activity_table.activityId  inner join mission_language_table on mission_language_table.missionId= activity_language_attribute_table.missionId  where form_ui_config_table.userId=:userId and form_ui_config_table.componentType=:formType and activity_language_attribute_table.languageCode=:languageCode  and mission_language_table.languageCode=:languageCode group by activity_table.activityId")
     suspend fun getActiveForm(
         userId: String,
         languageCode: String,
         formType: String
     ): List<ActivityFormUIModel>
 
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId=:missionId and isActive=1")
+    suspend fun getActiveActivities(userId: String, missionId: Int): List<ActivityEntity>
+
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId=:missionId and activityId=:activityId and isActive=1")
+    suspend fun getActiveActivitiesStatus(userId: String, missionId: Int, activityId: Int): ActivityEntity?
 
 }

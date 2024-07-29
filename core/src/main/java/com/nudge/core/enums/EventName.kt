@@ -23,11 +23,7 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     FORM_B_TOPIC(14, listOf(12), topicName = "FORM_B_TOPIC"),
     FORM_C_TOPIC(14, listOf(12), topicName = "FORM_C_TOPIC"),
     FORM_D_TOPIC(14, listOf(12), topicName = "FORM_D_TOPIC"),
-    SAVE_BPC_MATCH_SCORE(
-        15,
-        emptyList(),
-        topicName = "BPC_TOPIC"
-    ), //TODO GET TOPIC NAME FOR THIS EVENT
+    SAVE_BPC_MATCH_SCORE(15, emptyList(), topicName = "BPC_TOPIC"),
     WORKFLOW_STATUS_UPDATE(16, emptyList(), "WORKFLOW_TOPIC"),
     RANKING_FLAG_EDIT(17, emptyList(), "RANKING_FLAG_EDIT_TOPIC"),
     ADD_SECTION_PROGRESS_FOR_DIDI_EVENT(19, topicName = "ADD_SECTION_PROGRESS_FOR_DIDI_EVENT"),
@@ -50,7 +46,8 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     UPLOAD_DOCUMENT_EVENT(33, topicName = "DOCUMENT_TOPIC"),
     SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC"),
     DELETE_SUBJECT_ATTENDANCE_EVENT(35, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC"),
-    FORM_RESPONSE_EVENT(36, topicName = "SAVE_RESPONSE_EVENT")
+    FORM_RESPONSE_EVENT(36, topicName = "SAVE_RESPONSE_EVENT"),
+    BLOB_UPLOAD_TOPIC(37, topicName = "BLOB_UPLOAD_TOPIC");
 
 }
 

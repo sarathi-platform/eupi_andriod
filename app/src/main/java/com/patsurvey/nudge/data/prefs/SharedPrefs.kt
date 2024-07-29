@@ -30,9 +30,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_LANGUAGE_ID = "language_id"
         const val PREF_KEY_PAGE_FROM = "page_from"
         const val PREF_KEY_STEP_ID = "step_id"
-        const val PREF_KEY_LAST_TOLA_ID = "last_tola_id"
-        const val PREF_KEY_LAST_TOLA_NAME = "last_tola_name"
-        const val SELECTED_VILLAGE_ID = "selected_village_id"
         const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_LAST_SYNC_TIME = "last_sync_time"
@@ -43,8 +40,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
-        const val PREF_USER_TYPE = "pref_user_type"
-        const val UP_CM_USER = "Ultra Poor change maker (UPCM)"
 
     }
 

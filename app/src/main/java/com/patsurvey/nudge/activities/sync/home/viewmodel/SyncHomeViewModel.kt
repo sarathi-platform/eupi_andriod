@@ -30,6 +30,7 @@ import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.getFirstName
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.openShareSheet
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
@@ -39,7 +40,6 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.openShareSheet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -157,7 +157,12 @@ class SyncHomeViewModel @Inject constructor(
                     }
                     eventFiles.forEach { it.second?.let { it1 -> fileAndDbZipList.add(it1) } }
                     NudgeLogger.d("SyncHomeViewModel", "Failed Event File: ${eventFiles.json()}")
-                    openShareSheet(fileAndDbZipList, "Share Failed Event File", "*/*")
+                    openShareSheet(
+                        fileUriList = fileAndDbZipList,
+                        title = "Share Failed Event File",
+                        type = "*/*",
+                        context = CoreAppDetails.getApplicationContext().applicationContext
+                    )
                 }
             }
         }

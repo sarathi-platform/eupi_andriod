@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
@@ -16,25 +15,27 @@ import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nudge.core.EVENT_STRING
+import com.nudge.core.CoreDispatchers
+import com.nudge.core.IMAGE
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.NUDGE_GRANT_DATABASE
+import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
-import com.nudge.core.ZIP_EXTENSION
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFile
 import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
+import com.nudge.core.findImagesExistInPictureFolder
 import com.nudge.core.getFirstName
-import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
+import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
@@ -66,12 +67,12 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
-import com.patsurvey.nudge.utils.openShareSheet
+import com.sarathi.dataloadingmangement.FORM_E
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -85,6 +86,7 @@ import javax.inject.Inject
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     private val getActivityUseCase: GetActivityUseCase,
+    private val formUseCase: FormUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo
@@ -101,8 +103,8 @@ class SettingBSViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
-    val formEAvailable = mutableStateOf(false)
-    val activityFormList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
+    val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
+    val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
 
 
     val loaderState: State<LoaderState> get() = _loaderState
@@ -110,8 +112,11 @@ class SettingBSViewModel @Inject constructor(
         applicationId.value= CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
         mAppContext = if(userType!= UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
-        getActivityForm()
-
+        getActivityFormGenerateList(onGetData = {
+            if (activityFormGenerateList.value.isNotEmpty()) {
+                checkFromEAvailable(activityFormGenerateList.value)
+            }
+        })
         val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
         val settingOpenFrom=settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
         val list = ArrayList<SettingOptionModel>()
@@ -142,6 +147,15 @@ class SettingBSViewModel @Inject constructor(
                     context.getString(R.string.training_videos),
                     BLANK_STRING,
                     SettingTagEnum.TRAINING_VIDEOS.name
+                )
+            )
+        } else {
+            list.add(
+                SettingOptionModel(
+                    2,
+                    context.getString(R.string.forms),
+                    BLANK_STRING,
+                    SettingTagEnum.FORMS.name
                 )
             )
         }
@@ -181,8 +195,6 @@ class SettingBSViewModel @Inject constructor(
             )
         }
 
-
-
         _optionList.value=list
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
@@ -190,13 +202,13 @@ class SettingBSViewModel @Inject constructor(
     }
 
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
-        CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
             if (userType != UPCM_USER) {
                 exportLocalData(context)
             }
             delay(2000)
-            withContext(Dispatchers.Main) {
+            withContext(CoreDispatchers.mainDispatcher) {
                showLoader.value=false
                 onLogout(settingUseCaseResponse)
             }
@@ -214,40 +226,65 @@ class SettingBSViewModel @Inject constructor(
 
     fun compressEventData(title: String) {
         NudgeLogger.d("SettingBSViewModel", "compressEventData---------------")
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                val fileUriList = ArrayList<Uri>()
+                val fileUriList = arrayListOf<Uri>()
                 val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
 
-                deleteOldFiles(compression)
-                handleImageFiles(fileUriList)
-                handleDatabaseFiles(fileAndDbZipList)
-                handleEventFiles(fileAndDbZipList, compression)
-                handleLogFile(fileAndDbZipList)
+                deleteOldZips(compression)
+
+                val isImageExistInFolder = findImagesExistInPictureFolder(
+                    appContext = mAppContext,
+                    applicationID = applicationId.value,
+                    mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
+                )
+
+                processImages(isImageExistInFolder, fileUriList)
+                processDatabaseFiles(fileAndDbZipList)
+                processLogFile(fileAndDbZipList)
 
                 if (userType == CRP_USER_TYPE) {
-                    handleFormsForCRP(fileAndDbZipList)
+                    processCRPForms(fileAndDbZipList)
                 }
 
                 if (userType == UPCM_USER) {
-                    handleSummaryFile(fileAndDbZipList)
+                    getSummaryFile()?.let { fileAndDbZipList.add(it) }
                 }
 
-                createAndShareZip(fileUriList, fileAndDbZipList, title, compression)
+                val zipFileName = generateZipFileName()
+                val zipLogDbFileUri = compression.compressData(
+                    context = mAppContext,
+                    zipFileName = zipFileName,
+                    filePathToZipped = Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber(),
+                    extraUris = fileAndDbZipList,
+                    folderName = getUserMobileNumber()
+                )
+                zipLogDbFileUri?.let {
+                    if (it != Uri.EMPTY) {
+                        fileUriList.add(it)
+                    }
+                }
+
+                fileUriList.forEach {
+                    NudgeLogger.d("SettingBSViewModel", "Share Dialog Open Zip Files: ${it.path}")
+                }
+                openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                handleError(exception)
+                NudgeLogger.e("Compression Exception", exception.message ?: "")
+                exception.printStackTrace()
+                onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    private fun deleteOldFiles(compression: ZipFileCompression) {
+    private suspend fun deleteOldZips(compression: ZipFileCompression) {
         compression.deleteOldFiles(
             context = mAppContext,
-            fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_Image",
+            fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_${SARATHI}_${IMAGE}",
             folderName = getUserMobileNumber(),
             fileType = SUFFIX_IMAGE_ZIP_FILE,
             applicationId = applicationId.value,
@@ -256,154 +293,106 @@ class SettingBSViewModel @Inject constructor(
 
         compression.deleteOldFiles(
             context = mAppContext,
-            fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_",
+            fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_${SARATHI}_",
             folderName = getUserMobileNumber(),
             fileType = SUFFIX_EVENT_ZIP_FILE
         )
     }
 
-    private suspend fun handleImageFiles(fileUriList: ArrayList<Uri>) {
-        val imageUri = exportAllOldImages(
-            appContext = mAppContext,
-            applicationID = applicationId.value,
-            mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-            moduleName = moduleNameAccToLoggedInUser(loggedInUser = userType),
-            userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
-        )
-
-        imageUri?.let {
-            if (it != Uri.EMPTY) {
-                fileUriList.add(it)
-                NudgeLogger.d("SettingBSViewModel_URI", "Image File Uri: ${imageUri.path}---------------")
-            }
-        }
-    }
-
-    private suspend fun handleDatabaseFiles(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        val dbUri = exportDbFile(
-            appContext = mAppContext,
-            applicationID = applicationId.value,
-            databaseName = if (userType != UPCM_USER) NUDGE_DATABASE else NUDGE_BASELINE_DATABASE
-        )
-        dbUri?.let {
-            if (it != Uri.EMPTY) {
-                fileAndDbZipList.add(Pair(if (userType != UPCM_USER) NUDGE_DATABASE else NUDGE_BASELINE_DATABASE, it))
-                NudgeLogger.d("SettingBSViewModel", "Database File Uri: ${it.path}---------------")
-            }
-        }
-
-    }
-
-    private fun handleEventFiles(fileAndDbZipList: ArrayList<Pair<String, Uri?>>, compression: ZipFileCompression) {
-        val eventFileUrisList = compression.getFileUrisFromMediaStore(
-            contentResolver = mAppContext.contentResolver,
-            extVolumeUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
-            filePathToZipped = Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber()
-        )
-
-        if (!eventFileUrisList.isNullOrEmpty()) {
-            val eventFiles = eventFileUrisList.filter { it.first.contains(EVENT_STRING) && !it.first.contains(ZIP_EXTENSION) }
-            eventFiles.forEach { fileAndDbZipList.add(it) }
-            NudgeLogger.d("SettingBSViewModel", "Event File: ${eventFiles.json()}")
-        }
-    }
-
-    private suspend fun handleLogFile(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        val logFile = LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()) {}
-        logFile?.let {
-            val logFileUri = uriFromFile(mAppContext, it, applicationId.value)
-            if (logFileUri != Uri.EMPTY) {
-                fileAndDbZipList.add(Pair(it.name, logFileUri))
-                NudgeLogger.d("SettingBSViewModel", "Log File Uri: ${logFileUri.path}---------------")
-            }
-        }
-    }
-
-    private suspend fun handleFormsForCRP(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        val selectedVillageId = prefRepo.getSelectedVillage().id
-        val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(prefRepo.getAppLanguageId() ?: 2)
-        val didiList = settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(selectedVillageId)
-
-        generateAndAddFormA(casteList, selectedVillageId, didiList, fileAndDbZipList)
-        generateAndAddFormB(casteList, selectedVillageId, didiList, fileAndDbZipList)
-        generateAndAddFormC(casteList, selectedVillageId, didiList, fileAndDbZipList)
-    }
-
-    private suspend fun generateAndAddFormA(
-        casteList: List<CasteEntity>,
-        selectedVillageId: Int,
-        didiList: List<DidiEntity>,
-        fileAndDbZipList: ArrayList<Pair<String, Uri?>>
-    ) {
-        val isFormAGenerated = generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
-        addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, fileAndDbZipList)
-    }
-
-    private suspend fun generateAndAddFormB(
-        casteList: List<CasteEntity>,
-        selectedVillageId: Int,
-        didiList: List<DidiEntity>,
-        fileAndDbZipList: ArrayList<Pair<String, Uri?>>
-    ) {
-        val isFormBGenerated = generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
-        addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, fileAndDbZipList)
-    }
-
-    private suspend fun generateAndAddFormC(
-        casteList: List<CasteEntity>,
-        selectedVillageId: Int,
-        didiList: List<DidiEntity>,
-        fileAndDbZipList: ArrayList<Pair<String, Uri?>>
-    ) {
-        val isFormCGenerated = generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
-        addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, fileAndDbZipList)
-    }
-
-    private suspend fun handleSummaryFile(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        getSummaryFile()?.let {
-            fileAndDbZipList.add(it)
-        }
-    }
-
-    private suspend fun createAndShareZip(
-        fileUriList: ArrayList<Uri>,
-        fileAndDbZipList: ArrayList<Pair<String, Uri?>>,
-        title: String,
-        compression: ZipFileCompression
-    ) {
-        val zipFileName = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_${System.currentTimeMillis()}"
-        if (fileUriList.isNotEmpty()) {
-            val zipLogDbFileUri = compression.compressData(
-                mAppContext,
-                zipFileName,
-                Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber() + "/${moduleNameAccToLoggedInUser(userType)}",
-                fileAndDbZipList,
-                getUserMobileNumber()
+    private suspend fun processImages(isImageExistInFolder: Boolean, fileUriList: ArrayList<Uri>) {
+        if (isImageExistInFolder) {
+            val imageUri = exportAllOldImages(
+                appContext = mAppContext,
+                applicationID = applicationId.value,
+                mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                moduleName = moduleNameAccToLoggedInUser(loggedInUser = userType),
+                userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
             )
-            zipLogDbFileUri?.let {
-                if (it != Uri.EMPTY) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        fileUriList.add(it)
-                    } else {
-                        fileUriList.add(
-                            uriFromFile(
-                                context = mAppContext,
-                                applicationID = applicationId.value,
-                                file = it.toFile()
-                            )
+
+            if (imageUri != Uri.EMPTY) {
+                imageUri?.let {
+                    fileUriList.add(it)
+                    NudgeLogger.d(
+                        "SettingBSViewModel_URI",
+                        "Image File Uri: ${it.path}---------------"
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun processDatabaseFiles(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
+        if (userType != UPCM_USER) {
+            val dbUri = exportDbFile(
+                appContext = mAppContext,
+                applicationID = applicationId.value,
+                databaseName = NUDGE_DATABASE
+            )
+            if (dbUri != Uri.EMPTY) {
+                dbUri?.let {
+                    NudgeLogger.d(
+                        "SettingBSViewModel",
+                        "Database File Uri: ${it.path}---------------"
+                    )
+                    fileAndDbZipList.add(Pair(NUDGE_DATABASE, it))
+                }
+            }
+        } else {
+            val dbUrisList = exportDbFiles(
+                mAppContext,
+                applicationId.value,
+                listOf(NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE)
+            )
+            if (dbUrisList.isNotEmpty()) {
+                dbUrisList.forEach { dbUri ->
+                    dbUri.second?.let {
+                        NudgeLogger.d(
+                            "SettingBSViewModel",
+                            "Database File Uri: ${it.path}---------------"
                         )
+                        fileAndDbZipList.add(Pair(dbUri.first, it))
                     }
                 }
             }
         }
-        NudgeLogger.d("SettingBSViewModel", "Share Dialog Open ${fileUriList.json()}")
-        openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
     }
 
-    private fun handleError(exception: Exception) {
-        NudgeLogger.e("Compression Exception", exception.message ?: "")
-        exception.printStackTrace()
-        onEvent(LoaderEvent.UpdateLoaderState(false))
+    private suspend fun processLogFile(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
+        val logFile = LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()) {}
+        if (logFile != null) {
+            val logFileUri = uriFromFile(mAppContext, logFile, applicationId.value)
+            if (logFileUri != Uri.EMPTY) {
+                logFileUri.let {
+                    fileAndDbZipList.add(Pair(logFile.name, it))
+                    NudgeLogger.d("SettingBSViewModel", "Log File Uri: ${it.path}---------------")
+                }
+            }
+        }
+    }
+
+    private suspend fun processCRPForms(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
+        val selectedVillageId = prefRepo.getSelectedVillage().id
+        val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
+            prefRepo.getAppLanguageId() ?: 2
+        )
+        val didiList =
+            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(selectedVillageId)
+
+        val isFormAGenerated =
+            generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+        addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, fileAndDbZipList)
+
+        val isFormBGenerated =
+            generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+        addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, fileAndDbZipList)
+
+        val isFormCGenerated =
+            generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+        addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, fileAndDbZipList)
+    }
+
+    private fun generateZipFileName(): String {
+        return "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_${SARATHI}_${System.currentTimeMillis()}"
     }
 
     override fun <T> onEvent(event: T) {
@@ -420,8 +409,8 @@ class SettingBSViewModel @Inject constructor(
         onEvent(LoaderEvent.UpdateLoaderState(true))
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    withContext(Dispatchers.Main) {
+                job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+                    withContext(CoreDispatchers.mainDispatcher) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
                     }
                 }
@@ -439,18 +428,18 @@ class SettingBSViewModel @Inject constructor(
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
         if (formAFilePath.isFile && formAFilePath.exists()) {
-            withContext(Dispatchers.Main) {
+            withContext(CoreDispatchers.mainDispatcher) {
                 formAAvailable.value = true
             }
         } else {
             if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
             ) {
-                withContext(Dispatchers.Main) {
+                withContext(CoreDispatchers.mainDispatcher) {
                     formAAvailable.value = true
                 }
             } else {
                 withContext(
-                    Dispatchers.Main
+                    CoreDispatchers.mainDispatcher
                 ) {
                     formAAvailable.value = false
                 }
@@ -468,17 +457,17 @@ class SettingBSViewModel @Inject constructor(
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
         if (formBFilePath.isFile && formBFilePath.exists()) {
-            withContext(Dispatchers.Main) {
+            withContext(CoreDispatchers.mainDispatcher) {
                 formBAvailable.value = true
             }
         } else {
             if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
             ) {
-                withContext(Dispatchers.Main) {
+                withContext(CoreDispatchers.mainDispatcher) {
                     formBAvailable.value = true
                 }
             } else {
-                withContext(Dispatchers.Main) {
+                withContext(CoreDispatchers.mainDispatcher) {
                     formBAvailable.value = false
                 }
             }
@@ -490,7 +479,7 @@ class SettingBSViewModel @Inject constructor(
             File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_C_PDF_NAME}_${villageId}.pdf")
 
         if (formCFilePath.isFile && formCFilePath.exists()) {
-            withContext(Dispatchers.Main) {
+            withContext(CoreDispatchers.mainDispatcher) {
                 formCAvailable.value = true
             }
         } else {
@@ -506,17 +495,16 @@ class SettingBSViewModel @Inject constructor(
         }
     }
     fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
 
             checkFormAAvailability(context = context, villageId = villageId)
             checkFormBAvailability(context = context, villageId = villageId)
             checkFormCAvailability(context = context, villageId = villageId)
-            formEAvailable.value = activityFormList.value.isNotEmpty()
         }
 
     }
     private suspend fun getSummaryFile(): Pair<String, Uri?>? {
-        val summaryFileNameWithoutExtension = "Sarathi_${
+        val summaryFileNameWithoutExtension = "${SARATHI}_${
             getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
         }_${prefBSRepo.getUniqueUserIdentifier()}_summary_file"
 
@@ -535,7 +523,7 @@ class SettingBSViewModel @Inject constructor(
     fun exportOnlyLogFile(context: Context){
         NudgeLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
         try {
-            CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 val logFile= LogWriter.buildLogFile(appContext = mAppContext){
                     onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -551,7 +539,12 @@ class SettingBSViewModel @Inject constructor(
                         moduleName = moduleNameAccToLoggedInUser(userType)
                     ) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
-                        openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
+                        openShareSheet(
+                            convertURIAccToOS(it),
+                            "",
+                            type = ZIP_MIME_TYPE,
+                            context = mAppContext
+                        )
                     }
 
 
@@ -643,9 +636,10 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun getActivityForm() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            activityFormList.value = getActivityUseCase.getActiveForm(formType = "form")
+    fun getActivityFormGenerateList(onGetData: () -> Unit) {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = FORM_E)
+            onGetData()
         }
     }
 
@@ -657,5 +651,23 @@ class SettingBSViewModel @Inject constructor(
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return arrayListOf(uri)
         return arrayListOf(uriFromFile(mAppContext,uri.toFile(),applicationId.value))
+    }
+    private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
+        if (activityFormUIModelList.isNotEmpty()) {
+            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+                val pairFormList = ArrayList<Pair<Int, Boolean>>()
+                activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
+                    val isFromEAvailable = formUseCase.getOnlyGeneratedFormSummaryData(
+                        activityId = activityFormUIModel.activityId,
+                        isFormGenerated = true
+                    ).isNotEmpty()
+                    pairFormList.add(Pair(index, isFromEAvailable))
+                }
+                formEAvailableList.value = pairFormList
+            }
+
+        } else {
+            formEAvailableList.value = emptyList()
+        }
     }
 }

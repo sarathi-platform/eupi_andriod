@@ -62,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.ContentWithImage
 import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
@@ -191,6 +192,12 @@ fun SmallGroupAttendanceHistoryScreen(
         dateRangePickerProperties = dateRangePickerProperties,
         sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
         onSheetConfirmButtonClicked = {
+            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
+                dateRangePickerProperties.state.setSelection(
+                    dateRangePickerProperties.state.selectedStartDateMillis,
+                    getCurrentTimeInMillis()
+                )
+            }
             smallGroupAttendanceHistoryViewModel
                 .onEvent(
                     CommonEvents.UpdateDateRange(

@@ -1581,7 +1581,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                                 prefRepo.savePref(
                                     PREF_KEY_TYPE_STATE_ID,
-                                    it.villageList?.get(0)?.stateId ?: 4
+                                    it.villageList?.firstOrNull()?.stateId ?: 4
                                 )
 
 
@@ -1599,7 +1599,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 )
 
                                 villageListDao.insertAll(it.villageList ?: listOf())
-                                stateId.value = it.villageList?.get(0)?.stateId ?: 1
+                                stateId.value = it.villageList?.firstOrNull()?.stateId ?: 1
                                 if (it.typeName.equals(UPCM_USER)) {
                                     prefRepo.savePref(
                                         PREF_STATE_ID,

@@ -22,15 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 
 
@@ -47,7 +46,7 @@ fun ButtonPositive(
 ) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(dimen_6_dp))
             .background(if (isActive) blueDark else languageItemActiveBg)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -64,7 +63,7 @@ fun ButtonPositive(
     ) {
         Row(
             Modifier
-                .padding(10.dp)
+                .padding(dimen_10_dp)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically,
@@ -76,17 +75,13 @@ fun ButtonPositive(
                     contentDescription = "Positive Button",
                     tint = if (isActive) iconTintColor else greyBorder,
                     modifier = Modifier
-                        .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
+                        .absolutePadding(top = dimen_2_dp, left = dimen_2_dp, right = dimen_10_dp)
                 )
             }
             Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyBorder,
-                style = /*buttonTextStyle*/TextStyle(
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
-                ),
+                style = smallTextStyle,
                 textAlign = TextAlign.Center
             )
             if (isArrowRequired && !isLeftArrow) {
@@ -95,7 +90,7 @@ fun ButtonPositive(
                     contentDescription = "Positive Button",
                     tint = if (isActive) iconTintColor else greyBorder,
                     modifier = Modifier
-                        .absolutePadding(top = 2.dp, left = 2.dp)
+                        .absolutePadding(top = dimen_2_dp, left = dimen_2_dp)
                 )
             }
         }

@@ -54,7 +54,8 @@ class SyncApiRepository @Inject constructor(
         return eventDao.getAllPendingEventList(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
+                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
+                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
             ),
             batchLimit = batchLimit,
             retryCount = retryCount,
@@ -74,7 +75,8 @@ class SyncApiRepository @Inject constructor(
         return eventDao.getSyncPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
+                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
+                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
             ),
             mobileNumber = prefRepo.getMobileNo(),
             syncType = syncType
@@ -183,9 +185,28 @@ class SyncApiRepository @Inject constructor(
         imageStatusDao.updateImageEventStatus(
             status = status,
             eventId = eventId,
-            errorMessage = errorMessage ?: BLANK_STRING,
+            errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
             mobileNumber = getLoggedInMobileNumber()
+        )
+
+        eventDao.updateEventStatus(
+            retryCount = 1,
+            clientId = eventId,
+            errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
+            modifiedDate = System.currentTimeMillis().toDate(),
+            newStatus = status
+        )
+
+        eventStatusDao.insert(
+            EventStatusEntity(
+                clientId = eventId,
+                errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
+                status = status,
+                mobileNumber = prefRepo.getMobileNo(),
+                createdBy = prefRepo.getUserId(),
+                eventStatusId = 0
+            )
         )
     }
     suspend fun findEventAndUpdateRetryCount(eventId: String) {

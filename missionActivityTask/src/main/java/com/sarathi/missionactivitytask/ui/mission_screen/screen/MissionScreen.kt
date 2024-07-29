@@ -46,7 +46,7 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GrantMissionScreen(
+fun MissionScreen(
     navController: NavController = rememberNavController(),
     viewModel: MissionScreenViewModel = hiltViewModel(),
     onSettingClick: () -> Unit,

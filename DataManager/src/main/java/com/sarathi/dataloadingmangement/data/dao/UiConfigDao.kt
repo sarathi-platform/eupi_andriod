@@ -14,7 +14,7 @@ interface UiConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUiConfig(uiConfigEntity: UiConfigEntity)
 
-    @Query("select  ui_config_table.type, ui_config_table.value,ui_config_table.`key`,ui_config_table.label,content_table.contentValue as icon,ui_config_table.componentType from ui_config_table left join  content_table on ui_config_table.icon = content_table.contentKey where ui_config_table.missionId=:missionId and ui_config_table.activityId=:activityId and ui_config_table.userId=:uniqueUserIdentifier and ui_config_table.language=:languageCode")
+    @Query("select  ui_config_table.type, ui_config_table.value,ui_config_table.`key`,ui_config_table.label,content_table.contentValue as icon,ui_config_table.componentType from ui_config_table left join  content_table on ui_config_table.icon = content_table.contentKey where ui_config_table.missionId=:missionId and ui_config_table.activityId=:activityId and ui_config_table.userId=:uniqueUserIdentifier and ui_config_table.language=:languageCode group by ui_config_table.`key`")
     fun getActivityUiConfig(
         missionId: Int,
         activityId: Int,

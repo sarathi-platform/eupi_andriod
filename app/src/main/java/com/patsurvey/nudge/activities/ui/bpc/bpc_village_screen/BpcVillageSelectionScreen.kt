@@ -62,6 +62,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -189,7 +190,6 @@ fun BpcVillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -383,14 +383,12 @@ fun BpcVillageSelectionScreen(
                                     )
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
-                                        navController.popBackStack()
-                                        navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH)
+                                        navController.navigateToBPCProgressScreen()
                                     }
                                 }
                             } else {
                                 viewModel.updateSelectedVillage(villageList = villages)
-                                navController.popBackStack()
-                                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH)
+                                navController.navigateToBPCProgressScreen()
                             }
 
                         }
@@ -659,17 +657,45 @@ fun BpcVillageAndVoBoxForBottomSheetPreview(
 }
 
 private fun fetchBPCVillageStatus(stepId: Int, statusId: Int): Int {
-    return if (stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal) {
-        BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal
-    } else if (stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal) {
-        BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal
-    } else if (stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) {
-        BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal
-    } else if (stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal) {
-        BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal
-    } else if (stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal) {
-        BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal
-    } else if (stepId == 45 && statusId == StepStatus.COMPLETED.ordinal) {
-        BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
-    } else 0
+    return when {
+        stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal -> {
+            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal
+        }
+
+        stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal -> {
+            BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal
+        }
+
+        stepId == 44 && statusId == StepStatus.COMPLETED.ordinal -> {
+            BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal
+        }
+
+        stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal -> {
+            BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal
+        }
+
+        stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal -> {
+            BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal
+        }
+
+        stepId == 45 && statusId == StepStatus.COMPLETED.ordinal -> {
+            BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
+        }
+
+        else -> 0
+    }
+}
+
+fun NavController.navigateToBPCProgressScreen() {
+    if (this.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
+        this.navigate(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
+            this.popUpTo(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+        }
+    } else if (this.graph.route?.equals(NudgeNavigationGraph.HOME_SUB_GRAPH, true) == true) {
+        this.popBackStack()
+        this.navigate(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route)
+    } else {
+        this.popBackStack()
+        this.navigate(NudgeNavigationGraph.HOME)
+    }
 }
