@@ -84,14 +84,16 @@ class SurveyScreenViewModel @Inject constructor(
     private fun intiQuestions() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             taskEntity = getTaskUseCase.getTask(taskId)
-            _questionUiModel.value = fetchDataUseCase.invoke(
-                surveyId = surveyId,
-                sectionId = sectionId,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                activityConfigId = activityConfigId,
-                referenceId = referenceId,
-                grantId = grantID
-            )
+            if (_questionUiModel.value.isEmpty()) {
+                _questionUiModel.value = fetchDataUseCase.invoke(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    activityConfigId = activityConfigId,
+                    referenceId = referenceId,
+                    grantId = grantID
+                )
+            }
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))

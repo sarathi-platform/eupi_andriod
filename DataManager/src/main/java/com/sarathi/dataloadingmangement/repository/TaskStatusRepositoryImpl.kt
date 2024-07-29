@@ -5,6 +5,8 @@ import com.nudge.core.toDate
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
@@ -79,6 +81,119 @@ class TaskStatusRepositoryImpl @Inject constructor(
             missionId = missionId,
             actualStartDate = System.currentTimeMillis().toDate().toString()
         )
+    }
+
+    override suspend fun reCheckActivityStatus(): List<ActivityEntity> {
+        val updatedActivities = mutableListOf<ActivityEntity>()
+        missionDao.getActiveMissions(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+        ).forEach { missionEntity ->
+            activityDao
+                .getActiveActivities(
+                    missionId = missionEntity.missionId,
+                    userId = coreSharedPrefs.getUniqueUserIdentifier()
+                )
+                .forEach { activity ->
+                    val totalTaskActivityCount = taskDao.getTaskCountForActivity(
+                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                        activityId = activity.activityId,
+                        missionId = missionEntity.missionId
+                    )
+
+                    if (totalTaskActivityCount > 0) {
+                        val pendingTaskCount = taskDao.countTasksByStatus(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            activityId = activity.activityId,
+                            missionId = missionEntity.missionId,
+                            statuses = listOf(
+                                SurveyStatusEnum.NOT_STARTED.name,
+                                SurveyStatusEnum.INPROGRESS.name
+                            )
+                        )
+
+                        if (pendingTaskCount > 0) {
+                            if (activity.status == SurveyStatusEnum.COMPLETED.name) {
+                                activityDao.updateActivityStatus(
+                                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                                    missionId = missionEntity.missionId,
+                                    activityId = activity.activityId,
+                                    status = SurveyStatusEnum.INPROGRESS.name
+                                )
+                                updatedActivities.add(
+                                    activity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                                )
+                            }
+
+
+                        }
+                    } else {
+                        activityDao.updateActivityStatus(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            activityId = activity.activityId,
+                            missionId = missionEntity.missionId,
+                            status = SurveyStatusEnum.COMPLETED.name
+                        )
+                        if (activity.status != SurveyStatusEnum.COMPLETED.name) {
+                            updatedActivities.add(
+                                activity.copy(status = SurveyStatusEnum.COMPLETED.name)
+                            )
+                        }
+                    }
+                }
+        }
+        return updatedActivities
+    }
+
+    override suspend fun reCheckMissionStatus(): List<MissionEntity> {
+        val updatedMission = mutableListOf<MissionEntity>()
+        missionDao.getActiveMissions(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+        ).forEach { missionEntity ->
+            val totalActivityCount = activityDao
+                .getActiveActivities(
+                    coreSharedPrefs.getUniqueUserIdentifier(),
+                    missionId = missionEntity.missionId
+                )
+
+            if (totalActivityCount.isNotEmpty()) {
+                val pendingActivityCount = activityDao
+                    .countActivityByStatus(
+                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                        missionId = missionEntity.missionId,
+                        statuses = listOf(
+                            SurveyStatusEnum.NOT_STARTED.name,
+                            SurveyStatusEnum.INPROGRESS.name
+                        )
+                    )
+                if (pendingActivityCount > 0) {
+
+                    if (missionEntity.status == SurveyStatusEnum.COMPLETED.name) {
+                        missionDao.updateMissionStatus(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            missionId = missionEntity.missionId,
+                            status = SurveyStatusEnum.INPROGRESS.name
+                        )
+                        updatedMission.add(
+                            missionEntity.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                        )
+                    }
+
+
+                }
+            } else {
+                missionDao.updateMissionStatus(
+                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                    missionId = missionEntity.missionId,
+                    status = SurveyStatusEnum.COMPLETED.name
+                )
+                if (missionEntity.status != SurveyStatusEnum.COMPLETED.name) {
+                    updatedMission.add(
+                        missionEntity.copy(status = SurveyStatusEnum.COMPLETED.name)
+                    )
+                }
+            }
+        }
+        return updatedMission
     }
 
 

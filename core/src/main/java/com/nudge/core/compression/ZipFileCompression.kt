@@ -417,6 +417,11 @@ class ZipFileCompression : IFileCompressor {
                         val id = cursor.getLong(idIndex)
                         val displayName = cursor.getString(displayNameIndex)
                         if(!displayName.contains("zip")) {
+                            CoreLogger.d(
+                                context = context,
+                                tag = "compressData",
+                                msg = "Files: $displayName"
+                            )
                             fileUris.add(
                                 Pair(
                                     first = displayName,
@@ -474,6 +479,15 @@ class ZipFileCompression : IFileCompressor {
                     val filesToBeZipped = ArrayList<Pair<String, Uri?>>()
                     filesToBeZipped.addAll(s)
                     filesToBeZipped.addAll(extraUris.filter { !it.first.contains("zip") })
+                    filesToBeZipped?.let {
+                        it.forEach { file ->
+                            CoreLogger.d(
+                                context = context,
+                                tag = "compressData",
+                                msg = "Files: ${file.first}"
+                            )
+                        }
+                    }
                     ZipManager.zip(
                         context = context,
                         files = filesToBeZipped,

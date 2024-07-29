@@ -2,6 +2,7 @@ package com.sarathi.contentmodule.media
 
 import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class MediaScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
-    var contentUrl = mutableStateOf("")
+    var contentUrl = mutableStateOf(BLANK_STRING)
 
     private suspend fun getContentValue(contentKey: String): String {
         return fetchContentUseCase.getContentValue(contentKey)

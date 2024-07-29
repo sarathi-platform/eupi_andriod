@@ -44,7 +44,6 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
-import com.nudge.core.model.CoreAppDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -111,7 +110,7 @@ class BaseLineStartViewModel @Inject constructor(
         val directory = getImagePath(context)
         val filePath = File(
             directory,
-            "${didi.didiId}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
+            "${didi.didiId}-${didi.didiName}-${startSurveyScreenUserCase.getSectionUseCase.getUserId()}_${System.currentTimeMillis()}.png"
         )
         Log.d("TAG", "getFileName: ${filePath}")
         return filePath
@@ -247,21 +246,28 @@ class BaseLineStartViewModel @Inject constructor(
         didiEntity: SurveyeeEntity
     ) {
         job = BaselineCore.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            BaselineLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
+            BaselineLogger.d("BaseLineStartViewModel", "saveFilePathInDb -> start")
 
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
+
+            delay(500)
+            val compressedDidi = compressImage(
+                updatedLocalPath.value,
+                BaselineCore.getAppContext(),
+                getFileNameFromURL(photoPath)
+            )
             val finalPathWithCoordinates =
-                "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+                "$compressedDidi|(${locationCoordinates.lat}, ${locationCoordinates.long})"
 
             BaselineLogger.d(
-                "PatDidiSummaryViewModel",
+                "BaseLineStartViewModel",
                 "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates"
             )
 
             startSurveyScreenUserCase.saveSurveyeeImagePathUseCase.invoke(didiEntity, finalPathWithCoordinates)
 
             BaselineLogger.d(
-                "PatDidiSummaryViewModel",
+                "BaseLineStartViewModel",
                 "saveFilePathInDb -> didiDao.saveLocalImagePath after"
             )
         }

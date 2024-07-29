@@ -1,9 +1,12 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import javax.inject.Inject
 
-class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val repository: ITaskStatusRepository) {
+class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val repository: ITaskStatusRepository, private val iMATrepository: IMATStatusEventRepository,) {
     suspend fun markTaskCompleted(taskId: Int) {
         return repository.markCompleteTaskStatus(taskId = taskId)
     }
@@ -39,6 +42,15 @@ class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val rep
     suspend fun markMissionCompleted(missionId: Int) {
         repository.markCompleteMissionStatus(missionId)
     }
+
+    suspend fun reCheckActivityStatus(): List<ActivityEntity> {
+        return repository.reCheckActivityStatus()
+    }
+
+    suspend fun reCheckMissionStatus(): List<MissionEntity> {
+        return repository.reCheckMissionStatus()
+    }
+
 
 
 }

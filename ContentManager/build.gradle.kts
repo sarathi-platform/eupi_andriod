@@ -88,20 +88,12 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.5.3")
     implementation("androidx.compose.material3:material3:1.1.2")
-    //Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
-    //Firebase Firestore
-    implementation("com.google.firebase:firebase-firestore")
-
-    //CSV Export
-    implementation("com.opencsv:opencsv:5.3")
     implementation(project(":DataManager"))
     implementation(project(":core"))
 
-//    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
-//    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+
     implementation("androidx.media3:media3-exoplayer:1.0.2")
     implementation("androidx.media3:media3-exoplayer-dash:1.0.2")
     implementation("androidx.media3:media3-ui:1.0.2")

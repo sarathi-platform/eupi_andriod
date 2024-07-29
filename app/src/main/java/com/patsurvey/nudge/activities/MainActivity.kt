@@ -49,6 +49,7 @@ import com.patsurvey.nudge.navigation.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.QUESTION_IMAGE_LINK_KEY
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,6 +59,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverInterface {
+
+    private var TAG = MainActivity::class.java.simpleName
+
     private val localizationDelegate = LocalizationActivityDelegate(this)
 
     @Inject
@@ -355,6 +359,21 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     override fun updateMissionActivityStatusOnGrantInit(onSuccess: (isSuccess: Boolean) -> Unit) {
         mViewModel.updateBaselineStatusOnInit() {
             onSuccess(it)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArrayList(QUESTION_IMAGE_LINK_KEY, ArrayList(quesImageList))
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (quesImageList.isEmpty()) {
+            quesImageList =
+                savedInstanceState.getStringArrayList(QUESTION_IMAGE_LINK_KEY)?.toMutableList()
+                    ?: mutableListOf()
+            NudgeLogger.d(TAG, "onRestoreInstanceState: $quesImageList")
         }
     }
 }

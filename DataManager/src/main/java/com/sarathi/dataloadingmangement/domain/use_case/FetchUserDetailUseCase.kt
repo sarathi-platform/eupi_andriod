@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.google.android.gms.common.api.ApiException
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
+import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import javax.inject.Inject
 
