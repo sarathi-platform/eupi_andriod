@@ -19,9 +19,12 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.datamodel.Data
+import com.nudge.core.datamodel.SyncImageMetadataRequest
 import com.nudge.core.datamodel.SyncImageUploadPayload
 import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
+import com.nudge.core.getFileMimeType
 import com.nudge.core.json
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.response.EventResult
@@ -267,7 +270,14 @@ class SyncUploadWorker @AssistedInject constructor(
                 fileName = imageStatusEvent.fileName,
                 filePath = imageStatusEvent.filePath,
                 eventName = imageStatusEvent.name,
-                mobileNo = imageStatusEvent.mobileNumber
+                    mobileNo = imageStatusEvent.mobileNumber,
+                    metadata = SyncImageMetadataRequest(
+                        data = Data(
+                            filePath = imageFile.absolutePath,
+                            contentType = getFileMimeType(file = imageFile)
+                        ),
+                        dependsOn = emptyList()
+                    ).json()
                 )
             ).json()
 
@@ -276,7 +286,7 @@ class SyncUploadWorker @AssistedInject constructor(
             CoreLogger.d(
                 context = applicationContext,
                 TAG,
-                "syncImageToServerAPI: SyncImageAPI Request: ${imagePayloadRequest.json()} :: $multipartData",
+                "syncImageToServerAPI: SyncImageAPI Request: ${imagePayloadRequest.json()}",
             )
             val response = syncApiRepository.syncImageToServer(
                 image = multipartRequest,
