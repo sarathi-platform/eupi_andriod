@@ -50,6 +50,8 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
@@ -62,6 +64,7 @@ import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
+import com.sarathi.surveymanager.ui.screen.LivelihoodDropDownScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.nudge.core.model.MissionUiModel as CoreMissionUiModel
 
@@ -461,6 +464,10 @@ fun NavGraphBuilder.MatNavigation(
             )
         }
     }
+    composable(route = MATHomeScreens.LivelihoodDropDownScreen.route) {
+        LivelihoodDropDownScreen(navController = navController) {
+        }
+    }
 }
 
 
@@ -522,6 +529,14 @@ fun navigateToActivityCompletionScreen(
 ) {
     navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
 }
+fun  navigateToLivelihoodDropDownScreen(
+    navController: NavController,
+    activityMsg: String,
+    isFromActivity: Boolean = false
+)
+{
+    navController.navigate("$LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
+}
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {
     navController.navigate(MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
@@ -556,6 +571,14 @@ fun navigateToAddImageScreen(navController: NavController, activityId: Int, task
 }
 
 fun navigateToGrantTaskScreen(
+    navController: NavController,
+    missionId: Int,
+    activityId: Int,
+    activityName: String
+) {
+    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+}
+fun navigateToLiveliHoodScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,

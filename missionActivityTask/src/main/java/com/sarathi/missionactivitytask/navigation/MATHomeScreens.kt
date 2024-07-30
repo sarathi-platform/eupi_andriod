@@ -38,5 +38,8 @@ sealed class MATHomeScreens(val route: String) {
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
 
+    object LivelihoodDropDownScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME}")
+
 
 }
