@@ -124,25 +124,25 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
             list.add(
                 DisbursementFormSummaryUiModel(
                     subjectType = form.subjectType,
-                    date = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_7_FORM.name]
+                    date = _data[GrantTaskFormSlots.TASK_SUBTITLE_7_FORM.name]
                         ?: BLANK_STRING,
                     noOfDidi = 1,
-                    subjectName = _data[GrantTaskFormSlots.GRANT_TASK_TITLE_FORM.name]
+                    subjectName = _data[GrantTaskFormSlots.TASK_TITLE_FORM.name]
                         ?: BLANK_STRING,
                     subjectId = form.subjectid,
-                    villageName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_2_FORM.name]
+                    villageName = _data[GrantTaskFormSlots.TASK_SUBTITLE_2_FORM.name]
                         ?: BLANK_STRING,
-                    mode = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_4_FORM.name]
+                    mode = _data[GrantTaskFormSlots.TASK_SUBTITLE_4_FORM.name]
                         ?: BLANK_STRING,
-                    nature = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_6_FORM.name]
+                    nature = _data[GrantTaskFormSlots.TASK_SUBTITLE_6_FORM.name]
                         ?: BLANK_STRING,
-                    amount = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_5_FORM.name]
+                    amount = _data[GrantTaskFormSlots.TASK_SUBTITLE_5_FORM.name]
                         ?: BLANK_STRING,
-                    didiImage = _data[GrantTaskFormSlots.GRANT_TASK_IMAGE_FORM.name]
+                    didiImage = _data[GrantTaskFormSlots.TASK_IMAGE_FORM.name]
                         ?: BLANK_STRING,
-                    voName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_3_FORM.name]
+                    voName = _data[GrantTaskFormSlots.TASK_SUBTITLE_3_FORM.name]
                         ?: BLANK_STRING,
-                    dadaName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_FORM.name]
+                    dadaName = _data[GrantTaskFormSlots.TASK_SUBTITLE_FORM.name]
                         ?: BLANK_STRING,
                 )
             )
