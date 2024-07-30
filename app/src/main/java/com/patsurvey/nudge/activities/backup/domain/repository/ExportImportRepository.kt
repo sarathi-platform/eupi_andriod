@@ -9,7 +9,7 @@ interface ExportImportRepository {
   fun getUserEmail(): String
   fun getUserName(): String
   fun clearSelectionLocalDB()
-
+  fun clearAPIStatusTableData()
   fun getLoggedInUserType():String
 
 

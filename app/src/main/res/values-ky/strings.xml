@@ -517,7 +517,7 @@
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
     <string name="warning">Warning!</string>
-    <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
+    <string name="data_lost_message">Another User ID detected. If you proceed, you will lose data for the previously logged in User ID.</string>
     <string name="proceed">Proceed</string>
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="regenerate_event_file">Regenerate event file</string>

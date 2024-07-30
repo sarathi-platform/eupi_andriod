@@ -272,6 +272,7 @@ open class TaskScreenViewModel @Inject constructor(
         if (queryTerm.isNotEmpty()) {
             taskList.value.entries.forEach { task ->
                 if (task.value[GrantTaskCardSlots.GRANT_SEARCH_ON.name]?.value?.lowercase()
+                        ?.contains(queryTerm.lowercase()) == true || task.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true
                 ) {
                     filteredList[task.key] = task.value
