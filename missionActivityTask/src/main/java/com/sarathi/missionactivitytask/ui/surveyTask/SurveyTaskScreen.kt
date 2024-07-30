@@ -30,13 +30,7 @@ fun SurveyTaskScreen(
         onSettingClick = onSettingClick,
         viewModel = viewModel,
         onSecondaryButtonClick = {
-//            navigateToDisbursmentSummaryScreen(
-//                navController = navController,
-//                activityId = activityId,
-//                missionId = missionId,
-//                isFromSettingScreen = false,
-//                taskIdList = BLANK_STRING
-//            )
+                                 // Implementation not required here
         },
         isSecondaryButtonEnable = false,
         secondaryButtonText = BLANK_STRING,

@@ -67,9 +67,7 @@ class MissionRepositoryImpl @Inject constructor(
 
     override suspend fun fetchMissionDataFromServer(
     ): ApiResponseModel<List<ProgrameResponse>> {
-        val missionRequest = /*MissionRequest(87)*/
-            MissionRequest(stateId = sharedPrefs.getStateId()) //TODO Uncomment this once api gives correct data
-
+        val missionRequest = MissionRequest(stateId = sharedPrefs.getStateId())
 
         return apiInterface.getMissions(missionRequest)
     }

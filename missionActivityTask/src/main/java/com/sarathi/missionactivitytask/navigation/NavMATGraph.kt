@@ -68,7 +68,7 @@ import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
-import com.sarathi.surveymanager.ui.screen.BaselineSurveyScreen
+import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
@@ -302,7 +302,7 @@ fun NavGraphBuilder.MatNavigation(
                 },
             ),
         ) {
-            SurveyScreen(
+            BaseSurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
                 taskId = it.arguments?.getInt(
@@ -463,7 +463,7 @@ fun NavGraphBuilder.MatNavigation(
             ),
         ) {
 
-            BaselineSurveyScreen(
+            SurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),

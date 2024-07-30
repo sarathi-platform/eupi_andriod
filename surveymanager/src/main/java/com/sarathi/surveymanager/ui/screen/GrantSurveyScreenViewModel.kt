@@ -25,7 +25,7 @@ class GrantSurveyScreenViewModel @Inject constructor(
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
-) : SurveyScreenViewModel(
+) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
     saveSurveyAnswerUseCase,

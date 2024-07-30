@@ -22,7 +22,7 @@ fun GrantSurveyScreen(
     onSettingClick: () -> Unit
 ) {
 
-    SurveyScreen(
+    BaseSurveyScreen(
         viewModel = viewModel,
         navController = navController,
         surveyId = surveyId,

@@ -325,16 +325,6 @@ private fun TaskRowView(
                         activityConfigId = it.activityConfigId,
                         sanctionedAmount = sanctionedAmount,
                     )
-//                    navigateToGrantSurveySummaryScreen(
-//                        navController,
-//                        taskId = task.key,
-//                        surveyId = it.surveyId,
-//                        sectionId = it.sectionId,
-//                        subjectType = it.subject,
-//                        subjectName = subjectName,
-//                        activityConfigId = it.activityConfigId,
-//                        sanctionedAmount = sanctionedAmount,
-//                    )
                 }
 
             }

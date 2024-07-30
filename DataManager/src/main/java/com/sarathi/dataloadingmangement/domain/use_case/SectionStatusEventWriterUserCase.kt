@@ -1,14 +1,8 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import android.net.Uri
-import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.getFileNameFromURL
-import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.utils.FileUtils
 import com.nudge.core.value
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepository
 import javax.inject.Inject
@@ -31,8 +25,7 @@ class SectionStatusEventWriterUserCase @Inject constructor(
         writeEventInFile(
             eventItem = event,
             eventName = EventName.UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT,
-            surveyName = survey?.surveyName.value(),
-            uriList = emptyList()
+            surveyName = survey?.surveyName.value()
         )
 
     }
@@ -42,7 +35,6 @@ class SectionStatusEventWriterUserCase @Inject constructor(
         eventItem: T,
         eventName: EventName,
         surveyName: String,
-        uriList: List<Uri>?
     ) {
         eventWriterRepositoryImpl.createAndSaveEvent(
             eventItem,
@@ -57,20 +49,6 @@ class SectionStatusEventWriterUserCase @Inject constructor(
                 EventType.STATEFUL
             )
 
-            uriList?.forEach { uri ->
-                compressImage(
-                    imageUri = FileUtils.findImageFile(
-                        CoreAppDetails.getContext()?.applicationContext!!,
-                        getFileNameFromURL(uri.path ?: BLANK_STRING)
-                    ).absolutePath,
-                    activity = CoreAppDetails.getContext()!!,
-                    name = getFileNameFromURL(uri.path ?: BLANK_STRING)
-                )
-                eventWriterRepositoryImpl.saveImageEventToMultipleSources(
-                    it,
-                    uri = uri
-                )
-            }
         }
     }
 
