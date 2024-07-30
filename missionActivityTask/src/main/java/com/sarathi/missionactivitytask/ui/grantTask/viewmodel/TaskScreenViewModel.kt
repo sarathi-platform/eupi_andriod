@@ -21,8 +21,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
-import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
@@ -138,10 +138,10 @@ open class TaskScreenViewModel @Inject constructor(
 
                         )
                     searchLabel.value =
-                        searchUiComponent[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
+                        searchUiComponent[TaskCardSlots.SEARCH_LABEL.name]?.value
                             ?: BLANK_STRING
 
-                    if ((uiComponent[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
+                    if ((uiComponent[TaskCardSlots.GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
                     ) {
                         isGroupByEnable.value = true
@@ -170,7 +170,7 @@ open class TaskScreenViewModel @Inject constructor(
             updateValueInMainThread(_filterList, _filterListt)
 
             filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
+                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -188,15 +188,15 @@ open class TaskScreenViewModel @Inject constructor(
         activityConfig: List<UiConfigModel>
     ): HashMap<String, TaskCardModel> {
         val cardAttributesWithValue = HashMap<String, TaskCardModel>()
-        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+        cardAttributesWithValue[TaskCardSlots.TASK_STATUS.name] =
             TaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
-        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name] =
+        cardAttributesWithValue[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name] =
             TaskCardModel(
                 value = isTaskSecondaryStatusEnable.toString(),
                 label = BLANK_STRING,
                 icon = null
             )
-        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_NOT_AVAILABLE_ENABLE.name] =
+        cardAttributesWithValue[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name] =
             TaskCardModel(
                 value = isNAButtonEnable.toString(),
                 label = BLANK_STRING,
@@ -271,8 +271,8 @@ open class TaskScreenViewModel @Inject constructor(
         val filteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
         if (queryTerm.isNotEmpty()) {
             taskList.value.entries.forEach { task ->
-                if (task.value[GrantTaskCardSlots.GRANT_SEARCH_ON.name]?.value?.lowercase()
-                        ?.contains(queryTerm.lowercase()) == true || task.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value?.lowercase()
+                if (task.value[TaskCardSlots.SEARCH_ON.name]?.value?.lowercase()
+                        ?.contains(queryTerm.lowercase()) == true || task.value[TaskCardSlots.GROUP_BY.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true
                 ) {
                     filteredList[task.key] = task.value
@@ -283,7 +283,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
         if (isFilterApplied) {
             filterTaskMap =
-                filteredList.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
+                filteredList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
         } else {
             _filterList.value = filteredList
         }
