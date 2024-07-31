@@ -7,6 +7,8 @@ import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
@@ -39,8 +41,11 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
+import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -105,6 +110,9 @@ class SettingBSViewModel @Inject constructor(
     val formCAvailable = mutableStateOf(false)
     val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
+    val workManager = WorkManager.getInstance(MyApplication.applicationContext())
+    var syncWorkerInfoState: WorkInfo.State? = null
+
 
 
     val loaderState: State<LoaderState> get() = _loaderState
@@ -208,6 +216,7 @@ class SettingBSViewModel @Inject constructor(
                 exportLocalData(context)
             }
             delay(2000)
+            cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
                showLoader.value=false
                 onLogout(settingUseCaseResponse)
@@ -670,4 +679,23 @@ class SettingBSViewModel @Inject constructor(
             formEAvailableList.value = emptyList()
         }
     }
+
+    private fun cancelSyncUploadWorker() {
+        syncWorkerInfoState?.let {
+            if (it == WorkInfo.State.RUNNING || it == WorkInfo.State.ENQUEUED) {
+                CoreLogger.d(
+                    CoreAppDetails.getApplicationContext(),
+                    "SyncHomeViewModel",
+                    "CancelSyncUploadWorker :: Worker Status: $it"
+                )
+                workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
+                CoreLogger.d(
+                    CoreAppDetails.getApplicationContext(),
+                    "SyncHomeViewModel",
+                    "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
+                )
+            }
+        }
+    }
 }
+

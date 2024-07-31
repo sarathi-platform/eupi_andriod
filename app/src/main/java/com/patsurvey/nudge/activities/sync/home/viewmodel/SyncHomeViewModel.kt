@@ -57,6 +57,9 @@ class SyncHomeViewModel @Inject constructor(
     var syncWorkerInfoState: WorkInfo.State? = null
     val imageEventProgress = mutableFloatStateOf(0f)
     val dataEventProgress = mutableFloatStateOf(0f)
+    val totalImageEventCount = mutableIntStateOf(0)
+    val isDataPBVisible = mutableStateOf(false)
+    val isImagePBVisible = mutableStateOf(false)
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
     val lastSyncTime = mutableLongStateOf(0L)
     private val _failedEventList = mutableStateOf<List<Events>>(emptyList())
@@ -78,6 +81,14 @@ class SyncHomeViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 cancelSyncUploadWorker()
+                when (selectedSyncType.intValue) {
+                    SyncType.SYNC_ONLY_DATA.ordinal -> isDataPBVisible.value = true
+                    SyncType.SYNC_ONLY_IMAGES.ordinal -> isImagePBVisible.value = true
+                    SyncType.SYNC_ALL.ordinal -> {
+                        isDataPBVisible.value = true
+                        isImagePBVisible.value = true
+                    }
+                }
                 NudgeCore.getEventObserver()
                     ?.syncPendingEvent(
                         NudgeCore.getAppContext(),
@@ -87,6 +98,8 @@ class SyncHomeViewModel @Inject constructor(
                 prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
                 lastSyncTime.longValue = prefRepo.getPref(LAST_SYNC_TIME, 0L)
             }catch (ex:Exception){
+                isDataPBVisible.value = false
+                isImagePBVisible.value = false
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext(),
                     "SyncHomeViewModel",
@@ -132,7 +145,7 @@ class SyncHomeViewModel @Inject constructor(
             val eventFileName =
                 getFirstName(syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserName()) +
                         "_${syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()}_" +
-                        "${SARATHI}_${moduleName}_failed_events_${System.currentTimeMillis()}"
+                        "${SARATHI}_${moduleName}_Failed_events_${System.currentTimeMillis()}"
             if (failedEventList.value.isNotEmpty()) {
                 failedEventList.value.forEach {
                     syncEventDetailUseCase.eventsWriterUseCase.writeFailedEventIntoEventFile(
@@ -181,6 +194,27 @@ class SyncHomeViewModel @Inject constructor(
                 syncEventDetailUseCase.fetchLastSyncDateForNetwork.invoke()
 
             lastSyncTime.longValue = prefRepo.getPref(LAST_SYNC_TIME, 0L)
+        }
+    }
+
+    fun checkSyncProgressBarStatus() {
+        when (selectedSyncType.intValue) {
+            SyncType.SYNC_ONLY_DATA.ordinal -> {
+                isDataPBVisible.value =
+                    dataEventProgress.floatValue > 0 && dataEventProgress.floatValue < 1
+            }
+
+            SyncType.SYNC_ONLY_IMAGES.ordinal -> {
+                isImagePBVisible.value =
+                    imageEventProgress.floatValue > 0 && imageEventProgress.floatValue < 1
+            }
+
+            SyncType.SYNC_ALL.ordinal -> {
+                isDataPBVisible.value =
+                    dataEventProgress.floatValue > 0 && dataEventProgress.floatValue < 1
+                isImagePBVisible.value =
+                    imageEventProgress.floatValue > 0 && imageEventProgress.floatValue < 1
+            }
         }
     }
 }

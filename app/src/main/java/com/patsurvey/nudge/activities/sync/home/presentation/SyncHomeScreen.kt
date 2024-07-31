@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
@@ -39,7 +41,9 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
+import com.nudge.core.database.entities.Events
 import com.nudge.core.json
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
@@ -60,12 +64,31 @@ fun SyncHomeScreen(
     viewModel: SyncHomeViewModel
 ) {
     val context = LocalContext.current
-    val workInfo =
-        viewModel.workManager.getWorkInfosForUniqueWorkLiveData(PRODUCER_WORKER_TAG).observeAsState().value
-
+    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(PRODUCER_WORKER_TAG)
+        .observeAsState().value
     val lifeCycleOwner = LocalLifecycleOwner.current
 
-    val uploadWorkerInfo = remember(key1 = workInfo) {
+    val uploadWorkerInfo = rememberUploadWorkerInfo(context, workInfo, viewModel)
+    val isNetworkAvailable = remember { mutableStateOf(false) }
+
+    ObserveNetworkState(viewModel, isNetworkAvailable, lifeCycleOwner)
+    ObserveEventCounts(viewModel, lifeCycleOwner)
+
+    SyncHomeContent(
+        navController = navController,
+        viewModel = viewModel,
+        uploadWorkerInfo = uploadWorkerInfo,
+        isNetworkAvailable = isNetworkAvailable
+    )
+}
+
+@Composable
+fun rememberUploadWorkerInfo(
+    context: Context,
+    workInfo: List<WorkInfo>?,
+    viewModel: SyncHomeViewModel
+): WorkInfo? {
+    return remember(key1 = workInfo) {
         CoreLogger.d(context, "SyncHomeScreen", "Sync Worker Info: ${workInfo?.json()}")
         val info = workInfo?.find { it.tags.contains(SYNC_WORKER_TAG) }
         CoreLogger.d(context, "SyncHomeScreen", "Info Details: ${info?.json()}")
@@ -74,28 +97,14 @@ fun SyncHomeScreen(
         }
         info
     }
+}
 
-    val totalDataEventCount = remember {
-        mutableStateOf(0)
-    }
-    val isNetworkAvailable = remember {
-        mutableStateOf(false)
-    }
-
-    val successDataEventCount = remember {
-        mutableStateOf(0)
-    }
-
-
-    val totalImageEventCount = remember {
-        mutableStateOf(0)
-    }
-
-
-    val successImageEventCount = remember {
-        mutableStateOf(0)
-    }
-
+@Composable
+fun ObserveNetworkState(
+    viewModel: SyncHomeViewModel,
+    isNetworkAvailable: MutableState<Boolean>,
+    lifeCycleOwner: LifecycleOwner
+) {
     DisposableEffect(key1 = lifeCycleOwner) {
         viewModel.isOnline.observe(lifeCycleOwner) { isOnline ->
             isNetworkAvailable.value = isOnline
@@ -107,49 +116,32 @@ fun SyncHomeScreen(
             viewModel.isOnline.removeObservers(lifeCycleOwner)
         }
     }
+}
 
+@Composable
+fun ObserveEventCounts(
+    viewModel: SyncHomeViewModel,
+    lifeCycleOwner: LifecycleOwner
+) {
     DisposableEffect(key1 = lifeCycleOwner) {
         val eventListLive = viewModel.syncEventDetailUseCase.getSyncEventsUseCase.getTotalEvents()
         eventListLive.observe(lifeCycleOwner) { eventList ->
+            val (totalDataCount, successDataCount) = eventList.filterAndCountEvents {
+                !it.name.toLowerCase(Locale.current).contains(IMAGE_STRING)
+            }
+            val (totalImageCount, successImageCount) = eventList.filterAndCountEvents {
+                it.name.toLowerCase(Locale.current).contains(IMAGE_STRING)
+            }
+            viewModel.totalImageEventCount.intValue = totalImageCount
+            viewModel.imageEventProgress.floatValue =
+                viewModel.calculateBarProgress(totalImageCount, successImageCount)
+            viewModel.dataEventProgress.floatValue =
+                viewModel.calculateBarProgress(totalDataCount, successDataCount)
 
-            totalDataEventCount.value = eventList.filter {
-                !it.name.toLowerCase(Locale.current).contains(
-                    IMAGE_STRING
-                )
-            }.size
-
-            successDataEventCount.value = eventList.filter {
-                !it.name.toLowerCase(Locale.current).contains(
-                    IMAGE_STRING
-                ) && it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
-            }.size
-
-            totalImageEventCount.value = eventList.filter {
-                it.name.toLowerCase(Locale.current).contains(
-                    IMAGE_STRING
-                )
-            }.size
-
-            successImageEventCount.value = eventList.filter {
-                it.name.toLowerCase(Locale.current).contains(
-                    IMAGE_STRING
-                ) && it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
-            }.size
-
-            viewModel.imageEventProgress.floatValue = viewModel.calculateBarProgress(
-                totalEventCount = totalImageEventCount.value,
-                successEventCount = successImageEventCount.value
-            )
-
-            viewModel.dataEventProgress.floatValue = viewModel.calculateBarProgress(
-                totalEventCount = totalDataEventCount.value,
-                successEventCount = successDataEventCount.value
-            )
             CoreLogger.d(
-                context,
+                CoreAppDetails.getApplicationContext().applicationContext,
                 "SyncHomeScreen",
-                "DisposableEffect-> totalDataEventCount: ${totalDataEventCount.value}, successDataEventCount: ${successDataEventCount.value}, totalImageEventCount: ${totalImageEventCount.value}" +
-                        " successImageEventCount: ${successImageEventCount.value}"
+                "Event counts updated: totalDataCount=$totalDataCount, successDataCount=$successDataCount, totalImageCount=$totalImageCount, successImageCount=$successImageCount"
             )
         }
 
@@ -157,187 +149,251 @@ fun SyncHomeScreen(
             eventListLive.removeObservers(lifeCycleOwner)
         }
     }
+}
 
-
+@Composable
+fun SyncHomeContent(
+    navController: NavController,
+    viewModel: SyncHomeViewModel,
+    uploadWorkerInfo: WorkInfo?,
+    isNetworkAvailable: MutableState<Boolean>
+) {
+    val context = LocalContext.current
     ToolbarWithMenuComponent(
         title = stringResource(id = R.string.sync_all_data),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = false,
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                    .padding(vertical = dimensionResource(id = R.dimen.dp_15))
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(vertical = 16.dp)
-                        ) {
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            if (viewModel.failedEventList.value.isNotEmpty()) {
-                                ButtonPositive(
-                                    modifier = Modifier.weight(1f),
-                                    buttonTitle = stringResource(id = R.string.export_failed_event),
-                                    isActive = true,
-                                    isArrowRequired = false,
-                                    textColor = white,
-                                ) {
-                                    viewModel.findFailedEventAndWriteIntoFile()
-                                }
-                            }
-                        }
-                    }
-                    ButtonPositive(
-                        buttonTitle = stringResource(id = R.string.sync_all_data),
-                        isArrowRequired = false,
-                        isActive = true
-                    ) {
-                        viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
-
-                        CoreLogger.d(
-                            context,
-                            "SyncHomeScreen",
-                            "Sync All Data Click: ${viewModel.selectedSyncType.intValue}"
-                        )
-                        startSyncProcess(context, viewModel, isNetworkAvailable.value)
-                    }
-                }
-
-            }
+            BottomContent(
+                context = context,
+                viewModel = viewModel,
+                isNetworkAvailable = isNetworkAvailable
+            )
         }) {
         Column(
             modifier = Modifier
                 .background(Color.White)
                 .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
                 .fillMaxSize()
-
         ) {
-
-            if (viewModel.lastSyncTime.longValue != 0L) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimen_10_dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Last Sync Time: ",
-                        style = mediumTextStyle,
-                        color = textColorDark
-                    )
-
-                    Text(
-                        text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
-                        style = mediumTextStyle,
-                        color = textColorDark
-                    )
-                }
-            }
-
-
-            EventTypeCard(
-                title = stringResource(id = R.string.sync_data),
-                progress = viewModel.dataEventProgress.floatValue,
-                isProgressBarVisible = ((viewModel.dataEventProgress.floatValue > 0
-                        && viewModel.dataEventProgress.floatValue < 1)
-                        && (viewModel.selectedSyncType.intValue == SyncType.SYNC_ALL.ordinal
-                        || viewModel.selectedSyncType.intValue == SyncType.SYNC_ONLY_DATA.ordinal)),
-                syncButtonTitle = stringResource(id = R.string.sync_only_data),
-                onSyncButtonClick = {
-                    viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
-                    CoreLogger.d(
-                        context,
-                        "SyncHomeScreen",
-                        "Sync Only Data Click: ${viewModel.selectedSyncType.intValue}"
-                    )
-                    startSyncProcess(context, viewModel, isNetworkAvailable.value)
-                },
-                onCardClick = {
-
-                }
+            LastSyncTime(viewModel)
+            SyncDataCard(
+                viewModel = viewModel,
+                context = context,
+                isNetworkAvailable = isNetworkAvailable
             )
+            SyncImageCard(
+                viewModel = viewModel,
+                context = context,
+                isNetworkAvailable = isNetworkAvailable,
+                totalImageEventCount = viewModel.totalImageEventCount
+            )
+            HandleWorkerState(uploadWorkerInfo, viewModel, context)
+        }
+    }
+}
 
-            if (totalImageEventCount.value > 0) {
-                EventTypeCard(
-                    title = stringResource(id = R.string.sync_images),
-                    progress = viewModel.imageEventProgress.floatValue,
-                    isProgressBarVisible = ((viewModel.imageEventProgress.floatValue > 0
-                            && viewModel.imageEventProgress.floatValue < 1)
-                            && (viewModel.selectedSyncType.intValue == SyncType.SYNC_ALL.ordinal
-                            || viewModel.selectedSyncType.intValue == SyncType.SYNC_ONLY_IMAGES.ordinal)),
-                    onSyncButtonClick = {
-                        viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
-                        CoreLogger.d(
-                            context,
-                            "SyncHomeScreen",
-                            "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
-                        )
-                        startSyncProcess(context, viewModel, isNetworkAvailable.value)
-                    },
-                    syncButtonTitle = stringResource(id = R.string.sync_only_images),
-                    onCardClick = {
+@Composable
+fun BottomContent(
+    context: Context,
+    viewModel: SyncHomeViewModel,
+    isNetworkAvailable: MutableState<Boolean>
+) {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+            .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    if (viewModel.failedEventList.value.isNotEmpty()) {
+                        ButtonPositive(
+                            modifier = Modifier.weight(1f),
+                            buttonTitle = stringResource(id = R.string.export_failed_event),
+                            isActive = true,
+                            isArrowRequired = false,
+                            textColor = white,
+                        ) {
+                            viewModel.findFailedEventAndWriteIntoFile()
+                        }
                     }
-                )
+                }
             }
-            when (uploadWorkerInfo?.state) {
-                WorkInfo.State.RUNNING -> {
-                    viewModel.findFailedEventList()
-                    CoreLogger.d(
+            ButtonPositive(
+                buttonTitle = stringResource(id = R.string.sync_all_data),
+                isArrowRequired = false,
+                isActive = true
+            ) {
+                viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
+                CoreLogger.d(
                     context,
                     "SyncHomeScreen",
-                    "Worker Status: RUNNING :: ${System.currentTimeMillis()}"
+                    "Sync All Data Click: ${viewModel.selectedSyncType.intValue}"
                 )
-
-                }
-
-                WorkInfo.State.ENQUEUED -> {
-                    viewModel.findFailedEventList()
-                    CoreLogger.d(
-                        context,
-                        "SyncHomeScreen",
-                        "Worker Status: ENQUEUED :: ${System.currentTimeMillis()}"
-                    )
-                }
-
-                WorkInfo.State.SUCCEEDED -> CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Worker Status: SUCCEEDED :: ${System.currentTimeMillis()}"
-                )
-
-                WorkInfo.State.FAILED -> CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Worker Status: FAILED :: ${System.currentTimeMillis()}"
-                )
-
-                WorkInfo.State.BLOCKED -> CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Worker Status: BLOCKED :: ${System.currentTimeMillis()}"
-                )
-
-                WorkInfo.State.CANCELLED -> CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Worker Status: CANCELLED :: ${System.currentTimeMillis()}"
-                )
-
-                null -> CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Worker Status: Null :: ${System.currentTimeMillis()}"
-                )
+                startSyncProcess(context, viewModel, isNetworkAvailable.value)
             }
         }
     }
+}
 
+@Composable
+fun LastSyncTime(viewModel: SyncHomeViewModel) {
+    if (viewModel.lastSyncTime.longValue != 0L) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimen_10_dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Last Sync Time: ",
+                style = mediumTextStyle,
+                color = textColorDark
+            )
+
+            Text(
+                text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                style = mediumTextStyle,
+                color = textColorDark
+            )
+        }
+    }
+}
+
+fun List<Events>.filterAndCountEvents(predicate: (Events) -> Boolean): Pair<Int, Int> {
+    val totalCount = filter(predicate).size
+    val successCount =
+        filter { predicate(it) && it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }.size
+    return totalCount to successCount
+}
+
+fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context) {
+    when (uploadWorkerInfo?.state) {
+        WorkInfo.State.RUNNING -> {
+            viewModel.checkSyncProgressBarStatus()
+            viewModel.findFailedEventList()
+            CoreLogger.d(
+                context,
+                "SyncHomeScreen",
+                "Worker Status: RUNNING :: ${System.currentTimeMillis()}"
+            )
+        }
+
+        WorkInfo.State.ENQUEUED -> {
+            viewModel.checkSyncProgressBarStatus()
+            viewModel.findFailedEventList()
+            CoreLogger.d(
+                context,
+                "SyncHomeScreen",
+                "Worker Status: ENQUEUED :: ${System.currentTimeMillis()}"
+            )
+        }
+
+        WorkInfo.State.SUCCEEDED -> CoreLogger.d(
+            context,
+            "SyncHomeScreen",
+            "Worker Status: SUCCEEDED :: ${System.currentTimeMillis()}"
+        )
+
+        WorkInfo.State.FAILED -> {
+            viewModel.isDataPBVisible.value = false
+            viewModel.isImagePBVisible.value = false
+            CoreLogger.d(
+                context,
+                "SyncHomeScreen",
+                "Worker Status: FAILED :: ${System.currentTimeMillis()}"
+            )
+        }
+
+        WorkInfo.State.BLOCKED -> {
+            viewModel.isDataPBVisible.value = false
+            viewModel.isImagePBVisible.value = false
+            CoreLogger.d(
+                context,
+                "SyncHomeScreen",
+                "Worker Status: BLOCKED :: ${System.currentTimeMillis()}"
+            )
+        }
+
+        WorkInfo.State.CANCELLED -> {
+            viewModel.isDataPBVisible.value = false
+            viewModel.isImagePBVisible.value = false
+            CoreLogger.d(
+                context,
+                "SyncHomeScreen",
+                "Worker Status: CANCELLED :: ${System.currentTimeMillis()}"
+            )
+        }
+
+        null -> CoreLogger.d(
+            context,
+            "SyncHomeScreen",
+            "Worker Status: Null :: ${System.currentTimeMillis()}"
+        )
+    }
+}
+
+
+@Composable
+private fun SyncDataCard(
+    viewModel: SyncHomeViewModel,
+    context: Context,
+    isNetworkAvailable: MutableState<Boolean>
+) {
+    EventTypeCard(
+        title = stringResource(id = R.string.sync_data),
+        progress = viewModel.dataEventProgress.floatValue,
+        isProgressBarVisible = viewModel.isDataPBVisible.value,
+        syncButtonTitle = stringResource(id = R.string.sync_only_data),
+        onSyncButtonClick = {
+            viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
+            CoreLogger.d(
+                context,
+                "SyncHomeScreen",
+                "Sync Only Data Click: ${viewModel.selectedSyncType.intValue}"
+            )
+            startSyncProcess(context, viewModel, isNetworkAvailable.value)
+        },
+        onCardClick = {
+
+        }
+    )
+}
+
+@Composable
+private fun SyncImageCard(
+    totalImageEventCount: MutableState<Int>,
+    viewModel: SyncHomeViewModel,
+    context: Context,
+    isNetworkAvailable: MutableState<Boolean>
+) {
+    if (totalImageEventCount.value > 0) {
+        EventTypeCard(
+            title = stringResource(id = R.string.sync_images),
+            progress = viewModel.imageEventProgress.floatValue,
+            isProgressBarVisible = viewModel.isImagePBVisible.value,
+            onSyncButtonClick = {
+                viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
+                CoreLogger.d(
+                    context,
+                    "SyncHomeScreen",
+                    "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
+                )
+                startSyncProcess(context, viewModel, isNetworkAvailable.value)
+            },
+            syncButtonTitle = stringResource(id = R.string.sync_only_images),
+            onCardClick = {
+            }
+        )
+    }
 }
 
 
