@@ -96,7 +96,7 @@ fun UserProfileCard(
                 Row {
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "Calendar Icon",
+                        contentDescription = "ArrowForward Icon",
                         modifier = Modifier.size(dimen_24_dp),
                         tint = blueDark
                     )

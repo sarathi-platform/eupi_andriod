@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,21 +10,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.theme.assetValueIconColor
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.didiDetailItemStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.incomeCardBorderColor
+import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.surveymanager.ui.component.SingleSelectDropDown
 
 @Composable
 fun LivelihoodScreen() {
@@ -35,6 +54,7 @@ fun LivelihoodScreen() {
         HeaderSection()
         Spacer(modifier = Modifier.height(16.dp))
         EventsList()
+        EventView()
         Spacer(modifier = Modifier.height(16.dp))
         ShowMoreButton()
         Spacer(modifier = Modifier.height(16.dp))
@@ -42,40 +62,64 @@ fun LivelihoodScreen() {
     }
 }
 
+
 @Composable
 fun HeaderSection() {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = incomeCardBorderColor,
+                shape = RoundedCornerShape(8.dp)
+            )
             .background(Color(0xFFFFF3E0), shape = RoundedCornerShape(8.dp))
-            .padding(16.dp),
+            .padding(dimen_10_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text(text = "Income", fontSize = 18.sp, color = Color.Gray)
-            Text(text = "₹ 2000", fontSize = 18.sp, color = Color.Black)
+            Text(text = "Income", style = getTextColor(newMediumTextStyle))
+            Text(text = "₹ 2000", style = getTextColor(defaultTextStyle))
         }
         Column {
-            Text(text = "Expense", fontSize = 18.sp, color = Color.Gray)
-            Text(text = "₹ 500", fontSize = 18.sp, color = Color.Black)
+            Text(text = "Expense", style = getTextColor(newMediumTextStyle))
+            Text(text = "₹ 500", style = getTextColor(defaultTextStyle))
         }
         Column {
-            Text(text = "Asset Value", fontSize = 18.sp, color = Color.Gray)
-            Text(text = "₹ 4000", fontSize = 18.sp, color = Color.Black)
+            Text(text = "Asset Value", style = getTextColor(newMediumTextStyle))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "₹ 4000",
+                    style = getTextColor(didiDetailItemStyle),
+                )
+                Spacer(modifier = Modifier.width(dimen_5_dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_right_circle),
+                    contentDescription = null,
+                    tint = assetValueIconColor
+                )
+            }
         }
     }
+
 }
 
 @Composable
 fun EventsList() {
-    Column {
-        EventItem("Asset Purchase", "₹ 8000", "+2", "15 Jan'24", Color.Red)
-        Spacer(modifier = Modifier.height(8.dp))
-        EventItem("Feed Procurement", "₹ 1000", "", "10 Jan'24", Color.Red)
-        Spacer(modifier = Modifier.height(8.dp))
-        EventItem("Birth", "", "+1", "9 Jan'24", Color.Black)
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        val sources =
+            listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
+        Text("Last 3 events:", style = getTextColor(defaultTextStyle))
+        SingleSelectDropDown(sources = sources) {
+
+        }
+
+        //  Text("Last 3 events:", style = getTextColor(defaultTextStyle))
+
     }
 }
+
 
 @Composable
 fun EventItem(event: String, amount: String, assets: String, date: String, amountColor: Color) {
@@ -97,28 +141,125 @@ fun EventItem(event: String, amount: String, assets: String, date: String, amoun
 
 @Composable
 fun ShowMoreButton() {
-    TextButton(
-        onClick = { },
-        modifier = Modifier
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        TextButton(
+            onClick = { },
+            modifier = Modifier
+                .height(48.dp)
+                .border(
+                    width = 1.dp,
+                    color = borderGreyLight,
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Show more",
+                    textAlign = TextAlign.Center,
+                    style = getTextColor(defaultTextStyle),
+                )
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = assetValueIconColor
+                )
+            }
+        }
+    }
+
+}
+
+
+@Composable
+private fun EventView() {
+    Column(
+        Modifier
             .fillMaxWidth()
-            .height(48.dp),
-        shape = RoundedCornerShape(8.dp),
+            .padding(horizontal = dimen_10_dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "Show more",
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
+        EventHeader()
+        EventDetails()
+    }
+}
+
+@Composable
+private fun EventHeader() {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row {
+            TextWithPaddingEnd(
+                text = "Event:",
+                style = getTextColor(quesOptionTextStyle)
             )
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = assetValueIconColor
+            Text(
+                text = "Asset Purchase",
+                style = getTextColor(newMediumTextStyle)
             )
         }
+        Text(
+            text = "15 Jan’ 24",
+            style = getTextColor(quesOptionTextStyle)
+        )
 
     }
 }
+
+@Composable
+private fun EventDetails() {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row {
+            TextWithPaddingEnd(
+                text = "Amount:",
+                style = getTextColor(quesOptionTextStyle)
+            )
+            Text(
+                text = "- ₹ 8000",
+                style = getTextColor(newMediumTextStyle)
+            )
+        }
+        Row {
+            TextWithPaddingEnd(
+                text = "Assets:",
+                style = getTextColor(quesOptionTextStyle)
+            )
+            Text(
+                text = "+2",
+                style = getTextColor(newMediumTextStyle)
+            )
+        }
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = "ArrowForward Icon",
+            modifier = Modifier.size(dimen_24_dp),
+            tint = blueDark
+        )
+
+    }
+}
+
+@Composable
+private fun TextWithPaddingEnd(text: String, style: TextStyle) {
+    Text(
+        modifier = Modifier.padding(end = dimen_5_dp),
+        text = text,
+        style = style
+    )
+}
+
+private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextStyle =
+    textColor.copy(color)
+
+
+
 
 
 @Preview(showBackground = true)
