@@ -103,7 +103,7 @@ fun TaskScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        onSearchValueChange = { queryTerm ->
+        onSearchValueChange = { _ ->
 
         },
         onRetry = {},
@@ -148,13 +148,13 @@ fun TaskScreen(
                 }
             }
         },
-        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+        onContentUI = { _, isSearch, _ ->
 
             Column {
                 BaseContentScreen(
                     matId = viewModel.matId.value,
                     contentScreenCategory = viewModel.contentCategory.value
-                ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
+                ) { _, contentKey, contentType, isLimitContentData, contentTitle ->
                     if (!isLimitContentData) {
                         navigateToMediaPlayerScreen(
                             navController = navController,
