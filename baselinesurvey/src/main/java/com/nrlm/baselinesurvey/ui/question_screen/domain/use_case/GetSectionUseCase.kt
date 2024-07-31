@@ -25,5 +25,6 @@ class GetSectionUseCase(
     }
 
     fun getUniqueUserIdentifier(): String = repository.getBaseLineUserId()
+    fun getUserId(): String = repository.getUserId()
 
 }

@@ -183,7 +183,7 @@ fun TaskScreen(
                             modifier = Modifier.padding(horizontal = 10.dp),
                             showFilter = viewModel.isFilterEnable.value,
                             onFilterSelected = {
-                                if (viewModel.filterList.value.isNotEmpty()) {
+                                if (viewModel.filterList.isNotEmpty()) {
                                     viewModel.isGroupByEnable.value = !it
                                 }
                             },
@@ -256,10 +256,10 @@ fun TaskScreen(
                             }
                         }
                     } else {
-                        if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
+                        if (viewModel.filterList.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
                             LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                                 itemsIndexed(
-                                    items = viewModel.filterList.value.entries.toList()
+                                    items = viewModel.filterList.entries.toList()
                                 ) { _, task ->
                                     TaskRowView(viewModel, navController, task)
                                     CustomVerticalSpacer()

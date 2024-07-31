@@ -388,7 +388,7 @@
     <string name="total_members_can_not_be_less_than_earning_members">পৰিয়ালৰ মুঠ সদস্য আৰ্নিং সদস্যতকৈ কম হ’ব নোৱাৰে।</string>
     <string name="logout_confirmation">আপুনি নিশ্চিত নেকি যে আপুনি লগআউট কৰিব বিচাৰে?</string>
     <string name="warning">সতৰ্কবাণী!</string>
-    <string name="data_lost_message">" আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব"</string>
+    <string name="data_lost_message">আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব</string>
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
