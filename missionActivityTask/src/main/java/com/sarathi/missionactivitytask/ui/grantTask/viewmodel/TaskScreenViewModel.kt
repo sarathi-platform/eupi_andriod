@@ -2,10 +2,11 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import android.net.Uri
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
@@ -56,11 +57,11 @@ open class TaskScreenViewModel @Inject constructor(
     var activityId = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList =
-        mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
-    val taskList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _taskList
+        mutableStateMapOf<Int, HashMap<String, TaskCardModel>>()
+    val taskList: SnapshotStateMap<Int, HashMap<String, TaskCardModel>> get() = _taskList
     private val _filterList =
-        mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
-    val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
+        mutableStateMapOf<Int, HashMap<String, TaskCardModel>>()
+    val filterList: SnapshotStateMap<Int, HashMap<String, TaskCardModel>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isGroupByEnable = mutableStateOf(false)
@@ -99,7 +100,9 @@ open class TaskScreenViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             onEvent(LoaderEvent.UpdateLoaderState(true))
-
+            withContext(Dispatchers.Main) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
             taskUiModel = if (taskList.isNullOrEmpty()) getTaskUseCase.getActiveTasks(
                 missionId = missionId,
                 activityId = activityId
@@ -144,17 +147,17 @@ open class TaskScreenViewModel @Inject constructor(
                         isFilterEnable.value = true
                     }
                 }
-                _taskList.value[it.taskId] = uiComponent
+                _taskList[it.taskId] = uiComponent
 
             }
 
-            var _filterListt = _taskList.value
-            updateValueInMainThread(_filterList, _filterListt)
+            _filterList.clear()
+            _filterList.putAll(_taskList)
 
             filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
+                _taskList.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
             withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
+                //  onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
@@ -244,7 +247,7 @@ open class TaskScreenViewModel @Inject constructor(
     ) {
         val filteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
         if (queryTerm.isNotEmpty()) {
-            taskList.value.entries.forEach { task ->
+            taskList.entries.forEach { task ->
                 if (task.value[GrantTaskCardSlots.GRANT_SEARCH_ON.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true || task.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true
@@ -253,13 +256,14 @@ open class TaskScreenViewModel @Inject constructor(
                 }
             }
         } else {
-            filteredList.putAll(taskList.value)
+            filteredList.putAll(taskList)
         }
         if (isFilterApplied) {
             filterTaskMap =
                 filteredList.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
         } else {
-            _filterList.value = filteredList
+            _filterList.clear()
+            _filterList.putAll(filteredList)
         }
     }
 
