@@ -28,7 +28,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
@@ -54,6 +53,7 @@ fun LivelihoodScreen() {
         HeaderSection()
         Spacer(modifier = Modifier.height(16.dp))
         EventsList()
+        Spacer(modifier = Modifier.height(16.dp))
         EventView()
         Spacer(modifier = Modifier.height(16.dp))
         ShowMoreButton()
@@ -112,32 +112,10 @@ fun EventsList() {
             listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
         Text("Last 3 events:", style = getTextColor(defaultTextStyle))
         SingleSelectDropDown(sources = sources) {
-
         }
-
-        //  Text("Last 3 events:", style = getTextColor(defaultTextStyle))
-
     }
 }
 
-
-@Composable
-fun EventItem(event: String, amount: String, assets: String, date: String, amountColor: Color) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(8.dp))
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(text = event, fontSize = 18.sp, color = Color.Black)
-            Text(text = "Amount: $amount", fontSize = 18.sp, color = amountColor)
-            Text(text = "Assets: $assets", fontSize = 18.sp, color = Color.Black)
-        }
-        Text(text = date, fontSize = 18.sp, color = Color.Gray)
-    }
-}
 
 @Composable
 fun ShowMoreButton() {
