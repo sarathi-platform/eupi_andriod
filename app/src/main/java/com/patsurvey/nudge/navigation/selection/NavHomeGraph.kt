@@ -16,6 +16,7 @@ import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.MissionUiModel
+import com.nudge.incomeexpensemodule.ui.screens.dataTab.presentation.DataTabScreen
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
@@ -150,6 +151,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 }) {
                 navController.navigateToSettingScreen()
             }
+        }
+
+        composable(route = HomeScreens.DATA_TAB_SCREEN.route) {
+            DataTabScreen(dataTabScreenViewModel = hiltViewModel())
         }
 
         detailsNavGraph(navController = navController)

@@ -484,6 +484,7 @@ class DataLoadingModule {
         languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
         surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
+        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
@@ -507,7 +508,10 @@ class DataLoadingModule {
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
-            formUseCase = formUseCase
+            formUseCase = formUseCase,
+            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
+                fetchDidiDetailsFromNetworkRepository
+            )
         )
     }
 
