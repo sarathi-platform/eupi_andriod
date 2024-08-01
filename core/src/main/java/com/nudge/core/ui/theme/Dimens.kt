@@ -42,6 +42,7 @@ val dimen_80_dp = 80.dp
 val dimen_100_dp = 100.dp
 val dimen_150_dp = 150.dp
 val dimen_200_dp = 200.dp
+val dimen_250_dp = 250.dp
 
 val dimen_450_px = 450
 val dimen_400_px = 400
