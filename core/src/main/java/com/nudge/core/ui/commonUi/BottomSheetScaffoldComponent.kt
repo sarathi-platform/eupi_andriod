@@ -1,4 +1,4 @@
-package com.nudge.incomeexpensemodule.ui.component
+package com.nudge.core.ui.commonUi
 
 
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.nudge.incomeexpensemodule.ui.component
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -53,11 +53,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import com.example.incomeexpensemodule.R
-import com.nudge.core.ui.commonUi.BasicCardView
-import com.nudge.core.ui.commonUi.CustomTextViewComponent
-import com.nudge.core.ui.commonUi.CustomVerticalSpacer
-import com.nudge.core.ui.commonUi.TextProperties
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.R
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -66,8 +63,6 @@ import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.surveymanager.ui.component.CustomOutlineTextField
 import androidx.compose.material3.TextFieldDefaults as TextFieldDefaults1
 
 @OptIn(ExperimentalMaterialApi::class)
