@@ -1,4 +1,4 @@
-package com.nudge.incomeexpensemodule.ui.component
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -53,21 +55,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import com.example.incomeexpensemodule.R
-import com.nudge.core.ui.commonUi.BasicCardView
-import com.nudge.core.ui.commonUi.CustomTextViewComponent
-import com.nudge.core.ui.commonUi.CustomVerticalSpacer
-import com.nudge.core.ui.commonUi.TextProperties
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.R
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_250_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.surveymanager.ui.component.CustomOutlineTextField
 import androidx.compose.material3.TextFieldDefaults as TextFieldDefaults1
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -193,7 +191,6 @@ fun <T, U> SearchBarWithDropdownComponent(
                                     LaunchedEffect(interactionSource) {
                                         interactionSource.interactions.collect {
                                             if (it is PressInteraction.Release) {
-
                                             }
                                         }
                                     }
@@ -206,17 +203,26 @@ fun <T, U> SearchBarWithDropdownComponent(
                             )
                         )
                         Divider()
-                        state.getFilteredDropDownMenuItemList().value.forEachIndexed { index, item ->
-                            DropdownMenuItem(
-                                modifier = Modifier.exposedDropdownSize(),
-                                onClick = {
-                                    onItemSelected(index)
-                                    state.clearSearchQueryValue()
+                        val scrollState = rememberScrollState()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_250_dp)
+                                .verticalScroll(scrollState)
+                        ) {
+                            state.getFilteredDropDownMenuItemList().value.forEachIndexed { index, item ->
+                                DropdownMenuItem(
+                                    modifier = Modifier.exposedDropdownSize(),
+                                    onClick = {
+                                        onItemSelected(index)
+                                        state.clearSearchQueryValue()
+                                    }
+                                ) {
+                                    DropDownItem(item)
                                 }
-                            ) {
-                                DropDownItem(item)
                             }
                         }
+
 
                     }
                 }
@@ -322,6 +328,27 @@ fun PerviewSerch() {
                 "Purchase",
                 "Sale",
                 "Feed Procurement",
+                "Health",
+                "Birth",
+                "Death",
+                "Gift",
+                "Purchase",
+                "Sale",
+                "Feed Procurement",
+                "Health",
+                "Birth",
+                "Death",
+                "Gift",
+                "Purchase",
+                "Sale",
+                "Feed Procurement",
+                "Health1",
+                "Birth1",
+                "Death",
+                "Gift",
+                "Purchase1",
+                "Sale1",
+                "Feed Procurement1",
                 "Health"
             )
         )
@@ -341,7 +368,7 @@ fun PerviewSerch() {
         },
         onSearchQueryChanged = { searchQuery ->
             state.filterDropDownMenuItemList(state.getDropDownMenuItemListStateValue()) {
-                it.contains(searchQuery.text)
+                it.contains(searchQuery.text, true)
             }
         }
     ) {
