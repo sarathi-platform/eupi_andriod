@@ -24,7 +24,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.textColorDark
 
 @Composable
 fun BasicTextWithIconComponent(
@@ -173,4 +175,19 @@ data class TextProperties<T>(
     val minLines: Int = 1,
     val onTextLayout: (TextLayoutResult) -> Unit = {},
     val style: TextStyle
-)
+) {
+
+    companion object {
+
+        fun <T> getBasicTextProperties(text: T): TextProperties<T> {
+
+            return TextProperties(
+                text = text,
+                color = textColorDark,
+                style = defaultTextStyle
+            )
+        }
+
+    }
+
+}
