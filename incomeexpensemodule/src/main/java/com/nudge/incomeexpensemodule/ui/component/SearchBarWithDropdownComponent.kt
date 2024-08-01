@@ -1,29 +1,39 @@
 package com.nudge.incomeexpensemodule.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuBoxScope
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,33 +45,45 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import com.example.incomeexpensemodule.R
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomTextViewComponent
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.ui.component.CustomOutlineTextField
+import androidx.compose.material3.TextFieldDefaults as TextFieldDefaults1
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SearchBarWithDropdownComponent(
-    expanded: Boolean = false,
-    mTextFieldSize: Size,
-    onExpandedChange: (Boolean) -> Unit,
-    onDismissRequest: () -> Unit,
+fun <T, U> SearchBarWithDropdownComponent(
+    title: TextProperties<U>,
+    state: SearchBarWithDropDownState<T>,
+    paddingValues: PaddingValues = PaddingValues(horizontal = dimen_16_dp),
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
-    onItemSelected: () -> Unit,
+    onItemSelected: (index: Int) -> Unit,
+    onSearchQueryChanged: (searchQuery: TextFieldValue) -> Unit,
+    DropDownItem: @Composable ExposedDropdownMenuBoxScope.(item: T) -> Unit
 ) {
-    var selectedEvent by remember { mutableStateOf("Asset Purchase") }
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    val events = listOf("Birth", "Death", "Gift", "Purchase", "Sale", "Feed Procurement", "Health")
-    val filteredEvents = events.filter { it.contains(searchQuery.text, ignoreCase = true) }
-    val icon = if (expanded)
+
+    val icon = if (state.getDropDownStateValue())
         Icons.Filled.KeyboardArrowUp
     else
         Icons.Filled.KeyboardArrowDown
@@ -69,12 +91,13 @@ fun SearchBarWithDropdownComponent(
     val currentDensity = LocalDensity.current
 
     Column(
+        modifier = Modifier.padding(paddingValues),
         horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "Event*", fontSize = 16.sp, color = Color.Black)
+        CustomTextViewComponent(textProperties = title)
         Spacer(modifier = Modifier.height(4.dp))
         CustomOutlineTextField(
-            value = selectedEvent,
+            value = state.getSelectedValue().value,
             onValueChange = {
             },
             interactionSource = remember { MutableInteractionSource() }
@@ -82,7 +105,7 @@ fun SearchBarWithDropdownComponent(
                     LaunchedEffect(interactionSource) {
                         interactionSource.interactions.collect {
                             if (it is PressInteraction.Release) {
-                                onExpandedChange(expanded)
+                                state.updateDropDownState()
                             }
                         }
                     }
@@ -91,7 +114,7 @@ fun SearchBarWithDropdownComponent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(dimen_60_dp)
-                .clickable { onExpandedChange(expanded) }
+                .clickable { state.updateDropDownState() }
                 .onGloballyPositioned { coordinates ->
                     onGlobalPositioned(coordinates)
                     textFieldWidth = with(currentDensity) { coordinates.size.width.toDp() }
@@ -111,79 +134,223 @@ fun SearchBarWithDropdownComponent(
             ),
             trailingIcon = {
                 Icon(icon, "contentDescription",
-                    Modifier.clickable { onExpandedChange(expanded) })
+                    Modifier.clickable {
+                        state.updateDropDownState()
+                    }
+                )
             }
         )
         ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = {
-                onItemSelected()//expanded = !expanded
-            },
-            modifier = Modifier.width(textFieldWidth)
+            expanded = state.getDropDownStateValue(),
+            onExpandedChange = {},
+            modifier = Modifier.fillMaxWidth()
         ) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { onDismissRequest() },
-                modifier = Modifier.width(textFieldWidth) // Ensure width matches parent
+            AnimatedVisibility(
+                visible = state.getDropDownStateValue(),
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
             ) {
-                Column {
-                    BasicTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(Color.LightGray, shape = MaterialTheme.shapes.small)
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                    ) { innerTextField ->
-                        if (searchQuery.text.isEmpty()) {
-                            Text(
-                                text = "Search",
-                                color = Color.Gray,
-                                fontSize = 16.sp
+                BasicCardView {
+                    Column {
+                        TextField(
+                            value = state.getSearchQueryStateValue(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(white)
+                                .exposedDropdownSize(),
+                            onValueChange = {
+                                state.searchQueryValueUpdated(it)
+                                onSearchQueryChanged(state.getSearchQueryStateValue())
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "search drop down",
+                                    modifier = Modifier.absolutePadding(top = dimen_2_dp)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "clear drop down search",
+                                    modifier = Modifier
+                                        .absolutePadding(top = dimen_2_dp)
+                                        .clickable {
+                                            state.clearSearchQueryValue()
+                                            onSearchQueryChanged(TextFieldValue(BLANK_STRING))
+                                        }
+                                )
+                            },
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.search_label),
+                                    color = Color.Gray
+                                )
+                            },
+                            textStyle = TextStyle(fontSize = 16.sp),
+                            interactionSource = remember { MutableInteractionSource() }
+                                .also { interactionSource ->
+                                    LaunchedEffect(interactionSource) {
+                                        interactionSource.interactions.collect {
+                                            if (it is PressInteraction.Release) {
+
+                                            }
+                                        }
+                                    }
+                                },
+                            colors = TextFieldDefaults1.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
                             )
-                        }
-                        innerTextField()
-                    }
-                    Divider()
-                    filteredEvents.forEach { event ->
-                        DropdownMenuItem(
-                            onClick = {
-                                onItemSelected()
-                                selectedEvent = event
+                        )
+                        Divider()
+                        state.getFilteredDropDownMenuItemList().value.forEachIndexed { index, item ->
+                            DropdownMenuItem(
+                                modifier = Modifier.exposedDropdownSize(),
+                                onClick = {
+                                    onItemSelected(index)
+                                    state.clearSearchQueryValue()
+                                }
+                            ) {
+                                DropDownItem(item)
                             }
-                        ) {
-                            Text(text = event)
                         }
+
                     }
                 }
             }
         }
+        CustomVerticalSpacer()
+    }
+}
+
+class SearchBarWithDropDownState<T>(initialValue: Boolean = false, dropdownMenuItemList: List<T>) {
+    private val dropDownState = mutableStateOf(initialValue)
+
+    private val selectedValue = mutableStateOf("Select")
+
+    private val searchQuery = mutableStateOf(TextFieldValue(BLANK_STRING))
+
+    private val _dropdownMenuItemListState: MutableState<List<T>> = mutableStateOf(emptyList())
+    private val dropdownMenuItemListState: State<List<T>> get() = _dropdownMenuItemListState
+
+    private val _filteredList: MutableState<List<T>> = mutableStateOf(emptyList())
+
+    private val filteredList: State<List<T>> = _filteredList
+
+    init {
+        _dropdownMenuItemListState.value = dropdownMenuItemList
+        _filteredList.value = dropdownMenuItemListState.value
+    }
+
+    fun getDropDownState() = dropDownState
+
+    fun getDropDownStateValue() = dropDownState.value
+
+    fun getSelectedValue() = selectedValue
+
+    fun getDropDownMenuItemListState() = dropdownMenuItemListState
+
+    fun getDropDownMenuItemListStateValue() = dropdownMenuItemListState.value
+
+    fun getFilteredDropDownMenuItemList() = filteredList
+
+    fun getFilteredDropDownMenuItemListValue() = filteredList.value
+
+    fun getSearchQueryState() = searchQuery
+
+    fun getSearchQueryStateValue() = searchQuery.value
+
+    fun show() {
+        dropDownState.value = true
+    }
+
+    fun hide() {
+        dropDownState.value = false
+    }
+
+    fun updateDropDownState() {
+        if (dropDownState.value) {
+            hide()
+        } else {
+            show()
+        }
+    }
+
+    fun searchQueryValueUpdated(mSearchQuery: TextFieldValue) {
+        searchQuery.value = mSearchQuery
+    }
+
+    fun clearSearchQueryValue() {
+        searchQuery.value = TextFieldValue(BLANK_STRING)
+    }
+
+    fun filterDropDownMenuItemList(listToFilter: List<T>, predicate: (T) -> Boolean) {
+        _filteredList.value = if (getSearchQueryStateValue().text.isNotEmpty())
+            listToFilter.filter(predicate)
+        else
+            dropdownMenuItemListState.value
+    }
+
+    fun setSelectedItemValue(mSelectedValue: String) {
+        selectedValue.value = mSelectedValue
     }
 }
 
 
+fun <T> rememberSearchBarWithDropDownState(
+    initialValue: Boolean = false,
+    dropdownMenuItemList: List<T>
+): SearchBarWithDropDownState<T> {
+    return SearchBarWithDropDownState(initialValue, dropdownMenuItemList)
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun PerviewSerch() {
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    var expanded by remember { mutableStateOf(false) }
 
+    val state = remember {
+        rememberSearchBarWithDropDownState(
+            dropdownMenuItemList = listOf(
+                "Birth",
+                "Death",
+                "Gift",
+                "Purchase",
+                "Sale",
+                "Feed Procurement",
+                "Health"
+            )
+        )
+    }
     SearchBarWithDropdownComponent(
-        expanded = expanded,
-        mTextFieldSize = textFieldSize,
-        onExpandedChange = {
-            expanded = !it
-        },
-        onDismissRequest = {
-            expanded = false
-        },
+        title = TextProperties.getBasicTextProperties(text = buildAnnotatedString {
+            append("Event")
+            append("*")
+        }),
+        state = state,
         onGlobalPositioned = { coordinates ->
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            expanded = !expanded
-
+            state.hide()
+            state.setSelectedItemValue(state.getFilteredDropDownMenuItemListValue()[it])
+        },
+        onSearchQueryChanged = { searchQuery ->
+            state.filterDropDownMenuItemList(state.getDropDownMenuItemListStateValue()) {
+                it.contains(searchQuery.text)
+            }
         }
-    )
+    ) {
+        CustomTextViewComponent(
+            textProperties = TextProperties.getBasicTextProperties(text = it).copy(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .exposedDropdownSize()
+            )
+        )
+    }
 }
