@@ -169,7 +169,7 @@ fun RowScope.AddItem(
                 popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true
             }
-            TabsCore.setTabIndex(screen.tabItem.id)
+            TabsCore.setTabIndex(screen.tabItem.tabIndex)
         }
     )
 }

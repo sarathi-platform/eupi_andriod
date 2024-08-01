@@ -4,13 +4,16 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class DadaTabUseCase @Inject constructor(
+class DataTabUseCase @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
-) {
+    val fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
+
+    ) {
 
     suspend operator fun invoke(
         isRefresh: Boolean,

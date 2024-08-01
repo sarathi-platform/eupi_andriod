@@ -145,7 +145,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(route = HomeScreens.DIDI_TAB_SCREEN.route) {
-            DidiTabScreen(navHostController = navController,
+            DidiTabScreen(
+                navHostController = navController,
                 onBackPressed = {
                     finishActivity()
                 }) {
@@ -154,7 +155,14 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(route = HomeScreens.DATA_TAB_SCREEN.route) {
-            DataTabScreen(dataTabScreenViewModel = hiltViewModel())
+            DataTabScreen(
+                dataTabScreenViewModel = hiltViewModel(),
+                navHostController = navController,
+                onBackPressed = {
+                    finishActivity()
+                }) {
+                navController.navigateToSettingScreen()
+            }
         }
 
         detailsNavGraph(navController = navController)
