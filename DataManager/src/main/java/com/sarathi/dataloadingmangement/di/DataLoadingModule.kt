@@ -239,6 +239,9 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyLanguageAttributeDao(db: NudgeGrantDatabase) = db.surveyLanguageAttributeDao()
 
+    @Provides
+    @Singleton
+    fun provideMoneyJournalDao(db: NudgeGrantDatabase) = db.moneyJournalDao()
 
     @Provides
     @Singleton
