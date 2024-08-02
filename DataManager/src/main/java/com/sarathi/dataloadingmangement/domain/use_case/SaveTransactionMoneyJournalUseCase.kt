@@ -30,31 +30,30 @@ class SaveTransactionMoneyJournalUseCase(private val repository: IMoneyJournalRe
             it.tagId.contains(DATE_TAG) || it.tagId.contains(DISBURSEMENT_DATE_TAG)
         }?.options?.firstOrNull()?.selectedValue
         var particulars = ""
+        var option = ""
         questionUiModels.filter {
             it.tagId.contains(MODE_TAG) || it.tagId.contains(NATURE_TAG) || it.tagId.contains(
                 NO_OF_POOR_DIDI_TAG
             )
         }.forEach { questionUiModel ->
-            var option = questionUiModel.questionSummary + "="
+            option = option + questionUiModel.questionSummary + "="
             if (questionUiModel.type == QuestionType.MultiSelectDropDown.name || questionUiModel.type == QuestionType.SingleSelectDropDown.name) {
                 questionUiModel.options?.filter { it.isSelected == true }
                     ?.forEachIndexed { index, it ->
-
-                        option = option + " ${it.originalValue}"
-                        if (index == questionUiModel.options?.size?.minus(1)) {
-                            option = option + ","
+                        option += "${it.originalValue}"
+                        if (index != questionUiModel.options?.size?.minus(1)) {
+                            option += ","
                         }
                     }
             } else {
                 questionUiModel.options?.forEach {
-                    option = option + " ${it.selectedValue} "
+                    option += " ${it.selectedValue} "
                 }
             }
-            particulars = option + "|"
-
-
+            option = "$option|"
+            particulars = option
         }
-        particulars = particulars + subjectType
+        particulars += subjectType
 
 
 
