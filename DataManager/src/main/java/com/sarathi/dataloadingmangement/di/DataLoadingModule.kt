@@ -878,41 +878,49 @@ class DataLoadingModule {
     @Singleton
     fun provideLivelihoodRepository(
         apiInterface: DataLoadingApiService,
-        livelihoodDao: LivelihoodDao
+        livelihoodDao: LivelihoodDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): LivelihoodRepositoryImpl {
         return LivelihoodRepositoryImpl(
             apiInterface = apiInterface,
-            livelihoodDao = livelihoodDao
+            livelihoodDao = livelihoodDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
     @Provides
     @Singleton
     fun provideLivelihoodEventRepository(
-        livelihoodEventDao: LivelihoodEventDao
+        livelihoodEventDao: LivelihoodEventDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): LivelihoodEventRepositoryImpl {
         return LivelihoodEventRepositoryImpl(
-            livelihoodEventDao = livelihoodEventDao
+            livelihoodEventDao = livelihoodEventDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
     @Provides
     @Singleton
     fun provideAssetRepository(
-        assetDao: AssetDao
+        assetDao: AssetDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): AssetRepositoryImpl {
         return AssetRepositoryImpl(
-            assetDao = assetDao
+            assetDao = assetDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
     @Provides
     @Singleton
     fun provideProductRepository(
-        productDao: ProductDao
+        productDao: ProductDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): ProductRepositoryImpl {
         return ProductRepositoryImpl(
-            productDao = productDao
+            productDao = productDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
