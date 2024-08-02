@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import com.nudge.core.toDateInMMDDYYFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
@@ -50,13 +51,14 @@ object PdfUtils {
         didiDetailList: List<DidiEntity>,
         casteList: List<CasteEntity>,
         completionDate: String
-    ): Boolean {
+    ): String {
 
         val mSerialNumberCellWidth = 50
         val mDataCellWidth = 150
+        val pdfFile = getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.id)
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context,stateId, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
+            getSimplePdfDocument(context, pdfFile = pdfFile, "Digital Form A")
 
 
         //  simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
@@ -216,7 +218,11 @@ object PdfUtils {
         val success = simplyPdfDocument.finish()
         val page = simplyPdfDocument.currentPageNumber
         println("TAG PAGE  $page")
-        return success
+        if (success)
+            return pdfFile.absolutePath
+        else {
+            return BLANK_STRING
+        }
     }
 
     suspend fun getFormAPdfForBpc(
@@ -226,13 +232,14 @@ object PdfUtils {
         didiDetailList: List<PoorDidiEntity>,
         casteList: List<CasteEntity>,
         completionDate: String
-    ): Boolean {
+    ): String {
 
         val mSerialNumberCellWidth = 50
         val mDataCellWidth = 150
+        val pdfFile = getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.id)
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, stateId, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
+            getSimplePdfDocument(context, pdfFile = pdfFile, "Digital Form A")
 
 
         //  simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
@@ -392,7 +399,11 @@ object PdfUtils {
         val success = simplyPdfDocument.finish()
         val page = simplyPdfDocument.currentPageNumber
         println("TAG PAGE  $page")
-        return success
+        if (success)
+            return pdfFile.absolutePath
+        else {
+            return BLANK_STRING
+        }
     }
 
     suspend fun getFormBPdf(
@@ -402,10 +413,11 @@ object PdfUtils {
         didiDetailList: List<DidiEntity>,
         casteList: List<CasteEntity>,
         completionDate: String
-    ): Boolean {
+    ): String {
+        val pdfFile = getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.id)
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context,stateId, villageEntity, FORM_B_PDF_NAME, "Digital Form B")
+            getSimplePdfDocument(context, pdfFile = pdfFile, "Digital Form B")
 
         // simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
 
@@ -498,7 +510,11 @@ object PdfUtils {
         simplyPdfDocument.insertEmptyLines(1)
 
         val success = simplyPdfDocument.finish()
-        return success
+        if (success)
+            return pdfFile.absolutePath
+        else {
+            return BLANK_STRING
+        }
     }
 
     suspend fun getFormBPdfForBpc(
@@ -508,10 +524,11 @@ object PdfUtils {
         didiDetailList: List<PoorDidiEntity>,
         casteList: List<CasteEntity>,
         completionDate: String
-    ): Boolean {
+    ): String {
+        val pdfFile = getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.id)
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, stateId , villageEntity, FORM_B_PDF_NAME, "Digital Form B")
+            getSimplePdfDocument(context, pdfFile = pdfFile, "Digital Form B")
 
         // simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
 
@@ -604,7 +621,11 @@ object PdfUtils {
         simplyPdfDocument.insertEmptyLines(1)
 
         val success = simplyPdfDocument.finish()
-        return success
+        if (success)
+            return pdfFile.absolutePath
+        else {
+            return BLANK_STRING
+        }
     }
 
     suspend fun getFormCPdf(
@@ -614,10 +635,11 @@ object PdfUtils {
         didiDetailList: List<DidiEntity>,
         casteList: List<CasteEntity>,
         completionDate: String
-    ): Boolean {
+    ): String {
+        val pdfFile = getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.id)
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context,stateId, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
+            getSimplePdfDocument(context, pdfFile = pdfFile, "Digital Form C")
 
         simplyPdfDocument.text.write(
             getVoNameForState(context,stateId, R.plurals.final_list_of_user),
@@ -708,8 +730,11 @@ object PdfUtils {
         simplyPdfDocument.insertEmptyLines(1)
 
         val success = simplyPdfDocument.finish()
-        return success
-
+        if (success)
+            return pdfFile.absolutePath
+        else {
+            return BLANK_STRING
+        }
     }
 
     suspend fun getFormCPdfForBpc(
@@ -719,10 +744,11 @@ object PdfUtils {
         didiDetailList: List<PoorDidiEntity>,
         casteList: List<CasteEntity>,
         completionDate: String
-    ): Boolean {
+    ): String {
+        val pdfFile = getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.id)
 
         val simplyPdfDocument =
-            getSimplePdfDocument(context, stateId , villageEntity, FORM_C_PDF_NAME, "Digital Form C")
+            getSimplePdfDocument(context, pdfFile = pdfFile, "Digital Form C")
 
         // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
 
@@ -815,20 +841,21 @@ object PdfUtils {
         simplyPdfDocument.insertEmptyLines(1)
 
         val success = simplyPdfDocument.finish()
-        return success
-
+        if (success)
+            return pdfFile.absolutePath
+        else {
+            return BLANK_STRING
+        }
     }
 
     private fun getSimplePdfDocument(
         context: Context,
-        stateId: Int,
-        villageEntity: VillageEntity,
-        fileName: String,
+        pdfFile: File,
         headerText: String
     ): SimplyPdfDocument {
         return SimplyPdf.with(
             context,
-            getPdfPath(context = context, formName = fileName, villageEntity.id)
+            pdfFile,
         )
             .colorMode(DocumentInfo.ColorMode.COLOR)
             .paperSize(PrintAttributes.MediaSize.ISO_A4)
@@ -860,7 +887,12 @@ object PdfUtils {
     }
 
     fun getPdfPath(context: Context, formName: String, villageId: Int): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageId}.pdf")
+        return File(
+            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageId}}_${
+                System.currentTimeMillis().toDateInMMDDYYFormat()
+            }.pdf"
+        )
+    }
     }
 
     private fun getTextPropertiesForCell(): TextProperties {
@@ -901,4 +933,3 @@ object PdfUtils {
 
         }
     }
-}
