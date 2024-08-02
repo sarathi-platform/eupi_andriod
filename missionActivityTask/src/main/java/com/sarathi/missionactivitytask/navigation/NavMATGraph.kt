@@ -59,6 +59,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY
 import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysicalFormScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
+import com.sarathi.missionactivitytask.ui.grantTask.screen.LivelihoodTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
@@ -146,6 +147,33 @@ fun NavGraphBuilder.MatNavigation(
                 })
         ) {
             GrantTaskScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                missionId = it.arguments?.getInt(
+                    ARG_MISSION_ID
+                ) ?: 0,
+                activityId = it.arguments?.getInt(
+                    ARG_ACTIVITY_ID
+                ) ?: 0,
+                activityName = it.arguments?.getString(
+                    ARG_ACTIVITY_NAME
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
+            )
+        }
+        composable(
+            route = MATHomeScreens.LivelihoodTaskScreen.route, arguments = listOf(
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_NAME) {
+                    type = NavType.StringType
+                })
+        ) {
+          LivelihoodTaskScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 missionId = it.arguments?.getInt(
@@ -465,8 +493,7 @@ fun NavGraphBuilder.MatNavigation(
         }
     }
     composable(route = MATHomeScreens.LivelihoodDropDownScreen.route) {
-        LivelihoodDropDownScreen(navController = navController) {
-        }
+        LivelihoodDropDownScreen(navController = navController)
     }
 }
 
@@ -521,7 +548,6 @@ fun navigateToGrantSurveySummaryScreen(
     navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
 }
 
-
 fun navigateToActivityCompletionScreen(
     navController: NavController,
     activityMsg: String,
@@ -531,11 +557,9 @@ fun navigateToActivityCompletionScreen(
 }
 fun  navigateToLivelihoodDropDownScreen(
     navController: NavController,
-    activityMsg: String,
-    isFromActivity: Boolean = false
 )
 {
-    navController.navigate("$LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
+    navController.navigate("$LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME")
 }
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {
@@ -584,5 +608,5 @@ fun navigateToLiveliHoodScreen(
     activityId: Int,
     activityName: String
 ) {
-    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }

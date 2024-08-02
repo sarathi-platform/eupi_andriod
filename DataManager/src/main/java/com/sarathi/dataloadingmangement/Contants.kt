@@ -5,6 +5,10 @@ const val KEY_HEADER_MOBILE = "header_type_mobile"
 const val BLANK_STRING = ""
 const val MISSION_TABLE_NAME = "mission_table"
 const val ACTIVITY_TABLE_NAME = "activity_table"
+const val LIVELIHOOD_TABLE_NAME = "livelihood_table"
+const val ASSETS_TABLE_NAME = "Assets_table"
+
+
 const val TAG_REFERENCE_TABLE_NAME = "tag_reference_table"
 const val TASK_TABLE_NAME = "task_table"
 const val CONTENT_TABLE_NAME = "content_table"
