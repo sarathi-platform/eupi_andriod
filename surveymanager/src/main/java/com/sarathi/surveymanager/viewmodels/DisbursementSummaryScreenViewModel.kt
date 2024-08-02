@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
@@ -46,7 +47,9 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     private val activityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
-) : BaseViewModel() {
+    private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
+
+    ) : BaseViewModel() {
     private val _taskList =
         mutableStateOf<Map<String, List<SurveyAnswerFormSummaryUiModel>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerFormSummaryUiModel>>> get() = _taskList
@@ -210,6 +213,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                     subjectType = subjectType
 
                 )
+                saveTransactionMoneyJournalUseCase.deleteTransactionFromMoneyJournal(referenceId)
                 onDeleteSuccess(deleteCount)
             }
             formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)
