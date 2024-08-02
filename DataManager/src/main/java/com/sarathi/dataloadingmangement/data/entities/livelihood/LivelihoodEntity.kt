@@ -1,39 +1,41 @@
-package com.sarathi.dataloadingmangement.data.entities
+package com.sarathi.dataloadingmangement.data.entities.livelihood
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
-import com.sarathi.dataloadingmangement.network.response.AssetsResponse
+import com.sarathi.dataloadingmangement.model.response.Livelihood
 
 
 @Entity(tableName = LIVELIHOOD_TABLE_NAME)
 data class LivelihoodEntity(
     @PrimaryKey(autoGenerate = true)
-    @SerializedName("id")
+    @SerializedName("primaryKey")
     @Expose
-    @ColumnInfo(name = "id")
-    var id: Int = 0,
+    @ColumnInfo(name = "primaryKey")
+    var primaryKey: Int = 0,
+    var id: Int,
     var userId: String,
-    var assetsId: Int,
+    var name: String,
     var status: Int,
-    var isActive: Int = 1,
+    var type: Int? = 0,
 
-) {
+    ) {
     companion object {
         fun getLivelihoodEntity(
             userId: String,
-           assets: AssetsResponse,
+            livelihood: Livelihood
         ): LivelihoodEntity {
 
             return LivelihoodEntity(
-                id = 0,
+                primaryKey = 0,
+                id = livelihood.id ?: 0,
                 userId = userId,
-                assetsId = assets.id!!,
-                status = assets.status,
-
+                name = livelihood.name ?: BLANK_STRING,
+                status = livelihood.status ?: 0,
             )
         }
 
