@@ -8,9 +8,10 @@ import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 @Entity(tableName = MONEY_JOURNAL_TABLE_NAME)
 data class MoneyJournalEntity(
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id")
     val id: Int = 0,
+
     val transactionId: String,
     val date: Long,
     val transactionDetails: String,

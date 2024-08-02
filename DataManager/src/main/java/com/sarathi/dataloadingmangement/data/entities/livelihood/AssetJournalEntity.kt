@@ -8,7 +8,7 @@ import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 @Entity(tableName = ASSET_JOURNAL_TABLE_NAME)
 data class AssetJournalEntity(
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id")
     val id: Int = 0,
 
