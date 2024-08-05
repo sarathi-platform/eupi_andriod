@@ -42,6 +42,7 @@ import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.surveymanager.R
 
 @Composable
@@ -132,9 +133,11 @@ fun <T> DropDownComponent(
                     is ValuesDto -> {
                         title = item.value
                     }
-                    is LivelihoodUIEntity -> {
+
+                    is LivelihoodUiEntity -> {
                         title = item.livelihoodEntity.name
                     }
+
                     else -> {
                         title = item.toString()
                     }
@@ -157,7 +160,7 @@ fun <T> DropDownComponent(
 
 private fun <T> isDisable(item: T, disableItemId: Int): Boolean {
     return when (item) {
-        is LivelihoodUIEntity -> {
+        is LivelihoodUiEntity -> {
             item.livelihoodEntity.id != disableItemId
         }
 

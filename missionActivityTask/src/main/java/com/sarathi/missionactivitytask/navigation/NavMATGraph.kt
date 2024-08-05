@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.media.PdfViewer
@@ -65,8 +66,8 @@ import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
-import com.sarathi.surveymanager.ui.screen.LivelihoodDropDownScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
+import com.sarathi.surveymanager.ui.screen.livelihood.LivelihoodDropDownScreen
 import com.nudge.core.model.MissionUiModel as CoreMissionUiModel
 
 
@@ -492,8 +493,34 @@ fun NavGraphBuilder.MatNavigation(
             )
         }
     }
-    composable(route = MATHomeScreens.LivelihoodDropDownScreen.route) {
-        LivelihoodDropDownScreen(navController = navController, viewModel = hiltViewModel())
+    composable(route = MATHomeScreens.LivelihoodDropDownScreen.route, arguments = listOf(
+        navArgument(ARG_TASK_ID) {
+            type = NavType.IntType
+        },
+        navArgument(name = ARG_ACTIVITY_ID) {
+            type = NavType.IntType
+        },
+        navArgument(name = ARG_MISSION_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_SUBJECT_NAME) {
+            type = NavType.StringType
+        }
+    )) {
+        LivelihoodDropDownScreen(
+            navController = navController,
+            viewModel = hiltViewModel(),
+            taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
+            activityId = it.arguments?.getInt(
+                ARG_ACTIVITY_ID
+            ).value(),
+            missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
+            subjectName = it.arguments?.getString(
+                ARG_SUBJECT_NAME
+            ).value(),
+            onSettingClicked = {
+
+            })
     }
 }
 
@@ -555,11 +582,15 @@ fun navigateToActivityCompletionScreen(
 ) {
     navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
 }
-fun  navigateToLivelihoodDropDownScreen(
+
+fun navigateToLivelihoodDropDownScreen(
     navController: NavController,
-)
-{
-    navController.navigate("$LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME")
+    taskId: Int,
+    activityId: Int,
+    missionId: Int,
+    subjectName: String
+) {
+    navController.navigate("$LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME/$taskId/$activityId/$missionId/$subjectName")
 }
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {

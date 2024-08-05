@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntit
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEventEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodLanguageReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.Asset
 import com.sarathi.dataloadingmangement.model.response.LanguageReference
 import com.sarathi.dataloadingmangement.model.response.Livelihood
@@ -36,7 +37,10 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                             asset = item
                         )
                     )
-                    saveLivelihoodLanguageToDB(item.languages)
+                    saveLivelihoodLanguageToDB(
+                        item.languages,
+                        LivelihoodLanguageReferenceType.Asset.name
+                    )
                 }
 
                 is Product -> {
@@ -46,7 +50,10 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                             product = item
                         )
                     )
-                    saveLivelihoodLanguageToDB(item.languages)
+                    saveLivelihoodLanguageToDB(
+                        item.languages,
+                        LivelihoodLanguageReferenceType.Product.name
+                    )
                 }
 
                 is LivelihoodEvent -> {
@@ -56,14 +63,17 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                             livelihoodEvent = item
                         )
                     )
-                    saveLivelihoodLanguageToDB(item.languages)
+                    saveLivelihoodLanguageToDB(
+                        item.languages,
+                        LivelihoodLanguageReferenceType.Event.name
+                    )
                 }
             }
         }
 
     }
 
-    override suspend fun <T> saveLivelihoodItemToDB(item: T) {
+    override suspend fun <T> saveLivelihoodItemToDB(item: T, referenceType: String) {
         when (item) {
             is Livelihood -> {
                 livelihoodDao.insertLivelihood(
@@ -72,18 +82,22 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                         livelihood = item
                     )
                 )
-                saveLivelihoodLanguageToDB(item.languages)
+                saveLivelihoodLanguageToDB(item.languages, referenceType)
             }
         }
     }
 
-    override suspend fun saveLivelihoodLanguageToDB(languageReferences: List<LanguageReference>) {
+    override suspend fun saveLivelihoodLanguageToDB(
+        languageReferences: List<LanguageReference>,
+        referenceType: String
+    ) {
         val languageReferenceEntities = ArrayList<LivelihoodLanguageReferenceEntity>()
         languageReferences.forEach { languageReference ->
             languageReferenceEntities.add(
                 LivelihoodLanguageReferenceEntity.getLivelihoodLanguageEntity(
                     uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
-                    languageReference = languageReference
+                    languageReference = languageReference,
+                    referenceType = referenceType
                 )
             )
         }
