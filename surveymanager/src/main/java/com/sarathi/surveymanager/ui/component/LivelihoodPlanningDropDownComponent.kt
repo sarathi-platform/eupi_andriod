@@ -1,6 +1,5 @@
 package com.sarathi.surveymanager.ui.component
 
-
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,35 +12,36 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.showCustomToast
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
 import com.sarathi.surveymanager.R
 
 @Composable
-fun TypeDropDownComponent(
+fun LivelihoodPlanningDropDownComponent(
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
-    sources: List<ValuesDto>?,
+    sources: List<LivelihoodUIEntity>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
-    onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
+    onAnswerSelection: (livelihoodUIEntity: LivelihoodUIEntity) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
-        sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
+        sources ?: listOf()
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember {
         mutableStateOf(
-            defaultSourceList.find { it.isSelected == true }?.value
-                ?: hintText
+            defaultSourceList.find { it.isSelected }?.livelihoodEntity?.name.value()
+
         )
     }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
 
-    DropDownComponent(items = defaultSourceList,
+    DropDownComponent<LivelihoodUIEntity>(items = defaultSourceList,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -68,10 +68,12 @@ fun TypeDropDownComponent(
         },
         onItemSelected = {
             selectedOptionText =
-                defaultSourceList[defaultSourceList.indexOf(it)].value
+                defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name.value()
             onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
             expanded = false
 
         })
 
 }
+
+data class LivelihoodUIEntity(val livelihoodEntity: LivelihoodEntity, val isSelected: Boolean)

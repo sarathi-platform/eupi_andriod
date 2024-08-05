@@ -9,6 +9,6 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodLangu
 @Dao
 interface LivelihoodLanguageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLivelihoodLanguage(languageEntity: LivelihoodLanguageReferenceEntity): Long
+    fun insertLivelihoodLanguage(languageEntity: List<LivelihoodLanguageReferenceEntity>)
 
 }

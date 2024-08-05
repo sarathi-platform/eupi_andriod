@@ -222,15 +222,19 @@ class LivelihoodUseCase @Inject constructor(
         livelihood.forEach { livelihood ->
             livelihood.livelihood?.let {
                 livelihoodRepositoryImpl.saveLivelihoodToDB(it)
+                livelihoodLanguageRepositoryImpl.saveLivelihoodLanguageToDB(it.languages)
             }
             livelihood.assets?.let {
                 assetRepositoryImpl.saveAssetToDB(it)
+                livelihoodLanguageRepositoryImpl.saveLivelihoodLanguageToDB(it.languages)
             }
             livelihood.products?.let {
                 productRepositoryImpl.saveProductEntityToDB(it)
+                livelihoodLanguageRepositoryImpl.saveLivelihoodLanguageToDB(it.languages)
             }
             livelihood.events?.let {
                 livelihoodEventRepositoryImpl.saveLivelihoodEventEntityToDB(it)
+                livelihoodLanguageRepositoryImpl.saveLivelihoodLanguageToDB(it.languages)
             }
 
         }

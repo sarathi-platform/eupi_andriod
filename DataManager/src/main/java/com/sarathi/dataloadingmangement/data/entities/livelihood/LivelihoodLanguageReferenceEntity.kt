@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.LIVILIHOOD_LANGUAGE_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.response.LanguageReference
 
 @Entity(tableName = LIVILIHOOD_LANGUAGE_TABLE_NAME)
 data class LivelihoodLanguageReferenceEntity(
@@ -25,17 +27,15 @@ data class LivelihoodLanguageReferenceEntity(
 ) {
     companion object {
         fun getLivelihoodLanguageEntity(
-            id: Int,
-            languageCode: String,
-            name: String,
+            languageReference: LanguageReference,
             uniqueUserIdentifier: String,
         ): LivelihoodLanguageReferenceEntity {
             return LivelihoodLanguageReferenceEntity(
                 primaryKey = 0,
-                id = id,
+                id = languageReference.id ?: 0,
                 userId = uniqueUserIdentifier,
-                languageCode = languageCode,
-                name = name,
+                languageCode = languageReference.languageCode ?: BLANK_STRING,
+                name = languageReference.name ?: BLANK_STRING,
             )
         }
     }

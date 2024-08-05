@@ -928,10 +928,12 @@ class DataLoadingModule {
     @Singleton
     fun provideLivelihoodLanguageRepository(
         apiInterface: DataLoadingApiService,
-        livelihoodLanguageDao: LivelihoodLanguageDao
+        livelihoodLanguageDao: LivelihoodLanguageDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): LivelihoodLanguageRepositoryImpl {
         return LivelihoodLanguageRepositoryImpl(
             apiInterface = apiInterface,
+            coreSharedPrefs = coreSharedPrefs,
             livelihoodLanguageDao = livelihoodLanguageDao
         )
     }

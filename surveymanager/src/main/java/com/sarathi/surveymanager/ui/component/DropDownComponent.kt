@@ -36,6 +36,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
@@ -55,6 +56,7 @@ fun <T> DropDownComponent(
     selectedItem: String = BLANK_STRING,
     expanded: Boolean = false,
     mTextFieldSize: Size,
+    diableItem: Int = -1,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
@@ -130,22 +132,37 @@ fun <T> DropDownComponent(
                     is ValuesDto -> {
                         title = item.value
                     }
-
+                    is LivelihoodUIEntity -> {
+                        title = item.livelihoodEntity.name
+                    }
                     else -> {
                         title = item.toString()
                     }
                 }
-                DropdownMenuItem(onClick = {
+                DropdownMenuItem(enabled = isDisable(item, diableItem), onClick = {
                     onItemSelected(item)
                 }) {
                     Text(
                         text = title,
                         modifier = Modifier.fillMaxWidth(),
-                        style = smallTextStyle.copy(blueDark)
+                        style = smallTextStyle.copy(
+                            if (isDisable(item, diableItem)) blueDark else greyColor
+                        )
                     )
                 }
             }
+        }
+    }
+}
 
+private fun <T> isDisable(item: T, disableItemId: Int): Boolean {
+    return when (item) {
+        is LivelihoodUIEntity -> {
+            item.livelihoodEntity.id != disableItemId
+        }
+
+        else -> {
+            true
         }
     }
 }

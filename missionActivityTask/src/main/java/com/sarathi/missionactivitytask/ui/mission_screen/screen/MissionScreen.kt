@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -154,7 +155,7 @@ fun MissionScreen(
                 )
                 if (viewModel.filterMissionList.value.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(10.dp))
-                    LazyColumn {
+                    LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                         items(viewModel.filterMissionList.value) { mission ->
                             BasicMissionCard(
                                 status = mission.missionStatus,
