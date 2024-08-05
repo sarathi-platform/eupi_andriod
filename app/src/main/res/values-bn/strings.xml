@@ -291,7 +291,7 @@
     <string name="didi_pat_complete_text">দিদিদের PAT সম্পন্ন হলো</string>
     <string name="didi_endorsed_text_plural">দিদিরা অনুমোদিত হয়েছে</string>
     <string name="didi_endorsed_text_singula">দিদি অনুমোদিত হয়েছে</string>
-    <string name="didi_rejected_text_plural">দিদিদের বাতিল করা হয়েছে</string>
+    <string name="didi_rejected_text_plural">দিদিরা অনুমোদিত হয়েছে</string>
     <string name="didi_rejected_text_singula">দিদি বাতিল করা হয়েছে</string>
     <string name="didi_not_available_sub_heading_text">দিদিদের পাওয়া যায় না</string>
     <string name="accept">স্বীকার করুন</string>
