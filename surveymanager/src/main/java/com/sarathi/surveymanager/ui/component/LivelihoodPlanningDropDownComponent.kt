@@ -15,33 +15,35 @@ import com.nudge.core.showCustomToast
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodDropDownUiModel
 import com.sarathi.surveymanager.R
 
 @Composable
 fun LivelihoodPlanningDropDownComponent(
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
-    sources: List<LivelihoodUIEntity>?,
+    sources: List<LivelihoodDropDownUiModel>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
-    onAnswerSelection: (livelihoodUIEntity: LivelihoodUIEntity) -> Unit
+    onAnswerSelection: (livelihoodUIEntity: LivelihoodDropDownUiModel) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
         sources ?: listOf()
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember {
-        mutableStateOf(
-            defaultSourceList.find { it.isSelected }?.livelihoodEntity?.name.value()
-
-        )
+        mutableStateOf("")
+//        mutableStateOf(
+//            defaultSourceList.find { it.isSelected }?.livelihoodEntity?.name.value()
+//
+//        )
     }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
 
-    DropDownComponent<LivelihoodUIEntity>(items = defaultSourceList,
+    DropDownComponent<LivelihoodDropDownUiModel>(items = defaultSourceList,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -68,7 +70,9 @@ fun LivelihoodPlanningDropDownComponent(
         },
         onItemSelected = {
             selectedOptionText =
-                defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name.value()
+                defaultSourceList[defaultSourceList.indexOf(it)].name
+//            selectedOptionText =
+//                defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name.value()
             onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
             expanded = false
 

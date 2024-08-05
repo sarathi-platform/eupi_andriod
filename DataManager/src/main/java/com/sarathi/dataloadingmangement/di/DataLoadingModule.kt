@@ -31,6 +31,7 @@ import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -95,6 +96,8 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.AssetsRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.GetAssetsRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepository
 import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
@@ -901,6 +904,20 @@ class DataLoadingModule {
         return FetchDidiDetailsFromDbRepositoryImpl(
             corePrefRepo, subjectEntityDao,
             smallGroupDidiMappingDao
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideFetchLivelihoodAssetsRepository(
+        corePrefRepo: CoreSharedPrefs,
+        livelihoodDao: LivelihoodDao
+    ): AssetsRepository {
+        return GetAssetsRepositoryImpl(
+            livelihoodDao,
+            corePrefRepo,
+
         )
     }
 

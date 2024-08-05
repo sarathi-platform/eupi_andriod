@@ -493,7 +493,7 @@ fun NavGraphBuilder.MatNavigation(
         }
     }
     composable(route = MATHomeScreens.LivelihoodDropDownScreen.route) {
-        LivelihoodDropDownScreen(navController = navController)
+        LivelihoodDropDownScreen(navController = navController, viewModel = hiltViewModel())
     }
 }
 
