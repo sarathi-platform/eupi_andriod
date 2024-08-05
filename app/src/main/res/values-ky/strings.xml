@@ -425,8 +425,15 @@
     <string name="pat_completed_for_didi_plural">PAT completed for %1$s new didis</string>
     <string name="pat_marked_not_available_singular">%1$s didi marked as Not Available</string>
     <string name="pat_marked_not_available_plural">%1$s didis marked as Not Available</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Ultrapoor didis sent for VO Endorsement.</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s Ultrapoor didis sent for VO Endorsement.</string>
+    <plurals name="pat_didi_sent_to_vo_endorsement_singular">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s Ultrapoor didis sent for VO Endorsement.</item>
+    </plurals>
+    <plurals name="pat_didi_sent_to_vo_endorsement_plural">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s Ultrapoor didis sent for VO Endorsement.</item>
+    </plurals>
+
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s Ultrapoor didi sent for BPM Approval.</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s Ultrapoor didis sent for BPM Approval.</string>
     <string name="link_form_c">Link Form C</string>

@@ -91,7 +91,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     fun getTaskListOfDisburesementAmountEqualSanctionedAmount(): String {
         val taskListSanctionedEqualDisbursed = ArrayList<String>()
         if (activityConfigUiModel?.taskCompletion == SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED) {
-            taskList.entries.forEach { task ->
+            taskList.value.entries.forEach { task ->
                 try {
                     if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
                         taskListSanctionedEqualDisbursed.add(task.key.toString())
