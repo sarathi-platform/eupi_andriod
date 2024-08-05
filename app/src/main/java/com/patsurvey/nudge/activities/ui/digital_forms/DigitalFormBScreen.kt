@@ -56,7 +56,6 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
@@ -454,17 +453,9 @@ fun DigitalFormBScreen(
                         .fillMaxWidth()
                         .weight(1f),
                 ) {
-                    val pdfFile = File(
-                        "${
-                            context.getExternalFilesDir(
-                                Environment.DIRECTORY_DOCUMENTS
-                            )?.absolutePath
-                        }",
-                        "${FORM_B_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf"
-                    )
                     viewModel.generateFormBPdf(context) { formGenerated, formPath ->
                         Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
-                        val fileUri = uriFromFile(context, pdfFile)
+                        val fileUri = formPath?.let { uriFromFile(context, it) }
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.type = "application/pdf"
                         shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
@@ -490,7 +481,7 @@ fun DigitalFormBScreen(
                     showLoader = showLoader.value,
                 ) {
                     if (formPathState.value.isFile) {
-                        navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf")
+                        navController.navigate("pdf_viewer/${formPathState.value.name}")
                     } else {
                         showLoader.value = true
                         viewModel.generateFormBPdf(context) { formGenerated, formPath ->

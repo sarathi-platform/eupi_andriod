@@ -888,7 +888,7 @@ object PdfUtils {
 
     fun getPdfPath(context: Context, formName: String, villageId: Int): File {
         return File(
-            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageId}}_${
+            "${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageId}_${
                 System.currentTimeMillis().toDateInMMDDYYFormat()
             }.pdf"
         )
