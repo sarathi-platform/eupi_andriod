@@ -40,8 +40,8 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
-import com.sarathi.surveymanager.ui.component.SingleSelectDropDown
 
 @Composable
 fun LivelihoodScreen() {
