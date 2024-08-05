@@ -40,6 +40,7 @@ const val PROGRAMME_TABLE_NAME = "programme_table"
 
 const val MONEY_JOURNAL_TABLE_NAME = "money_journal_table"
 const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
+const val SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME = "subject_livelihood_mapping_table"
 
 const val SUCCESS_CODE = "200"
 const val STATE = "STATE"
