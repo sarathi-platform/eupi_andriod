@@ -159,6 +159,10 @@ class SyncApiRepository @Inject constructor(
                     )
                 )
             }
+            imageStatusDao.updateImageConsumerStatus(
+                eventList = eventList,
+                mobileNumber = prefRepo.getMobileNo()
+            )
         } catch (e: Exception) {
             CoreLogger.d(
                 context = context,

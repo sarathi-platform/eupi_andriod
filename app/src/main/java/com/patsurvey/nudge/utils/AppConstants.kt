@@ -16,6 +16,10 @@ var EXPANSTION_TRANSITION_DURATION: Int = 450
 const val POOR_STRING="Poor"
 const val MEDIUM_STRING="Medium"
 const val RICH_STRING="Rich"
+const val KEY_HEADER_AUTH = "authorization"
+const val AUTH_TOKEN_PREFIX = "Bearer"
+const val KEY_HEADER_TYPE = "header_type"
+const val KEY_HEADER_MOBILE = "header_type_mobile"
 const val HEADER_TYPE_NONE = "header_none"
 const val KEY_SOURCE_TYPE = "source_name"
 const val KEY_SOURCE_PLATFORM = "Android"
@@ -188,6 +192,7 @@ const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
+const val LAST_SYNC_TIME = "last_sync_time"
 
 const val SYNC_FAILED = "Online Sync Failed"
 const val SYNC_SUCCESSFULL = "Online Sync Successful"
@@ -236,7 +241,7 @@ const val BENGAL_STRING_VALUE_OTHER = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
 const val VO_ENDORSEMENT_CONSTANT = "VO Endorsement"
-const val EMPTY_STRING="";
+const val EMPTY_STRING = "";
 
 const val MIN_PROGRESS_COUNT_INT = 0
 const val MIN_PROGRESS_COUNT_FLOAT = 0F
@@ -247,3 +252,4 @@ const val UPCM_USER="Ultra Poor change maker (UPCM)"
 const val IMAGE_STRING="image"
 const val SYNC_IMAGE="IMAGE"
 const val SYNC_DATA="DATA"
+const val QUESTION_IMAGE_LINK_KEY = "QUESTION_IMAGE_LINK"
