@@ -111,7 +111,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
-
 @InstallIn(SingletonComponent::class)
 @Module
 class DataLoadingModule {
@@ -126,6 +125,7 @@ class DataLoadingModule {
     @Singleton
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
+            .addMigrations(NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2)
             .fallbackToDestructiveMigration()
             .build()
 
