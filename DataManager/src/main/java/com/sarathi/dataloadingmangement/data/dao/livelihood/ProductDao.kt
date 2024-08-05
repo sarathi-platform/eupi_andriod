@@ -11,7 +11,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
 @Dao
 interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLivelihood(productEntity: ProductEntity)
+    fun insertProduct(productEntity: ProductEntity)
 
     @Query("DELETE FROM $PRODUCT_TABLE_NAME where userId=:userId ")
     fun deleteProductForUser(userId: String)
