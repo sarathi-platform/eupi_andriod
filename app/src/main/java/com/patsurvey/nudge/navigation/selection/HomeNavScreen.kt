@@ -23,6 +23,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.TabsCore
+import com.nudge.core.enums.TabsEnum
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
@@ -60,12 +62,20 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
             BottomNavItem(
                 stringResource(R.string.mission),
                 MATHomeScreens.MissionScreen.route,
-                painterResource(R.drawable.ic_mission_icon)
+                painterResource(R.drawable.ic_mission_icon),
+                TabsEnum.MissionTab
+            ),
+            BottomNavItem(
+                "Data",
+                HomeScreens.DATA_TAB_SCREEN.route,
+                painterResource(id = R.drawable.data_tab_icon),
+                TabsEnum.DataTab
             ),
             BottomNavItem(
                 stringResource(R.string.didis_item_text_plural),
                 HomeScreens.DIDI_TAB_SCREEN.route,
-                painterResource(R.drawable.didi_icon)
+                painterResource(R.drawable.didi_icon),
+                TabsEnum.DidiUpcmTab
             )
         )
     }else{
@@ -76,12 +86,14 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
                     HomeScreens.BPC_PROGRESS_SEL_SCREEN.route
                 else
                     HomeScreens.PROGRESS_SEL_SCREEN.route,
-                painterResource(R.drawable.progress_icon)
+                painterResource(R.drawable.progress_icon),
+                TabsEnum.ProgressTab
             ),
             BottomNavItem(
                 stringResource(R.string.didis_item_text_plural),
                 HomeScreens.DIDI_SEL_SCREEN.route,
-                painterResource(R.drawable.didi_icon)
+                painterResource(R.drawable.didi_icon),
+                TabsEnum.DidiCrpTab
             )
         )
     }
@@ -157,6 +169,7 @@ fun RowScope.AddItem(
                 popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true
             }
+            TabsCore.setTabIndex(screen.tabItem.tabIndex)
         }
     )
 }

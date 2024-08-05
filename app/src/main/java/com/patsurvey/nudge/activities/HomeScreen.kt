@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.enums.TabsEnum
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -57,12 +58,14 @@ fun HomeScreen(
                     BottomNavItem(
                         stringResource(R.string.progress_item_text),
                         HomeScreens.PROGRESS_SEL_SCREEN.route,
-                        painterResource(R.drawable.progress_icon)
+                        painterResource(R.drawable.progress_icon),
+                        TabsEnum.ProgressTab
                     ),
                     BottomNavItem(
                         stringResource(R.string.didi_endorsed_text_plural),
                         HomeScreens.DIDI_SEL_SCREEN.route,
-                        painterResource(R.drawable.didi_icon)
+                        painterResource(R.drawable.didi_icon),
+                        TabsEnum.DidiCrpTab
                     ),
                 ),
                 navController = homeScreenNavController,
@@ -99,8 +102,9 @@ fun BottomNavigationBar(
                 alwaysShowLabel = true,
                 icon = {
                     Column(horizontalAlignment = CenterHorizontally) {
-                        Spacer(modifier = Modifier.height(26.dp)
-                            .background( blueDark))
+                        Spacer(modifier = Modifier
+                            .height(26.dp)
+                            .background(blueDark))
                         Icon(
                             painter = item.icon,
                             contentDescription = item.name,

@@ -58,6 +58,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
@@ -104,6 +105,8 @@ import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodEventRepo
 import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodLanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.ProductRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
@@ -270,6 +273,13 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyLanguageAttributeDao(db: NudgeGrantDatabase) = db.surveyLanguageAttributeDao()
 
+    @Provides
+    @Singleton
+    fun provideMoneyJournalDao(db: NudgeGrantDatabase) = db.moneyJournalDao()
+
+    @Provides
+    @Singleton
+    fun provideAssetJournalDao(db: NudgeGrantDatabase) = db.assetJournalDao()
 
     @Provides
     @Singleton
@@ -515,6 +525,7 @@ class DataLoadingModule {
         languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
         surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
+        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
@@ -540,6 +551,9 @@ class DataLoadingModule {
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
+            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
+                fetchDidiDetailsFromNetworkRepository
+            ),
             livelihoodUseCase = livelihoodUseCase
         )
     }
@@ -953,6 +967,27 @@ class DataLoadingModule {
             livelihoodEventRepositoryImpl = livelihoodEventRepositoryImpl,
             assetRepositoryImpl = assetRepositoryImpl,
             productRepositoryImpl = productRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsFromDbUseCase(
+        fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository
+    ): FetchDidiDetailsFromDbUseCase {
+        return FetchDidiDetailsFromDbUseCase(fetchDidiDetailsFromDbRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsFromDbRepository(
+        corePrefRepo: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+    ): FetchDidiDetailsFromDbRepository {
+        return FetchDidiDetailsFromDbRepositoryImpl(
+            corePrefRepo, subjectEntityDao,
+            smallGroupDidiMappingDao
         )
     }
 

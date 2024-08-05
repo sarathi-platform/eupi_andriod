@@ -1,13 +1,10 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -25,8 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.nudge.core.TabsCore
+import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
@@ -35,9 +36,6 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
-import com.sarathi.smallgroupmodule.R
-import com.sarathi.smallgroupmodule.SmallGroupCore
-import com.sarathi.smallgroupmodule.ui.TabItem
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
@@ -110,7 +108,7 @@ fun DidiTabScreen(
 
     val didiList = didiTabViewModel.filteredDidiList
 
-    val tabs = listOf(DidiSubTabsEnum.DidiTab, DidiSubTabsEnum.SmallGroupTab)
+    val tabs = listOf(SubTabs.DidiTab, SubTabs.SmallGroupTab)
 
     ToolBarWithMenuComponent(
         title = stringResource(id = DataLoadingRes.string.app_name),
@@ -154,31 +152,17 @@ fun DidiTabScreen(
                         verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
 
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-
-                            tabs.forEachIndexed { index, tab ->
-
-                                val count = getCount(index, didiTabViewModel)
-                                val tabName = getTabName(context, tab)
-                                TabItem(
-                                    isSelected = SmallGroupCore.tabIndex.value == index,
-                                    onClick = {
-                                        SmallGroupCore.tabIndex.value = index
-                                    },
-                                    text = "$tabName ($count)"
-                                )
-                            }
-
-                        }
+                        CustomSubTabLayout(
+                            parentTabIndex = TabsEnum.DidiUpcmTab.tabIndex,
+                            tabs,
+                            didiTabViewModel.countMap
+                        )
 
                         Column {
                             SearchWithFilterViewComponent(
-                                placeholderString = when (SmallGroupCore.tabIndex.value) {
-                                    DidiSubTabsEnum.DidiTab.id -> "Search by didis"
-                                    DidiSubTabsEnum.SmallGroupTab.id -> "Search by small groups"
+                                placeholderString = when (TabsCore.getSubTabIndex().value) {
+                                    SubTabs.DidiTab.id -> "Search by didis"
+                                    SubTabs.SmallGroupTab.id -> "Search by small groups"
                                     else -> "Search by didis"
                                 },
                                 showFilter = false,
@@ -190,29 +174,27 @@ fun DidiTabScreen(
                                     didiTabViewModel.onEvent(
                                         CommonEvents.SearchValueChangedEvent(
                                             searchQuery,
-                                            (SmallGroupCore.tabIndex.value as Int)
+                                            (TabsCore.getSubTabIndex().value as Int)
                                         )
                                     )
                                 }
                             )
                             CustomVerticalSpacer()
-                            when (SmallGroupCore.tabIndex.value) {
-                                DidiSubTabsEnum.DidiTab.id -> {
+                            when (TabsCore.getSubTabIndex().value) {
+                                SubTabs.DidiTab.id -> {
                                     DidiSubTab(
                                         didiTabViewModel = didiTabViewModel,
                                         didiList = didiList.value
                                     )
                                 }
 
-                                DidiSubTabsEnum.SmallGroupTab.id -> SmallGroupSubTab(
+                                SubTabs.SmallGroupTab.id -> SmallGroupSubTab(
                                     didiTabViewModel = didiTabViewModel,
                                     smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
                                     navHostController = navHostController
                                 )
                             }
                         }
-
-
                     }
                 }
             }
@@ -221,25 +203,5 @@ fun DidiTabScreen(
 
 }
 
-fun getTabName(context: Context, tab: DidiSubTabsEnum): String {
-    return when (tab) {
-        DidiSubTabsEnum.DidiTab -> context.getString(R.string.didi_sub_tab_title)
-        DidiSubTabsEnum.SmallGroupTab -> context.getString(R.string.small_group_sub_tab_title)
-    }
-}
 
-fun getCount(tabIndex: Int, didiTabViewModel: DidiTabViewModel): Int {
-    return when (tabIndex) {
-        DidiSubTabsEnum.DidiTab.id -> didiTabViewModel.totalCount.value
-        DidiSubTabsEnum.SmallGroupTab.id -> didiTabViewModel.totalSmallGroupCount.value
-        else -> {
-            0
-        }
-    }
-}
 
-enum class DidiSubTabsEnum(val id: Int) {
-    DidiTab(0),
-    SmallGroupTab(1)
-
-}

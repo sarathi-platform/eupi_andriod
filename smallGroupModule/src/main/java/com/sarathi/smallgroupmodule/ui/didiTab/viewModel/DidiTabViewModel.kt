@@ -3,6 +3,7 @@ package com.sarathi.smallgroupmodule.ui.didiTab.viewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.SubTabs
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
@@ -41,26 +42,12 @@ class DidiTabViewModel @Inject constructor(
         mutableStateOf(mutableListOf())
     val filteredSmallGroupList: State<List<SmallGroupSubTabUiModel>> get() = _filteredSmallGroupList
 
+    val countMap = mutableMapOf<SubTabs, Int>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
                 loadAllDataForDidiTab(false)
-                /*viewModelScope.launch(Dispatchers.IO) {
-                    didiTabUseCase.fetchDidiDetailsFromNetworkUseCase.invoke()
-                    didiTabUseCase.fetchSmallGroupFromNetworkUseCase.invoke()
-                    delay(300)
-                    _didiList.value = didiTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
-                    _filteredDidiList.value = didiList.value
-                    _smallGroupList.value =
-                        didiTabUseCase.fetchSmallGroupListsFromDbUseCase.invoke()
-                    _filteredSmallGroupList.value = smallGroupList.value
-                    delay(100)
-                    smallGroupList.value.forEach {
-                        fetchSmallGroupAttendanceHistoryFromNetwork(it.smallGroupId)
-                    }
-
-                }*/
             }
 
             is CommonEvents.SearchValueChangedEvent -> {
@@ -114,6 +101,8 @@ class DidiTabViewModel @Inject constructor(
             delay(100)
             _totalDidiCount.value = didiList.value.size
             _totalSmallGroupCount.value = smallGroupList.value.size
+            countMap.put(SubTabs.DidiTab, totalCount.value)
+            countMap.put(SubTabs.SmallGroupTab, totalSmallGroupCount.value)
             withContext(mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

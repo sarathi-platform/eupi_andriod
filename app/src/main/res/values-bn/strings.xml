@@ -24,7 +24,7 @@
     <string name="didis_item_text_singular">দিদি</string>
     <string name="didis_list_text">দিদিদের তালিকা</string>
     <string name="poor_didi_item_text">দরিদ্র দিদি</string>
-    <string name="medium_didi_item_text">মাধমিয় দিদি</string>
+    <string name="medium_didi_item_text">মধ্যম দিদি</string>
     <string name="rich_didi_item_text">ধনী দিদি</string>
     <string name="poor_didi_item_text_plural">দরিদ্র দিদিরা</string>
     <string name="medium_didi_item_text_plural">মাধমিয় দিদিরা</string>
@@ -47,7 +47,7 @@
     <string name="resend_otp">OTP আবার পাঠান</string>
     <string name="ranking_text">র‍্যাঙ্কিং :</string>
     <string name="poor_text">দরিদ্র</string>
-    <string name="medium_text">মাধমিয়</string>
+    <string name="medium_text">মধ্যম</string>
     <string name="rich_text">ধনী</string>
     <string name="search_didis">দিদির খোঁজ করুন</string>
     <string name="search_video">ভিডিও খোঁজ করুন</string>
@@ -65,7 +65,7 @@
     <string name="mark_as_completed">সম্পন্ন হিসাবে চিহ্নিত করুন</string>
     <string name="village_text">গ্রাম</string>
     <plurals name="vo_name">
-        <item quantity="one">গ্রাম সংগঠন (CLF) নাম</item>
+        <item quantity="one">সংঘ (CLF) নাম</item>
         <item quantity="other">গ্রাম সংগঠন (VO) নাম</item>
     </plurals>
     <plurals name="seletc_village_screen_text">
@@ -73,16 +73,16 @@
         <item quantity="other">গ্রাম এবং সংঘ (VO) নির্বাচন </item>
     </plurals>
     <plurals name="pat_sub_text_singular">
-        <item quantity="one"> গ্রাম সংগঠন (CLF) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদিদের পাঠানো হয়েছে</item>
+        <item quantity="one">%1$s অতি দরিদ্র দিদি সংঘ (CLF) অনুমোদনের জন্য পাঠানো হয়েছে</item>
         <item quantity="other"> গ্রাম সংগঠন (VO) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদিদের পাঠানো হয়েছে</item>
 
     </plurals>
     <plurals name="pat_sub_text_plural">
-        <item quantity="one">%1$s অতি দরিদ্র দিদিদের CLF অনুমোদনের জন্য পাঠানো হয়েছে</item>
+        <item quantity="one">সংঘ (CLF) অনুমোদনের জন্য %1$s অতি দরিদ্র দিদিদের পাঠানো হয়েছে</item>
         <item quantity="other">%1$s অতি দরিদ্র দিদিদের VO অনুমোদনের জন্য পাঠানো হয়েছে</item>
     </plurals>
     <plurals name="vo_endorsement_screen_title">
-        <item quantity="one">List of Didis for CLF Endorsement</item>
+        <item quantity="one">সংঘ (CLF) অনুমোদনের জন্য দিদিদের তালিকা</item>
         <item quantity="other">List of Didis for VO Endorsement</item>
     </plurals>
     <plurals name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">
@@ -90,7 +90,7 @@
         <item quantity="other">আপনি VO অনুমোদনের জন্য %1$s PAT সম্পন্ন দিদিদের পাঠাচ্ছেন</item>
     </plurals>
     <plurals name="send_all_for_vo_endorsement">
-        <item quantity="one">CLF অনুমোদনের জন্য সকলকে পাঠান</item>
+        <item quantity="one">CLF (সংঘ) অনুমোদনের জন্য সকলকে পাঠান</item>
         <item quantity="other">VO অনুমোদনের জন্য সকলকে পাঠান</item>
     </plurals>
     <plurals name="vo_endorsement_completed_message">
@@ -110,11 +110,11 @@
         <item quantity="other">Final list of Ultra Poor families endorsed by VO (Village Organization)</item>
     </plurals>
     <plurals name="no_didis_availble_for_vo_endorsement">
-        <item quantity="one">গ্রাম সংগঠনের (CLF) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না.</item>
+        <item quantity="one">সংঘ (CLF)  অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না</item>
         <item quantity="other">গ্রাম সংগঠনের (VO) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না.</item>
     </plurals>
     <plurals name="vo_endorsement">
-        <item quantity="one">গ্রাম সংগঠন (CLF) অনুমোদন</item>
+        <item quantity="one">সংঘ (CLF) অনুমোদন</item>
         <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদন</item>
     </plurals>
     <plurals name="summary_vo_endoresement_text_plural">
@@ -177,7 +177,7 @@
     <string name="participation_date_wealth_ranking">তারিখ</string>
     <string name="add_didi">দিদি যোগ করুন</string>
     <string name="update_didi">আপডেট দিদি</string>
-    <string name="house_number">বাড়ির নম্বর</string>
+    <string name="house_number">পরিবার নং</string>
     <string name="didi_name">দিদির নাম</string>
     <string name="dada_name">স্বামীর / বাবার নাম</string>
     <string name="dada">স্বামী / বাবা</string>
@@ -314,8 +314,8 @@
     <string name="size">আকার</string>
     <string name="syncing">ইন্টারনেটের সাথে সিঙ্ক হচ্ছে</string>
     <string name="continue_pat">PAT করতে থাকো</string>
-    <string name="pat_completion_dialog_message_plural">আপনি VO অনুমোদনের জন্য {COUNT}টি PAT সম্পূর্ণ দিদিদেরকে পাঠাচ্ছেন</string>
-    <string name="pat_completion_dialog_message_singular">আপনি VO অনুমোদনের জন্য {COUNT}টি PAT সম্পূর্ণ দিদিকে পাঠাচ্ছেন</string>
+    <string name="pat_completion_dialog_message_plural">আপনি সংঘ (CLF)অনুমোদনের জন্য {COUNT}টি PAT সম্পূর্ণ দিদিদেরকে পাঠাচ্ছেন</string>
+    <string name="pat_completion_dialog_message_singular">আপনি সংঘ (CLF) অনুমোদনের জন্য {COUNT}টি PAT সম্পূর্ণ দিদিকে পাঠাচ্ছেন</string>
     <string name="vo_endorsement_completion_dialog_message_plural">আপনি {COUNT}টি অনুমোদিত দিদিদের জন্য চূড়ান্ত জমা দিচ্ছেন</string>
     <string name="vo_endorsement_completion_dialog_message_singular">আপনি {COUNT}টি অনুমোদিত দিদির জন্য চূড়ান্ত জমা দিচ্ছেন</string>
     <string name="form_picture_screen_title">ফর্মের ছবি যুক্ত করুন</string>
@@ -383,7 +383,7 @@
     <string name="min_battery_text">(ন্যূনতম ৩০% প্রয়োজন)</string>
     <string name="do_not_close_app_message">অনুগ্রহ করে অ্যাপটি বা ফোনটি বন্ধ করবেন নাঅনুগ্রহ করে অ্যাপটি বন্ধ করবেন না বা ফোনটি বন্ধ করবেন না</string>
     <plurals name="vo_endorsement_completed_village_banner_text">
-        <item quantity="one">CLF অনুমোদন সম্পন্ন হয়েছে</item>
+        <item quantity="one">সংঘ (CLF) অনুমোদন সম্পন্ন হয়েছে</item>
         <item quantity="other">VO অনুমোদন সম্পন্ন হয়েছে</item>
     </plurals>
     <!--    <string name="vo_endorsement_completed_village_banner_text">VO অনুমোদন সম্পন্ন হয়েছে</string>-->
@@ -402,7 +402,7 @@
     <string name="vo_endorsement_inprogress_village_banner_text">গ্রাম সংগঠনের (VO) অনুমোদন চলছে</string>
     <string name="latest_status_text">সর্বশেষ স্থিতি:</string>
     <string name="ranking_text_rich">ধনী</string>
-    <string name="ranking_text_medium">মাধমিয়</string>
+    <string name="ranking_text_medium">মধ্যম</string>
     <string name="ranking_text_poor">দরিদ্র</string>
     <string name="crp_group_name_text">CRP দলের নাম</string>
     <string name="current_status_text">বর্তমান স্থিতি:</string>
@@ -410,8 +410,8 @@
     <string name="pat_completed_for_didi_plural">%1$s দিদিদের জন্য PAT সম্পন্ন হয়েছে</string>
     <string name="pat_marked_not_available_singular">%1$s দিদি কে পাওয়া যায় না ভাবে চিহ্নিত করা হয়েছে</string>
     <string name="pat_marked_not_available_plural">%1$s দিদিদের কে পাওয়া যায় না ভাবে চিহ্নিত করা হয়েছে</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s অতি দরিদ্র দিদিদের VO অনুমোদনের জন্য পাঠানো হয়েছে</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s অতি দরিদ্র দিদিদের VO অনুমোদনের জন্য পাঠানো হয়েছে</string>
+    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s অতি দরিদ্র দিদিদের সংঘ (CLF) অনুমোদনের জন্য পাঠানো হয়েছে</string>
+    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s অতি দরিদ্র দিদিদের সংঘ (CLF) অনুমোদনের জন্য পাঠানো হয়েছে</string>
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s অতি দরিদ্র দিদি BPM অনুমোদনের জন্য পাঠানো হয়েছে</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s অতি দরিদ্র দিদিদের BPM অনুমোদনের জন্য পাঠানো হয়েছে</string>
     <string name="link_form_c">লিঙ্ক ফর্ম C</string>
@@ -434,7 +434,7 @@
     <string name="match_percentage_should_be_more_than_70">% মিল ৭০% এর বেশি হওয়া উচিত</string>
     <string name="delete_and_retake">ডিলিট করে আবার করো</string>
     <string name="if_more_than_5_pages_please_uload_last_page">৫ পৃষ্ঠার বেশি হলে, শেষ পৃষ্ঠাটি আপলোড করুন</string>
-    <string name="vo_endorsement_completed">VO অনুমোদন \nসম্পন্ন হয়েছে</string>
+    <string name="vo_endorsement_completed">সংঘ (CLF) অনুমোদন \nসম্পন্ন হয়েছে</string>
     <string name="no_didis_available_to_add_or_replace">যোগ বা প্রতিস্থাপন করার জন্য কোন দিদিরা উপলব্ধ নয়</string>
     <string name="online_sync_successful">অনলাইন সিঙ্ক সফল হয়েছে</string>
     <string name="sync_failed">অনলাইন সিঙ্ক ব্যর্থ হয়েছে</string>

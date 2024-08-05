@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.didiTab.domain.repository
+package com.sarathi.dataloadingmangement.repository.livelihood
 
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 

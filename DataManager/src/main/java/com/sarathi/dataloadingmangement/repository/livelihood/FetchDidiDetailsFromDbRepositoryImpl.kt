@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.didiTab.domain.repository
+package com.sarathi.dataloadingmangement.repository.livelihood
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao

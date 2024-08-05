@@ -37,6 +37,10 @@ const val SECTION_TABLE = "section_table"
 const val QUESTION_TABLE = "question_table"
 const val OPTION_TABLE = "option_table"
 const val PROGRAMME_TABLE_NAME = "programme_table"
+
+const val MONEY_JOURNAL_TABLE_NAME = "money_journal_table"
+const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
+
 const val SUCCESS_CODE = "200"
 const val STATE = "STATE"
 const val SUCCESS = "SUCCESS"
