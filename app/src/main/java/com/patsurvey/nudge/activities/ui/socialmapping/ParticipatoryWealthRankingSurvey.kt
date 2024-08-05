@@ -79,6 +79,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
@@ -111,7 +112,6 @@ import com.patsurvey.nudge.utils.BulletList
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus

@@ -11,7 +11,6 @@ const val ASSET_VALUE_LENGTH=8
 const val MAXIMUM_RANGE=99999
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
-var EXPANSTION_TRANSITION_DURATION: Int = 450
 const val POOR_STRING="Poor"
 const val MEDIUM_STRING="Medium"
 const val RICH_STRING="Rich"

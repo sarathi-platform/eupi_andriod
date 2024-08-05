@@ -121,6 +121,7 @@ class SurveyDownloadRepository @Inject constructor(
                 )
             }
         } catch (ex: Exception) {
+            ex.printStackTrace()
             Log.e("Exceptiom", ex.localizedMessage)
         }
 

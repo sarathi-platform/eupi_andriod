@@ -5,5 +5,7 @@ enum class QuestionType {
     DateType,
     MultiImage,
     SingleSelectDropDown,
-    MultiSelectDropDown
+    MultiSelectDropDown,
+    ToggleGrid,
+    MultiSelect
 }

@@ -91,3 +91,5 @@ val eventWriters = listOf<IEventWriter>(
     LogEventWriter(),
     ImageEventWriter()
 )
+
+var EXPANSTION_TRANSITION_DURATION: Int = 450

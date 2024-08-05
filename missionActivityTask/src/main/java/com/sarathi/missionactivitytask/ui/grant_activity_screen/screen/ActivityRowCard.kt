@@ -68,6 +68,8 @@ fun ActivityRowCard(
                     when (activity.activityType.lowercase()) {
                         ActivityTypeEnum.GRANT.name.lowercase(
                             Locale.ENGLISH
+                        ), ActivityTypeEnum.BASIC.name.lowercase(
+                            Locale.ENGLISH
                         ) -> {
                             navigateToGrantTaskScreen(
                                 navController,

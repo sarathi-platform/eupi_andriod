@@ -308,7 +308,7 @@ fun TaskCard(
     }
 
 @Composable
-private fun SubContainerView(
+fun SubContainerView(
     taskCard: TaskCardModel?,
     isNumberFormattingRequired: Boolean = false
 ) {

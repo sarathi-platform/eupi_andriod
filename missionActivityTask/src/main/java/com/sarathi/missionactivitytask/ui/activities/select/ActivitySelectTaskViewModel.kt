@@ -1,6 +1,5 @@
-package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
+package com.sarathi.missionactivitytask.ui.activities.select
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -9,17 +8,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.CoreObserverManager
 import com.nudge.core.json
-import com.nudge.core.utils.CoreLogger
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
-import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
@@ -29,10 +30,10 @@ import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
-import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.missionactivitytask.utils.getFilePathUri
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,43 +42,44 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-
 @HiltViewModel
-open class TaskScreenViewModel @Inject constructor(
+open class ActivitySelectTaskViewModel @Inject constructor(
     val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
+    private val fetchDataUseCase: FetchSurveyDataFromDB,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
+    private val fromEUseCase: FormUseCase,
+    private val formEventWriterUseCase: FormEventWriterUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
+    var taskUiModel: List<TaskUiModel>? = null
+    val searchLabel = mutableStateOf<String>(BLANK_STRING)
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+    var isGroupByEnable = mutableStateOf(false)
+    var isFilterEnable = mutableStateOf(false)
+    var isActivityCompleted = mutableStateOf(false)
     var activityConfigUiModel: ActivityConfigUiModel? = null
+
+    var matId = mutableStateOf<Int>(0)
+    var contentCategory = mutableStateOf<Int>(0)
     private val _taskList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val taskList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _taskList
     private val _filterList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
-    val searchLabel = mutableStateOf<String>(BLANK_STRING)
-    val isButtonEnable = mutableStateOf<Boolean>(false)
-    var isGroupByEnable = mutableStateOf(false)
-    var isFilterEnable = mutableStateOf(false)
-    var isActivityCompleted = mutableStateOf(false)
-
-    var matId = mutableStateOf<Int>(0)
-    var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
-    var taskUiModel: List<TaskUiModel>? = null
-    private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
-        withContext(Dispatchers.Main) {
-            mutableState.value = newValue
-        }
-    }
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -90,10 +92,6 @@ open class TaskScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
-
-            is SearchEvent.PerformSearch -> {
-                performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
-            }
         }
     }
 
@@ -103,8 +101,7 @@ open class TaskScreenViewModel @Inject constructor(
             onEvent(LoaderEvent.UpdateLoaderState(true))
             Log.d("TAG", "initTaskScreen: $missionId :: $activityId")
             taskUiModel = if (taskList.isNullOrEmpty()) getTaskUseCase.getActiveTasks(
-                missionId = missionId,
-                activityId = activityId
+                missionId = missionId, activityId = activityId
             ) else taskList
             isContentScreenEmpty()
             getSurveyDetail()
@@ -138,10 +135,9 @@ open class TaskScreenViewModel @Inject constructor(
                         componentType = ComponentEnum.Search.name,
                         activityConfig
 
-                        )
+                    )
                     searchLabel.value =
-                        searchUiComponent[TaskCardSlots.SEARCH_LABEL.name]?.value
-                            ?: BLANK_STRING
+                        searchUiComponent[TaskCardSlots.SEARCH_LABEL.name]?.value ?: BLANK_STRING
 
                     if ((uiComponent[TaskCardSlots.GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
@@ -171,6 +167,23 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
+    private suspend fun isContentScreenEmpty() {
+        val isContentEmpty = fetchContentUseCase.getContentCount(
+            matId = activityId, contentCategory = ContentCategoryEnum.ACTIVITY.ordinal
+        ) == 0
+        if (isContentEmpty) {
+            matId.value = missionId
+            contentCategory.value = ContentCategoryEnum.MISSION.ordinal
+        } else {
+            matId.value = activityId
+            contentCategory.value = ContentCategoryEnum.ACTIVITY.ordinal
+        }
+
+    }
+
+    suspend fun getSurveyDetail() {
+        activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
+    }
 
     private suspend fun getUiComponentValues(
         taskId: Int,
@@ -184,39 +197,29 @@ open class TaskScreenViewModel @Inject constructor(
         val cardAttributesWithValue = HashMap<String, TaskCardModel>()
         cardAttributesWithValue[TaskCardSlots.TASK_STATUS.name] =
             TaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
-        cardAttributesWithValue[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name] =
-            TaskCardModel(
-                value = isTaskSecondaryStatusEnable.toString(),
-                label = BLANK_STRING,
-                icon = null
-            )
-        cardAttributesWithValue[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name] =
-            TaskCardModel(
-                value = isNAButtonEnable.toString(),
-                label = BLANK_STRING,
-                icon = null
-            )
+        cardAttributesWithValue[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name] = TaskCardModel(
+            value = isTaskSecondaryStatusEnable.toString(), label = BLANK_STRING, icon = null
+        )
+        cardAttributesWithValue[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name] = TaskCardModel(
+            value = isNAButtonEnable.toString(), label = BLANK_STRING, icon = null
+        )
 
         val cardConfig = activityConfig.filter { it.componentType == componentType }
         cardConfig.forEach { cardAttribute ->
             cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {
                 UiConfigAttributeType.STATIC.name -> getTaskCardModel(
-                    value = cardAttribute.value,
-                    activityUiConfig = cardAttribute
+                    value = cardAttribute.value, activityUiConfig = cardAttribute
                 )
 
                 UiConfigAttributeType.DYNAMIC.name, UiConfigAttributeType.ATTRIBUTE.name -> getTaskCardModel(
                     value = getTaskAttributeValue(
-                        cardAttribute.value,
-                        taskId
+                        cardAttribute.value, taskId
                     ), activityUiConfig = cardAttribute
                 )
 
                 UiConfigAttributeType.TAG.name -> getTaskCardModel(
                     activityUiConfig = cardAttribute, value = surveyAnswerUseCase.getAnswerForTag(
-                        taskId,
-                        subjectId,
-                        getTaskAttributeValue(
+                        taskId, subjectId, getTaskAttributeValue(
                             cardAttribute.value, taskId
                         )
                     )
@@ -235,44 +238,28 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     private suspend fun getTaskAttributeValue(key: String, taskId: Int): String {
-
         return getTaskUseCase.getSubjectAttributes(taskId).find { it.key == key }?.value
             ?: BLANK_STRING
+    }
 
+    private fun getTaskCardModel(
+        activityUiConfig: UiConfigModel, value: String
+    ): TaskCardModel {
+        return TaskCardModel(
+            label = activityUiConfig.label,
+            value = value,
+            icon = getFilePathUri(activityUiConfig.icon ?: BLANK_STRING)
+        )
 
     }
 
-    fun setMissionActivityId(missionId: Int, activityId: Int) {
-        this.missionId = missionId
-        this.activityId = activityId
-    }
-
-    suspend fun getSurveyDetail() {
-        Log.d("TAG", "getSurveyDetail: ${activityId}")
-        activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
-    }
-
-    private fun performSearchQuery(
-        queryTerm: String, isFilterApplied: Boolean, fromScreen: String
-    ) {
-        val filteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
-        if (queryTerm.isNotEmpty()) {
-            taskList.value.entries.forEach { task ->
-                if (task.value[TaskCardSlots.SEARCH_ON.name]?.value?.lowercase()
-                        ?.contains(queryTerm.lowercase()) == true || task.value[TaskCardSlots.GROUP_BY.name]?.value?.lowercase()
-                        ?.contains(queryTerm.lowercase()) == true
-                ) {
-                    filteredList[task.key] = task.value
-                }
-            }
-        } else {
-            filteredList.putAll(taskList.value)
-        }
-        if (isFilterApplied) {
-            filterTaskMap =
-                filteredList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-        } else {
-            _filterList.value = filteredList
+    fun isActivityCompleted() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+                missionId = missionId,
+                activityId = activityId
+            )
+            checkButtonValidation()
         }
     }
 
@@ -282,6 +269,17 @@ open class TaskScreenViewModel @Inject constructor(
             activityId = activityId
         ) && !isActivityCompleted.value
         updateValueInMainThread(isButtonEnable, isButtonEnablee)
+    }
+
+    private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
+        withContext(Dispatchers.Main) {
+            mutableState.value = newValue
+        }
+    }
+
+    fun setMissionActivityId(missionId: Int, activityId: Int) {
+        this.missionId = missionId
+        this.activityId = activityId
     }
 
     fun markActivityCompleteStatus() {
@@ -296,105 +294,4 @@ open class TaskScreenViewModel @Inject constructor(
             )
         }
     }
-
-
-
-    fun getFilePathUri(filePath: String): Uri? {
-        return fetchContentUseCase.getFilePathUri(filePath)
-    }
-
-    fun updateTaskAvailableStatus(
-        taskId: Int,
-        status: String,
-    ) {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            if (status == SurveyStatusEnum.NOT_AVAILABLE.name) {
-                taskStatusUseCase.markTaskNotAvailable(taskId = taskId)
-            }
-            taskStatusUseCase.markActivityInProgress(missionId, activityId)
-            taskStatusUseCase.markMissionInProgress(missionId)
-            eventWriterUseCase.markMATStatus(
-                missionId = missionId,
-                activityId = activityId,
-                taskId = taskId,
-                subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
-                surveyName = "CSG"
-            )
-            getTaskUseCase.updateTaskStatus(
-                taskId = taskId,
-                status = status
-            )
-        }
-    }
-
-    fun isActivityCompleted() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
-                missionId = missionId,
-                activityId = activityId
-            )
-            checkButtonValidation()
-        }
-    }
-
-    private suspend fun isContentScreenEmpty() {
-        val isContentEmpty = fetchContentUseCase.getContentCount(
-            matId = activityId,
-            contentCategory = ContentCategoryEnum.ACTIVITY.ordinal
-        ) == 0
-        if (isContentEmpty) {
-            matId.value = missionId
-            contentCategory.value = ContentCategoryEnum.MISSION.ordinal
-        } else {
-            matId.value = activityId
-            contentCategory.value = ContentCategoryEnum.ACTIVITY.ordinal
-        }
-
-    }
-
-
-    private fun getTaskCardModel(
-        activityUiConfig: UiConfigModel,
-        value: String
-    ): TaskCardModel {
-        return TaskCardModel(
-            label = activityUiConfig.label,
-            value = value,
-            icon = getFilePathUri(activityUiConfig.icon ?: BLANK_STRING)
-        )
-
-    }
-
-
-
-
-
-    override fun refreshData() {
-        super.refreshData()
-        loadAllData(isRefresh = true)
-    }
-
-    private fun loadAllData(isRefresh: Boolean) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
-                // Temp method to be removed after baseline is migrated to Grant flow.
-                updateStatusForBaselineMission() { success ->
-                    CoreLogger.i(
-                        tag = "MissionScreenViewMode",
-                        msg = "updateStatusForBaselineMission: success: $success"
-                    )
-                    initTaskScreen(taskUiModel) // Move this out of the lambda block once the above method is removed
-                }
-            }, isRefresh = isRefresh)
-        }
-    }
-
-    // Temp method to be removed after baseline is migrated to Grant flow.
-    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
-        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
-            onSuccess(it)
-        }
-    }
-
 }

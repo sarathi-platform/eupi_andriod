@@ -93,6 +93,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -128,7 +129,7 @@ import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+
 import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PAT_SURVEY
