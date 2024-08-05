@@ -273,6 +273,10 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun subjectLivelihoodMappingDao(db: NudgeGrantDatabase) = db.subjectLivelihoodMappingDao()
+
+    @Provides
+    @Singleton
     fun provideSurveyDownloadRepository(
         dataLoadingApiService: DataLoadingApiService,
         surveyDao: SurveyEntityDao,
