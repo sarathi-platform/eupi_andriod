@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.LIVILIHOOD_LANGUAGE_TABLE_NAME
+import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.response.LanguageReference
 
-@Entity(tableName = LIVILIHOOD_LANGUAGE_TABLE_NAME)
+@Entity(tableName = LIVELIHOOD_LANGUAGE_TABLE_NAME)
 data class LivelihoodLanguageReferenceEntity(
     @PrimaryKey(autoGenerate = true)
     @SerializedName("primaryKey")
