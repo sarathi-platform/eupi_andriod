@@ -1334,7 +1334,7 @@ fun IncrementDecrementView(modifier: Modifier,
                         var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
-                                findOptionValueCount(optionList, optionValue ?: 1)
+                                findOptionValueCount(optionList, optionValue ?: 1, questionFlag)
                             val newCurrentCount = incDecValue(
                                 0,
                                 currentCount,
@@ -1381,7 +1381,8 @@ fun IncrementDecrementView(modifier: Modifier,
                         if(onlyNumberField(it)) {
                             var errorType=NumericQuestionsErrorEnum.NO_ERROR.name
                             if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
-                                val otherOptionValueCount =  findOptionValueCount(optionList,optionValue?:1)
+                                val otherOptionValueCount =
+                                    findOptionValueCount(optionList, optionValue ?: 1, questionFlag)
                                 val intCnt =
                                     if (it.isEmpty()) 0 else it.toInt()
                                 if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE) {
@@ -1466,7 +1467,7 @@ fun IncrementDecrementView(modifier: Modifier,
                     var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                     if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                         val otherOptionValueCount =
-                            findOptionValueCount(optionList, optionValue ?: 1)
+                            findOptionValueCount(optionList, optionValue ?: 1, questionFlag)
                         val newCurrentCount = incDecValue(1, currentCount)
                         val intCnt =
                             if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
@@ -1497,11 +1498,22 @@ fun IncrementDecrementView(modifier: Modifier,
 
 }
 
-fun findOptionValueCount(optionList: List<OptionsItem>, optionValue:Int):Int{
+fun findOptionValueCount(
+    optionList: List<OptionsItem>,
+    optionValue: Int,
+    questionFlag: String
+): Int {
     optionList?.let {
-        it.forEach {
-            if(optionValue != it.optionValue){
-                return it.count?:0
+        it.forEach { optionItem ->
+            if (optionValue != optionItem.optionValue) {
+                if (optionItem.optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && questionFlag.equals(
+                        QUESTION_FLAG_RATIO,
+                        true
+                    ) && optionItem.count == 0
+                ) {
+                    return 1
+                }
+                return optionItem.count ?: 0
             }
         }
     }
