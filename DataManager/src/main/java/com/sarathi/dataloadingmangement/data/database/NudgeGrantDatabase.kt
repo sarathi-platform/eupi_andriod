@@ -1,7 +1,6 @@
 package com.sarathi.dataloadingmangement.data.database
 
 
-import android.util.Log
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -165,7 +164,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun moneyJournalDao(): MoneyJournalDao
 
-    class NudgeDatabaseCallback : Callback()
+    class NudgeGrantDatabaseCallback : Callback()
     companion object {
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
         private val CREATE_MONEY_JOUNRAL_TABLE =
@@ -184,9 +183,19 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                 try {
                     database.execSQL(sql)
                 } catch (e: SQLException) {
-                    Log.d("NudgeDatabase", "migration \"$sql\" Migration Error", e)
+                    CoreLogger.e(
+                        tag = "NudgeGrantDatabase",
+                        msg = "migration \"$sql\" Migration Error",
+                        ex = e,
+                        stackTrace = true
+                    )
                 } catch (t: Throwable) {
-                    Log.d("NudgeDatabase", "migration \"$sql\"", t)
+                    CoreLogger.e(
+                        tag = "NudgeGrantDatabase",
+                        msg = "migration \"$sql\"",
+                        ex = t,
+                        stackTrace = true
+                    )
                 }
             }
         }

@@ -44,6 +44,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
@@ -87,6 +88,7 @@ import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
 import com.sarathi.dataloadingmangement.repository.MoneyJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
@@ -126,6 +128,7 @@ class DataLoadingModule {
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .addMigrations(NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2)
+            .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
 
@@ -493,7 +496,8 @@ class DataLoadingModule {
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
-        formUseCase: FormUseCase
+        formUseCase: FormUseCase,
+        fetchMoneyJournalUseCase: FetchMoneyJournalUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -513,7 +517,8 @@ class DataLoadingModule {
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
-            formUseCase = formUseCase
+            formUseCase = formUseCase,
+            moneyJournalUseCase = fetchMoneyJournalUseCase
         )
     }
 
@@ -861,4 +866,21 @@ class DataLoadingModule {
     @Singleton
     fun provideMoneyJournalUsecase(moneyJournalRepository: MoneyJournalRepositoryImpl) =
         SaveTransactionMoneyJournalUseCase(moneyJournalRepository)
+
+    @Provides
+    @Singleton
+    fun provideMoneyJournalNetworkRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        moneyJournalDao: MoneyJournalDao,
+        apiService: DataLoadingApiService
+    ) = MoneyJournalNetworkRepository(
+        sharedPrefs = coreSharedPrefs,
+        apiInterface = apiService,
+        moneyJournalDao = moneyJournalDao
+    )
+
+    @Provides
+    @Singleton
+    fun provideFetchMoneyJournalUseCase(moneyJournalNetworkRepository: MoneyJournalNetworkRepository) =
+        FetchMoneyJournalUseCase(moneyJournalNetworkRepository)
 }

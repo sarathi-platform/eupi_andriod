@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.toInMillisec
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.response.MoneyJournalApiResponse
 
 @Entity(tableName = MONEY_JOURNAL_TABLE_NAME)
 data class MoneyJournalEntity(
@@ -56,6 +57,30 @@ data class MoneyJournalEntity(
                 status = 1,
                 transactionType = grantType,
                 modifiedDate = System.currentTimeMillis()
+            )
+
+        }
+
+        fun getMoneyJournalEntity(
+            moneyJournalApiResponse: MoneyJournalApiResponse,
+            userId: String
+        ): MoneyJournalEntity {
+            return MoneyJournalEntity(
+                id = 0,
+                userId = userId,
+                transactionAmount = moneyJournalApiResponse.amount.toDouble(),
+                transactionDate = moneyJournalApiResponse.transactionDate,
+                transactionId = moneyJournalApiResponse.transactionId,
+                referenceId = moneyJournalApiResponse.referenceId,
+                referenceType = moneyJournalApiResponse.referenceType,
+                subjectType = moneyJournalApiResponse.subjectType,
+                subjectId = moneyJournalApiResponse.subjectId,
+                transactionDetails = moneyJournalApiResponse.particulars,
+                transactionFlow = moneyJournalApiResponse.transactionFlow,
+                status = moneyJournalApiResponse.status,
+                transactionType = moneyJournalApiResponse.transactionType,
+                modifiedDate = moneyJournalApiResponse.modifiedDate
+
             )
 
         }
