@@ -26,7 +26,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             particulars,
             referenceId,
             grantId,
-            grantType,
+            "GRANT",
             subjectType,
             subjectId,
             "INFLOW"
