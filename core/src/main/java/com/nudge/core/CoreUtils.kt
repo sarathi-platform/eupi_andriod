@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
@@ -1143,4 +1144,10 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
         filePath = _uri!!.path
     }
     Log.d("", "Chosen path = $filePath")
+}
+fun onlyNumberField(value: String): Boolean {
+    if (value.isDigitsOnly() && value != "_" && value != "N") {
+        return true
+    }
+    return false
 }

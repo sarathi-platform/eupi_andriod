@@ -91,3 +91,5 @@ val eventWriters = listOf<IEventWriter>(
     LogEventWriter(),
     ImageEventWriter()
 )
+const val MAXIMUM_RANGE = 999999
+const val MAXIMUM_RANGE_LENGTH = 10
