@@ -254,7 +254,7 @@ fun LastSyncTime(viewModel: SyncHomeViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Last Sync Time: ",
+                text = stringResource(id = R.string.last_sync_date_time),
                 style = mediumTextStyle,
                 color = textColorDark
             )

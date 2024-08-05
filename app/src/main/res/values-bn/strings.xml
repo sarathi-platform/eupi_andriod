@@ -508,6 +508,7 @@
     <string name="no_history_available_right_now">কোন ইতিহাস এই মুহূর্তে উপলব্ধ</string>
     <string name="sync_data">ডেটা</string>
     <string name="sync_images">ছবি</string>
+    <string name="last_sync_date_time">Last Sync Time:</string>
 
 
 </resources>

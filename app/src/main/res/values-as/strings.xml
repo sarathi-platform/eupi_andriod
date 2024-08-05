@@ -512,6 +512,7 @@
     </plurals>
 
     <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="last_sync_date_time">Last Sync Time:</string>
 
 
 </resources>

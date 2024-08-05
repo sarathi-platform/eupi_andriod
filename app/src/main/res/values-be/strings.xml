@@ -500,5 +500,6 @@
     <string name="no_history_available_right_now">No History Available Right Now</string>
     <string name="sync_data">Data</string>
     <string name="sync_images">Images</string>
+    <string name="last_sync_date_time">Last Sync Time:</string>
 
 </resources>
