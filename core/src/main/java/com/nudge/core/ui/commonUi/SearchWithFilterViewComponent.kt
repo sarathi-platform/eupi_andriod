@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
@@ -40,6 +41,7 @@ import com.nudge.core.R
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
@@ -163,6 +165,85 @@ fun SearchWithFilterViewComponent(
             }
         }
     }
+}
+
+@Composable
+fun SimpleSearchComponent(
+    placeholderString: String,
+    modifier: Modifier = Modifier,
+    searchFieldHeight: Dp = dimen_40_dp,
+    onSearchValueChange: (String) -> Unit
+) {
+
+    var searchString by remember {
+        mutableStateOf(BLANK_STRING)
+    }
+
+    val focusManager = LocalFocusManager.current
+
+    Surface(
+        modifier = Modifier
+            .then(modifier),
+        color = Color.White,
+    ) {
+
+        CustomOutlineTextField(
+            value = searchString,
+            onValueChange = {
+                searchString = it
+                onSearchValueChange(it)
+            },
+            placeholder = {
+                Text(
+                    text = placeholderString, style = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    ), color = placeholderGrey
+                )
+            },
+            textStyle = TextStyle(
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp
+            ),
+            singleLine = true,
+            maxLines = 1,
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = textColorDark,
+                backgroundColor = Color.White,
+                focusedIndicatorColor = borderGrey,
+                unfocusedIndicatorColor = borderGrey,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(searchFieldHeight),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_search),
+                    tint = placeholderGrey,
+                    contentDescription = "Search icon",
+                    modifier = Modifier.absolutePadding(top = 3.dp)
+                )
+            },
+            trailingIcon = {
+                if (searchString.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = textColorDark,
+                        modifier = Modifier
+                            .absolutePadding(top = 2.dp)
+                            .clickable {
+                                searchString = BLANK_STRING
+                                onSearchValueChange(searchString)
+                            }
+                    )
+                }
+            }
+        )
+    }
+
 }
 
 @Preview(showBackground = true, showSystemUi = true)

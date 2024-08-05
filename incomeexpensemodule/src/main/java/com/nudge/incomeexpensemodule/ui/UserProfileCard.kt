@@ -52,7 +52,7 @@ fun UserProfileCard(
     income: String,
     expense: String,
     assetValue: String,
-    imageRes: Int
+//    imageRes: Int
 ) {
     BasicCardView(
         modifier = Modifier
@@ -191,7 +191,7 @@ fun UserProfileCardList() {
             income = "₹ 2000",
             expense = "₹ 500",
             assetValue = "₹ 8000",
-            imageRes = R.drawable.profile_img
+//            imageRes = R.drawable.profile_img
         )
         UserProfileCard(
             name = "Surbhi Verma",
@@ -201,7 +201,7 @@ fun UserProfileCardList() {
             income = "₹ 1000",
             expense = "₹ 500",
             assetValue = "₹ 1000",
-            imageRes = R.drawable.profile_img
+//            imageRes = R.drawable.profile_img
         )
     }
 }

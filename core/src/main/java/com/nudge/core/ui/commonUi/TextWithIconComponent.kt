@@ -155,7 +155,18 @@ data class IconProperties<T>(
     val contentDescription: String?,
     val tint: Color = Color.Black,
     val modifier: Modifier = Modifier
-)
+) {
+
+    companion object {
+        fun <T> getBasicIconProperties(icon: T, contentDescription: String?): IconProperties<T> {
+            return IconProperties(
+                icon = icon,
+                contentDescription = contentDescription,
+            )
+        }
+    }
+
+}
 
 data class TextProperties<T>(
     val text: T,

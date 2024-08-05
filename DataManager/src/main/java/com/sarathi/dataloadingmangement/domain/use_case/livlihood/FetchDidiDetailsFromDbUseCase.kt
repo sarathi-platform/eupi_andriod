@@ -1,7 +1,7 @@
-package com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case
+package com.sarathi.dataloadingmangement.domain.use_case.livlihood
 
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepository
 import javax.inject.Inject
 
 class FetchDidiDetailsFromDbUseCase @Inject constructor(

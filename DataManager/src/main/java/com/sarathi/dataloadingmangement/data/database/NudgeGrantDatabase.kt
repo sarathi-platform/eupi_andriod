@@ -40,6 +40,8 @@ import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
@@ -68,6 +70,8 @@ import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEnt
 import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 
 const val NUDGE_GRANT_DATABASE_VERSION = 1
@@ -101,7 +105,9 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         SurveyLanguageAttributeEntity::class,
         SubjectEntity::class,
         SmallGroupDidiMappingEntity::class,
-        TagReferenceEntity::class
+        TagReferenceEntity::class,
+        MoneyJournalEntity::class,
+        AssetJournalEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -153,6 +159,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
     abstract fun tagReferenceEntityDao(): TagReferenceEntityDao
+    abstract fun moneyJournalDao(): MoneyJournalDao
+    abstract fun assetJournalDao(): AssetJournalDao
 
     class NudgeDatabaseCallback : Callback()
 
