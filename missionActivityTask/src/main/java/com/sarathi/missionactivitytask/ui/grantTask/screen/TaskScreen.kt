@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.DEFAULT_ID
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -47,14 +46,14 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
-import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
+import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
@@ -285,26 +284,27 @@ private fun TaskRowView(
 ) {
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
-            viewModel.activityConfigUiModel?.let {
-                if (subjectName.isNotBlank()) {
-                    navigateToGrantSurveySummaryScreen(
-                        navController,
-                        taskId = task.key,
-                        surveyId = it.surveyId,
-                        sectionId = it.sectionId,
-                        subjectType = it.subject,
-                        subjectName = subjectName,
-                        activityConfigId = it.activityConfigId,
-                        sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                            ?: DEFAULT_ID,
-                    )
-                }
-
-            }
+            navigateToLivelihoodDropDownScreen(navController)
+//            viewModel.activityConfigUiModel?.let {
+//                if (subjectName.isNotBlank()) {
+//                    navigateToGrantSurveySummaryScreen(
+//                        navController,
+//                        taskId = task.key,
+//                        surveyId = it.surveyId,
+//                        sectionId = it.sectionId,
+//                        subjectType = it.subject,
+//                        subjectName = subjectName,
+//                        activityConfigId = it.activityConfigId,
+//                        sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+//                            ?: DEFAULT_ID,
+//                    )
+//                }
+//
+//            }
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = TaskCardModel(
+                task.value[TaskCardSlots.TASK_STATUS.name] = TaskCardModel(
                     value = SurveyStatusEnum.NOT_AVAILABLE.name,
                     label = BLANK_STRING,
                     icon = null
@@ -317,23 +317,23 @@ private fun TaskRowView(
             }
         },
         imagePath = viewModel.getFilePathUri(
-            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
+            task.value[TaskCardSlots.TASK_IMAGE.name]?.value ?: BLANK_STRING
         ),
-        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
-        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
-        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
-        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
-        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
-        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
-        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
-        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
-        subtitle6 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_8.name],
+        title = task.value[TaskCardSlots.TASK_TITLE.name],
+        subTitle1 = task.value[TaskCardSlots.TASK_SUBTITLE.name],
+        primaryButtonText = task.value[TaskCardSlots.TASK_PRIMARY_BUTTON.name],
+        secondaryButtonText = task.value[TaskCardSlots.TASK_SECONDARY_BUTTON.name],
+        status = task.value[TaskCardSlots.TASK_STATUS.name],
+        subtitle2 = task.value[TaskCardSlots.TASK_SUBTITLE_2.name],
+        subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
+        subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
+        subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name],
+        subtitle6 = task.value[TaskCardSlots.TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
-        isNotAvailableButtonEnable = task.value[GrantTaskCardSlots.GRANT_TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
+        isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
             "true"
         ),
-        isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
+        isShowSecondaryStatusIcon = task.value[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
         ),
 

@@ -6,9 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
@@ -37,21 +39,25 @@ import com.nudge.core.ui.theme.white
 
 @Composable
 fun CustomSubTabLayout(
+    parentTabIndex: Int,
     tabs: List<SubTabs>,
     countMap: Map<SubTabs, Int> = mapOf()
 ) {
 
-    Row(
+    val state = rememberLazyListState()
+
+    LazyRow(
         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
         modifier = Modifier.fillMaxWidth(),
+        state = state
     ) {
 
-        tabs.forEachIndexed { index, tab ->
-
+        itemsIndexed(tabs) { index, tab ->
             TabItem(
-                isSelected = TabsCore.getSubTabIndex().value == tab.id,
+                isSelected = TabsCore.getSubTabForTabIndex(parentTabIndex) == index,
                 onClick = {
-                    TabsCore.getSubTabIndex().value = tab.id
+                    TabsCore.setSubTabIndex(parentTabIndex, index)
+//                    TabsCore.getSubTabIndex().value = tab.id
                 },
                 text = getTabTitle(countMap, tab)
             )
@@ -110,6 +116,7 @@ fun TabItem(
             color = textColorDark,
             style = mediumTextStyle,
             textAlign = TextAlign.Center,
+            maxLines = 1,
         )
     }
 }
@@ -133,6 +140,9 @@ fun getTabName(tab: SubTabs): String {
     return when (tab) {
         SubTabs.DidiTab -> stringResource(R.string.didi_sub_tab_title)
         SubTabs.SmallGroupTab -> stringResource(R.string.small_group_sub_tab_title)
+        SubTabs.All -> "All"
+        SubTabs.NoEntryMonthTab -> "No entry this month"
+        SubTabs.NoEntryWeekTab -> "No entry this week"
         else -> {
             BLANK_STRING
         }

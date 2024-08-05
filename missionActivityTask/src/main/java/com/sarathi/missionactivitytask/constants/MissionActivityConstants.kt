@@ -18,6 +18,10 @@ object MissionActivityConstants {
     const val ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME = "activity_completion_screen"
     const val MISSION_FINAL_STEP_SCREEN_ROUTE_NAME = "mission_final_step_screen"
     const val DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME = "disbursment_summary_screen"
+    const val LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME = "livelihood_task_screen"
+
+    const val LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME = "livelihood_dropdown_screen"
+
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"
     const val ARG_TASK_ID_LIST = "task_id_list"

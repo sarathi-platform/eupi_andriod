@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.43"
+def version = "2.0.45"
 def prodVersion = version
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 33
-        versionCode 47
+        versionCode 49
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -296,6 +296,7 @@ dependencies {
     implementation(project(":missionActivityTask"))
     implementation(project(":smallGroupModule"))
     implementation(project(":DataManager"))
+    implementation(project(":incomeexpensemodule"))
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 

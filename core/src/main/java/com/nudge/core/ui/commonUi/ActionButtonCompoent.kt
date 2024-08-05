@@ -27,6 +27,9 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -43,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
@@ -287,3 +291,38 @@ fun ButtonPositiveWithLoaderComponent(
         }
     }
 }
+
+
+@Composable
+fun <T> CustomIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: T,
+    contentDescription: String?,
+    enabled: Boolean = true,
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+) {
+
+    Box(
+        modifier = Modifier
+            .border(
+                dimen_1_dp,
+                color = borderGrey,
+                shape = RoundedCornerShape(roundedCornerRadiusDefault)
+            )
+            .clip(RoundedCornerShape(roundedCornerRadiusDefault))
+            .background(Color.Transparent, RoundedCornerShape(roundedCornerRadiusDefault))
+    ) {
+        IconButton(onClick = { onClick() }, modifier, enabled, colors, interactionSource) {
+            CustomIconComponent(
+                iconProperties = IconProperties.getBasicIconProperties(
+                    icon = icon,
+                    contentDescription = contentDescription
+                )
+            )
+        }
+    }
+
+}
+

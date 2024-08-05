@@ -24,6 +24,7 @@ fun TypeDropDownComponent(
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
+    diableItem: Int = -1,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
     val context = LocalContext.current
@@ -45,6 +46,7 @@ fun TypeDropDownComponent(
         mTextFieldSize = textFieldSize,
         expanded = expanded,
         title = title,
+        diableItem = diableItem,
         isMandatory = isMandatory,
         selectedItem = selectedOptionText,
         onExpandedChange = {

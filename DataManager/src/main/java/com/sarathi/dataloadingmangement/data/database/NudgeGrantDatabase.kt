@@ -40,6 +40,14 @@ import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
@@ -68,6 +76,14 @@ import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEnt
 import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEventEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodLanguageReferenceEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 
 const val NUDGE_GRANT_DATABASE_VERSION = 1
@@ -101,7 +117,15 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         SurveyLanguageAttributeEntity::class,
         SubjectEntity::class,
         SmallGroupDidiMappingEntity::class,
-        TagReferenceEntity::class
+        TagReferenceEntity::class,
+        LivelihoodLanguageReferenceEntity::class,
+        LivelihoodEntity::class,
+        AssetEntity::class,
+        ProductEntity::class,
+        LivelihoodEventEntity::class,
+        MoneyJournalEntity::class,
+        AssetJournalEntity::class,
+        SubjectLivelihoodMappingEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -153,6 +177,15 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
     abstract fun tagReferenceEntityDao(): TagReferenceEntityDao
+    abstract fun moneyJournalDao(): MoneyJournalDao
+    abstract fun assetJournalDao(): AssetJournalDao
+    abstract fun livelihoodLanguageDao(): LivelihoodLanguageDao
+    abstract fun livelihoodDao(): LivelihoodDao
+    abstract fun assetDao(): AssetDao
+    abstract fun productDao(): ProductDao
+    abstract fun livelihoodEventDao(): LivelihoodEventDao
+
+    abstract fun subjectLivelihoodMappingDao(): SubjectLivelihoodMappingDao
 
     class NudgeDatabaseCallback : Callback()
 

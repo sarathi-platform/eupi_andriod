@@ -3,107 +3,132 @@ package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.searchFieldBg
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BottomSheetScaffoldComponent() {
+fun <T> BottomSheetScaffoldComponent(
+    bottomSheetScaffoldProperties: CustomBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties(),
+    bottomSheetContentItemList: List<T>,
+    onBottomSheetItemSelected: (selectedItemIndex: Int) -> Unit,
+    content: @Composable () -> Unit
+) {
 
-    val selectedItem = remember { mutableStateOf("None") }
-    val items = remember { mutableStateOf(listOf("Item 1", "Item 2", "Item 3")) }
     val coroutineScope = rememberCoroutineScope()
-    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
     ModalBottomSheetLayout(
-        sheetState = bottomSheetState,
-        sheetShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+        sheetState = bottomSheetScaffoldProperties.sheetState,
+        sheetShape = bottomSheetScaffoldProperties.sheetShape,
         sheetContent = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    .clip(bottomSheetScaffoldProperties.sheetShape)
                     .background(MaterialTheme.colors.surface)
             ) {
-                ItemSelectionSheet(
-                    items = items.value,
-                    onItemSelected = { item ->
-                        coroutineScope.launch {
-                            selectedItem.value = item
-                            bottomSheetState.hide()
-                        }
+                SelectionSheetItemView(
+                    items = bottomSheetContentItemList,
+                    SelectionSheetItem = { index, item ->
+                        CustomTextViewComponent(
+                            textProperties = TextProperties
+                                .getBasicTextProperties(text = item)
+                                .copy(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            coroutineScope.launch {
+                                                onBottomSheetItemSelected(index)
+                                                bottomSheetScaffoldProperties.sheetState.hide()
+                                            }
+                                        }
+                                )
+                        )
                     }
                 )
             }
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        bottomSheetState.show()
-                    }
-                }
-            ) {
-                Text(text = "Filter")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(text = "Selected Item: ${selectedItem.value}", fontSize = 20.sp)
-        }
+        content()
     }
 }
 
 @Composable
-fun ItemSelectionSheet(items: List<String>, onItemSelected: (String) -> Unit) {
+fun <T> SelectionSheetItemView(
+    items: List<T>,
+    SelectionSheetItem: @Composable (index: Int, item: T) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        items.forEach { item ->
-            Text(
-                text = item,
-                style = defaultTextStyle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clickable { onItemSelected(item) }
-            )
+        items.forEachIndexed { index, item ->
+            SelectionSheetItem(index, item)
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+data class CustomBottomSheetScaffoldProperties(
+    val modifier: Modifier = Modifier,
+    val sheetState: ModalBottomSheetState,
+    val sheetShape: Shape,
+    val sheetElevation: Dp,
+    val sheetBackgroundColor: Color,
+    val sheetContentColor: Color,
+    val scrimColor: Color,
+)
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun rememberCustomBottomSheetScaffoldProperties(
+    modifier: Modifier = Modifier,
+    sheetState: ModalBottomSheetState = rememberModalBottomSheetState(
+        ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    ),
+    sheetShape: Shape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp),
+    sheetElevation: Dp = ModalBottomSheetDefaults.Elevation,
+    sheetBackgroundColor: Color = searchFieldBg,
+    sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
+    scrimColor: Color = ModalBottomSheetDefaults.scrimColor,
+): CustomBottomSheetScaffoldProperties {
+    return remember {
+        CustomBottomSheetScaffoldProperties(
+            modifier = modifier,
+            sheetState = sheetState,
+            sheetShape = sheetShape,
+            sheetElevation = sheetElevation,
+            sheetBackgroundColor = sheetBackgroundColor,
+            sheetContentColor = sheetContentColor,
+            scrimColor = scrimColor
+        )
     }
 }
 
@@ -112,5 +137,15 @@ fun ItemSelectionSheet(items: List<String>, onItemSelected: (String) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    BottomSheetScaffoldComponent()
+    val selectedItem = remember { mutableStateOf("None") }
+    val items = remember { mutableStateOf(listOf("Item 1", "Item 2", "Item 3")) }
+
+    BottomSheetScaffoldComponent(
+        bottomSheetContentItemList = items.value,
+        onBottomSheetItemSelected = {
+
+        }
+    ) {
+
+    }
 }

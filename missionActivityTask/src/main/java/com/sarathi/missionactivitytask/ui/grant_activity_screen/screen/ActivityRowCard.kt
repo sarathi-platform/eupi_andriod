@@ -18,6 +18,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
+import com.sarathi.missionactivitytask.navigation.navigateToLiveliHoodScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 import java.util.Locale
 import com.sarathi.missionactivitytask.utils.getFilePathUri
@@ -75,6 +76,17 @@ fun ActivityRowCard(
                         activityName = activity.description
                     )
                 }
+                   else if (activity.activityType.lowercase() == ActivityTypeEnum.LIVELIHOOD.name.lowercase(
+                            Locale.ENGLISH
+                        )
+                    ) {
+                        navigateToLiveliHoodScreen(
+                            navController,
+                            missionId = activity.missionId,
+                            activityId = activity.activityId,
+                            activityName = activity.description
+                        )
+                    }
                 }
             }
             item {

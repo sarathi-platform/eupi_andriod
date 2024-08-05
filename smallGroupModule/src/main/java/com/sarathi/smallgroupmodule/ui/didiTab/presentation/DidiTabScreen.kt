@@ -24,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
@@ -151,7 +152,11 @@ fun DidiTabScreen(
                         verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
 
-                        CustomSubTabLayout(tabs, didiTabViewModel.countMap)
+                        CustomSubTabLayout(
+                            parentTabIndex = TabsEnum.DidiUpcmTab.tabIndex,
+                            tabs,
+                            didiTabViewModel.countMap
+                        )
 
                         Column {
                             SearchWithFilterViewComponent(
