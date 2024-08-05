@@ -10,20 +10,30 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLiveliho
 interface SubjectLivelihoodMappingDao {
 
     @Insert
-    fun insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity)
+    suspend fun insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity)
 
     @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set primaryLivelihoodId = :primaryLivelihoodId where userId = :userId and subjectId = :subjectId")
-    fun updatePrimaryLivelihoodForSubject(subjectId: Int, userId: String, primaryLivelihoodId: Int)
+    suspend fun updatePrimaryLivelihoodForSubject(
+        subjectId: Int,
+        userId: String,
+        primaryLivelihoodId: Int
+    )
 
     @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set secondaryLivelihoodId = :secondaryLivelihoodId where userId = :userId and subjectId = :subjectId")
-    fun updateSecondaryLivelihoodForSubject(
+    suspend fun updateSecondaryLivelihoodForSubject(
         subjectId: Int,
         userId: String,
         secondaryLivelihoodId: Int
     )
 
     @Query("SELECT COUNT(*) from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId")
-    fun isSubjectLivelihoodMappingAvailable(subjectId: Int, userId: String): Int
+    suspend fun isSubjectLivelihoodMappingAvailable(subjectId: Int, userId: String): Int
+
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId")
+    suspend fun getSubjectLivelihoodMappingAvailable(
+        subjectId: Int,
+        userId: String
+    ): SubjectLivelihoodMappingEntity?
 
 
 }

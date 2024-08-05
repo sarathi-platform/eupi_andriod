@@ -15,4 +15,8 @@ class GetActivityUiConfigUseCase @Inject constructor(private val configRepositor
         return configRepositoryImpl.getActivityConfig(activityId = activityId)
     }
 
+    suspend fun getActivityConfig(activityId: Int, missionId: Int): ActivityConfigEntity? {
+        return configRepositoryImpl.getActivityConfig(activityId = activityId, missionId)
+    }
+
 }

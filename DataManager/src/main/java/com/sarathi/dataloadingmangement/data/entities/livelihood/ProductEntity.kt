@@ -25,7 +25,7 @@ data class ProductEntity(
 
     ) {
     companion object {
-        fun getLivelihoodEntity(
+        fun getProductEntity(
             userId: String,
             product: Product
         ): ProductEntity {

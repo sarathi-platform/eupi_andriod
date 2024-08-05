@@ -2,28 +2,25 @@ package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
-import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
+import com.nudge.core.BLANK_STRING
+import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.LivelihoodTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 
 @Composable
 fun LivelihoodTaskScreen(
     navController: NavController = rememberNavController(),
-    viewModel: GrantTaskScreenViewModel = hiltViewModel(),
+    viewModel: LivelihoodTaskScreenViewModel = hiltViewModel(),
     missionId: Int,
     activityName: String,
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
+
     LaunchedEffect(Unit) {
-
-        viewModel.onEvent(InitDataEvent.InitGrantTaskScreenState(missionId, activityId))
-
+        viewModel.onEvent(InitDataEvent.InitLivelihoodPlanningScreenState(missionId, activityId))
     }
     TaskScreen(
         missionId = missionId,
@@ -32,17 +29,11 @@ fun LivelihoodTaskScreen(
         onSettingClick = onSettingClick,
         viewModel = viewModel,
         onSecondaryButtonClick = {
-            navigateToLivelihoodDropDownScreen(
-                navController = navController,
-//                activityId = activityId,
-//                missionId = missionId,
-//                isFromSettingScreen = false,
-//                taskIdList = viewModel.getTaskListOfDisburesementAmountEqualSanctionedAmount()
-            )
+
         },
-        isSecondaryButtonEnable = viewModel.isGenerateFormButtonEnable.value,
-        secondaryButtonText = stringResource(id = R.string.generate_form_e),
-        isSecondaryButtonVisible = viewModel.isGenerateFormButtonVisible.value,
+        isSecondaryButtonEnable = false,
+        secondaryButtonText = BLANK_STRING,
+        isSecondaryButtonVisible = false,
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController
 

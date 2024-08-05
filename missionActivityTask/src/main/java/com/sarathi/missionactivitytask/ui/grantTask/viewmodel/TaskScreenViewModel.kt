@@ -12,6 +12,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -55,6 +56,7 @@ open class TaskScreenViewModel @Inject constructor(
     var missionId = 0
     var activityId = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
+    var activityConfigUiModelWithoutSurvey: ActivityConfigEntity? = null
     private val _taskList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val taskList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _taskList

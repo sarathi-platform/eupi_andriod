@@ -14,24 +14,25 @@ import androidx.compose.ui.unit.toSize
 import com.nudge.core.showCustomToast
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.surveymanager.R
 
 @Composable
 fun LivelihoodPlanningDropDownComponent(
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
-    sources: List<LivelihoodUIEntity>?,
+    sources: List<LivelihoodUiEntity>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
-    onAnswerSelection: (livelihoodUIEntity: LivelihoodUIEntity) -> Unit
+    onAnswerSelection: (livelihoodUIEntity: LivelihoodUiEntity) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
         sources ?: listOf()
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember {
+
         mutableStateOf(
             defaultSourceList.find { it.isSelected }?.livelihoodEntity?.name.value()
 
@@ -41,7 +42,8 @@ fun LivelihoodPlanningDropDownComponent(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
 
-    DropDownComponent<LivelihoodUIEntity>(items = defaultSourceList,
+    DropDownComponent(
+        items = defaultSourceList,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -68,12 +70,13 @@ fun LivelihoodPlanningDropDownComponent(
         },
         onItemSelected = {
             selectedOptionText =
+                defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name
+            selectedOptionText =
                 defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name.value()
             onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
             expanded = false
 
-        })
+        }
+    )
 
 }
-
-data class LivelihoodUIEntity(val livelihoodEntity: LivelihoodEntity, val isSelected: Boolean)

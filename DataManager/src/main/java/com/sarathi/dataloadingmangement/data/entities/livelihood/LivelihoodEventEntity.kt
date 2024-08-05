@@ -21,7 +21,7 @@ data class LivelihoodEventEntity(
     var userId: String,
     var name: String,
     var status: Int,
-    var type: Int? = 0,
+    var type: String?,
 
     ) {
     companion object {
@@ -36,6 +36,7 @@ data class LivelihoodEventEntity(
                 userId = userId,
                 name = livelihoodEvent.name ?: BLANK_STRING,
                 status = livelihoodEvent.status ?: 0,
+                type = livelihoodEvent.type
             )
         }
 

@@ -1,0 +1,148 @@
+package com.sarathi.surveymanager.ui.screen.livelihood
+
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.SaveLivelihoodMappingUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.dataloadingmangement.util.event.LivelihoodPlanningEvent
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+@HiltViewModel
+class LivelihoodPlaningViewModel @Inject constructor(
+    private val getTaskUseCase: GetTaskUseCase,
+    private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+    private val getSubjectLivelihoodMappingFromUseCase: GetSubjectLivelihoodMappingFromUseCase,
+    private val saveLivelihoodMappingUseCase: SaveLivelihoodMappingUseCase,
+) : BaseViewModel() {
+
+    private val TAG = LivelihoodPlaningViewModel::class.java.simpleName
+
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+    private val _livelihoodList = mutableStateOf<List<LivelihoodUiEntity>>(emptyList())
+    val livelihoodList: State<List<LivelihoodUiEntity>> get() = _livelihoodList
+
+    var taskId: Int? = null
+    var subjectId: Int? = null
+    var activityId: Int? = null
+    var missionId: Int? = null
+    var subjectName: String? = null
+
+    var primaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
+    var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
+
+    override fun <T> onEvent(event: T) {
+
+        when (event) {
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(event.showLoader)
+            }
+
+            is InitDataEvent.InitDataState -> {
+                initLivelihoodPlanningScreen()
+            }
+
+            is LivelihoodPlanningEvent.PrimaryLivelihoodPlanningEvent -> {
+                primaryLivelihoodId.value = event.livelihoodId
+                checkButtonValidation()
+            }
+
+            is LivelihoodPlanningEvent.SecondaryLivelihoodPlanningEvent -> {
+                secondaryLivelihoodId.value = event.livelihoodId
+                checkButtonValidation()
+            }
+        }
+
+    }
+
+    private fun initLivelihoodPlanningScreen() {
+        ioViewModelScope {
+            try {
+                taskId?.let {
+                    subjectId = getTaskUseCase.getTask(it).subjectId
+                    val livelihoodList = getLivelihoodListFromDbUseCase.invoke()
+                    val subjectLivelihoodMapping =
+                        getSubjectLivelihoodMappingFromUseCase.invoke(subjectId!!)
+                    if (subjectLivelihoodMapping != null) {
+                        val mLivelihoodUiEntityList = LivelihoodUiEntity.getLivelihoodUiEntityList(
+                            livelihoodUiModelList = livelihoodList,
+                            selectedIds = listOf(
+                                subjectLivelihoodMapping.primaryLivelihoodId,
+                                subjectLivelihoodMapping.secondaryLivelihoodId
+                            )
+                        )
+                        _livelihoodList.value = mLivelihoodUiEntityList
+                        primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
+                        secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId
+                    } else {
+                        val mLivelihoodUiEntityList =
+                            LivelihoodUiEntity.getLivelihoodUiEntityList(
+                                livelihoodUiModelList = livelihoodList,
+                                selectedIds = listOf()
+                            )
+                        _livelihoodList.value = mLivelihoodUiEntityList
+                    }
+                }
+            } catch (ex: Exception) {
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "initLivelihoodPlanningScreen -> exception: ${ex.message}",
+                    ex = ex
+                )
+            } finally {
+                withContext(mainDispatcher) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            }
+        }
+    }
+
+    fun setPreviousScreenData(
+        mTaskId: Int,
+        mActivityId: Int,
+        mMissionId: Int,
+        mSubjectName: String
+    ) {
+        this.taskId = mTaskId
+        this.activityId = mActivityId
+        this.missionId = mMissionId
+        this.subjectName = mSubjectName
+    }
+
+    fun checkButtonValidation() {
+
+        isButtonEnable.value = primaryLivelihoodId.value != -1 && secondaryLivelihoodId.value != -1
+
+
+    }
+
+    fun saveButtonClicked() {
+        ioViewModelScope {
+            saveLivelihoodMappingToDb()
+        }
+    }
+
+    private suspend fun saveLivelihoodMappingToDb() {
+        ioViewModelScope {
+            val subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity? = subjectId?.let {
+                SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                    userId = saveLivelihoodMappingUseCase.getUserId(),
+                    subjectId = it,
+                    primaryLivelihoodId.value, secondaryLivelihoodId.value
+                )
+            }
+            subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.invoke(it) }
+        }
+    }
+
+}
