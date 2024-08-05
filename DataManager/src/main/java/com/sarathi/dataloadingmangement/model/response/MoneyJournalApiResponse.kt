@@ -6,16 +6,12 @@ import com.google.gson.annotations.SerializedName
 data class MoneyJournalApiResponse(
     @SerializedName("amount")
     val amount: Int,
-    @SerializedName("createdBy")
-    val createdBy: Any,
     @SerializedName("createdDate")
     val createdDate: Long,
     @SerializedName("id")
     val id: Int,
     @SerializedName("transactionId")
     val transactionId: String,
-    @SerializedName("modifiedBy")
-    val modifiedBy: Any,
     @SerializedName("modifiedDate")
     val modifiedDate: Long,
     @SerializedName("particulars")
