@@ -15,7 +15,7 @@ interface SubjectLivelihoodEventMappingDao {
     suspend fun getSubjectLivelihoodEventMappingAvailable(
         subjectId: Int,
         userId: String
-    ): SubjectLivelihoodEventMappingEntity?
+    ): List<SubjectLivelihoodEventMappingEntity>?
 
 
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
+import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
+import com.nudge.core.ui.commonUi.componet_.component.TabComponent
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
@@ -45,31 +50,88 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
+import com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel.DataSummaryScreenViewModel
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 @Composable
-fun LivelihoodScreen(navController: NavHostController, subjectId: Int, subjectName: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        HeaderSection()
-        Spacer(modifier = Modifier.height(16.dp))
-        EventsList()
-        Spacer(modifier = Modifier.height(16.dp))
-        EventView()
-        Spacer(modifier = Modifier.height(16.dp))
-        ShowMoreButton(navController = navController, subjectId, subjectName)
-        Spacer(modifier = Modifier.height(16.dp))
+fun DataSummaryScreen(
+    navController: NavHostController,
+    viewModel: DataSummaryScreenViewModel,
+    subjectId: Int,
+    subjectName: String
+) {
+    LaunchedEffect(key1 = true) {
+        viewModel.onEvent(InitDataEvent.InitDataSummaryScreenState(subjectId = subjectId))
+    }
+    ToolBarWithMenuComponent(
+        title = subjectName,
+        modifier = Modifier.fillMaxSize(),
+        onBackIconClick = { },
+        onSearchValueChange = {},
+        onBottomUI = { },
+        onContentUI = { a, b, c ->
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+            ) {
+                if (viewModel.livelihoodEvent.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        AddEventButton(navController = navController)
+                    }
+                } else {
+                    DataSummaryView(navController)
+                }
 
+            }
+        },
+        onSettingClick = { }) {
+
+    }
+
+}
+
+@Composable
+private fun DataSummaryView(navController: NavHostController) {
+    TabBarContainer()
+    Spacer(modifier = Modifier.height(16.dp))
+    DropDownConatiner()
+    Spacer(modifier = Modifier.height(16.dp))
+    HeaderSection()
+    Spacer(modifier = Modifier.height(16.dp))
+    EventsList()
+    Spacer(modifier = Modifier.height(16.dp))
+    EventView()
+    Spacer(modifier = Modifier.height(16.dp))
+    ShowMoreButton(navController = navController)
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+fun TabBarContainer() {
+    TabComponent(
+        tabs = listOf(
+            "Last week",
+            "Last month",
+            "Last 3 months"
+        )
+    ) {
     }
 }
 
+@Composable
+fun DropDownConatiner() {
+    SingleSelectDropDown(sources = listOf(ValuesDto(1, "item1"), ValuesDto(2, "item2"))) {
+
+    }
+
+}
 
 @Composable
 fun HeaderSection() {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -248,6 +310,17 @@ private fun TextWithPaddingEnd(text: String, style: TextStyle) {
     )
 }
 
+@Composable
+private fun AddEventButton(navController: NavHostController) {
+    ButtonPositive(buttonTitle = "Add Event", isActive = true, isArrowRequired = true) {
+        navigateToAddEventScreen(
+            navController = navController,
+            subjectName = "ABC",
+            subjectId = 1
+        )
+    }
+}
+
 private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextStyle =
     textColor.copy(color)
 
@@ -255,5 +328,10 @@ private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextSty
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    LivelihoodScreen(navController = rememberNavController(), subjectName = "", subjectId = 1)
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+    ) {
+        DataSummaryView(navController = rememberNavController())
+    }
 }

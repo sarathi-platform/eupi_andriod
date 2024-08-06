@@ -63,6 +63,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLive
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
@@ -123,6 +124,7 @@ import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodEventRepo
 import com.sarathi.dataloadingmangement.repository.liveihood.ProductRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.SaveLivelihoodMappingForSubjectRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.SaveLivelihoodMappingForSubjectRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.SubjectLivelihoodEventMappingRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
@@ -920,6 +922,14 @@ class DataLoadingModule {
         fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository
     ): FetchDidiDetailsFromDbUseCase {
         return FetchDidiDetailsFromDbUseCase(fetchDidiDetailsFromDbRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectLivelihoodEventMappingUseCase(
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl
+    ): FetchSubjectLivelihoodEventMappingUseCase {
+        return FetchSubjectLivelihoodEventMappingUseCase(subjectLivelihoodEventMappingRepositoryImpl)
     }
 
     @Provides
