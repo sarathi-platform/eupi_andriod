@@ -2,6 +2,7 @@ package com.nudge.incomeexpensemodule.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
@@ -40,11 +43,12 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 @Composable
-fun LivelihoodScreen() {
+fun LivelihoodScreen(navController: NavHostController, subjectId: Int, subjectName: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,7 +60,7 @@ fun LivelihoodScreen() {
         Spacer(modifier = Modifier.height(16.dp))
         EventView()
         Spacer(modifier = Modifier.height(16.dp))
-        ShowMoreButton()
+        ShowMoreButton(navController = navController)
         Spacer(modifier = Modifier.height(16.dp))
 
     }
@@ -118,10 +122,21 @@ fun EventsList() {
 
 
 @Composable
-fun ShowMoreButton() {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+fun ShowMoreButton(navController: NavHostController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+            }, horizontalArrangement = Arrangement.Center
+    ) {
         TextButton(
-            onClick = { },
+            onClick = {
+                navigateToAddEventScreen(
+                    navController = navController,
+                    subjectName = "ABC",
+                    subjectId = 1
+                )
+            },
             modifier = Modifier
                 .height(48.dp)
                 .border(
@@ -237,11 +252,8 @@ private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextSty
     textColor.copy(color)
 
 
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    LivelihoodScreen()
+    LivelihoodScreen(navController = rememberNavController(), subjectName = "", subjectId = 1)
 }
