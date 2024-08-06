@@ -3,12 +3,15 @@ package com.sarathi.surveymanager.ui.screen.livelihood
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.SaveLivelihoodMappingUseCase
+import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LivelihoodPlanningEvent
@@ -24,7 +27,11 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
     private val getSubjectLivelihoodMappingFromUseCase: GetSubjectLivelihoodMappingFromUseCase,
     private val saveLivelihoodMappingUseCase: SaveLivelihoodMappingUseCase,
-) : BaseViewModel() {
+    private val livelihoodEventWriterUseCase: LivelihoodEventWriterUseCase,
+    val coreSharedPrefs: CoreSharedPrefs
+
+
+    ) : BaseViewModel() {
 
     private val TAG = LivelihoodPlaningViewModel::class.java.simpleName
 
@@ -38,7 +45,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var missionId: Int? = null
     var subjectName: String? = null
 
-    var primaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
+    var primaryLivelihoodId = mutableStateOf(-1)
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
 
     override fun <T> onEvent(event: T) {
@@ -121,10 +128,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     }
 
     fun checkButtonValidation() {
-
         isButtonEnable.value = primaryLivelihoodId.value != -1 && secondaryLivelihoodId.value != -1
-
-
     }
 
     fun saveButtonClicked() {
@@ -142,6 +146,11 @@ class LivelihoodPlaningViewModel @Inject constructor(
                     primaryLivelihoodId.value, secondaryLivelihoodId.value
                 )
             }
+            val livelihoodPlanActivityDto = LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(), primaryLivelihoodId.value, secondaryLivelihoodId.value,activityId!!,missionId!!,subjectId!!,coreSharedPrefs.getUserType())
+            livelihoodEventWriterUseCase.writeLivelihoodEvent(
+               livelihoodPlanActivityDto,
+
+                )
             subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.invoke(it) }
         }
     }
