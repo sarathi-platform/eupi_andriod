@@ -3,7 +3,7 @@ package com.sarathi.dataloadingmangement.model.uiModel.livelihood
 data class LivelihoodUiEntity(
     val id: Int,
     val livelihoodEntity: LivelihoodModel,
-    val isSelected: Boolean
+    var isSelected: Boolean
 ) {
 
     companion object {

@@ -120,6 +120,7 @@ fun DropdownView(
             title = "Select first livelihood for didi",
             isMandatory = true,
             diableItem = selectedItem2 ?: 0,
+            enableItem = selectedItem1 ?: -1,
             sources = firstDropDownItems,
             onAnswerSelection = { selectedValue ->
                 selectedItem1 = selectedValue.id
@@ -131,6 +132,7 @@ fun DropdownView(
         LivelihoodPlanningDropDownComponent(title = "Select second livelihood for didi",
             isMandatory = true,
             diableItem = selectedItem1 ?: 0,
+            enableItem = selectedItem2 ?: -1,
             sources = secondaryDropDownItems,
             onAnswerSelection = { selectedValue ->
                 selectedItem2 = selectedValue.id

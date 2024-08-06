@@ -92,6 +92,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                             )
                         _livelihoodList.value = mLivelihoodUiEntityList
                     }
+                    checkButtonValidation()
                 }
             } catch (ex: Exception) {
                 CoreLogger.e(

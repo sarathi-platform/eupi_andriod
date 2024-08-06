@@ -25,6 +25,7 @@ fun LivelihoodPlanningDropDownComponent(
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
+    enableItem: Int = -1,
     onAnswerSelection: (livelihoodUIEntity: LivelihoodUiEntity) -> Unit
 ) {
     val context = LocalContext.current
@@ -34,8 +35,7 @@ fun LivelihoodPlanningDropDownComponent(
     var selectedOptionText by remember {
 
         mutableStateOf(
-            defaultSourceList.find { it.isSelected }?.livelihoodEntity?.name.value()
-
+            defaultSourceList.find { it.isSelected && it.id == enableItem }?.livelihoodEntity?.name.value()
         )
     }
 
