@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.LIVILIHOOD_LANGUAGE_TABLE_NAME
+import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.response.LanguageReference
 
-@Entity(tableName = LIVILIHOOD_LANGUAGE_TABLE_NAME)
+@Entity(tableName = LIVELIHOOD_LANGUAGE_TABLE_NAME)
 data class LivelihoodLanguageReferenceEntity(
     @PrimaryKey(autoGenerate = true)
     @SerializedName("primaryKey")
@@ -18,6 +18,8 @@ data class LivelihoodLanguageReferenceEntity(
     var primaryKey: Int = 0,
     @ColumnInfo(name = "id")
     var id: Int,
+    @ColumnInfo(name = "referenceType")
+    var referenceType: String,
     @ColumnInfo(name = "languageCode")
     var languageCode: String,
     @ColumnInfo(name = "name")
@@ -29,6 +31,7 @@ data class LivelihoodLanguageReferenceEntity(
         fun getLivelihoodLanguageEntity(
             languageReference: LanguageReference,
             uniqueUserIdentifier: String,
+            referenceType: String
         ): LivelihoodLanguageReferenceEntity {
             return LivelihoodLanguageReferenceEntity(
                 primaryKey = 0,
@@ -36,6 +39,7 @@ data class LivelihoodLanguageReferenceEntity(
                 userId = uniqueUserIdentifier,
                 languageCode = languageReference.languageCode ?: BLANK_STRING,
                 name = languageReference.name ?: BLANK_STRING,
+                referenceType = referenceType
             )
         }
     }

@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.repository.liveihood.CoreLivelihoodRepositoryImpl
 import javax.inject.Inject
@@ -264,7 +265,10 @@ class LivelihoodUseCase @Inject constructor(
         )
         livelihood.forEach { livelihoodResponse ->
             livelihoodResponse.livelihood?.let { livelihood ->
-                coreLivelihoodRepositoryImpl.saveLivelihoodItemToDB(livelihood)
+                coreLivelihoodRepositoryImpl.saveLivelihoodItemToDB(
+                    livelihood,
+                    LivelihoodLanguageReferenceType.Livelihood.name
+                )
             }
             livelihoodResponse.assets?.let { assets ->
                 coreLivelihoodRepositoryImpl.saveLivelihoodItemListToDB(assets)

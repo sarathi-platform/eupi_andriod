@@ -8,4 +8,6 @@ interface IUiConfigRepository {
     suspend fun getActivityUiConfig(missionId: Int, activityId: Int): List<UiConfigModel>
     suspend fun getActivityConfig(activityId: Int): ActivityConfigEntity?
 
+    suspend fun getActivityConfig(activityId: Int, missionId: Int): ActivityConfigEntity?
+
 }
