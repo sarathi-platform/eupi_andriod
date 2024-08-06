@@ -9,8 +9,8 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
-import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DataTabScreenViewModel @Inject constructor(
     private val dataTabUseCase: DataTabUseCase,
-    private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase
+    private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
 ) : BaseViewModel() {
 
     private val _filters = mutableStateListOf<LivelihoodModel>()
@@ -33,12 +33,13 @@ class DataTabScreenViewModel @Inject constructor(
 
     val isFilterApplied = mutableStateOf(false)
 
-    val _subjectList: MutableState<List<SubjectEntity>> = mutableStateOf(mutableListOf())
-    val subjectList: State<List<SubjectEntity>> get() = _subjectList
-
-    private val _filteredSubjectList: MutableState<List<SubjectEntity>> =
+    val _subjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
-    val filteredSubjectList: State<List<SubjectEntity>> get() = _filteredSubjectList
+    val subjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _subjectList
+
+    private val _filteredSubjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
+        mutableStateOf(mutableListOf())
+    val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -77,10 +78,9 @@ class DataTabScreenViewModel @Inject constructor(
 
     private fun initDataTab() {
         ioViewModelScope {
-            _subjectList.value = dataTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
+            _subjectList.value =
+                dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke()
             _filteredSubjectList.value = subjectList.value
-
-            dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke() //TODO get subject mapping and populate list accordingly
 
             _filters.add(LivelihoodModel.getAllFilter())
             _filters.addAll(getLivelihoodListFromDbUseCase.invoke())

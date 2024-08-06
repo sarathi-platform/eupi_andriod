@@ -11,9 +11,6 @@ class FetchDidiDetailsWithLivelihoodMappingRepositoryImpl @Inject constructor(
 ) : FetchDidiDetailsWithLivelihoodMappingRepository {
 
     override suspend fun fetchDidiDetailsWithLivelihoodMapping(): List<SubjectEntityWithLivelihoodMappingUiModel> {
-        return emptyList()
-//        subjectEntityDao.getSubjectEntityWithLivelihoodMappingUiModelList(userId = coreSharedPrefs.getUniqueUserIdentifier())
+        return subjectEntityDao.getSubjectEntityWithLivelihoodMappingUiModelList(userId = coreSharedPrefs.getUniqueUserIdentifier())
     }
-
-
 }
