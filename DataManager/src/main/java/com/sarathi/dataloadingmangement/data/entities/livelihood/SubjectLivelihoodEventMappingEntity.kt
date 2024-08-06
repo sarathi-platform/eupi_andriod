@@ -11,6 +11,7 @@ data class SubjectLivelihoodEventMappingEntity(
     val id: Int = 0,
     val userId: String,
     val transactionId: String,
+    val subjectId: Int,
     val date: Long,
     val livelihoodId: Int,
     val livelihoodEventId: Int,
