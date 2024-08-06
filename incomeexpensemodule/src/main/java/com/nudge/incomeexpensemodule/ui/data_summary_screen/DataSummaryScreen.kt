@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -74,27 +75,16 @@ fun DataSummaryScreen(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
             ) {
-                DataSummaryView(navController)
-
-
-//                if (viewModel.livelihoodEvent.isEmpty()) {
-//                    Box(
-//                        contentAlignment = Alignment.Center,
-//                        modifier = Modifier.fillMaxSize()
-//                    ) {
-//                        AddEventButton(navController = navController)
-//                    }
-//                } else {
-//                    HeaderSection()
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                    EventsList()
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                    EventView()
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                    ShowMoreButton(navController = navController)
-//                    Spacer(modifier = Modifier.height(16.dp))
-//
-//                }
+                if (viewModel.livelihoodEvent.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        AddEventButton(navController = navController)
+                    }
+                } else {
+                    DataSummaryView(navController)
+                }
 
             }
         },
