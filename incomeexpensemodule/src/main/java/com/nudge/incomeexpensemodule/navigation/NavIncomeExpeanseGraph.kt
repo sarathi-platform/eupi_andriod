@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -8,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
-import com.nudge.incomeexpensemodule.ui.LivelihoodScreen
 import com.nudge.incomeexpensemodule.ui.add_event_screen.AddEventScreen
+import com.nudge.incomeexpensemodule.ui.data_summary_screen.DataSummaryScreen
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_ID
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_NAME
@@ -33,8 +34,9 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                     type = NavType.IntType
                 }
             )) {
-            LivelihoodScreen(
+            DataSummaryScreen(
                 navController = navController,
+                viewModel = hiltViewModel(),
                 subjectId = it.arguments?.getInt(
                     ARG_SUBJECT_ID
                 ) ?: 0,
