@@ -28,6 +28,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
@@ -44,7 +46,7 @@ import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 @Composable
-fun LivelihoodScreen() {
+fun LivelihoodScreen(navHostController: NavHostController, subjectId: Int, subjectName: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -243,5 +245,5 @@ private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextSty
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    LivelihoodScreen()
+    LivelihoodScreen(navHostController = rememberNavController(), subjectName = "", subjectId = 1)
 }
