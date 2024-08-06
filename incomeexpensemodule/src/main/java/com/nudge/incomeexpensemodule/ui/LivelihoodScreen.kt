@@ -60,7 +60,7 @@ fun LivelihoodScreen(navController: NavHostController, subjectId: Int, subjectNa
         Spacer(modifier = Modifier.height(16.dp))
         EventView()
         Spacer(modifier = Modifier.height(16.dp))
-        ShowMoreButton(navController = navController)
+        ShowMoreButton(navController = navController, subjectId, subjectName)
         Spacer(modifier = Modifier.height(16.dp))
 
     }
@@ -122,7 +122,7 @@ fun EventsList() {
 
 
 @Composable
-fun ShowMoreButton(navController: NavHostController) {
+fun ShowMoreButton(navController: NavHostController, subjectId: Int, subjectName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,8 +133,8 @@ fun ShowMoreButton(navController: NavHostController) {
             onClick = {
                 navigateToAddEventScreen(
                     navController = navController,
-                    subjectName = "ABC",
-                    subjectId = 1
+                    subjectName = subjectName,
+                    subjectId = subjectId
                 )
             },
             modifier = Modifier

@@ -19,14 +19,14 @@ interface LivelihoodDao {
     @Query("DELETE FROM $LIVELIHOOD_TABLE_NAME where userId=:userId ")
     fun deleteLivelihoodForUser(userId: String)
 
-    @Query("SELECT lt.id,lr.name,lt.status from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.id = lr.id Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType")
+    @Query("SELECT lt.livelihoodId,lr.name,lt.status from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.id Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType")
     fun getLivelihoodList(
         userId: String,
         languageCode: String,
         referenceType: String = LivelihoodLanguageReferenceType.Livelihood.name
     ): List<LivelihoodModel>
 
-    @Query("SELECT lt.id,lr.name,lt.status from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.id = lr.id Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.id in(:ids)")
+    @Query("SELECT lt.livelihoodId,lr.name,lt.status from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.id Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.livelihoodId in(:ids)")
     fun getLivelihoodList(
         userId: String,
         languageCode: String,

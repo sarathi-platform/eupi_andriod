@@ -10,12 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
@@ -31,9 +30,8 @@ import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
-import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 
 @Composable
@@ -43,6 +41,12 @@ fun AddEventScreen(
     subjectName: String,
     viewModel: AddEventViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId))
+
+
+    }
     ToolBarWithMenuComponent(
         title = "Asset Purchase",
         modifier = Modifier.fillMaxSize(),
@@ -103,6 +107,15 @@ fun AddEventScreen(
                     isMandatory = true,
                     sources = viewModel.livelihoodDropdownValue,
                     onAnswerSelection = { selectedValue ->
+                        viewModel.onLivelihoodSelect(selectedValue.id)
+                    }
+                )
+                TypeDropDownComponent(
+                    isEditAllowed = true,
+                    title = "Events*",
+                    isMandatory = true,
+                    sources = viewModel.livelihoodEventDropdownValue,
+                    onAnswerSelection = { selectedValue ->
 
                     }
                 )
@@ -111,16 +124,18 @@ fun AddEventScreen(
                     isEditAllowed = true,
                     title = "Type of Asset*",
                     isMandatory = true,
-                    sources = listOf(
-                        ValuesDto(id = 1, value = "item1"),
-                        ValuesDto(id = 2, value = "item2"),
-                        ValuesDto(id = 3, value = "item3"),
-                        ValuesDto(id = 4, value = "item4")
-                    ),
+                    sources = viewModel.livelihoodAssetDropdownValue,
                     onAnswerSelection = { selectedValue ->
                     }
                 )
-
+                TypeDropDownComponent(
+                    isEditAllowed = true,
+                    title = "Products*",
+                    isMandatory = true,
+                    sources = viewModel.livelihoodProductDropdownValue,
+                    onAnswerSelection = { selectedValue ->
+                    }
+                )
                 InputComponent(
                     maxLength = 7,
                     isMandatory = true,
@@ -150,5 +165,5 @@ fun AddEventScreen(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    //AddEventScreen()
+    AddEventScreen(subjectId = 0, subjectName = "")
 }

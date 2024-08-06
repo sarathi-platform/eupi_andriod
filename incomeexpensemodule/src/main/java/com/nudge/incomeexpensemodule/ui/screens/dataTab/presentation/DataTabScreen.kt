@@ -254,7 +254,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(
                                                         dataTabScreenViewModel.filters.toList()
-                                                            .find { it.id == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                            .find { it.livelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
                                                     )
                                                 }
                                             }
@@ -280,8 +280,8 @@ fun DataTabScreen(
                                         ) {
                                             navigateToDataSummaryScreen(
                                                 navController = navHostController,
-                                                subjectId = 1,
-                                                subjectName = "abc"
+                                                subjectId = subject.subjectId,
+                                                subjectName = subject.subjectName
                                             )
 
                                         }
