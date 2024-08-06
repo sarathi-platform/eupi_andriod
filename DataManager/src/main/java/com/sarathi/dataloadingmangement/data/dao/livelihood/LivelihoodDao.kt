@@ -4,11 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
-import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodModel
 
 
 @Dao

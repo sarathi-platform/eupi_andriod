@@ -15,6 +15,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +38,7 @@ import com.example.incomeexpensemodule.R
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
@@ -49,9 +52,12 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.textColorDark
-import com.nudge.incomeexpensemodule.ui.UserProfileCard
+import com.nudge.core.ui.theme.white
+import com.nudge.core.value
+import com.nudge.incomeexpensemodule.ui.SubjectLivelihoodEventSummaryCard
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel.DataTabScreenViewModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -128,10 +134,10 @@ fun DataTabScreen(
     val tabs = listOf<SubTabs>(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab)
 
 
-    Surface(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-        BottomSheetScaffoldComponent(
+    Surface(modifier = Modifier.padding(bottom = dimen_56_dp)) {
+        BottomSheetScaffoldComponent<LivelihoodModel>(
             bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-            bottomSheetContentItemList = dataTabScreenViewModel.filters,
+            bottomSheetContentItemList = dataTabScreenViewModel.filters.toList(),
             onBottomSheetItemSelected = {
 
             }
@@ -208,7 +214,12 @@ fun DataTabScreen(
                                             }
                                         },
                                         icon = painterResource(id = R.drawable.filter_icon),
-                                        contentDescription = "filter_list"
+                                        iconTintColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark,
+                                        contentDescription = "filter_list",
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
+                                            contentColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark
+                                        )
                                     )
 
                                     CustomIconButton(
@@ -228,19 +239,22 @@ fun DataTabScreen(
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
-                                                        fontWeight = FontWeight.SemiBold
+                                                        fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append("2")
+                                                    append(dataTabScreenViewModel.filteredSubjectList.value.size.toString())
                                                 }
                                                 append(" results for ")
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
-                                                        fontWeight = FontWeight.SemiBold
+                                                        fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append("Goatery")
+                                                    append(
+                                                        dataTabScreenViewModel.filters.toList()
+                                                            .find { it.id == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                    )
                                                 }
                                             }
                                         )
@@ -250,7 +264,8 @@ fun DataTabScreen(
                                 LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
                                     itemsIndexed(dataTabScreenViewModel.filteredSubjectList.value) { index, subject ->
-                                        UserProfileCard(
+                                        SubjectLivelihoodEventSummaryCard(
+                                            subjectId = subject.subjectId!!,
                                             name = subject.subjectName,
                                             address = subject.houseNo + ", " + subject.cohortName,
                                             location = subject.villageName,
@@ -258,7 +273,12 @@ fun DataTabScreen(
                                             income = "",
                                             expense = "",
                                             assetValue = "",
-                                        )
+                                            onAssetValueItemClicked = {
+
+                                            }
+                                        ) {
+
+                                        }
                                     }
 
                                 }

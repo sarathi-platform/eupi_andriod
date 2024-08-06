@@ -55,11 +55,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.SaveLivelihoodMappingUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
@@ -100,14 +101,16 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.SaveLivelihoodMappingForSubjectRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.SaveLivelihoodMappingForSubjectRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepository
-import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
@@ -975,6 +978,27 @@ class DataLoadingModule {
     ): SaveLivelihoodMappingUseCase {
         return SaveLivelihoodMappingUseCase(
             saveLivelihoodMappingForSubjectRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsWithLivelihoodMappingRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao
+    ): FetchDidiDetailsWithLivelihoodMappingRepository {
+        return FetchDidiDetailsWithLivelihoodMappingRepositoryImpl(
+            coreSharedPrefs, subjectEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsWithLivelihoodMappingUseCase(
+        fetchDidiDetailsWithLivelihoodMappingRepository: FetchDidiDetailsWithLivelihoodMappingRepository
+    ): FetchDidiDetailsWithLivelihoodMappingUseCase {
+        return FetchDidiDetailsWithLivelihoodMappingUseCase(
+            fetchDidiDetailsWithLivelihoodMappingRepository
         )
     }
 

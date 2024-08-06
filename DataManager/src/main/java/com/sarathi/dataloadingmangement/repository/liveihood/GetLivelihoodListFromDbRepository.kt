@@ -1,6 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
-import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodModel
+import com.nudge.core.model.uiModel.LivelihoodModel
 
 
 interface GetLivelihoodListFromDbRepository {

@@ -2,6 +2,7 @@ package com.nudge.incomeexpensemodule.ui
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
+import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
@@ -42,9 +44,11 @@ import com.nudge.core.ui.theme.incomeCardTopViewColor
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
-fun UserProfileCard(
+fun SubjectLivelihoodEventSummaryCard(
+    subjectId: Int,
     name: String,
     address: String,
     location: String,
@@ -52,14 +56,21 @@ fun UserProfileCard(
     income: String,
     expense: String,
     assetValue: String,
-//    imageRes: Int
+//    imageRes: Int,
+    onAssetValueItemClicked: () -> Unit,
+    onSummaryCardClicked: () -> Unit
 ) {
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(dimen_8_dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .clickable {
+                    onSummaryCardClicked()
+                }
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -132,14 +143,24 @@ fun UserProfileCard(
                     )
                 }
                 Spacer(modifier = Modifier.height(dimen_8_dp))
-                IncomeExpenseAssetAmountView(income, expense, assetValue)
+                IncomeExpenseAssetAmountView(income, expense, assetValue) {
+
+                }
             }
         }
     }
 }
 
 @Composable
-fun IncomeExpenseAssetAmountView(income: String, expense: String, assetValue: String) {
+fun IncomeExpenseAssetAmountView(
+    income: String,
+    expense: String,
+    primaryAssetIcon: String = BLANK_STRING,
+    primaryAssetCount: String = BLANK_STRING,
+    secondaryAssetIcon: String = BLANK_STRING,
+    secondaryAssetCount: String = BLANK_STRING,
+    onAssetValueItemClicked: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,17 +176,44 @@ fun IncomeExpenseAssetAmountView(income: String, expense: String, assetValue: St
             Text(text = "Expense", style = getTextColor(smallTextStyleWithNormalWeight))
             Text(text = expense, style = getTextColor(didiDetailItemStyle))
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable {
+            onAssetValueItemClicked()
+        }) {
             Text(
                 text = "Asset Value",
                 style = getTextColor(smallTextStyleWithNormalWeight)
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = assetValue,
-                    style = getTextColor(didiDetailItemStyle),
-                )
-                Spacer(modifier = Modifier.width(dimen_5_dp))
+                if (primaryAssetIcon != BLANK_STRING) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right_circle), //TODO change this to livelihood count
+                        contentDescription = null,
+                        tint = assetValueIconColor
+                    )
+                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                }
+                if (primaryAssetCount != BLANK_STRING) {
+                    Text(
+                        text = primaryAssetCount,
+                        style = getTextColor(didiDetailItemStyle),
+                    )
+                    CustomHorizontalSpacer(size = dimen_5_dp)
+                }
+                if (secondaryAssetIcon != BLANK_STRING) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right_circle), //TODO change this to livelihood count
+                        contentDescription = null,
+                        tint = assetValueIconColor
+                    )
+                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                }
+                if (secondaryAssetCount != BLANK_STRING) {
+                    Text(
+                        text = secondaryAssetCount,
+                        style = getTextColor(didiDetailItemStyle),
+                    )
+                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                }
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_right_circle),
                     contentDescription = null,
@@ -183,7 +231,8 @@ private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextSty
 @Preview(showSystemUi = true, showBackground = true)
 fun UserProfileCardList() {
     Column {
-        UserProfileCard(
+        SubjectLivelihoodEventSummaryCard(
+            subjectId = 123,
             name = "Shanti Devi",
             address = "#45, Killu dada",
             location = "Sundar Pahari",
@@ -191,9 +240,15 @@ fun UserProfileCardList() {
             income = "₹ 2000",
             expense = "₹ 500",
             assetValue = "₹ 8000",
-//            imageRes = R.drawable.profile_img
-        )
-        UserProfileCard(
+//            imageRes = R.drawable.profile_img,
+            onAssetValueItemClicked = {
+
+            }
+        ) {
+
+        }
+        SubjectLivelihoodEventSummaryCard(
+            subjectId = 234,
             name = "Surbhi Verma",
             address = "#45, Killu dada",
             location = "Sundar Pahari",
@@ -201,7 +256,10 @@ fun UserProfileCardList() {
             income = "₹ 1000",
             expense = "₹ 500",
             assetValue = "₹ 1000",
-//            imageRes = R.drawable.profile_img
-        )
+//            imageRes = R.drawable.profile_img,
+            onAssetValueItemClicked = {}
+        ) {
+
+        }
     }
 }

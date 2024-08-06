@@ -1,7 +1,7 @@
-package com.sarathi.dataloadingmangement.domain.use_case.livlihood
+package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
-import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
 import javax.inject.Inject
 
 class FetchDidiDetailsFromDbUseCase @Inject constructor(

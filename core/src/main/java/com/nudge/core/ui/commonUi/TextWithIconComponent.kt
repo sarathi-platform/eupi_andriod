@@ -158,10 +158,15 @@ data class IconProperties<T>(
 ) {
 
     companion object {
-        fun <T> getBasicIconProperties(icon: T, contentDescription: String?): IconProperties<T> {
+        fun <T> getBasicIconProperties(
+            icon: T,
+            contentDescription: String?,
+            tint: Color = Color.Black
+        ): IconProperties<T> {
             return IconProperties(
                 icon = icon,
                 contentDescription = contentDescription,
+                tint = tint
             )
         }
     }

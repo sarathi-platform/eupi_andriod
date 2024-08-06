@@ -4,7 +4,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
-import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -12,8 +13,8 @@ import javax.inject.Inject
 class DataTabUseCase @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     val fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
-
-    ) {
+    val fetchDidiDetailsWithLivelihoodMappingUseCase: FetchDidiDetailsWithLivelihoodMappingUseCase
+) {
 
     suspend operator fun invoke(
         isRefresh: Boolean,

@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.searchFieldBg
 import kotlinx.coroutines.launch
@@ -55,20 +56,42 @@ fun <T> BottomSheetScaffoldComponent(
                 SelectionSheetItemView(
                     items = bottomSheetContentItemList,
                     SelectionSheetItem = { index, item ->
-                        CustomTextViewComponent(
-                            textProperties = TextProperties
-                                .getBasicTextProperties(text = item)
-                                .copy(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            coroutineScope.launch {
-                                                onBottomSheetItemSelected(index)
-                                                bottomSheetScaffoldProperties.sheetState.hide()
-                                            }
-                                        }
+                        when (item) {
+                            is LivelihoodModel -> {
+                                CustomTextViewComponent(
+                                    textProperties = TextProperties
+                                        .getBasicTextProperties(text = item.name)
+                                        .copy(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    coroutineScope.launch {
+                                                        onBottomSheetItemSelected(index)
+                                                        bottomSheetScaffoldProperties.sheetState.hide()
+                                                    }
+                                                }
+                                        )
                                 )
-                        )
+                            }
+
+                            else -> {
+                                CustomTextViewComponent(
+                                    textProperties = TextProperties
+                                        .getBasicTextProperties(text = item)
+                                        .copy(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    coroutineScope.launch {
+                                                        onBottomSheetItemSelected(index)
+                                                        bottomSheetScaffoldProperties.sheetState.hide()
+                                                    }
+                                                }
+                                        )
+                                )
+                            }
+                        }
+
                     }
                 )
             }

@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.model.uiModel.livelihood
 
+import com.nudge.core.model.uiModel.LivelihoodModel
+
 data class LivelihoodUiEntity(
     val id: Int,
     val livelihoodEntity: LivelihoodModel,

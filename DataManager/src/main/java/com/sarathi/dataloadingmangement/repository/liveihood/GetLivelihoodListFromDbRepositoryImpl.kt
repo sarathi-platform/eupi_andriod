@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
-import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodModel
 import javax.inject.Inject
 
 

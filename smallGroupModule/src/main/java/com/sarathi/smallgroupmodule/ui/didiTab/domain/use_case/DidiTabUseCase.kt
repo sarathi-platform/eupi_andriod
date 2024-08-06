@@ -5,7 +5,7 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
