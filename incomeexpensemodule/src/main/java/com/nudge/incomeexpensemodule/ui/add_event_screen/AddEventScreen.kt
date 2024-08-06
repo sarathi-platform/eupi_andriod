@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -29,13 +31,16 @@ import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
+import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 
 @Composable
 fun AddEventScreen(
-    navController: NavController = rememberNavController(),
+    navController: NavHostController = rememberNavController(),
+    subjectId: Int,
+    subjectName: String,
     viewModel: AddEventViewModel = hiltViewModel()
 ) {
     ToolBarWithMenuComponent(
@@ -145,5 +150,5 @@ fun AddEventScreen(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    AddEventScreen()
+    //AddEventScreen()
 }

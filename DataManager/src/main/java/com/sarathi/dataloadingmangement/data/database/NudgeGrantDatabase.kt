@@ -47,6 +47,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -83,6 +84,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEvent
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodLanguageReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 
@@ -125,7 +127,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         LivelihoodEventEntity::class,
         MoneyJournalEntity::class,
         AssetJournalEntity::class,
-        SubjectLivelihoodMappingEntity::class
+        SubjectLivelihoodMappingEntity::class,
+        SubjectLivelihoodEventMappingEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -186,6 +189,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun livelihoodEventDao(): LivelihoodEventDao
 
     abstract fun subjectLivelihoodMappingDao(): SubjectLivelihoodMappingDao
+
+    abstract fun subjectLivelihoodEventMappingDao(): SubjectLivelihoodEventMappingDao
 
     class NudgeDatabaseCallback : Callback()
 

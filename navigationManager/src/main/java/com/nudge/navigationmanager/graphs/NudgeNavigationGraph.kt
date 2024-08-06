@@ -72,6 +72,7 @@ object NudgeNavigationGraph {
         "mission_summary_graph/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}"
     val MAT_GRAPH = "mat_graph"
     val SMALL_GROUP_GRAPH = "small_group_graph"
+    val INCOME_EXPENSE_GRAPH = "income_expense_graph"
 
 }
 

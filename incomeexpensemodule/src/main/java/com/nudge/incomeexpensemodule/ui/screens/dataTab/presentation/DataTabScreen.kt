@@ -57,6 +57,7 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.nudge.incomeexpensemodule.navigation.navigateToDataSummaryScreen
 import com.nudge.incomeexpensemodule.ui.SubjectLivelihoodEventSummaryCard
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel.DataTabScreenViewModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -277,6 +278,11 @@ fun DataTabScreen(
 
                                             }
                                         ) {
+                                            navigateToDataSummaryScreen(
+                                                navController = navHostController,
+                                                subjectId = 1,
+                                                subjectName = "abc"
+                                            )
 
                                         }
                                     }
