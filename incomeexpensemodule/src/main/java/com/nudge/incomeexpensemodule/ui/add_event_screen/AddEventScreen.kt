@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
@@ -27,12 +28,16 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
+import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 
 @Composable
-fun AddEventScreen(navController: NavController = rememberNavController()) {
+fun AddEventScreen(
+    navController: NavController = rememberNavController(),
+    viewModel: AddEventViewModel = hiltViewModel()
+) {
     ToolBarWithMenuComponent(
         title = "Asset Purchase",
         modifier = Modifier.fillMaxSize(),
@@ -91,13 +96,9 @@ fun AddEventScreen(navController: NavController = rememberNavController()) {
                     isEditAllowed = true,
                     title = "Livelihood",
                     isMandatory = true,
-                    sources = listOf(
-                        ValuesDto(id = 1, value = "item1"),
-                        ValuesDto(id = 2, value = "item2"),
-                        ValuesDto(id = 3, value = "item3"),
-                        ValuesDto(id = 4, value = "item4")
-                    ),
+                    sources = viewModel.livelihoodDropdownValue,
                     onAnswerSelection = { selectedValue ->
+
                     }
                 )
 
