@@ -3,7 +3,6 @@ package com.sarathi.dataloadingmangement.model.uiModel.livelihood
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
 data class SubjectEntityWithLivelihoodMappingUiModel(
-    val userId: String,
     val subjectId: Int,
     val subjectName: String,
     val dadaName: String,
