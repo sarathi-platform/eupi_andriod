@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -32,7 +32,11 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 
 @Composable
-fun AddEventScreen(navController: NavController = rememberNavController()) {
+fun AddEventScreen(
+    navController: NavHostController = rememberNavController(),
+    subjectId: Int,
+    subjectName: String
+) {
     ToolBarWithMenuComponent(
         title = "Asset Purchase",
         modifier = Modifier.fillMaxSize(),
@@ -144,5 +148,5 @@ fun AddEventScreen(navController: NavController = rememberNavController()) {
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    AddEventScreen()
+    //AddEventScreen()
 }

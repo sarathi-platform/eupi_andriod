@@ -9,9 +9,11 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
 import com.nudge.incomeexpensemodule.ui.LivelihoodScreen
+import com.nudge.incomeexpensemodule.ui.add_event_screen.AddEventScreen
+import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_ID
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_NAME
-import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.INCOME_EXPENSE_GRAPH
 
 fun NavGraphBuilder.IncomeExpenseNavigation(
     navController: NavHostController,
@@ -19,7 +21,7 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
     onBackPressed: () -> Unit
 ) {
     navigation(
-        route = MAT_GRAPH,
+        route = INCOME_EXPENSE_GRAPH,
         startDestination = IncomeExpenseScreens.DataTabSummaryScreen.route
     ) {
         composable(
@@ -32,7 +34,26 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                 }
             )) {
             LivelihoodScreen(
-                navHostController = navController,
+                navController = navController,
+                subjectId = it.arguments?.getInt(
+                    ARG_SUBJECT_ID
+                ) ?: 0,
+                subjectName = it.arguments?.getString(
+                    ARG_SUBJECT_NAME
+                ) ?: BLANK_STRING
+            )
+        }
+        composable(
+            route = IncomeExpenseScreens.AddEventScreen.route, arguments = listOf(
+                navArgument(name = ARG_SUBJECT_NAME) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_SUBJECT_ID) {
+                    type = NavType.IntType
+                }
+            )) {
+            AddEventScreen(
+                navController = navController,
                 subjectId = it.arguments?.getInt(
                     ARG_SUBJECT_ID
                 ) ?: 0,
@@ -45,5 +66,9 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
 }
 
 fun navigateToDataSummaryScreen(navController: NavController, subjectId: Int, subjectName: String) {
-    navController.navigate("${IncomeExpenseScreens.DataTabSummaryScreen}/$subjectId/$subjectName")
+    navController.navigate("${IncomeExpenseConstants.DATA_TAB_SUMMARY_SCREEN_ROUTE_NAME}/$subjectId/$subjectName")
+}
+
+fun navigateToAddEventScreen(navController: NavController, subjectId: Int, subjectName: String) {
+    navController.navigate("${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/$subjectId/$subjectName")
 }
