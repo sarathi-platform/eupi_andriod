@@ -288,6 +288,7 @@ fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel,
         }
 
         WorkInfo.State.ENQUEUED -> {
+            viewModel.isSyncStarted.value = true
             viewModel.checkSyncProgressBarStatus()
             viewModel.findFailedEventList()
             CoreLogger.d(
