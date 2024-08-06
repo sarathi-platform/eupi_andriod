@@ -83,7 +83,7 @@ fun DataSummaryScreen(
                         AddEventButton(navController = navController)
                     }
                 } else {
-                    DataSummaryView(navController)
+                    DataSummaryView(navController, subjectId, subjectName)
                 }
 
             }
@@ -95,7 +95,7 @@ fun DataSummaryScreen(
 }
 
 @Composable
-private fun DataSummaryView(navController: NavHostController) {
+private fun DataSummaryView(navController: NavHostController, subjectId: Int, subjectName: String) {
     TabBarContainer()
     Spacer(modifier = Modifier.height(16.dp))
     DropDownConatiner()
@@ -106,7 +106,7 @@ private fun DataSummaryView(navController: NavHostController) {
     Spacer(modifier = Modifier.height(16.dp))
     EventView()
     Spacer(modifier = Modifier.height(16.dp))
-    ShowMoreButton(navController = navController)
+    ShowMoreButton(navController = navController, subjectId, subjectName)
     Spacer(modifier = Modifier.height(16.dp))
 }
 
@@ -332,6 +332,6 @@ fun DefaultPreview() {
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        DataSummaryView(navController = rememberNavController())
+        DataSummaryView(navController = rememberNavController(), 0, "")
     }
 }
