@@ -32,7 +32,7 @@ interface EventsDao {
     @Query("SELECT * from $EventsTable where name = :eventName ORDER BY created_date DESC")
     fun getAllEventsForEventName(eventName: String): List<Events>
 
-    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber ORDER BY modified_date DESC LIMIT :batchLimit")
+    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber ORDER BY created_date LIMIT :batchLimit")
     fun getAllPendingEvent(status: List<String>,batchLimit:Int,retryCount: Int,mobileNumber:String): List<Events>
 
     @Query("SELECT COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber")
@@ -100,7 +100,7 @@ interface EventsDao {
     fun getSuccessEventCount(status:String,mobileNumber:String):List<Events>
 
 
-    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber AND type NOT LIKE '%image%' ORDER BY modified_date DESC LIMIT :batchLimit")
+    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber AND type NOT LIKE '%image%' ORDER BY created_date LIMIT :batchLimit")
     fun getAllPendingDataEvent(
         status: List<String>,
         batchLimit: Int,
@@ -108,7 +108,7 @@ interface EventsDao {
         mobileNumber: String
     ): List<Events>
 
-    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber AND type LIKE '%image%' ORDER BY modified_date DESC LIMIT :batchLimit")
+    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber AND type LIKE '%image%' ORDER BY created_date LIMIT :batchLimit")
     fun getAllPendingImageEvent(
         status: List<String>,
         batchLimit: Int,
