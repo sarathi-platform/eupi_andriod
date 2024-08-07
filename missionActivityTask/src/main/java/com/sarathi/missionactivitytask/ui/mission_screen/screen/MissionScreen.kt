@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -166,10 +167,10 @@ fun MissionScreen(
                                 primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
                                     onNavigationToActivity(
-                                        /*mission.description.contains(
+                                        mission.description.contains(
                                             "Baseline",
                                             true
-                                        )*/false, //TODO Temp code to be removed after data is fetched from server.
+                                        ), //TODO Temp code to be removed after data is fetched from server.
                                         mission
                                     ) //TODO handle navigation to activity based on mission.
                                     /*navigateToActivityScreen(
@@ -183,7 +184,7 @@ fun MissionScreen(
                             CustomVerticalSpacer()
                         }
                         item {
-                            CustomVerticalSpacer()
+                            CustomVerticalSpacer(size = dimen_56_dp)
                         }
                     }
                 }
