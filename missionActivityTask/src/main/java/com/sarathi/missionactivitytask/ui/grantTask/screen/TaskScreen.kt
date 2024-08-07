@@ -50,8 +50,8 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
-import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
@@ -80,7 +80,8 @@ fun TaskScreen(
     isSecondaryButtonVisible: Boolean = false,
     isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    taskScreenContent: @Composable (viewModel: TaskScreenViewModel, navController: NavController, task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -262,7 +263,9 @@ fun TaskScreen(
                                 itemsIndexed(
                                     items = itemsInCategory
                                 ) { _, task ->
-                                    TaskRowView(viewModel, navController, task)
+
+                                    taskScreenContent(viewModel, navController, task)
+
                                     CustomVerticalSpacer()
                                 }
                                 item {
@@ -275,7 +278,9 @@ fun TaskScreen(
                                 itemsIndexed(
                                     items = viewModel.filterList.value.entries.toList()
                                 ) { _, task ->
-                                    TaskRowView(viewModel, navController, task)
+
+                                    taskScreenContent(viewModel, navController, task)
+
                                     CustomVerticalSpacer()
                                 }
                                 item {
@@ -292,7 +297,7 @@ fun TaskScreen(
 }
 
 @Composable
-private fun TaskRowView(
+fun TaskRowView(
     viewModel: TaskScreenViewModel,
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
@@ -302,7 +307,7 @@ private fun TaskRowView(
             viewModel.activityConfigUiModel?.let {
                 if (subjectName.isNotBlank()) {
                     val sanctionedAmount = try {
-                        task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                        task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
                             ?: DEFAULT_ID
                     } catch (ex: Exception) {
                         CoreLogger.e(
@@ -331,7 +336,7 @@ private fun TaskRowView(
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = TaskCardModel(
+                task.value[TaskCardSlots.TASK_STATUS.name] = TaskCardModel(
                     value = SurveyStatusEnum.NOT_AVAILABLE.name,
                     label = BLANK_STRING,
                     icon = null
@@ -344,23 +349,23 @@ private fun TaskRowView(
             }
         },
         imagePath = viewModel.getFilePathUri(
-            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
+            task.value[TaskCardSlots.TASK_IMAGE.name]?.value ?: BLANK_STRING
         ),
-        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
-        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
-        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
-        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
-        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
-        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
-        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
-        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name],
-        subtitle6 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_8.name],
+        title = task.value[TaskCardSlots.TASK_TITLE.name],
+        subTitle1 = task.value[TaskCardSlots.TASK_SUBTITLE.name],
+        primaryButtonText = task.value[TaskCardSlots.TASK_PRIMARY_BUTTON.name],
+        secondaryButtonText = task.value[TaskCardSlots.TASK_SECONDARY_BUTTON.name],
+        status = task.value[TaskCardSlots.TASK_STATUS.name],
+        subtitle2 = task.value[TaskCardSlots.TASK_SUBTITLE_2.name],
+        subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
+        subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
+        subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name],
+        subtitle6 = task.value[TaskCardSlots.TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
-        isNotAvailableButtonEnable = task.value[GrantTaskCardSlots.GRANT_TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
+        isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
             "true"
         ),
-        isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
+        isShowSecondaryStatusIcon = task.value[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
         ),
     )
