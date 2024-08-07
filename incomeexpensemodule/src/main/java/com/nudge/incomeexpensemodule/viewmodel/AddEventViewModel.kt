@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
@@ -8,7 +9,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLive
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -36,6 +40,9 @@ class AddEventViewModel @Inject constructor(
 
     private val _livelihoodProductDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodProductDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodProductDropdownValue
+    private var eventList: List<LivelihoodEventUiModel> = ArrayList<LivelihoodEventUiModel>()
+    var questionTypeMap = HashMap<String, LivelihoodEventDataCaptureTypeEnum>()
+    var questionVisibilityMap = mutableStateMapOf<LivelihoodEventDataCaptureTypeEnum, Boolean>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -76,8 +83,10 @@ class AddEventViewModel @Inject constructor(
             _livelihoodEventDropdownValue.clear()
             _livelihoodAssetDropdownValue.clear()
             _livelihoodProductDropdownValue.clear()
-
-            _livelihoodEventDropdownValue.addAll(fetchLivelihoodEventUseCase.invoke(livelihoodId))
+            eventList = fetchLivelihoodEventUseCase.invoke(livelihoodId)
+            _livelihoodEventDropdownValue.addAll(eventList.map {
+                ValuesDto(id = it.id, value = it.name, isSelected = false)
+            })
             _livelihoodAssetDropdownValue.addAll(fetchAssetUseCase.invoke(livelihoodId))
             _livelihoodProductDropdownValue.addAll(fetchProductUseCase.invoke(livelihoodId))
 
@@ -89,5 +98,22 @@ class AddEventViewModel @Inject constructor(
         return livelihoodForDidi.map {
             ValuesDto(id = it.livelihoodId, value = it.name, isSelected = false)
         }
+    }
+
+    fun onEventSelected(selectedValue: ValuesDto) {
+
+        val eventType = eventList.find { it.id == selectedValue.id }?.eventType
+        if (eventType == LivelihoodEventTypeDataCaptureMapping.Income.name) {
+            LivelihoodEventTypeDataCaptureMapping.Income.livelihoodEventDataCaptureTypes.forEach {
+                if (questionTypeMap.containsValue(it)) {
+                    questionVisibilityMap[it] = true
+                } else {
+                    questionVisibilityMap[it] = false
+                }
+            }
+
+        }
+
+
     }
 }

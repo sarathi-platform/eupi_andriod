@@ -28,9 +28,11 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 
@@ -116,45 +118,55 @@ fun AddEventScreen(
                     isMandatory = true,
                     sources = viewModel.livelihoodEventDropdownValue,
                     onAnswerSelection = { selectedValue ->
-
+                        viewModel.onEventSelected(selectedValue)
                     }
                 )
-
-                TypeDropDownComponent(
-                    isEditAllowed = true,
-                    title = "Type of Asset*",
-                    isMandatory = true,
-                    sources = viewModel.livelihoodAssetDropdownValue,
-                    onAnswerSelection = { selectedValue ->
-                    }
-                )
-                TypeDropDownComponent(
-                    isEditAllowed = true,
-                    title = "Products*",
-                    isMandatory = true,
-                    sources = viewModel.livelihoodProductDropdownValue,
-                    onAnswerSelection = { selectedValue ->
-                    }
-                )
-                InputComponent(
-                    maxLength = 7,
-                    isMandatory = true,
-                    isEditable = true,
-                    defaultValue = BLANK_STRING,
-                    title = "Amount",
-                    isOnlyNumber = true,
-                    hintText = BLANK_STRING
-                ) { selectedValue, remainingAmout ->
-
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
+                    TypeDropDownComponent(
+                        isEditAllowed = true,
+                        title = "Type of Asset*",
+                        isMandatory = true,
+                        sources = viewModel.livelihoodAssetDropdownValue,
+                        onAnswerSelection = { selectedValue ->
+                        }
+                    )
                 }
-                IncrementDecrementNumberComponent(
-                    isMandatory = true,
-                    title = "Increase in Number*",
-                    isEditAllowed = true,
-                    currentValue = "0",
-                    onAnswerSelection = { inputValue ->
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_PRODUCT].value()) {
+
+                    TypeDropDownComponent(
+                        isEditAllowed = true,
+                        title = "Products*",
+                        isMandatory = true,
+                        sources = viewModel.livelihoodProductDropdownValue,
+                        onAnswerSelection = { selectedValue ->
+                        }
+                    )
+                }
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.AMOUNT].value()) {
+
+                    InputComponent(
+                        maxLength = 7,
+                        isMandatory = true,
+                        isEditable = true,
+                        defaultValue = BLANK_STRING,
+                        title = "Amount",
+                        isOnlyNumber = true,
+                        hintText = BLANK_STRING
+                    ) { selectedValue, remainingAmout ->
+
                     }
-                )
+                }
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
+
+                    IncrementDecrementNumberComponent(
+                        isMandatory = true,
+                        title = "Increase in Number*",
+                        isEditAllowed = true,
+                        currentValue = "0",
+                        onAnswerSelection = { inputValue ->
+                        }
+                    )
+                }
             }
 
 
