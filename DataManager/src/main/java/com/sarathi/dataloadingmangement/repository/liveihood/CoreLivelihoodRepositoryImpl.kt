@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
@@ -16,7 +17,9 @@ import com.sarathi.dataloadingmangement.model.response.Asset
 import com.sarathi.dataloadingmangement.model.response.LanguageReference
 import com.sarathi.dataloadingmangement.model.response.Livelihood
 import com.sarathi.dataloadingmangement.model.response.LivelihoodEvent
+import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.model.response.Product
+import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
 
 class CoreLivelihoodRepositoryImpl @Inject constructor(
@@ -26,15 +29,21 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
     private val livelihoodDao: LivelihoodDao,
     private val livelihoodLanguageDao: LivelihoodLanguageDao,
     private val coreSharedPrefs: CoreSharedPrefs,
+    private val dataLoadingApiService: DataLoadingApiService
 ) : ICoreLivelihoodRepository {
-    override suspend fun <T> saveLivelihoodItemListToDB(items: List<T>) {
+    override suspend fun getLivelihoodConfigFromNetwork(): ApiResponseModel<List<LivelihoodResponse>> {
+        return dataLoadingApiService.fetchLivelihoodConfigData(userId = 1)//coreSharedPrefs.getUserNameInInt())
+    }
+
+    override suspend fun <T> saveLivelihoodItemListToDB(items: List<T>, livelihoodId: Int) {
         items.forEach { item ->
             when (item) {
                 is Asset -> {
                     assetDao.insertAsset(
                         AssetEntity.getAssetEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            asset = item
+                            asset = item,
+                            livelihoodId = livelihoodId
                         )
                     )
                     saveLivelihoodLanguageToDB(
@@ -47,7 +56,8 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                     productDao.insertProduct(
                         ProductEntity.getProductEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            product = item
+                            product = item,
+                            livelihoodId = livelihoodId
                         )
                     )
                     saveLivelihoodLanguageToDB(
@@ -60,7 +70,8 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                     livelihoodEventDao.insertLivelihoodEvent(
                         LivelihoodEventEntity.getLivelihoodEventEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            livelihoodEvent = item
+                            livelihoodEvent = item,
+                            livelihoodId = livelihoodId
                         )
                     )
                     saveLivelihoodLanguageToDB(

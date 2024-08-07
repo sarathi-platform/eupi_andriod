@@ -44,6 +44,7 @@ import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomTextViewComponent
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -254,7 +255,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(
                                                         dataTabScreenViewModel.filters.toList()
-                                                            .find { it.id == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                            .find { it.livelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
                                                     )
                                                 }
                                             }
@@ -280,24 +281,23 @@ fun DataTabScreen(
                                         ) {
                                             navigateToDataSummaryScreen(
                                                 navController = navHostController,
-                                                subjectId = 1,
-                                                subjectName = "abc"
+                                                subjectId = subject.subjectId,
+                                                subjectName = subject.subjectName
                                             )
 
                                         }
                                     }
 
-                                }
+                                    item {
+                                        CustomVerticalSpacer()
+                                    }
 
+                                }
                             }
                         }
-
                     }
-
                 }
             )
         }
     }
-
-
 }

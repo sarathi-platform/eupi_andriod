@@ -1,4 +1,4 @@
-package com.nudge.incomeexpensemodule.ui.data_summary_screen
+package com.nudge.incomeexpensemodule.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,7 +67,9 @@ fun DataSummaryScreen(
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
-        onBackIconClick = { },
+        onBackIconClick = {
+            navController.navigateUp()
+        },
         onSearchValueChange = {},
         onBottomUI = { },
         onContentUI = { a, b, c ->
@@ -83,7 +85,7 @@ fun DataSummaryScreen(
                         AddEventButton(navController = navController)
                     }
                 } else {
-                    DataSummaryView(navController)
+                    DataSummaryView(navController, subjectId, subjectName)
                 }
 
             }
@@ -95,7 +97,7 @@ fun DataSummaryScreen(
 }
 
 @Composable
-private fun DataSummaryView(navController: NavHostController) {
+private fun DataSummaryView(navController: NavHostController, subjectId: Int, subjectName: String) {
     TabBarContainer()
     Spacer(modifier = Modifier.height(16.dp))
     DropDownConatiner()
@@ -106,7 +108,7 @@ private fun DataSummaryView(navController: NavHostController) {
     Spacer(modifier = Modifier.height(16.dp))
     EventView()
     Spacer(modifier = Modifier.height(16.dp))
-    ShowMoreButton(navController = navController)
+    ShowMoreButton(navController = navController, subjectId, subjectName)
     Spacer(modifier = Modifier.height(16.dp))
 }
 
@@ -184,7 +186,7 @@ fun EventsList() {
 
 
 @Composable
-fun ShowMoreButton(navController: NavHostController) {
+fun ShowMoreButton(navController: NavHostController, subjectId: Int, subjectName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,8 +197,8 @@ fun ShowMoreButton(navController: NavHostController) {
             onClick = {
                 navigateToAddEventScreen(
                     navController = navController,
-                    subjectName = "ABC",
-                    subjectId = 1
+                    subjectName = subjectName,
+                    subjectId = subjectId
                 )
             },
             modifier = Modifier
@@ -332,6 +334,6 @@ fun DefaultPreview() {
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        DataSummaryView(navController = rememberNavController())
+        DataSummaryView(navController = rememberNavController(), 0, "")
     }
 }

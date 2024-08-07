@@ -11,5 +11,8 @@ class GetLivelihoodListFromDbUseCase @Inject constructor(
     suspend operator fun invoke(): List<LivelihoodModel> {
         return getLivelihoodListFromDbRepository.getLivelihoodListFromDb()
     }
+    suspend operator fun invoke(livelihoodIds: List<Int>): List<LivelihoodModel> {
+        return getLivelihoodListFromDbRepository.getLivelihoodListFromDb(livelihoodIds)
+    }
 
 }

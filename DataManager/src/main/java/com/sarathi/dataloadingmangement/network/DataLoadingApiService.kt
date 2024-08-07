@@ -5,21 +5,20 @@ import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
-import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
+import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
+import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
-import com.sarathi.dataloadingmangement.network.request.LivelihoodRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
-import com.sarathi.dataloadingmangement.network.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -35,8 +34,8 @@ interface DataLoadingApiService {
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
-    @POST("")
-    suspend fun fetchLivelihoodData(@Body livelihoodRequest: List<LivelihoodRequest>): ApiResponseModel<List<LivelihoodResponse>>
+    @GET(SUBPATH_GET_LIVELIHOOD_CONFIG)
+    suspend fun fetchLivelihoodConfigData(@Query("userId") userId: Int): ApiResponseModel<List<LivelihoodResponse>>
 
     // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
