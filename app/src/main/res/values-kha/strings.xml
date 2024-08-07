@@ -212,8 +212,8 @@
     <string name="complete_didi_addition">Pyndep ka jingpynrung kyrteng</string>
     <string name="user_id_text">ID: </string>
     <string name="empty_tola_string">Khem pynrung ia ka kyrteng ka dong</string>
-    <string name="tola_conirmation_text_plural">Ka jingthep ia ka kyrteng ba thymmai jong %1$s ki dong ka long kaba jop</string>
-    <string name="tola_conirmation_text_singular">Ka jingthep ia ka kyrteng ba thymmai jong %1$s i dong ka long kaba jop</string>
+    <string name="tola_conirmation_text_plural">Ka jingthep ia ka kyrteng ba thymmai jong %1$ ki dong ka long kaba jop</string>
+    <string name="tola_conirmation_text_singular">Ka jingthep ia ka kyrteng ba thymmai jong %1$ i dong ka long kaba jop</string>
     <string name="complete_transect_walk_text">Pyndep ia ka jingiaid lyngba ka shnong</string>
     <string name="transect_walk_completed_message">La dep ia ka jingiaid lyngba ia ka shnong {VILLAGE_NAME}</string>
     <string name="wealth_ranking_completed_message">La pyndep ia ka jing iashimbynta ha kaba bynta ia ka kyrdan ka ioh ka kot ha ka shnong {VILLAGE_NAME}</string>
