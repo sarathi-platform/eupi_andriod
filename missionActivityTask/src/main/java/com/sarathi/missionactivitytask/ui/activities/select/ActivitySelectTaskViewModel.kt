@@ -8,9 +8,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchActivitySelectSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
@@ -24,6 +27,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -59,10 +63,19 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
+    private val fetchActivitySelectSurveyDataFromDB: FetchActivitySelectSurveyDataFromDB,
     private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
+    private var surveyId: Int = 0
+    private var sectionId: Int = 0
+    private var taskId: Int = 0
+    private var grantID: Int = 0
+    private var activityConfigId: Int = 0
+    private var granType: String = BLANK_STRING
+    private var subjectType: String = BLANK_STRING
+    private var referenceId: String = BLANK_STRING
     var taskUiModel: List<TaskUiModel>? = null
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
@@ -70,21 +83,23 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     var isFilterEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
     var activityConfigUiModel: ActivityConfigUiModel? = null
+    private var taskEntity: ActivityTaskEntity? = null
 
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
     private val _taskList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
-    val taskList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _taskList
     private val _filterList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
-
+    private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
+    val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitTaskScreenState -> {
                 initTaskScreen(event.taskList)
+                intiQuestions()
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -292,6 +307,29 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 missionId = missionId,
                 activityId = activityId, surveyName = "CSG"
             )
+        }
+    }
+
+    private fun intiQuestions() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            taskEntity = getTaskUseCase.getTask(taskId)
+            if (_questionUiModel.value.isEmpty()) {
+                _questionUiModel.value = fetchDataUseCase.invoke(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    activityConfigId = activityConfigId,
+                    referenceId = referenceId,
+                    grantId = grantID
+                )
+            }
+            withContext(Dispatchers.Main) {
+                onEvent(
+                    com.sarathi.dataloadingmangement.util.event.LoaderEvent.UpdateLoaderState(
+                        false
+                    )
+                )
+            }
         }
     }
 }

@@ -78,9 +78,9 @@ import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
-import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
@@ -89,7 +89,6 @@ import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.ImageViewer
 import com.sarathi.missionactivitytask.ui.basic_content.component.SubContainerView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
-import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -193,34 +192,6 @@ fun ActivitySelectTaskScreen(
                         )
                     }
                 }
-                if (isSearch) {
-
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(start = dimen_8_dp, end = dimen_8_dp, bottom = dimen_10_dp)
-                    ) {
-                        SearchWithFilterViewComponent(
-                            placeholderString = viewModel.searchLabel.value,
-                            filterSelected = viewModel.isGroupByEnable.value,
-                            modifier = Modifier.padding(horizontal = 10.dp),
-                            showFilter = viewModel.isFilterEnable.value,
-                            onFilterSelected = {
-                                if (viewModel.filterList.value.isNotEmpty()) {
-                                    viewModel.isGroupByEnable.value = !it
-                                }
-                            },
-                            onSearchValueChange = { queryTerm ->
-                                viewModel.onEvent(
-                                    SearchEvent.PerformSearch(
-                                        queryTerm,
-                                        viewModel.isGroupByEnable.value,
-                                        BLANK_STRING
-                                    )
-                                )
-                            })
-                    }
-                }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -250,6 +221,93 @@ fun ActivitySelectTaskScreen(
                                     label = "option1, option2 ",
                                     value = "subTitle 1",
                                     icon = null
+                                )
+                                val optionitemList = listOf(
+                                    OptionItemEntity(
+                                        id = 1,
+                                        sectionId = 5,
+                                        originalValue = "Yes",
+                                        selectedValue = BLANK_STRING,
+                                        conditions = emptyList(),
+                                        isSelected = false,
+                                        optionType = QuestionType.MultiSelect.name,
+                                        questionId = 22,
+                                        conditional = false,
+                                        optionImage = BLANK_STRING,
+                                        optionValue = null,
+                                        contentEntities = emptyList(),
+                                        selectedValueId = 0,
+                                        count = 0,
+                                        order = 1,
+                                        userId = "Ultra Poor change maker (UPCM)_6666667777",
+                                        values = null,
+                                        weight = 0,
+                                        optionId = 9,
+                                        surveyId = 1,
+                                        summary = BLANK_STRING
+                                    ),
+
+                                    OptionItemEntity(
+                                        id = 2,
+                                        sectionId = 5,
+                                        originalValue = "No",
+                                        selectedValue = BLANK_STRING,
+                                        conditions = emptyList(),
+                                        isSelected = false,
+                                        optionType = QuestionType.MultiSelect.name,
+                                        questionId = 22,
+                                        conditional = false,
+                                        optionImage = BLANK_STRING,
+                                        optionValue = null,
+                                        contentEntities = emptyList(),
+                                        selectedValueId = 0,
+                                        count = 0,
+                                        order = 2,
+                                        userId = "Ultra Poor change maker (UPCM)_6666667777",
+                                        values = null,
+                                        weight = 0,
+                                        optionId = 10,
+                                        surveyId = 1,
+                                        summary = BLANK_STRING
+                                    ),
+
+                                    OptionItemEntity(
+                                        id = 3,
+                                        sectionId = 5,
+                                        originalValue = "Not Available",
+                                        selectedValue = BLANK_STRING,
+                                        conditions = emptyList(),
+                                        isSelected = false,
+                                        optionType = QuestionType.MultiSelect.name,
+                                        questionId = 22,
+                                        conditional = false,
+                                        optionImage = BLANK_STRING,
+                                        optionValue = null,
+                                        contentEntities = emptyList(),
+                                        selectedValueId = 0,
+                                        count = 0,
+                                        order = 3,
+                                        userId = "Ultra Poor change maker (UPCM)_6666667777",
+                                        values = null,
+                                        weight = 0,
+                                        optionId = 11,
+                                        surveyId = 1,
+                                        summary = BLANK_STRING
+                                    )
+
+                                )
+                                ExpandableTaskCard(
+                                    title = task.value[TaskCardSlots.TASK_TITLE.name],
+                                    subTitle1 = task.value[TaskCardSlots.TASK_SUBTITLE.name],
+                                    options = options,
+                                    status = task.value[TaskCardSlots.TASK_STATUS.name],
+                                    imagePath = Uri.EMPTY,
+                                    modifier = Modifier,
+                                    optionItemEntityList = optionitemList,
+                                    expanded = true,
+                                    onExpendClick = { _, _ ->
+
+                                    }
                                 )
 
                                 CustomVerticalSpacer()

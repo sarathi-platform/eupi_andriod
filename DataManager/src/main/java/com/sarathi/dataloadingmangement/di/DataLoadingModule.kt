@@ -67,6 +67,7 @@ import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
@@ -86,6 +87,7 @@ import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SelectActivitySurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -667,6 +669,27 @@ class DataLoadingModule {
         grantConfigDao: GrantConfigDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyDao,
+            grantConfigDao = grantConfigDao
+
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSelectActivitySurveyRepository(
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyDao: SurveyEntityDao,
+        grantConfigDao: GrantConfigDao
+    ): IActivitySelectSurveyRepository {
+        return SelectActivitySurveyRepositoryImpl(
             questionDao = questionEntityDao,
             surveyAnswersDao = surveyAnswersDao,
             optionItemDao = optionItemDao,
