@@ -47,8 +47,8 @@ fun GrantTaskScreen(
         isSecondaryButtonVisible = viewModel.isGenerateFormButtonVisible.value,
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,
-        taskScreenContent = { vm, mNavController, task ->
-            TaskRowView(vm, mNavController, task)
+        taskScreenContent = { vm, mNavController ->
+            TaskScreenContent(vm, mNavController)
         }
     )
 }
