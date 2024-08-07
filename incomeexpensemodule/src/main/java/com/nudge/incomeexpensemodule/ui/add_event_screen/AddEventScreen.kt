@@ -17,11 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
-import com.nudge.core.ui.commonUi.componet_.component.DatePickerComponent
 import com.nudge.core.ui.commonUi.componet_.component.InputComponent
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -51,7 +51,9 @@ fun AddEventScreen(
         title = "Asset Purchase",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { /*TODO*/ },
+        onBackIconClick = {
+            navController.navigateUp()
+        },
         onSearchValueChange = {},
         onBottomUI = {
 
@@ -92,15 +94,19 @@ fun AddEventScreen(
                     horizontal = dimen_16_dp
                 )
             ) {
-                DatePickerComponent(
+
+
+                CustomDatePickerTextFieldComponent(
                     isMandatory = true,
                     defaultValue = BLANK_STRING,
                     title = "Date",
                     isEditable = true,
-                    hintText = "Select"
-                        ?: BLANK_STRING
-                ) { selectedValue ->
-                }
+                    hintText = "Select" ?: BLANK_STRING,
+                    onDateSelected = {
+
+                    }
+                )
+
                 TypeDropDownComponent(
                     isEditAllowed = true,
                     title = "Livelihood",

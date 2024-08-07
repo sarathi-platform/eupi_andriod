@@ -67,7 +67,9 @@ fun DataSummaryScreen(
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
-        onBackIconClick = { },
+        onBackIconClick = {
+            navController.navigateUp()
+        },
         onSearchValueChange = {},
         onBottomUI = { },
         onContentUI = { a, b, c ->

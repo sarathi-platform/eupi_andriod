@@ -94,7 +94,7 @@ class DataTabScreenViewModel @Inject constructor(
     private suspend fun createFilterBottomSheetList() {
         _filters.clear()
         _filters.add(LivelihoodModel.getAllFilter())
-        _filters.addAll(getLivelihoodListFromDbUseCase.invoke().distinctBy { it.id })
+        _filters.addAll(getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId })
     }
 
 }
