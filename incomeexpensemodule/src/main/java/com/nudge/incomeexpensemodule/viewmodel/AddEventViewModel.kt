@@ -2,16 +2,20 @@ package com.nudge.incomeexpensemodule.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
-import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -25,7 +29,8 @@ class AddEventViewModel @Inject constructor(
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
     private val fetchLivelihoodEventUseCase: FetchLivelihoodEventUseCase,
     private val fetchAssetUseCase: FetchAssetUseCase,
-    private val fetchProductUseCase: FetchProductUseCase
+    private val fetchProductUseCase: FetchProductUseCase,
+    private val saveLivelihoodEventUseCase: SaveLivelihoodEventUseCase,
 ) : BaseViewModel() {
 
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
@@ -41,8 +46,16 @@ class AddEventViewModel @Inject constructor(
     private val _livelihoodProductDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodProductDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodProductDropdownValue
     private var eventList: List<LivelihoodEventUiModel> = ArrayList<LivelihoodEventUiModel>()
-    var questionTypeMap = HashMap<String, LivelihoodEventDataCaptureTypeEnum>()
     var questionVisibilityMap = mutableStateMapOf<LivelihoodEventDataCaptureTypeEnum, Boolean>()
+    var eventType: String = ""
+    var selectedLivelihoodId = mutableStateOf(-1)
+    var selectedAssetTypeId = mutableStateOf(-1)
+    var selectedProductId = mutableStateOf(-1)
+    var selectedEventId = mutableStateOf(-1)
+    var assetCount = mutableStateOf("")
+    var amount = mutableStateOf("")
+    var selectedDate = mutableStateOf("")
+    var selectedDateInLong: Long = 0
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -80,6 +93,7 @@ class AddEventViewModel @Inject constructor(
 
     fun onLivelihoodSelect(livelihoodId: Int) {
         ioViewModelScope {
+            selectedLivelihoodId.value = livelihoodId
             _livelihoodEventDropdownValue.clear()
             _livelihoodAssetDropdownValue.clear()
             _livelihoodProductDropdownValue.clear()
@@ -102,18 +116,47 @@ class AddEventViewModel @Inject constructor(
 
     fun onEventSelected(selectedValue: ValuesDto) {
 
-        val eventType = eventList.find { it.id == selectedValue.id }?.eventType
-        if (eventType == LivelihoodEventTypeDataCaptureMapping.Income.name) {
-            LivelihoodEventTypeDataCaptureMapping.Income.livelihoodEventDataCaptureTypes.forEach {
-                if (questionTypeMap.containsValue(it)) {
-                    questionVisibilityMap[it] = true
-                } else {
-                    questionVisibilityMap[it] = false
-                }
-            }
+        eventType = eventList.find { it.id == selectedValue.id }?.eventType ?: BLANK_STRING
 
+        selectedEventId.value = selectedValue.id
+        getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
+            if (questionVisibilityMap.containsKey(it)) {
+                questionVisibilityMap[it] = true
+            } else {
+                questionVisibilityMap[it] = false
+            }
         }
 
+    }
+
+    fun onSubmitButtonClick(subjectId: Int, transactionId: String) {
+
+        ioViewModelScope {
+            val event = getLivelihoodEventFromName(eventType)
+
+            saveLivelihoodEventUseCase.addOrEditEvent(
+                LivelihoodEventScreenData(
+                    subjectId = subjectId,
+                    amount = amount.value.toIntOrNull() ?: 0,
+                    assetCount = assetCount.value.toIntOrNull() ?: 0,
+                    assetType = selectedAssetTypeId.value,
+                    date = selectedDateInLong,
+                    livelihoodId = selectedLivelihoodId.value,
+                    eventId = selectedEventId.value,
+                    productId = selectedEventId.value,
+                    selectedEvent = event,
+                    transactionId = transactionId
+
+                )
+            )
+        }
+        validateForm()
+    }
+
+
+    private fun validateForm() {
 
     }
+
+
 }

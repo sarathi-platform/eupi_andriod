@@ -56,6 +56,7 @@ import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel.DataSummaryScreenViewModel
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import java.util.UUID
 
 @Composable
 fun DataSummaryScreen(
@@ -205,7 +206,8 @@ fun ShowMoreButton(navController: NavHostController, subjectId: Int, subjectName
                 navigateToAddEventScreen(
                     navController = navController,
                     subjectName = subjectName,
-                    subjectId = subjectId
+                    subjectId = subjectId,
+                    transactionID = UUID.randomUUID().toString()
                 )
             },
             modifier = Modifier
@@ -325,7 +327,8 @@ private fun AddEventButton(navController: NavHostController) {
         navigateToAddEventScreen(
             navController = navController,
             subjectName = "ABC",
-            subjectId = 1
+            subjectId = 1,
+            transactionID = UUID.randomUUID().toString()
         )
     }
 }

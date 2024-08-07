@@ -9,17 +9,17 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEnt
 interface AssetJournalDao {
 
     @Insert
-    suspend fun insetMoneyJournalEntry(moneyJournalEntity: AssetJournalEntity)
+    suspend fun insetAssetJournalEntry(assetJournal: AssetJournalEntity)
 
     @Insert
-    suspend fun insertMoneyJournalEntry(moneyJournalEntity: List<AssetJournalEntity>)
+    suspend fun insetAssetJournalEntry(assetJournals: List<AssetJournalEntity>)
 
     @Query("Select count(*) from asset_journal_table where userId=:userId and transactionId=:transactionId and status=1")
     suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
 
 
     @Query("update asset_journal_table set transactionAmount=:amount, transactionDate=:date, transactionDetails=:particulars, modifiedDate=:modifiedDate where userId=:userId and transactionId=:transactionId ")
-    suspend fun updateMoneyJournal(
+    suspend fun updateAssetJournal(
         transactionId: String,
         userId: String,
         date: Long,

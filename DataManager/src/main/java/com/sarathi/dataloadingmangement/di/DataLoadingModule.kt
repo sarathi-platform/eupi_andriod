@@ -32,6 +32,7 @@ import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
@@ -61,6 +62,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
@@ -108,6 +110,7 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.AssetJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.AssetRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepositoryImpl
@@ -1083,5 +1086,25 @@ class DataLoadingModule {
         productRepositoryImpl: ProductRepositoryImpl
     ): FetchProductUseCase {
         return FetchProductUseCase(productRepositoryImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAssetJournalRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        assetJournalDao: AssetJournalDao
+    ): AssetJournalRepositoryImpl {
+        return AssetJournalRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            assetJournalDao = assetJournalDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl
+    ): SaveLivelihoodEventUseCase {
+        return SaveLivelihoodEventUseCase(assetJournalRepo)
     }
 }

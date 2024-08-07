@@ -14,6 +14,7 @@ import com.nudge.incomeexpensemodule.ui.add_event_screen.AddEventScreen
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_ID
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_NAME
+import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_TRANSACTION_ID
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.INCOME_EXPENSE_GRAPH
 
 fun NavGraphBuilder.IncomeExpenseNavigation(
@@ -52,6 +53,9 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                 },
                 navArgument(name = ARG_SUBJECT_ID) {
                     type = NavType.IntType
+                },
+                navArgument(name = ARG_TRANSACTION_ID) {
+                    type = NavType.IntType
                 }
             )) {
             AddEventScreen(
@@ -61,6 +65,9 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                 ) ?: 0,
                 subjectName = it.arguments?.getString(
                     ARG_SUBJECT_NAME
+                ) ?: BLANK_STRING,
+                transactionId = it.arguments?.getString(
+                    ARG_TRANSACTION_ID
                 ) ?: BLANK_STRING
             )
         }
@@ -71,6 +78,11 @@ fun navigateToDataSummaryScreen(navController: NavController, subjectId: Int, su
     navController.navigate("${IncomeExpenseConstants.DATA_TAB_SUMMARY_SCREEN_ROUTE_NAME}/$subjectId/$subjectName")
 }
 
-fun navigateToAddEventScreen(navController: NavController, subjectId: Int, subjectName: String) {
-    navController.navigate("${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/$subjectId/$subjectName")
+fun navigateToAddEventScreen(
+    navController: NavController,
+    subjectId: Int,
+    subjectName: String,
+    transactionID: String
+) {
+    navController.navigate("${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/$subjectId/$subjectName/$transactionID")
 }

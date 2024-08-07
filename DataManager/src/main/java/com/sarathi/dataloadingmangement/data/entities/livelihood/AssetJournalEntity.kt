@@ -3,8 +3,6 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nudge.core.DD_MMM_YYYY_FORMAT
-import com.nudge.core.toInMillisec
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 
 @Entity(tableName = ASSET_JOURNAL_TABLE_NAME)
@@ -34,11 +32,11 @@ data class AssetJournalEntity(
         fun getAssetJournalEntity(
             userId: String,
             amount: Int,
-            date: String,
+            date: Long,
             particulars: String,
-            referenceId: String,
-            grantId: Int,
-            grantType: String,
+            transactionId: String,
+            referenceId: Int,
+            referenceType: String,
             subjectType: String,
             subjectId: Int,
             transactionFlow: String
@@ -47,16 +45,16 @@ data class AssetJournalEntity(
                 id = 0,
                 userId = userId,
                 transactionAmount = amount.toDouble(),
-                transactionDate = date.toInMillisec(DD_MMM_YYYY_FORMAT),
-                transactionId = referenceId,
-                referenceId = grantId,
-                referenceType = grantType,
+                transactionDate = date,
+                transactionId = transactionId,
+                referenceId = referenceId,
+                referenceType = referenceType,
                 subjectType = subjectType,
                 subjectId = subjectId,
                 transactionDetails = particulars,
                 transactionFlow = transactionFlow,
                 status = 1,
-                transactionType = grantType,
+                transactionType = referenceType,
                 modifiedDate = System.currentTimeMillis()
             )
 

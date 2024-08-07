@@ -1,7 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,36 +18,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
-import com.nudge.core.ui.commonUi.CustomTextViewComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
-import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.commonUi.componet_.component.InputComponent
-import com.nudge.core.ui.theme.NotoSans
-import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_72_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
-import com.nudge.incomeexpensemodule.ui.component.SearchBarWithDropdownComponent
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
@@ -65,15 +51,16 @@ fun AddEventScreen(
     navController: NavHostController = rememberNavController(),
     subjectId: Int,
     subjectName: String,
+    transactionId: String,
     viewModel: AddEventViewModel = hiltViewModel()
 ) {
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     LaunchedEffect(Unit) {
-        viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId))
+        viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
     }
 
-    val dropDownWithSearchState = remember {
+    val dropDownWithSearchState = remember(viewModel.livelihoodEventDropdownValue) {
         rememberSearchBarWithDropDownState<ValuesDto>(
             dropdownMenuItemList = viewModel.livelihoodEventDropdownValue
         )
@@ -110,7 +97,9 @@ fun AddEventScreen(
                         buttonTitle = "Save",
                         isActive = true,
                         isArrowRequired = false,
-                        onClick = { }
+                        onClick = {
+                            viewModel.onSubmitButtonClick(subjectId, transactionId)
+                        }
                     )
 
                 }
@@ -128,11 +117,13 @@ fun AddEventScreen(
 
                 CustomDatePickerTextFieldComponent(
                     isMandatory = true,
-                    defaultValue = BLANK_STRING,
+                    defaultValue = viewModel.selectedDate.value,
                     title = "Date",
                     isEditable = true,
                     hintText = "Select" ?: BLANK_STRING,
-                    onDateSelected = {
+                    onDateSelected = { date ->
+                        viewModel.selectedDate.value = date.value().getDate()
+                        viewModel.selectedDateInLong = date.value()
 
                     }
                 )
@@ -147,64 +138,65 @@ fun AddEventScreen(
                     }
                 )
 
-                SearchBarWithDropdownComponent<ValuesDto, AnnotatedString>(
-                    title = TextProperties.getBasicTextProperties(text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = blueDark,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = NotoSans
-                            )
-                        ) {
-                            append("Event")
-                        }
-
-                        withStyle(
-                            style = SpanStyle(
-                                color = red,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = NotoSans
-                            )
-                        ) {
-                            append("*")
-                        }
-                    }),
-                    paddingValues = PaddingValues(dimen_0_dp),
-                    contentPadding = PaddingValues(dimen_8_dp),
-                    state = dropDownWithSearchState,
-                    onGlobalPositioned = { coordinates ->
-                        textFieldSize = coordinates.size.toSize()
-                    },
-                    onItemSelected = {
-                        dropDownWithSearchState.hide()
-                        dropDownWithSearchState.setSelectedItemValue(dropDownWithSearchState.getFilteredDropDownMenuItemListValue()[it].value)
-                    },
-                    onSearchQueryChanged = { searchQuery ->
-                        dropDownWithSearchState.filterDropDownMenuItemList(dropDownWithSearchState.getDropDownMenuItemListStateValue()) {
-                            it.value.contains(searchQuery.text, true)
-                        }
-                    }
-                ) {
-                    CustomTextViewComponent(
-                        textProperties = TextProperties.getBasicTextProperties(text = it.value)
-                            .copy(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .exposedDropdownSize()
-                            )
-                    )
-                }
-//                TypeDropDownComponent(
-//                    isEditAllowed = true,
-//                    title = "Events",
-//                    isMandatory = true,
-//                    sources = viewModel.livelihoodEventDropdownValue,
-//                    onAnswerSelection = { selectedValue ->
+//                SearchBarWithDropdownComponent<ValuesDto, AnnotatedString>(
+//                    title = TextProperties.getBasicTextProperties(text = buildAnnotatedString {
+//                        withStyle(
+//                            style = SpanStyle(
+//                                color = blueDark,
+//                                fontSize = 16.sp,
+//                                fontWeight = FontWeight.SemiBold,
+//                                fontFamily = NotoSans
+//                            )
+//                        ) {
+//                            append("Event")
+//                        }
 //
+//                        withStyle(
+//                            style = SpanStyle(
+//                                color = red,
+//                                fontSize = 14.sp,
+//                                fontWeight = FontWeight.SemiBold,
+//                                fontFamily = NotoSans
+//                            )
+//                        ) {
+//                            append("*")
+//                        }
+//                    }),
+//                    paddingValues = PaddingValues(dimen_0_dp),
+//                    contentPadding = PaddingValues(dimen_8_dp),
+//                    state = dropDownWithSearchState,
+//                    onGlobalPositioned = { coordinates ->
+//                        textFieldSize = coordinates.size.toSize()
+//                    },
+//                    onItemSelected = {
+//                        dropDownWithSearchState.hide()
+//                        dropDownWithSearchState.setSelectedItemValue(dropDownWithSearchState.getFilteredDropDownMenuItemListValue()[it].value)
+//                    },
+//                    onSearchQueryChanged = { searchQuery ->
+//                        dropDownWithSearchState.filterDropDownMenuItemList(dropDownWithSearchState.getDropDownMenuItemListStateValue()) {
+//                            it.value.contains(searchQuery.text, true)
+//                        }
 //                    }
-//                )
+//                ) {
+//                    CustomTextViewComponent(
+//                        textProperties = TextProperties.getBasicTextProperties(text = it.value)
+//                            .copy(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .exposedDropdownSize(),
+//                                color = textColorDark
+//                            )
+//                    )
+//                }
+                TypeDropDownComponent(
+                    isEditAllowed = true,
+                    title = "Events",
+                    isMandatory = true,
+                    sources = viewModel.livelihoodEventDropdownValue,
+                    onAnswerSelection = { selectedValue ->
+                        viewModel.onEventSelected(selectedValue)
+                    }
+                )
 
 
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
@@ -214,6 +206,7 @@ fun AddEventScreen(
                         isMandatory = true,
                         sources = viewModel.livelihoodAssetDropdownValue,
                         onAnswerSelection = { selectedValue ->
+                            viewModel.selectedAssetTypeId.value = selectedValue.id
                         }
                     )
                 }
@@ -225,6 +218,20 @@ fun AddEventScreen(
                         isMandatory = true,
                         sources = viewModel.livelihoodProductDropdownValue,
                         onAnswerSelection = { selectedValue ->
+                            viewModel.selectedProductId.value = selectedValue.id
+
+                        }
+                    )
+                }
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
+
+                    IncrementDecrementNumberComponent(
+                        isMandatory = true,
+                        title = "Increase in Number*",
+                        isEditAllowed = true,
+                        currentValue = viewModel.amount.value,
+                        onAnswerSelection = { inputValue ->
+                            viewModel.assetCount.value = inputValue
                         }
                     )
                 }
@@ -239,20 +246,11 @@ fun AddEventScreen(
                         isOnlyNumber = true,
                         hintText = BLANK_STRING
                     ) { selectedValue, remainingAmout ->
+                        viewModel.amount.value = selectedValue
 
                     }
                 }
-                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
 
-                    IncrementDecrementNumberComponent(
-                        isMandatory = true,
-                        title = "Increase in Number*",
-                        isEditAllowed = true,
-                        currentValue = "0",
-                        onAnswerSelection = { inputValue ->
-                        }
-                    )
-                }
             }
 
 
@@ -263,5 +261,5 @@ fun AddEventScreen(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    AddEventScreen(subjectId = 0, subjectName = "")
+    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "")
 }
