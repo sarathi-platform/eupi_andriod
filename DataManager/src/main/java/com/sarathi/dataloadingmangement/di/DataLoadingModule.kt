@@ -35,8 +35,8 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
-import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -562,7 +562,7 @@ class DataLoadingModule {
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
-            moneyJournalUseCase = fetchMoneyJournalUseCase
+            moneyJournalUseCase = fetchMoneyJournalUseCase,
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
