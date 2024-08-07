@@ -44,7 +44,6 @@ import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
-import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
@@ -82,7 +81,6 @@ import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEnt
 import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity

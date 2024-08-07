@@ -4,11 +4,11 @@ import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.network.ApiException
-import com.sarathi.dataloadingmangement.repository.liveihood.CoreLivelihoodRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.ICoreLivelihoodRepository
 import javax.inject.Inject
 
 class LivelihoodUseCase @Inject constructor(
-    private val coreLivelihoodRepositoryImpl: CoreLivelihoodRepositoryImpl
+    private val coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository
 ) {
     suspend operator fun invoke(): Boolean {
 
