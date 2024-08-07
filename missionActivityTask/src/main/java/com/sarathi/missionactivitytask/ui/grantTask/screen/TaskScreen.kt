@@ -80,7 +80,8 @@ fun TaskScreen(
     isSecondaryButtonVisible: Boolean = false,
     isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    taskScreenContent: @Composable (viewModel: TaskScreenViewModel, navController: NavController, task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -262,7 +263,9 @@ fun TaskScreen(
                                 itemsIndexed(
                                     items = itemsInCategory
                                 ) { _, task ->
-                                    TaskRowView(viewModel, navController, task)
+
+                                    taskScreenContent(viewModel, navController, task)
+
                                     CustomVerticalSpacer()
                                 }
                                 item {
@@ -275,7 +278,9 @@ fun TaskScreen(
                                 itemsIndexed(
                                     items = viewModel.filterList.value.entries.toList()
                                 ) { _, task ->
-                                    TaskRowView(viewModel, navController, task)
+
+                                    taskScreenContent(viewModel, navController, task)
+
                                     CustomVerticalSpacer()
                                 }
                                 item {
@@ -292,7 +297,7 @@ fun TaskScreen(
 }
 
 @Composable
-private fun TaskRowView(
+fun TaskRowView(
     viewModel: TaskScreenViewModel,
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,

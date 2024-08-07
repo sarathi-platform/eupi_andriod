@@ -158,10 +158,10 @@ open class TaskScreenViewModel @Inject constructor(
                     )
 
                     isProgressEnable.value =
-                        progressUiComponent[GrantTaskCardSlots.GRANT_TASK_PROGRESS.name]?.value != null
+                        progressUiComponent[TaskCardSlots.TASK_PROGRESS.name]?.value != null
                 }
 
-                if (uiComponent[GrantTaskCardSlots.GRANT_TASK_TITLE.name]?.value?.isNotEmpty() == true)
+                if (uiComponent[TaskCardSlots.TASK_TITLE.name]?.value?.isNotEmpty() == true)
                     _taskList.value[it.taskId] = uiComponent
 
             }
