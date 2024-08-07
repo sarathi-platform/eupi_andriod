@@ -134,7 +134,7 @@
         <item quantity="other">দিদি গ্রাম সংগঠনের (VO) অনুমোদনের জন্য পাঠিয়েছেন</item>
     </plurals>
     <plurals name="step_vo_endorsement">
-        <item quantity="one">গ্রাম সংগঠন (CLF) অনুমোদন</item>
+        <item quantity="one">সংঘ (CLF) অনুমোদন</item>
         <item quantity="other">গ্রাম সংগঠন (VO) অনুমোদন</item>
     </plurals>
     <plurals name="vo_endorsement_completed">
