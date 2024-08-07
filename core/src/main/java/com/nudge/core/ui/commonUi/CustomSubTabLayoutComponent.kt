@@ -143,6 +143,9 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.All -> "All"
         SubTabs.NoEntryMonthTab -> "No entry this month"
         SubTabs.NoEntryWeekTab -> "No entry this week"
+        SubTabs.LastWeekTab -> "Last week"
+        SubTabs.LastMonthTab -> "Last month"
+        SubTabs.Last3MonthsTab -> "Last 3 months"
         else -> {
             BLANK_STRING
         }
