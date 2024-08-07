@@ -192,16 +192,15 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
-        if(prefRepo.settingOpenFrom() != PageFrom.VILLAGE_PAGE.ordinal) {
-            list.add(
-                SettingOptionModel(
-                    7,
-                    context.getString(R.string.sync_your_data),
-                    BLANK_STRING,
-                    SettingTagEnum.SYNC_DATA_NOW.name
-                )
+        list.add(
+            SettingOptionModel(
+                7,
+                context.getString(R.string.sync_your_data),
+                BLANK_STRING,
+                SettingTagEnum.SYNC_DATA_NOW.name
             )
-        }
+        )
+
 
         _optionList.value=list
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
