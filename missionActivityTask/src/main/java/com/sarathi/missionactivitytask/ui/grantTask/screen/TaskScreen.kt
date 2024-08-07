@@ -284,23 +284,23 @@ private fun TaskRowView(
 ) {
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
-            navigateToLivelihoodDropDownScreen(navController)
-//            viewModel.activityConfigUiModel?.let {
-//                if (subjectName.isNotBlank()) {
-//                    navigateToGrantSurveySummaryScreen(
-//                        navController,
-//                        taskId = task.key,
-//                        surveyId = it.surveyId,
-//                        sectionId = it.sectionId,
-//                        subjectType = it.subject,
-//                        subjectName = subjectName,
-//                        activityConfigId = it.activityConfigId,
-//                        sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
-//                            ?: DEFAULT_ID,
-//                    )
-//                }
-//
-//            }
+//            navigateToLivelihoodDropDownScreen(navController)
+            viewModel.activityConfigUiModel?.let {
+                if (subjectName.isNotBlank()) {
+                    navigateToGrantSurveySummaryScreen(
+                        navController,
+                        taskId = task.key,
+                        surveyId = it.surveyId,
+                        sectionId = it.sectionId,
+                        subjectType = it.subject,
+                        subjectName = subjectName,
+                        activityConfigId = it.activityConfigId,
+                        sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+                            ?: DEFAULT_ID,
+                    )
+                }
+
+            }
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {

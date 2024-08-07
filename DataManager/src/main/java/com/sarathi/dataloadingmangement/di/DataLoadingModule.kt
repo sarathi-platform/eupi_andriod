@@ -36,6 +36,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -48,6 +49,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
@@ -57,6 +59,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
@@ -92,6 +95,8 @@ import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
+import com.sarathi.dataloadingmangement.repository.MoneyJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
@@ -122,7 +127,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
-
 @InstallIn(SingletonComponent::class)
 @Module
 class DataLoadingModule {
@@ -137,6 +141,8 @@ class DataLoadingModule {
     @Singleton
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
+            .addMigrations(NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2)
+            .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
 
@@ -155,26 +161,6 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideActivityConfigDao(db: NudgeGrantDatabase) = db.activityConfigDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodDao(db: NudgeGrantDatabase) = db.livelihoodDao()
-
-    @Provides
-    @Singleton
-    fun provideAssetDao(db: NudgeGrantDatabase) = db.assetDao()
-
-    @Provides
-    @Singleton
-    fun provideProductDao(db: NudgeGrantDatabase) = db.productDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodEventDao(db: NudgeGrantDatabase) = db.livelihoodEventDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodLanguageDao(db: NudgeGrantDatabase) = db.livelihoodLanguageDao()
 
     @Provides
     @Singleton
@@ -284,6 +270,26 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun subjectLivelihoodMappingDao(db: NudgeGrantDatabase) = db.subjectLivelihoodMappingDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodDao(db: NudgeGrantDatabase) = db.livelihoodDao()
+
+    @Provides
+    @Singleton
+    fun provideAssetDao(db: NudgeGrantDatabase) = db.assetDao()
+
+    @Provides
+    @Singleton
+    fun provideProductDao(db: NudgeGrantDatabase) = db.productDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventDao(db: NudgeGrantDatabase) = db.livelihoodEventDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodLanguageDao(db: NudgeGrantDatabase) = db.livelihoodLanguageDao()
 
     @Provides
     @Singleton
@@ -534,6 +540,7 @@ class DataLoadingModule {
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
         formUseCase: FormUseCase,
+        fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
@@ -555,6 +562,7 @@ class DataLoadingModule {
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
+            moneyJournalUseCase = fetchMoneyJournalUseCase
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
@@ -892,6 +900,37 @@ class DataLoadingModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideMoneyJournalRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        moneyJournalDao: MoneyJournalDao
+    ) = MoneyJournalRepositoryImpl(
+        coreSharedPrefs = coreSharedPrefs,
+        moneyJournalDao = moneyJournalDao
+    )
+
+    @Provides
+    @Singleton
+    fun provideMoneyJournalUsecase(moneyJournalRepository: MoneyJournalRepositoryImpl) =
+        SaveTransactionMoneyJournalUseCase(moneyJournalRepository)
+
+    @Provides
+    @Singleton
+    fun provideMoneyJournalNetworkRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        moneyJournalDao: MoneyJournalDao,
+        apiService: DataLoadingApiService
+    ) = MoneyJournalNetworkRepository(
+        sharedPrefs = coreSharedPrefs,
+        apiInterface = apiService,
+        moneyJournalDao = moneyJournalDao
+    )
+
+    @Provides
+    @Singleton
+    fun provideFetchMoneyJournalUseCase(moneyJournalNetworkRepository: MoneyJournalNetworkRepository) =
+        FetchMoneyJournalUseCase(moneyJournalNetworkRepository)
     @Provides
     @Singleton
     fun provideLivelihoodRepository(

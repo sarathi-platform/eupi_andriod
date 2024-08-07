@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 
+
 @Dao
 interface MoneyJournalDao {
 
@@ -34,5 +35,4 @@ interface MoneyJournalDao {
 
     @Query("Delete from money_journal_table where userId=:userId")
     suspend fun deleteMoneyJournal(userId: String)
-
 }
