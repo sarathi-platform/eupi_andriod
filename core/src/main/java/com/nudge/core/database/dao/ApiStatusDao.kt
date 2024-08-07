@@ -23,4 +23,7 @@ interface ApiStatusDao {
         apiEndpoint: String, status: Int, errorMessage: String,
         errorCode: Int
     )
+
+    @Query("DELETE FROM $ApiStatusTable")
+    fun deleteApiStatus()
 }

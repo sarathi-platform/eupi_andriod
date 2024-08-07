@@ -17,6 +17,7 @@ class ClearLocalDBExportUseCase(
             } else {
                 repository.clearSelectionLocalDB()
             }
+            repository.clearAPIStatusTableData()
             true
         } catch (exception: Exception) {
             CoreLogger.e(
