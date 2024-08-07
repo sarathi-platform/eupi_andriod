@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.ui
 
 import android.net.Uri
+import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.incomeCardTopViewColor
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
@@ -71,23 +73,25 @@ fun SubjectLivelihoodEventSummaryCard(
                     onSummaryCardClicked()
                 }
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(incomeCardTopViewColor),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(
+            if (!TextUtils.isEmpty(lastUpdated)) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
-                )
-                Text(
-                    text = "Last updated: $lastUpdated",
-                    style = getTextColor(textColor = smallerTextStyle),
-                    modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_5_dp)
-                )
+                        .background(incomeCardTopViewColor),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    Text(
+                        text = "Last updated: $lastUpdated",
+                        style = getTextColor(textColor = smallerTextStyle),
+                        modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_5_dp)
+                    )
+                }
             }
             Row(
                 modifier = Modifier
@@ -124,7 +128,8 @@ fun SubjectLivelihoodEventSummaryCard(
                     modifier = Modifier.size(dimen_16_dp),
                     tint = blueDark
                 )
-                Text(text = location, style = getTextColor(smallTextStyleWithNormalWeight))
+                Spacer(modifier = Modifier.width(dimen_5_dp))
+                Text(text = location, style = getTextColor(smallerTextStyle))
             }
             Divider()
 
@@ -139,7 +144,7 @@ fun SubjectLivelihoodEventSummaryCard(
                     Spacer(modifier = Modifier.width(dimen_4_dp))
                     Text(
                         text = "Last 1 Month",
-                        style = getTextColor(smallTextStyleWithNormalWeight)
+                        style = getTextColor(smallTextStyleMediumWeight2)
                     )
                 }
                 Spacer(modifier = Modifier.height(dimen_8_dp))
@@ -169,11 +174,11 @@ fun IncomeExpenseAssetAmountView(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Income", style = getTextColor(smallTextStyleWithNormalWeight))
+            Text(text = "Income", style = getTextColor(smallTextStyleMediumWeight2))
             Text(text = income, style = getTextColor(didiDetailItemStyle))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Expense", style = getTextColor(smallTextStyleWithNormalWeight))
+            Text(text = "Expense", style = getTextColor(smallTextStyleMediumWeight2))
             Text(text = expense, style = getTextColor(didiDetailItemStyle))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable {
@@ -181,7 +186,7 @@ fun IncomeExpenseAssetAmountView(
         }) {
             Text(
                 text = "Asset Value",
-                style = getTextColor(smallTextStyleWithNormalWeight)
+                style = getTextColor(smallTextStyleMediumWeight2)
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (primaryAssetIcon != BLANK_STRING) {

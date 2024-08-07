@@ -11,9 +11,9 @@ data class SaveAnswerMoneyJorunalEventDto(
     @SerializedName("languageId")
     @Expose
     val languageId: String,
-    @SerializedName("referenceId")
+    @SerializedName("transactionId")
     @Expose
-    val referenceId: String,
+    val transactionId: String,
     @SerializedName("sectionId")
     @Expose
     val sectionId: Int,

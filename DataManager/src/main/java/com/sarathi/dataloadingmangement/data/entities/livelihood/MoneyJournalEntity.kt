@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.toInMillisec
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.response.MoneyJournalApiResponse
 
 @Entity(tableName = MONEY_JOURNAL_TABLE_NAME)
 data class MoneyJournalEntity(
@@ -60,7 +61,7 @@ data class MoneyJournalEntity(
 
         }
 
-        /*fun getMoneyJournalEntity(
+        fun getMoneyJournalEntity(
             moneyJournalApiResponse: MoneyJournalApiResponse,
             userId: String
         ): MoneyJournalEntity {
@@ -82,6 +83,8 @@ data class MoneyJournalEntity(
 
             )
 
-        }*/
+        }
     }
 }
+
+

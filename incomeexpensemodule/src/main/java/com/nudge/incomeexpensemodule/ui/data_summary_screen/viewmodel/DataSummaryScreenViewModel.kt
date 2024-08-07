@@ -30,9 +30,10 @@ class DataSummaryScreenViewModel @Inject constructor(private val fetchSubjectLiv
             fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
                 subjectId = subjectId
             )?.let {
-                if (it.isNotEmpty() && it.size != 0)
+                if (it.isNotEmpty() && it.size != 0) {
                     countMap.put(SubTabs.All, it.size)
-                _livelihoodEvent.add(it)
+                    _livelihoodEvent.add(it)
+                }
             }
 
         }
