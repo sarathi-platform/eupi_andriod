@@ -1,4 +1,4 @@
-package com.nudge.incomeexpensemodule.ui.data_summary_screen
+package com.nudge.incomeexpensemodule.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,9 +32,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
+import com.nudge.core.ui.commonUi.componet_.component.TabComponent
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
@@ -81,15 +83,7 @@ fun DataSummaryScreen(
                         AddEventButton(navController = navController)
                     }
                 } else {
-                    HeaderSection()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    EventsList()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    EventView()
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ShowMoreButton(navController = navController)
-                    Spacer(modifier = Modifier.height(16.dp))
-
+                    DataSummaryView(navController, subjectId, subjectName)
                 }
 
             }
@@ -100,10 +94,44 @@ fun DataSummaryScreen(
 
 }
 
+@Composable
+private fun DataSummaryView(navController: NavHostController, subjectId: Int, subjectName: String) {
+    TabBarContainer()
+    Spacer(modifier = Modifier.height(16.dp))
+    DropDownConatiner()
+    Spacer(modifier = Modifier.height(16.dp))
+    HeaderSection()
+    Spacer(modifier = Modifier.height(16.dp))
+    EventsList()
+    Spacer(modifier = Modifier.height(16.dp))
+    EventView()
+    Spacer(modifier = Modifier.height(16.dp))
+    ShowMoreButton(navController = navController, subjectId, subjectName)
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+fun TabBarContainer() {
+    TabComponent(
+        tabs = listOf(
+            "Last week",
+            "Last month",
+            "Last 3 months"
+        )
+    ) {
+    }
+}
+
+@Composable
+fun DropDownConatiner() {
+    SingleSelectDropDown(sources = listOf(ValuesDto(1, "item1"), ValuesDto(2, "item2"))) {
+
+    }
+
+}
 
 @Composable
 fun HeaderSection() {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,7 +184,7 @@ fun EventsList() {
 
 
 @Composable
-fun ShowMoreButton(navController: NavHostController) {
+fun ShowMoreButton(navController: NavHostController, subjectId: Int, subjectName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -167,8 +195,8 @@ fun ShowMoreButton(navController: NavHostController) {
             onClick = {
                 navigateToAddEventScreen(
                     navController = navController,
-                    subjectName = "ABC",
-                    subjectId = 1
+                    subjectName = subjectName,
+                    subjectId = subjectId
                 )
             },
             modifier = Modifier
@@ -300,5 +328,10 @@ private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextSty
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    // DataSummaryScreen(navController = rememberNavController(), subjectName = "", subjectId = 1)
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+    ) {
+        DataSummaryView(navController = rememberNavController(), 0, "")
+    }
 }

@@ -18,5 +18,13 @@ class GetLivelihoodListFromDbRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getLivelihoodListFromDb(livelihoodIds: List<Int>): List<LivelihoodModel> {
+        return livelihoodDao.getLivelihoodList(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            languageCode = coreSharedPrefs.getSelectedLanguageCode(),
+            livelihoodIds
+        )
+    }
+
 
 }

@@ -60,7 +60,7 @@ class DataTabScreenViewModel @Inject constructor(
     }
 
     private fun applyFilter(livelihoodModel: LivelihoodModel) {
-        selectedFilterValue.value = livelihoodModel.id
+        selectedFilterValue.value = livelihoodModel.livelihoodId
         isFilterApplied.value = selectedFilterValue.value != DEFAULT_FILTER_ID
     }
 
