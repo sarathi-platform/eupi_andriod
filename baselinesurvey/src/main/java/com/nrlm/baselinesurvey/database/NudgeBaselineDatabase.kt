@@ -150,6 +150,7 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
         }
     }
 
-    class NudgeDatabaseCallback : Callback()
+    class NudgeDatabaseCallback : Callback() {
+    }
 
 }
