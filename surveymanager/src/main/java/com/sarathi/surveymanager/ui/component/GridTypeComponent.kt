@@ -28,8 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,11 +37,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.showCustomToast
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -55,45 +54,28 @@ import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
-import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
-import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
-import com.sarathi.dataloadingmangement.repository.ResultType
-import com.sarathi.dataloadingmangement.util.constants.QuestionType
-import com.sarathi.surveymanager.R
+import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @Composable
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
-    optionItemEntityList: List<OptionItemEntity>,
+    questionDisplay: String,
+    optionUiModelList: List<OptionsUiModel>,
     areOptionsEnabled: Boolean = true,
+    isRequiredField: Boolean = true,
     questionIndex: Int,
-    selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
-    onAnswerSelection: (questionIndex: Int, optionItems: List<OptionItemEntity>, selectedIndeciesCount: List<Int>) -> Unit,
+    onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
-    val selectedIndices = remember { mutableStateOf(mutableSetOf<Int>()) }
-    selectedIndices.value.clear()
-    selectedIndices.value.addAll(selectedOptionIndices)
-
-    var selectedOptionsItem = remember { mutableSetOf<OptionItemEntity>() }
-
-    if (selectedIndices.value.isEmpty())
-        selectedOptionsItem.clear()
-    else {
-        selectedOptionsItem =
-            selectedOptionsItem.filter { selectedIndices.value.contains(it.optionId) }
-                .toMutableSet()
-    }
-
 
     val context = LocalContext.current
 
@@ -142,25 +124,11 @@ fun GridTypeComponent(
                             Row(
                                 modifier = Modifier.padding(horizontal = dimen_16_dp)
                             ) {
-                                    HtmlText(
-                                        text = "${questionIndex + 1}. ",
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp,
-                                            color = textColorDark
-                                        ),
-                                    )
-
-                                    HtmlText(
-                                        text = "",   // question.questionDisplay
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp,
-                                            color = textColorDark
-                                        ),
-                                    )
+                                QuestionComponent(
+                                    title = questionDisplay,
+                                    questionNumber = getQuestionNumber(questionIndex),
+                                    isRequiredField = isRequiredField
+                                )
                             }
                         }
                         item {
@@ -168,7 +136,7 @@ fun GridTypeComponent(
                         }
 
                         item {
-                            if (optionItemEntityList?.isNotEmpty() == true) {
+                            if (optionUiModelList?.isNotEmpty() == true) {
                                 LazyVerticalGrid(
                                     userScrollEnabled = false,
                                     state = innerState,
@@ -182,111 +150,21 @@ fun GridTypeComponent(
                                         ),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-                                    itemsIndexed(optionItemEntityList.sortedBy { it.optionId }
-                                        ?: emptyList()) { _index, optionItem ->
-                                        if (optionItem.optionType?.equals(
-                                                QuestionType.Grid.name,
-                                                true
-                                            ) == true
-                                            || optionItem.optionType?.equals(
-                                                QuestionType.MultiSelect.name,
-                                                true
-                                            ) == true
-                                        ) {
-                                            GridOptionCard(
-                                                optionItem = optionItem,
-                                                index = _index,
-                                                isEnabled = areOptionsEnabled,
-                                                selectedIndex = selectedIndices.value.toList()
-                                            ) { selectedOptionId ->
-                                                if (isEditAllowed) {
-                                                    if (areOptionsEnabled) {
-                                                        try {
-                                                            if (optionItemEntityList.find { it.optionId == selectedOptionId }
-                                                                    ?.conditions?.map { it?.resultType }
-                                                                    ?.contains(ResultType.NoneMarked.name) == true) {
+                                    itemsIndexed(
+                                        optionUiModelList
+                                            ?: emptyList()
+                                    ) { _index, optionItem ->
 
-                                                                if (!selectedIndices.value.contains(
-                                                                        selectedOptionId
-                                                                    )
-                                                                ) {
-                                                                    selectedIndices.value.add(
-                                                                        selectedOptionId
-                                                                    )
-//
-                                                                    selectedIndices.value.clear()
-                                                                    selectedIndices.value.add(
-                                                                        selectedOptionId
-                                                                    )
-                                                                    selectedOptionsItem.clear()
-//
-                                                                } else {
-                                                                    selectedIndices.value.remove(
-                                                                        selectedOptionId
-                                                                    )
-                                                                }
-                                                            } else {
-                                                                if (!selectedIndices.value.contains(
-                                                                        selectedOptionId
-                                                                    )
-                                                                ) {
-                                                                    selectedIndices.value.add(
-                                                                        selectedOptionId
-                                                                    )
-                                                                } else {
-                                                                    selectedIndices.value.remove(
-                                                                        selectedOptionId
-                                                                    )
-                                                                }
-                                                            }
+                                        GridOptionCard(
+                                            optionItem = optionItem,
+                                            isEnabled = areOptionsEnabled,
+                                            isOptionSelected = optionItem.isSelected.value()
+                                        ) { selectedOptionId, isSelected ->
 
-                                                            optionItemEntityList.forEach { optionItemEntity ->
-                                                                if (selectedIndices.value.contains(
-                                                                        optionItemEntity.optionId
-                                                                    )
-                                                                ) {
-                                                                }
-                                                            }
+                                            onAnswerSelection(_index, isSelected)
 
-                                                            onAnswerSelection(
-                                                                questionIndex,
-                                                                selectedOptionsItem.toList(),
-                                                                selectedOptionIndices
-                                                            )
-                                                        } catch (ex: Exception) {
-//
-                                                        }
-                                                    } else {
-                                                        if (optionItem.conditions?.map { it?.resultType }
-                                                                ?.contains(ResultType.NoneMarked.name) == true) {
-                                                            if (!selectedIndices.value.contains(
-                                                                    selectedOptionId
-                                                                )
-                                                            ) {
-                                                                selectedIndices.value.add(
-                                                                    selectedOptionId
-                                                                )
-                                                            } else {
-                                                                selectedIndices.value.remove(
-                                                                    selectedOptionId
-                                                                )
-                                                            }
-                                                            onAnswerSelection(
-                                                                questionIndex,
-                                                                selectedOptionsItem.toList(),
-                                                                selectedOptionIndices
-                                                            )
-                                                        }
-                                                    }
-                                                } else {
-                                                    showCustomToast(
-                                                        context,
-                                                        context.getString(R.string.edit_disable_message)
-                                                    )
-                                                }
-                                            }
-                                            Spacer(modifier = Modifier.height(4.dp))
                                         }
+                                        Spacer(modifier = Modifier.height(4.dp))
                                     }
 
                                 }
@@ -298,7 +176,32 @@ fun GridTypeComponent(
                                     .fillMaxWidth()
                                     .padding(bottom = 10.dp)
                             )
-
+                            //TODO Add content box when content is available from server
+                            /*if (contests?.isNotEmpty() == true) {
+                                Divider(
+                                    thickness = dimen_1_dp,
+                                    color = lightGray2,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                ExpandableDescriptionContentComponent(
+                                    questionDetailExpanded,
+                                    questionIndex,
+                                    contents = contests,
+                                    subTitle = BLANK_STRING,
+                                    imageClickListener = { imageTypeDescriptionContent ->
+                                        onMediaTypeDescriptionAction(
+                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                            imageTypeDescriptionContent
+                                        )
+                                    },
+                                    videoLinkClicked = { videoTypeDescriptionContent ->
+                                        onMediaTypeDescriptionAction(
+                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                            videoTypeDescriptionContent
+                                        )
+                                    }
+                                )
+                            }*/
                         }
                     }
 
@@ -312,20 +215,25 @@ fun GridTypeComponent(
 @Composable
 fun GridOptionCard(
     modifier: Modifier = Modifier,
-    optionItem: OptionItemEntity,
-    index: Int,
+    optionItem: OptionsUiModel,
     isEnabled: Boolean = true,
-    selectedIndex: List<Int>,
-    onOptionSelected: (Int) -> Unit
+    isOptionSelected: Boolean = false,
+    onOptionSelected: (Int, isSelected: Boolean) -> Unit
 ) {
+
+    val isSelected = remember {
+        mutableStateOf(isOptionSelected)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
             .clip(RoundedCornerShape(6.dp))
-            .background(if (selectedIndex.contains(optionItem.optionId)) blueDark else languageItemActiveBg)
+            .background(if (isSelected.value) blueDark else languageItemActiveBg)
             .clickable {
-                onOptionSelected(optionItem.optionId ?: -1)
+                isSelected.value = !isSelected.value
+                onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
             }
             .then(modifier)) {
         Box(
@@ -336,18 +244,18 @@ fun GridOptionCard(
                 Modifier.padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                HtmlText(
-//                    text =  "",  //question.questionDisplay
-//                    style = TextStyle(
-//                        fontFamily = NotoSans,
-//                        fontWeight = FontWeight.Normal,
-//                        fontSize = 14.sp,
-//                        textAlign = TextAlign.Center
-//                    ),
-//                    color = if (selectedIndex.contains(optionItem.optionId)) white else textColorDark.copy(
-//                        alpha = if (isEnabled) 1f else 0.5f
-//                    )
-//                )
+                HtmlText(
+                    text = optionItem.description.value(),
+                    style = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = if (isSelected.value) white else textColorDark.copy(
+                        alpha = if (isEnabled) 1f else 0.5f
+                    )
+                )
             }
         }
         Spacer(
@@ -361,131 +269,8 @@ fun GridOptionCard(
 
 @Preview(showBackground = true)
 @Composable
-fun GridTypeQuestionPreview() {
-    val optionList = mutableListOf<OptionsItem>()
-//    for (i in 1..5) {
-//        optionList.add(OptionsItem(i, i + 1, i, 1, "Summery"))
-//    }
-
-    val question = QuestionEntity(
-        id = 3,
-        questionId = 12,
-//        questionDisplay = "How much is your current savings? (Select all that apply)",
-//        questionSummary = "How much is your current savings? (Select all that apply)",
-        order = 12,
-        type = "Grid",
-        gotoQuestionId = 13,
-        questionImageUrl = "Section1_ColourTV.webp",
-        surveyId = 1
-    )
-    val option1 = OptionItemEntity(
-        optionId = 1,
-//        display = "YES",
-        weight = 1,
-        summary = "YES",
-        optionValue = 1,
-        // optionImage = R.drawable.icon_check,
-        optionImage = "",
-        optionType = "Grid",
-        surveyId = 1,
-        questionId = 1,
-        id = 1
-    )
-
-//    val option1State = OptionItemEntityState(
-//        optionId = option1.optionId,
-//        optionItemEntity = option1,
-//        showQuestion = true
-//    )
-    val option2 = OptionItemEntity(
-        optionId = 2,
-//        display = "NO",
-        weight = 0,
-        summary = "NO",
-        optionValue = 0,
-        // optionImage = R.drawable.icon_close,
-        optionImage = "",
-        optionType = "Grid",
-        surveyId = 1,
-        questionId = 1,
-        id = 1
-    )
-//    val option2State = OptionItemEntityState(
-//        optionId = option2.optionId,
-//        optionItemEntity = option2,
-//        showQuestion = true
-//    )
-
-    val option3 = OptionItemEntity(
-        optionId = 1,
-//        display = "Milk and milk products",
-        weight = 1,
-        summary = "Milk and milk products",
-        optionValue = 1,
-        // optionImage = R.drawable.icon_check,
-        optionImage = "",
-        optionType = "Grid",
-        surveyId = 1,
-        questionId = 1,
-        id = 1
-    )
-//    val option3State = OptionItemEntityState(
-//        option3.optionId,
-//        option3,
-//        true
-//    )
-
-    val option4 = OptionItemEntity(
-        optionId = 2,
-//        display = "Please Specify",
-        weight = 0,
-        summary = "Please Specify",
-        optionValue = 0,
-        // optionImage = R.drawable.icon_close,
-        optionImage = "",
-//        optionType = QuestionType.InputText.name,
-        surveyId = 1,
-        questionId = 1,
-        conditional = true,
-        id = 1
-    )
-//    val option4State = OptionItemEntityState(
-//        optionId = option2.optionId,
-//        optionItemEntity = option2,
-//        showQuestion = true
-//    )
-
-    val optionItemEntity = listOf(option1, option2, option3, option1, option4)
-//    val optionItemEntityStateList = listOf(option1State, option2State, option3State, option4State)
-
-    BoxWithConstraints() {
-        GridTypeComponent(
-//            showQuestionState = QuestionEntityState(
-//                question.questionId,
-//                questionEntity = question,
-//                optionItemEntityState = optionItemEntityStateList,
-//                answerdOptionList = emptyList(),
-//                showQuestion = true
-//            ),
-//            question = question,
-            optionItemEntityList = optionItemEntity,
-            onAnswerSelection = { questionIndex, optionsItem, selectedIndeciesCount ->
-
-            },
-            questionDetailExpanded = {},
-            questionIndex = 1,
-            maxCustomHeight = maxHeight,
-            selectedOptionIndices = listOf(),
-//            onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
-//            }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 fun GridOptionCardPreview() {
-    val selectedIndex = remember {
+    /*val selectedIndex = remember {
         mutableStateOf(mutableListOf<Int>(1))
     }
     val option = OptionItemEntity(
@@ -504,8 +289,7 @@ fun GridOptionCardPreview() {
     GridOptionCard(
         modifier = Modifier,
         option,
-        index = 0,
         onOptionSelected = {},
         selectedIndex = selectedIndex.value
-    )
+    )*/
 }

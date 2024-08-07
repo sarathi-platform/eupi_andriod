@@ -46,4 +46,7 @@ class FetchAllDataUseCase @Inject constructor(
             onComplete(true, BLANK_STRING)
         }
     }
+
+    //TODO Temp code remove after data is fetched from API
+    fun getStateId() = coreSharedPrefs.getStateId()
 }

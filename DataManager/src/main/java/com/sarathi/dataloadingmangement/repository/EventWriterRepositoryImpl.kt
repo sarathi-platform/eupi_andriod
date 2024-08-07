@@ -38,8 +38,8 @@ class EventWriterRepositoryImpl @Inject constructor(
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
     val coreSharedPrefs: CoreSharedPrefs
-) :
-    IEventWriterRepository {
+) : IEventWriterRepository {
+
     override suspend fun <T> createAndSaveEvent(
         eventItem: T,
         eventName: EventName,

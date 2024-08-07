@@ -35,7 +35,9 @@ import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.isOnline
+import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -45,6 +47,7 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
@@ -54,8 +57,8 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSectionScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -75,6 +78,7 @@ fun TaskScreen(
     isSecondaryButtonEnable: Boolean = false,
     onSecondaryButtonClick: () -> Unit,
     isSecondaryButtonVisible: Boolean = false,
+    isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
     onSettingClick: () -> Unit
 ) {
@@ -93,10 +97,14 @@ fun TaskScreen(
             }
 
         })
+
+    val linearProgressState = rememberCustomProgressState()
+
     LaunchedEffect(taskList?.size) {
         viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
+
     ToolBarWithMenuComponent(
         title = activityName,
         modifier = Modifier.fillMaxSize(),
@@ -138,7 +146,8 @@ fun TaskScreen(
 
                     if (isSecondaryButtonVisible) {
                         Spacer(modifier = Modifier.width(10.dp))
-                        ButtonPositive(modifier = Modifier.weight(0.5f),
+                        ButtonPositive(
+                            modifier = Modifier.weight(0.5f),
                             buttonTitle = secondaryButtonText,
                             isActive = isSecondaryButtonEnable,
                             isArrowRequired = false,
@@ -202,8 +211,7 @@ fun TaskScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
-                )
-                {
+                ) {
                     PullRefreshIndicator(
                         refreshing = viewModel.loaderState.value.isLoaderVisible,
                         state = pullRefreshState,
@@ -213,10 +221,17 @@ fun TaskScreen(
                         contentColor = blueDark,
                     )
                     Spacer(modifier = Modifier.height(dimen_10_dp))
-                    if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
-                        LazyColumn(
-                            modifier = Modifier.padding(bottom = dimen_50_dp)
-                        ) {
+                    LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+                        if (/*viewModel.isProgressEnable.value*/false) {
+                            item {
+                                CustomLinearProgressIndicator(
+                                    modifier = Modifier
+                                        .padding(dimen_10_dp),
+                                    progressState = linearProgressState
+                                )
+                            }
+                        }
+                        if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
                             viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                                 item {
                                     Row(
@@ -254,10 +269,9 @@ fun TaskScreen(
                                     CustomVerticalSpacer(size = dimen_20_dp)
                                 }
                             }
-                        }
-                    } else {
-                        if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-                            LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+
+                        } else {
+                            if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
                                 itemsIndexed(
                                     items = viewModel.filterList.value.entries.toList()
                                 ) { _, task ->
@@ -281,22 +295,35 @@ fun TaskScreen(
 private fun TaskRowView(
     viewModel: TaskScreenViewModel,
     navController: NavController,
-    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
+    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModel?.let {
                 if (subjectName.isNotBlank()) {
-                    navigateToGrantSurveySummaryScreen(
+                    val sanctionedAmount = try {
+                        task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
+                            ?: DEFAULT_ID
+                    } catch (ex: Exception) {
+                        CoreLogger.e(
+                            tag = TAG,
+                            msg = "TaskRowView: exception -> ${ex.message}",
+                            ex = ex,
+                            stackTrace = true
+                        )
+                        DEFAULT_ID
+                    }
+                    navigateToSectionScreen(
                         navController,
+                        missionId = viewModel.missionId,
+                        activityId = viewModel.activityId,
                         taskId = task.key,
                         surveyId = it.surveyId,
-                        sectionId = it.sectionId,
                         subjectType = it.subject,
                         subjectName = subjectName,
+                        activityType = viewModel.activityType,
                         activityConfigId = it.activityConfigId,
-                        sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt()
-                            ?: DEFAULT_ID,
+                        sanctionedAmount = sanctionedAmount,
                     )
                 }
 
@@ -336,8 +363,7 @@ private fun TaskRowView(
         isShowSecondaryStatusIcon = task.value[GrantTaskCardSlots.GRANT_TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
         ),
-
-
     )
 }
 
+const val TAG = "TaskScreen"

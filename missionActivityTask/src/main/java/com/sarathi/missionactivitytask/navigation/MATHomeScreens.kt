@@ -12,6 +12,9 @@ sealed class MATHomeScreens(val route: String) {
     object GrantTaskScreen :
         MATHomeScreens(route = "${MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
 
+    object SurveyTaskScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+
     object ContentDetailScreen :
         MATHomeScreens(route = "${MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MAT_ID}}/{${MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY}}")
 
@@ -19,7 +22,13 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "${MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_CONTENT_KEY}}/{${MissionActivityConstants.ARG_CONTENT_TYPE}}/{${MissionActivityConstants.ARG_CONTENT_TITLE}}")
 
     object SurveyScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}/{${MissionActivityConstants.ARG_REFERENCE_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_GRANT_ID}}/{${MissionActivityConstants.ARG_GRANT_TYPE}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT}}")
+        MATHomeScreens(route = "${MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_TOOLBAR_TITLE}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_GRANT_ID}}/{${MissionActivityConstants.ARG_GRANT_TYPE}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}")
+
+    object GrantSurveyScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.GRANT_SURVEY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_TOOLBAR_TITLE}}/{${MissionActivityConstants.ARG_REFERENCE_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_GRANT_ID}}/{${MissionActivityConstants.ARG_GRANT_TYPE}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT}}")
+
+    object BaseSurveyScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.BASE_SURVEY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_TOOLBAR_TITLE}}/{${MissionActivityConstants.ARG_REFERENCE_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_GRANT_ID}}/{${MissionActivityConstants.ARG_GRANT_TYPE}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT}}")
 
     object DisbursementSurveyScreen :
         MATHomeScreens(route = "${MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}")
@@ -35,8 +44,11 @@ sealed class MATHomeScreens(val route: String) {
 
     object AddImageScreen :
         MATHomeScreens(route = "${MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_TASK_ID_LIST}}")
+
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
 
+    object SectionScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}")
 
 }
