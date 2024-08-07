@@ -44,6 +44,7 @@ import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomTextViewComponent
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -287,17 +288,16 @@ fun DataTabScreen(
                                         }
                                     }
 
-                                }
+                                    item {
+                                        CustomVerticalSpacer()
+                                    }
 
+                                }
                             }
                         }
-
                     }
-
                 }
             )
         }
     }
-
-
 }

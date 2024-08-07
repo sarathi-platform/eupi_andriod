@@ -82,14 +82,19 @@ class DataTabScreenViewModel @Inject constructor(
                 dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke()
             _filteredSubjectList.value = subjectList.value
 
-            _filters.add(LivelihoodModel.getAllFilter())
-            _filters.addAll(getLivelihoodListFromDbUseCase.invoke())
+            createFilterBottomSheetList()
 
             countMap.put(SubTabs.All, filteredSubjectList.value.size)
             withContext(mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private suspend fun createFilterBottomSheetList() {
+        _filters.clear()
+        _filters.add(LivelihoodModel.getAllFilter())
+        _filters.addAll(getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId })
     }
 
 }

@@ -34,9 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.TabsCore
+import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
+import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
-import com.nudge.core.ui.commonUi.componet_.component.TabComponent
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
@@ -67,7 +70,9 @@ fun DataSummaryScreen(
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
-        onBackIconClick = { },
+        onBackIconClick = {
+            navController.navigateUp()
+        },
         onSearchValueChange = {},
         onBottomUI = { },
         onContentUI = { a, b, c ->
@@ -83,7 +88,7 @@ fun DataSummaryScreen(
                         AddEventButton(navController = navController)
                     }
                 } else {
-                    DataSummaryView(navController, subjectId, subjectName)
+                    DataSummaryView(navController, subjectId, subjectName, viewModel.countMap)
                 }
 
             }
@@ -95,8 +100,13 @@ fun DataSummaryScreen(
 }
 
 @Composable
-private fun DataSummaryView(navController: NavHostController, subjectId: Int, subjectName: String) {
-    TabBarContainer()
+private fun DataSummaryView(
+    navController: NavHostController,
+    subjectId: Int,
+    subjectName: String,
+    countMap: Map<SubTabs, Int>
+) {
+    TabBarContainer(countMap)
     Spacer(modifier = Modifier.height(16.dp))
     DropDownConatiner()
     Spacer(modifier = Modifier.height(16.dp))
@@ -111,15 +121,14 @@ private fun DataSummaryView(navController: NavHostController, subjectId: Int, su
 }
 
 @Composable
-fun TabBarContainer() {
-    TabComponent(
-        tabs = listOf(
-            "Last week",
-            "Last month",
-            "Last 3 months"
-        )
-    ) {
-    }
+fun TabBarContainer(countMap: Map<SubTabs, Int>) {
+    val tabs = listOf<SubTabs>(SubTabs.LastWeekTab, SubTabs.LastMonthTab, SubTabs.Last3MonthsTab)
+    TabsCore.setTabIndex(TabsEnum.DataSummaryTab.tabIndex)
+    CustomSubTabLayout(
+        parentTabIndex = TabsEnum.DataSummaryTab.tabIndex,
+        tabs = tabs,
+        countMap = countMap
+    )
 }
 
 @Composable
@@ -328,10 +337,12 @@ private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextSty
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
+    countMap.put(SubTabs.All, 1)
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        DataSummaryView(navController = rememberNavController(), 0, "")
+        DataSummaryView(navController = rememberNavController(), 0, "", countMap = countMap)
     }
 }

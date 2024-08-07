@@ -160,7 +160,7 @@ fun DidiTabScreen(
 
                         Column {
                             SearchWithFilterViewComponent(
-                                placeholderString = when (TabsCore.getSubTabIndex().value) {
+                                placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
                                     SubTabs.DidiTab.id -> "Search by didis"
                                     SubTabs.SmallGroupTab.id -> "Search by small groups"
                                     else -> "Search by didis"
@@ -174,13 +174,13 @@ fun DidiTabScreen(
                                     didiTabViewModel.onEvent(
                                         CommonEvents.SearchValueChangedEvent(
                                             searchQuery,
-                                            (TabsCore.getSubTabIndex().value as Int)
+                                            TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)
                                         )
                                     )
                                 }
                             )
                             CustomVerticalSpacer()
-                            when (TabsCore.getSubTabIndex().value) {
+                            when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
                                 SubTabs.DidiTab.id -> {
                                     DidiSubTab(
                                         didiTabViewModel = didiTabViewModel,

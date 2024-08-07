@@ -5,8 +5,9 @@ enum class TabsEnum(val id: Int, val tabIndex: Int) {
     MissionTab(1, 0),
     DidiCrpTab(3, 1),
     DidiUpcmTab(4, 2),
-    DataTab(5, 1)
-    ;
+    DataTab(5, 1),
+    DataSummaryTab(6, 0)
+
 }
 
 sealed class SubTabs(val id: Int) {
@@ -16,6 +17,9 @@ sealed class SubTabs(val id: Int) {
     object All : SubTabs(2)
     object NoEntryMonthTab : SubTabs(3)
     object NoEntryWeekTab : SubTabs(4)
+    object LastWeekTab : SubTabs(5)
+    object LastMonthTab : SubTabs(6)
+    object Last3MonthsTab : SubTabs(7)
 
 
 }
