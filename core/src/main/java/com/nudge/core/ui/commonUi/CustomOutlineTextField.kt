@@ -79,7 +79,7 @@ fun CustomOutlineTextField(
         decorationBox = @Composable { innerTextField ->
             TextFieldDefaults.OutlinedTextFieldDecorationBox(
                 value = value,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = contentPadding,
                 visualTransformation = visualTransformation,
                 innerTextField = innerTextField,
                 placeholder = placeholder,
