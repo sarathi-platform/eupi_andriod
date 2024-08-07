@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
@@ -81,7 +82,7 @@ fun TaskScreen(
     isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
     onSettingClick: () -> Unit,
-    taskScreenContent: @Composable (viewModel: TaskScreenViewModel, navController: NavController, task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>) -> Unit
+    taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -260,32 +261,15 @@ fun TaskScreen(
                                 item {
                                     CustomVerticalSpacer()
                                 }
-                                itemsIndexed(
-                                    items = itemsInCategory
-                                ) { _, task ->
 
-                                    taskScreenContent(viewModel, navController, task)
-
-                                    CustomVerticalSpacer()
-                                }
-                                item {
-                                    CustomVerticalSpacer(size = dimen_20_dp)
-                                }
+                                taskScreenContent(viewModel, navController)
                             }
 
                         } else {
                             if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-                                itemsIndexed(
-                                    items = viewModel.filterList.value.entries.toList()
-                                ) { _, task ->
 
-                                    taskScreenContent(viewModel, navController, task)
+                                taskScreenContent(viewModel, navController)
 
-                                    CustomVerticalSpacer()
-                                }
-                                item {
-                                    CustomVerticalSpacer(size = dimen_20_dp)
-                                }
                             }
                         }
                     }
@@ -294,6 +278,22 @@ fun TaskScreen(
         },
         onSettingClick = onSettingClick
     )
+}
+
+fun LazyListScope.TaskScreenContent(viewModel: TaskScreenViewModel, navController: NavController) {
+
+    itemsIndexed(
+        items = viewModel.filterList.value.entries.toList()
+    ) { _, task ->
+
+        TaskRowView(viewModel, navController, task)
+
+        CustomVerticalSpacer()
+    }
+    item {
+        CustomVerticalSpacer(size = dimen_20_dp)
+    }
+
 }
 
 @Composable

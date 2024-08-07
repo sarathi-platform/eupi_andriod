@@ -5,8 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskRowView
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
+import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreenContent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.SurveyTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 
@@ -38,8 +38,8 @@ fun SurveyTaskScreen(
         isSecondaryButtonVisible = false,
         taskList = emptyList(),
         navController = navController,
-        taskScreenContent = { vm, mNavController, task ->
-            TaskRowView(vm, mNavController, task)
+        taskScreenContent = { vm, mNavController ->
+            TaskScreenContent(vm, mNavController)
         }
     )
 
