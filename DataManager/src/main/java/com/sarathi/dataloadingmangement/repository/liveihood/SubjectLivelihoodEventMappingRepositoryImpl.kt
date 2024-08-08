@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository.liveihood
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import javax.inject.Inject
 
 class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
@@ -19,9 +20,13 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun saveSubjectLivelihoodEventMapping(subjectLivelihoodEventMappingEntity: SubjectLivelihoodEventMappingEntity) {
+    override suspend fun addOrUpdateLivelihoodEvent(eventData: LivelihoodEventScreenData) {
         subjectLivelihoodEventMappingDao.insertSubjectLivelihoodEventMapping(
-            subjectLivelihoodEventMappingEntity = subjectLivelihoodEventMappingEntity
+            subjectLivelihoodEventMappingEntity = SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
+                coreSharedPrefs.getUniqueUserIdentifier(), eventData
+            )
         )
     }
+
+
 }

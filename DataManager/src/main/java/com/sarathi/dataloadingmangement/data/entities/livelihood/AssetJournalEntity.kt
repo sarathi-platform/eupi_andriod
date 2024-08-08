@@ -17,7 +17,7 @@ data class AssetJournalEntity(
     val transactionDetails: String,
     val transactionFlow: String,
     val transactionType: String,
-    val transactionAmount: Double,
+    val assetCount: Int,
     val referenceId: Int,
     val referenceType: String,
     val subjectId: Int,
@@ -31,7 +31,7 @@ data class AssetJournalEntity(
 
         fun getAssetJournalEntity(
             userId: String,
-            amount: Int,
+            count: Int,
             date: Long,
             particulars: String,
             transactionId: String,
@@ -44,7 +44,7 @@ data class AssetJournalEntity(
             return AssetJournalEntity(
                 id = 0,
                 userId = userId,
-                transactionAmount = amount.toDouble(),
+                assetCount = count,
                 transactionDate = date,
                 transactionId = transactionId,
                 referenceId = referenceId,

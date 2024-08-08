@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 
 @Entity(tableName = SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME)
 data class SubjectLivelihoodEventMappingEntity(
@@ -17,4 +18,24 @@ data class SubjectLivelihoodEventMappingEntity(
     val livelihoodEventId: Int,
     val livelihoodEventType: String
 
-)
+) {
+    companion object {
+        fun getSubjectLivelihoodEventMappingEntity(
+            uniqueUserIdentifier: String,
+            eventData: LivelihoodEventScreenData
+        ): SubjectLivelihoodEventMappingEntity {
+            return SubjectLivelihoodEventMappingEntity(
+                userId = uniqueUserIdentifier,
+                id = 0,
+                transactionId = eventData.transactionId,
+                subjectId = eventData.subjectId,
+                date = eventData.date,
+                livelihoodId = eventData.livelihoodId,
+                livelihoodEventId = eventData.eventId,
+                livelihoodEventType = eventData.selectedEvent.name
+
+            )
+        }
+
+    }
+}

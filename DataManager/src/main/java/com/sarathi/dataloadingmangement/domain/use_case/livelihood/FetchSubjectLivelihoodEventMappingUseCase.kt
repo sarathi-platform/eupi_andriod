@@ -15,10 +15,4 @@ class FetchSubjectLivelihoodEventMappingUseCase @Inject constructor(
         )
     }
 
-    suspend fun saveSubjectLivelihoodEventMapping(subjectLivelihoodEventMappingEntity: SubjectLivelihoodEventMappingEntity) {
-        subjectLivelihoodEventMappingRepositoryImpl.saveSubjectLivelihoodEventMapping(
-            subjectLivelihoodEventMappingEntity = subjectLivelihoodEventMappingEntity
-        )
-
-    }
 }
