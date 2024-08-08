@@ -44,7 +44,8 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             asset = item,
                             livelihoodId = livelihoodId,
-                            value = item.value
+                            value = item.value,
+                            image = item.image
                         )
                     )
                     saveLivelihoodLanguageToDB(

@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
@@ -8,7 +9,9 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetCountUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetsCountWithValueUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import javax.inject.Inject
 
@@ -25,21 +28,78 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         subjectId: Int,
         subjectLivelihoodEventMapping: List<SubjectLivelihoodEventMappingEntity>?,
         assets: List<AssetEntity>
-    ): IncomeExpenseSummaryUiModel? {
-        return null
+    ): IncomeExpenseSummaryUiModel {
+
+        val totalIncome = getTotalIncomeForSubject(subjectId = subjectId)
+        val totalExpense = getTotalExpenseForSubject(subjectId = subjectId)
+        val assetCounts = getAssetCountForAssets(subjectId, assets.map { it.assetId })
+
+        val livelihoodAssetMap = assets.groupBy { it.livelihoodId }
+
+        val assetsCountWithValue = AssetsCountWithValueUiModel
+            .getAssetsCountWithValueUiModelList(assetsList = assets, assetCounts)
+
+        return IncomeExpenseSummaryUiModel
+            .getIncomeExpenseSummaryUiModel(
+                subjectId,
+                totalIncome,
+                totalExpense,
+                livelihoodAssetMap,
+                assetsCountWithValue
+            )
     }
 
     override suspend fun getTotalIncomeForSubject(subjectId: Int): Double {
-        return 0.0
+        return moneyJournalDao.getTotalIncomeExpenseForSubject(
+            transactionFlow = EntryFlowTypeEnum.Inflow.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId.value(),
+            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
+        )?.totalIncome.value()
     }
 
     override suspend fun getTotalExpenseForSubject(subjectId: Int): Double {
-        return 0.0
+        return moneyJournalDao.getTotalIncomeExpenseForSubject(
+            transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId.value(),
+            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
+        )?.totalIncome.value()
     }
 
 
-    override suspend fun getAssetCountForAssets(assetIds: List<Int>): List<AssetCountUiModel> {
-        return
+    override suspend fun getAssetCountForAssets(
+        subjectId: Int,
+        assetIds: List<Int>
+    ): List<AssetCountUiModel> {
+        val assetCountUiModelList = ArrayList<AssetCountUiModel>()
+        assetIds.forEach { assetId ->
+            val inflowAssetCount = assetJournalDao.getAssetCountForAsset(
+                assetId = assetId,
+                subjectId = subjectId,
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                transactionFlow = EntryFlowTypeEnum.Inflow.name,
+                referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
+            )
+            val outFlowAssetCount = assetJournalDao.getAssetCountForAsset(
+                assetId = assetId,
+                subjectId = subjectId,
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+                referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
+            )
+
+            val totalCount = AssetCountUiModel.getAssetCountUiModel(
+                subjectId = subjectId,
+                livelihoodId = inflowAssetCount?.livelihoodId.value(),
+                assetId = inflowAssetCount?.assetId.value(),
+                totalAssetCountForFlow = (inflowAssetCount?.totalAssetCountForFlow ?: 0)
+                        - (outFlowAssetCount?.totalAssetCountForFlow?.value() ?: 0),
+            )
+            assetCountUiModelList.add(totalCount)
+        }
+
+        return assetCountUiModelList
     }
 
 }

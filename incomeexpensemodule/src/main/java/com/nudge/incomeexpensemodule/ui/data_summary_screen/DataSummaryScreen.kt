@@ -32,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.TabsCore
@@ -41,6 +40,7 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
+import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
@@ -52,10 +52,12 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
 import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel.DataSummaryScreenViewModel
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import java.util.UUID
 
@@ -69,6 +71,17 @@ fun DataSummaryScreen(
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(InitDataEvent.InitDataSummaryScreenState(subjectId = subjectId))
     }
+
+    if (viewModel.showAssetDialog.value) {
+        AssetsDialog(
+            viewModel.incomeExpenseSummaryUiModel.value,
+            viewModel.livelihoodModel,
+            onDismissRequest = {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+            }
+        )
+    }
+
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
@@ -90,7 +103,13 @@ fun DataSummaryScreen(
                         AddEventButton(navController = navController, subjectId, subjectName)
                     }
                 } else {
-                    DataSummaryView(navController, subjectId, subjectName, viewModel.countMap)
+                    DataSummaryView(
+                        viewModel,
+                        navController,
+                        subjectId,
+                        subjectName,
+                        viewModel.countMap
+                    )
                 }
 
             }
@@ -103,6 +122,7 @@ fun DataSummaryScreen(
 
 @Composable
 private fun DataSummaryView(
+    viewModel: DataSummaryScreenViewModel,
     navController: NavHostController,
     subjectId: Int,
     subjectName: String,
@@ -112,9 +132,14 @@ private fun DataSummaryView(
     Spacer(modifier = Modifier.height(16.dp))
     DropDownConatiner()
     Spacer(modifier = Modifier.height(16.dp))
-    HeaderSection()
+    HeaderSection(viewModel.incomeExpenseSummaryUiModel.value!!) {
+
+    }
     Spacer(modifier = Modifier.height(16.dp))
-    EventsList()
+    EventsList(viewModel.livelihoodDropdownList.toList()) {
+        viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
+    }
+
     Spacer(modifier = Modifier.height(16.dp))
     EventView()
     Spacer(modifier = Modifier.height(16.dp))
@@ -142,7 +167,10 @@ fun DropDownConatiner() {
 }
 
 @Composable
-fun HeaderSection() {
+fun HeaderSection(
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel,
+    onAssetCountClicked: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,20 +185,33 @@ fun HeaderSection() {
     ) {
         Column {
             Text(text = "Income", style = getTextColor(newMediumTextStyle))
-            Text(text = "₹ 2000", style = getTextColor(defaultTextStyle))
+            Text(
+                text = "₹ ${incomeExpenseSummaryUiModel.totalIncome}",
+                style = getTextColor(defaultTextStyle)
+            )
         }
         Column {
             Text(text = "Expense", style = getTextColor(newMediumTextStyle))
-            Text(text = "₹ 500", style = getTextColor(defaultTextStyle))
+            Text(
+                text = "₹ ${incomeExpenseSummaryUiModel.totalExpense}",
+                style = getTextColor(defaultTextStyle)
+            )
         }
         Column {
             Text(text = "Asset Value", style = getTextColor(newMediumTextStyle))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "₹ 4000",
-                    style = getTextColor(didiDetailItemStyle),
-                )
-                Spacer(modifier = Modifier.width(dimen_5_dp))
+                incomeExpenseSummaryUiModel.assetsCountWithValue.forEach {
+                    Icon(
+                        painter = painterResource(id = R.drawable.goat_icon),
+                        contentDescription = null,
+                        tint = assetValueIconColor
+                    )
+                    Text(
+                        text = it.assetCount.toString(),
+                        style = getTextColor(didiDetailItemStyle),
+                    )
+                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                }
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_right_circle),
                     contentDescription = null,
@@ -183,12 +224,12 @@ fun HeaderSection() {
 }
 
 @Composable
-fun EventsList() {
+fun EventsList(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        val sources =
-            listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
+
         Text("Last 3 events:", style = getTextColor(defaultTextStyle))
-        SingleSelectDropDown(sources = sources) {
+        SingleSelectDropDown(sources = livelihoodList) {
+            onValueSelected(it)
         }
     }
 }
@@ -347,6 +388,6 @@ fun DefaultPreview() {
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        DataSummaryView(navController = rememberNavController(), 0, "", countMap = countMap)
+//        DataSummaryView(navController = rememberNavController(), 0, "", countMap = countMap)
     }
 }

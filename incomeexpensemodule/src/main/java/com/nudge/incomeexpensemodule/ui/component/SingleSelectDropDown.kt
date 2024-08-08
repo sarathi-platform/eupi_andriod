@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.example.incomeexpensemodule.R
+import com.nudge.core.showCustomToast
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 
@@ -62,10 +63,10 @@ fun SingleSelectDropDown(
                 onAnswerSelection(it.id)
                 expanded = false
             } else {
-//                    showCustomToast(
-//                        context,
-//                        context.getString(R.string.edit_disable_message)
-//                    )
+                showCustomToast(
+                    context,
+                    context.getString(R.string.edit_disable_message)
+                )
             }
         },
 

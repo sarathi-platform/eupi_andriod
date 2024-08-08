@@ -229,7 +229,7 @@ fun AddEventScreen(
                         isMandatory = true,
                         title = "Increase in Number*",
                         isEditAllowed = true,
-                        currentValue = viewModel.amount.value,
+                        currentValue = viewModel.assetCount.value,
                         onAnswerSelection = { inputValue ->
                             viewModel.assetCount.value = inputValue
                         }

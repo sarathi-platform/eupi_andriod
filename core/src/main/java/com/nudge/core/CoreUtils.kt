@@ -883,6 +883,8 @@ fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
 
+fun Double?.value() = this ?: 0.0
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()

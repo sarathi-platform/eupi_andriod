@@ -19,10 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 
 @Composable
 fun AssetsDialog(
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    livelihoodModel: List<LivelihoodModel>,
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
@@ -45,12 +51,30 @@ fun AssetsDialog(
         },
         text = {
             Column {
-                AssetRow("Adult Male:", "1", "₹ 2000")
-                Spacer(modifier = Modifier.height(dimen_8_dp))
-                AssetRow("Adult Female:", "5", "₹ 6000")
+                livelihoodModel.forEach { livelihood ->
+                    Text(text = livelihood.name, style = defaultTextStyle)
+                    Column() {
+                        incomeExpenseSummaryUiModel?.assetsCountWithValue?.forEach { assetsCountWithValueItem ->
+                            val assets =
+                                incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
+                            val itemIndex = assets?.map { it.assetId }
+                                ?.indexOf(assetsCountWithValueItem.assetId).value()
+                            if (itemIndex != -1) {
+                                AssetRow(
+                                    assets?.get(itemIndex)?.name.value(),
+                                    assetsCountWithValueItem.assetCount.toString(),
+                                    "₹ ${assetsCountWithValueItem.totalAssetValue}"
+                                )
+                                Spacer(modifier = Modifier.height(dimen_8_dp))
+                            }
+                        }
+                    }
+                }
             }
         },
         buttons = {
+            /**
+             * Implementation not required. **/
         },
     )
 }
@@ -75,5 +99,5 @@ fun AssetRow(label: String, quantity: String, amount: String) {
 @Preview
 @Composable
 private fun AssetsDialogPreview() {
-    AssetsDialog({})
+//    AssetsDialog({})
 }
