@@ -59,6 +59,7 @@ class AddEventViewModel @Inject constructor(
     var assetCount = mutableStateOf("")
     var amount = mutableStateOf("")
     var selectedDate = mutableStateOf("")
+    var isSubmitButtonEnable = mutableStateOf(false)
     var selectedDateInLong: Long = 0
 
     override fun <T> onEvent(event: T) {
@@ -117,7 +118,7 @@ class AddEventViewModel @Inject constructor(
             })
             _livelihoodAssetDropdownValue.addAll(fetchAssetUseCase.invoke(livelihoodId))
             _livelihoodProductDropdownValue.addAll(fetchProductUseCase.invoke(livelihoodId))
-
+            validateForm()
         }
     }
 
@@ -140,6 +141,7 @@ class AddEventViewModel @Inject constructor(
                 questionVisibilityMap[it] = false
             }
         }
+        validateForm()
 
     }
 
@@ -171,6 +173,7 @@ class AddEventViewModel @Inject constructor(
 
 
     private fun validateForm() {
+
 
     }
 

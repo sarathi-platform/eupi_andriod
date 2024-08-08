@@ -17,6 +17,7 @@ data class AssetJournalEntity(
     val transactionDetails: String,
     val transactionFlow: String,
     val transactionType: String,
+    val assetId: Int,
     val assetCount: Int,
     val referenceId: Int,
     val referenceType: String,
@@ -39,6 +40,7 @@ data class AssetJournalEntity(
             referenceType: String,
             subjectType: String,
             subjectId: Int,
+            assetId: Int,
             transactionFlow: String,
         ): AssetJournalEntity {
             return AssetJournalEntity(
@@ -55,6 +57,7 @@ data class AssetJournalEntity(
                 transactionFlow = transactionFlow,
                 status = 1,
                 transactionType = referenceType,
+                assetId = assetId,
                 modifiedDate = System.currentTimeMillis()
             )
 

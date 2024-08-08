@@ -28,7 +28,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
                 transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
                     ?: BLANK_STRING,
                 referenceType = "LivelihoodEvent",
-                referenceId = eventData.livelihoodId
+                referenceId = eventData.livelihoodId,
+                assetId = eventData.assetType
             )
         )
     }
