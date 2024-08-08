@@ -9,7 +9,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
-import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -92,8 +91,9 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateActivityStatus(){
-        val updateActivityStatusList = updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
+    private suspend fun updateActivityStatus() {
+        val updateActivityStatusList =
+            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
         val updateMissionStatusList = updateMissionActivityTaskStatusUseCase.reCheckMissionStatus()
         updateActivityStatusList.forEach {
             matStatusEventWriterUseCase.updateActivityStatus(

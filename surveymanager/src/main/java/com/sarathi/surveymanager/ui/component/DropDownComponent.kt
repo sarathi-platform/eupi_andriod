@@ -50,6 +50,7 @@ fun <T> DropDownComponent(
     title: String = BLANK_STRING,
     isMandatory: Boolean = false,
     modifier: Modifier,
+    questionNumber: String = BLANK_STRING,
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
     selectedItem: String = BLANK_STRING,
@@ -71,7 +72,11 @@ fun <T> DropDownComponent(
         horizontalAlignment = Alignment.Start
     ) {
         if (title.isNotBlank()) {
-            QuestionComponent(title = title, isRequiredField = isMandatory)
+            QuestionComponent(
+                title = title,
+                questionNumber = questionNumber,
+                isRequiredField = isMandatory
+            )
         }
         CustomOutlineTextField(
             value = selectedItem,

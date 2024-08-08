@@ -86,22 +86,30 @@ fun SplashScreen(
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
-                viewModel.showLoader.value=true
+                viewModel.showLoader.value = true
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value=false
+                viewModel.showLoader.value = false
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
-        } else
-        {
-            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false")
+        } else {
+            NudgeLogger.d(
+                "SplashScreen",
+                "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false"
+            )
             delay(ONE_SECOND)
-            viewModel.showLoader.value=true
-            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails before")
+            viewModel.showLoader.value = true
+            NudgeLogger.d(
+                "SplashScreen",
+                "LaunchedEffect(key1 = true) -> fetchLanguageDetails before"
+            )
             viewModel.fetchLanguageDetails() {
-                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it")
-                viewModel.showLoader.value=false
-                if(it.isNotEmpty()){
+                NudgeLogger.d(
+                    "SplashScreen",
+                    "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
+                )
+                viewModel.showLoader.value = false
+                if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {

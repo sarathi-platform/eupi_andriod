@@ -882,6 +882,10 @@ fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
 
+fun <T> List<T>?.value(): List<T> {
+    return this ?: emptyList()
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -1143,4 +1147,8 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
         filePath = _uri!!.path
     }
     Log.d("", "Chosen path = $filePath")
+}
+
+fun getQuestionNumber(questionIndex: Int): String {
+    return "${questionIndex + 1}. "
 }

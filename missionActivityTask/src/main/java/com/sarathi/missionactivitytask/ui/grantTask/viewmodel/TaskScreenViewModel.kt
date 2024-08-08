@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -10,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.json
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -56,6 +54,7 @@ open class TaskScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
+    var activityType: String? = null
     var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
@@ -68,6 +67,9 @@ open class TaskScreenViewModel @Inject constructor(
     var isGroupByEnable = mutableStateOf(false)
     var isFilterEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
+
+    var isProgressEnable = mutableStateOf(true)
+    val isTaskProgressBarVisible = mutableStateOf(false)
 
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
@@ -101,7 +103,7 @@ open class TaskScreenViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             onEvent(LoaderEvent.UpdateLoaderState(true))
-            Log.d("TAG", "initTaskScreen: $missionId :: $activityId")
+
             taskUiModel = if (taskList.isNullOrEmpty()) getTaskUseCase.getActiveTasks(
                 missionId = missionId,
                 activityId = activityId
@@ -124,10 +126,6 @@ open class TaskScreenViewModel @Inject constructor(
                     activityConfig
                 )
 
-                Log.d(
-                    "TAG",
-                    "initTaskScreen uiComponent: ${uiComponent.json()} :: $index : ${it.json()} "
-                )
                 if (index == 0) {
                     val searchUiComponent = getUiComponentValues(
                         taskId = it.taskId,
@@ -149,22 +147,30 @@ open class TaskScreenViewModel @Inject constructor(
                         isGroupByEnable.value = true
                         isFilterEnable.value = true
                     }
+                    val progressUiComponent = getUiComponentValues(
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
+                        isNAButtonEnable = it.isNotAvailableButton,
+                        subjectId = it.subjectId,
+                        componentType = ComponentEnum.Progress.name,
+                        activityConfig = activityConfig
+                    )
+
+                    isProgressEnable.value =
+                        progressUiComponent[TaskCardSlots.TASK_PROGRESS.name]?.value != null
                 }
-                _taskList.value[it.taskId] = uiComponent
-                Log.d("TAG", "initTaskScreen_taskList 1: ${_taskList.value.json()}")
+
+                if (uiComponent[TaskCardSlots.TASK_TITLE.name]?.value?.isNotEmpty() == true)
+                    _taskList.value[it.taskId] = uiComponent
 
             }
-
-            Log.d("TAG", "initTaskScreen_taskList: ${taskList?.json()}")
 
             var _filterListt = _taskList.value
             updateValueInMainThread(_filterList, _filterListt)
 
-            Log.d("TAG", "initTaskScreen filterTaskMap1: ${_taskList.value.json()}")
-
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-            Log.d("TAG", "initTaskScreen filterTaskMap: ${filterTaskMap.json()}")
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -245,10 +251,17 @@ open class TaskScreenViewModel @Inject constructor(
     fun setMissionActivityId(missionId: Int, activityId: Int) {
         this.missionId = missionId
         this.activityId = activityId
+        getActivityType(missionId, activityId)
+    }
+
+    private fun getActivityType(missionId: Int, activityId: Int) {
+        ioViewModelScope {
+            activityType = getActivityUseCase.getTypeForActivity(missionId, activityId)
+        }
+
     }
 
     suspend fun getSurveyDetail() {
-        Log.d("TAG", "getSurveyDetail: ${activityId}")
         activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
     }
 

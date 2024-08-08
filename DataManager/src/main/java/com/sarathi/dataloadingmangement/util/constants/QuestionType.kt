@@ -7,5 +7,10 @@ enum class QuestionType {
     SingleSelectDropDown,
     MultiSelectDropDown,
     ToggleGrid,
-    MultiSelect
+    MultiSelect,
+    AutoCalculation,
+    RadioButton,
+    Grid,
+    Toggle,
+    DropDown
 }

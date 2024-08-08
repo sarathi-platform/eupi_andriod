@@ -19,6 +19,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.navigation.navigateToActivitySelectTaskScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSurveyTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 import com.sarathi.missionactivitytask.utils.getFilePathUri
 import java.util.Locale
@@ -68,8 +69,6 @@ fun ActivityRowCard(
                     when (activity.activityType.lowercase()) {
                         ActivityTypeEnum.GRANT.name.lowercase(
                             Locale.ENGLISH
-                        ), ActivityTypeEnum.BASIC.name.lowercase(
-                            Locale.ENGLISH
                         ) -> {
                             navigateToGrantTaskScreen(
                                 navController,
@@ -79,10 +78,10 @@ fun ActivityRowCard(
                             )
                         }
 
-                        ActivityTypeEnum.SELECT.name.lowercase(
+                        ActivityTypeEnum.SURVEY.name.lowercase(
                             Locale.ENGLISH
                         ) -> {
-                            navigateToActivitySelectTaskScreen(
+                            navigateToSurveyTaskScreen(
                                 navController,
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
@@ -90,6 +89,16 @@ fun ActivityRowCard(
                             )
                         }
 
+                    ActivityTypeEnum.SELECT.name.lowercase(
+                        Locale.ENGLISH
+                    ) -> {
+                    navigateToActivitySelectTaskScreen(
+                        navController,
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        activityName = activity.description
+                    )
+                }
                     }
                 }
             }
