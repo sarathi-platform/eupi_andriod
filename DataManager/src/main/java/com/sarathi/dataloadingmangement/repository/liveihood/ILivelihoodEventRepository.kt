@@ -5,5 +5,4 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEv
 interface ILivelihoodEventRepository {
 
     suspend fun getEventsForLivelihood(livelihoodId: Int): List<LivelihoodEventUiModel>
-
 }

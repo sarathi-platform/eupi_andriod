@@ -18,7 +18,7 @@ interface AssetJournalDao {
     suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
 
 
-    @Query("update asset_journal_table set transactionAmount=:amount, transactionDate=:date, transactionDetails=:particulars, modifiedDate=:modifiedDate where userId=:userId and transactionId=:transactionId ")
+    @Query("update asset_journal_table set assetCount=:amount, transactionDate=:date, transactionDetails=:particulars, modifiedDate=:modifiedDate where userId=:userId and transactionId=:transactionId ")
     suspend fun updateAssetJournal(
         transactionId: String,
         userId: String,

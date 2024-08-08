@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
+
 interface IMoneyJournalRepository {
     suspend fun saveAndUpdateMoneyJournalTransaction(
         amount: Int,
@@ -10,6 +12,10 @@ interface IMoneyJournalRepository {
         grantType: String,
         subjectType: String,
         subjectId: Int
+    )
+    suspend fun saveAndUpdateMoneyJournalTransaction(
+        particular: String,
+        eventData: LivelihoodEventScreenData
     )
 
     suspend fun deleteMoneyJournalTransaction(transactionId: String)

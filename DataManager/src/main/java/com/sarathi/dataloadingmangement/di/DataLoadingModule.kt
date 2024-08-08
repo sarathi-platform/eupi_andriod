@@ -982,7 +982,6 @@ class DataLoadingModule {
     }
 
 
-
     @Provides
     @Singleton
     fun provideFetchDidiDetailsFromDbRepository(
@@ -1183,9 +1182,15 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideSaveLivelihoodEventUseCase(
-        assetJournalRepo: AssetJournalRepositoryImpl
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl
     ): SaveLivelihoodEventUseCase {
-        return SaveLivelihoodEventUseCase(assetJournalRepo)
+        return SaveLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl
+        )
     }
 
     @Provides

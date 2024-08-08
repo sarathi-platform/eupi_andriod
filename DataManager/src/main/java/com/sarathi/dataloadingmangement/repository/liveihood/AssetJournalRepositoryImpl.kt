@@ -19,7 +19,7 @@ class AssetJournalRepositoryImpl @Inject constructor(
         assetJournalDao.insetAssetJournalEntry(
             AssetJournalEntity.getAssetJournalEntity(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                amount = eventData.assetCount,
+                count = eventData.assetCount,
                 date = eventData.date,
                 particulars = particular,
                 transactionId = eventData.transactionId,
@@ -28,7 +28,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
                 transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
                     ?: BLANK_STRING,
                 referenceType = "LivelihoodEvent",
-                referenceId = eventData.livelihoodId
+                referenceId = eventData.livelihoodId,
+                assetId = eventData.assetType
             )
         )
     }
