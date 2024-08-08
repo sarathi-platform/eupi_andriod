@@ -24,6 +24,8 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     private val assetDao: AssetDao
 ) : FetchSubjectIncomeExpenseSummaryRepository {
 
+    private val LIVELIHOOD_EVENT_REFERENCE_TYPE: String = "LivelihoodEvent"
+
     override suspend fun getIncomeExpenseSummaryForSubject(
         subjectId: Int,
         subjectLivelihoodEventMapping: List<SubjectLivelihoodEventMappingEntity>?,

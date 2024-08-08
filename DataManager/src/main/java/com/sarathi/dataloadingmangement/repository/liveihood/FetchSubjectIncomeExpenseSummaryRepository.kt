@@ -7,10 +7,6 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpens
 
 interface FetchSubjectIncomeExpenseSummaryRepository {
 
-    var LIVELIHOOD_EVENT_REFERENCE_TYPE: String
-        get() = "LivelihoodEvent"
-        set(value) = TODO()
-
     suspend fun getIncomeExpenseSummaryForSubject(
         subjectId: Int,
         subjectLivelihoodEventMapping: List<SubjectLivelihoodEventMappingEntity>?,
