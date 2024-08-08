@@ -112,6 +112,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 2
         SmallGroupDidiMappingEntity::class,
         TagReferenceEntity::class,
         MoneyJournalEntity::class,
+        SectionStatusEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false

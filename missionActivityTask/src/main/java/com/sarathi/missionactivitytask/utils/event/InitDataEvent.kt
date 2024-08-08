@@ -12,6 +12,8 @@ sealed class InitDataEvent {
     ) : InitDataEvent()
 
     data class InitGrantTaskScreenState(val missionId: Int, val activityId: Int) : InitDataEvent()
+    data class InitActivitySelectTaskScreenState(val missionId: Int, val activityId: Int) :
+        InitDataEvent()
     data class InitTaskScreenState(val taskList: List<TaskUiModel>?) : InitDataEvent()
 
     data class InitSurveyTaskScreenState(val missionId: Int, val activityId: Int) : InitDataEvent()

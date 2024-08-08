@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.activities.select
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -14,25 +13,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,22 +37,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
-import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CardArrow
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
@@ -68,33 +57,28 @@ import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
-import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
-import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
-import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.ImageViewer
 import com.sarathi.missionactivitytask.ui.basic_content.component.SubContainerView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
-import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
+import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
-import com.sarathi.missionactivitytask.utils.event.LoaderEvent
-import com.sarathi.surveymanager.ui.component.ButtonPositive
-import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -106,315 +90,67 @@ fun ActivitySelectTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
-
-    val context = LocalContext.current
-    val pullRefreshState = rememberPullRefreshState(
-        viewModel.loaderState.value.isLoaderVisible,
-        {
-            if (isOnline(context)) {
-                viewModel.refreshData()
-            } else {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.refresh_failed_please_try_again),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-        })
-    LaunchedEffect(key1 = true) {
-        viewModel.setMissionActivityId(missionId, activityId)
-        viewModel.onEvent(InitDataEvent.InitTaskScreenState(emptyList()))
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(InitDataEvent.InitActivitySelectTaskScreenState(missionId, activityId))
     }
-    ToolBarWithMenuComponent(
-        title = activityName,
-        modifier = Modifier.fillMaxSize(),
+    TaskScreen(
+        missionId = missionId,
+        activityId = activityId,
+        activityName = activityName,
+        onSettingClick = onSettingClick,
+        viewModel = viewModel,
+        onSecondaryButtonClick = {
+
+        },
+        isSecondaryButtonEnable = false,
+        secondaryButtonText = stringResource(id = R.string.generate_form_e),
+        isSecondaryButtonVisible = false,
+        taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
-        isSearch = true,
-        onSearchValueChange = { _ ->
-
-        },
-        onRetry = {},
-        onBottomUI = {
-            BottomAppBar(
-                modifier = Modifier.height(dimen_72_dp),
-                backgroundColor = white
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimen_10_dp),
-                ) {
-
-                    ButtonPositive(
-                        modifier = Modifier.weight(0.5f),
-                        buttonTitle = stringResource(R.string.complete_activity),
-                        isActive = viewModel.isButtonEnable.value,
-                        isArrowRequired = false,
-                        onClick = {
-                            viewModel.markActivityCompleteStatus()
-
-                            navigateToActivityCompletionScreen(
-                                isFromActivity = true,
-                                navController = navController,
-                                activityMsg = context.getString(
-                                    R.string.activity_completion_message,
-                                    activityName
-                                )
-                            )
-                        })
-
-                }
-            }
-        },
-        onContentUI = { _, isSearch, _ ->
-
-            Column {
-                BaseContentScreen(
-                    matId = viewModel.matId.value,
-                    contentScreenCategory = viewModel.contentCategory.value
-                ) { _, contentKey, contentType, isLimitContentData, contentTitle ->
-                    if (!isLimitContentData) {
-                        navigateToMediaPlayerScreen(
-                            navController = navController,
-                            contentKey = contentKey,
-                            contentType = contentType,
-                            contentTitle = contentTitle,
-                        )
-                    } else {
-                        navigateToContentDetailScreen(
-                            navController,
-                            matId = viewModel.matId.value,
-                            contentScreenCategory = viewModel.contentCategory.value
-                        )
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState)
-                )
-                {
-                    PullRefreshIndicator(
-                        refreshing = viewModel.loaderState.value.isLoaderVisible,
-                        state = pullRefreshState,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .zIndex(1f),
-                        contentColor = blueDark,
-                    )
-                    Spacer(modifier = Modifier.height(dimen_10_dp))
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimen_16_dp)
-                    ) {
-                        viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
-                            itemsIndexed(
-                                items = itemsInCategory
-                            ) { _, task ->
-                                val options = TaskCardModel(
-                                    label = "option1, option2 ",
-                                    value = "subTitle 1",
-                                    icon = null
-                                )
-                                val optionitemList = listOf(
-                                    OptionItemEntity(
-                                        id = 1,
-                                        sectionId = 5,
-                                        originalValue = "Yes",
-                                        selectedValue = BLANK_STRING,
-                                        conditions = emptyList(),
-                                        isSelected = false,
-                                        optionType = QuestionType.MultiSelect.name,
-                                        questionId = 22,
-                                        conditional = false,
-                                        optionImage = BLANK_STRING,
-                                        optionValue = null,
-                                        contentEntities = emptyList(),
-                                        selectedValueId = 0,
-                                        count = 0,
-                                        order = 1,
-                                        userId = "Ultra Poor change maker (UPCM)_6666667777",
-                                        values = null,
-                                        weight = 0,
-                                        optionId = 9,
-                                        surveyId = 1,
-                                        summary = BLANK_STRING
-                                    ),
-
-                                    OptionItemEntity(
-                                        id = 2,
-                                        sectionId = 5,
-                                        originalValue = "No",
-                                        selectedValue = BLANK_STRING,
-                                        conditions = emptyList(),
-                                        isSelected = false,
-                                        optionType = QuestionType.MultiSelect.name,
-                                        questionId = 22,
-                                        conditional = false,
-                                        optionImage = BLANK_STRING,
-                                        optionValue = null,
-                                        contentEntities = emptyList(),
-                                        selectedValueId = 0,
-                                        count = 0,
-                                        order = 2,
-                                        userId = "Ultra Poor change maker (UPCM)_6666667777",
-                                        values = null,
-                                        weight = 0,
-                                        optionId = 10,
-                                        surveyId = 1,
-                                        summary = BLANK_STRING
-                                    ),
-
-                                    OptionItemEntity(
-                                        id = 3,
-                                        sectionId = 5,
-                                        originalValue = "Not Available",
-                                        selectedValue = BLANK_STRING,
-                                        conditions = emptyList(),
-                                        isSelected = false,
-                                        optionType = QuestionType.MultiSelect.name,
-                                        questionId = 22,
-                                        conditional = false,
-                                        optionImage = BLANK_STRING,
-                                        optionValue = null,
-                                        contentEntities = emptyList(),
-                                        selectedValueId = 0,
-                                        count = 0,
-                                        order = 3,
-                                        userId = "Ultra Poor change maker (UPCM)_6666667777",
-                                        values = null,
-                                        weight = 0,
-                                        optionId = 11,
-                                        surveyId = 1,
-                                        summary = BLANK_STRING
-                                    )
-
-                                )
-                                ExpandableTaskCard(
-                                    title = task.value[TaskCardSlots.TASK_TITLE.name],
-                                    subTitle1 = task.value[TaskCardSlots.TASK_SUBTITLE.name],
-                                    options = options,
-                                    status = task.value[TaskCardSlots.TASK_STATUS.name],
-                                    imagePath = Uri.EMPTY,
-                                    modifier = Modifier,
-                                    optionItemEntityList = optionitemList,
-                                    expanded = true,
-                                    onExpendClick = { _, _ ->
-
-                                    }
-                                )
-
-                                CustomVerticalSpacer()
-                            }
-                        }
-
-                    }
-                }
-            }
-        },
-        onSettingClick = onSettingClick
+        taskScreenContent = { vm, mNavController ->
+            SelectActivityTaskScreenContent(viewModel = viewModel)
+        }
     )
 }
 
+fun LazyListScope.SelectActivityTaskScreenContent(viewModel: TaskScreenViewModel) {
 
-@Preview(showBackground = true)
+    itemsIndexed(
+        items = viewModel.filterList.value.entries.toList()
+    ) { _, task ->
+
+        ExpandableTaskCardRow(viewModel = viewModel, task = task)
+
+        CustomVerticalSpacer()
+    }
+    item {
+        CustomVerticalSpacer(size = dimen_20_dp)
+    }
+
+}
+
 @Composable
-fun ExpandableTaskCardPreview() {
-    val title = TaskCardModel(label = "Title1", value = "Title 1", icon = null)
-    val subTitle1 = TaskCardModel(label = "subTitle1", value = "subTitle 1", icon = null)
+fun ExpandableTaskCardRow(
+    viewModel: TaskScreenViewModel,
+    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
+) {
     val options = TaskCardModel(label = "option1, option2 ", value = "subTitle 1", icon = null)
-    val status = TaskCardModel(label = "Status 1", value = StatusEnum.NOT_STARTED.name, icon = null)
-    val optionitemList = listOf(
-        OptionItemEntity(
-            id = 1,
-            sectionId = 5,
-            originalValue = "Yes",
-            selectedValue = BLANK_STRING,
-            conditions = emptyList(),
-            isSelected = false,
-            optionType = QuestionType.MultiSelect.name,
-            questionId = 22,
-            conditional = false,
-            optionImage = BLANK_STRING,
-            optionValue = null,
-            contentEntities = emptyList(),
-            selectedValueId = 0,
-            count = 0,
-            order = 1,
-            userId = "Ultra Poor change maker (UPCM)_6666667777",
-            values = null,
-            weight = 0,
-            optionId = 9,
-            surveyId = 1,
-            summary = BLANK_STRING
-        ),
 
-        OptionItemEntity(
-            id = 2,
-            sectionId = 5,
-            originalValue = "No",
-            selectedValue = BLANK_STRING,
-            conditions = emptyList(),
-            isSelected = false,
-            optionType = QuestionType.MultiSelect.name,
-            questionId = 22,
-            conditional = false,
-            optionImage = BLANK_STRING,
-            optionValue = null,
-            contentEntities = emptyList(),
-            selectedValueId = 0,
-            count = 0,
-            order = 2,
-            userId = "Ultra Poor change maker (UPCM)_6666667777",
-            values = null,
-            weight = 0,
-            optionId = 10,
-            surveyId = 1,
-            summary = BLANK_STRING
-        ),
 
-        OptionItemEntity(
-            id = 3,
-            sectionId = 5,
-            originalValue = "Not Available",
-            selectedValue = BLANK_STRING,
-            conditions = emptyList(),
-            isSelected = false,
-            optionType = QuestionType.MultiSelect.name,
-            questionId = 22,
-            conditional = false,
-            optionImage = BLANK_STRING,
-            optionValue = null,
-            contentEntities = emptyList(),
-            selectedValueId = 0,
-            count = 0,
-            order = 3,
-            userId = "Ultra Poor change maker (UPCM)_6666667777",
-            values = null,
-            weight = 0,
-            optionId = 11,
-            surveyId = 1,
-            summary = BLANK_STRING
-        )
-
-    )
     ExpandableTaskCard(
-        title = title,
-        status = status,
-        subTitle1 = subTitle1,
-        modifier = Modifier,
-        imagePath = File("").toUri(),
-        expanded = true,
+        title = task.value[TaskCardSlots.TASK_TITLE.name],
+        subTitle1 = task.value[TaskCardSlots.TASK_SUBTITLE.name],
         options = options,
-        optionItemEntityList = optionitemList,
-        onExpendClick = { _, _ -> }
-    )
+        status = task.value[TaskCardSlots.TASK_STATUS.name],
+        imagePath = viewModel.getFilePathUri(
+            task.value[TaskCardSlots.TASK_IMAGE.name]?.value ?: BLANK_STRING
+        ) ?: Uri.EMPTY,
+        modifier = Modifier,
+        questionUiModel = null,
+        expanded = false
+    ) { _, _ ->
+
+    }
 }
 
 @Composable
@@ -425,7 +161,7 @@ fun ExpandableTaskCard(
     status: TaskCardModel?,
     imagePath: Uri,
     modifier: Modifier,
-    optionItemEntityList: List<OptionItemEntity>,
+    questionUiModel: QuestionUiModel?,
     expanded: Boolean,
     onExpendClick: (Boolean, TaskCardModel) -> Unit,
 ) {
@@ -539,7 +275,7 @@ fun ExpandableTaskCard(
                     ),
                 horizontalArrangement = Arrangement.Center
             ) {
-                itemsIndexed(optionItemEntityList.sortedBy { it.optionId }
+                itemsIndexed(questionUiModel?.options?.sortedBy { it.optionId }
                     ?: emptyList()) { _index, optionItem ->
                     if (optionItem.optionType?.equals(
                             QuestionType.MultiSelect.name,
@@ -594,7 +330,7 @@ fun ExpandableTaskCard(
 @Composable
 fun GridOptionCard(
     modifier: Modifier = Modifier,
-    optionItem: OptionItemEntity,
+    optionItem: OptionsUiModel,
     index: Int,
     isEnabled: Boolean = true,
     selectedIndex: List<Int>,
