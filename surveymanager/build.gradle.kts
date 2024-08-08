@@ -89,7 +89,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     //Material
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material:1.5.3")
+    implementation("androidx.compose.material:material:1.6.8")
     implementation("androidx.compose.material3:material3:1.1.2")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
@@ -101,7 +101,8 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
-    implementation("androidx.compose.material3:material3:1.0.0-alpha12")
+    implementation("androidx.compose.material3:material3:1.1.2")
+
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
     implementation("androidx.camera:camera-camera2:1.1.0")

@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.45"
+def version = "2.0.50"
 def prodVersion = version
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 33
-        versionCode 49
+        versionCode 53
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -156,9 +156,9 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation platform('androidx.compose:compose-bom:2024.06.00')
-    implementation "androidx.compose.ui:ui"
-    implementation "androidx.compose.ui:ui-tooling-preview"
+    implementation platform('androidx.compose:compose-bom:2023.03.00')
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.compose.material:material:1.5.3"
     implementation 'androidx.hilt:hilt-work:1.0.0'
     implementation 'com.google.firebase:firebase-config-ktx:21.6.1'
@@ -187,8 +187,8 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:1.1.5"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
     implementation("com.google.dagger:hilt-android:2.43.2")
-    debugImplementation "androidx.compose.ui:ui-tooling"
-    debugImplementation "androidx.compose.ui:ui-test-manifest"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     kapt("com.google.dagger:hilt-android-compiler:2.43.2")
 
     //Compose Navigation
@@ -304,7 +304,7 @@ dependencies {
     implementation 'de.charlex.compose.material:material-html-text:2.0.0-beta01'
     implementation 'androidx.compose.material3:material3'
     implementation "androidx.compose.material:material:1.6.8"
-    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material3:material3:1.1.2")
 
 
 }
