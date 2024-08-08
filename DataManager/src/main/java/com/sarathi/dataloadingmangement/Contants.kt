@@ -30,6 +30,10 @@ const val SECTION_TABLE = "section_table"
 const val QUESTION_TABLE = "question_table"
 const val OPTION_TABLE = "option_table"
 const val PROGRAMME_TABLE_NAME = "programme_table"
+
+const val MONEY_JOURNAL_TABLE_NAME = "money_journal_table"
+const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
+
 const val SUCCESS_CODE = "200"
 const val STATE = "STATE"
 const val SUCCESS = "SUCCESS"
@@ -38,6 +42,8 @@ const val NATURE_TAG = 90
 const val MODE_TAG = 89
 const val RECEIVED_AMOUNT_TAG = 86
 const val DISBURSED_AMOUNT_TAG = 98
+const val MULTI_IMAGE_TAG = 91
+
 const val NO_OF_POOR_DIDI_TAG = 85
 const val DATE_TAG = 87
 const val DISBURSEMENT_DATE_TAG = 99
