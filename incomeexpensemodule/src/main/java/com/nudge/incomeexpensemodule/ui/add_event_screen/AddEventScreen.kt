@@ -95,10 +95,13 @@ fun AddEventScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     ButtonPositive(modifier = Modifier.weight(0.5f),
                         buttonTitle = "Save",
-                        isActive = true,
+                        isActive = viewModel.isSubmitButtonEnable.value,
+
+
                         isArrowRequired = false,
                         onClick = {
                             viewModel.onSubmitButtonClick(subjectId, transactionId)
+                            navController.navigateUp()
                         }
                     )
 
@@ -124,7 +127,7 @@ fun AddEventScreen(
                     onDateSelected = { date ->
                         viewModel.selectedDate.value = date.value().getDate()
                         viewModel.selectedDateInLong = date.value()
-
+                        viewModel.validateForm()
                     }
                 )
 
@@ -135,6 +138,8 @@ fun AddEventScreen(
                     sources = viewModel.livelihoodDropdownValue,
                     onAnswerSelection = { selectedValue ->
                         viewModel.onLivelihoodSelect(selectedValue.id)
+                        viewModel.validateForm()
+
                     }
                 )
 
@@ -195,6 +200,7 @@ fun AddEventScreen(
                     sources = viewModel.livelihoodEventDropdownValue,
                     onAnswerSelection = { selectedValue ->
                         viewModel.onEventSelected(selectedValue)
+                        viewModel.validateForm()
                     }
                 )
 
@@ -207,6 +213,7 @@ fun AddEventScreen(
                         sources = viewModel.livelihoodAssetDropdownValue,
                         onAnswerSelection = { selectedValue ->
                             viewModel.selectedAssetTypeId.value = selectedValue.id
+                            viewModel.validateForm()
                         }
                     )
                 }
@@ -219,6 +226,7 @@ fun AddEventScreen(
                         sources = viewModel.livelihoodProductDropdownValue,
                         onAnswerSelection = { selectedValue ->
                             viewModel.selectedProductId.value = selectedValue.id
+                            viewModel.validateForm()
 
                         }
                     )
@@ -232,6 +240,7 @@ fun AddEventScreen(
                         currentValue = viewModel.assetCount.value,
                         onAnswerSelection = { inputValue ->
                             viewModel.assetCount.value = inputValue
+                            viewModel.validateForm()
                         }
                     )
                 }
@@ -247,6 +256,7 @@ fun AddEventScreen(
                         hintText = BLANK_STRING
                     ) { selectedValue, remainingAmout ->
                         viewModel.amount.value = selectedValue
+                        viewModel.validateForm()
 
                     }
                 }

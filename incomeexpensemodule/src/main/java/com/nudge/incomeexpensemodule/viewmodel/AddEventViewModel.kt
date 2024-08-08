@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
@@ -104,14 +105,17 @@ class AddEventViewModel @Inject constructor(
 
             }
         }
+        validateForm()
     }
 
     fun onLivelihoodSelect(livelihoodId: Int) {
+        resetForm()
         ioViewModelScope {
             selectedLivelihoodId.value = livelihoodId
             _livelihoodEventDropdownValue.clear()
             _livelihoodAssetDropdownValue.clear()
             _livelihoodProductDropdownValue.clear()
+
             eventList = fetchLivelihoodEventUseCase.invoke(livelihoodId)
             _livelihoodEventDropdownValue.addAll(eventList.map {
                 ValuesDto(id = it.id, value = it.name, isSelected = false)
@@ -119,6 +123,14 @@ class AddEventViewModel @Inject constructor(
             _livelihoodAssetDropdownValue.addAll(fetchAssetUseCase.invoke(livelihoodId))
             _livelihoodProductDropdownValue.addAll(fetchProductUseCase.invoke(livelihoodId))
             validateForm()
+        }
+    }
+
+    private fun resetForm() {
+        selectedEventId.value = -1
+        getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
+            questionVisibilityMap[it] = false
+
         }
     }
 
@@ -151,7 +163,8 @@ class AddEventViewModel @Inject constructor(
             val event = getLivelihoodEventFromName(eventType)
 
             val mTransactionId =
-                if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID().toString()
+                if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
+                    .toString()
             saveLivelihoodEventUseCase.addOrEditEvent(
                 LivelihoodEventScreenData(
                     subjectId = subjectId,
@@ -168,14 +181,54 @@ class AddEventViewModel @Inject constructor(
                 )
             )
         }
-        validateForm()
     }
 
 
-    private fun validateForm() {
+    fun validateForm() {
+
+        isSubmitButtonEnable.value = checkValidData()
 
 
+    }
+
+    private fun checkValidData(): Boolean {
+        if (selectedEventId.value != -1 && selectedLivelihoodId.value != -1 &&
+            !TextUtils.isEmpty(selectedDate.value)
+        ) {
+            if (questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
+                if (selectedAssetTypeId.value == -1) {
+                    return false
+
+                }
+            }
+
+            if (questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
+                if (TextUtils.isEmpty(assetCount.value)) {
+                    return false
+                }
+            }
+            if (questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.AMOUNT].value()) {
+                if (TextUtils.isEmpty(amount.value)) {
+                    return false
+                }
+            }
+            if (questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_PRODUCT].value()) {
+                if (selectedProductId.value == -1) {
+                    return false
+
+                }
+            }
+            return true
+
+
+        } else {
+            return false
+        }
     }
 
 
 }
+
+
+
+

@@ -31,7 +31,7 @@ fun TypeDropDownComponent(
     val defaultSourceList =
         sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember {
+    var selectedOptionText by remember(defaultSourceList) {
         mutableStateOf(
             defaultSourceList.find { it.isSelected == true }?.value
                 ?: hintText
