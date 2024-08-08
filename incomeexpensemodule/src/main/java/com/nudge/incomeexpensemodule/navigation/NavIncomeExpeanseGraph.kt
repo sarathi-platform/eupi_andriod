@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.navigation
 
+import android.text.TextUtils
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -55,7 +56,8 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                     type = NavType.IntType
                 },
                 navArgument(name = ARG_TRANSACTION_ID) {
-                    type = NavType.IntType
+                    type = NavType.StringType
+                    nullable = true
                 }
             )) {
             AddEventScreen(
@@ -84,5 +86,6 @@ fun navigateToAddEventScreen(
     subjectName: String,
     transactionID: String
 ) {
-    navController.navigate("${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/$subjectId/$subjectName/$transactionID")
+    val mTransactionId = if (!TextUtils.equals(transactionID, BLANK_STRING)) transactionID else null
+    navController.navigate("${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/$subjectId/$subjectName/$mTransactionId")
 }

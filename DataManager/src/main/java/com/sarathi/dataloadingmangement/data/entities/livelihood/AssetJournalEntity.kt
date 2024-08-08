@@ -39,7 +39,7 @@ data class AssetJournalEntity(
             referenceType: String,
             subjectType: String,
             subjectId: Int,
-            transactionFlow: String
+            transactionFlow: String,
         ): AssetJournalEntity {
             return AssetJournalEntity(
                 id = 0,

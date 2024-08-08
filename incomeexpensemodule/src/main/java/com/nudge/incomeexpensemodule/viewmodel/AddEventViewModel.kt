@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.viewmodel
 
+import android.text.TextUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,8 +47,10 @@ class AddEventViewModel @Inject constructor(
 
     private val _livelihoodProductDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodProductDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodProductDropdownValue
+
     private var eventList: List<LivelihoodEventUiModel> = ArrayList<LivelihoodEventUiModel>()
     var questionVisibilityMap = mutableStateMapOf<LivelihoodEventDataCaptureTypeEnum, Boolean>()
+
     var eventType: String = ""
     var selectedLivelihoodId = mutableStateOf(-1)
     var selectedAssetTypeId = mutableStateOf(-1)
@@ -60,7 +64,7 @@ class AddEventViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitAddEventState -> {
-                fetchEventData(event.subjectId)
+                fetchEventData(event.subjectId, event.transactionId)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -72,7 +76,7 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
-    private fun fetchEventData(subjectId: Int) {
+    private fun fetchEventData(subjectId: Int, transactionId: String) {
         ioViewModelScope {
 
             val livelihoodForDidi =
@@ -86,6 +90,16 @@ class AddEventViewModel @Inject constructor(
                 )
                 _livelihoodDropdownValue.clear()
                 _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
+
+
+
+                if (!TextUtils.equals(transactionId, BLANK_STRING)) {
+                    //TODO Fetch Saved Events
+                } else {
+                    LivelihoodEventDataCaptureTypeEnum.values().forEach {
+                        questionVisibilityMap[it] = false
+                    }
+                }
 
             }
         }
@@ -134,6 +148,8 @@ class AddEventViewModel @Inject constructor(
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
 
+            val mTransactionId =
+                if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID().toString()
             saveLivelihoodEventUseCase.addOrEditEvent(
                 LivelihoodEventScreenData(
                     subjectId = subjectId,
@@ -145,7 +161,7 @@ class AddEventViewModel @Inject constructor(
                     eventId = selectedEventId.value,
                     productId = selectedEventId.value,
                     selectedEvent = event,
-                    transactionId = transactionId
+                    transactionId = mTransactionId
 
                 )
             )

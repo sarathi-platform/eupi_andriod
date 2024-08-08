@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
@@ -86,7 +87,7 @@ fun DataSummaryScreen(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        AddEventButton(navController = navController)
+                        AddEventButton(navController = navController, subjectId, subjectName)
                     }
                 } else {
                     DataSummaryView(navController, subjectId, subjectName, viewModel.countMap)
@@ -322,13 +323,13 @@ private fun TextWithPaddingEnd(text: String, style: TextStyle) {
 }
 
 @Composable
-private fun AddEventButton(navController: NavHostController) {
+private fun AddEventButton(navController: NavHostController, subjectId: Int, subjectName: String) {
     ButtonPositive(buttonTitle = "Add Event", isActive = true, isArrowRequired = true) {
         navigateToAddEventScreen(
             navController = navController,
-            subjectName = "ABC",
-            subjectId = 1,
-            transactionID = UUID.randomUUID().toString()
+            subjectName = subjectName,
+            subjectId = subjectId,
+            transactionID = BLANK_STRING
         )
     }
 }
