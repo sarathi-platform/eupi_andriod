@@ -6,7 +6,6 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.response.LivelihoodEvent
 
-
 @Entity(tableName = LIVELIHOOD_EVENT_TABLE_NAME)
 data class LivelihoodEventEntity(
     @PrimaryKey(autoGenerate = true)
@@ -39,3 +38,4 @@ data class LivelihoodEventEntity(
 
     }
 }
+

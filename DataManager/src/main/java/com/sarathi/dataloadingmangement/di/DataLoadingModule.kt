@@ -66,6 +66,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
@@ -123,6 +124,8 @@ import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFro
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
@@ -1183,6 +1186,40 @@ class DataLoadingModule {
         assetJournalRepo: AssetJournalRepositoryImpl
     ): SaveLivelihoodEventUseCase {
         return SaveLivelihoodEventUseCase(assetJournalRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectIncomeExpenseSummaryUseCase(
+        fetchSubjectIncomeExpenseSummaryRepository: FetchSubjectIncomeExpenseSummaryRepository,
+        subjectLivelihoodEventMappingRepository: SubjectLivelihoodEventMappingRepositoryImpl,
+        assetRepositoryImpl: AssetRepositoryImpl
+    ): FetchSubjectIncomeExpenseSummaryUseCase {
+        return FetchSubjectIncomeExpenseSummaryUseCase(
+            fetchSubjectIncomeExpenseSummaryRepository,
+            subjectLivelihoodEventMappingRepository,
+            assetRepositoryImpl
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideFetchSubjectIncomeExpenseSummaryRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        livelihoodEventDao: LivelihoodEventDao,
+        moneyJournalDao: MoneyJournalDao,
+        assetJournalDao: AssetJournalDao,
+        livelihoodDao: LivelihoodDao,
+        assetDao: AssetDao
+    ): FetchSubjectIncomeExpenseSummaryRepository {
+        return FetchSubjectIncomeExpenseSummaryRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            livelihoodEventDao = livelihoodEventDao,
+            moneyJournalDao = moneyJournalDao,
+            assetJournalDao = assetJournalDao,
+            livelihoodDao = livelihoodDao,
+            assetDao = assetDao
+        )
     }
 
 }
