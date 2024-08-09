@@ -18,6 +18,8 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 @Composable
 fun SingleSelectDropDown(
+    modifier: Modifier = Modifier
+        .fillMaxWidth(),
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isEditAllowed: Boolean = true,
@@ -43,7 +45,8 @@ fun SingleSelectDropDown(
 
     DropDownComponent(
         items = defaultSourceList,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .then(modifier),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
         selectedItem = selectedOptionText,

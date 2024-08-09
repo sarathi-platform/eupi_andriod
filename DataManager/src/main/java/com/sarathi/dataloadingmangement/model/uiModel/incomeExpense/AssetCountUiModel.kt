@@ -72,3 +72,19 @@ data class AssetsCountWithValueUiModel(
     }
 
 }
+
+fun List<AssetsCountWithValueUiModel>.find(assetId: Int): AssetsCountWithValueUiModel? {
+
+    if (assetId == -1)
+        return null
+
+    if (this.isEmpty())
+        return null
+
+    val index = this.map { it.assetId }.indexOf(assetId)
+
+    if (index == -1)
+        return null
+
+    return this[index]
+}

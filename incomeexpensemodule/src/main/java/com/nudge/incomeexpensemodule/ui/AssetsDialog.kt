@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -21,7 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 
@@ -35,7 +35,7 @@ fun AssetsDialog(
         onDismissRequest = onDismissRequest,
         title = {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Assets", style = MaterialTheme.typography.h6)
+                Text(text = "Assets", style = defaultTextStyle, color = textColorDark)
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -44,7 +44,7 @@ fun AssetsDialog(
                 IconButton(onClick = onDismissRequest) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close"
+                        contentDescription = "Close",
                     )
                 }
             }
@@ -52,20 +52,30 @@ fun AssetsDialog(
         text = {
             Column {
                 livelihoodModel.forEach { livelihood ->
-                    Text(text = livelihood.name, style = defaultTextStyle)
-                    Column() {
-                        incomeExpenseSummaryUiModel?.assetsCountWithValue?.forEach { assetsCountWithValueItem ->
-                            val assets =
-                                incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
-                            val itemIndex = assets?.map { it.assetId }
-                                ?.indexOf(assetsCountWithValueItem.assetId).value()
-                            if (itemIndex != -1) {
-                                AssetRow(
-                                    assets?.get(itemIndex)?.name.value(),
-                                    assetsCountWithValueItem.assetCount.toString(),
-                                    "₹ ${assetsCountWithValueItem.totalAssetValue}"
-                                )
-                                Spacer(modifier = Modifier.height(dimen_8_dp))
+                    if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.containsKey(
+                            livelihood.livelihoodId
+                        ) == true
+                        && incomeExpenseSummaryUiModel.totalAssetCountForLivelihood[livelihood.livelihoodId] != 0
+                    ) {
+                        Text(
+                            text = livelihood.name,
+                            style = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
+                            color = textColorDark
+                        )
+                        Column() {
+                            incomeExpenseSummaryUiModel?.assetsCountWithValue?.forEach { assetsCountWithValueItem ->
+                                val assets =
+                                    incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
+                                val itemIndex = assets?.map { it.assetId }
+                                    ?.indexOf(assetsCountWithValueItem.assetId).value()
+                                if (itemIndex != -1) {
+                                    AssetRow(
+                                        assets?.get(itemIndex)?.name.value(),
+                                        assetsCountWithValueItem.assetCount.toString(),
+                                        "₹ ${assetsCountWithValueItem.totalAssetValue}"
+                                    )
+                                    Spacer(modifier = Modifier.height(dimen_6_dp))
+                                }
                             }
                         }
                     }
@@ -85,14 +95,22 @@ fun AssetRow(label: String, quantity: String, amount: String) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = label, style = MaterialTheme.typography.body1)
+        Text(
+            text = "$label: ",
+            style = defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
+            color = textColorDark.copy(alpha = 0.8f)
+        )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = quantity,
-            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+            style = defaultTextStyle.copy(fontWeight = FontWeight.Bold), color = textColorDark
         )
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = amount, style = MaterialTheme.typography.body1)
+        Text(
+            text = amount,
+            style = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
+            color = textColorDark
+        )
     }
 }
 

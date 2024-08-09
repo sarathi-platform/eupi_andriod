@@ -13,6 +13,7 @@ import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetCountUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetsCountWithValueUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.find
 import javax.inject.Inject
 
 class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
@@ -41,13 +42,28 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         val assetsCountWithValue = AssetsCountWithValueUiModel
             .getAssetsCountWithValueUiModelList(assetsList = assets, assetCounts)
 
+        val totalAssetCountForLivelihood = hashMapOf<Int, Int>()
+
+        livelihoodAssetMap.forEach { mapEntry ->
+
+            var totalAssetCount = 0
+            mapEntry.value.forEach {
+                totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
+            }
+
+            totalAssetCountForLivelihood.put(mapEntry.key, totalAssetCount)
+        }
+
+
+
         return IncomeExpenseSummaryUiModel
             .getIncomeExpenseSummaryUiModel(
-                subjectId,
-                totalIncome,
-                totalExpense,
-                livelihoodAssetMap,
-                assetsCountWithValue
+                subjectId = subjectId,
+                totalIncome = totalIncome,
+                totalExpense = totalExpense,
+                livelihoodAssetMap = livelihoodAssetMap,
+                totalAssetCountForLivelihood = totalAssetCountForLivelihood,
+                assetsCountWithValue = assetsCountWithValue
             )
     }
 

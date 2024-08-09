@@ -8,14 +8,17 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.utils.CoreLogger
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
-import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -27,24 +30,40 @@ import javax.inject.Inject
 class DataSummaryScreenViewModel @Inject constructor(
     private val getSubjectLivelihoodMappingFromUseCase: GetSubjectLivelihoodMappingFromUseCase,
     private val fetchSubjectLivelihoodEventMappingUseCase: FetchSubjectLivelihoodEventMappingUseCase,
+    private val fetchLivelihoodEventUseCase: FetchLivelihoodEventUseCase,
     private val fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
 ) : BaseViewModel() {
 
-    private val _livelihoodEvent = mutableStateListOf<List<SubjectLivelihoodEventMappingEntity>>()
-    val livelihoodEvent: SnapshotStateList<List<SubjectLivelihoodEventMappingEntity>> get() = _livelihoodEvent
+    private val tag = DataSummaryScreenViewModel::class.java.simpleName
+
+    var subjectId: Int = -1
+
+    val areEventsNotAvailableForSubject: MutableState<Boolean> = mutableStateOf(true)
+
+    val livelihoodEventMap = HashMap<Int, List<LivelihoodEventUiModel>>()
+
+    private val _subjectLivelihoodEventSummaryUiModelList =
+        mutableListOf<SubjectLivelihoodEventSummaryUiModel>()
+    private val subjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel> get() = _subjectLivelihoodEventSummaryUiModelList
+
+    private val _filteredSubjectLivelihoodEventSummaryUiModelList =
+        mutableStateListOf<SubjectLivelihoodEventSummaryUiModel>()
+    val filteredSubjectLivelihoodEventSummaryUiModelList: SnapshotStateList<SubjectLivelihoodEventSummaryUiModel> get() = _filteredSubjectLivelihoodEventSummaryUiModelList
+
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
     private val _livelihoodModel = mutableListOf<LivelihoodModel>()
     val livelihoodModel: List<LivelihoodModel> get() = _livelihoodModel
 
     private val _incomeExpenseSummaryUiModel: MutableState<IncomeExpenseSummaryUiModel?> =
-        mutableStateOf(null)
+        mutableStateOf(IncomeExpenseSummaryUiModel.getDefaultIncomeExpenseSummaryUiModel(subjectId))
     val incomeExpenseSummaryUiModel: State<IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
     private val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
 
+    val selectedLivelihood: MutableState<Int> = mutableStateOf(0)
 
     private val _showAssetDialog: MutableState<Boolean> = mutableStateOf(false)
     val showAssetDialog: State<Boolean> get() = _showAssetDialog
@@ -52,7 +71,6 @@ class DataSummaryScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataSummaryScreenState -> {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
                 loadAddDataSummaryData(subjectId = event.subjectId)
             }
 
@@ -65,51 +83,87 @@ class DataSummaryScreenViewModel @Inject constructor(
             }
 
             is DataSummaryScreenEvents.FilterDataForLivelihood -> {
-
+                selectedLivelihood.value = event.livelihoodId
+                _filteredSubjectLivelihoodEventSummaryUiModelList.clear()
+                _filteredSubjectLivelihoodEventSummaryUiModelList.addAll(
+                    subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == selectedLivelihood.value })
             }
         }
+    }
+
+    fun setPreviousScreenData(mSubjectId: Int) {
+        subjectId = mSubjectId
     }
 
     private fun loadAddDataSummaryData(subjectId: Int) {
         ioViewModelScope {
-            fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
-                subjectId = subjectId
-            )?.let {
-                if (it.isNotEmpty() && it.size != 0) {
-                    countMap.put(SubTabs.All, it.size)
-                    _livelihoodEvent.add(it)
+            try {
+                fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
+                    subjectId = subjectId
+                )?.let {
+                    if (it.isNotEmpty()) {
+                        countMap.put(SubTabs.All, it.size)
+                        areEventsNotAvailableForSubject.value = false
+                    }
                 }
-            }
 
-            val subjectLivelihoodMapping = getSubjectLivelihoodMappingFromUseCase.invoke(subjectId)
+                val subjectLivelihoodMapping =
+                    getSubjectLivelihoodMappingFromUseCase.invoke(subjectId)
 
-            subjectLivelihoodMapping?.let {
-                _livelihoodModel.addAll(
-                    getLivelihoodListFromDbUseCase(
-                        livelihoodIds = listOf(
-                            it.primaryLivelihoodId,
-                            it.secondaryLivelihoodId
-                        )
+                subjectLivelihoodMapping?.let {
+
+                    val livelihoodIds = listOf(
+                        it.primaryLivelihoodId,
+                        it.secondaryLivelihoodId
                     )
+
+                    val livelihoodEventList = fetchLivelihoodEventUseCase.invoke(livelihoodIds)
+
+                    livelihoodEventMap.putAll(livelihoodEventList.groupBy { it.livelihoodId })
+
+                    _subjectLivelihoodEventSummaryUiModelList.clear()
+                    _subjectLivelihoodEventSummaryUiModelList.addAll(
+                        fetchSubjectLivelihoodEventMappingUseCase.invoke(subjectId)
+                    )
+
+                    _livelihoodModel.clear()
+                    _livelihoodModel.addAll(
+                        getLivelihoodListFromDbUseCase.invoke(livelihoodIds)
+                    )
+
+                    _incomeExpenseSummaryUiModel.value =
+                        fetchSubjectIncomeExpenseSummaryUseCase.invoke(
+                            subjectId = subjectId,
+                            subjectLivelihoodMappingEntity = it
+                        )
+
+                    createLivelihoodDropDownList()
+
+                    _filteredSubjectLivelihoodEventSummaryUiModelList.clear()
+                    _filteredSubjectLivelihoodEventSummaryUiModelList.addAll(
+                        subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == selectedLivelihood.value }
+                    )
+                }
+
+
+            } catch (ex: Exception) {
+                CoreLogger.e(
+                    tag = tag,
+                    msg = "loadAddDataSummaryData: Exception -> ${ex.message}",
+                    ex = ex
                 )
-
-                createLivelihoodDropDownList()
-
-                _incomeExpenseSummaryUiModel.value = fetchSubjectIncomeExpenseSummaryUseCase(
-                    subjectId = subjectId,
-                    subjectLivelihoodMappingEntity = it
-                )
-            }
-
-            withContext(mainDispatcher) {
-                LoaderEvent.UpdateLoaderState(false)
+            } finally {
+                withContext(mainDispatcher) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
             }
         }
     }
 
-    private fun createLivelihoodDropDownList() {
+    private suspend fun createLivelihoodDropDownList() {
         livelihoodModel.forEach {
             _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
         }
+        selectedLivelihood.value = livelihoodDropdownList.first().id
     }
 }

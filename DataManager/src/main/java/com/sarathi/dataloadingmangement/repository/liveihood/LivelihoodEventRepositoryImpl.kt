@@ -18,5 +18,13 @@ class LivelihoodEventRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getEventsForLivelihood(livelihoodIds: List<Int>): List<LivelihoodEventUiModel> {
+        return livelihoodEventDao.getEventsForLivelihood(
+            livelihoodIds = livelihoodIds,
+            languageCode = coreSharedPrefs.getAppLanguage(),
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
 
 }
