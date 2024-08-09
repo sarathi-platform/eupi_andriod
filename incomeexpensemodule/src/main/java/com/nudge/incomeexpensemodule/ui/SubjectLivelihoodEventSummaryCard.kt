@@ -24,17 +24,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
-import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
-import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
-import com.nudge.core.ui.theme.didiDetailItemStyle
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
@@ -46,7 +41,9 @@ import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.nudge.core.value
+import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 
 @Composable
 fun SubjectLivelihoodEventSummaryCard(
@@ -55,11 +52,9 @@ fun SubjectLivelihoodEventSummaryCard(
     address: String,
     location: String,
     lastUpdated: String,
-    income: String,
-    expense: String,
-    assetValue: String,
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
 //    imageRes: Int,
-    onAssetValueItemClicked: () -> Unit,
+    onAssetCountClicked: (subjectId: Int) -> Unit,
     onSummaryCardClicked: () -> Unit
 ) {
     BasicCardView(
@@ -149,9 +144,11 @@ fun SubjectLivelihoodEventSummaryCard(
                 }
                 Spacer(modifier = Modifier.height(dimen_8_dp))
                 //TODO show correct value from db and display dialog also.
-                IncomeExpenseAssetAmountView(income, expense, assetValue) {
-
-                }
+                IncomeExpenseAssetAmountView(
+                    incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel,
+                    onAssetCountClicked = {
+                        onAssetCountClicked(it)
+                    })
             }
         }
     }
@@ -159,13 +156,8 @@ fun SubjectLivelihoodEventSummaryCard(
 
 @Composable
 fun IncomeExpenseAssetAmountView(
-    income: String,
-    expense: String,
-    primaryAssetIcon: String = BLANK_STRING,
-    primaryAssetCount: String = BLANK_STRING,
-    secondaryAssetIcon: String = BLANK_STRING,
-    secondaryAssetCount: String = BLANK_STRING,
-    onAssetValueItemClicked: () -> Unit
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    onAssetCountClicked: (subjectId: Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -174,58 +166,8 @@ fun IncomeExpenseAssetAmountView(
             .padding(horizontal = dimen_8_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Income", style = getTextColor(smallTextStyleMediumWeight2))
-            Text(text = income, style = getTextColor(didiDetailItemStyle))
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Expense", style = getTextColor(smallTextStyleMediumWeight2))
-            Text(text = expense, style = getTextColor(didiDetailItemStyle))
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable {
-            onAssetValueItemClicked()
-        }) {
-            Text(
-                text = "Asset Value",
-                style = getTextColor(smallTextStyleMediumWeight2)
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (primaryAssetIcon != BLANK_STRING) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_right_circle), //TODO change this to livelihood count
-                        contentDescription = null,
-                        tint = assetValueIconColor
-                    )
-                    Spacer(modifier = Modifier.width(dimen_5_dp))
-                }
-                if (primaryAssetCount != BLANK_STRING) {
-                    Text(
-                        text = primaryAssetCount,
-                        style = getTextColor(didiDetailItemStyle),
-                    )
-                    CustomHorizontalSpacer(size = dimen_5_dp)
-                }
-                if (secondaryAssetIcon != BLANK_STRING) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_right_circle), //TODO change this to livelihood count
-                        contentDescription = null,
-                        tint = assetValueIconColor
-                    )
-                    Spacer(modifier = Modifier.width(dimen_5_dp))
-                }
-                if (secondaryAssetCount != BLANK_STRING) {
-                    Text(
-                        text = secondaryAssetCount,
-                        style = getTextColor(didiDetailItemStyle),
-                    )
-                    Spacer(modifier = Modifier.width(dimen_5_dp))
-                }
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_right_circle),
-                    contentDescription = null,
-                    tint = assetValueIconColor
-                )
-            }
+        TotalIncomeExpenseAssetSummaryView(incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel) {
+            onAssetCountClicked(incomeExpenseSummaryUiModel?.subjectId.value())
         }
     }
 }
@@ -243,27 +185,13 @@ fun UserProfileCardList() {
             address = "#45, Killu dada",
             location = "Sundar Pahari",
             lastUpdated = "10 days ago",
-            income = "₹ 2000",
-            expense = "₹ 500",
-            assetValue = "₹ 8000",
+            incomeExpenseSummaryUiModel = IncomeExpenseSummaryUiModel.getDefaultIncomeExpenseSummaryUiModel(
+                123
+            ),
 //            imageRes = R.drawable.profile_img,
-            onAssetValueItemClicked = {
+            onAssetCountClicked = {
 
             }
-        ) {
-
-        }
-        SubjectLivelihoodEventSummaryCard(
-            subjectId = 234,
-            name = "Surbhi Verma",
-            address = "#45, Killu dada",
-            location = "Sundar Pahari",
-            lastUpdated = "10 days ago",
-            income = "₹ 1000",
-            expense = "₹ 500",
-            assetValue = "₹ 1000",
-//            imageRes = R.drawable.profile_img,
-            onAssetValueItemClicked = {}
         ) {
 
         }

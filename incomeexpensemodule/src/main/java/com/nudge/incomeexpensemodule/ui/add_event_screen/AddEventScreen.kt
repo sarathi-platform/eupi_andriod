@@ -1,6 +1,5 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
@@ -113,37 +113,40 @@ fun AddEventScreen(
         onSettingClick = {},
         onRetry = {},
         onContentUI = { paddingValues, b, function ->
-            Column(
+            LazyColumn(
                 modifier = Modifier.padding(
                     horizontal = dimen_16_dp
                 )
             ) {
 
 
-                CustomDatePickerTextFieldComponent(
-                    isMandatory = true,
-                    defaultValue = viewModel.selectedDate.value,
-                    title = "Date",
-                    isEditable = true,
-                    hintText = "Select" ?: BLANK_STRING,
-                    onDateSelected = { date ->
-                        viewModel.selectedDate.value = date.value().getDate()
-                        viewModel.selectedDateInLong = date.value()
-                        viewModel.validateForm()
-                    }
-                )
+                item {
+                    CustomDatePickerTextFieldComponent(
+                        isMandatory = true,
+                        defaultValue = viewModel.selectedDate.value,
+                        title = "Date",
+                        isEditable = true,
+                        hintText = "Select" ?: BLANK_STRING,
+                        onDateSelected = { date ->
+                            viewModel.selectedDate.value = date.value().getDate()
+                            viewModel.selectedDateInLong = date.value()
+                            viewModel.validateForm()
+                        }
+                    )
+                }
 
-                TypeDropDownComponent(
-                    isEditAllowed = true,
-                    title = "Livelihood",
-                    isMandatory = true,
-                    sources = viewModel.livelihoodDropdownValue,
-                    onAnswerSelection = { selectedValue ->
-                        viewModel.onLivelihoodSelect(selectedValue.id)
-                        viewModel.validateForm()
+                item {
+                    TypeDropDownComponent(
+                        isEditAllowed = true,
+                        title = "Livelihood",
+                        isMandatory = true,
+                        sources = viewModel.livelihoodDropdownValue,
+                        onAnswerSelection = { selectedValue ->
+                            viewModel.onLivelihoodSelect(selectedValue.id)
+                            viewModel.validateForm()
 
-                    }
-                )
+                        }
+                    )
 
 //                SearchBarWithDropdownComponent<ValuesDto, AnnotatedString>(
 //                    title = TextProperties.getBasicTextProperties(text = buildAnnotatedString {
@@ -195,72 +198,87 @@ fun AddEventScreen(
 //                            )
 //                    )
 //                }
-                TypeDropDownComponent(
-                    isEditAllowed = true,
-                    title = "Events",
-                    isMandatory = true,
-                    sources = viewModel.livelihoodEventDropdownValue,
-                    onAnswerSelection = { selectedValue ->
-                        viewModel.onEventSelected(selectedValue)
-                        viewModel.validateForm()
-                    }
-                )
+                }
 
+
+
+                item {
+                    TypeDropDownComponent(
+                        isEditAllowed = true,
+                        title = "Events",
+                        isMandatory = true,
+                        sources = viewModel.livelihoodEventDropdownValue,
+                        onAnswerSelection = { selectedValue ->
+                            viewModel.onEventSelected(selectedValue)
+                            viewModel.validateForm()
+                        }
+                    )
+                }
 
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
-                    TypeDropDownComponent(
-                        isEditAllowed = true,
-                        title = "Type of Asset*",
-                        isMandatory = true,
-                        sources = viewModel.livelihoodAssetDropdownValue,
-                        onAnswerSelection = { selectedValue ->
-                            viewModel.selectedAssetTypeId.value = selectedValue.id
-                            viewModel.validateForm()
-                        }
-                    )
+                    item {
+                        TypeDropDownComponent(
+                            isEditAllowed = true,
+                            title = "Type of Asset*",
+                            isMandatory = true,
+                            sources = viewModel.livelihoodAssetDropdownValue,
+                            onAnswerSelection = { selectedValue ->
+                                viewModel.selectedAssetTypeId.value = selectedValue.id
+                                viewModel.validateForm()
+                            }
+                        )
+                    }
+
+
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_PRODUCT].value()) {
+                    item {
+                        TypeDropDownComponent(
+                            isEditAllowed = true,
+                            title = "Products*",
+                            isMandatory = true,
+                            sources = viewModel.livelihoodProductDropdownValue,
+                            onAnswerSelection = { selectedValue ->
+                                viewModel.selectedProductId.value = selectedValue.id
+                                viewModel.validateForm()
 
-                    TypeDropDownComponent(
-                        isEditAllowed = true,
-                        title = "Products*",
-                        isMandatory = true,
-                        sources = viewModel.livelihoodProductDropdownValue,
-                        onAnswerSelection = { selectedValue ->
-                            viewModel.selectedProductId.value = selectedValue.id
-                            viewModel.validateForm()
+                            }
+                        )
+                    }
 
-                        }
-                    )
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
+                    item {
+                        IncrementDecrementNumberComponent(
+                            isMandatory = true,
+                            title = "Increase in Number*",
+                            isEditAllowed = true,
+                            currentValue = viewModel.assetCount.value,
+                            onAnswerSelection = { inputValue ->
+                                viewModel.assetCount.value = inputValue
+                                viewModel.validateForm()
+                            }
+                        )
+                    }
 
-                    IncrementDecrementNumberComponent(
-                        isMandatory = true,
-                        title = "Increase in Number*",
-                        isEditAllowed = true,
-                        currentValue = viewModel.assetCount.value,
-                        onAnswerSelection = { inputValue ->
-                            viewModel.assetCount.value = inputValue
-                            viewModel.validateForm()
-                        }
-                    )
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.AMOUNT].value()) {
+                    item {
+                        InputComponent(
+                            maxLength = 7,
+                            isMandatory = true,
+                            isEditable = true,
+                            defaultValue = viewModel.amount.value,
+                            title = "Amount",
+                            isOnlyNumber = true,
+                            hintText = BLANK_STRING
+                        ) { selectedValue, remainingAmout ->
+                            viewModel.amount.value = selectedValue
+                            viewModel.validateForm()
 
-                    InputComponent(
-                        maxLength = 7,
-                        isMandatory = true,
-                        isEditable = true,
-                        defaultValue = viewModel.amount.value,
-                        title = "Amount",
-                        isOnlyNumber = true,
-                        hintText = BLANK_STRING
-                    ) { selectedValue, remainingAmout ->
-                        viewModel.amount.value = selectedValue
-                        viewModel.validateForm()
-
+                        }
                     }
+
                 }
 
             }

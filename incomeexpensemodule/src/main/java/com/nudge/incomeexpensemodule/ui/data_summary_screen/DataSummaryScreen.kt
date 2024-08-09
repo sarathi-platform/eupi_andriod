@@ -41,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,13 +48,11 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.incomeexpensemodule.R
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDate
-import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -65,7 +62,6 @@ import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.didiDetailItemStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -84,7 +80,9 @@ import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
 import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
 import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
+import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
 import com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel.DataSummaryScreenViewModel
+import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
@@ -254,47 +252,7 @@ fun HeaderSection(
             .padding(vertical = dimen_10_dp, horizontal = dimen_14_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            Text(text = "Income", style = getTextColor(newMediumTextStyle))
-            Text(
-                text = "₹ ${incomeExpenseSummaryUiModel.totalIncome}",
-                style = getTextColor(defaultTextStyle)
-            )
-        }
-        Column {
-            Text(text = "Expense", style = getTextColor(newMediumTextStyle))
-            Text(
-                text = "₹ ${incomeExpenseSummaryUiModel.totalExpense}",
-                style = getTextColor(defaultTextStyle)
-            )
-        }
-        Column(modifier = Modifier.clickable {
-            onAssetCountClicked()
-        }) {
-            Text(text = "Asset Value", style = getTextColor(newMediumTextStyle))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                incomeExpenseSummaryUiModel.totalAssetCountForLivelihood.forEach {
-                    if (it.value != 0) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.goat_icon),
-                            contentDescription = null,
-                            tint = assetValueIconColor
-                        )
-                        CustomHorizontalSpacer(size = dimen_5_dp)
-                        Text(
-                            text = it.value.toString(),
-                            style = getTextColor(didiDetailItemStyle),
-                        )
-                        Spacer(modifier = Modifier.width(dimen_5_dp))
-                    }
-                }
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_right_circle),
-                    contentDescription = null,
-                    tint = assetValueIconColor
-                )
-            }
-        }
+        TotalIncomeExpenseAssetSummaryView(incomeExpenseSummaryUiModel, onAssetCountClicked)
     }
 
 }
@@ -565,9 +523,6 @@ private fun AddEventButton(onAddEventButtonClicked: () -> Unit) {
         onAddEventButtonClicked()
     }
 }
-
-private fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextStyle =
-    textColor.copy(color)
 
 
 @Preview(showBackground = true)
