@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetCountUiModel
 
 @Dao
 interface AssetJournalDao {
@@ -40,6 +41,25 @@ interface AssetJournalDao {
     suspend fun softDeleteTransaction(transactionId: String, userId: String, subjectId: Int)
 
     @Query("Delete from asset_journal_table where userId=:userId")
-    suspend fun deleteMoneyJournal(userId: String)
+    suspend fun deleteAssetJournal(userId: String)
+
+    @Query(
+        "select subjectId as subjectId, referenceId as livelihoodId, assetId as assetId, \n" +
+                "sum(assetCount) as totalAssetCountForFlow \n" +
+                " from asset_journal_table\n" +
+                " where userId = :userId \n" +
+                " and subjectId = :subjectId \n" +
+                " and assetId = :assetId\n" +
+                " and transactionFlow = :transactionFlow \n" +
+                " and referenceType = :referenceType \n" +
+                " group by assetId, referenceId"
+    )
+    suspend fun getAssetCountForAsset(
+        assetId: Int,
+        transactionFlow: String,
+        userId: String,
+        subjectId: Int,
+        referenceType: String
+    ): AssetCountUiModel?
 
 }

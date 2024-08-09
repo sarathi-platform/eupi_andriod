@@ -32,4 +32,7 @@ interface AssetDao {
         languageCode: String,
     ): List<ProductAssetUiModel>
 
+    @Query("SELECT * from assets_table where livelihoodId in (:livelihoodIds) and userId = :userId")
+    fun getAllAssetsForLivelihoods(livelihoodIds: List<Int>, userId: String): List<AssetEntity>
+
 }

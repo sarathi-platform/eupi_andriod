@@ -12,4 +12,8 @@ class FetchLivelihoodEventUseCase @Inject constructor(
         return eventRepositoryImpl.getEventsForLivelihood(livelihoodId)
     }
 
+    suspend operator fun invoke(livelihoodIds: List<Int>): List<LivelihoodEventUiModel> {
+        return eventRepositoryImpl.getEventsForLivelihood(livelihoodIds)
+    }
+
 }

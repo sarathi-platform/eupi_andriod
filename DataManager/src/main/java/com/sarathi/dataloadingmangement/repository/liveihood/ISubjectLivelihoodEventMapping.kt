@@ -2,8 +2,12 @@ package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 
 interface ISubjectLivelihoodEventMapping {
+
+    suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel>
+
     suspend fun getSubjectLivelihoodEventMappingListFromDb(
         subjectId: Int
     ): List<SubjectLivelihoodEventMappingEntity>?

@@ -17,13 +17,16 @@ data class AssetEntity(
     var name: String,
     var status: Int,
     var type: Int? = 0,
-
-    ) {
+    var value: Double? = 0.0,
+    var image: String?
+) {
     companion object {
         fun getAssetEntity(
             userId: String,
             asset: Asset,
-            livelihoodId: Int
+            livelihoodId: Int,
+            value: Double?,
+            image: String?
         ): AssetEntity {
 
             return AssetEntity(
@@ -32,7 +35,9 @@ data class AssetEntity(
                 userId = userId,
                 name = asset.name ?: BLANK_STRING,
                 status = asset.status ?: 0,
-                livelihoodId = livelihoodId
+                livelihoodId = livelihoodId,
+                value = value,
+                image = image
             )
         }
 

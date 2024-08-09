@@ -148,6 +148,7 @@ fun SubjectLivelihoodEventSummaryCard(
                     )
                 }
                 Spacer(modifier = Modifier.height(dimen_8_dp))
+                //TODO show correct value from db and display dialog also.
                 IncomeExpenseAssetAmountView(income, expense, assetValue) {
 
                 }
