@@ -109,6 +109,17 @@ fun DataTabScreen(
         )
     }
 
+//    if (dataTabScreenViewModel.showAssetDialog.value) {
+//        AssetsDialog(
+//            dataTabScreenViewModel.incomeExpenseSummaryUiModel[],
+//            dataTabScreenViewModel.livelihoodModel,
+//            onDismissRequest = {
+//                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+//            }
+//        )
+//    }
+
+
     val pullToRefreshState = rememberPullRefreshState(
         refreshing = dataTabScreenViewModel.loaderState.value.isLoaderVisible,
         onRefresh = {
@@ -274,12 +285,8 @@ fun DataTabScreen(
                                             address = subject.houseNo + ", " + subject.cohortName,
                                             location = subject.villageName,
                                             lastUpdated = "",
-                                            income = summaryForSubject?.totalIncome.value()
-                                                .toString(),
-                                            expense = summaryForSubject?.totalExpense.value()
-                                                .toString(),
-                                            assetValue = "",
-                                            onAssetValueItemClicked = {
+                                            incomeExpenseSummaryUiModel = summaryForSubject,
+                                            onAssetCountClicked = {
 
                                             }
                                         ) {
