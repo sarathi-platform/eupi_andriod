@@ -11,7 +11,8 @@ data class SubjectLivelihoodEventSummaryUiModel(
     val moneyJournalFlow: String?,
     val assetId: Int?,
     val assetCount: Int?,
-    val assetJournalFlow: String?
+    val assetJournalFlow: String?,
+    val status: Int,
 ) {
 
 

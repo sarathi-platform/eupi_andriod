@@ -93,6 +93,7 @@ class AddEventViewModel @Inject constructor(
             if (savedEvent != null) {
 
                 selectedDate.value = savedEvent.date.getDate()
+                selectedDateInLong = savedEvent.date
                 selectedLivelihoodId.value = savedEvent.livelihoodId
                 selectedEventId.value = savedEvent.eventId
                 selectedProductId.value = savedEvent.productId

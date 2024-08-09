@@ -252,7 +252,7 @@ fun AddEventScreen(
                         maxLength = 7,
                         isMandatory = true,
                         isEditable = true,
-                        defaultValue = BLANK_STRING,
+                        defaultValue = viewModel.amount.value,
                         title = "Amount",
                         isOnlyNumber = true,
                         hintText = BLANK_STRING

@@ -122,7 +122,7 @@ Sapp/src/main/java/com/patsurvey/nudge/model/dataModel/UserAndVillageDetailsMode
 ≤
 ÅmissionActivityTask/src/main/java/com/sarathi/missionactivitytask/ui/disbursement_summary_screen/DisbursementFormSummaryScreen.kt,a/2/a270d885e6c993868d365921ce0b9ece9179abef
 ^
-.core/src/main/java/com/nudge/core/CoreUtils.kt,6\f\6f02a3681253d4ea2ac26a77b2537d285f9ec504
+.core/src/main/java/com/nudge/core/CoreUtils.kt,6/f/6f02a3681253d4ea2ac26a77b2537d285f9ec504
 c
 3core/src/main/java/com/nudge/core/ui/theme/Color.kt,9\7\97326746f5acf3b8bcb7759f1cea143dd1806a73
 ê
@@ -265,3 +265,17 @@ qDataManager/src/main/java/com/sarathi/dataloadingmangement/repository/liveihood
 xDataManager/src/main/java/com/sarathi/dataloadingmangement/domain/use_case/income_expense/FetchLivelihoodEventUseCase.kt,d/6/d66b58da6b31f47f57aa8c55e04bc5c1cb51ec71
 †
 pDataManager/src/main/java/com/sarathi/dataloadingmangement/repository/liveihood/LivelihoodEventRepositoryImpl.kt,d/f/df15310cb58cc9afb9faace61b0eb4d4e8326971
+ï
+eincomeexpensemodule/src/main/java/com/nudge/incomeexpensemodule/ui/add_event_screen/AddEventScreen.kt,b/a/baecddfe7bb0605156e06837f1e0100fb9374fe9
+ï
+eincomeexpensemodule/src/main/java/com/nudge/incomeexpensemodule/ui/component/TypeDropDownComponent.kt,4/d/4d821477de255210e88844f52d38bcde00582da8
+ò
+hsurveymanager/src/main/java/com/sarathi/surveymanager/ui/component/TypeMultiSelectedDropDownComponent.kt,0/7/07244eeb651d7e1bf7cc8ca2230b4cbe59d302f8
+
+Osurveymanager/src/main/java/com/sarathi/surveymanager/ui/screen/SurveyScreen.kt,6/0/600d6734960f57e315102396822c1e5dda2701e8
+ã
+[surveymanager/src/main/java/com/sarathi/surveymanager/ui/component/TypeDropDownComponent.kt,8/0/806c8720b0c923af24e2e39d6bc24992d1bdd8b3
+É
+Score/src/main/java/com/nudge/core/ui/commonUi/componet_/component/InputComponent.kt,4/e/4eda3df531a6cfcc630468eae707645033bc1ab6
+Æ
+~DataManager/src/main/java/com/sarathi/dataloadingmangement/model/uiModel/incomeExpense/SubjectLivelihoodEventSummaryUiModel.kt,8/0/80796f48ab569d31e746c866baba2cd72cc4dbcd

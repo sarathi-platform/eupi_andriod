@@ -44,11 +44,12 @@ interface SubjectLivelihoodEventMappingDao {
     @Query(
         "select subject_livelihood_event_mapping_table.transactionId, subject_livelihood_event_mapping_table.subjectId, subject_livelihood_event_mapping_table.date, subject_livelihood_event_mapping_table.livelihoodId, subject_livelihood_event_mapping_table.livelihoodEventId, subject_livelihood_event_mapping_table.livelihoodEventType, \n" +
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
-                "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow \n" +
+                "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
+                "subject_livelihood_event_mapping_table.status " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId\n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId\n" +
-                "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId"
+                "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId and subject_livelihood_event_mapping_table.status=1  group by subject_livelihood_event_mapping_table.id "
     )
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(
         userId: String,
