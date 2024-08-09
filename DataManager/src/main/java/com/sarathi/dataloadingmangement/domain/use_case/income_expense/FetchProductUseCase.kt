@@ -7,9 +7,9 @@ class FetchProductUseCase(
     private val productRepositoryImpl: ProductRepositoryImpl,
 ) {
 
-    suspend operator fun invoke(livelihoodId: Int): List<ValuesDto> {
+    suspend operator fun invoke(livelihoodId: Int, selectedId: Int): List<ValuesDto> {
         return productRepositoryImpl.getProductsForLivelihood(livelihoodId).map {
-            ValuesDto(it.id, it.name, false)
+            ValuesDto(it.id, it.name, it.id == selectedId)
         }
     }
 

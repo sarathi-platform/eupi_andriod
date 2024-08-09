@@ -87,6 +87,26 @@ class AddEventViewModel @Inject constructor(
                 subjectId = subjectId,
                 transactionId = transactionId
             )
+            LivelihoodEventDataCaptureTypeEnum.values().forEach {
+                questionVisibilityMap[it] = false
+            }
+            if (savedEvent != null) {
+
+                selectedDate.value = savedEvent.date.getDate()
+                selectedLivelihoodId.value = savedEvent.livelihoodId
+                selectedEventId.value = savedEvent.eventId
+                selectedProductId.value = savedEvent.productId
+                eventType = savedEvent.selectedEvent.name
+                amount.value = savedEvent.amount.toString()
+                selectedAssetTypeId.value = savedEvent.assetType
+                assetCount.value = savedEvent.assetCount.toString()
+
+                getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
+                    questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
+                }
+
+                fetchAssestEventProductValues()
+            }
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
             if (livelihoodForDidi != null) {
@@ -100,30 +120,9 @@ class AddEventViewModel @Inject constructor(
                 _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
 
 
-
-
-                    LivelihoodEventDataCaptureTypeEnum.values().forEach {
-                        questionVisibilityMap[it] = false
-                    }
-                }
-
-            if (savedEvent != null) {
-
-                selectedDate.value = savedEvent.date.getDate()
-                selectedLivelihoodId.value = savedEvent.livelihoodId
-                selectedEventId.value = savedEvent.eventId
-                eventType = savedEvent.selectedEvent.name
-
-                getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
-                    if (questionVisibilityMap.containsKey(it)) {
-                        questionVisibilityMap[it] = true
-                    } else {
-                        questionVisibilityMap[it] = false
-                    }
-                }
-
-
             }
+
+
         }
         validateForm()
     }
@@ -136,14 +135,28 @@ class AddEventViewModel @Inject constructor(
             _livelihoodAssetDropdownValue.clear()
             _livelihoodProductDropdownValue.clear()
 
-            eventList = fetchLivelihoodEventUseCase.invoke(livelihoodId)
-            _livelihoodEventDropdownValue.addAll(eventList.map {
-                ValuesDto(id = it.id, value = it.name, isSelected = false)
-            })
-            _livelihoodAssetDropdownValue.addAll(fetchAssetUseCase.invoke(livelihoodId))
-            _livelihoodProductDropdownValue.addAll(fetchProductUseCase.invoke(livelihoodId))
+            fetchAssestEventProductValues()
             validateForm()
         }
+    }
+
+    private suspend fun fetchAssestEventProductValues() {
+        eventList = fetchLivelihoodEventUseCase.invoke(selectedLivelihoodId.value)
+        _livelihoodEventDropdownValue.addAll(eventList.map {
+            ValuesDto(id = it.id, value = it.name, isSelected = it.id == selectedEventId.value)
+        })
+        _livelihoodAssetDropdownValue.addAll(
+            fetchAssetUseCase.invoke(
+                selectedLivelihoodId.value,
+                selectedAssetTypeId.value
+            )
+        )
+        _livelihoodProductDropdownValue.addAll(
+            fetchProductUseCase.invoke(
+                selectedLivelihoodId.value,
+                selectedProductId.value
+            )
+        )
     }
 
     private fun resetForm() {
@@ -157,7 +170,11 @@ class AddEventViewModel @Inject constructor(
 
     private fun getLivelihooldDropValue(livelihoodForDidi: List<LivelihoodModel>): List<ValuesDto> {
         return livelihoodForDidi.map {
-            ValuesDto(id = it.livelihoodId, value = it.name, isSelected = false)
+            ValuesDto(
+                id = it.livelihoodId,
+                value = it.name,
+                isSelected = if (selectedLivelihoodId.value == it.livelihoodId) true else false
+            )
         }
     }
 
