@@ -16,21 +16,51 @@ class AssetJournalRepositoryImpl @Inject constructor(
         particular: String,
         eventData: LivelihoodEventScreenData
     ) {
-        assetJournalDao.insetAssetJournalEntry(
-            AssetJournalEntity.getAssetJournalEntity(
+        val assetJournal = AssetJournalEntity.getAssetJournalEntity(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            count = eventData.assetCount,
+            date = eventData.date,
+            particulars = particular,
+            transactionId = eventData.transactionId,
+            subjectType = "Didi",
+            subjectId = eventData.subjectId,
+            transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
+                ?: BLANK_STRING,
+            referenceType = "LivelihoodEvent",
+            referenceId = eventData.livelihoodId,
+            assetId = eventData.assetType
+        )
+        if (assetJournalDao.isTransactionAlreadyExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                count = eventData.assetCount,
-                date = eventData.date,
-                particulars = particular,
-                transactionId = eventData.transactionId,
-                subjectType = "Didi",
-                subjectId = eventData.subjectId,
-                transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
-                    ?: BLANK_STRING,
-                referenceType = "LivelihoodEvent",
-                referenceId = eventData.livelihoodId,
-                assetId = eventData.assetType
+                transactionId = assetJournal.transactionId
+            ) > 0
+        ) {
+            softDeleteAssetJournalEvent(
+                transactionId = assetJournal.transactionId,
+                subjectId = assetJournal.subjectId
             )
+        }
+        assetJournalDao.insetAssetJournalEntry(assetJournal)
+
+
+    }
+
+    override suspend fun softDeleteAssetJournalEvent(transactionId: String, subjectId: Int) {
+        assetJournalDao.softDeleteTransaction(
+            transactionId = transactionId,
+            subjectId = subjectId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    override suspend fun getAssetForTransaction(
+        transactionId: String,
+        subjectId: Int
+    ): AssetJournalEntity? {
+        return assetJournalDao.getAssetJournalForTransaction(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId,
+            subjectId = subjectId
         )
     }
 }

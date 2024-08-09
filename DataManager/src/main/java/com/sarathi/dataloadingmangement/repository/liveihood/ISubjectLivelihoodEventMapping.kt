@@ -8,6 +8,12 @@ interface ISubjectLivelihoodEventMapping {
         subjectId: Int
     ): List<SubjectLivelihoodEventMappingEntity>?
 
+    suspend fun getSavedEventFromDb(
+        subjectId: Int,
+        transactionId: String,
+    ): SubjectLivelihoodEventMappingEntity?
+
     suspend fun addOrUpdateLivelihoodEvent(eventData: LivelihoodEventScreenData)
 
+    suspend fun softDeleteLivelihoodEvent(transactionId: String, subjectId: Int)
 }

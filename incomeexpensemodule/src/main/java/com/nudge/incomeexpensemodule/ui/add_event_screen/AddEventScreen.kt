@@ -91,6 +91,8 @@ fun AddEventScreen(
                         isArrowRequired = false,
                         isActive = true,
                         onClick = {
+                            viewModel.onDeleteClick(transactionId, subjectId)
+                            navController.navigateUp()
                         })
                     Spacer(modifier = Modifier.width(10.dp))
                     ButtonPositive(modifier = Modifier.weight(0.5f),

@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
@@ -34,6 +36,7 @@ class AddEventViewModel @Inject constructor(
     private val fetchAssetUseCase: FetchAssetUseCase,
     private val fetchProductUseCase: FetchProductUseCase,
     private val saveLivelihoodEventUseCase: SaveLivelihoodEventUseCase,
+    private val fetchSavedEventUseCase: FetchSavedEventUseCase
 ) : BaseViewModel() {
 
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
@@ -80,7 +83,10 @@ class AddEventViewModel @Inject constructor(
 
     private fun fetchEventData(subjectId: Int, transactionId: String) {
         ioViewModelScope {
-
+            val savedEvent = fetchSavedEventUseCase.fetchEvent(
+                subjectId = subjectId,
+                transactionId = transactionId
+            )
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
             if (livelihoodForDidi != null) {
@@ -95,13 +101,27 @@ class AddEventViewModel @Inject constructor(
 
 
 
-                if (!TextUtils.equals(transactionId, BLANK_STRING)) {
-                    //TODO Fetch Saved Events
-                } else {
+
                     LivelihoodEventDataCaptureTypeEnum.values().forEach {
                         questionVisibilityMap[it] = false
                     }
                 }
+
+            if (savedEvent != null) {
+
+                selectedDate.value = savedEvent.date.getDate()
+                selectedLivelihoodId.value = savedEvent.livelihoodId
+                selectedEventId.value = savedEvent.eventId
+                eventType = savedEvent.selectedEvent.name
+
+                getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
+                    if (questionVisibilityMap.containsKey(it)) {
+                        questionVisibilityMap[it] = true
+                    } else {
+                        questionVisibilityMap[it] = false
+                    }
+                }
+
 
             }
         }
@@ -174,7 +194,7 @@ class AddEventViewModel @Inject constructor(
                     date = selectedDateInLong,
                     livelihoodId = selectedLivelihoodId.value,
                     eventId = selectedEventId.value,
-                    productId = selectedEventId.value,
+                    productId = selectedProductId.value,
                     selectedEvent = event,
                     transactionId = mTransactionId
 
@@ -223,6 +243,16 @@ class AddEventViewModel @Inject constructor(
 
         } else {
             return false
+        }
+    }
+
+    fun onDeleteClick(transactionId: String, subjectId: Int) {
+        ioViewModelScope {
+            saveLivelihoodEventUseCase.deleteLivelihoodEvent(
+                transactionId = transactionId,
+                subjectId = subjectId,
+                getLivelihoodEventFromName(eventType)
+            )
         }
     }
 

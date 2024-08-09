@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IMoneyJournalRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.IAssetJournalRepository
@@ -26,5 +27,24 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         }
 
     }
+
+    suspend fun deleteLivelihoodEvent(
+        transactionId: String,
+        subjectId: Int,
+        selectedEvent: LivelihoodEventTypeDataCaptureMapping
+    ) {
+        subjectLivelihoodEventMappingRepository.softDeleteLivelihoodEvent(transactionId, subjectId)
+        selectedEvent.assetJournalEntryFlowType?.let {
+            assetJournalRepository.softDeleteAssetJournalEvent(
+                subjectId = subjectId,
+                transactionId = transactionId
+            )
+        }
+        selectedEvent.moneyJournalEntryFlowType?.let {
+            moneyJournalRepo.deleteMoneyJournalTransaction(transactionId)
+        }
+    }
+
+
 
 }

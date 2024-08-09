@@ -15,6 +15,13 @@ interface MoneyJournalDao {
     @Insert
     suspend fun insertMoneyJournalEntry(moneyJournalEntity: List<MoneyJournalEntity>)
 
+    @Query("select * from money_journal_table where userId=:userId and subjectId=:subjectId and transactionId=:transactionId and status=1")
+    suspend fun getMoneyJournalForTransaction(
+        userId: String,
+        transactionId: String,
+        subjectId: Int
+    ): MoneyJournalEntity?
+
     @Query("Select count(*) from money_journal_table where userId=:userId and transactionId=:transactionId and status=1")
     suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
 

@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 
 interface IMoneyJournalRepository {
@@ -19,4 +20,8 @@ interface IMoneyJournalRepository {
     )
 
     suspend fun deleteMoneyJournalTransaction(transactionId: String)
+    suspend fun getMoneyJournalTransaction(
+        transactionId: String,
+        subjectId: Int
+    ): MoneyJournalEntity?
 }
