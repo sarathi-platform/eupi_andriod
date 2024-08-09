@@ -8,7 +8,6 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetEntity
-import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetCountUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.AssetsCountWithValueUiModel
@@ -29,7 +28,6 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
     override suspend fun getIncomeExpenseSummaryForSubject(
         subjectId: Int,
-        subjectLivelihoodEventMapping: List<SubjectLivelihoodEventMappingEntity>?,
         assets: List<AssetEntity>
     ): IncomeExpenseSummaryUiModel {
 
@@ -119,5 +117,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
         return assetCountUiModelList
     }
+
+    override fun getUserId() = coreSharedPrefs.getUniqueUserIdentifier()
 
 }

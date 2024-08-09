@@ -266,14 +266,18 @@ fun DataTabScreen(
                                 LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
                                     itemsIndexed(dataTabScreenViewModel.filteredSubjectList.value) { index, subject ->
+                                        val summaryForSubject =
+                                            dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
                                         SubjectLivelihoodEventSummaryCard(
                                             subjectId = subject.subjectId!!,
                                             name = subject.subjectName,
                                             address = subject.houseNo + ", " + subject.cohortName,
                                             location = subject.villageName,
                                             lastUpdated = "",
-                                            income = "",
-                                            expense = "",
+                                            income = summaryForSubject?.totalIncome.value()
+                                                .toString(),
+                                            expense = summaryForSubject?.totalExpense.value()
+                                                .toString(),
                                             assetValue = "",
                                             onAssetValueItemClicked = {
 

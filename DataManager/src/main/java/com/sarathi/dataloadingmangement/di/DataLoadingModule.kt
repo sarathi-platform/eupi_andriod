@@ -1197,12 +1197,10 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchSubjectIncomeExpenseSummaryUseCase(
         fetchSubjectIncomeExpenseSummaryRepository: FetchSubjectIncomeExpenseSummaryRepository,
-        subjectLivelihoodEventMappingRepository: SubjectLivelihoodEventMappingRepositoryImpl,
         assetRepositoryImpl: AssetRepositoryImpl
     ): FetchSubjectIncomeExpenseSummaryUseCase {
         return FetchSubjectIncomeExpenseSummaryUseCase(
             fetchSubjectIncomeExpenseSummaryRepository,
-            subjectLivelihoodEventMappingRepository,
             assetRepositoryImpl
         )
     }
