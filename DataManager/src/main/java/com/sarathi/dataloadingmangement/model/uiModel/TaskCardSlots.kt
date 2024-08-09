@@ -9,6 +9,7 @@ enum class TaskCardSlots(val type: String) {
     TASK_SUBTITLE_3(type = "text"),
     TASK_SUBTITLE_4(type = "text"),
     TASK_SUBTITLE_5(type = "text"),
+    TASK_SUBTITLE_6(type = "text"),
     TASK_SUBTITLE_8(type = "text"),
     TASK_PRIMARY_BUTTON(type = "text"),
     TASK_SECONDARY_BUTTON(type = "text"),

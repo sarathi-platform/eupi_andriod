@@ -19,7 +19,6 @@ data class LivelihoodUiEntity(
             selectedIds: List<Int>
         ): List<LivelihoodUiEntity> {
             val livelihoodUIEntityList = ArrayList<LivelihoodUiEntity>()
-
             livelihoodUiModelList.forEach { livelihoodDropDownUiModel ->
                 livelihoodUIEntityList.add(
                     LivelihoodUiEntity(

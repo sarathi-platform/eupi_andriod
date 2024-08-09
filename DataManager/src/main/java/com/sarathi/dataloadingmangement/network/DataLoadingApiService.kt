@@ -4,6 +4,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodOptionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
@@ -14,12 +15,10 @@ import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResp
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
-import com.sarathi.dataloadingmangement.network.request.LivelihoodRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
-import com.sarathi.dataloadingmangement.network.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -35,8 +34,6 @@ interface DataLoadingApiService {
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
-    @POST("")
-    suspend fun fetchLivelihoodData(@Body livelihoodRequest: List<LivelihoodRequest>): ApiResponseModel<List<LivelihoodResponse>>
 
     // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
@@ -63,6 +60,9 @@ interface DataLoadingApiService {
         @Query("surveyId") surveyId: Int,
         @Query("formType") formType: String
     ): ApiResponseModel<List<FormDetailResponseModel>>
+    @GET(SUBPATH_FETCH_LIVELIHOOD_OPTION)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchLivelihoodPlanData(@Query("activityId") activityId: Int): ApiResponseModel<List<LivelihoodOptionResponse>>
 
     @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
     suspend fun getSmallGroupBeneficiaryMapping(@Body smallGroupApiRequest: SmallGroupApiRequest): ApiResponseModel<List<SmallGroupMappingResponseModel>>

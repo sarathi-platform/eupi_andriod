@@ -55,6 +55,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
@@ -100,6 +101,7 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
@@ -535,7 +537,8 @@ class DataLoadingModule {
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
         formUseCase: FormUseCase,
-        livelihoodUseCase: LivelihoodUseCase
+        livelihoodUseCase: LivelihoodUseCase,
+        fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -559,7 +562,8 @@ class DataLoadingModule {
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
-            livelihoodUseCase = livelihoodUseCase
+            livelihoodUseCase = livelihoodUseCase,
+            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase
         )
     }
 
@@ -977,5 +981,29 @@ class DataLoadingModule {
             saveLivelihoodMappingForSubjectRepository
         )
     }
+
+
+    @Provides
+    @Singleton
+    fun provideSaveLivelihoodOptionUseCase(
+        repository: FetchLivelihoodOptionRepositoryImpl,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchLivelihoodOptionNetworkUseCase {
+        return FetchLivelihoodOptionNetworkUseCase(
+            repository = repository,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+//    @Provides
+//    @Singleton
+//    fun provideSaveLivelihoodOptionUseCase(
+//        fetchLivelihoodOptionRepository: FetchLivelihoodOptionRepository,
+//        coreSharedPrefs: CoreSharedPrefs
+//    ): FetchLivelihoodOptionNetworkUseCase {
+//        return FetchLivelihoodOptionNetworkUseCase(
+//            repository = fetchLivelihoodOptionRepository,
+//            coreSharedPrefs =   coreSharedPrefs)
+//    }
 
 }

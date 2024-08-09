@@ -169,8 +169,6 @@ class SurveyScreenViewModel @Inject constructor(
         }
 
     }
-
-
     fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
             if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {

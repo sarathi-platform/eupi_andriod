@@ -350,6 +350,7 @@ private fun TaskRowView(
         subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
         subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
         subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name],
+        subtitle7 = task.value[TaskCardSlots.TASK_SUBTITLE_6.name],
         subtitle6 = task.value[TaskCardSlots.TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
         isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(

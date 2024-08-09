@@ -17,9 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
@@ -41,11 +43,15 @@ fun LivelihoodDropDownScreen(
     subjectName: String,
     onSettingClicked: () -> Unit
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
         viewModel.onEvent(InitDataEvent.InitDataState)
+
     }
+
 
     ToolBarWithMenuComponent(
         title = subjectName,
@@ -63,11 +69,17 @@ fun LivelihoodDropDownScreen(
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
             ) {
+                if (viewModel.isButtonEnable.value == false){
+                    if ((viewModel.primaryLivelihoodId.value == viewModel.secondaryLivelihoodId.value && viewModel.secondaryLivelihoodId.value!=-1 &&  viewModel.primaryLivelihoodId.value!=-1)) {
+                        showCustomToast(context, stringResource(R.string.primary_and_secondary_value_not_same))
+                    }
+            }
                 ButtonPositive(
                     buttonTitle = stringResource(R.string.submit),
                     isActive = viewModel.isButtonEnable.value,
                     isLeftArrow = false,
                     onClick = {
+
                         viewModel.saveButtonClicked()
                         navController.navigateUp()
                     }
@@ -119,7 +131,7 @@ fun DropdownView(
             isEditAllowed = true,
             title = "Select first livelihood for didi",
             isMandatory = true,
-            diableItem = selectedItem2 ?: 0,
+//            diableItem = selectedItem2 ?: 0,
             enableItem = selectedItem1 ?: -1,
             sources = firstDropDownItems,
             onAnswerSelection = { selectedValue ->
