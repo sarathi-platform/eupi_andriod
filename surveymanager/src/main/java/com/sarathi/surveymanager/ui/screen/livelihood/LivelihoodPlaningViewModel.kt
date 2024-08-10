@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -40,9 +41,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val coreSharedPrefs: CoreSharedPrefs
-
-
-    ) : BaseViewModel() {
+) : BaseViewModel() {
 
     private val TAG = LivelihoodPlaningViewModel::class.java.simpleName
     val isButtonEnable = mutableStateOf<Boolean>(false)
@@ -169,8 +168,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
                selectedPrimaryLivelihood =  primaryLivelihoodId.value,
                 selectedSecondaryLivelihood =  secondaryLivelihoodId.value,
                 )
-
-            val livelihoodPlanActivityDto = LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(), primaryLivelihoodId.value, secondaryLivelihoodId.value,activityId!!,missionId!!,subjectId!!,coreSharedPrefs.getUserType())
+            val livelihoodPlanActivityDto = LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName()
+                , primaryLivelihoodId.value, secondaryLivelihoodId.value,
+                activityId!!,missionId!!,subjectId!!,DIDI)
             livelihoodEventWriterUseCase.writeLivelihoodEvent(
                livelihoodPlanActivityDto,
 
