@@ -34,7 +34,7 @@ class FetchLivelihoodOptionRepositoryImpl @Inject constructor(
             primaryLivelihoodId = selectedPrimaryLivelihood,
             secondaryLivelihoodId = selectedSecondaryLivelihood,
         )
-        subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodOptionRepository)
+//        subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodOptionRepository)
         return subjectLivelihoodOptionRepository
     }
 

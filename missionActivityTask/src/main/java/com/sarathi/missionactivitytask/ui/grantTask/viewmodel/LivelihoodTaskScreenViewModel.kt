@@ -1,6 +1,9 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
@@ -10,6 +13,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +37,10 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     private val formUiConfigUseCase: GetFormUiConfigUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
-) : TaskScreenViewModel(
+  var  getLivelihoodListFromDbUseCase:GetLivelihoodListFromDbUseCase,
+   var getLivelihoodMappingUseCase: GetSubjectLivelihoodMappingFromUseCase,
+
+    ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
     getActivityUiConfigUseCase,
@@ -42,6 +51,9 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     getActivityUseCase,
     fetchAllDataUseCase
 ) {
+        val livelihoodsEntityList=ArrayList<LivelihoodModel>()
+        val subjectLivelihoodMapiingMap:MutableMap<Int,SubjectLivelihoodMappingEntity> =HashMap()
+
 
     override fun <T> onEvent(event: T) {
         super.onEvent(event)
@@ -49,7 +61,6 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
             is InitDataEvent.InitLivelihoodPlanningScreenState -> {
 
                 initLivelihoodPlanningScreen(event.missionId, event.activityId)
-
             }
         }
     }
@@ -58,6 +69,16 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             activityConfigUiModelWithoutSurvey =
                 getActivityUiConfigUseCase.getActivityConfig(activityId, missionId)
+            livelihoodsEntityList.clear()
+            livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
+
+           var getLivelihoodSupbjectMapping= taskUiModel?.map { it.subjectId }
+                ?.let { getLivelihoodMappingUseCase.getLivelihoodMappingForSubject(it) }
+
+            getLivelihoodSupbjectMapping?.associateBy { it.subjectId }
+                ?.let {
+                    subjectLivelihoodMapiingMap.clear()
+                    subjectLivelihoodMapiingMap.putAll(it) }
         }
     }
 

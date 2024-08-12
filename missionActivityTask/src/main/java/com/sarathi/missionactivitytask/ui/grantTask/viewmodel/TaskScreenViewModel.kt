@@ -317,7 +317,6 @@ open class TaskScreenViewModel @Inject constructor(
     fun getFilePathUri(filePath: String): Uri? {
         return fetchContentUseCase.getFilePathUri(filePath)
     }
-
     fun updateTaskAvailableStatus(
         taskId: Int,
         status: String,

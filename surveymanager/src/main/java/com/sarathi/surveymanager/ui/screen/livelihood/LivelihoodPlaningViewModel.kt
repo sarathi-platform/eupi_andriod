@@ -91,6 +91,8 @@ class LivelihoodPlaningViewModel @Inject constructor(
                     val subjectLivelihoodMapping =
                         getSubjectLivelihoodMappingFromUseCase.invoke(subjectId!!)
 
+
+
                     if (subjectLivelihoodMapping != null) {
                         val mLivelihoodUiEntityList = LivelihoodUiEntity.getLivelihoodUiEntityList(
                             livelihoodUiModelList = livelihoodList,
@@ -102,6 +104,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         _livelihoodList.value = mLivelihoodUiEntityList
                         primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId
+
+                        getSubjectLivelihoodMappingFromUseCase.getLivelihoodMappingForSubject(listOf(subjectLivelihoodMapping!!.subjectId))
+
                     } else {
                         val mLivelihoodUiEntityList =
                             LivelihoodUiEntity.getLivelihoodUiEntityList(
@@ -156,13 +161,15 @@ class LivelihoodPlaningViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     private suspend fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
-            val subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity? = subjectId?.let {
-                SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+            val subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity?
+                        = subjectId?.let {
+                            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                     userId = saveLivelihoodMappingUseCase.getUserId(),
                     subjectId = it,
                     primaryLivelihoodId.value, secondaryLivelihoodId.value
                 )
             }
+
             fetchLivelihoodOptionNetworkUseCase.saveFormEData(activityId = activityId!!,
                 subjectId = subjectId!!,
                selectedPrimaryLivelihood =  primaryLivelihoodId.value,
@@ -189,9 +196,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
                     )
                 }
-            subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.invoke(it) }
-
-//                subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingForSubject(it) }
+                subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingForSubject(it) }
         }
     }
 

@@ -40,6 +40,14 @@ interface SubjectLivelihoodMappingDao {
         userId: String
     ): SubjectLivelihoodMappingEntity?
 
+
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME" +
+            " where subjectId IN (:subjectIds) and userId = :userId")
+    suspend fun getSubjectsLivelihoodMapping(
+        subjectIds: List<Int>,
+        userId: String
+    ): List<SubjectLivelihoodMappingEntity>
+
     @Transaction
     suspend  fun insertOrModifyLivelihoodMapping(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
         if (isSubjectLivelihoodMappingAvailable(

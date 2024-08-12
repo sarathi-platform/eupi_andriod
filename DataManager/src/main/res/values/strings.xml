@@ -58,6 +58,6 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="search">Search</string>
-    <string name="primary_and_secondary_value_not_same">Primary And Secondary Value not same</string>
+    <string name="primary_and_secondary_value_not_same">Primary And Secondary Value can not be same</string>
 
 </resources>
