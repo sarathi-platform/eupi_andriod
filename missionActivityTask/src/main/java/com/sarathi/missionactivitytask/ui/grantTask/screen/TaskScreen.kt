@@ -212,6 +212,7 @@ fun TaskScreen(
                             })
                     }
                 }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

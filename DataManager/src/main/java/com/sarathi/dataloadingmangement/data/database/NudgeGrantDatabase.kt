@@ -138,6 +138,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 2
         SubjectLivelihoodEventMappingEntity::class
         SectionStatusEntity::class
     ],
+
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
 )

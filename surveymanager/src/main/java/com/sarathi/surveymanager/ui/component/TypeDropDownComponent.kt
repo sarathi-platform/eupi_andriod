@@ -36,6 +36,7 @@ fun TypeDropDownComponent(
     questionNumber: String = BLANK_STRING,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
+
     val context = LocalContext.current
     val defaultSourceList =
         sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))

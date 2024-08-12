@@ -81,6 +81,7 @@ class SurveyScreenViewModel @Inject constructor(
         }
 
     }
+
     fun updateTaskStatus(taskId: Int) {
         ioViewModelScope {
             val surveyEntity = getSectionListUseCase.getSurveyEntity(super.surveyId)

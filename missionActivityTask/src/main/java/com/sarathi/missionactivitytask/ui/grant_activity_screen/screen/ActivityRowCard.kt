@@ -23,6 +23,7 @@ import com.sarathi.missionactivitytask.navigation.navigateToSurveyTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 import com.sarathi.missionactivitytask.utils.getFilePathUri
 import java.util.Locale
+import java.util.Locale.ENGLISH
 
 @Composable
 fun ActivityRowCard(
