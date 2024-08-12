@@ -21,7 +21,9 @@ enum class TaskCardSlots(val type: String) {
     TASK_NOT_AVAILABLE_ENABLE(type = "text"),
     SEARCH_LABEL(type = "text"),
 
+    TASK_PROGRESS(type = "text"),
 }
+
 enum class GrantTaskSearchBarSlots(val type: String) {
     GRANT_TASK_SEARCH_TITLE(type = "text"),
 

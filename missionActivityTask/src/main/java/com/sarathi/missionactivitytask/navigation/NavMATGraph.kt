@@ -25,6 +25,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TITLE
@@ -46,17 +47,21 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SU
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID_LIST
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOOLBAR_TITLE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysicalFormScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
@@ -65,9 +70,13 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityS
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
+import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
+import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
+import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.sarathi.surveymanager.ui.screen.livelihood.LivelihoodDropDownScreen
+import com.sarathi.surveymanager.ui.screen.sectionScreen.SectionScreen
 import com.nudge.core.model.MissionUiModel as CoreMissionUiModel
 
 
@@ -190,23 +199,52 @@ fun NavGraphBuilder.MatNavigation(
             )
         }
 
-        composable(route = MATHomeScreens.MediaPlayerScreen.route, arguments = listOf(
-            navArgument(
-                name = ARG_CONTENT_KEY
-            ) {
-                type = NavType.StringType
-            },
-            navArgument(
-                name = ARG_CONTENT_TYPE
-            ) {
-                type = NavType.StringType
-            },
-            navArgument(
-                name = ARG_CONTENT_TITLE
-            ) {
-                type = NavType.StringType
-            }
-        )
+        composable(
+            route = MATHomeScreens.SurveyTaskScreen.route, arguments = listOf(
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_NAME) {
+                    type = NavType.StringType
+                })
+        ) {
+            SurveyTaskScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                missionId = it.arguments?.getInt(
+                    ARG_MISSION_ID
+                ) ?: 0,
+                activityId = it.arguments?.getInt(
+                    ARG_ACTIVITY_ID
+                ) ?: 0,
+                activityName = it.arguments?.getString(
+                    ARG_ACTIVITY_NAME
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
+            )
+        }
+
+        composable(
+            route = MATHomeScreens.MediaPlayerScreen.route, arguments = listOf(
+                navArgument(
+                    name = ARG_CONTENT_KEY
+                ) {
+                    type = NavType.StringType
+                },
+                navArgument(
+                    name = ARG_CONTENT_TYPE
+                ) {
+                    type = NavType.StringType
+                },
+                navArgument(
+                    name = ARG_CONTENT_TITLE
+                ) {
+                    type = NavType.StringType
+                }
+            )
         ) {
             MediaScreen(
                 navController = navController,
@@ -258,7 +296,7 @@ fun NavGraphBuilder.MatNavigation(
             )
         }
         composable(
-            route = MATHomeScreens.SurveyScreen.route,
+            route = MATHomeScreens.BaseSurveyScreen.route,
             arguments = listOf(
                 navArgument(name = ARG_TASK_ID) {
                     type = NavType.IntType
@@ -272,7 +310,7 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_SUBJECT_TYPE) {
                     type = NavType.StringType
                 },
-                navArgument(name = ARG_SUBJECT_NAME) {
+                navArgument(name = ARG_TOOLBAR_TITLE) {
                     type = NavType.StringType
                 },
                 navArgument(name = ARG_REFERENCE_ID) {
@@ -295,7 +333,7 @@ fun NavGraphBuilder.MatNavigation(
                 },
             ),
         ) {
-            SurveyScreen(
+            BaseSurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
                 onSettingClick = onSettingIconClick,
                 taskId = it.arguments?.getInt(
@@ -310,8 +348,88 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
-                subjectName = it.arguments?.getString(
-                    ARG_SUBJECT_NAME
+                toolbarTitle = it.arguments?.getString(
+                    ARG_TOOLBAR_TITLE
+                ) ?: BLANK_STRING,
+                referenceId = it.arguments?.getString(
+                    ARG_REFERENCE_ID
+                ) ?: BLANK_STRING,
+                activityConfigId = it.arguments?.getInt(
+                    ARG_ACTIVITY_CONFIG_ID
+                ) ?: 0,
+                grantId = it.arguments?.getInt(
+                    ARG_GRANT_ID
+                ) ?: 0,
+                grantType = it.arguments?.getString(
+                    ARG_GRANT_TYPE
+                ) ?: BLANK_STRING,
+                sanctionedAmount = it.arguments?.getInt(
+                    ARG_SANCTIONED_AMOUNT
+                ) ?: 0,
+                totalSubmittedAmount = it.arguments?.getInt(
+                    ARG_TOTAL_SUBMITTED_AMOUNT
+                ) ?: 0,
+                onAnswerSelect = { questionUiModel ->
+
+                },
+                onSubmitButtonClick = {}
+            )
+        }
+        composable(
+            route = MATHomeScreens.GrantSurveyScreen.route,
+            arguments = listOf(
+                navArgument(name = ARG_TASK_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SECTION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SURVEY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SUBJECT_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_TOOLBAR_TITLE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_REFERENCE_ID) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_GRANT_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_GRANT_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_SANCTIONED_AMOUNT) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_TOTAL_SUBMITTED_AMOUNT) {
+                    type = NavType.IntType
+                },
+            ),
+        ) {
+            GrantSurveyScreen(
+                navController = navController, viewModel = hiltViewModel(),
+                onSettingClick = onSettingIconClick,
+                taskId = it.arguments?.getInt(
+                    ARG_TASK_ID
+                ) ?: 0,
+                surveyId = it.arguments?.getInt(
+                    ARG_SURVEY_ID
+                ) ?: 0,
+                sectionId = it.arguments?.getInt(
+                    ARG_SECTION_ID
+                ) ?: 0,
+                subjectType = it.arguments?.getString(
+                    ARG_SUBJECT_TYPE
+                ) ?: BLANK_STRING,
+                toolbarTitle = it.arguments?.getString(
+                    ARG_TOOLBAR_TITLE
                 ) ?: BLANK_STRING,
                 referenceId = it.arguments?.getString(
                     ARG_REFERENCE_ID
@@ -333,6 +451,86 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
 
                 )
+        }
+        composable(
+            route = MATHomeScreens.SurveyScreen.route,
+            arguments = listOf(
+                navArgument(name = ARG_TASK_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SECTION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SURVEY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SUBJECT_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_TOOLBAR_TITLE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_GRANT_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_GRANT_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_SANCTIONED_AMOUNT) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_TOTAL_SUBMITTED_AMOUNT) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
+                }
+            ),
+        ) {
+
+            SurveyScreen(
+                navController = navController, viewModel = hiltViewModel(),
+                onSettingClick = onSettingIconClick,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID).value(),
+                taskId = it.arguments?.getInt(
+                    ARG_TASK_ID
+                ) ?: 0,
+                surveyId = it.arguments?.getInt(
+                    ARG_SURVEY_ID
+                ) ?: 0,
+                sectionId = it.arguments?.getInt(
+                    ARG_SECTION_ID
+                ) ?: 0,
+                subjectType = it.arguments?.getString(
+                    ARG_SUBJECT_TYPE
+                ) ?: BLANK_STRING,
+                toolbarTitle = it.arguments?.getString(
+                    ARG_TOOLBAR_TITLE
+                ) ?: BLANK_STRING,
+
+                activityConfigId = it.arguments?.getInt(
+                    ARG_ACTIVITY_CONFIG_ID
+                ) ?: 0,
+                grantId = it.arguments?.getInt(
+                    ARG_GRANT_ID
+                ) ?: 0,
+                activityType = it.arguments?.getString(
+                    ARG_GRANT_TYPE
+                ) ?: BLANK_STRING,
+                sanctionedAmount = it.arguments?.getInt(
+                    ARG_SANCTIONED_AMOUNT
+                ) ?: 0,
+                totalSubmittedAmount = it.arguments?.getInt(
+                    ARG_TOTAL_SUBMITTED_AMOUNT
+                ) ?: 0
+            )
         }
         composable(
             route = MATHomeScreens.DisbursementSurveyScreen.route, arguments = listOf(
@@ -380,7 +578,7 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
                 onSettingClick = onSettingIconClick,
                 onNavigateSurveyScreen = { referenceId, activityConfigId, grantId, grantType, sanctionAmount, totalSubmittedAmount ->
-                    navigateToSurveyScreen(
+                    navigateToGrantSurveyScreen(
                         navController, surveyId = it.arguments?.getInt(
                             ARG_SURVEY_ID
                         ) ?: 0, sectionId = it.arguments?.getInt(
@@ -390,7 +588,7 @@ fun NavGraphBuilder.MatNavigation(
                         ) ?: 0, subjectType = it.arguments?.getString(
                             ARG_SUBJECT_TYPE
                         ) ?: BLANK_STRING,
-                        subjectName = it.arguments?.getString(ARG_SUBJECT_NAME) ?: BLANK_STRING,
+                        toolbarName = it.arguments?.getString(ARG_SUBJECT_NAME) ?: BLANK_STRING,
                         referenceId = referenceId,
                         activityConfigId = activityConfigId,
                         grantId = grantId,
@@ -492,6 +690,92 @@ fun NavGraphBuilder.MatNavigation(
                 taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
+
+        composable(
+            route = MATHomeScreens.SectionScreen.route,
+            arguments = listOf(
+                navArgument(name = ARG_TASK_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SURVEY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SUBJECT_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_SUBJECT_NAME) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SANCTIONED_AMOUNT) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            SectionScreen(
+                sectionScreenViewModel = hiltViewModel(),
+                navController = navController,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
+                activityId = it.arguments?.getInt(ARG_ACTIVITY_ID).value(),
+                surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
+                taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
+                subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
+                subjectName = it.arguments?.getString(ARG_SUBJECT_NAME).value(),
+                activityType = it.arguments?.getString(ARG_ACTIVITY_NAME).value(),
+                activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
+                sanctionedAmount = it.arguments?.getInt(ARG_SANCTIONED_AMOUNT).value(),
+                onNavigateToGrantSurveySummaryScreen = { navController, surveyId, sectionId, taskId, subjectType, subjectName, activityConfigId, sanctionedAmount ->
+                    navigateToGrantSurveySummaryScreen(
+                        navController = navController,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        taskId = taskId,
+                        subjectType = subjectType,
+                        subjectName = subjectName,
+                        activityConfigId = activityConfigId,
+                        sanctionedAmount = sanctionedAmount
+                    )
+                },
+                onSettingClick = onSettingIconClick,
+                onNavigateSuccessScreen = { msg ->
+                    navigateToActivityCompletionScreen(
+                        navController,
+                        msg
+                    )
+                },
+                onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
+
+                },
+                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId ->
+                    navigateToSurveyScreen(
+                        navController = navController,
+                        missionId = missionId,
+                        activityId = activityId,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        taskId = taskId,
+                        subjectType = subjectType,
+                        toolbarName = sectionName,
+                        activityConfigId = activityConfigId,
+                        grantId = 0,
+                        activityType = "Survey",
+                        sanctionedAmount = 0,
+                        totalSubmittedAmount = 0
+                    )
+                }
+            )
+        }
     }
     composable(route = MATHomeScreens.LivelihoodDropDownScreen.route, arguments = listOf(
         navArgument(ARG_TASK_ID) {
@@ -547,11 +831,29 @@ fun navigateToDisbursmentSummaryScreen(
 
 fun navigateToSurveyScreen(
     navController: NavController,
+    missionId: Int,
+    activityId: Int,
     surveyId: Int,
     sectionId: Int,
     taskId: Int,
     subjectType: String,
-    subjectName: String,
+    toolbarName: String,
+    activityConfigId: Int,
+    grantId: Int,
+    activityType: String,
+    sanctionedAmount: Int?,
+    totalSubmittedAmount: Int?,
+) {
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
+}
+
+fun navigateToGrantSurveyScreen(
+    navController: NavController,
+    surveyId: Int,
+    sectionId: Int,
+    taskId: Int,
+    subjectType: String,
+    toolbarName: String,
     referenceId: String,
     activityConfigId: Int,
     grantId: Int,
@@ -559,9 +861,8 @@ fun navigateToSurveyScreen(
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$referenceId/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
+    navController.navigate("$GRANT_SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$referenceId/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
 }
-
 fun navigateToGrantSurveySummaryScreen(
     navController: NavController,
     surveyId: Int,
@@ -574,6 +875,22 @@ fun navigateToGrantSurveySummaryScreen(
 ) {
     navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
 }
+
+fun navigateToSectionScreen(
+    navController: NavController,
+    missionId: Int,
+    activityId: Int,
+    surveyId: Int,
+    taskId: Int,
+    subjectType: String,
+    subjectName: String,
+    activityType: String?,
+    activityConfigId: Int,
+    sanctionedAmount: Int?,
+) {
+    navController.navigate("$MAT_SECTION_SCREEN_ROUTE_NAME/$surveyId/$taskId/$activityType/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount/$activityId/$missionId")
+}
+
 
 fun navigateToActivityCompletionScreen(
     navController: NavController,
@@ -640,4 +957,13 @@ fun navigateToLiveliHoodScreen(
     activityName: String
 ) {
     navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+}
+
+fun navigateToSurveyTaskScreen(
+    navController: NavController,
+    missionId: Int,
+    activityId: Int,
+    activityName: String
+) {
+    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }

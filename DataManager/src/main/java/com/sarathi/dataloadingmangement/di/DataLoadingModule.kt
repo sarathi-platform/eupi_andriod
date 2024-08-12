@@ -23,6 +23,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -58,10 +59,13 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetwo
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
@@ -112,6 +116,12 @@ import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
 import com.sarathi.dataloadingmangement.repository.MoneyJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionListRepository
+import com.sarathi.dataloadingmangement.repository.SectionListRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
+import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -326,6 +336,9 @@ class DataLoadingModule {
     @Singleton
     fun subjectLivelihoodEventMappingDao(db: NudgeGrantDatabase) =
         db.subjectLivelihoodEventMappingDao()
+    @Provides
+    @Singleton
+    fun provideSectionStatusEntityDao(db: NudgeGrantDatabase) = db.sectionStatusEntityDao()
 
     @Provides
     @Singleton
@@ -1267,4 +1280,76 @@ class DataLoadingModule {
             subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl
         )
     }
+    @Provides
+    @Singleton
+    fun provideSectionListRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyEntityDao: SurveyEntityDao,
+        sectionEntityDao: SectionEntityDao,
+        sectionSectionEntityDao: SectionStatusEntityDao
+
+    ): SectionListRepository {
+        return SectionListRepositoryImpl(
+            coreSharedPrefs,
+            surveyEntityDao,
+            sectionEntityDao,
+            sectionSectionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSectionListUseCase(
+        sectionListRepository: SectionListRepository
+    ): GetSectionListUseCase {
+        return GetSectionListUseCase(sectionListRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusUpdateUseCase(
+        sectionStatusUpdateRepository: SectionStatusUpdateRepository
+    ): SectionStatusUpdateUseCase {
+        return SectionStatusUpdateUseCase(sectionStatusUpdateRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusUpdateRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        sectionSectionEntityDao: SectionStatusEntityDao
+    ): SectionStatusUpdateRepository {
+
+        return SectionStatusUpdateRepositoryImpl(coreSharedPrefs, sectionSectionEntityDao)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusEventWriterUserCase(
+        sectionStatusEventWriterRepository: SectionStatusEventWriterRepository,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): SectionStatusEventWriterUserCase {
+        return SectionStatusEventWriterUserCase(
+            sectionStatusEventWriterRepository,
+            eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusEventWriterRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        taskDao: TaskDao,
+        sectionStatusEntityDao: SectionStatusEntityDao,
+        surveyEntityDao: SurveyEntityDao
+    ): SectionStatusEventWriterRepository {
+        return SectionStatusEventWriterRepositoryImpl(
+            coreSharedPrefs,
+            taskDao,
+            sectionStatusEntityDao,
+            surveyEntityDao
+        )
+    }
+
 }

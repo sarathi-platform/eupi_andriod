@@ -18,8 +18,8 @@ data class ActivityConfigEntity(
     @ColumnInfo(name = "id")
     var id: Int = 0,
     var userId: String? = BLANK_STRING,
-    var activityType: String,
-    var activityTypeId: Int,
+    var activityType: String? = BLANK_STRING,
+    var activityTypeId: Int?,
     var surveyId: Int,
     var doer: String,
     var reviewer: String,
@@ -29,7 +29,7 @@ data class ActivityConfigEntity(
     var missionId: Int,
     var icon: String,
 
-) {
+    ) {
     companion object {
         fun getActivityConfigEntity(
             activityId: Int,

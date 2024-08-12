@@ -71,7 +71,10 @@ fun DisbursementSummaryScreen(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            navController.navigateUp()
+            navController.navigateUp()
+        },
         isSearch = false,
         onSearchValueChange = {
 
