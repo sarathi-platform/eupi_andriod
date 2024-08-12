@@ -131,7 +131,7 @@ fun TypeDropDownWithCardComponent(
 
 
 @Composable
-fun TypeDropDownComponent(
+fun DropDownTypeComponent(
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,

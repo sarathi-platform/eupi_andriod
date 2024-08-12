@@ -46,11 +46,11 @@ import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
+import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
-import com.sarathi.surveymanager.ui.component.TypeDropDownComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
 import kotlinx.coroutines.launch
 
@@ -221,7 +221,7 @@ fun BaseSurveyScreen(
 
                             QuestionType.SingleSelectDropDown.name,
                             QuestionType.DropDown.name -> {
-                                TypeDropDownComponent(
+                                DropDownTypeComponent(
                                     isEditAllowed = viewModel.isActivityNotCompleted.value,
                                     title = question.questionDisplay,
                                     questionNumber = if (TextUtils.equals(

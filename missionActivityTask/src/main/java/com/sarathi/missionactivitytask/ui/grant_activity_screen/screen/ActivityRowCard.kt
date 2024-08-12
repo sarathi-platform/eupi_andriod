@@ -23,7 +23,6 @@ import com.sarathi.missionactivitytask.navigation.navigateToSurveyTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 import com.sarathi.missionactivitytask.utils.getFilePathUri
 import java.util.Locale
-import java.util.Locale.ENGLISH
 
 @Composable
 fun ActivityRowCard(
@@ -70,28 +69,19 @@ fun ActivityRowCard(
                     when (activity.activityType.lowercase()) {
                         ActivityTypeEnum.GRANT.name.lowercase(
                             Locale.ENGLISH
-                        )
-                    ) {
-                        navigateToGrantTaskScreen(
-                        navController,
-                        missionId = activity.missionId,
-                        activityId = activity.activityId,
-                        activityName = activity.description
-                    )
-                }
-                   else if (activity.activityType.lowercase() == ActivityTypeEnum.LIVELIHOOD.name.lowercase(
-                            Locale.ENGLISH
-                        )
-                    ) {
-                        navigateToLiveliHoodScreen(
-                            navController,
-                            missionId = activity.missionId,
-                            activityId = activity.activityId,
-                            activityName = activity.description
-                        )
-                    }
                         ) -> {
                             navigateToGrantTaskScreen(
+                                navController,
+                                missionId = activity.missionId,
+                                activityId = activity.activityId,
+                                activityName = activity.description
+                            )
+                        }
+
+                        ActivityTypeEnum.LIVELIHOOD.name.lowercase(
+                            Locale.ENGLISH
+                        ) -> {
+                            navigateToLiveliHoodScreen(
                                 navController,
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,

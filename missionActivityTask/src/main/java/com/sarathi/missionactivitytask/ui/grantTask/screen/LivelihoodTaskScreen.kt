@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.LivelihoodTaskScreenViewModel
+import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 
 @Composable
@@ -35,7 +36,10 @@ fun LivelihoodTaskScreen(
         secondaryButtonText = BLANK_STRING,
         isSecondaryButtonVisible = false,
         taskList = emptyList(),//viewModel.taskUiList.value,
-        navController = navController
+        navController = navController,
+        taskScreenContent = { vm: TaskScreenViewModel, _: NavController ->
+
+        }
 
     )
 }

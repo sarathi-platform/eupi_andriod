@@ -29,7 +29,7 @@ class SectionScreenViewModel @Inject constructor(
     private var surveyId: Int = 0
     private var taskId: Int = 0
     private var subjectType: String = BLANK_STRING
-    private var activityConfigId: Int = 0
+    var activityConfigId: Int = 0
 
     private val _contentList = mutableStateOf<List<Content>>(emptyList())
     val contentList: State<List<Content>> get() = _contentList

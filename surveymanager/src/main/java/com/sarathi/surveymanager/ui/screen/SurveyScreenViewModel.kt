@@ -80,7 +80,6 @@ class SurveyScreenViewModel @Inject constructor(
 
         }
 
-    }
 
     fun updateTaskStatus(taskId: Int) {
         ioViewModelScope {

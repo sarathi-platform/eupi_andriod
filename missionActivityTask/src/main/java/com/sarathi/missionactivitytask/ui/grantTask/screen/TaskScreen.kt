@@ -49,7 +49,6 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
-import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
@@ -62,7 +61,6 @@ import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
-import com.sarathi.missionactivitytask.navigation.navigateToSectionScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -338,8 +336,12 @@ fun TaskRowView(
                         )
                     }
 
-                    else -> {
-            viewModel.activityConfigUiModel?.let {
+                    else -> {}
+                }
+            }
+
+            //TODO @Anupam uncomment when survey type screen is used
+            /*viewModel.activityConfigUiModel?.let {
                 if (subjectName.isNotBlank()) {
                     val sanctionedAmount = try {
                         task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
@@ -367,10 +369,7 @@ fun TaskRowView(
                     )
                 }
 
-                    }
-                }
-            }
-
+            }*/
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {

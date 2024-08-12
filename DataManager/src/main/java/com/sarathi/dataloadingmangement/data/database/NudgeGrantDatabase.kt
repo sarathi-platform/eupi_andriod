@@ -135,7 +135,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 2
         MoneyJournalEntity::class,
         AssetJournalEntity::class,
         SubjectLivelihoodMappingEntity::class,
-        SubjectLivelihoodEventMappingEntity::class
+        SubjectLivelihoodEventMappingEntity::class,
         SectionStatusEntity::class
     ],
 

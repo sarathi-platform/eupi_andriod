@@ -1,5 +1,3 @@
-import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
-import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import android.text.TextUtils
 import androidx.compose.ui.graphics.Color
 import com.nudge.core.ui.theme.greenLight
@@ -9,9 +7,9 @@ import com.nudge.core.ui.theme.sectionIconCompletedBg
 import com.nudge.core.ui.theme.sectionIconNotStartedBg
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
-
-fun getColorForComponent(status: String, componentName: ComponentName): Color {
 
 fun SubjectEntityWithLivelihoodMappingUiModel.getSubjectLivelihoodMappingEntity(userId: String): SubjectLivelihoodMappingEntity {
     return SubjectLivelihoodMappingEntity(
@@ -21,6 +19,9 @@ fun SubjectEntityWithLivelihoodMappingUiModel.getSubjectLivelihoodMappingEntity(
         secondaryLivelihoodId = this.secondaryLivelihoodId
     )
 }
+
+fun getColorForComponent(status: String, componentName: ComponentName): Color {
+
     return when (componentName) {
         ComponentName.SECTION_BOX_BORDER_COLOR -> {
             if (TextUtils.equals(

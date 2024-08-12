@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -31,12 +29,10 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -61,9 +56,7 @@ import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_2_dp
-import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -210,7 +203,7 @@ fun ButtonPositiveComponent(
             Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyColor,
-                style = TextStyle(
+                style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
@@ -231,16 +224,12 @@ fun ButtonPositiveComponent(
 }
 
 @Composable
-fun ButtonPositiveWithLoaderComponent(
 fun ButtonPositive(
-
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isArrowRequired: Boolean = false,
-    isArrowRequired: Boolean = true,
     isLeftArrow: Boolean = false,
     isActive: Boolean = false,
-    showLoader: Boolean = false,
     textColor: Color = Color.White,
     iconTintColor: Color = Color.White,
     onClick: () -> Unit
@@ -274,17 +263,14 @@ fun ButtonPositive(
                 androidx.compose.material.Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = "Positive Button",
-                    tint = if (isActive) iconTintColor else greyColor,
                     tint = if (isActive) iconTintColor else greyBorder,
                     modifier = Modifier
                         .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
                 )
             }
             Text(
-            androidx.compose.material.Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyBorder,
-                color = if (isActive) white else greyColor,
                 style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
@@ -292,16 +278,6 @@ fun ButtonPositive(
                 ),
                 textAlign = TextAlign.Center
             )
-            if (showLoader && isActive) {
-                Spacer(modifier = Modifier.width(dimen_4_dp))
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(dimen_20_dp),
-                    strokeCap = StrokeCap.Round,
-                    color = white
-                )
-            }
-            if (isArrowRequired && !isLeftArrow && !showLoader) {
             if (isArrowRequired && !isLeftArrow) {
                 androidx.compose.material.Icon(
                     Icons.Default.ArrowForward,
@@ -315,93 +291,93 @@ fun ButtonPositive(
     }
 }
 
-    @Composable
-    fun ButtonNegative(
-        modifier: Modifier = Modifier,
-        buttonTitle: String,
-        horizontalPadding: Dp = 10.dp,
-        isArrowRequired: Boolean = true,
-        onClick: () -> Unit
-    ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(6.dp))
-                .background(languageItemActiveBg)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(
-                        bounded = true,
-                        color = Color.Black
-                    )
+@Composable
+fun ButtonNegative(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    horizontalPadding: Dp = 10.dp,
+    isArrowRequired: Boolean = true,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(languageItemActiveBg)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
 
-                ) {
-                    onClick()
-                }
-                .padding(horizontal = horizontalPadding)
-                .then(modifier),
-            contentAlignment = Alignment.Center,
+            ) {
+                onClick()
+            }
+            .padding(horizontal = horizontalPadding)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                Modifier.padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (isArrowRequired) {
-                    Image(
-                        painter = painterResource(id = R.drawable.baseline_arrow_back),
-                        contentDescription = "Negative Button",
-                        modifier = Modifier
-                            .absolutePadding(top = 2.dp),
-                        colorFilter = ColorFilter.tint(blueDark)
-                    )
-                }
-                Text(
-                    text = buttonTitle,
-                    color = blueDark,
-                    style = buttonTextStyle
+            if (isArrowRequired) {
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back),
+                    contentDescription = "Negative Button",
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp),
+                    colorFilter = ColorFilter.tint(blueDark)
                 )
             }
+            Text(
+                text = buttonTitle,
+                color = blueDark,
+                style = buttonTextStyle
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonComponentWithVisibility(
+    modifier: Modifier = Modifier,
+    showButtonComponentState: CustomButtonVisibilityState = rememberCustomButtonVisibilityState(),
+    buttonTitle: String,
+    isArrowRequired: Boolean = false,
+    isLeftArrow: Boolean = false,
+    isActive: Boolean = false,
+    textColor: Color = Color.White,
+    iconTintColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+
+    val buttonVisibilityState =
+        remember(showButtonComponentState.getButtonVisibilityState().value) {
+            showButtonComponentState.getButtonVisibilityState()
+        }
+
+    AnimatedVisibility(visible = buttonVisibilityState.value, enter = fadeIn(), exit = fadeOut()) {
+        BottomAppBar(
+            modifier = modifier
+                .padding(horizontal = 16.dp),
+            containerColor = white
+        ) {
+
+            ButtonPositive(
+                buttonTitle = buttonTitle,
+                isArrowRequired = isArrowRequired,
+                isLeftArrow = isLeftArrow,
+                isActive = isActive,
+                textColor = textColor,
+                iconTintColor = iconTintColor,
+                onClick = onClick
+            )
+
         }
     }
 
-    @Composable
-    fun ButtonComponentWithVisibility(
-        modifier: Modifier = Modifier,
-        showButtonComponentState: CustomButtonVisibilityState = rememberCustomButtonVisibilityState(),
-        buttonTitle: String,
-        isArrowRequired: Boolean = false,
-        isLeftArrow: Boolean = false,
-        isActive: Boolean = false,
-        textColor: Color = Color.White,
-        iconTintColor: Color = Color.White,
-        onClick: () -> Unit
-    ) {
-
-        val buttonVisibilityState =
-            remember(showButtonComponentState.getButtonVisibilityState().value) {
-                showButtonComponentState.getButtonVisibilityState()
-            }
-
-        AnimatedVisibility(visible = buttonVisibilityState.value, enter = fadeIn(), exit = fadeOut()) {
-            BottomAppBar(
-                modifier = modifier
-                    .padding(horizontal = 16.dp),
-                containerColor = white
-            ) {
-
-                ButtonPositive(
-                    buttonTitle = buttonTitle,
-                    isArrowRequired = isArrowRequired,
-                    isLeftArrow = isLeftArrow,
-                    isActive = isActive,
-                    textColor = textColor,
-                    iconTintColor = iconTintColor,
-                    onClick = onClick
-                )
-
-            }
-        }
-
-    }
+}
 
 @Composable
 fun <T> CustomIconButton(
