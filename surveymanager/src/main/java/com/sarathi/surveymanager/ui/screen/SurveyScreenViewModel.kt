@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -41,6 +42,7 @@ class SurveyScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
+    private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
     private var surveyId: Int = 0
@@ -155,6 +157,14 @@ class SurveyScreenViewModel @Inject constructor(
                 }
 
             }
+            saveTransactionMoneyJournalUseCase.saveMoneyJournalForGrant(
+                referenceId = referenceId,
+                grantId = grantID,
+                grantType = granType,
+                questionUiModels = questionUiModel.value,
+                subjectId = taskEntity?.subjectId ?: -1,
+                subjectType = subjectType
+            )
             surveyAnswerEventWriterUseCase.invoke(
                 questionUiModels = questionUiModel.value,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
@@ -165,6 +175,7 @@ class SurveyScreenViewModel @Inject constructor(
                 grantType = granType,
                 taskId = taskId
             )
+
 
         }
 

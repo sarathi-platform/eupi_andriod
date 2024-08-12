@@ -400,7 +400,10 @@
     <string name="take_photo_text">Shon dur</string>
     <string name="retake_photo_text">Shon biang ia ka dur</string>
     <string name="previous_step_not_complete_messgae_text">Ka kyrdan ba shwa ym pat pyndep</string>
-    <string name="vo_endorsement_inprogress_village_banner_text">Ka dang iaid shaphrang ka jing mynjur da ka VO</string>
+    <plurals name="vo_endorsement_inprogress_village_banner_text">
+        <item quantity="one">Ka dang iaid shaphrang ka jing mynjur da ka VO</item>
+        <item quantity="other">Ka dang iaid shaphrang ka jing mynjur da ka VO</item>
+    </plurals>
     <string name="latest_status_text">Ka jinglong ba khatduh:</string>
     <string name="ranking_text_rich">Bariewspah</string>
     <string name="ranking_text_medium">Ba shu pdeng</string>
@@ -411,8 +414,15 @@
     <string name="pat_completed_for_didi_plural">La pyndep ia ka PAT na ka bynta jong %1$s ngut i kong</string>
     <string name="pat_marked_not_available_singular">%1$s i kong la kdew bym ioh</string>
     <string name="pat_marked_not_available_plural">%1$s ngut ki kong la kdew bym ioh</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s La phah ban ioh ia ka jingmynjur ka VO na ka bynta ki kong ki baduk na ki baduk tam.</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s La phah ban ioh ia ka jingmynjur ka VO na ka bynta ki kong ki baduk na ki baduk tam.</string>
+    <plurals name="pat_didi_sent_to_vo_endorsement_singular">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s La phah ban ioh ia ka jingmynjur ka VO na ka bynta ki kong ki baduk na ki baduk tam.</item>
+    </plurals>
+    <plurals name="pat_didi_sent_to_vo_endorsement_plural">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s La phah ban ioh ia ka jingmynjur ka VO na ka bynta ki kong ki baduk na ki baduk tam.</item>
+    </plurals>
+
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s La phah ban ioh ia ka jingmynjur na BPM na ka bynta i kong i baduk na i baduk tam.</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s La phah ban ioh ia ka jingmynjur na BPM na ka bynta ki kong ki baduk na ki baduk tam.</string>
     <string name="link_form_c">Link Phorm C</string>

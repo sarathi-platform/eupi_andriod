@@ -2,7 +2,9 @@ package com.nudge.incomeexpensemodule.di
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,11 +19,16 @@ class LivelihoodModule {
     @Singleton
     fun provideDataTabUseCase(
         coreSharedPrefs: CoreSharedPrefs,
-        fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase
-    ): DataTabUseCase {
+        fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
+        fetchDidiDetailsWithLivelihoodMappingUseCase: FetchDidiDetailsWithLivelihoodMappingUseCase,
+        fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
+
+        ): DataTabUseCase {
         return DataTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
-            fetchDidiDetailsFromDbUseCase = fetchDidiDetailsFromDbUseCase
+            fetchDidiDetailsFromDbUseCase = fetchDidiDetailsFromDbUseCase,
+            fetchDidiDetailsWithLivelihoodMappingUseCase = fetchDidiDetailsWithLivelihoodMappingUseCase,
+            fetchSubjectIncomeExpenseSummaryUseCase = fetchSubjectIncomeExpenseSummaryUseCase
         )
     }
 

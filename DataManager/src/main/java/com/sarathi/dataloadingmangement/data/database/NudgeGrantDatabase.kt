@@ -4,7 +4,11 @@ package com.sarathi.dataloadingmangement.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
@@ -47,6 +51,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -83,10 +88,12 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEvent
 import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodLanguageReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
+import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 1
+const val NUDGE_GRANT_DATABASE_VERSION = 2
 
 @Database(
     entities = [
@@ -125,7 +132,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         LivelihoodEventEntity::class,
         MoneyJournalEntity::class,
         AssetJournalEntity::class,
-        SubjectLivelihoodMappingEntity::class
+        SubjectLivelihoodMappingEntity::class,
+        SubjectLivelihoodEventMappingEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -187,6 +195,42 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun subjectLivelihoodMappingDao(): SubjectLivelihoodMappingDao
 
-    class NudgeDatabaseCallback : Callback()
+    abstract fun subjectLivelihoodEventMappingDao(): SubjectLivelihoodEventMappingDao
 
+    class NudgeGrantDatabaseCallback : Callback()
+    companion object {
+        // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
+        private val CREATE_MONEY_JOUNRAL_TABLE =
+            "CREATE TABLE IF NOT EXISTS $MONEY_JOURNAL_TABLE_NAME (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `transactionId` TEXT NOT NULL, `transactionDate` INTEGER NOT NULL, `transactionDetails` TEXT NOT NULL, `transactionFlow` TEXT NOT NULL, `transactionType` TEXT NOT NULL, `transactionAmount` REAL NOT NULL, `referenceId` INTEGER NOT NULL, `referenceType` TEXT NOT NULL, `subjectId` INTEGER NOT NULL, `subjectType` TEXT NOT NULL, `status` INTEGER NOT NULL, `modifiedDate` INTEGER NOT NULL)"
+
+        // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
+        val NUDGE_GRANT_DATABASE_MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_1_2")
+                migration(db, listOf(CREATE_MONEY_JOUNRAL_TABLE))
+            }
+        }
+
+        private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
+            for (sql in execSqls) {
+                try {
+                    database.execSQL(sql)
+                } catch (e: SQLException) {
+                    CoreLogger.e(
+                        tag = "NudgeGrantDatabase",
+                        msg = "migration \"$sql\" Migration Error",
+                        ex = e,
+                        stackTrace = true
+                    )
+                } catch (t: Throwable) {
+                    CoreLogger.e(
+                        tag = "NudgeGrantDatabase",
+                        msg = "migration \"$sql\"",
+                        ex = t,
+                        stackTrace = true
+                    )
+                }
+            }
+        }
+    }
 }

@@ -38,7 +38,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             subjectType = subjectType,
             sectionId = questionUiModels.first().sectionId,
             question = getQuestionEvent(questionUiModels),
-            referenceId = refrenceId,
+            transactionId = refrenceId,
             localTaskId = taskLocalId ?: BLANK_STRING,
             grantId = grantId,
             grantType = grantType,

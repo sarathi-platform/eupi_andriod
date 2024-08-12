@@ -2,10 +2,18 @@ package com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
-import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -15,21 +23,30 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DataTabScreenViewModel @Inject constructor(
-    private val dataTabUseCase: DataTabUseCase
+    private val dataTabUseCase: DataTabUseCase,
+    private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
 ) : BaseViewModel() {
 
-    val filters: List<String> =
-        mutableListOf("All") //TODO make a method to fetch this in local language and create this filters list
+    private val _filters = mutableStateListOf<LivelihoodModel>()
+    val filters: SnapshotStateList<LivelihoodModel> get() = _filters
+
+    val selectedFilterValue = mutableStateOf(DEFAULT_FILTER_ID)
+
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
-    val isFilterApplied = mutableStateOf(true)
+    val isFilterApplied = mutableStateOf(false)
 
-    val _subjectList: MutableState<List<SubjectEntity>> = mutableStateOf(mutableListOf())
-    val subjectList: State<List<SubjectEntity>> get() = _subjectList
-
-    private val _filteredSubjectList: MutableState<List<SubjectEntity>> =
+    val _subjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
-    val filteredSubjectList: State<List<SubjectEntity>> get() = _filteredSubjectList
+    val subjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _subjectList
+
+    private val _filteredSubjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
+        mutableStateOf(mutableListOf())
+    val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
+
+    private val _incomeExpenseSummaryUiModel =
+        mutableStateMapOf<Int, IncomeExpenseSummaryUiModel?>()
+    val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -42,7 +59,16 @@ class DataTabScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
+            is DataTabEvents.FilterApplied -> {
+                applyFilter(event.livelihoodModel)
+            }
         }
+    }
+
+    private fun applyFilter(livelihoodModel: LivelihoodModel) {
+        selectedFilterValue.value = livelihoodModel.livelihoodId
+        isFilterApplied.value = selectedFilterValue.value != DEFAULT_FILTER_ID
     }
 
     private fun loadAddDataForDataTab(isRefresh: Boolean) {
@@ -59,8 +85,18 @@ class DataTabScreenViewModel @Inject constructor(
 
     private fun initDataTab() {
         ioViewModelScope {
-            _subjectList.value = dataTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
+            _subjectList.value =
+                dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke()
             _filteredSubjectList.value = subjectList.value
+
+            _incomeExpenseSummaryUiModel.clear()
+            _incomeExpenseSummaryUiModel.putAll(
+                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjects(
+                    subjectList.value
+                )
+            )
+
+            createFilterBottomSheetList()
 
             countMap.put(SubTabs.All, filteredSubjectList.value.size)
             withContext(mainDispatcher) {
@@ -69,4 +105,12 @@ class DataTabScreenViewModel @Inject constructor(
         }
     }
 
+    private suspend fun createFilterBottomSheetList() {
+        _filters.clear()
+        _filters.add(LivelihoodModel.getAllFilter())
+        _filters.addAll(getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId })
+    }
+
 }
+
+const val DEFAULT_FILTER_ID = 0

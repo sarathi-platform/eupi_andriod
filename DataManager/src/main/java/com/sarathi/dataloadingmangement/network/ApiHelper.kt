@@ -12,6 +12,8 @@ const val SUBPATH_CONFIG_GET_LANGUAGE = "/read-api/config/language/get"
 const val SUBPATH_USER_VIEW = "/read-api/user/view"
 const val SUBPATH_SURVEY_ANSWERS = "/survey-service/v1/getSurveyAnswers"
 const val SUBPATH_GET_FORM_DETAILS = "/didi-service/form/getFormDetails"
+const val SUBPATH_GET_MONEY_JOURNAL_DETAILS = "/didi-service/moneyJournal/fetchAll/{doerId}"
+const val SUBPATH_GET_LIVELIHOOD_CONFIG = "/livelihood-service/livelihood/config/program"
 const val SUBPATH_FETCH_LIVELIHOOD_OPTION= "/livelihood-service/livelihood-options/fetch"
 
 

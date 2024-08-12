@@ -51,6 +51,8 @@ const val NATURE_TAG = 90
 const val MODE_TAG = 89
 const val RECEIVED_AMOUNT_TAG = 86
 const val DISBURSED_AMOUNT_TAG = 98
+const val MULTI_IMAGE_TAG = 91
+
 const val NO_OF_POOR_DIDI_TAG = 85
 const val DATE_TAG = 87
 const val DISBURSEMENT_DATE_TAG = 99

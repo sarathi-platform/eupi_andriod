@@ -298,6 +298,7 @@ fun <T> CustomIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: T,
+    iconTintColor: Color = Color.Black,
     contentDescription: String?,
     enabled: Boolean = true,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
@@ -318,7 +319,8 @@ fun <T> CustomIconButton(
             CustomIconComponent(
                 iconProperties = IconProperties.getBasicIconProperties(
                     icon = icon,
-                    contentDescription = contentDescription
+                    contentDescription = contentDescription,
+                    tint = iconTintColor
                 )
             )
         }

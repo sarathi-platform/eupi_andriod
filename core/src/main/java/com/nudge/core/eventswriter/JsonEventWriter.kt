@@ -29,6 +29,7 @@ class JsonEventWriter(
                 it.getEventWriteType() == eventName
             }
 
+            if (event.request_payload?.isNotEmpty() == true) {
             eventWriter.firstOrNull()
                 ?.addEvent(
                     context = context,
@@ -39,6 +40,7 @@ class JsonEventWriter(
                     eventDependencyDao = eventDependencyDao,
                     dependencyEntity = dependencyEntity
                 )
+        }
         }
     }
 }

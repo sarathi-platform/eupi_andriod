@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseUiModel
+
 
 @Dao
 interface MoneyJournalDao {
@@ -13,6 +15,13 @@ interface MoneyJournalDao {
 
     @Insert
     suspend fun insertMoneyJournalEntry(moneyJournalEntity: List<MoneyJournalEntity>)
+
+    @Query("select * from money_journal_table where userId=:userId and subjectId=:subjectId and transactionId=:transactionId and status=1")
+    suspend fun getMoneyJournalForTransaction(
+        userId: String,
+        transactionId: String,
+        subjectId: Int
+    ): MoneyJournalEntity?
 
     @Query("Select count(*) from money_journal_table where userId=:userId and transactionId=:transactionId and status=1")
     suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
@@ -35,4 +44,12 @@ interface MoneyJournalDao {
     @Query("Delete from money_journal_table where userId=:userId")
     suspend fun deleteMoneyJournal(userId: String)
 
+
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType group by subjectId")
+    suspend fun getTotalIncomeExpenseForSubject(
+        transactionFlow: String,
+        userId: String,
+        subjectId: Int,
+        referenceType: String
+    ): IncomeExpenseUiModel?
 }

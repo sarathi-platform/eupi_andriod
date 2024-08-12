@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.model.uiModel.livelihood
 
+import com.nudge.core.model.uiModel.LivelihoodModel
+
 data class LivelihoodUiEntity(
     val id: Int,
     val livelihoodEntity: LivelihoodModel,
@@ -11,7 +13,7 @@ data class LivelihoodUiEntity(
             livelihoodUiModel: LivelihoodModel,
             isSelected: Boolean
         ): LivelihoodUiEntity {
-            return LivelihoodUiEntity(livelihoodUiModel.id, livelihoodUiModel, isSelected)
+            return LivelihoodUiEntity(livelihoodUiModel.livelihoodId, livelihoodUiModel, isSelected)
         }
 
         fun getLivelihoodUiEntityList(
@@ -22,9 +24,9 @@ data class LivelihoodUiEntity(
             livelihoodUiModelList.forEach { livelihoodDropDownUiModel ->
                 livelihoodUIEntityList.add(
                     LivelihoodUiEntity(
-                        livelihoodDropDownUiModel.id,
+                        livelihoodDropDownUiModel.livelihoodId,
                         livelihoodDropDownUiModel,
-                        isSelected = selectedIds.contains(livelihoodDropDownUiModel.id)
+                        isSelected = selectedIds.contains(livelihoodDropDownUiModel.livelihoodId)
                     )
                 )
             }

@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.repository.livelihood
+package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 

@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.repository.livelihood
+package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
