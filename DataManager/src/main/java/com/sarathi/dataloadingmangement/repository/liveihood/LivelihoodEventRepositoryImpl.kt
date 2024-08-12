@@ -6,22 +6,23 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import javax.inject.Inject
 
-class LivelihoodEventRepositoryImpl @Inject constructor() : ILivelihoodEventRepository {
-    override fun getSaveLivelihoodEventDto(
-        livelihoodPlanActivityEventDto: LivelihoodPlanActivityEventDto
-    ): LivelihoodPlanActivityEventDto {
-        return  LivelihoodPlanActivityEventDto(
-            userId = livelihoodPlanActivityEventDto.userId,
-            primaryLivelihoodId = livelihoodPlanActivityEventDto.primaryLivelihoodId,
-            secondaryLivelihoodId = livelihoodPlanActivityEventDto.secondaryLivelihoodId,
-            activityId = livelihoodPlanActivityEventDto.activityId,
-            missionId = livelihoodPlanActivityEventDto.missionId,
-            subjectId = livelihoodPlanActivityEventDto.subjectId,
-            subjectType = livelihoodPlanActivityEventDto.subjectType
 class LivelihoodEventRepositoryImpl @Inject constructor(
     private val livelihoodEventDao: LivelihoodEventDao,
-    private val coreSharedPrefs: CoreSharedPrefs
-) : ILivelihoodEventRepository {
+     private val coreSharedPrefs: CoreSharedPrefs) : ILivelihoodEventRepository {
+    override fun getSaveLivelihoodEventDto(
+        livelihoodEntity: LivelihoodPlanActivityEventDto
+    ): LivelihoodPlanActivityEventDto {
+        return LivelihoodPlanActivityEventDto(
+            userId = livelihoodEntity.userId,
+            primaryLivelihoodId = livelihoodEntity.primaryLivelihoodId,
+            secondaryLivelihoodId = livelihoodEntity.secondaryLivelihoodId,
+            activityId = livelihoodEntity.activityId,
+            missionId = livelihoodEntity.missionId,
+            subjectId = livelihoodEntity.subjectId,
+            subjectType = livelihoodEntity.subjectType
+        )
+    }
+
 
     override suspend fun getEventsForLivelihood(livelihoodId: Int): List<LivelihoodEventUiModel> {
         return livelihoodEventDao.getEventsForLivelihood(

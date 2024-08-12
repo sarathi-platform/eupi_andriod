@@ -604,7 +604,6 @@ class DataLoadingModule {
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
-            livelihoodUseCase = livelihoodUseCase,
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase
         )
     }

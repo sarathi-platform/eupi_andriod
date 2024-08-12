@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 
 interface ILivelihoodEventRepository {
