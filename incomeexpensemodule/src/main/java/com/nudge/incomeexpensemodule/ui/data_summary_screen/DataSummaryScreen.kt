@@ -53,7 +53,7 @@ import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDate
-import com.nudge.core.ui.commonUi.CustomSubTabLayout
+import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
@@ -82,6 +82,7 @@ import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
 import com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel.DataSummaryScreenViewModel
+import com.nudge.incomeexpensemodule.utils.findById
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
@@ -116,6 +117,10 @@ fun DataSummaryScreen(
         )
     }
 
+    val showMoreItems = remember {
+        mutableStateOf(false)
+    }
+
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
@@ -133,7 +138,8 @@ fun DataSummaryScreen(
                         navController = navController,
                         subjectName = subjectName,
                         subjectId = subjectId,
-                        transactionID = UUID.randomUUID().toString()
+                        transactionID = UUID.randomUUID().toString(),
+                        showDeleteButton = false
                     )
                 }
 
@@ -155,7 +161,8 @@ fun DataSummaryScreen(
                                 navController = navController,
                                 subjectName = subjectName,
                                 subjectId = subjectId,
-                                transactionID = UUID.randomUUID().toString()
+                                transactionID = UUID.randomUUID().toString(),
+                                showDeleteButton = false
                             )
                         }
                     }
@@ -167,13 +174,18 @@ fun DataSummaryScreen(
                     } else {
                         DataSummaryView(
                             viewModel,
+                            showMoreItems = showMoreItems.value,
                             onEventItemClicked = { transactionId ->
                                 navigateToAddEventScreen(
                                     navController = navController,
                                     subjectName = subjectName,
                                     subjectId = subjectId,
-                                    transactionID = transactionId
+                                    transactionID = transactionId,
+                                    showDeleteButton = true
                                 )
+                            },
+                            onShowModeClicked = {
+                                showMoreItems.value = !showMoreItems.value
                             }
                         )
                     }
@@ -191,9 +203,19 @@ fun DataSummaryScreen(
 @Composable
 private fun DataSummaryView(
     viewModel: DataSummaryScreenViewModel,
-    onEventItemClicked: (transactionId: String) -> Unit
+    showMoreItems: Boolean,
+    onEventItemClicked: (transactionId: String) -> Unit,
+    onShowModeClicked: () -> Unit
 ) {
-    TabBarContainer(viewModel.countMap)
+    TabBarContainer(viewModel.tabs) {
+        viewModel.onEvent(
+            DataSummaryScreenEvents.TabFilterSelected(
+                TabsCore.getSubTabForTabIndex(
+                    TabsEnum.DataSummaryTab.tabIndex
+                )
+            )
+        )
+    }
     Spacer(modifier = Modifier.height(16.dp))
     DropDownContainer(viewModel.livelihoodDropdownList.toList()) {
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
@@ -203,7 +225,13 @@ private fun DataSummaryView(
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     }
     Spacer(modifier = Modifier.height(16.dp))
-    EventsListHeaderWithDropDownFilter()
+    EventsListHeaderWithDropDownFilter(
+        viewModel.eventsSubFilterList,
+        selectedValue = viewModel.selectedEventsSubFilter.value,
+        showMoreItems
+    ) { selectedFilterId ->
+        viewModel.onEvent(DataSummaryScreenEvents.EventsSubFilterSelected(selectedFilterId))
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
     EventView(
@@ -211,20 +239,25 @@ private fun DataSummaryView(
             .sortedByDescending { it.date },
         viewModel.livelihoodEventMap,
         viewModel.selectedLivelihood.value,
-        onEventItemClicked = onEventItemClicked
+        showMoreItems = showMoreItems,
+        onEventItemClicked = onEventItemClicked,
+        onShowModeClicked = {
+            onShowModeClicked()
+        }
     )
     Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable
-fun TabBarContainer(countMap: Map<SubTabs, Int>) {
-    val tabs = listOf<SubTabs>(SubTabs.LastWeekTab, SubTabs.LastMonthTab, SubTabs.Last3MonthsTab)
+fun TabBarContainer(tabs: List<SubTabs>, onClick: () -> Unit) {
+
     TabsCore.setTabIndex(TabsEnum.DataSummaryTab.tabIndex)
-    CustomSubTabLayout(
+    CustomSubTabLayoutWithCallBack(
         parentTabIndex = TabsEnum.DataSummaryTab.tabIndex,
-        tabs = tabs,
-        countMap = countMap
-    )
+        tabs = tabs
+    ) {
+        onClick()
+    }
 }
 
 @Composable
@@ -258,20 +291,29 @@ fun HeaderSection(
 }
 
 @Composable
-fun EventsListHeaderWithDropDownFilter() {
+fun EventsListHeaderWithDropDownFilter(
+    eventSubFilterSelected: List<ValuesDto>,
+    selectedValue: Int,
+    showMoreItems: Boolean,
+    onEventSubFilterSelected: (selectedFilterId: Int) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         val sources =
-            listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
+            eventSubFilterSelected
 
         var selectedOptionValue by remember {
-            mutableStateOf(sources[0])
+            mutableStateOf(sources.findById(selectedValue) ?: sources[0])
         }
 
-        Text("Last $DEFAULT_EVENT_LIST_VIEW_SIZE events:", style = getTextColor(defaultTextStyle))
+
+        Text(
+            if (showMoreItems) "All Events:" else "Last $DEFAULT_EVENT_LIST_VIEW_SIZE events:",
+            style = getTextColor(defaultTextStyle)
+        )
         MeasureUnconstrainedViewWidth(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
             SingleSelectDropDown(
                 sources = sources,
@@ -279,7 +321,8 @@ fun EventsListHeaderWithDropDownFilter() {
                 modifier = Modifier.width(it + dimen_60_dp + dimen_16_dp)
             ) { selectValue ->
 
-                selectedOptionValue = sources.find { it.id == selectValue } ?: sources[0]
+                selectedOptionValue = sources.findById(selectValue) ?: sources[0]
+                onEventSubFilterSelected(selectValue)
 
             }
         }
@@ -335,12 +378,10 @@ private fun EventView(
     filteredSubjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel>,
     eventsList: Map<Int, List<LivelihoodEventUiModel>>,
     selectedLivelihoodId: Int,
-    onEventItemClicked: (transactionId: String) -> Unit
+    showMoreItems: Boolean,
+    onEventItemClicked: (transactionId: String) -> Unit,
+    onShowModeClicked: () -> Unit
 ) {
-
-    val showMoreItems = remember {
-        mutableStateOf(false)
-    }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(dimen_10_dp), modifier = Modifier
@@ -365,7 +406,7 @@ private fun EventView(
 
         item {
             AnimatedVisibility(
-                visible = showMoreItems.value,
+                visible = showMoreItems,
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically()
             ) {
@@ -393,8 +434,9 @@ private fun EventView(
 
         if (filteredSubjectLivelihoodEventSummaryUiModelList.size > DEFAULT_EVENT_LIST_VIEW_SIZE) {
             item {
-                ShowMoreButton(showMoreItems.value) {
-                    showMoreItems.value = !showMoreItems.value
+                ShowMoreButton(showMoreItems) {
+
+                    onShowModeClicked()
                 }
             }
         }

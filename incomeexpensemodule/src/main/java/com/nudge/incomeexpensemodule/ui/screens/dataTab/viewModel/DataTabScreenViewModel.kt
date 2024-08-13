@@ -30,7 +30,7 @@ class DataTabScreenViewModel @Inject constructor(
     private val _filters = mutableStateListOf<LivelihoodModel>()
     val filters: SnapshotStateList<LivelihoodModel> get() = _filters
 
-    val selectedFilterValue = mutableStateOf(DEFAULT_FILTER_ID)
+    val selectedFilterValue = mutableStateOf(DEFAULT_FILTER_INDEX)
 
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
@@ -68,7 +68,7 @@ class DataTabScreenViewModel @Inject constructor(
 
     private fun applyFilter(livelihoodModel: LivelihoodModel) {
         selectedFilterValue.value = livelihoodModel.livelihoodId
-        isFilterApplied.value = selectedFilterValue.value != DEFAULT_FILTER_ID
+        isFilterApplied.value = selectedFilterValue.value != DEFAULT_FILTER_INDEX
     }
 
     private fun loadAddDataForDataTab(isRefresh: Boolean) {
@@ -113,4 +113,4 @@ class DataTabScreenViewModel @Inject constructor(
 
 }
 
-const val DEFAULT_FILTER_ID = 0
+const val DEFAULT_FILTER_INDEX = 0
