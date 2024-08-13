@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.response.AssetJournalApiResponse
 
 @Entity(tableName = ASSET_JOURNAL_TABLE_NAME)
 data class AssetJournalEntity(
@@ -25,8 +26,8 @@ data class AssetJournalEntity(
     val subjectType: String,
     val status: Int,
     val modifiedDate: Long,
-
-    ) {
+    val createdDate: Long
+) {
 
     companion object {
 
@@ -58,19 +59,21 @@ data class AssetJournalEntity(
                 status = 1,
                 transactionType = referenceType,
                 assetId = assetId,
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                createdDate = System.currentTimeMillis()
             )
 
         }
 
-        /*fun getAssetJournalEntity(
+        fun getAssetJournalEntity(
             assetJournalApiResponse: AssetJournalApiResponse,
             userId: String
         ): AssetJournalEntity {
-            return assetJournalEntity(
+            return AssetJournalEntity(
                 id = 0,
                 userId = userId,
-                transactionAmount = assetJournalApiResponse.amount.toDouble(),
+                assetCount = assetJournalApiResponse.assetCount,
+                assetId = assetJournalApiResponse.assetId,
                 transactionDate = assetJournalApiResponse.transactionDate,
                 transactionId = assetJournalApiResponse.transactionId,
                 referenceId = assetJournalApiResponse.referenceId,
@@ -81,9 +84,10 @@ data class AssetJournalEntity(
                 transactionFlow = assetJournalApiResponse.transactionFlow,
                 status = assetJournalApiResponse.status,
                 transactionType = assetJournalApiResponse.transactionType,
-                modifiedDate = assetJournalApiResponse.modifiedDate
+                modifiedDate = assetJournalApiResponse.modifiedDate,
+                createdDate = assetJournalApiResponse.createdDate
             )
-        }*/
+        }
     }
 
 }

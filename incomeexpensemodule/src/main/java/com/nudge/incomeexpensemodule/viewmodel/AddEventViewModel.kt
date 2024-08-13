@@ -125,9 +125,8 @@ class AddEventViewModel @Inject constructor(
 
             }
 
-
+            validateForm()
         }
-        validateForm()
     }
 
     fun onLivelihoodSelect(livelihoodId: Int) {
@@ -228,9 +227,13 @@ class AddEventViewModel @Inject constructor(
                 selectedEvent = event,
                 transactionId = mTransactionId,
                 eventValue = livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName
+                    ?: BLANK_STRING,
+                livelihoodValue = livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName
+                    ?: BLANK_STRING,
+                assetTypeValue = livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName
+                    ?: BLANK_STRING,
+                productValue = livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName
                     ?: BLANK_STRING
-
-
             )
             saveLivelihoodEventUseCase.addOrEditEvent(
                 particular = getParticulars(),

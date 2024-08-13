@@ -63,7 +63,7 @@ fun AddEventScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = "Asset Purchase",
+        title = "Add Event",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.navigateUp() },
