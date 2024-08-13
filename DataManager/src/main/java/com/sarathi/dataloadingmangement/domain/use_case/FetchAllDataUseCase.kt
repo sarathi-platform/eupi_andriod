@@ -41,6 +41,7 @@ class FetchAllDataUseCase @Inject constructor(
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
                 moneyJournalUseCase.invoke()
+                fetchLivelihoodOptionNetworkUseCase.invoke()
             }
             fetchContentDataFromNetworkUseCase.invoke()
             coreSharedPrefs.setDataLoaded(true)
@@ -48,7 +49,7 @@ class FetchAllDataUseCase @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
             }
-            fetchLivelihoodOptionNetworkUseCase.invoke()
+
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
             }
