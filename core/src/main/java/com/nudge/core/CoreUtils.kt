@@ -1151,6 +1151,7 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     }
     Log.d("", "Chosen path = $filePath")
 }
+
 fun onlyNumberField(value: String): Boolean {
     if (value.isDigitsOnly() && value != "_" && value != "N") {
         return true
@@ -1160,4 +1161,21 @@ fun onlyNumberField(value: String): Boolean {
 
 fun getQuestionNumber(questionIndex: Int): String {
     return "${questionIndex + 1}. "
+}
+
+fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
+
+    if (id == -1)
+        return null
+
+    if (this.isEmpty())
+        return null
+
+    val index = this.map(transform).indexOf(id)
+
+    if (index == -1)
+        return null
+
+    return this[index]
+
 }

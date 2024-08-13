@@ -7,6 +7,7 @@ import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.redOffline
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
+import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 
 fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
@@ -41,3 +42,13 @@ fun getAmountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
 
 fun getTextColor(textColor: TextStyle, color: Color = blueDark): TextStyle =
     textColor.copy(color)
+
+fun List<ValuesDto>.findById(id: Int): ValuesDto? {
+    val index = this.map { it.id }.indexOf(id)
+
+    if (index == -1)
+        return null
+
+    return this[index]
+
+}

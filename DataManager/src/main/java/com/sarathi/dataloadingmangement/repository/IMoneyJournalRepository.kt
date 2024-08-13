@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveMoneyJournalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 
 interface IMoneyJournalRepository {
@@ -24,4 +25,9 @@ interface IMoneyJournalRepository {
         transactionId: String,
         subjectId: Int
     ): MoneyJournalEntity?
+
+    suspend fun getMoneyJournalEventDto(
+        particular: String,
+        eventData: LivelihoodEventScreenData
+    ): SaveMoneyJournalEventDto
 }

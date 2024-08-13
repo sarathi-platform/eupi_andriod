@@ -58,7 +58,9 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.navigation.navigateToDataSummaryScreen
+import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.SubjectLivelihoodEventSummaryCard
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel.DataTabScreenViewModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -109,15 +111,25 @@ fun DataTabScreen(
         )
     }
 
-//    if (dataTabScreenViewModel.showAssetDialog.value) {
-//        AssetsDialog(
-//            dataTabScreenViewModel.incomeExpenseSummaryUiModel[],
-//            dataTabScreenViewModel.livelihoodModel,
-//            onDismissRequest = {
-//                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
-//            }
-//        )
-//    }
+    if (dataTabScreenViewModel.showAssetDialog.value.first) {
+        AssetsDialog(
+            dataTabScreenViewModel.incomeExpenseSummaryUiModel[dataTabScreenViewModel.showAssetDialog.value.second],
+            dataTabScreenViewModel.livelihoodModelList.filter {
+                dataTabScreenViewModel.showAssetDialog.value.third.contains(
+                    it.livelihoodId
+                )
+            },
+            onDismissRequest = {
+                dataTabScreenViewModel.onEvent(
+                    DataTabEvents.ShowAssetDialogForSubject(
+                        false,
+                        -1,
+                        listOf()
+                    )
+                )
+            }
+        )
+    }
 
 
     val pullToRefreshState = rememberPullRefreshState(
@@ -152,7 +164,11 @@ fun DataTabScreen(
             bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
             bottomSheetContentItemList = dataTabScreenViewModel.filters.toList(),
             onBottomSheetItemSelected = {
-
+                dataTabScreenViewModel.onEvent(
+                    DataTabEvents.LivelihoodFilterApplied(
+                        dataTabScreenViewModel.filters[it].livelihoodId
+                    )
+                )
             }
         ) {
             ToolBarWithMenuComponent(
@@ -216,7 +232,11 @@ fun DataTabScreen(
                                         placeholderString = "Search by didis", //TODO pick this from string file with translations
                                         searchFieldHeight = dimen_50_dp,
                                         onSearchValueChange = {
-                                            //TODO Handle search
+                                            dataTabScreenViewModel.onEvent(
+                                                DataTabEvents.OnSearchQueryChanged(
+                                                    it
+                                                )
+                                            )
                                         }
                                     )
 
@@ -229,6 +249,7 @@ fun DataTabScreen(
                                         icon = painterResource(id = R.drawable.filter_icon),
                                         iconTintColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark,
                                         contentDescription = "filter_list",
+                                        buttonContainerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
                                         colors = IconButtonDefaults.iconButtonColors(
                                             containerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
                                             contentColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark
@@ -284,10 +305,19 @@ fun DataTabScreen(
                                             name = subject.subjectName,
                                             address = subject.houseNo + ", " + subject.cohortName,
                                             location = subject.villageName,
-                                            lastUpdated = "",
+                                            lastUpdated = ""/*dataTabScreenViewModel.lastEventDateMapForSubject[subject.subjectId]*/,
                                             incomeExpenseSummaryUiModel = summaryForSubject,
                                             onAssetCountClicked = {
-
+                                                dataTabScreenViewModel.onEvent(
+                                                    DataTabEvents.ShowAssetDialogForSubject(
+                                                        showDialog = true,
+                                                        subjectId = it,
+                                                        listOf(
+                                                            subject.primaryLivelihoodId,
+                                                            subject.secondaryLivelihoodId
+                                                        )
+                                                    )
+                                                )
                                             }
                                         ) {
                                             navigateToDataSummaryScreen(

@@ -14,7 +14,7 @@ interface LivelihoodEventDao {
     fun insertLivelihoodEvent(livelihoodEventEntity: LivelihoodEventEntity)
 
     @Query(
-        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType, livelihood_language_reference_table.name, livelihood_event_table.livelihoodId as livelihoodId\n" +
+        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType, livelihood_language_reference_table.name, livelihood_event_table.livelihoodId as livelihoodId, livelihood_event_table.name as originalName \n" +
                 " from livelihood_event_table inner join livelihood_language_reference_table \n" +
                 " on livelihood_event_table.eventId= livelihood_language_reference_table.id \n" +
                 " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +
@@ -31,7 +31,7 @@ interface LivelihoodEventDao {
     ): List<LivelihoodEventUiModel>
 
     @Query(
-        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType, livelihood_language_reference_table.name, livelihood_event_table.livelihoodId as livelihoodId \n" +
+        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType, livelihood_language_reference_table.name, livelihood_event_table.livelihoodId as livelihoodId,livelihood_event_table.name as originalName \n" +
                 " from livelihood_event_table inner join livelihood_language_reference_table \n" +
                 " on livelihood_event_table.eventId= livelihood_language_reference_table.id \n" +
                 " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +

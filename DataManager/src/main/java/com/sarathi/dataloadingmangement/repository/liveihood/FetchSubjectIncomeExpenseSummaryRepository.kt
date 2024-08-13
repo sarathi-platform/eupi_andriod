@@ -19,4 +19,28 @@ interface FetchSubjectIncomeExpenseSummaryRepository {
 
     fun getUserId(): String
 
+    suspend fun getIncomeExpenseSummaryForSubjectForDuration(
+        subjectId: Int,
+        assets: List<AssetEntity>,
+        durationStart: Long,
+        durationEnd: Long
+    ): IncomeExpenseSummaryUiModel
+
+    suspend fun getTotalIncomeForSubjectForDuration(
+        subjectId: Int, durationStart: Long,
+        durationEnd: Long
+    ): Double
+
+    suspend fun getTotalExpenseForSubjectForDuration(
+        subjectId: Int, durationStart: Long,
+        durationEnd: Long
+    ): Double
+
+    suspend fun getAssetCountForAssetsForDuration(
+        subjectId: Int,
+        assetIds: List<Int>,
+        durationStart: Long,
+        durationEnd: Long
+    ): List<AssetCountUiModel>
+
 }

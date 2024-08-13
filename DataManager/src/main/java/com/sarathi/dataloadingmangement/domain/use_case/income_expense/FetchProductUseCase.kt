@@ -9,7 +9,7 @@ class FetchProductUseCase(
 
     suspend operator fun invoke(livelihoodId: Int, selectedId: Int): List<ValuesDto> {
         return productRepositoryImpl.getProductsForLivelihood(livelihoodId).map {
-            ValuesDto(it.id, it.name, it.id == selectedId)
+            ValuesDto(it.id, it.name, it.id == selectedId, originalName = it.originalName)
         }
     }
 

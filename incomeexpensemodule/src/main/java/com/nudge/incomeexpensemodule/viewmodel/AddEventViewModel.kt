@@ -14,6 +14,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLive
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
@@ -36,7 +37,8 @@ class AddEventViewModel @Inject constructor(
     private val fetchAssetUseCase: FetchAssetUseCase,
     private val fetchProductUseCase: FetchProductUseCase,
     private val saveLivelihoodEventUseCase: SaveLivelihoodEventUseCase,
-    private val fetchSavedEventUseCase: FetchSavedEventUseCase
+    private val fetchSavedEventUseCase: FetchSavedEventUseCase,
+    private val writeLivelihoodEventUseCase: WriteLivelihoodEventUseCase
 ) : BaseViewModel() {
 
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
@@ -144,7 +146,12 @@ class AddEventViewModel @Inject constructor(
     private suspend fun fetchAssestEventProductValues() {
         eventList = fetchLivelihoodEventUseCase.invoke(selectedLivelihoodId.value)
         _livelihoodEventDropdownValue.addAll(eventList.map {
-            ValuesDto(id = it.id, value = it.name, isSelected = it.id == selectedEventId.value)
+            ValuesDto(
+                id = it.id,
+                value = it.name,
+                isSelected = it.id == selectedEventId.value,
+                originalName = it.originalName
+            )
         })
         _livelihoodAssetDropdownValue.addAll(
             fetchAssetUseCase.invoke(
@@ -174,6 +181,7 @@ class AddEventViewModel @Inject constructor(
             ValuesDto(
                 id = it.livelihoodId,
                 value = it.name,
+                originalName = it.originalName,
                 isSelected = if (selectedLivelihoodId.value == it.livelihoodId) true else false
             )
         }
@@ -184,6 +192,11 @@ class AddEventViewModel @Inject constructor(
         eventType = eventList.find { it.id == selectedValue.id }?.eventType ?: BLANK_STRING
 
         selectedEventId.value = selectedValue.id
+        selectedProductId.value = -1
+        selectedAssetTypeId.value = -1
+        assetCount.value = BLANK_STRING
+        amount.value = BLANK_STRING
+
         getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
             if (questionVisibilityMap.containsKey(it)) {
                 questionVisibilityMap[it] = true
@@ -203,24 +216,50 @@ class AddEventViewModel @Inject constructor(
             val mTransactionId =
                 if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
                     .toString()
-            saveLivelihoodEventUseCase.addOrEditEvent(
-                LivelihoodEventScreenData(
-                    subjectId = subjectId,
-                    amount = amount.value.toIntOrNull() ?: 0,
-                    assetCount = assetCount.value.toIntOrNull() ?: 0,
-                    assetType = selectedAssetTypeId.value,
-                    date = selectedDateInLong,
-                    livelihoodId = selectedLivelihoodId.value,
-                    eventId = selectedEventId.value,
-                    productId = selectedProductId.value,
-                    selectedEvent = event,
-                    transactionId = mTransactionId
+            val livelihoodScreenData = LivelihoodEventScreenData(
+                subjectId = subjectId,
+                amount = amount.value.toIntOrNull() ?: 0,
+                assetCount = assetCount.value.toIntOrNull() ?: 0,
+                assetType = selectedAssetTypeId.value,
+                date = selectedDateInLong,
+                livelihoodId = selectedLivelihoodId.value,
+                eventId = selectedEventId.value,
+                productId = selectedProductId.value,
+                selectedEvent = event,
+                transactionId = mTransactionId,
+                eventValue = livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName
+                    ?: BLANK_STRING
 
-                )
+
             )
+            saveLivelihoodEventUseCase.addOrEditEvent(
+                particular = getParticulars(),
+                eventData = livelihoodScreenData
+            )
+            writeLivelihoodEventUseCase.writeLivelihoodEvent(
+                particular = getParticulars(),
+                eventData = livelihoodScreenData
+            )
+
         }
     }
 
+    private fun getParticulars(): String {
+        var particulars = ""
+
+        particulars =
+            "Livelihood=${livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName}|"
+        particulars +=
+            "Event=${_livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName}|"
+        if (selectedAssetTypeId.value != -1) {
+            particulars += "AssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName}|"
+        }
+        if (selectedProductId.value != -1) {
+            particulars += "Product=${_livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName}|"
+        }
+
+        return particulars
+    }
 
     fun validateForm() {
 
@@ -270,6 +309,10 @@ class AddEventViewModel @Inject constructor(
                 transactionId = transactionId,
                 subjectId = subjectId,
                 getLivelihoodEventFromName(eventType)
+            )
+            writeLivelihoodEventUseCase.writeDeleteLivelihoodEvent(
+                transactionId = transactionId,
+                subjectId = subjectId
             )
         }
     }

@@ -9,6 +9,7 @@ data class LivelihoodEventScreenData(
     val assetCount: Int,
     val livelihoodId: Int,
     val eventId: Int,
+    val eventValue: String,
     val productId: Int,
     val assetType: Int,
     val transactionId: String,
