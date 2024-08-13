@@ -3,6 +3,7 @@ package com.nudge.incomeexpensemodule.di
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import dagger.Module
@@ -22,13 +23,14 @@ class LivelihoodModule {
         fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
         fetchDidiDetailsWithLivelihoodMappingUseCase: FetchDidiDetailsWithLivelihoodMappingUseCase,
         fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
-
-        ): DataTabUseCase {
+        fetchSubjectLivelihoodEventHistoryUseCase: FetchSubjectLivelihoodEventHistoryUseCase
+    ): DataTabUseCase {
         return DataTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
             fetchDidiDetailsFromDbUseCase = fetchDidiDetailsFromDbUseCase,
             fetchDidiDetailsWithLivelihoodMappingUseCase = fetchDidiDetailsWithLivelihoodMappingUseCase,
-            fetchSubjectIncomeExpenseSummaryUseCase = fetchSubjectIncomeExpenseSummaryUseCase
+            fetchSubjectIncomeExpenseSummaryUseCase = fetchSubjectIncomeExpenseSummaryUseCase,
+            fetchSubjectLivelihoodEventHistoryUseCase = fetchSubjectLivelihoodEventHistoryUseCase
         )
     }
 

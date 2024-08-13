@@ -31,11 +31,49 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
 
     }
 
+    suspend fun invoke(
+        subjectId: Int,
+        subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity,
+        durationStart: Long,
+        durationEnd: Long
+    ): IncomeExpenseSummaryUiModel {
+        val assets = assetRepositoryImpl.getAssetsEntityForLivelihood(
+            listOf(
+                subjectLivelihoodMappingEntity.primaryLivelihoodId,
+                subjectLivelihoodMappingEntity.secondaryLivelihoodId
+            )
+        )
+        return fetchSubjectIncomeExpenseSummaryRepository.getIncomeExpenseSummaryForSubjectForDuration(
+            subjectId = subjectId,
+            assets = assets,
+            durationStart = durationStart,
+            durationEnd = durationEnd
+        )
+    }
+
     suspend fun getSummaryForSubjects(subjectLivelihoodMappingEntityList: List<SubjectEntityWithLivelihoodMappingUiModel>): Map<Int, IncomeExpenseSummaryUiModel> {
         val summaryMap: HashMap<Int, IncomeExpenseSummaryUiModel> = hashMapOf()
         subjectLivelihoodMappingEntityList.forEach {
             summaryMap[it.subjectId] =
                 invoke(it.subjectId, it.getSubjectLivelihoodMappingEntity(getUserId()))
+        }
+        return summaryMap
+    }
+
+    suspend fun getSummaryForSubjectForDuration(
+        subjectLivelihoodMappingEntityList: List<SubjectEntityWithLivelihoodMappingUiModel>,
+        durationStart: Long,
+        durationEnd: Long
+    ): Map<Int, IncomeExpenseSummaryUiModel> {
+        val summaryMap: HashMap<Int, IncomeExpenseSummaryUiModel> = hashMapOf()
+        subjectLivelihoodMappingEntityList.forEach {
+            summaryMap[it.subjectId] =
+                invoke(
+                    subjectId = it.subjectId,
+                    subjectLivelihoodMappingEntity = it.getSubjectLivelihoodMappingEntity(getUserId()),
+                    durationStart = durationStart,
+                    durationEnd = durationEnd
+                )
         }
         return summaryMap
     }

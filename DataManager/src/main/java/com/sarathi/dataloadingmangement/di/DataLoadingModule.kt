@@ -38,6 +38,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
@@ -68,6 +69,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLive
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
@@ -128,6 +130,8 @@ import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWit
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
@@ -1254,6 +1258,27 @@ class DataLoadingModule {
             moneyJournalRepo = moneyJournalRepository,
             subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
             eventWriterRepository = eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectLivelihoodEventHistoryUseCase(
+        fetchSubjectLivelihoodEventHistoryRepository: FetchSubjectLivelihoodEventHistoryRepository
+    ): FetchSubjectLivelihoodEventHistoryUseCase {
+        return FetchSubjectLivelihoodEventHistoryUseCase(
+            fetchSubjectLivelihoodEventHistoryRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectLivelihoodEventHistoryRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectLivelihoodEventMappingDao: SubjectLivelihoodEventMappingDao
+    ): FetchSubjectLivelihoodEventHistoryRepository {
+        return FetchSubjectLivelihoodEventHistoryRepositoryImpl(
+            coreSharedPrefs, subjectLivelihoodEventMappingDao
         )
     }
 }
