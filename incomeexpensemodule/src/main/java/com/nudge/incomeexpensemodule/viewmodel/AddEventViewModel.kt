@@ -227,7 +227,7 @@ class AddEventViewModel @Inject constructor(
                 productId = selectedProductId.value,
                 selectedEvent = event,
                 transactionId = mTransactionId,
-                eventValue = livelihoodEventDropdownValue.find { it.isSelected == true }?.originalName
+                eventValue = livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName
                     ?: BLANK_STRING
 
 
@@ -248,14 +248,14 @@ class AddEventViewModel @Inject constructor(
         var particulars = ""
 
         particulars =
-            "Livelihood=${livelihoodEventDropdownValue.find { it.isSelected == true }?.originalName}|"
+            "Livelihood=${livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName}|"
         particulars +=
-            "Event=${_livelihoodEventDropdownValue.find { it.isSelected == true }?.originalName}|"
+            "Event=${_livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName}|"
         if (selectedAssetTypeId.value != -1) {
-            particulars += "AssetType=${_livelihoodAssetDropdownValue.find { it.isSelected == true }?.originalName}|"
+            particulars += "AssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName}|"
         }
         if (selectedProductId.value != -1) {
-            particulars += "Product=${_livelihoodProductDropdownValue.find { it.isSelected == true }?.originalName}|"
+            particulars += "Product=${_livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName}|"
         }
 
         return particulars
