@@ -5,11 +5,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
+import com.nudge.core.getCurrentTimeInMillis
+import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
+import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
@@ -37,6 +43,8 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     private val tag = DataSummaryScreenViewModel::class.java.simpleName
 
+    val tabs = listOf<SubTabs>(SubTabs.LastWeekTab, SubTabs.LastMonthTab, SubTabs.Last3MonthsTab)
+
     var subjectId: Int = -1
 
     val areEventsNotAvailableForSubject: MutableState<Boolean> = mutableStateOf(true)
@@ -51,8 +59,6 @@ class DataSummaryScreenViewModel @Inject constructor(
         mutableStateListOf<SubjectLivelihoodEventSummaryUiModel>()
     val filteredSubjectLivelihoodEventSummaryUiModelList: SnapshotStateList<SubjectLivelihoodEventSummaryUiModel> get() = _filteredSubjectLivelihoodEventSummaryUiModelList
 
-    val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
-
     private val _livelihoodModel = mutableListOf<LivelihoodModel>()
     val livelihoodModel: List<LivelihoodModel> get() = _livelihoodModel
 
@@ -63,10 +69,17 @@ class DataSummaryScreenViewModel @Inject constructor(
     private val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
 
+    val eventsSubFilterList: List<ValuesDto> =
+        listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
+
     val selectedLivelihood: MutableState<Int> = mutableStateOf(0)
+
+    val selectedEventsSubFilter: MutableState<Int> = mutableStateOf(0)
 
     private val _showAssetDialog: MutableState<Boolean> = mutableStateOf(false)
     val showAssetDialog: State<Boolean> get() = _showAssetDialog
+
+    var filtersTuple: Triple<Int, Int, Int> = Triple(0, 0, 0)
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -84,11 +97,135 @@ class DataSummaryScreenViewModel @Inject constructor(
 
             is DataSummaryScreenEvents.FilterDataForLivelihood -> {
                 selectedLivelihood.value = event.livelihoodId
-                _filteredSubjectLivelihoodEventSummaryUiModelList.clear()
-                _filteredSubjectLivelihoodEventSummaryUiModelList.addAll(
-                    subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == selectedLivelihood.value })
+
+                filtersTuple = Triple(
+                    TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex),
+                    selectedLivelihood.value,
+                    selectedEventsSubFilter.value
+                )
+
+                updateEventsList()
+
+            }
+
+            is DataSummaryScreenEvents.EventsSubFilterSelected -> {
+                selectedEventsSubFilter.value = event.selectedValue
+
+                filtersTuple = Triple(
+                    TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex),
+                    selectedLivelihood.value,
+                    selectedEventsSubFilter.value
+                )
+
+                updateEventsList()
+
+            }
+
+            is DataSummaryScreenEvents.TabFilterSelected -> {
+
+                filtersTuple = Triple(
+                    event.selectedTabIndex,
+                    selectedLivelihood.value,
+                    selectedEventsSubFilter.value
+                )
+
+                updateEventsList()
+
+
             }
         }
+    }
+
+    private fun updateEventsList() {
+        _filteredSubjectLivelihoodEventSummaryUiModelList.clear()
+        _filteredSubjectLivelihoodEventSummaryUiModelList.addAll(
+            getListForFilters(
+                filtersTuple.first,
+                filtersTuple.second,
+                filtersTuple.third
+            )
+        )
+    }
+
+    private fun getListForFilters(
+        selectedTabFilter: Int,
+        livelihoodFilter: Int,
+        eventsSubFilter: Int
+    ): List<SubjectLivelihoodEventSummaryUiModel> {
+        var result =
+            subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
+
+        result = filterListForSelectedTab(selectedTabFilter, result)
+
+        result = filterListForSubFilter(eventsSubFilter, result)
+
+
+        return result
+
+    }
+
+    private fun filterListForSubFilter(
+        eventsSubFilter: Int,
+        resultAfterTabFilter: List<SubjectLivelihoodEventSummaryUiModel>
+    ): List<SubjectLivelihoodEventSummaryUiModel> {
+        val resultAfterSubFilter = when (eventsSubFilter) {
+            1 -> {
+                resultAfterTabFilter
+            }
+
+            2 -> {
+                resultAfterTabFilter.filter { it.assetId != null }
+            }
+
+            3 -> {
+                resultAfterTabFilter.filter { it.transactionAmount != null }
+            }
+
+            else -> {
+                resultAfterTabFilter
+            }
+        }
+        return resultAfterSubFilter
+    }
+
+    private fun filterListForSelectedTab(
+        selectedTabFilter: Int,
+        result: List<SubjectLivelihoodEventSummaryUiModel>
+    ): List<SubjectLivelihoodEventSummaryUiModel> {
+        val resultAfterTabFilter = when (tabs[selectedTabFilter].id) {
+            SubTabs.LastWeekTab.id -> {
+                result.filter {
+                    (it.date.value() <= getCurrentTimeInMillis())
+                            && (it.date.value() >= getDayPriorCurrentTimeMillis(
+                        IncomeExpenseConstants.WEEK_DURATION
+                    ))
+                }
+
+            }
+
+            SubTabs.LastMonthTab.id -> {
+                result.filter {
+                    (it.date.value() <= getCurrentTimeInMillis())
+                            && (it.date.value() >= getDayPriorCurrentTimeMillis(
+                        IncomeExpenseConstants.MONTH_DURATION
+                    ))
+                }
+            }
+
+            SubTabs.Last3MonthsTab.id -> {
+                result.filter {
+                    (it.date.value() <= getCurrentTimeInMillis())
+                            && (it.date.value() >= getDayPriorCurrentTimeMillis(
+                        IncomeExpenseConstants.LAST_3_MONTH_DURATION
+                    ))
+                }
+            }
+
+            else -> {
+                result
+            }
+        }
+        return resultAfterTabFilter
     }
 
     fun setPreviousScreenData(mSubjectId: Int) {
@@ -102,7 +239,6 @@ class DataSummaryScreenViewModel @Inject constructor(
                     subjectId = subjectId
                 )?.let {
                     if (it.isNotEmpty()) {
-                        countMap.put(SubTabs.All, it.size)
                         areEventsNotAvailableForSubject.value = false
                     }
                 }
@@ -139,10 +275,8 @@ class DataSummaryScreenViewModel @Inject constructor(
 
                     createLivelihoodDropDownList()
 
-                    _filteredSubjectLivelihoodEventSummaryUiModelList.clear()
-                    _filteredSubjectLivelihoodEventSummaryUiModelList.addAll(
-                        subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == selectedLivelihood.value }
-                    )
+                    updateEventsList()
+
                 }
 
 
@@ -161,9 +295,16 @@ class DataSummaryScreenViewModel @Inject constructor(
     }
 
     private suspend fun createLivelihoodDropDownList() {
+        _livelihoodDropdownList.clear()
         livelihoodModel.forEach {
             _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
         }
         selectedLivelihood.value = livelihoodDropdownList.first().id
+        selectedEventsSubFilter.value = eventsSubFilterList.first().id
+        filtersTuple = Triple(
+            TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex),
+            selectedLivelihood.value,
+            selectedEventsSubFilter.value
+        )
     }
 }

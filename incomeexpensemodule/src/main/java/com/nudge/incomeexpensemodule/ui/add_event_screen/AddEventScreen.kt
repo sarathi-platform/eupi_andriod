@@ -12,12 +12,8 @@ import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,12 +45,12 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 @Composable
 fun AddEventScreen(
     navController: NavHostController = rememberNavController(),
+    viewModel: AddEventViewModel = hiltViewModel(),
     subjectId: Int,
     subjectName: String,
     transactionId: String,
-    viewModel: AddEventViewModel = hiltViewModel()
+    showDeleteButton: Boolean = false
 ) {
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
@@ -70,7 +66,7 @@ fun AddEventScreen(
         title = "Asset Purchase",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { /*TODO*/ },
+        onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = {},
         onBottomUI = {
 
@@ -83,19 +79,24 @@ fun AddEventScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_10_dp),
                 ) {
+                    if (showDeleteButton) {
+                        ButtonNegative(
+                            modifier = Modifier.weight(0.5f),
+                            buttonTitle = "Delete",
+                            textColor = red,
+                            isArrowRequired = false,
+                            isActive = true,
+                            onClick = {
+                                viewModel.onDeleteClick(transactionId, subjectId)
+                                navController.navigateUp()
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
 
-                    ButtonNegative(
+                    }
+
+                    ButtonPositive(
                         modifier = Modifier.weight(0.5f),
-                        buttonTitle = "Delete",
-                        textColor = red,
-                        isArrowRequired = false,
-                        isActive = true,
-                        onClick = {
-                            viewModel.onDeleteClick(transactionId, subjectId)
-                            navController.navigateUp()
-                        })
-                    Spacer(modifier = Modifier.width(10.dp))
-                    ButtonPositive(modifier = Modifier.weight(0.5f),
                         buttonTitle = "Save",
                         isActive = viewModel.isSubmitButtonEnable.value,
 
@@ -148,6 +149,7 @@ fun AddEventScreen(
                         }
                     )
 
+                    //TODO @Anupam fix this before merge.
 //                SearchBarWithDropdownComponent<ValuesDto, AnnotatedString>(
 //                    title = TextProperties.getBasicTextProperties(text = buildAnnotatedString {
 //                        withStyle(
