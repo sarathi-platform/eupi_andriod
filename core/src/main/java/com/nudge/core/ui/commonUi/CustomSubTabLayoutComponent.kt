@@ -178,6 +178,7 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.LastWeekTab -> "Last week"
         SubTabs.LastMonthTab -> "Last month"
         SubTabs.Last3MonthsTab -> "Last 3 months"
+        SubTabs.CustomDateRange -> "Custom Date"
         else -> {
             BLANK_STRING
         }
