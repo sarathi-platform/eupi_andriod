@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.incomeexpensemodule.R
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
@@ -26,6 +28,7 @@ import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.commonUi.componet_.component.InputComponent
+import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_72_dp
@@ -49,7 +52,8 @@ fun AddEventScreen(
     subjectId: Int,
     subjectName: String,
     transactionId: String,
-    showDeleteButton: Boolean = false
+    showDeleteButton: Boolean = false,
+    onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(Unit) {
@@ -87,8 +91,7 @@ fun AddEventScreen(
                             isArrowRequired = false,
                             isActive = true,
                             onClick = {
-                                viewModel.onDeleteClick(transactionId, subjectId)
-                                navController.navigateUp()
+                                viewModel.showDeleteDialog.value = true
                             }
                         )
                         Spacer(modifier = Modifier.width(10.dp))
@@ -111,7 +114,7 @@ fun AddEventScreen(
                 }
             }
         },
-        onSettingClick = {},
+        onSettingClick = { onSettingClick() },
         onRetry = {},
         onContentUI = { paddingValues, b, function ->
             LazyColumn(
@@ -285,7 +288,22 @@ fun AddEventScreen(
 
             }
 
+            if (viewModel.showDeleteDialog.value) {
+                ShowCustomDialog(
+                    message = stringResource(R.string.are_you_sure_you_want_to_delete),
+                    negativeButtonTitle = stringResource(R.string.no),
+                    positiveButtonTitle = stringResource(R.string.yes),
+                    onNegativeButtonClick = {
+                        viewModel.showDeleteDialog.value = false
+                    },
+                    onPositiveButtonClick = {
+                        viewModel.onDeleteClick(transactionId, subjectId)
+                        navController.navigateUp()
+                        viewModel.showDeleteDialog.value = false
 
+                    }
+                )
+            }
         }
     )
 }
@@ -293,5 +311,5 @@ fun AddEventScreen(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "")
+    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "", onSettingClick = {})
 }
