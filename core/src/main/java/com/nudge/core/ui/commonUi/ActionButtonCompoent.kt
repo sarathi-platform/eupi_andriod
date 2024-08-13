@@ -301,6 +301,7 @@ fun <T> CustomIconButton(
     iconTintColor: Color = Color.Black,
     contentDescription: String?,
     enabled: Boolean = true,
+    buttonContainerColor: Color = Color.Transparent,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
@@ -313,7 +314,10 @@ fun <T> CustomIconButton(
                 shape = RoundedCornerShape(roundedCornerRadiusDefault)
             )
             .clip(RoundedCornerShape(roundedCornerRadiusDefault))
-            .background(Color.Transparent, RoundedCornerShape(roundedCornerRadiusDefault))
+            .background(
+                color = buttonContainerColor,
+                RoundedCornerShape(roundedCornerRadiusDefault)
+            )
     ) {
         IconButton(onClick = { onClick() }, modifier, enabled, colors, interactionSource) {
             CustomIconComponent(
