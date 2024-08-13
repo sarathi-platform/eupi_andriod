@@ -23,7 +23,7 @@ interface AssetDao {
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
                 " livelihood_language_reference_table.userId=:userId and" +
                 " assets_table.userId=:userId  and" +
-                " assets_table.livelihoodId=:livelihoodId "
+                " assets_table.livelihoodId=:livelihoodId group by assets_table.assetId "
     )
     fun getAssetForLivelihood(
         livelihoodId: Int,

@@ -27,7 +27,7 @@ interface ProductDao {
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
                 " livelihood_language_reference_table.userId=:userId and" +
                 " product_table.userId=:userId  and" +
-                " product_table.livelihoodId=:livelihoodId "
+                " product_table.livelihoodId=:livelihoodId group by product_table.productId"
     )
     fun getProductsForLivelihood(
         livelihoodId: Int,
