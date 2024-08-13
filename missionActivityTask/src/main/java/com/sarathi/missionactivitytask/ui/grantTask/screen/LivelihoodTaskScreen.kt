@@ -8,7 +8,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_20_dp
@@ -16,10 +15,8 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
-import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.LivelihoodTaskCard
-import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.LivelihoodTaskScreenViewModel
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -79,6 +76,7 @@ fun LivelihoodTaskRowView(
 
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
+
     LivelihoodTaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
@@ -99,6 +97,8 @@ fun LivelihoodTaskRowView(
 
 
         },
+
+
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
                 task.value[TaskCardSlots.TASK_STATUS.name] = TaskCardModel(
@@ -124,8 +124,8 @@ fun LivelihoodTaskRowView(
         subtitle2 = task.value[TaskCardSlots.TASK_SUBTITLE_2.name],
         subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
         subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name]?.copy(value = viewModel.livelihoodsEntityList.find { it.livelihoodId==viewModel.subjectLivelihoodMapiingMap.get(viewModel.taskUiModel?.find { it.taskId==task.key }?.subjectId)?.primaryLivelihoodId.value() }?.name.value()),
-        subtitle7 = task.value[TaskCardSlots.TASK_SUBTITLE_6.name]?.copy(value = viewModel.livelihoodsEntityList.find { it.livelihoodId==viewModel.subjectLivelihoodMapiingMap.get(viewModel.taskUiModel?.find { it.taskId==task.key }?.subjectId)?.secondaryLivelihoodId.value() }?.name.value()) ,
+        subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name]?.copy(value = viewModel.livelihoodsEntityList.find { it.livelihoodId==viewModel.subjectLivelihoodMappingMap.get(viewModel.taskUiModel?.find { it.taskId==task.key }?.subjectId)?.primaryLivelihoodId.value() }?.name.value()),
+        subtitle7 = task.value[TaskCardSlots.TASK_SUBTITLE_6.name]?.copy(value = viewModel.livelihoodsEntityList.find { it.livelihoodId==viewModel.subjectLivelihoodMappingMap.get(viewModel.taskUiModel?.find { it.taskId==task.key }?.subjectId)?.secondaryLivelihoodId.value() }?.name.value()) ,
         subtitle6 = task.value[TaskCardSlots.TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
         isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(

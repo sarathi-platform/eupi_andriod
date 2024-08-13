@@ -91,6 +91,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                     val subjectLivelihoodMapping =
                         getSubjectLivelihoodMappingFromUseCase.invoke(subjectId!!)
 
+
                     if (subjectLivelihoodMapping != null) {
                         val mLivelihoodUiEntityList = LivelihoodUiEntity.getLivelihoodUiEntityList(
                             livelihoodUiModelList = livelihoodList,
@@ -103,7 +104,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId
 
-                        getSubjectLivelihoodMappingFromUseCase.getLivelihoodMappingForSubject(listOf(subjectLivelihoodMapping!!.subjectId))
+//                        getSubjectLivelihoodMappingFromUseCase.getLivelihoodMappingForSubject(listOf(subjectLivelihoodMapping!!.subjectId))
 
                     } else {
                         val mLivelihoodUiEntityList =

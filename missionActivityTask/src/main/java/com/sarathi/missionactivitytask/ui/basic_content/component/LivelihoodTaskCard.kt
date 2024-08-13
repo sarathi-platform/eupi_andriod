@@ -23,28 +23,20 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.formatToIndianRupee
-import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
@@ -56,16 +48,12 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.greyColor
-import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
-import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
-import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
@@ -208,8 +196,8 @@ fun LivelihoodTaskCard(
                 SubContainerView(subtitle6, isNumberFormattingRequired = false)
                 SubContainerView(subtitle3)
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
-                SubContainerView(subtitle5, isNumberFormattingRequired = true)
-                SubContainerView(subtitle7, isNumberFormattingRequired = false)
+                SubContainerView(subtitle5)
+                SubContainerView(subtitle7)
 
             }
 
