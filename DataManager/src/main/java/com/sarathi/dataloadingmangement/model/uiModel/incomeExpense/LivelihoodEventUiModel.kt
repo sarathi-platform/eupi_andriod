@@ -4,7 +4,8 @@ data class LivelihoodEventUiModel(
     val name: String,
     val eventType: String,
     val id: Int,
-    val livelihoodId: Int
+    val livelihoodId: Int,
+    val originalName: String
 )
 
 fun List<LivelihoodEventUiModel>?.find(eventId: Int): LivelihoodEventUiModel? {

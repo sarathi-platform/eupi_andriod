@@ -13,15 +13,20 @@ class SaveLivelihoodEventUseCase @Inject constructor(
     private val subjectLivelihoodEventMappingRepository: ISubjectLivelihoodEventMapping
 ) {
 
-    suspend fun addOrEditEvent(eventData: LivelihoodEventScreenData) {
+    suspend fun addOrEditEvent(eventData: LivelihoodEventScreenData, particular: String) {
 
         subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(eventData)
+
+
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
-            assetJournalRepository.saveOrEditAssetJournal(particular = "", eventData = eventData)
+            assetJournalRepository.saveOrEditAssetJournal(
+                particular = particular,
+                eventData = eventData
+            )
         }
         eventData.selectedEvent.moneyJournalEntryFlowType?.let {
             moneyJournalRepo.saveAndUpdateMoneyJournalTransaction(
-                particular = "",
+                particular = particular,
                 eventData = eventData
             )
         }

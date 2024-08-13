@@ -12,7 +12,9 @@ data class ValuesDto(
     @Expose
     val value: String,
 
-    val isSelected: Boolean? = false
+    val isSelected: Boolean? = false,
+    @Transient
+    val originalName: String? = null
 )
 
 fun List<ValuesDto>.contains(element: String): Boolean {
