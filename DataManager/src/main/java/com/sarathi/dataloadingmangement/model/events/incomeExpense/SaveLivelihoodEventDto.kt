@@ -13,14 +13,21 @@ data class SaveLivelihoodEventDto(
     val assetCount: Int,
     @SerializedName("livelihoodId")
     val livelihoodId: Int,
+    @SerializedName("livelihoodValue")
+    val livelihoodValue: String,
     @SerializedName("eventId")
     val eventId: Int,
     @SerializedName("eventValue")
     val eventValue: String,
     @SerializedName("productId")
     val productId: Int,
+    @SerializedName("productValue")
+    val productValue: String,
     @SerializedName("assetType")
     val assetType: Int,
+    @SerializedName("assetTypeValue")
+    val assetTypeValue: String,
     @SerializedName("transactionId")
     val transactionId: String,
-)
+
+    )
