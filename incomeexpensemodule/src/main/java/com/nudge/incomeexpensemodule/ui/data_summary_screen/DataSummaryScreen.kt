@@ -40,12 +40,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.nudge.core.DD_MMM_YYYY_FORMAT
@@ -55,6 +52,7 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.MeasureUnconstrainedViewWidthComponent
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.events.DialogEvents
@@ -315,7 +313,7 @@ fun EventsListHeaderWithDropDownFilter(
             if (showMoreItems) "All Events:" else "Last $DEFAULT_EVENT_LIST_VIEW_SIZE events:",
             style = getTextColor(defaultTextStyle)
         )
-        MeasureUnconstrainedViewWidth(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
+        MeasureUnconstrainedViewWidthComponent(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
             SingleSelectDropDown(
                 sources = sources,
                 selectOptionText = selectedOptionValue.id,
@@ -324,7 +322,6 @@ fun EventsListHeaderWithDropDownFilter(
 
                 selectedOptionValue = sources.findById(selectValue) ?: sources[0]
                 onEventSubFilterSelected(selectValue)
-
             }
         }
 
@@ -581,20 +578,3 @@ fun DefaultPreview() {
     }
 }
 
-@Composable
-fun MeasureUnconstrainedViewWidth(
-    viewToMeasure: @Composable () -> Unit,
-    content: @Composable (measuredWidth: Dp) -> Unit,
-) {
-    SubcomposeLayout { constraints ->
-        val measuredWidth = subcompose("viewToMeasure", viewToMeasure)[0]
-            .measure(Constraints()).width.toDp()
-
-        val contentPlaceable = subcompose("content") {
-            content(measuredWidth)
-        }[0].measure(constraints)
-        layout(contentPlaceable.width, contentPlaceable.height) {
-            contentPlaceable.place(0, 0)
-        }
-    }
-}
