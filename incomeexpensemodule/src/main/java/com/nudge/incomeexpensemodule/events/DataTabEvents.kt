@@ -1,8 +1,14 @@
 package com.nudge.incomeexpensemodule.events
 
-import com.nudge.core.model.uiModel.LivelihoodModel
-
 sealed class DataTabEvents {
-    data class FilterApplied(val livelihoodModel: LivelihoodModel) : DataTabEvents()
+    data class LivelihoodFilterApplied(val livelihoodId: Int) : DataTabEvents()
+
+    data class OnSearchQueryChanged(val searchQuery: String) : DataTabEvents()
+
+    data class ShowAssetDialogForSubject(
+        val showDialog: Boolean,
+        val subjectId: Int,
+        val livelihoodIds: List<Int>
+    ) : DataTabEvents()
 
 }

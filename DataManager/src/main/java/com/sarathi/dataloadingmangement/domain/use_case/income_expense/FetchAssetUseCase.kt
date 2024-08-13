@@ -9,7 +9,7 @@ class FetchAssetUseCase(
 
     suspend operator fun invoke(livelihoodId: Int, selectedId: Int): List<ValuesDto> {
         return assetRepositoryImpl.getAssetsForLivelihood(livelihoodId).map {
-            ValuesDto(it.id, it.name, it.id == selectedId)
+            ValuesDto(it.id, it.name, it.id == selectedId, originalName = it.originalName)
         }
     }
 

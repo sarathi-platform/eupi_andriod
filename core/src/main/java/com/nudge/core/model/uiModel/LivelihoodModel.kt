@@ -4,11 +4,12 @@ data class LivelihoodModel(
     var livelihoodId: Int,
     var name: String,
     var status: Int,
+    var originalName: String
 ) {
 
     companion object {
         fun getAllFilter(): LivelihoodModel {
-            return LivelihoodModel(livelihoodId = 0, "All", status = 1)
+            return LivelihoodModel(livelihoodId = 0, "All", status = 1, originalName = "")
         }
     }
 

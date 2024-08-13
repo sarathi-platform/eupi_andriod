@@ -62,4 +62,26 @@ interface AssetJournalDao {
         referenceType: String
     ): AssetCountUiModel?
 
+    @Query(
+        "select subjectId as subjectId, referenceId as livelihoodId, assetId as assetId, \n" +
+                "sum(assetCount) as totalAssetCountForFlow \n" +
+                "from asset_journal_table\n" +
+                "where userId = :userId \n" +
+                "and subjectId = :subjectId \n" +
+                "and assetId = :assetId\n" +
+                "and transactionFlow = :transactionFlow \n" +
+                "and referenceType = :referenceType \n" +
+                "and transactionDate BETWEEN :durationStart and :durationEnd \n" +
+                "group by assetId, referenceId"
+    )
+    suspend fun getAssetCountForAssetForDuration(
+        assetId: Int,
+        transactionFlow: String,
+        userId: String,
+        subjectId: Int,
+        referenceType: String,
+        durationStart: Long,
+        durationEnd: Long
+    ): AssetCountUiModel?
+
 }

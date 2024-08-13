@@ -20,7 +20,7 @@ interface ProductDao {
 
 
     @Query(
-        "select product_table.productId as id, livelihood_language_reference_table.name\n" +
+        "select product_table.productId as id, livelihood_language_reference_table.name, product_table.name as originalName \n" +
                 " from product_table inner join livelihood_language_reference_table \n" +
                 " on product_table.productId= livelihood_language_reference_table.id \n" +
                 " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +
