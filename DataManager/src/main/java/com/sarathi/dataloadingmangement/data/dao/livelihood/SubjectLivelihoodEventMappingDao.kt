@@ -56,7 +56,7 @@ interface SubjectLivelihoodEventMappingDao {
         subjectId: Int
     ): List<SubjectLivelihoodEventSummaryUiModel>
 
-    @Query("SELECT date from subject_livelihood_event_mapping_table where subjectId = :subjectId and userId = :userId and status = 1 order by date limit 1")
+    @Query("SELECT date from subject_livelihood_event_mapping_table where subjectId = :subjectId and userId = :userId and status = 1 order by date DESC limit 1")
     suspend fun getLastEventDateForSubjectLivelihoodEventMapping(
         userId: String,
         subjectId: Int

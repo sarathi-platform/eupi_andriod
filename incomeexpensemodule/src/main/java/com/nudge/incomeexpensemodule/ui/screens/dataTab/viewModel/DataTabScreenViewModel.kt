@@ -8,6 +8,8 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
+import com.nudge.core.WEEK_DURATION_RANGE
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
@@ -163,11 +165,54 @@ class DataTabScreenViewModel @Inject constructor(
 
             createFilterBottomSheetList(livelihoodModelList)
 
-            countMap.put(SubTabs.All, filteredSubjectList.value.size)
+            updateCountMap()
+
             withContext(mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    fun getLastEventMapListForSubTab(subTabs: SubTabs): Map<Int, Long> {
+        val currentTime = getCurrentTimeInMillis()
+        return when (subTabs) {
+            SubTabs.All -> {
+                lastEventDateMapForSubject
+            }
+
+            SubTabs.NoEntryWeekTab -> {
+                lastEventDateMapForSubject.filter {
+                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
+                        WEEK_DURATION_RANGE
+                    )
+                }
+            }
+
+            SubTabs.NoEntryMonthTab -> {
+                lastEventDateMapForSubject.filter {
+                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
+                        DEFAULT_DATE_RANGE_DURATION
+                    )
+                }
+            }
+
+            else -> {
+                lastEventDateMapForSubject
+            }
+        }
+    }
+
+    private fun updateCountMap() {
+
+        countMap.put(SubTabs.All, getLastEventMapListForSubTab(SubTabs.All).size)
+        countMap.put(
+            SubTabs.NoEntryWeekTab,
+            getLastEventMapListForSubTab(SubTabs.NoEntryWeekTab).size
+        )
+        countMap.put(
+            SubTabs.NoEntryMonthTab,
+            getLastEventMapListForSubTab(SubTabs.NoEntryMonthTab).size
+        )
     }
 
     private suspend fun createFilterBottomSheetList(livelihoodModelsList: List<LivelihoodModel>) {
