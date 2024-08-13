@@ -26,8 +26,8 @@ data class AssetJournalEntity(
     val subjectType: String,
     val status: Int,
     val modifiedDate: Long,
-
-    ) {
+    val createdDate: Long
+) {
 
     companion object {
 
@@ -59,7 +59,8 @@ data class AssetJournalEntity(
                 status = 1,
                 transactionType = referenceType,
                 assetId = assetId,
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                createdDate = System.currentTimeMillis()
             )
 
         }
@@ -83,7 +84,8 @@ data class AssetJournalEntity(
                 transactionFlow = assetJournalApiResponse.transactionFlow,
                 status = assetJournalApiResponse.status,
                 transactionType = assetJournalApiResponse.transactionType,
-                modifiedDate = assetJournalApiResponse.modifiedDate
+                modifiedDate = assetJournalApiResponse.modifiedDate,
+                createdDate = assetJournalApiResponse.createdDate
             )
         }
     }
