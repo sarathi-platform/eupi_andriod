@@ -71,6 +71,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSave
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
@@ -129,6 +130,8 @@ import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWit
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
@@ -157,8 +160,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
-import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepository
-import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepositoryImpl
 
 @InstallIn(SingletonComponent::class)
 @Module
