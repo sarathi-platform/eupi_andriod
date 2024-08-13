@@ -556,4 +556,5 @@
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="mission">Missions</string>
     <string name="last_sync_date_time">Last Sync Time:</string>
+    <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
 </resources>

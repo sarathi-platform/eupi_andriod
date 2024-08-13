@@ -60,6 +60,8 @@ class SyncHomeViewModel @Inject constructor(
     val totalImageEventCount = mutableIntStateOf(0)
     val isDataPBVisible = mutableStateOf(false)
     val isImagePBVisible = mutableStateOf(false)
+    val isDataStatusVisible = mutableStateOf(false)
+    val isImageStatusVisible = mutableStateOf(false)
     val isSyncStarted = mutableStateOf(false)
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
     val lastSyncTime = mutableLongStateOf(0L)
@@ -84,10 +86,19 @@ class SyncHomeViewModel @Inject constructor(
                 cancelSyncUploadWorker()
                 isSyncStarted.value = true
                 when (selectedSyncType.intValue) {
-                    SyncType.SYNC_ONLY_DATA.ordinal -> isDataPBVisible.value = true
-                    SyncType.SYNC_ONLY_IMAGES.ordinal -> isImagePBVisible.value = true
+                    SyncType.SYNC_ONLY_DATA.ordinal -> {
+                        isDataPBVisible.value = true
+                        isDataStatusVisible.value = true
+                    }
+
+                    SyncType.SYNC_ONLY_IMAGES.ordinal -> {
+                        isImagePBVisible.value = true
+                        isImageStatusVisible.value = true
+                    }
                     SyncType.SYNC_ALL.ordinal -> {
                         isDataPBVisible.value = true
+                        isDataStatusVisible.value = true
+                        isImageStatusVisible.value = true
                         isImagePBVisible.value = true
                     }
                 }
@@ -201,23 +212,34 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    fun checkSyncProgressBarStatus() {
+    fun checkSyncProgressBarStatus(isWorkerRunning: Boolean) {
         when (selectedSyncType.intValue) {
             SyncType.SYNC_ONLY_DATA.ordinal -> {
-                isDataPBVisible.value =
+                isDataStatusVisible.value
                     (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
+
+                isDataPBVisible.value =
+                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1 && isWorkerRunning
             }
 
             SyncType.SYNC_ONLY_IMAGES.ordinal -> {
-                isImagePBVisible.value =
+                isImageStatusVisible.value =
                     (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
+
+                isImagePBVisible.value =
+                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1 && isWorkerRunning
             }
 
             SyncType.SYNC_ALL.ordinal -> {
-                isDataPBVisible.value =
+                isDataStatusVisible.value =
                     (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
-                isImagePBVisible.value =
+                isImageStatusVisible.value =
                     (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
+
+                isDataPBVisible.value =
+                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1 && isWorkerRunning
+                isImagePBVisible.value =
+                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1 && isWorkerRunning
             }
         }
     }
