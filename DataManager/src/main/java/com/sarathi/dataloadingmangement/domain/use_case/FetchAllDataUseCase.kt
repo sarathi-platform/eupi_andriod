@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
     val formUseCase: FormUseCase,
     val moneyJournalUseCase: FetchMoneyJournalUseCase,
+    val assetJournalUseCase: FetchAssetJournalUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
@@ -39,6 +41,7 @@ class FetchAllDataUseCase @Inject constructor(
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
                 moneyJournalUseCase.invoke()
+                assetJournalUseCase.invoke()
             }
             fetchContentDataFromNetworkUseCase.invoke()
             coreSharedPrefs.setDataLoaded(true)

@@ -66,9 +66,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
@@ -575,7 +576,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         formUseCase: FormUseCase,
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
-        livelihoodUseCase: LivelihoodUseCase
+        livelihoodUseCase: LivelihoodUseCase,
+        assetJournalUseCase: FetchAssetJournalUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -600,7 +602,8 @@ class DataLoadingModule {
             livelihoodUseCase = livelihoodUseCase,
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
-            )
+            ),
+            assetJournalUseCase = assetJournalUseCase
         )
     }
 
