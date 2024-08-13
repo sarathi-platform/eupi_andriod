@@ -305,39 +305,35 @@ fun DataTabScreen(
 
                                         when (TabsCore.getSubTabForTabIndex(TabsEnum.DataTab.tabIndex)) {
                                             0 -> {
-                                                if (dataTabScreenViewModel.getLastEventMapListForSubTab(
-                                                        SubTabs.All
-                                                    ).containsKey(subject.subjectId)
-                                                ) {
-                                                    SubjectLivelihoodEventSummaryCard(
-                                                        subjectId = subject.subjectId!!,
-                                                        name = subject.subjectName,
-                                                        address = subject.houseNo + ", " + subject.cohortName,
-                                                        location = subject.villageName,
-                                                        lastUpdated = getDurationDifferenceInDays(
-                                                            dataTabScreenViewModel.lastEventDateMapForSubject[subject.subjectId].value()
-                                                        ),
-                                                        incomeExpenseSummaryUiModel = summaryForSubject,
-                                                        onAssetCountClicked = {
-                                                            dataTabScreenViewModel.onEvent(
-                                                                DataTabEvents.ShowAssetDialogForSubject(
-                                                                    showDialog = true,
-                                                                    subjectId = it,
-                                                                    listOf(
-                                                                        subject.primaryLivelihoodId,
-                                                                        subject.secondaryLivelihoodId
-                                                                    )
+
+                                                SubjectLivelihoodEventSummaryCard(
+                                                    subjectId = subject.subjectId!!,
+                                                    name = subject.subjectName,
+                                                    address = subject.houseNo + ", " + subject.cohortName,
+                                                    location = subject.villageName,
+                                                    lastUpdated = getDurationDifferenceInDays(
+                                                        dataTabScreenViewModel.lastEventDateMapForSubject[subject.subjectId].value()
+                                                    ),
+                                                    incomeExpenseSummaryUiModel = summaryForSubject,
+                                                    onAssetCountClicked = {
+                                                        dataTabScreenViewModel.onEvent(
+                                                            DataTabEvents.ShowAssetDialogForSubject(
+                                                                showDialog = true,
+                                                                subjectId = it,
+                                                                listOf(
+                                                                    subject.primaryLivelihoodId,
+                                                                    subject.secondaryLivelihoodId
                                                                 )
                                                             )
-                                                        }
-                                                    ) {
-                                                        navigateToDataSummaryScreen(
-                                                            navController = navHostController,
-                                                            subjectId = subject.subjectId,
-                                                            subjectName = subject.subjectName
                                                         )
-
                                                     }
+                                                ) {
+                                                    navigateToDataSummaryScreen(
+                                                        navController = navHostController,
+                                                        subjectId = subject.subjectId,
+                                                        subjectName = subject.subjectName
+                                                    )
+
                                                 }
                                             }
 

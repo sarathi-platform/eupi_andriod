@@ -204,7 +204,7 @@ class DataTabScreenViewModel @Inject constructor(
 
     private fun updateCountMap() {
 
-        countMap.put(SubTabs.All, getLastEventMapListForSubTab(SubTabs.All).size)
+        countMap.put(SubTabs.All, subjectList.value.size)
         countMap.put(
             SubTabs.NoEntryWeekTab,
             getLastEventMapListForSubTab(SubTabs.NoEntryWeekTab).size
