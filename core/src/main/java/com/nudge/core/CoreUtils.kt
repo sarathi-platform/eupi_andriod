@@ -883,6 +883,8 @@ fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
 
+fun Double?.value() = this ?: 0.0
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -1145,9 +1147,27 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     }
     Log.d("", "Chosen path = $filePath")
 }
+
 fun onlyNumberField(value: String): Boolean {
     if (value.isDigitsOnly() && value != "_" && value != "N") {
         return true
     }
     return false
+}
+
+fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
+
+    if (id == -1)
+        return null
+
+    if (this.isEmpty())
+        return null
+
+    val index = this.map(transform).indexOf(id)
+
+    if (index == -1)
+        return null
+
+    return this[index]
+
 }

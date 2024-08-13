@@ -7,6 +7,7 @@ import com.sarathi.dataloadingmangement.domain.MissionRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
+import com.sarathi.dataloadingmangement.model.response.MoneyJournalApiResponse
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
@@ -24,6 +25,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface DataLoadingApiService {
@@ -33,9 +35,6 @@ interface DataLoadingApiService {
 
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
-
-    @GET(SUBPATH_GET_LIVELIHOOD_CONFIG)
-    suspend fun fetchLivelihoodConfigData(@Query("userId") userId: Int): ApiResponseModel<List<LivelihoodResponse>>
 
     // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
@@ -72,5 +71,11 @@ interface DataLoadingApiService {
     @POST(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK)
     suspend fun getAttendanceHistoryFromNetwork(@Body attendanceHistoryRequest: AttendanceHistoryRequest): ApiResponseModel<List<AttendanceHistoryResponse>>
 
+    @GET(SUBPATH_GET_MONEY_JOURNAL_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getMoneyJournalDetails(@Path("doerId") doerId: Int): ApiResponseModel<List<MoneyJournalApiResponse>>
+
+    @GET(SUBPATH_GET_LIVELIHOOD_CONFIG)
+    suspend fun fetchLivelihoodConfigData(@Query("userId") userId: Int): ApiResponseModel<List<LivelihoodResponse>>
 
 }

@@ -109,6 +109,17 @@ fun DataTabScreen(
         )
     }
 
+//    if (dataTabScreenViewModel.showAssetDialog.value) {
+//        AssetsDialog(
+//            dataTabScreenViewModel.incomeExpenseSummaryUiModel[],
+//            dataTabScreenViewModel.livelihoodModel,
+//            onDismissRequest = {
+//                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+//            }
+//        )
+//    }
+
+
     val pullToRefreshState = rememberPullRefreshState(
         refreshing = dataTabScreenViewModel.loaderState.value.isLoaderVisible,
         onRefresh = {
@@ -266,16 +277,16 @@ fun DataTabScreen(
                                 LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
                                     itemsIndexed(dataTabScreenViewModel.filteredSubjectList.value) { index, subject ->
+                                        val summaryForSubject =
+                                            dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
                                         SubjectLivelihoodEventSummaryCard(
                                             subjectId = subject.subjectId!!,
                                             name = subject.subjectName,
                                             address = subject.houseNo + ", " + subject.cohortName,
                                             location = subject.villageName,
                                             lastUpdated = "",
-                                            income = "",
-                                            expense = "",
-                                            assetValue = "",
-                                            onAssetValueItemClicked = {
+                                            incomeExpenseSummaryUiModel = summaryForSubject,
+                                            onAssetCountClicked = {
 
                                             }
                                         ) {

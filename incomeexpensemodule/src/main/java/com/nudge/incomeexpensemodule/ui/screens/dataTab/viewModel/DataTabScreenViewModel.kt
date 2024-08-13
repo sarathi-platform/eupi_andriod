@@ -3,13 +3,16 @@ package com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -27,7 +30,7 @@ class DataTabScreenViewModel @Inject constructor(
     private val _filters = mutableStateListOf<LivelihoodModel>()
     val filters: SnapshotStateList<LivelihoodModel> get() = _filters
 
-    val selectedFilterValue = mutableStateOf(DEFAULT_FILTER_ID)
+    val selectedFilterValue = mutableStateOf(DEFAULT_FILTER_INDEX)
 
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
@@ -40,6 +43,10 @@ class DataTabScreenViewModel @Inject constructor(
     private val _filteredSubjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
     val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
+
+    private val _incomeExpenseSummaryUiModel =
+        mutableStateMapOf<Int, IncomeExpenseSummaryUiModel?>()
+    val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -61,7 +68,7 @@ class DataTabScreenViewModel @Inject constructor(
 
     private fun applyFilter(livelihoodModel: LivelihoodModel) {
         selectedFilterValue.value = livelihoodModel.livelihoodId
-        isFilterApplied.value = selectedFilterValue.value != DEFAULT_FILTER_ID
+        isFilterApplied.value = selectedFilterValue.value != DEFAULT_FILTER_INDEX
     }
 
     private fun loadAddDataForDataTab(isRefresh: Boolean) {
@@ -82,6 +89,13 @@ class DataTabScreenViewModel @Inject constructor(
                 dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke()
             _filteredSubjectList.value = subjectList.value
 
+            _incomeExpenseSummaryUiModel.clear()
+            _incomeExpenseSummaryUiModel.putAll(
+                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjects(
+                    subjectList.value
+                )
+            )
+
             createFilterBottomSheetList()
 
             countMap.put(SubTabs.All, filteredSubjectList.value.size)
@@ -99,4 +113,4 @@ class DataTabScreenViewModel @Inject constructor(
 
 }
 
-const val DEFAULT_FILTER_ID = 0
+const val DEFAULT_FILTER_INDEX = 0

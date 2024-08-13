@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetEntity
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
-import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.EventProductAssetUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.ProductAssetUiModel
 
 
 @Dao
@@ -30,6 +30,9 @@ interface AssetDao {
         userId: String,
         referenceType: String = LivelihoodLanguageReferenceType.Asset.name,
         languageCode: String,
-    ): List<EventProductAssetUiModel>
+    ): List<ProductAssetUiModel>
+
+    @Query("SELECT * from assets_table where livelihoodId in (:livelihoodIds) and userId = :userId")
+    fun getAllAssetsForLivelihoods(livelihoodIds: List<Int>, userId: String): List<AssetEntity>
 
 }

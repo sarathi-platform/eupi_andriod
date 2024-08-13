@@ -58,7 +58,7 @@ fun RadioOptionTypeComponent(
     }
     val localDensity = LocalDensity.current
 
-    val selectedValue = remember {
+    val selectedValueState = remember(selectedValue, optionItemEntityState.optionId) {
         mutableStateOf(selectedValue)
     }
 
@@ -135,12 +135,12 @@ fun RadioOptionTypeComponent(
                     optionItemEntityState.optionItemEntity?.values?.forEach {  optionValueText ->
                         TextButton(
                             onClick = {
-                                selectedValue.value = optionValueText.value
+                                selectedValueState.value = optionValueText.value
                                 onOptionSelected(optionValueText.value, optionValueText.id)
                             }, modifier = Modifier
                                 .weight(1f)
                                 .background(
-                                    if (selectedValue.value.equals(
+                                    if (selectedValueState.value.equals(
                                             optionValueText.value,
                                             ignoreCase = true
                                         )
@@ -157,7 +157,7 @@ fun RadioOptionTypeComponent(
                         ) {
                             Text(
                                 text = optionValueText.value,
-                                color = if (selectedValue.value.equals(
+                                color = if (selectedValueState.value.equals(
                                         optionValueText.value,
                                         ignoreCase = true
                                     )

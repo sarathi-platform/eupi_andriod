@@ -49,7 +49,7 @@ fun CustomDatePickerTextFieldComponent(
     onDateSelected: (selectedDate: Long?) -> Unit,
 ) {
 
-    var text by remember { mutableStateOf(defaultValue) }
+    var text by remember(defaultValue) { mutableStateOf(defaultValue) }
 
     val datePickerState =
         rememberCustomDatePickerState()

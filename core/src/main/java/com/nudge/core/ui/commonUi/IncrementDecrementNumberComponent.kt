@@ -56,7 +56,7 @@ fun IncrementDecrementNumberComponent(
     onAnswerSelection: (selectValue: String) -> Unit,
     isMandatory: Boolean = false,
 ) {
-    val currentCount: MutableState<String> = remember {
+    val currentCount: MutableState<String> = remember(currentValue) {
         mutableStateOf(currentValue ?: "")
     }
 

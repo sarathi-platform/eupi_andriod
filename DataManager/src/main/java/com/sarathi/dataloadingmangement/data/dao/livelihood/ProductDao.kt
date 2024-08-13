@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
-import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.EventProductAssetUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.ProductAssetUiModel
 
 
 @Dao
@@ -34,6 +34,6 @@ interface ProductDao {
         userId: String,
         referenceType: String = LivelihoodLanguageReferenceType.Product.name,
         languageCode: String,
-    ): List<EventProductAssetUiModel>
+    ): List<ProductAssetUiModel>
 
 }

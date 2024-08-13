@@ -362,20 +362,24 @@ fun NestedLazyListForFormQuestions(
 
                             QuestionType.RadioButton.name,
                             QuestionType.Toggle.name -> {
+
+                                val responseValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                    formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue
+                                        ?: BLANK_STRING
+                                else
+                                    viewModel.storeCacheForResponse.getResponseForOptionId(
+                                        optionId = option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING
+
                                 RadioOptionTypeComponent(
                                     optionItemEntityState = option,
-                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
-                                    selectedValue = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType != BANNER }
+                                        .isNotEmpty(),
+                                    selectedValue = responseValue,
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType != BANNER })
                                     },
                                     onOptionSelected = { selectedValue, selectedOptionId ->
                                         questionTypeScreenViewModel.onEvent(

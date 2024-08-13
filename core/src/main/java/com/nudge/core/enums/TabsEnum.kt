@@ -6,7 +6,7 @@ enum class TabsEnum(val id: Int, val tabIndex: Int) {
     DidiCrpTab(3, 1),
     DidiUpcmTab(4, 2),
     DataTab(5, 1),
-    DataSummaryTab(6, 0)
+    DataSummaryTab(6, 3)
 
 }
 

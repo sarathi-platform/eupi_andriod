@@ -43,7 +43,9 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                         AssetEntity.getAssetEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             asset = item,
-                            livelihoodId = livelihoodId
+                            livelihoodId = livelihoodId,
+                            value = item.value,
+                            image = item.image
                         )
                     )
                     saveLivelihoodLanguageToDB(

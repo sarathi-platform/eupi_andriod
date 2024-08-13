@@ -1,9 +1,10 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
-import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.EventProductAssetUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 
 interface ILivelihoodEventRepository {
 
-    suspend fun getEventsForLivelihood(livelihoodId: Int): List<EventProductAssetUiModel>
+    suspend fun getEventsForLivelihood(livelihoodId: Int): List<LivelihoodEventUiModel>
 
+    suspend fun getEventsForLivelihood(livelihoodIds: List<Int>): List<LivelihoodEventUiModel>
 }

@@ -7,9 +7,9 @@ class FetchAssetUseCase(
     private val assetRepositoryImpl: AssetRepositoryImpl,
 ) {
 
-    suspend operator fun invoke(livelihoodId: Int): List<ValuesDto> {
+    suspend operator fun invoke(livelihoodId: Int, selectedId: Int): List<ValuesDto> {
         return assetRepositoryImpl.getAssetsForLivelihood(livelihoodId).map {
-            ValuesDto(it.id, it.name, false)
+            ValuesDto(it.id, it.name, it.id == selectedId)
         }
     }
 
