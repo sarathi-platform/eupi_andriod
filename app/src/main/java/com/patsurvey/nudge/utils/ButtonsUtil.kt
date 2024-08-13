@@ -686,7 +686,7 @@ fun ButtonNegativePreview() {
 
 
 @Composable
-fun ButtonOutline(
+fun q(
     modifier: Modifier = Modifier,
     buttonTitle: String = stringResource(id = R.string.add_tola),
     icon: ImageVector = Icons.Default.Add,

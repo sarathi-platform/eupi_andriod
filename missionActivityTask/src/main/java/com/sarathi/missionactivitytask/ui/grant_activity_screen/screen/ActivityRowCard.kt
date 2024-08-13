@@ -80,6 +80,8 @@ fun ActivityRowCard(
 
                         ActivityTypeEnum.SURVEY.name.lowercase(
                             Locale.ENGLISH
+                        ), ActivityTypeEnum.BASIC.name.lowercase(
+                            Locale.ENGLISH
                         ) -> {
                             navigateToSurveyTaskScreen(
                                 navController,

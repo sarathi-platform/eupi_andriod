@@ -101,7 +101,7 @@ fun SectionScreen(
         contentType: String,
         contentTitle: String
     ) -> Unit,
-    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int) -> Unit
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -142,22 +142,42 @@ fun SectionScreen(
         sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
 
             // Navigate to Grant Survey Summary Screen if it is grant type activity
-            if (activityType.toLowerCase() != ActivityTypeEnum.SURVEY.name.toLowerCase() && sectionScreenViewModel.sectionList.value.size == 1) {
-                val sectionId: Int? =
-                    sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
-                sectionId?.let {
-                    onNavigateToGrantSurveySummaryScreen(
-                        navController,
-                        surveyId,
-                        sectionId,
-                        taskId,
-                        subjectType,
-                        subjectName,
-                        activityConfigId,
-                        sanctionedAmount
-                    )
+            if (sectionScreenViewModel.sectionList.value.size == 1) {
+                if (activityType.toLowerCase() == ActivityTypeEnum.GRANT.name.toLowerCase()) {
+                    val sectionId: Int? =
+                        sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                    sectionId?.let {
+                        onNavigateToGrantSurveySummaryScreen(
+                            navController,
+                            surveyId,
+                            sectionId,
+                            taskId,
+                            subjectType,
+                            subjectName,
+                            activityConfigId,
+                            sanctionedAmount
+                        )
+                    }
+                } else if (activityType.toLowerCase() == ActivityTypeEnum.BASIC.name.toLowerCase()) {
+                    val sectionId: Int? =
+                        sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                    sectionId?.let {
+                        onNavigateToQuestionScreen(
+                            surveyId,
+                            sectionId,
+                            taskId,
+                            subjectName,
+                            subjectType,
+                            activityConfigId,
+                            missionId,
+                            activityId,
+                            activityType
+                        )
+                    }
                 }
             }
+
+
 
             sectionScreenViewModel.checkButtonValidation()
             sectionScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -291,7 +311,8 @@ fun SectionScreen(
                                                 subjectType,
                                                 activityConfigId,
                                                 missionId,
-                                                activityId
+                                                activityId,
+                                                activityType
                                             )
                                         }
                                     )

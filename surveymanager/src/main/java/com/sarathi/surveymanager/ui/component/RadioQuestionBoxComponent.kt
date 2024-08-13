@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
@@ -57,6 +58,7 @@ fun RadioQuestionBoxComponent(
     optionUiModelList: List<OptionsUiModel>,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
+    showCardView: Boolean = false,
     isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
@@ -83,7 +85,7 @@ fun RadioQuestionBoxComponent(
     ) {
         Card(
             elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
+                defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
             ),
             shape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier

@@ -1152,3 +1152,9 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
 fun getQuestionNumber(questionIndex: Int): String {
     return "${questionIndex + 1}. "
 }
+
+fun String.stringToInt(): Int {
+    return if (this.isNullOrEmpty())
+        0
+    else this.toInt()
+}

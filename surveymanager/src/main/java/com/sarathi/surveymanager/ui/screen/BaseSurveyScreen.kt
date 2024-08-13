@@ -278,6 +278,7 @@ fun BaseSurveyScreen(
                                     questionDisplay = question.questionDisplay,
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
+                                    showCardView = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
                                     optionUiModelList = question.options.value(),
                                     onAnswerSelection = { questionIndex, optionItemIndex ->
                                         question.options?.forEachIndexed { index, _ ->
