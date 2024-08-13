@@ -52,7 +52,8 @@ fun AddEventScreen(
     subjectId: Int,
     subjectName: String,
     transactionId: String,
-    showDeleteButton: Boolean = false
+    showDeleteButton: Boolean = false,
+    onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(Unit) {
@@ -113,7 +114,7 @@ fun AddEventScreen(
                 }
             }
         },
-        onSettingClick = {},
+        onSettingClick = { onSettingClick() },
         onRetry = {},
         onContentUI = { paddingValues, b, function ->
             LazyColumn(
@@ -310,5 +311,5 @@ fun AddEventScreen(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "")
+    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "", onSettingClick = {})
 }
