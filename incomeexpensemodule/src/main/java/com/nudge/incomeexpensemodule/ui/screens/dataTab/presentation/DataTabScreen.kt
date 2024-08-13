@@ -259,8 +259,18 @@ fun DataTabScreen(
                                     )
 
                                     CustomIconButton(
-                                        onClick = { /*TODO*/ },
+                                        onClick = {
+                                            dataTabScreenViewModel.isSortApplied.value =
+                                                !dataTabScreenViewModel.isSortApplied.value
+                                            dataTabScreenViewModel.onEvent(DataTabEvents.LivelihoodSortApplied)
+                                        },
+                                        iconTintColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark,
                                         icon = painterResource(id = R.drawable.sort_icon),
+                                        buttonContainerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
+                                            contentColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark
+                                        ),
                                         contentDescription = "Sort List"
                                     )
 
@@ -278,7 +288,7 @@ fun DataTabScreen(
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append(dataTabScreenViewModel.filteredSubjectList.value.size.toString())
+                                                    append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
                                                 }
                                                 append(" results for ")
                                                 withStyle(
@@ -299,7 +309,7 @@ fun DataTabScreen(
 
                                 LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
-                                    itemsIndexed(dataTabScreenViewModel.filteredSubjectList.value) { index, subject ->
+                                    itemsIndexed(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value) { index, subject ->
                                         val summaryForSubject =
                                             dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
 
@@ -312,7 +322,7 @@ fun DataTabScreen(
                                                     address = subject.houseNo + ", " + subject.cohortName,
                                                     location = subject.villageName,
                                                     lastUpdated = getDurationDifferenceInDays(
-                                                        dataTabScreenViewModel.lastEventDateMapForSubject[subject.subjectId].value()
+                                                        subject.lastUpdated
                                                     ),
                                                     incomeExpenseSummaryUiModel = summaryForSubject,
                                                     onAssetCountClicked = {
@@ -349,7 +359,7 @@ fun DataTabScreen(
                                                         address = subject.houseNo + ", " + subject.cohortName,
                                                         location = subject.villageName,
                                                         lastUpdated = getDurationDifferenceInDays(
-                                                            dataTabScreenViewModel.lastEventDateMapForSubject[subject.subjectId].value()
+                                                            subject.lastUpdated
                                                         ),
                                                         incomeExpenseSummaryUiModel = summaryForSubject,
                                                         onAssetCountClicked = {
@@ -387,7 +397,7 @@ fun DataTabScreen(
                                                         address = subject.houseNo + ", " + subject.cohortName,
                                                         location = subject.villageName,
                                                         lastUpdated = getDurationDifferenceInDays(
-                                                            dataTabScreenViewModel.lastEventDateMapForSubject[subject.subjectId].value()
+                                                            subject.lastUpdated
                                                         ),
                                                         incomeExpenseSummaryUiModel = summaryForSubject,
                                                         onAssetCountClicked = {

@@ -18,6 +18,7 @@ import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -40,6 +41,7 @@ class DataTabScreenViewModel @Inject constructor(
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
     val isFilterApplied = mutableStateOf(false)
+    val isSortApplied = mutableStateOf(false)
 
     val _subjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
@@ -47,13 +49,17 @@ class DataTabScreenViewModel @Inject constructor(
 
     private val _filteredSubjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
-    val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
+    private val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
+
+    private val _filteredDataTabScreenUiEntityList: MutableState<List<DataTabScreenUiModel>> =
+        mutableStateOf(mutableListOf())
+    val filteredDataTabScreenUiEntityList: State<List<DataTabScreenUiModel>> get() = _filteredDataTabScreenUiEntityList
 
     private val _incomeExpenseSummaryUiModel =
         mutableStateMapOf<Int, IncomeExpenseSummaryUiModel?>()
     val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
-    var lastEventDateMapForSubject: Map<Int, Long> = hashMapOf()
+    private var lastEventDateMapForSubject: Map<Int, Long> = hashMapOf()
 
     var livelihoodModelList: List<LivelihoodModel> = listOf()
 
@@ -84,6 +90,16 @@ class DataTabScreenViewModel @Inject constructor(
             is DataTabEvents.OnSearchQueryChanged -> {
                 onSearchQueryChanged(event.searchQuery)
             }
+            is DataTabEvents.LivelihoodSortApplied -> {
+                if (isSortApplied.value) {
+                    _filteredDataTabScreenUiEntityList.value =
+                        _filteredDataTabScreenUiEntityList.value.sortedByDescending { it.lastUpdated }
+                } else {
+                    _filteredDataTabScreenUiEntityList.value =
+                        _filteredDataTabScreenUiEntityList.value.sortedBy { it.lastUpdated }
+
+                }
+            }
         }
     }
 
@@ -99,7 +115,7 @@ class DataTabScreenViewModel @Inject constructor(
         } else {
             filteredList
         }
-
+        updateDataTabScreenUiEntityList()
     }
 
     private fun applyFilter(livelihoodId: Int) {
@@ -110,6 +126,7 @@ class DataTabScreenViewModel @Inject constructor(
         } else {
             subjectList.value
         }
+        updateDataTabScreenUiEntityList()
 
     }
 
@@ -146,7 +163,6 @@ class DataTabScreenViewModel @Inject constructor(
             _subjectList.value =
                 dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke()
             _filteredSubjectList.value = subjectList.value
-
             _incomeExpenseSummaryUiModel.clear()
             val currentTime = getCurrentTimeInMillis()
             _incomeExpenseSummaryUiModel.putAll(
@@ -160,6 +176,7 @@ class DataTabScreenViewModel @Inject constructor(
             lastEventDateMapForSubject =
                 dataTabUseCase.fetchSubjectLivelihoodEventHistoryUseCase.invoke(subjectList.value.map { it.subjectId })
 
+            updateDataTabScreenUiEntityList()
             livelihoodModelList =
                 getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId }
 
@@ -171,6 +188,13 @@ class DataTabScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun updateDataTabScreenUiEntityList() {
+        _filteredDataTabScreenUiEntityList.value = DataTabScreenUiModel.getDataTabUiEntityList(
+            filteredSubjectList.value,
+            lastEventDateMapForSubject
+        )
     }
 
     fun getLastEventMapListForSubTab(subTabs: SubTabs): Map<Int, Long> {
