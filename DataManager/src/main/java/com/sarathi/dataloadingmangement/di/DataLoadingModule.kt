@@ -129,8 +129,6 @@ import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWit
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepository
-import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
@@ -159,6 +157,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepositoryImpl
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -1241,6 +1241,22 @@ class DataLoadingModule {
             assetJournalRepository = assetJournalRepo,
             moneyJournalRepo = moneyJournalRepository,
             subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWriteLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): WriteLivelihoodEventUseCase {
+        return WriteLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
+            eventWriterRepository = eventWriterRepositoryImpl
         )
     }
 

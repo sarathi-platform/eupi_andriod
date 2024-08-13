@@ -5,6 +5,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDateString
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveMoneyJournalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import javax.inject.Inject
 
@@ -97,6 +98,27 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId,
             transactionId = transactionId
+        )
+    }
+
+    override suspend fun getMoneyJournalEventDto(
+        particular: String,
+        eventData: LivelihoodEventScreenData
+    ): SaveMoneyJournalEventDto {
+        return SaveMoneyJournalEventDto(
+            amount = eventData.amount,
+            createdDate = System.currentTimeMillis(),
+            particulars = particular,
+            referenceType = "LivelihoodEvent",
+            transactionType = "LivelihoodEvent",
+            transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
+                ?: BLANK_STRING,
+            transactionId = eventData.transactionId,
+            subjectId = eventData.subjectId,
+            subjectType = "Didi",
+            transactionDate = eventData.date,
+            referenceId = eventData.livelihoodId,
+            status = 1
         )
     }
 

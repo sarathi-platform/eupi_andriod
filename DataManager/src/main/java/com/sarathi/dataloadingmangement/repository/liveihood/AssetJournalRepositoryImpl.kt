@@ -4,6 +4,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJournalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import javax.inject.Inject
 
@@ -61,6 +62,30 @@ class AssetJournalRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             transactionId = transactionId,
             subjectId = subjectId
+        )
+    }
+
+    override suspend fun getSaveAssetJournalEventDto(
+        particular: String,
+        eventData: LivelihoodEventScreenData
+    ): SaveAssetJournalEventDto {
+        return SaveAssetJournalEventDto(
+            assetCount = eventData.assetCount,
+            createdDate = System.currentTimeMillis(),
+            particulars = particular,
+            referenceId = eventData.livelihoodId,
+            subjectId = eventData.subjectId,
+            subjectType = "Didi",
+            status = 1,
+            transactionId = eventData.transactionId,
+            referenceType = "LivelihoodEvent",
+            transactionType = "LivelihoodEvent",
+            transactionDate = eventData.date,
+            transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
+                ?: BLANK_STRING,
+            assetId = eventData.assetType
+
+
         )
     }
 }
