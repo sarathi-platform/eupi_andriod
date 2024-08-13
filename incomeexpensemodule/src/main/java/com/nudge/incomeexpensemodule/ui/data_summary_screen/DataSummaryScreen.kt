@@ -99,7 +99,8 @@ fun DataSummaryScreen(
     navController: NavHostController,
     viewModel: DataSummaryScreenViewModel,
     subjectId: Int,
-    subjectName: String
+    subjectName: String,
+    onSettingClick: () -> Unit,
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -194,7 +195,7 @@ fun DataSummaryScreen(
             }
 
         },
-        onSettingClick = { }) {
+        onSettingClick = { onSettingClick() }) {
 
     }
 
