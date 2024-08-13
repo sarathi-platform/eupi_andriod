@@ -32,7 +32,8 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
     private val dataLoadingApiService: DataLoadingApiService
 ) : ICoreLivelihoodRepository {
     override suspend fun getLivelihoodConfigFromNetwork(): ApiResponseModel<List<LivelihoodResponse>> {
-        return dataLoadingApiService.fetchLivelihoodConfigData(userId = 1)//coreSharedPrefs.getUserNameInInt())
+        val userId = coreSharedPrefs.getUserNameInInt()
+        return dataLoadingApiService.fetchLivelihoodConfigData(userId = userId)//coreSharedPrefs.getUserNameInInt())
     }
 
     override suspend fun <T> saveLivelihoodItemListToDB(items: List<T>, livelihoodId: Int) {

@@ -60,7 +60,7 @@ fun SubjectLivelihoodEventSummaryCard(
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(dimen_8_dp)
+            .padding(vertical = dimen_8_dp)
     ) {
         Column(
             modifier = Modifier
