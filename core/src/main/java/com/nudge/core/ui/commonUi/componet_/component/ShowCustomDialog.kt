@@ -100,9 +100,11 @@ fun ShowCustomDialog(
 
                             if (!negativeButtonTitle.isNullOrEmpty()) {
                                 ButtonNegative(
+                                    isActive = true,
                                     buttonTitle = negativeButtonTitle,
                                     isArrowRequired = false,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+
                                 ) {
                                     onNegativeButtonClick()
                                 }

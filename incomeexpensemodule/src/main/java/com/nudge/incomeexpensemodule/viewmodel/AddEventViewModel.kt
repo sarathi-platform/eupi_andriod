@@ -41,6 +41,7 @@ class AddEventViewModel @Inject constructor(
     private val writeLivelihoodEventUseCase: WriteLivelihoodEventUseCase
 ) : BaseViewModel() {
 
+    val showDeleteDialog = mutableStateOf(false)
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownValue
 
