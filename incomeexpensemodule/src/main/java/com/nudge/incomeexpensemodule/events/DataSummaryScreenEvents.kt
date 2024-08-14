@@ -8,4 +8,6 @@ sealed class DataSummaryScreenEvents() {
 
     data class TabFilterSelected(val selectedTabIndex: Int) : DataSummaryScreenEvents()
 
+    data class CustomDateRangeFilterSelected(val selectedTabIndex: Int) : DataSummaryScreenEvents()
+
 }
