@@ -66,6 +66,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJour
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
@@ -582,7 +583,8 @@ class DataLoadingModule {
         formUseCase: FormUseCase,
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
-        assetJournalUseCase: FetchAssetJournalUseCase
+        assetJournalUseCase: FetchAssetJournalUseCase,
+        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -608,7 +610,8 @@ class DataLoadingModule {
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
-            assetJournalUseCase = assetJournalUseCase
+            assetJournalUseCase = assetJournalUseCase,
+            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
         )
     }
 

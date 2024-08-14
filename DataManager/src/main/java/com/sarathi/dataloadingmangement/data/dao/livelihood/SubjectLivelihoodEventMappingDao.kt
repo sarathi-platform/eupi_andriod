@@ -12,6 +12,9 @@ interface SubjectLivelihoodEventMappingDao {
     @Insert
     suspend fun insertSubjectLivelihoodEventMapping(subjectLivelihoodEventMappingEntity: SubjectLivelihoodEventMappingEntity)
 
+    @Insert
+    suspend fun insertSubjectLivelihoodEventMapping(subjectLivelihoodEventMappingEntity: List<SubjectLivelihoodEventMappingEntity>)
+
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId and status=1")
     suspend fun getSubjectLivelihoodEventMappingAvailable(
         subjectId: Int,
@@ -34,7 +37,7 @@ interface SubjectLivelihoodEventMappingDao {
         livelihoodEventType: String, subjectId: Int
     )
 
-    @Query("Update subject_livelihood_event_mapping_table set status = 0 where transactionId=:transactionId and subjectId=:subjectId and userId=:userId")
+    @Query("Update subject_livelihood_event_mapping_table set status = 2 where transactionId=:transactionId and subjectId=:subjectId and userId=:userId")
     suspend fun softDeleteLivelihoodEventMapping(
         userId: String,
         transactionId: String,
@@ -49,7 +52,7 @@ interface SubjectLivelihoodEventMappingDao {
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId\n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId\n" +
-                "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId and subject_livelihood_event_mapping_table.status=1  group by subject_livelihood_event_mapping_table.id "
+                "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId and subject_livelihood_event_mapping_table.status=1   group by subject_livelihood_event_mapping_table.id "
     )
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(
         userId: String,

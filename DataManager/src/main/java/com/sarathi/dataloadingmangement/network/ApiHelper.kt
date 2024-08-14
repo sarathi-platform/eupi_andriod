@@ -15,4 +15,6 @@ const val SUBPATH_GET_FORM_DETAILS = "/didi-service/form/getFormDetails"
 const val SUBPATH_GET_MONEY_JOURNAL_DETAILS = "/didi-service/moneyJournal/fetchAll/{doerId}"
 const val SUBPATH_GET_ASSETS_JOURNAL_DETAILS = "/didi-service/assetJournal/fetchAll/{doerId}"
 const val SUBPATH_GET_LIVELIHOOD_CONFIG = "/livelihood-service/livelihood/config/program"
+const val SUBPATH_GET_LIVELIHOOD_SAVE_EVENT =
+    "/livelihood-service/livelihood/livelihood-event/{doerId}"
 const val SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK = "didi-service/smallgroup/attendance-history"

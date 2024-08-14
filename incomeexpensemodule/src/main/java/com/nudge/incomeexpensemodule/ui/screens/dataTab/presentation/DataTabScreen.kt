@@ -35,8 +35,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
-import com.nudge.core.TabsCore
-import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDurationDifferenceInDays
 import com.nudge.core.isOnline
@@ -44,7 +42,7 @@ import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
-import com.nudge.core.ui.commonUi.CustomSubTabLayout
+import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomTextViewComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
@@ -158,8 +156,6 @@ fun DataTabScreen(
         mutableStateOf(false)
     }
 
-    val tabs = listOf<SubTabs>(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab)
-
 
     Surface(modifier = Modifier.padding(bottom = dimen_56_dp)) {
         BottomSheetScaffoldComponent<LivelihoodModel>(
@@ -217,11 +213,13 @@ fun DataTabScreen(
                                 verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                             ) {
 
-                                CustomSubTabLayout(
+                                CustomSubTabLayoutWithCallBack(
                                     parentTabIndex = TabsEnum.DataTab.tabIndex,
-                                    tabs = tabs,
+                                    tabs = dataTabScreenViewModel.tabs,
                                     dataTabScreenViewModel.countMap
-                                )
+                                ) {
+                                    dataTabScreenViewModel.onEvent(DataTabEvents.OnSubTabChanged)
+                                }
 
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
@@ -313,7 +311,37 @@ fun DataTabScreen(
                                         val summaryForSubject =
                                             dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
 
-                                        when (TabsCore.getSubTabForTabIndex(TabsEnum.DataTab.tabIndex)) {
+                                        SubjectLivelihoodEventSummaryCard(
+                                            subjectId = subject.subjectId!!,
+                                            name = subject.subjectName,
+                                            address = subject.houseNo + ", " + subject.cohortName,
+                                            location = subject.villageName,
+                                            lastUpdated = getDurationDifferenceInDays(
+                                                subject.lastUpdated
+                                            ),
+                                            incomeExpenseSummaryUiModel = summaryForSubject,
+                                            onAssetCountClicked = {
+                                                dataTabScreenViewModel.onEvent(
+                                                    DataTabEvents.ShowAssetDialogForSubject(
+                                                        showDialog = true,
+                                                        subjectId = it,
+                                                        listOf(
+                                                            subject.primaryLivelihoodId,
+                                                            subject.secondaryLivelihoodId
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        ) {
+                                            navigateToDataSummaryScreen(
+                                                navController = navHostController,
+                                                subjectId = subject.subjectId,
+                                                subjectName = subject.subjectName
+                                            )
+
+                                        }
+
+                                        /*when (TabsCore.getSubTabForTabIndex(TabsEnum.DataTab.tabIndex)) {
                                             0 -> {
 
                                                 SubjectLivelihoodEventSummaryCard(
@@ -422,8 +450,7 @@ fun DataTabScreen(
                                                     }
                                                 }
                                             }
-                                        }
-
+                                        }*/
                                     }
 
                                     item {

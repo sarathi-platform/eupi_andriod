@@ -12,4 +12,6 @@ sealed class DataTabEvents {
         val livelihoodIds: List<Int>
     ) : DataTabEvents()
 
+    object OnSubTabChanged : DataTabEvents()
+
 }

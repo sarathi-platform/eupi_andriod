@@ -9,6 +9,7 @@ import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.AssetJournalApiResponse
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
+import com.sarathi.dataloadingmangement.model.response.LivelihoodSaveEventResponse
 import com.sarathi.dataloadingmangement.model.response.MoneyJournalApiResponse
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
@@ -79,6 +80,10 @@ interface DataLoadingApiService {
     @GET(SUBPATH_GET_ASSETS_JOURNAL_DETAILS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getAssetJournalDetails(@Path("doerId") doerId: Int): ApiResponseModel<List<AssetJournalApiResponse>>
+
+    @GET(SUBPATH_GET_LIVELIHOOD_SAVE_EVENT)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getSaveLivelihoodEvent(@Path("doerId") doerId: Int): ApiResponseModel<List<LivelihoodSaveEventResponse>>
 
     @GET(SUBPATH_GET_LIVELIHOOD_CONFIG)
     suspend fun fetchLivelihoodConfigData(@Query("userId") userId: Int): ApiResponseModel<List<LivelihoodResponse>>

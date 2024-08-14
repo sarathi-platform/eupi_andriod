@@ -9,8 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
+import com.nudge.core.TabsCore
 import com.nudge.core.WEEK_DURATION_RANGE
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.model.uiModel.LivelihoodModel
@@ -32,6 +34,8 @@ class DataTabScreenViewModel @Inject constructor(
     private val dataTabUseCase: DataTabUseCase,
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
 ) : BaseViewModel() {
+
+    val tabs = listOf<SubTabs>(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab)
 
     private val _filters = mutableStateListOf<LivelihoodModel>()
     val filters: SnapshotStateList<LivelihoodModel> get() = _filters
@@ -90,6 +94,7 @@ class DataTabScreenViewModel @Inject constructor(
             is DataTabEvents.OnSearchQueryChanged -> {
                 onSearchQueryChanged(event.searchQuery)
             }
+
             is DataTabEvents.LivelihoodSortApplied -> {
                 if (isSortApplied.value) {
                     _filteredDataTabScreenUiEntityList.value =
@@ -100,11 +105,15 @@ class DataTabScreenViewModel @Inject constructor(
 
                 }
             }
+
+            is DataTabEvents.OnSubTabChanged -> {
+                updateDataTabScreenUiEntityListForSubTab(tabs[TabsCore.getSubTabForTabIndex(TabsEnum.DataTab.tabIndex)])
+            }
         }
     }
 
     private fun onSearchQueryChanged(searchQuery: String) {
-        val filteredList = if (isFilterApplied.value) {
+        var filteredList = if (isFilterApplied.value) {
             getFilteredList(LIVELIHOOD_FILTER, selectedFilterValue.value)
         } else {
             subjectList.value
@@ -177,6 +186,7 @@ class DataTabScreenViewModel @Inject constructor(
                 dataTabUseCase.fetchSubjectLivelihoodEventHistoryUseCase.invoke(subjectList.value.map { it.subjectId })
 
             updateDataTabScreenUiEntityList()
+
             livelihoodModelList =
                 getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId }
 
@@ -190,38 +200,49 @@ class DataTabScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateDataTabScreenUiEntityList() {
+    private fun updateDataTabScreenUiEntityList(): List<DataTabScreenUiModel> {
         _filteredDataTabScreenUiEntityList.value = DataTabScreenUiModel.getDataTabUiEntityList(
             filteredSubjectList.value,
             lastEventDateMapForSubject
         )
+        onEvent(DataTabEvents.LivelihoodSortApplied)
+        return filteredDataTabScreenUiEntityList.value
     }
 
-    fun getLastEventMapListForSubTab(subTabs: SubTabs): Map<Int, Long> {
+    fun updateDataTabScreenUiEntityListForSubTab(subTabs: SubTabs) {
         val currentTime = getCurrentTimeInMillis()
-        return when (subTabs) {
+        when (subTabs) {
             SubTabs.All -> {
-                lastEventDateMapForSubject
+                _filteredSubjectList.value = subjectList.value
+                updateDataTabScreenUiEntityList()
             }
 
             SubTabs.NoEntryWeekTab -> {
-                lastEventDateMapForSubject.filter {
-                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
-                        WEEK_DURATION_RANGE
-                    )
-                }
+                _filteredDataTabScreenUiEntityList.value =
+                    DataTabScreenUiModel.getDataTabUiEntityList(
+                        filteredSubjectList.value,
+                        lastEventDateMapForSubject
+                    ).filterNot {
+                        it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
+                            WEEK_DURATION_RANGE
+                        )
+                    }
             }
 
             SubTabs.NoEntryMonthTab -> {
-                lastEventDateMapForSubject.filter {
-                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
-                        DEFAULT_DATE_RANGE_DURATION
-                    )
-                }
+                _filteredDataTabScreenUiEntityList.value =
+                    DataTabScreenUiModel.getDataTabUiEntityList(
+                        filteredSubjectList.value,
+                        lastEventDateMapForSubject
+                    ).filterNot {
+                        it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
+                            DEFAULT_DATE_RANGE_DURATION
+                        )
+                    }
             }
 
             else -> {
-                lastEventDateMapForSubject
+                _filteredSubjectList.value = subjectList.value
             }
         }
     }
@@ -231,12 +252,41 @@ class DataTabScreenViewModel @Inject constructor(
         countMap.put(SubTabs.All, subjectList.value.size)
         countMap.put(
             SubTabs.NoEntryWeekTab,
-            getLastEventMapListForSubTab(SubTabs.NoEntryWeekTab).size
+            getLastEventMapListForSubTab(SubTabs.NoEntryWeekTab)
         )
         countMap.put(
             SubTabs.NoEntryMonthTab,
-            getLastEventMapListForSubTab(SubTabs.NoEntryMonthTab).size
+            getLastEventMapListForSubTab(SubTabs.NoEntryMonthTab)
         )
+    }
+
+    private fun getLastEventMapListForSubTab(subTabs: SubTabs): Int {
+        val currentTime = getCurrentTimeInMillis()
+        return when (subTabs) {
+            SubTabs.All -> {
+                lastEventDateMapForSubject.size
+            }
+
+            SubTabs.NoEntryWeekTab -> {
+                lastEventDateMapForSubject.filter {
+                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
+                        WEEK_DURATION_RANGE
+                    )
+                }.size
+            }
+
+            SubTabs.NoEntryMonthTab -> {
+                lastEventDateMapForSubject.filter {
+                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
+                        DEFAULT_DATE_RANGE_DURATION
+                    )
+                }.size
+            }
+
+            else -> {
+                lastEventDateMapForSubject.size
+            }
+        }
     }
 
     private suspend fun createFilterBottomSheetList(livelihoodModelsList: List<LivelihoodModel>) {

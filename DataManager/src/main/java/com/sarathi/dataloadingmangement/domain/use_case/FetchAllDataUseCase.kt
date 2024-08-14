@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
@@ -23,6 +24,7 @@ class FetchAllDataUseCase @Inject constructor(
     val moneyJournalUseCase: FetchMoneyJournalUseCase,
     val assetJournalUseCase: FetchAssetJournalUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
+    val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -40,6 +42,8 @@ class FetchAllDataUseCase @Inject constructor(
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
+                fetchLivelihoodSaveEventUseCase.invoke()
+                livelihoodUseCase.invoke()
                 moneyJournalUseCase.invoke()
                 assetJournalUseCase.invoke()
             }
@@ -51,9 +55,6 @@ class FetchAllDataUseCase @Inject constructor(
             }
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
-            }
-            CoroutineScope(Dispatchers.IO).launch {
-                livelihoodUseCase.invoke()
             }
         } else {
             onComplete(true, BLANK_STRING)

@@ -15,8 +15,12 @@ interface AssetJournalDao {
     @Insert
     suspend fun insetAssetJournalEntry(assetJournals: List<AssetJournalEntity>)
 
-    @Query("Select count(*) from asset_journal_table where userId=:userId and transactionId=:transactionId and status=1")
-    suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
+    @Query("Select count(*) from asset_journal_table where userId=:userId and transactionId=:transactionId and  subjectId=:subjectId and status=1 ")
+    suspend fun isTransactionAlreadyExist(
+        userId: String,
+        transactionId: String,
+        subjectId: Int
+    ): Int
 
     @Query("Select * from asset_journal_table where userId=:userId and transactionId=:transactionId and subjectId=:subjectId and status=1")
     suspend fun getAssetJournalForTransaction(
@@ -37,7 +41,7 @@ interface AssetJournalDao {
     )
 
 
-    @Query("update asset_journal_table set status=0 where transactionId=:transactionId and userId=:userId and subjectId=:subjectId")
+    @Query("update asset_journal_table set status=2 where transactionId=:transactionId and userId=:userId and subjectId=:subjectId")
     suspend fun softDeleteTransaction(transactionId: String, userId: String, subjectId: Int)
 
     @Query("Delete from asset_journal_table where userId=:userId")
@@ -52,6 +56,7 @@ interface AssetJournalDao {
                 " and assetId = :assetId\n" +
                 " and transactionFlow = :transactionFlow \n" +
                 " and referenceType = :referenceType \n" +
+                " and status=1 " +
                 " group by assetId, referenceId"
     )
     suspend fun getAssetCountForAsset(
@@ -71,7 +76,8 @@ interface AssetJournalDao {
                 "and assetId = :assetId\n" +
                 "and transactionFlow = :transactionFlow \n" +
                 "and referenceType = :referenceType \n" +
-                "and transactionDate BETWEEN :durationStart and :durationEnd \n" +
+                " and status=1 " +
+                " and transactionDate BETWEEN :durationStart and :durationEnd \n" +
                 "group by assetId, referenceId"
     )
     suspend fun getAssetCountForAssetForDuration(

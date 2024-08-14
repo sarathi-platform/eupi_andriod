@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
@@ -31,8 +33,10 @@ fun AssetsDialog(
     livelihoodModel: List<LivelihoodModel>,
     onDismissRequest: () -> Unit
 ) {
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
+        shape = RoundedCornerShape(roundedCornerRadiusDefault),
         title = {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Assets", style = defaultTextStyle, color = textColorDark)
@@ -63,17 +67,18 @@ fun AssetsDialog(
                             color = textColorDark
                         )
                         Column() {
-                            incomeExpenseSummaryUiModel?.assetsCountWithValue?.forEach { assetsCountWithValueItem ->
-                                val assets =
-                                    incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
-                                val itemIndex = assets?.map { it.assetId }
-                                    ?.indexOf(assetsCountWithValueItem.assetId).value()
-                                if (itemIndex != -1) {
-                                    AssetRow(
-                                        assets?.get(itemIndex)?.name.value(),
-                                        assetsCountWithValueItem.assetCount.toString(),
-                                        "₹ ${assetsCountWithValueItem.totalAssetValue}"
-                                    )
+                            incomeExpenseSummaryUiModel?.assetsCountWithValue?.distinctBy { it.assetId }
+                                ?.forEach { assetsCountWithValueItem ->
+                                    val assets =
+                                        incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
+                                    val itemIndex = assets?.map { it.assetId }
+                                        ?.indexOf(assetsCountWithValueItem.assetId).value()
+                                    if (itemIndex != -1) {
+                                        AssetRow(
+                                            assets?.get(itemIndex)?.name.value(),
+                                            assetsCountWithValueItem.assetCount.toString(),
+                                            "₹ ${assetsCountWithValueItem.totalAssetValue}"
+                                        )
                                     Spacer(modifier = Modifier.height(dimen_6_dp))
                                 }
                             }
@@ -87,6 +92,7 @@ fun AssetsDialog(
              * Implementation not required. **/
         },
     )
+
 }
 
 @Composable
