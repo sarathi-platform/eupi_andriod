@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sarathi</string>
+    <string name="app_name">SARATHI</string>
     <string name="online_text">Online</string>
     <string name="offline_text">Offline</string>
     <string name="not_able_to_load">"Data Load khlai maya, Tai waisa khlai phidi. "</string>

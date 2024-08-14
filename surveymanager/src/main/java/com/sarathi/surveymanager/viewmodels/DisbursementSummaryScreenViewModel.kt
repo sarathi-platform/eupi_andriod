@@ -213,7 +213,10 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                     subjectType = subjectType
 
                 )
-                saveTransactionMoneyJournalUseCase.deleteTransactionFromMoneyJournal(referenceId)
+                saveTransactionMoneyJournalUseCase.deleteTransactionFromMoneyJournal(
+                    referenceId,
+                    taskEntity?.subjectId ?: 0
+                )
                 onDeleteSuccess(deleteCount)
             }
             formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)

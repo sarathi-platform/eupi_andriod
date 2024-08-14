@@ -43,6 +43,7 @@ class FetchAllDataUseCase @Inject constructor(
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
                 fetchLivelihoodSaveEventUseCase.invoke()
+                livelihoodUseCase.invoke()
                 moneyJournalUseCase.invoke()
                 assetJournalUseCase.invoke()
             }
@@ -54,9 +55,6 @@ class FetchAllDataUseCase @Inject constructor(
             }
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
-            }
-            CoroutineScope(Dispatchers.IO).launch {
-                livelihoodUseCase.invoke()
             }
         } else {
             onComplete(true, BLANK_STRING)
