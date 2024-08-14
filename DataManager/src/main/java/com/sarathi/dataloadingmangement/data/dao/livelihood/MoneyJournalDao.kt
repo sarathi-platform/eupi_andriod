@@ -57,7 +57,16 @@ interface MoneyJournalDao {
         referenceType: String
     ): IncomeExpenseUiModel?
 
-    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and status=1 and transactionDate BETWEEN :durationStart and :durationEnd group by subjectId")
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and referenceId = :referenceId group by subjectId")
+    suspend fun getTotalIncomeExpenseForSubject(
+        transactionFlow: String,
+        userId: String,
+        subjectId: Int,
+        referenceType: String,
+        referenceId: Int
+    ): IncomeExpenseUiModel?
+
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and transactionDate BETWEEN :durationStart and :durationEnd group by subjectId")
 
     suspend fun getTotalIncomeExpenseForSubjectForDuration(
         transactionFlow: String,

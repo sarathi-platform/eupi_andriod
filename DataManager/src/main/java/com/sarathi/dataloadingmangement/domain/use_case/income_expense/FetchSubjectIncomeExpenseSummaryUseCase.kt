@@ -51,6 +51,34 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
         )
     }
 
+    suspend fun getLivelihoodIncomeExpenseSummaryMap(
+        subjectId: Int,
+        subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity
+    ): Map<Int, IncomeExpenseSummaryUiModel> {
+        val livelihoodIncomeExpenseMap: MutableMap<Int, IncomeExpenseSummaryUiModel> = HashMap()
+        val livelihoods = listOf(
+            subjectLivelihoodMappingEntity.primaryLivelihoodId,
+            subjectLivelihoodMappingEntity.secondaryLivelihoodId
+        )
+        livelihoods.forEach {
+            val assets = assetRepositoryImpl.getAssetsEntityForLivelihood(
+                listOf(
+                    it
+                )
+            )
+            livelihoodIncomeExpenseMap.put(
+                it, fetchSubjectIncomeExpenseSummaryRepository.getIncomeExpenseSummaryForSubject(
+                    subjectId,
+                    assets,
+                    it
+                )
+            )
+        }
+
+        return livelihoodIncomeExpenseMap
+
+    }
+
     suspend fun getSummaryForSubjects(subjectLivelihoodMappingEntityList: List<SubjectEntityWithLivelihoodMappingUiModel>): Map<Int, IncomeExpenseSummaryUiModel> {
         val summaryMap: HashMap<Int, IncomeExpenseSummaryUiModel> = hashMapOf()
         subjectLivelihoodMappingEntityList.forEach {

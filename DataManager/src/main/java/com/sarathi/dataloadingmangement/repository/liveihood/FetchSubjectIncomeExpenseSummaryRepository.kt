@@ -11,9 +11,19 @@ interface FetchSubjectIncomeExpenseSummaryRepository {
         assets: List<AssetEntity>
     ): IncomeExpenseSummaryUiModel
 
+    suspend fun getIncomeExpenseSummaryForSubject(
+        subjectId: Int,
+        assets: List<AssetEntity>,
+        livelihoodId: Int
+    ): IncomeExpenseSummaryUiModel
+
     suspend fun getTotalIncomeForSubject(subjectId: Int): Double
 
+    suspend fun getTotalIncomeForSubjectLivelihood(subjectId: Int, livelihoodId: Int): Double
+
     suspend fun getTotalExpenseForSubject(subjectId: Int): Double
+
+    suspend fun getTotalExpenseForSubjectLivelihood(subjectId: Int, livelihoodId: Int): Double
 
     suspend fun getAssetCountForAssets(subjectId: Int, assetIds: List<Int>): List<AssetCountUiModel>
 
