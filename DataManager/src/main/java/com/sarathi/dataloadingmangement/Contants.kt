@@ -44,6 +44,9 @@ const val MODE_TAG = 89
 const val RECEIVED_AMOUNT_TAG = 86
 const val DISBURSED_AMOUNT_TAG = 98
 const val MULTI_IMAGE_TAG = 91
+const val KIND = "Kind"
+const val INFLOW = "INFLOW"
+const val OUTFLOW = "OUTFLOW"
 
 const val NO_OF_POOR_DIDI_TAG = 85
 const val DATE_TAG = 87
