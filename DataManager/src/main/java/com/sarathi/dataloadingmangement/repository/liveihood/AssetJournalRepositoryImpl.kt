@@ -31,27 +31,26 @@ class AssetJournalRepositoryImpl @Inject constructor(
             referenceId = eventData.livelihoodId,
             assetId = eventData.assetType
         )
-        if (assetJournalDao.isTransactionAlreadyExist(
-                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                transactionId = assetJournal.transactionId
-            ) > 0
-        ) {
-            softDeleteAssetJournalEvent(
-                transactionId = assetJournal.transactionId,
-                subjectId = assetJournal.subjectId
-            )
-        }
+
         assetJournalDao.insetAssetJournalEntry(assetJournal)
 
 
     }
 
     override suspend fun softDeleteAssetJournalEvent(transactionId: String, subjectId: Int) {
-        assetJournalDao.softDeleteTransaction(
-            transactionId = transactionId,
-            subjectId = subjectId,
-            userId = coreSharedPrefs.getUniqueUserIdentifier()
-        )
+        if (assetJournalDao.isTransactionAlreadyExist(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                transactionId = transactionId,
+                subjectId = subjectId
+            ) > 0
+        ) {
+            assetJournalDao.softDeleteTransaction(
+                transactionId = transactionId,
+                subjectId = subjectId,
+                userId = coreSharedPrefs.getUniqueUserIdentifier()
+            )
+        }
+
     }
 
     override suspend fun getAssetForTransaction(

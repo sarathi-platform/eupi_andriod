@@ -104,7 +104,6 @@ class AddEventViewModel @Inject constructor(
                 amount.value = savedEvent.amount.toString()
                 selectedAssetTypeId.value = savedEvent.assetType
                 assetCount.value = savedEvent.assetCount.toString()
-
                 getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
                     questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
                 }
@@ -188,7 +187,7 @@ class AddEventViewModel @Inject constructor(
     }
 
     fun onEventSelected(selectedValue: ValuesDto) {
-
+        resetForm()
         eventType = eventList.find { it.id == selectedValue.id }?.eventType ?: BLANK_STRING
 
         selectedEventId.value = selectedValue.id
@@ -196,6 +195,7 @@ class AddEventViewModel @Inject constructor(
         selectedAssetTypeId.value = -1
         assetCount.value = BLANK_STRING
         amount.value = BLANK_STRING
+
 
         getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
             if (questionVisibilityMap.containsKey(it)) {
