@@ -12,6 +12,9 @@ interface SubjectLivelihoodEventMappingDao {
     @Insert
     suspend fun insertSubjectLivelihoodEventMapping(subjectLivelihoodEventMappingEntity: SubjectLivelihoodEventMappingEntity)
 
+    @Insert
+    suspend fun insertSubjectLivelihoodEventMapping(subjectLivelihoodEventMappingEntity: List<SubjectLivelihoodEventMappingEntity>)
+
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId and status=1")
     suspend fun getSubjectLivelihoodEventMappingAvailable(
         subjectId: Int,
