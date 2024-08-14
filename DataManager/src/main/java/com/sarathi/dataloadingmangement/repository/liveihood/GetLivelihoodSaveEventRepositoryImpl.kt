@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
@@ -31,15 +32,15 @@ class GetLivelihoodSaveEventRepositoryImpl @Inject constructor(
                         date = it.date,
                         assetCount = it.assetCount,
                         livelihoodId = it.livelihoodId,
-                        productValue = it.productValue,
-                        assetTypeValue = it.assetTypeValue,
+                        productValue = it.productValue ?: BLANK_STRING,
+                        assetTypeValue = it.assetTypeValue ?: BLANK_STRING,
                         eventId = it.eventId,
-                        eventValue = it.eventValue,
+                        eventValue = it.eventValue ?: BLANK_STRING,
                         productId = it.productId,
                         assetType = it.assetType,
                         transactionId = it.transactionId,
-                        selectedEvent = getLivelihoodEventFromName(it.eventType),
-                        livelihoodValue = it.livelihoodValue
+                        selectedEvent = getLivelihoodEventFromName(it.eventType ?: BLANK_STRING),
+                        livelihoodValue = it.livelihoodValue ?: BLANK_STRING
                     ),
                 )
             )

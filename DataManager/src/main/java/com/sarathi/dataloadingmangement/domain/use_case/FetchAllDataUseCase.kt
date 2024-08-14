@@ -42,9 +42,9 @@ class FetchAllDataUseCase @Inject constructor(
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
+                fetchLivelihoodSaveEventUseCase.invoke()
                 moneyJournalUseCase.invoke()
                 assetJournalUseCase.invoke()
-                fetchLivelihoodSaveEventUseCase.invoke()
             }
             fetchContentDataFromNetworkUseCase.invoke()
             coreSharedPrefs.setDataLoaded(true)
