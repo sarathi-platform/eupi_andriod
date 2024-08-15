@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,11 +78,13 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
@@ -486,6 +489,8 @@ private fun EventView(
             ) {
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
                 EventDetails(subjectLivelihoodEventSummaryUiModel)
+                CustomVerticalSpacer(size = dimen_5_dp)
+                Divider(thickness = dimen_1_dp, color = greyBorder)
             }
 
         }
@@ -512,6 +517,8 @@ private fun EventView(
                             EventDetails(
                                 subjectLivelihoodEventSummaryUiModel,
                             )
+                            CustomVerticalSpacer(size = dimen_5_dp)
+                            Divider(thickness = dimen_1_dp, color = greyBorder)
                         }
                     }
                 }
