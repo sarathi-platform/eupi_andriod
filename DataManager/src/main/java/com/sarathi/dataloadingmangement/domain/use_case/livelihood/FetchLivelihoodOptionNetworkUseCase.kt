@@ -42,7 +42,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
         }
         return false
     }
-    suspend fun saveFormEData(
+    suspend fun saveLivelihoodMappingData(
         subjectId: Int,
 
         selectedPrimaryLivelihood: Int,
@@ -60,12 +60,11 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
     }
     suspend fun invoke(): Boolean {
         try {
+
             var getActivityIdForLivelihood =repository.getActivityIdForLivelihood()
-            if (getActivityIdForLivelihood!=null){
-                getSubjectLivelihoodMapping(
-                    activityId = getActivityIdForLivelihood,
-                    )
-                }
+            getSubjectLivelihoodMapping(
+                activityId = getActivityIdForLivelihood,
+                )
         } catch (ex: Exception) {
             throw ex
         }

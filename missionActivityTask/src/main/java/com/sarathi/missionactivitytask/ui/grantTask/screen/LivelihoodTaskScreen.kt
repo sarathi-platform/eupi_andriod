@@ -82,13 +82,16 @@ fun LivelihoodTaskRowView(
             viewModel.activityConfigUiModelWithoutSurvey?.let {
                 when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
                     ActivityTypeEnum.LIVELIHOOD -> {
-                        navigateToLivelihoodDropDownScreen(
-                            navController,
-                            taskId = task.key,
-                            activityId = viewModel.activityId,
-                            missionId = viewModel.missionId,
-                            subjectName = subjectName
-                        )
+                        if (!viewModel.isActivityCompleted.value) {
+                            navigateToLivelihoodDropDownScreen(
+                                navController,
+                                taskId = task.key,
+                                activityId = viewModel.activityId,
+                                missionId = viewModel.missionId,
+                                subjectName = subjectName
+
+                            )
+                        }
                     }
 
                     else -> {}

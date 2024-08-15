@@ -67,5 +67,6 @@ interface SubjectLivelihoodMappingDao {
                 secondaryLivelihoodId = subjectLivelihoodMappingEntity.secondaryLivelihoodId)
         }
     }
-
+    @Query("DELETE from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where userId = :userId")
+    fun deleteLivelihoodSubjectsForUsers(userId: String)
 }

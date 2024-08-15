@@ -621,7 +621,7 @@ fun NavGraphBuilder.MatNavigation(
             ActivitySuccessScreen(
                 onNavigateBack = { isFromActivity ->
                     navController.popBackStack(
-                        MATHomeScreens.GrantTaskScreen.route,
+                        MATHomeScreens.LivelihoodTaskScreen.route,
                         inclusive = isFromActivity
                     )
                 },
@@ -802,6 +802,8 @@ fun NavGraphBuilder.MatNavigation(
             subjectName = it.arguments?.getString(
                 ARG_SUBJECT_NAME
             ).value(),
+//            isActivityComplete = it.arguments?.getBoolean(ACTIVITY_COMPLETED).value(),
+
             onSettingClicked = {
 
             })

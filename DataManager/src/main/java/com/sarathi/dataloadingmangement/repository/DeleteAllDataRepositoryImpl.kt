@@ -85,6 +85,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
             tagReferenceEntityDao().deleteTagReferenceEntityForUser(userId)
 
             moneyJournalDao().deleteMoneyJournal(userId)
+            subjectLivelihoodMappingDao().deleteLivelihoodSubjectsForUsers(userId)
         }
     }
 }
