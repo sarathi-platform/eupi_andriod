@@ -139,7 +139,11 @@ fun DataSummaryScreen(
         sheetBackgroundColor = searchFieldBg,
     )
 
-    val dateRangePickerProperties = rememberDateRangePickerProperties()
+    val dateRangePickerProperties = rememberDateRangePickerProperties(
+        dateValidator = {
+            it <= getCurrentTimeInMillis()
+        }
+    )
 
     val scope = rememberCoroutineScope()
 
