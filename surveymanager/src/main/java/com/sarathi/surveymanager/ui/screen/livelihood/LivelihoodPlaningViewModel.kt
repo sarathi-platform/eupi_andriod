@@ -169,7 +169,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 )
             }
 
-            fetchLivelihoodOptionNetworkUseCase.saveFormEData(activityId = activityId!!,
+            fetchLivelihoodOptionNetworkUseCase.saveLivelihoodMappingData(activityId = activityId!!,
                 subjectId = subjectId!!,
                selectedPrimaryLivelihood =  primaryLivelihoodId.value,
                 selectedSecondaryLivelihood =  secondaryLivelihoodId.value,
