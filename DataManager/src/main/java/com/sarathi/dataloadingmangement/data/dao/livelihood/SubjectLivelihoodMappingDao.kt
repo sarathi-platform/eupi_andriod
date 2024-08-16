@@ -48,25 +48,6 @@ interface SubjectLivelihoodMappingDao {
         userId: String
     ): List<SubjectLivelihoodMappingEntity>
 
-    @Transaction
-    suspend  fun insertOrModifyLivelihoodMapping(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
-        if (isSubjectLivelihoodMappingAvailable(
-                subjectId =subjectLivelihoodMappingEntity.subjectId!! ,
-            userId = subjectLivelihoodMappingEntity.userId
-
-            ) == 0
-        ) {
-            insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
-        } else {
-            updatePrimaryLivelihoodForSubject(
-                userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
-                subjectId = subjectLivelihoodMappingEntity.subjectId,
-                primaryLivelihoodId = subjectLivelihoodMappingEntity.primaryLivelihoodId)
-            updateSecondaryLivelihoodForSubject( userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
-                subjectId = subjectLivelihoodMappingEntity.subjectId,
-                secondaryLivelihoodId = subjectLivelihoodMappingEntity.secondaryLivelihoodId)
-        }
-    }
     @Query("DELETE from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where userId = :userId")
     fun deleteLivelihoodSubjectsForUsers(userId: String)
 }
