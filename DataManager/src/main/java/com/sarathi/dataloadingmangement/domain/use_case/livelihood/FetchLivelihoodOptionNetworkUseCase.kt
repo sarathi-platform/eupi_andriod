@@ -53,9 +53,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
             subjectId = subjectId,
             selectedPrimaryLivelihood = selectedPrimaryLivelihood,
             selectedSecondaryLivelihood = selectedSecondaryLivelihood,
-            activityId = activityId,
-//            referenceId = referenceId,
-//            subjectType = subjectType
+            activityId = activityId
         )
     }
     suspend fun invoke(): Boolean {

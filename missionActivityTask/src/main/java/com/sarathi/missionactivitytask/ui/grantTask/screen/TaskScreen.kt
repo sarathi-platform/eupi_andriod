@@ -371,6 +371,7 @@ fun TaskRowView(
                 }
 
             }*/
+            //
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {

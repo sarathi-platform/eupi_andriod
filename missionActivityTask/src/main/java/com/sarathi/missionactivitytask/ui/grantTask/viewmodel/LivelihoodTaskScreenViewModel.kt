@@ -67,8 +67,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
-            activityConfigUiModelWithoutSurvey =
-                getActivityUiConfigUseCase.getActivityConfig(activityId, missionId)
+
             livelihoodsEntityList.clear()
             livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
 

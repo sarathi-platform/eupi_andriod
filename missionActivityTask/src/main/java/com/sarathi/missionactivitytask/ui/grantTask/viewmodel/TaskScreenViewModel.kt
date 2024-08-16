@@ -104,6 +104,8 @@ open class TaskScreenViewModel @Inject constructor(
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            activityConfigUiModelWithoutSurvey =
+                getActivityUiConfigUseCase.getActivityConfig(activityId, missionId)
             onEvent(LoaderEvent.UpdateLoaderState(true))
 
             taskUiModel = if (taskList.isNullOrEmpty()) getTaskUseCase.getActiveTasks(

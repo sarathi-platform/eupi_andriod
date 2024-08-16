@@ -12,8 +12,6 @@ interface FetchLivelihoodOptionRepository {
 
     suspend fun saveFromToDB(
         subjectId: Int,
-//        surveyId: Int,
-//        missionId: Int,
         activityId: Int,
         selectedPrimaryLivelihood: Int,
         selectedSecondaryLivelihood: Int
