@@ -12,8 +12,12 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
 
     override suspend fun saveSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
         subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
-    }
 
+    }
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+        subjectLivelihoodMappingDao.insertOrModifyLivelihoodMapping(subjectLivelihoodMappingEntity)
+
+    }
     override fun getUserId() = coreSharedPrefs.getUniqueUserIdentifier()
 
 }

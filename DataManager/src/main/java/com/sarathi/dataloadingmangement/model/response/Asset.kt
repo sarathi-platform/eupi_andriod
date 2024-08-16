@@ -8,5 +8,6 @@ data class Asset(
     @SerializedName("status") var status: Int? = null,
     @SerializedName("image") var image: String? = null,
     @SerializedName("type") var type: String? = null,
+    @SerializedName("value") var value: Double? = null,
     @SerializedName("languages") var languages: ArrayList<LanguageReference> = arrayListOf()
 )

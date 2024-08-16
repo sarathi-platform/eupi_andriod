@@ -15,7 +15,7 @@ data class SubjectLivelihoodMappingEntity(
     val primaryLivelihoodId: Int,
     val secondaryLivelihoodId: Int
 ) {
-
+//
     companion object {
         fun getSubjectLivelihoodMappingEntity(
             userId: String,

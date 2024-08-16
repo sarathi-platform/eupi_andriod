@@ -55,6 +55,7 @@ open class TaskScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
+    var activityType: String? = null
     var activityConfigUiModel: ActivityConfigUiModel? = null
     var activityConfigUiModelWithoutSurvey: ActivityConfigEntity? = null
     private val _taskList =
@@ -68,6 +69,9 @@ open class TaskScreenViewModel @Inject constructor(
     var isGroupByEnable = mutableStateOf(false)
     var isFilterEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
+
+    var isProgressEnable = mutableStateOf(true)
+    val isTaskProgressBarVisible = mutableStateOf(false)
 
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
@@ -145,8 +149,22 @@ open class TaskScreenViewModel @Inject constructor(
                         isGroupByEnable.value = true
                         isFilterEnable.value = true
                     }
+                    val progressUiComponent = getUiComponentValues(
+                        taskId = it.taskId,
+                        taskStatus = it.status.toString(),
+                        isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
+                        isNAButtonEnable = it.isNotAvailableButton,
+                        subjectId = it.subjectId,
+                        componentType = ComponentEnum.Progress.name,
+                        activityConfig = activityConfig
+                    )
+
+                    isProgressEnable.value =
+                        progressUiComponent[TaskCardSlots.TASK_PROGRESS.name]?.value != null
                 }
-                _taskList.value[it.taskId] = uiComponent
+
+                if (uiComponent[TaskCardSlots.TASK_TITLE.name]?.value?.isNotEmpty() == true)
+                    _taskList.value[it.taskId] = uiComponent
 
             }
 
@@ -235,6 +253,14 @@ open class TaskScreenViewModel @Inject constructor(
     fun setMissionActivityId(missionId: Int, activityId: Int) {
         this.missionId = missionId
         this.activityId = activityId
+        getActivityType(missionId, activityId)
+    }
+
+    private fun getActivityType(missionId: Int, activityId: Int) {
+        ioViewModelScope {
+            activityType = getActivityUseCase.getTypeForActivity(missionId, activityId)
+        }
+
     }
 
     suspend fun getSurveyDetail() {
@@ -291,7 +317,6 @@ open class TaskScreenViewModel @Inject constructor(
     fun getFilePathUri(filePath: String): Uri? {
         return fetchContentUseCase.getFilePathUri(filePath)
     }
-
     fun updateTaskAvailableStatus(
         taskId: Int,
         status: String,

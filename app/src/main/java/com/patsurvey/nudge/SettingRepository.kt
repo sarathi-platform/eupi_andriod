@@ -96,13 +96,13 @@ class SettingRepository @Inject constructor(
                     generateAddTolaEvent(it.id)
                     generateAddDidiEvent(it.id)
                     generateWealthRankingEvent(it.id)
-                        generatePatEvents(it.id)
-                        generateVOEvents(it.id)
-                        generateRankingEditEvent(it.id)
-                        generateWorkFlowStatusEvent(it.id)
-                        generateDidiImageEvent(it.id)
-                    }
+                    generatePatEvents(it.id)
+                    generateVOEvents(it.id)
+                    generateRankingEditEvent(it.id)
+                    generateWorkFlowStatusEvent(it.id)
+                    generateDidiImageEvent(it.id)
                 }
+            }
 
         } catch (exception: Exception) {
             NudgeLogger.e("RegenerateEvent", exception.message ?: "")

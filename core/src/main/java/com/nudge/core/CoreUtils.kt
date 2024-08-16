@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
@@ -882,6 +883,12 @@ fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
 
+fun Double?.value() = this ?: 0.0
+
+fun <T> List<T>?.value(): List<T> {
+    return this ?: emptyList()
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -899,6 +906,15 @@ fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
     val currentTime = System.currentTimeMillis()
     return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+}
+
+fun getDurationDifferenceInDays(sourceDuration: Long): String {
+    if (sourceDuration == -1L)
+        return BLANK_STRING
+
+    return TimeUnit.MILLISECONDS.toDays(Math.abs(getCurrentTimeInMillis() - sourceDuration))
+        .toString();
+
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -1143,4 +1159,32 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
         filePath = _uri!!.path
     }
     Log.d("", "Chosen path = $filePath")
+}
+
+fun onlyNumberField(value: String): Boolean {
+    if (value.isDigitsOnly() && value != "_" && value != "N") {
+        return true
+    }
+    return false
+}
+
+fun getQuestionNumber(questionIndex: Int): String {
+    return "${questionIndex + 1}. "
+}
+
+fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
+
+    if (id == -1)
+        return null
+
+    if (this.isEmpty())
+        return null
+
+    val index = this.map(transform).indexOf(id)
+
+    if (index == -1)
+        return null
+
+    return this[index]
+
 }

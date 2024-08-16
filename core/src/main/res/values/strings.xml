@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">SARATHI</string>
     <string name="ok">Ok</string>
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="retry">Retry</string>
@@ -13,5 +14,10 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="search">Search</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="add_image">+ Add Image</string>
+    <string name="select">Select</string>
+    <string name="amount_limit">Amount limit is %1$d</string>
+
 
 </resources>

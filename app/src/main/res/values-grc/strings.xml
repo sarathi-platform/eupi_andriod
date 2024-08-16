@@ -399,7 +399,10 @@
     <string name="take_photo_text">Photo Ka.bo</string>
     <string name="retake_photo_text">Photo ko ka.taibo</string>
     <string name="previous_step_not_complete_messgae_text">Skanggipa Bak Matchotkuja</string>
-    <string name="vo_endorsement_inprogress_village_banner_text">VO ra.chakaniko dakenga</string>
+    <plurals name="vo_endorsement_inprogress_village_banner_text">
+        <item quantity="one">VO ra.chakaniko dakenga</item>
+        <item quantity="other">VO ra.chakaniko dakenga</item>
+    </plurals>
     <string name="latest_status_text">"Gitalsranggipa Status\'</string>
     <string name="ranking_text_rich">Man·e cha·a</string>
     <string name="ranking_text_medium">Chol ong·kalgipa</string>
@@ -410,8 +413,14 @@
     <string name="pat_completed_for_didi_plural">%1$s Didi rang ni PAT ko matchotaha</string>
     <string name="pat_marked_not_available_singular">%1$s Didi ko dongja ine mesokaha</string>
     <string name="pat_marked_not_available_plural">%1$s Didi rang ko dongja ine mesokaha</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Kangalbegipa didi rang ko VO chi rachakaniko dakna gita onatenga</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s Kangalbegipa didi rang ko VO chi rachakaniko dakna gita onatenga</string>
+    <plurals name="pat_didi_sent_to_vo_endorsement_singular">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s Kangalbegipa didi rang ko VO chi rachakaniko dakna gita onatenga</item>
+    </plurals>
+    <plurals name="pat_didi_sent_to_vo_endorsement_plural">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s Kangalbegipa didi rang ko VO chi rachakaniko dakna gita onatenga</item>
+    </plurals>
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s Kangalbegipa didi ko BPM chi rachakaniko dakna onataha</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s Kangalbegipa didi rangko BPM chi rachakaniko dakna onataha</string>
     <string name="link_form_c">Form C baksa Link ka.bo</string>

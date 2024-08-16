@@ -1,4 +1,6 @@
 <resources>
-    <string name="app_name">IncomeExpenseModule</string>
+    <string name="app_name">SARATHI</string>
     <string name="search_label">Search</string>
+
+    <string name="date_range_picker_label_text">From - To</string>
 </resources>

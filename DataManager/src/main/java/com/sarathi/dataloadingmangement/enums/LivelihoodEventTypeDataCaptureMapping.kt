@@ -41,5 +41,23 @@ enum class LivelihoodEventTypeDataCaptureMapping(
     Income(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = Inflow),
     Expense(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = OutFlow);
 
+    companion object {
+
+        fun getLivelihoodEventFromName(eventName: String): LivelihoodEventTypeDataCaptureMapping {
+
+            when (eventName) {
+                AssetIncrease.name -> return AssetIncrease
+                AssetDecrease.name -> return AssetDecrease
+                AssetPurchase.name -> return AssetPurchase
+                AssetSale.name -> return AssetSale
+                ProductSale.name -> return ProductSale
+                Income.name -> return Income
+                Expense.name -> return Expense
+
+            }
+            return Expense
+        }
+    }
+
 }
 

@@ -43,6 +43,7 @@ const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
 const val SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME = "subject_livelihood_mapping_table"
 const val SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME = "subject_livelihood_event_mapping_table"
 
+const val SECTION_STATUS_TABLE_NAME = "section_status_table"
 const val SUCCESS_CODE = "200"
 const val STATE = "STATE"
 const val SUCCESS = "SUCCESS"
@@ -51,6 +52,8 @@ const val NATURE_TAG = 90
 const val MODE_TAG = 89
 const val RECEIVED_AMOUNT_TAG = 86
 const val DISBURSED_AMOUNT_TAG = 98
+const val MULTI_IMAGE_TAG = 91
+
 const val NO_OF_POOR_DIDI_TAG = 85
 const val DATE_TAG = 87
 const val DISBURSEMENT_DATE_TAG = 99

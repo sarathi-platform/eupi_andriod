@@ -6,6 +6,7 @@ interface SaveLivelihoodMappingForSubjectRepository {
 
     suspend fun saveSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity)
 
+suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity)
     fun getUserId(): String
 
 }

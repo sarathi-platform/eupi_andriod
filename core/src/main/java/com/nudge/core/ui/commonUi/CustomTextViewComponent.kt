@@ -7,6 +7,7 @@ import androidx.compose.ui.text.AnnotatedString
 @Composable
 fun <T> CustomTextViewComponent(
     textProperties: TextProperties<T>,
+    isMandatory: Boolean = false
 ) {
     when (textProperties.text) {
         is String -> {

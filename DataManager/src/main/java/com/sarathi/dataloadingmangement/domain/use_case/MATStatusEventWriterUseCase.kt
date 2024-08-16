@@ -63,7 +63,7 @@ class MATStatusEventWriterUseCase(
         repository.getActivityEntity(missionId = missionId, activityId = activityId)
             ?.let { updateActivityStatus(it, surveyName) }
         updateTaskStatus(
-            repository.getTaskEntity(taskId),
+            getTaskEntity(taskId),
             surveyName = surveyName,
             subjectType = subjectType
         )
@@ -100,5 +100,8 @@ class MATStatusEventWriterUseCase(
         }
     }
 
+    suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity {
+        return repository.getTaskEntity(taskId)
+    }
 
 }

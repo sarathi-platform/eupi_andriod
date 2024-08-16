@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
-import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodModel
 import javax.inject.Inject
 
 
@@ -15,6 +15,14 @@ class GetLivelihoodListFromDbRepositoryImpl @Inject constructor(
         return livelihoodDao.getLivelihoodList(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             languageCode = coreSharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
+    override suspend fun getLivelihoodListFromDb(livelihoodIds: List<Int>): List<LivelihoodModel> {
+        return livelihoodDao.getLivelihoodList(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            languageCode = coreSharedPrefs.getSelectedLanguageCode(),
+            livelihoodIds
         )
     }
 
