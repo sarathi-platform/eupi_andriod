@@ -494,7 +494,9 @@ private fun EventView(
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
                 EventDetails(subjectLivelihoodEventSummaryUiModel)
                 CustomVerticalSpacer(size = dimen_5_dp)
-                Divider(thickness = dimen_1_dp, color = greyBorder)
+                if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
+                    Divider(thickness = dimen_1_dp, color = borderGreyLight)
+                }
             }
 
         }
