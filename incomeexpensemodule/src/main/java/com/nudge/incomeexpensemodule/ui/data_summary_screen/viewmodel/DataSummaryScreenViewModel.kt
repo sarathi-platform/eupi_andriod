@@ -193,7 +193,8 @@ class DataSummaryScreenViewModel @Inject constructor(
         var result =
             subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
 
-        result = filterListForSelectedTab(selectedTabFilter, result)
+        result =
+            filterListForSelectedTab(if (selectedTabFilter == -1) 0 else selectedTabFilter, result)
 
         result = filterListForSubFilter(eventsSubFilter, result)
 

@@ -38,5 +38,4 @@ interface AssetDao {
     @Query("DELETE from assets_table where userId = :userId")
     fun deleteAssetsForUser(userId: String)
 
-
 }
