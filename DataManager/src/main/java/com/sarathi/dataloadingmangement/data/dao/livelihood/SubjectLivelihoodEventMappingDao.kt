@@ -50,8 +50,8 @@ interface SubjectLivelihoodEventMappingDao {
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status " +
                 "from subject_livelihood_event_mapping_table\n" +
-                "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId\n" +
-                "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId\n" +
+                "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=1 \n" +
+                "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=1 \n" +
                 "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId and subject_livelihood_event_mapping_table.status=1   group by subject_livelihood_event_mapping_table.id "
     )
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(
