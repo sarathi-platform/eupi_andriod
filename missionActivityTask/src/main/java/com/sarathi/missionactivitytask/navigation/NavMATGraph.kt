@@ -591,10 +591,12 @@ fun NavGraphBuilder.MatNavigation(
         )) {
             ActivitySuccessScreen(
                 onNavigateBack = { isFromActivity ->
-                    navController.popBackStack(
-                        MATHomeScreens.GrantTaskScreen.route,
-                        inclusive = isFromActivity
-                    )
+//                    navController.popBackStack(
+//                        MATHomeScreens.GrantTaskScreen.route,
+//                        inclusive = isFromActivity
+//                    )
+                    navController.popBackStack()
+                    navController.popBackStack()
                 },
                 navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE

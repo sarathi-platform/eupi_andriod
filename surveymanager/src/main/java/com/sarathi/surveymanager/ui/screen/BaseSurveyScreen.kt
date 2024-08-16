@@ -97,7 +97,14 @@ fun BaseSurveyScreen(
         title = toolbarTitle,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            if (grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase())
+                navController.popBackStack()
+            else {
+                navController.popBackStack()
+                navController.popBackStack()
+            }
+        },
         isSearch = false,
         onSearchValueChange = {
 
@@ -278,6 +285,7 @@ fun BaseSurveyScreen(
                                     questionDisplay = question.questionDisplay,
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
+                                    isQuestionTypeToggle = false,
                                     showCardView = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
                                     optionUiModelList = question.options.value(),
                                     onAnswerSelection = { questionIndex, optionItemIndex ->
@@ -314,6 +322,23 @@ fun BaseSurveyScreen(
                             }
 
                             QuestionType.Toggle.name -> {
+                                RadioQuestionBoxComponent(
+                                    questionIndex = index,
+                                    questionDisplay = question.questionDisplay,
+                                    isRequiredField = question.isMandatory,
+                                    maxCustomHeight = maxHeight,
+                                    isQuestionTypeToggle = false,
+                                    showCardView = false,
+                                    optionUiModelList = question.options.value(),
+                                    onAnswerSelection = { questionIndex, optionItemIndex ->
+                                        question.options?.forEachIndexed { index, _ ->
+                                            question.options?.get(index)?.isSelected = false
+                                        }
+                                        question.options?.get(optionItemIndex)?.isSelected = true
+                                        onAnswerSelect(question)
+                                        viewModel.checkButtonValidation()
+                                    }
+                                )
                             }
                         }
                     }

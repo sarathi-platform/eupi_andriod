@@ -64,6 +64,7 @@ fun SurveyScreen(
                 SurveyStatusEnum.COMPLETED.name
             ) {
                 navController.popBackStack()
+                navController.popBackStack()
             }
         }
     )

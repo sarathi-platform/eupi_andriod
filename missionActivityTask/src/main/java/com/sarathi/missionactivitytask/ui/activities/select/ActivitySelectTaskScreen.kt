@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -38,7 +37,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -104,9 +102,6 @@ fun ActivitySelectTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
-    val outerState = rememberLazyListState()
-    val innerState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = viewModel.taskUiList.value) {
         viewModel.onEvent(InitDataEvent.InitActivitySelectTaskScreenState(missionId, activityId))
     }
@@ -132,8 +127,11 @@ fun ActivitySelectTaskScreen(
 
 fun LazyListScope.SelectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
     item {
-        viewModel.filterList.value.keys.first()?.let {
-            CustomTextView(title = viewModel.questionUiModel.value[it]?.display ?: BLANK_STRING)
+        viewModel.filterList.value.keys.let {
+            CustomTextView(
+                title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
+            )
+            viewModel.expandedIds.addAll(it)
         }
     }
     itemsIndexed(
@@ -188,7 +186,7 @@ fun ExpandableTaskCardRow(
         modifier = Modifier,
         questionUiModel = questionUIModel,
         viewModel = viewModel,
-        expanded = true /*viewModel.expandedIds.contains(task.key)*/,
+        expanded = viewModel.expandedIds.contains(task.key),
         onExpendClick = { _, _ ->
             if (viewModel.expandedIds.contains(task.key)) {
                 viewModel.expandedIds.remove(task.key)
@@ -222,6 +220,11 @@ fun ExpandableTaskCardRow(
                     subjectType = BLANK_STRING,
                     taskId = task.key
                 )
+                viewModel.updateTasStatus(
+                    taskId = task.key,
+                    status = SurveyStatusEnum.COMPLETED.name
+                )
+
             }
         }
 
@@ -437,8 +440,8 @@ private fun RadioTypeOptionsUI(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(
-                min = 110.dp,
-                max = 160.dp
+                min = 60.dp,
+                max = 80.dp
             ),
         columns = GridCells.Fixed(1),
 
@@ -446,7 +449,7 @@ private fun RadioTypeOptionsUI(
         item {
             questionUiModel?.options?.sortedBy { it.order }?.let {
                 when (questionUiModel.type) {
-                    QuestionType.MultiSelect.name -> {
+                    QuestionType.RadioButton.name -> {
                         val selectedValue =
                             it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
 
@@ -467,7 +470,7 @@ private fun RadioTypeOptionsUI(
                         }
                     }
 
-                    QuestionType.RadioButton.name -> {
+                    QuestionType.MultiSelect.name -> {
                         GridTypeComponent(
                             questionDisplay = questionUiModel.questionDisplay,
                             optionUiModelList = it,
@@ -487,6 +490,7 @@ private fun RadioTypeOptionsUI(
             }
         }
     }
+    CustomVerticalSpacer()
     Divider(
         Modifier
             .fillMaxWidth()

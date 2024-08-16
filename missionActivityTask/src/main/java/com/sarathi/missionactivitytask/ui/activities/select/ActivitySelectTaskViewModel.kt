@@ -3,9 +3,11 @@ package com.sarathi.missionactivitytask.ui.activities.select
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.enums.ActivityTypeEnum
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -18,7 +20,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -93,169 +94,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                     referenceId = BLANK_STRING
                 ).firstOrNull()
                 list?.let {
-                    val jsonString = "{\n" +
-                            "  \"display\": \"Have you collected the materials - sticks, rope, cement - for the shed\",\n" +
-                            "  \"formId\": 0,\n" +
-                            "  \"isMandatory\": true,\n" +
-                            "  \"languageId\": \"en\",\n" +
-                            "  \"options\": [\n" +
-                            "    {\n" +
-                            "      \"conditions\": [],\n" +
-                            "      \"contentEntities\": [],\n" +
-                            "      \"description\": \"Option 1\",\n" +
-                            "      \"isSelected\": false,\n" +
-                            "      \"optionId\": 11,\n" +
-                            "      \"optionType\": \"\",\n" +
-                            "      \"order\": 1,\n" +
-                            "      \"paraphrase\": \"Option 1\",\n" +
-                            "      \"questionId\": 56,\n" +
-                            "      \"sectionId\": 12,\n" +
-                            "      \"selectedValue\": \"\",\n" +
-                            "      \"selectedValueId\": 0,\n" +
-                            "      \"surveyId\": 6\n" +
-                            "    },\n" +
-                            "    {\n" +
-                            "      \"conditions\": [],\n" +
-                            "      \"contentEntities\": [],\n" +
-                            "      \"description\": \"Option 2\",\n" +
-                            "      \"isSelected\": false,\n" +
-                            "      \"optionId\": 12,\n" +
-                            "      \"optionType\": \"\",\n" +
-                            "      \"order\": 2,\n" +
-                            "      \"paraphrase\": \"Option 2\",\n" +
-                            "      \"questionId\": 56,\n" +
-                            "      \"sectionId\": 12,\n" +
-                            "      \"selectedValue\": \"\",\n" +
-                            "      \"selectedValueId\": 0,\n" +
-                            "      \"surveyId\": 6\n" +
-                            "    },\n" +
-                            "    {\n" +
-                            "      \"conditions\": [],\n" +
-                            "      \"contentEntities\": [],\n" +
-                            "      \"description\": \"Option 3\",\n" +
-                            "      \"isSelected\": false,\n" +
-                            "      \"optionId\": 13,\n" +
-                            "      \"optionType\": \"\",\n" +
-                            "      \"order\": 2,\n" +
-                            "      \"paraphrase\": \"Option 3\",\n" +
-                            "      \"questionId\": 56,\n" +
-                            "      \"sectionId\": 12,\n" +
-                            "      \"selectedValue\": \"\",\n" +
-                            "      \"selectedValueId\": 0,\n" +
-                            "      \"surveyId\": 6\n" +
-                            "    },\n" +
-                            "    {\n" +
-                            "      \"conditions\": [],\n" +
-                            "      \"contentEntities\": [],\n" +
-                            "      \"description\": \"Option 4\",\n" +
-                            "      \"isSelected\": false,\n" +
-                            "      \"optionId\": 14,\n" +
-                            "      \"optionType\": \"\",\n" +
-                            "      \"order\": 2,\n" +
-                            "      \"paraphrase\": \"Option 4\",\n" +
-                            "      \"questionId\": 56,\n" +
-                            "      \"sectionId\": 12,\n" +
-                            "      \"selectedValue\": \"\",\n" +
-                            "      \"selectedValueId\": 0,\n" +
-                            "      \"surveyId\": 6\n" +
-                            "    }\n" +
-                            "    \n" +
-                            "  ],\n" +
-                            "  \"questionDisplay\": \"Have you collected the materials - sticks, rope, cement - for the shed\",\n" +
-                            "  \"questionId\": 56,\n" +
-                            "  \"questionSummary\": \"Have you collected the materials - sticks, rope, cement - for the shed\",\n" +
-                            "  \"sectionId\": 12,\n" +
-                            "  \"subjectId\": 7572,\n" +
-                            "  \"subjectType\": \"\",\n" +
-                            "  \"summary\": \"\",\n" +
-                            "  \"surveyId\": 6,\n" +
-                            "  \"surveyName\": \"Organise Shed Materials\",\n" +
-                            "  \"tagId\": [\n" +
-                            "    104\n" +
-                            "  ],\n" +
-                            "  \"type\": \"RadioButton\"\n" +
-                            "}"
                     it.subjectId = task.subjectId
-                    val ls: ArrayList<OptionsUiModel> = arrayListOf()
-                    it.options?.let { it1 -> ls.addAll(it1) }
-                    ls.add(
-                        OptionsUiModel(
-                            isSelected = false,
-                            selectedValue = BLANK_STRING,
-                            selectedValueId = -1,
-                            optionId = 12,
-                            sectionId = 12,
-                            surveyId = 6,
-                            originalValue = BLANK_STRING,
-                            questionId = 56,
-                            optionType = BLANK_STRING,
-                            conditions = emptyList(),
-                            order = 3,
-                            contentEntities = emptyList(),
-                            paraphrase = "Option 1",
-                            description = "Option 1"
-                        )
-                    )
-
-                    ls.add(
-                        OptionsUiModel(
-                            isSelected = false,
-                            selectedValue = BLANK_STRING,
-                            selectedValueId = -1,
-                            optionId = 13,
-                            sectionId = 12,
-                            surveyId = 6,
-                            originalValue = BLANK_STRING,
-                            questionId = 56,
-                            optionType = BLANK_STRING,
-                            conditions = emptyList(),
-                            order = 4,
-                            contentEntities = emptyList(),
-                            paraphrase = "Option 2",
-                            description = "Option 2"
-                        )
-                    )
-
-                    ls.add(
-                        OptionsUiModel(
-                            isSelected = false,
-                            selectedValue = BLANK_STRING,
-                            selectedValueId = -1,
-                            optionId = 14,
-                            sectionId = 12,
-                            surveyId = 6,
-                            originalValue = BLANK_STRING,
-                            questionId = 56,
-                            optionType = BLANK_STRING,
-                            conditions = emptyList(),
-                            order = 5,
-                            contentEntities = emptyList(),
-                            paraphrase = "Option 3",
-                            description = "Option 3"
-                        )
-                    )
-
-                    ls.add(
-                        OptionsUiModel(
-                            isSelected = false,
-                            selectedValue = BLANK_STRING,
-                            selectedValueId = -1,
-                            optionId = 18,
-                            sectionId = 12,
-                            surveyId = 6,
-                            originalValue = BLANK_STRING,
-                            questionId = 56,
-                            optionType = BLANK_STRING,
-                            conditions = emptyList(),
-                            order = 6,
-                            contentEntities = emptyList(),
-                            paraphrase = "Option 4",
-                            description = "Option 4"
-                        )
-
-
-                    )
-                    it.options = ls
                     _questionUiModel.value[task.taskId ?: -1] = it
                 }
             }
@@ -319,6 +158,29 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             grantId = grantID,
             grantType = grantType
         )
+    }
+
+    fun updateTasStatus(
+        taskId: Int,
+        status: String,
+    ) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+
+            taskStatusUseCase.markActivityInProgress(missionId, activityId)
+            taskStatusUseCase.markMissionInProgress(missionId)
+            eventWriterUseCase.markMATStatus(
+                missionId = missionId,
+                activityId = activityId,
+                taskId = taskId,
+                subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
+                surveyName = ActivityTypeEnum.SELECT.name
+            )
+            getTaskUseCase.updateTaskStatus(
+                taskId = taskId,
+                status = status
+            )
+            checkButtonValidation()
+        }
     }
 
 

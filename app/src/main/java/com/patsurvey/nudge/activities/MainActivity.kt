@@ -314,10 +314,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         super.onResume()
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        applyOverrideConfiguration(localizationDelegate.updateConfigurationLocale(newBase))
-        super.attachBaseContext(newBase)
-    }
+//    override fun attachBaseContext(newBase: Context) {
+//        applyOverrideConfiguration(localizationDelegate.updateConfigurationLocale(newBase))
+//        super.attachBaseContext(newBase)
+//    }
 
     override fun getApplicationContext(): Context {
         return localizationDelegate.getApplicationContext(super.getApplicationContext())

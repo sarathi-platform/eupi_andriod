@@ -289,7 +289,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkButtonValidation() {
+    suspend fun checkButtonValidation() {
         var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId

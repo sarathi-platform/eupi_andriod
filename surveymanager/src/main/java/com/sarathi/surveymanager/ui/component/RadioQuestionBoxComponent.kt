@@ -60,6 +60,7 @@ fun RadioQuestionBoxComponent(
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
     isEditAllowed: Boolean = true,
+    isQuestionTypeToggle: Boolean = false,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
 
@@ -135,6 +136,7 @@ fun RadioQuestionBoxComponent(
                                             modifier = Modifier.weight(1f),
                                             index = _index,
                                             optionsItem = option,
+                                            isIconRequired = isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
                                             if (isEditAllowed) {
