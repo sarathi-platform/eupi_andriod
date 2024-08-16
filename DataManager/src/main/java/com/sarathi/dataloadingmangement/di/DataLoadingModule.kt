@@ -598,7 +598,7 @@ class DataLoadingModule {
         formUseCase: FormUseCase,
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
-        fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase
+        fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         assetJournalUseCase: FetchAssetJournalUseCase,
         fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
     ): FetchAllDataUseCase {
@@ -626,8 +626,7 @@ class DataLoadingModule {
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
-            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase
-            ),
+            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
             assetJournalUseCase = assetJournalUseCase,
             fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
         )

@@ -103,9 +103,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         _livelihoodList.value = mLivelihoodUiEntityList
                         primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId
-
-//                        getSubjectLivelihoodMappingFromUseCase.getLivelihoodMappingForSubject(listOf(subjectLivelihoodMapping!!.subjectId))
-
                     } else {
                         val mLivelihoodUiEntityList =
                             LivelihoodUiEntity.getLivelihoodUiEntityList(
