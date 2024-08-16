@@ -38,14 +38,18 @@ interface MoneyJournalDao {
     )
 
 
-    @Query("update money_journal_table set status=0 where transactionId=:transactionId and userId=:userId")
-    suspend fun softDeleteTransaction(transactionId: String, userId: String)
+    @Query("update money_journal_table set status=2 where transactionId=:transactionId and subjectId=:subjectId and userId=:userId")
+    suspend fun softDeleteTransaction(
+        transactionId: String,
+        subjectId: Int,
+        userId: String
+    )
 
     @Query("Delete from money_journal_table where userId=:userId")
     suspend fun deleteMoneyJournal(userId: String)
 
 
-    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType group by subjectId")
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and status=1 group by subjectId")
     suspend fun getTotalIncomeExpenseForSubject(
         transactionFlow: String,
         userId: String,
@@ -53,7 +57,16 @@ interface MoneyJournalDao {
         referenceType: String
     ): IncomeExpenseUiModel?
 
-    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and transactionDate BETWEEN :durationStart and :durationEnd group by subjectId")
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and referenceId = :referenceId and status=1 group by subjectId")
+    suspend fun getTotalIncomeExpenseForSubject(
+        transactionFlow: String,
+        userId: String,
+        subjectId: Int,
+        referenceType: String,
+        referenceId: Int
+    ): IncomeExpenseUiModel?
+
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and transactionDate BETWEEN :durationStart and :durationEnd and status=1 group by subjectId")
 
     suspend fun getTotalIncomeExpenseForSubjectForDuration(
         transactionFlow: String,

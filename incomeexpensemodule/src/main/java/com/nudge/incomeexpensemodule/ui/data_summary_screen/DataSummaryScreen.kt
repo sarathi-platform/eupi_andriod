@@ -24,39 +24,52 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.incomeexpensemodule.R
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
+import com.nudge.core.ui.commonUi.CustomDateRangePickerDisplay
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.MeasureUnconstrainedViewWidthComponent
+import com.nudge.core.ui.commonUi.SheetHeight
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
+import com.nudge.core.ui.commonUi.rememberCustomDateRangePickerSheetState
+import com.nudge.core.ui.commonUi.rememberDateRangePickerBottomSheetProperties
+import com.nudge.core.ui.commonUi.rememberDateRangePickerProperties
+import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
@@ -65,15 +78,19 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
@@ -92,14 +109,17 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.find
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+import kotlinx.coroutines.launch
 import java.util.UUID
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DataSummaryScreen(
     navController: NavHostController,
     viewModel: DataSummaryScreenViewModel,
     subjectId: Int,
-    subjectName: String
+    subjectName: String,
+    onSettingClick: () -> Unit,
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -107,9 +127,29 @@ fun DataSummaryScreen(
         viewModel.onEvent(InitDataEvent.InitDataSummaryScreenState(subjectId = subjectId))
     }
 
+    val sheetState = rememberCustomDateRangePickerSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
+
+    val sheetProperties = rememberDateRangePickerBottomSheetProperties(
+        sheetState = sheetState,
+        modifier = Modifier,
+        sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp),
+        sheetBackgroundColor = searchFieldBg,
+    )
+
+    val dateRangePickerProperties = rememberDateRangePickerProperties(
+        dateValidator = {
+            it <= getCurrentTimeInMillis()
+        }
+    )
+
+    val scope = rememberCoroutineScope()
+
     if (viewModel.showAssetDialog.value) {
         AssetsDialog(
-            viewModel.incomeExpenseSummaryUiModel.value,
+            viewModel.incomeExpenseSummaryUiModel[viewModel.selectedLivelihood.value],
             viewModel.livelihoodModel,
             onDismissRequest = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -121,83 +161,118 @@ fun DataSummaryScreen(
         mutableStateOf(false)
     }
 
-    ToolBarWithMenuComponent(
-        title = subjectName,
-        modifier = Modifier.fillMaxSize(),
-        onBackIconClick = {
-            navController.navigateUp()
-        },
-        onSearchValueChange = {},
-        onBottomUI = {
-            BottomAppBar(
-                backgroundColor = Color.White,
-                elevation = 10.dp
-            ) {
-                AddEventButton() {
-                    navigateToAddEventScreen(
-                        navController = navController,
-                        subjectName = subjectName,
-                        subjectId = subjectId,
-                        transactionID = UUID.randomUUID().toString(),
-                        showDeleteButton = false
-                    )
-                }
+    CustomDateRangePickerBottomSheetComponent(
+        customDateRangePickerBottomSheetProperties = sheetProperties,
+        dateRangePickerProperties = dateRangePickerProperties,
+        sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
+        onSheetConfirmButtonClicked = {
 
+            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
+                dateRangePickerProperties.state.setSelection(
+                    dateRangePickerProperties.state.selectedStartDateMillis,
+                    getCurrentTimeInMillis()
+                )
             }
-        },
-        onContentUI = { a, b, c ->
 
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-            ) {
-                if (viewModel.areEventsNotAvailableForSubject.value) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        AddEventButton() {
-                            navigateToAddEventScreen(
-                                navController = navController,
-                                subjectName = subjectName,
-                                subjectId = subjectId,
-                                transactionID = UUID.randomUUID().toString(),
-                                showDeleteButton = false
-                            )
-                        }
+            viewModel.onEvent(
+                CommonEvents.UpdateDateRange(
+                    dateRangePickerProperties.state.selectedStartDateMillis,
+                    dateRangePickerProperties.state.selectedEndDateMillis
+                )
+            )
+
+            viewModel.onEvent(
+                DataSummaryScreenEvents.CustomDateRangeFilterSelected(viewModel.tabs.map { it.id }
+                    .indexOf(SubTabs.CustomDateRange.id))
+            )
+
+            scope.launch {
+                sheetState.hide()
+            }
+        }
+    ) {
+        ToolBarWithMenuComponent(
+            title = subjectName,
+            modifier = Modifier.fillMaxSize(),
+            onBackIconClick = {
+                navController.navigateUp()
+            },
+            onSearchValueChange = {},
+            onBottomUI = {
+                BottomAppBar(
+                    backgroundColor = Color.White,
+                    elevation = 10.dp
+                ) {
+                    AddEventButton() {
+                        navigateToAddEventScreen(
+                            navController = navController,
+                            subjectName = subjectName,
+                            subjectId = subjectId,
+                            transactionID = UUID.randomUUID().toString(),
+                            showDeleteButton = false
+                        )
                     }
-                } else {
-                    if (viewModel.loaderState.value.isLoaderVisible) {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(modifier = Modifier.size(dimen_24_dp))
-                        }
-                    } else {
-                        DataSummaryView(
-                            viewModel,
-                            showMoreItems = showMoreItems.value,
-                            onEventItemClicked = { transactionId ->
+
+                }
+            },
+            onContentUI = { a, b, c ->
+
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                ) {
+                    if (viewModel.areEventsNotAvailableForSubject.value) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            AddEventButton() {
                                 navigateToAddEventScreen(
                                     navController = navController,
                                     subjectName = subjectName,
                                     subjectId = subjectId,
-                                    transactionID = transactionId,
-                                    showDeleteButton = true
+                                    transactionID = UUID.randomUUID().toString(),
+                                    showDeleteButton = false
                                 )
-                            },
-                            onShowModeClicked = {
-                                showMoreItems.value = !showMoreItems.value
                             }
-                        )
+                        }
+                    } else {
+                        if (viewModel.loaderState.value.isLoaderVisible) {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(modifier = Modifier.size(dimen_24_dp))
+                            }
+                        } else {
+                            DataSummaryView(
+                                viewModel,
+                                showMoreItems = showMoreItems.value,
+                                onEventItemClicked = { transactionId ->
+                                    navigateToAddEventScreen(
+                                        navController = navController,
+                                        subjectName = subjectName,
+                                        subjectId = subjectId,
+                                        transactionID = transactionId,
+                                        showDeleteButton = true
+                                    )
+                                },
+                                dateRangePickerClicked = {
+                                    scope.launch {
+                                        sheetState.show()
+                                    }
+                                },
+                                onShowModeClicked = {
+                                    showMoreItems.value = !showMoreItems.value
+                                }
+                            )
+                        }
                     }
+
                 }
 
-            }
+            },
+            onSettingClick = { onSettingClick() }) {
 
-        },
-        onSettingClick = { }) {
-
+        }
     }
-
 }
 
 @Composable
@@ -205,23 +280,42 @@ private fun DataSummaryView(
     viewModel: DataSummaryScreenViewModel,
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
+    dateRangePickerClicked: () -> Unit,
     onShowModeClicked: () -> Unit
 ) {
     TabBarContainer(viewModel.tabs) {
-        viewModel.onEvent(
-            DataSummaryScreenEvents.TabFilterSelected(
-                TabsCore.getSubTabForTabIndex(
-                    TabsEnum.DataSummaryTab.tabIndex
+        if (TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex) == viewModel.tabs.map { it.id }
+                .indexOf(SubTabs.CustomDateRange.id)) {
+            viewModel.showCustomDatePicker.value = true
+        } else {
+            viewModel.showCustomDatePicker.value = false
+            viewModel.onEvent(
+                DataSummaryScreenEvents.TabFilterSelected(
+                    TabsCore.getSubTabForTabIndex(
+                        TabsEnum.DataSummaryTab.tabIndex
+                    )
                 )
             )
-        )
+        }
+
     }
     Spacer(modifier = Modifier.height(16.dp))
+
+    if (viewModel.showCustomDatePicker.value) {
+        CustomDateRangePickerDisplay(
+            value = "${viewModel.dateRangeFilter.value.first.getDate()} - ${viewModel.dateRangeFilter.value.second.getDate()}",
+            label = stringResource(R.string.date_range_picker_label_text)
+        ) {
+            dateRangePickerClicked()
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+
     DropDownContainer(viewModel.livelihoodDropdownList.toList()) {
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
     }
     Spacer(modifier = Modifier.height(16.dp))
-    HeaderSection(viewModel.incomeExpenseSummaryUiModel.value!!) {
+    HeaderSection(viewModel.incomeExpenseSummaryUiModel[viewModel.selectedLivelihood.value]!!) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     }
     Spacer(modifier = Modifier.height(16.dp))
@@ -314,7 +408,7 @@ fun EventsListHeaderWithDropDownFilter(
             if (showMoreItems) "All Events:" else "Last $DEFAULT_EVENT_LIST_VIEW_SIZE events:",
             style = getTextColor(defaultTextStyle)
         )
-        MeasureUnconstrainedViewWidth(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
+        MeasureUnconstrainedViewWidthComponent(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
             SingleSelectDropDown(
                 sources = sources,
                 selectOptionText = selectedOptionValue.id,
@@ -323,7 +417,6 @@ fun EventsListHeaderWithDropDownFilter(
 
                 selectedOptionValue = sources.findById(selectValue) ?: sources[0]
                 onEventSubFilterSelected(selectValue)
-
             }
         }
 
@@ -400,6 +493,8 @@ private fun EventView(
             ) {
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
                 EventDetails(subjectLivelihoodEventSummaryUiModel)
+                CustomVerticalSpacer(size = dimen_5_dp)
+                Divider(thickness = dimen_1_dp, color = greyBorder)
             }
 
         }
@@ -426,6 +521,8 @@ private fun EventView(
                             EventDetails(
                                 subjectLivelihoodEventSummaryUiModel,
                             )
+                            CustomVerticalSpacer(size = dimen_5_dp)
+                            Divider(thickness = dimen_1_dp, color = greyBorder)
                         }
                     }
                 }
@@ -580,20 +677,3 @@ fun DefaultPreview() {
     }
 }
 
-@Composable
-fun MeasureUnconstrainedViewWidth(
-    viewToMeasure: @Composable () -> Unit,
-    content: @Composable (measuredWidth: Dp) -> Unit,
-) {
-    SubcomposeLayout { constraints ->
-        val measuredWidth = subcompose("viewToMeasure", viewToMeasure)[0]
-            .measure(Constraints()).width.toDp()
-
-        val contentPlaceable = subcompose("content") {
-            content(measuredWidth)
-        }[0].measure(constraints)
-        layout(contentPlaceable.width, contentPlaceable.height) {
-            contentPlaceable.place(0, 0)
-        }
-    }
-}

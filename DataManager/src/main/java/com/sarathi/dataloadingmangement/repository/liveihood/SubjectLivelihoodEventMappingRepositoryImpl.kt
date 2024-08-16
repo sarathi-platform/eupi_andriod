@@ -84,7 +84,10 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             assetCount = eventData.assetCount,
             amount = eventData.amount,
             transactionId = eventData.transactionId,
-            date = eventData.date
+            date = eventData.date,
+            livelihoodValue = eventData.livelihoodValue,
+            assetTypeValue = eventData.assetTypeValue,
+            productValue = eventData.productValue
         )
     }
 

@@ -8,7 +8,11 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
+import com.nudge.core.TabsCore
+import com.nudge.core.WEEK_DURATION_RANGE
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.model.uiModel.LivelihoodModel
@@ -16,6 +20,7 @@ import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -30,6 +35,8 @@ class DataTabScreenViewModel @Inject constructor(
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
 ) : BaseViewModel() {
 
+    val tabs = listOf<SubTabs>(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab)
+
     private val _filters = mutableStateListOf<LivelihoodModel>()
     val filters: SnapshotStateList<LivelihoodModel> get() = _filters
 
@@ -38,6 +45,7 @@ class DataTabScreenViewModel @Inject constructor(
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
     val isFilterApplied = mutableStateOf(false)
+    val isSortApplied = mutableStateOf(false)
 
     val _subjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
@@ -45,13 +53,17 @@ class DataTabScreenViewModel @Inject constructor(
 
     private val _filteredSubjectList: MutableState<List<SubjectEntityWithLivelihoodMappingUiModel>> =
         mutableStateOf(mutableListOf())
-    val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
+    private val filteredSubjectList: State<List<SubjectEntityWithLivelihoodMappingUiModel>> get() = _filteredSubjectList
+
+    private val _filteredDataTabScreenUiEntityList: MutableState<List<DataTabScreenUiModel>> =
+        mutableStateOf(mutableListOf())
+    val filteredDataTabScreenUiEntityList: State<List<DataTabScreenUiModel>> get() = _filteredDataTabScreenUiEntityList
 
     private val _incomeExpenseSummaryUiModel =
         mutableStateMapOf<Int, IncomeExpenseSummaryUiModel?>()
     val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
-    var lastEventDateMapForSubject: Map<Int, Long> = hashMapOf()
+    private var lastEventDateMapForSubject: Map<Int, Long> = hashMapOf()
 
     var livelihoodModelList: List<LivelihoodModel> = listOf()
 
@@ -82,11 +94,26 @@ class DataTabScreenViewModel @Inject constructor(
             is DataTabEvents.OnSearchQueryChanged -> {
                 onSearchQueryChanged(event.searchQuery)
             }
+
+            is DataTabEvents.LivelihoodSortApplied -> {
+                if (isSortApplied.value) {
+                    _filteredDataTabScreenUiEntityList.value =
+                        _filteredDataTabScreenUiEntityList.value.sortedByDescending { it.lastUpdated }
+                } else {
+                    _filteredDataTabScreenUiEntityList.value =
+                        _filteredDataTabScreenUiEntityList.value.sortedBy { it.lastUpdated }
+
+                }
+            }
+
+            is DataTabEvents.OnSubTabChanged -> {
+                updateDataTabScreenUiEntityListForSubTab(tabs[TabsCore.getSubTabForTabIndex(TabsEnum.DataTab.tabIndex)])
+            }
         }
     }
 
     private fun onSearchQueryChanged(searchQuery: String) {
-        val filteredList = if (isFilterApplied.value) {
+        var filteredList = if (isFilterApplied.value) {
             getFilteredList(LIVELIHOOD_FILTER, selectedFilterValue.value)
         } else {
             subjectList.value
@@ -97,7 +124,7 @@ class DataTabScreenViewModel @Inject constructor(
         } else {
             filteredList
         }
-
+        updateDataTabScreenUiEntityList()
     }
 
     private fun applyFilter(livelihoodId: Int) {
@@ -108,6 +135,7 @@ class DataTabScreenViewModel @Inject constructor(
         } else {
             subjectList.value
         }
+        updateDataTabScreenUiEntityList()
 
     }
 
@@ -144,7 +172,6 @@ class DataTabScreenViewModel @Inject constructor(
             _subjectList.value =
                 dataTabUseCase.fetchDidiDetailsWithLivelihoodMappingUseCase.invoke()
             _filteredSubjectList.value = subjectList.value
-
             _incomeExpenseSummaryUiModel.clear()
             val currentTime = getCurrentTimeInMillis()
             _incomeExpenseSummaryUiModel.putAll(
@@ -158,14 +185,106 @@ class DataTabScreenViewModel @Inject constructor(
             lastEventDateMapForSubject =
                 dataTabUseCase.fetchSubjectLivelihoodEventHistoryUseCase.invoke(subjectList.value.map { it.subjectId })
 
+            updateDataTabScreenUiEntityList()
+
             livelihoodModelList =
                 getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId }
 
             createFilterBottomSheetList(livelihoodModelList)
 
-            countMap.put(SubTabs.All, filteredSubjectList.value.size)
+            updateCountMap()
+
             withContext(mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
+    }
+
+    private fun updateDataTabScreenUiEntityList(): List<DataTabScreenUiModel> {
+        _filteredDataTabScreenUiEntityList.value = DataTabScreenUiModel.getDataTabUiEntityList(
+            filteredSubjectList.value,
+            lastEventDateMapForSubject
+        )
+        onEvent(DataTabEvents.LivelihoodSortApplied)
+        return filteredDataTabScreenUiEntityList.value
+    }
+
+    fun updateDataTabScreenUiEntityListForSubTab(subTabs: SubTabs) {
+        val currentTime = getCurrentTimeInMillis()
+        when (subTabs) {
+            SubTabs.All -> {
+                _filteredSubjectList.value = subjectList.value
+                updateDataTabScreenUiEntityList()
+            }
+
+            SubTabs.NoEntryWeekTab -> {
+                _filteredDataTabScreenUiEntityList.value =
+                    DataTabScreenUiModel.getDataTabUiEntityList(
+                        filteredSubjectList.value,
+                        lastEventDateMapForSubject
+                    ).filterNot {
+                        it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
+                            WEEK_DURATION_RANGE
+                        )
+                    }
+            }
+
+            SubTabs.NoEntryMonthTab -> {
+                _filteredDataTabScreenUiEntityList.value =
+                    DataTabScreenUiModel.getDataTabUiEntityList(
+                        filteredSubjectList.value,
+                        lastEventDateMapForSubject
+                    ).filterNot {
+                        it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
+                            DEFAULT_DATE_RANGE_DURATION
+                        )
+                    }
+            }
+
+            else -> {
+                _filteredSubjectList.value = subjectList.value
+            }
+        }
+    }
+
+    private fun updateCountMap() {
+
+        countMap.put(SubTabs.All, subjectList.value.size)
+        countMap.put(
+            SubTabs.NoEntryWeekTab,
+            getLastEventMapListForSubTab(SubTabs.NoEntryWeekTab)
+        )
+        countMap.put(
+            SubTabs.NoEntryMonthTab,
+            getLastEventMapListForSubTab(SubTabs.NoEntryMonthTab)
+        )
+    }
+
+    private fun getLastEventMapListForSubTab(subTabs: SubTabs): Int {
+        val currentTime = getCurrentTimeInMillis()
+        return when (subTabs) {
+            SubTabs.All -> {
+                lastEventDateMapForSubject.size
+            }
+
+            SubTabs.NoEntryWeekTab -> {
+                filteredDataTabScreenUiEntityList.value.filterNot {
+                    it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
+                        WEEK_DURATION_RANGE
+                    )
+                }.size
+            }
+
+            SubTabs.NoEntryMonthTab -> {
+                filteredDataTabScreenUiEntityList.value.filterNot {
+                    it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
+                        DEFAULT_DATE_RANGE_DURATION
+                    )
+                }.size
+            }
+
+            else -> {
+                lastEventDateMapForSubject.size
             }
         }
     }

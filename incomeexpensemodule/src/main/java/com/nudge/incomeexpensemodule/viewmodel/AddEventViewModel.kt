@@ -41,6 +41,7 @@ class AddEventViewModel @Inject constructor(
     private val writeLivelihoodEventUseCase: WriteLivelihoodEventUseCase
 ) : BaseViewModel() {
 
+    val showDeleteDialog = mutableStateOf(false)
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownValue
 
@@ -103,7 +104,6 @@ class AddEventViewModel @Inject constructor(
                 amount.value = savedEvent.amount.toString()
                 selectedAssetTypeId.value = savedEvent.assetType
                 assetCount.value = savedEvent.assetCount.toString()
-
                 getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
                     questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
                 }
@@ -125,9 +125,8 @@ class AddEventViewModel @Inject constructor(
 
             }
 
-
+            validateForm()
         }
-        validateForm()
     }
 
     fun onLivelihoodSelect(livelihoodId: Int) {
@@ -188,7 +187,7 @@ class AddEventViewModel @Inject constructor(
     }
 
     fun onEventSelected(selectedValue: ValuesDto) {
-
+        resetForm()
         eventType = eventList.find { it.id == selectedValue.id }?.eventType ?: BLANK_STRING
 
         selectedEventId.value = selectedValue.id
@@ -196,6 +195,7 @@ class AddEventViewModel @Inject constructor(
         selectedAssetTypeId.value = -1
         assetCount.value = BLANK_STRING
         amount.value = BLANK_STRING
+
 
         getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
             if (questionVisibilityMap.containsKey(it)) {
@@ -228,9 +228,13 @@ class AddEventViewModel @Inject constructor(
                 selectedEvent = event,
                 transactionId = mTransactionId,
                 eventValue = livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName
+                    ?: BLANK_STRING,
+                livelihoodValue = livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName
+                    ?: BLANK_STRING,
+                assetTypeValue = livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName
+                    ?: BLANK_STRING,
+                productValue = livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName
                     ?: BLANK_STRING
-
-
             )
             saveLivelihoodEventUseCase.addOrEditEvent(
                 particular = getParticulars(),

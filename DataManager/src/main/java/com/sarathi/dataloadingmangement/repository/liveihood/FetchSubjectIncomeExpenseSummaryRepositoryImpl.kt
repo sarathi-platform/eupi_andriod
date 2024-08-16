@@ -63,12 +63,62 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
             )
     }
 
+    override suspend fun getIncomeExpenseSummaryForSubject(
+        subjectId: Int,
+        assets: List<AssetEntity>,
+        livelihoodId: Int
+    ): IncomeExpenseSummaryUiModel {
+        val totalIncome = getTotalIncomeForSubjectLivelihood(subjectId = subjectId, livelihoodId)
+        val totalExpense = getTotalExpenseForSubjectLivelihood(subjectId = subjectId, livelihoodId)
+        val assetCounts = getAssetCountForAssets(subjectId, assets.map { it.assetId })
+
+        val livelihoodAssetMap = assets.groupBy { it.livelihoodId }
+
+        val assetsCountWithValue = AssetsCountWithValueUiModel
+            .getAssetsCountWithValueUiModelList(assetsList = assets, assetCounts)
+
+        val totalAssetCountForLivelihood = hashMapOf<Int, Int>()
+
+        livelihoodAssetMap.forEach { mapEntry ->
+
+            var totalAssetCount = 0
+            mapEntry.value.forEach {
+                totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
+            }
+
+            totalAssetCountForLivelihood.put(mapEntry.key, totalAssetCount)
+        }
+
+        return IncomeExpenseSummaryUiModel
+            .getIncomeExpenseSummaryUiModel(
+                subjectId = subjectId,
+                totalIncome = totalIncome,
+                totalExpense = totalExpense,
+                livelihoodAssetMap = livelihoodAssetMap,
+                totalAssetCountForLivelihood = totalAssetCountForLivelihood,
+                assetsCountWithValue = assetsCountWithValue
+            )
+    }
+
     override suspend fun getTotalIncomeForSubject(subjectId: Int): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
             transactionFlow = EntryFlowTypeEnum.Inflow.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
+        )?.totalIncome.value()
+    }
+
+    override suspend fun getTotalIncomeForSubjectLivelihood(
+        subjectId: Int,
+        livelihoodId: Int
+    ): Double {
+        return moneyJournalDao.getTotalIncomeExpenseForSubject(
+            transactionFlow = EntryFlowTypeEnum.Inflow.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId.value(),
+            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
+            referenceId = livelihoodId
         )?.totalIncome.value()
     }
 
@@ -81,6 +131,18 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         )?.totalIncome.value()
     }
 
+    override suspend fun getTotalExpenseForSubjectLivelihood(
+        subjectId: Int,
+        livelihoodId: Int
+    ): Double {
+        return moneyJournalDao.getTotalIncomeExpenseForSubject(
+            transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId.value(),
+            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
+            referenceId = livelihoodId
+        )?.totalIncome.value()
+    }
 
     override suspend fun getAssetCountForAssets(
         subjectId: Int,

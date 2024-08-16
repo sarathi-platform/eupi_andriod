@@ -10,15 +10,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.incomeexpensemodule.R
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
@@ -26,6 +30,10 @@ import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.commonUi.componet_.component.InputComponent
+import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
+import com.nudge.core.ui.commonUi.rememberCustomDatePickerDialogProperties
+import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
+import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_72_dp
@@ -41,7 +49,7 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventScreen(
     navController: NavHostController = rememberNavController(),
@@ -49,7 +57,8 @@ fun AddEventScreen(
     subjectId: Int,
     subjectName: String,
     transactionId: String,
-    showDeleteButton: Boolean = false
+    showDeleteButton: Boolean = false,
+    onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(Unit) {
@@ -62,8 +71,20 @@ fun AddEventScreen(
         )
     }
 
+    val datePickerState =
+        rememberCustomDatePickerState()
+
+    val datePickerProperties = rememberDatePickerProperties(
+        state = datePickerState,
+        dateValidator = {
+            it <= getCurrentTimeInMillis()
+        }
+    )
+
+    val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
+
     ToolBarWithMenuComponent(
-        title = "Asset Purchase",
+        title = if (showDeleteButton) "Edit Event" else "Add Event",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.navigateUp() },
@@ -87,8 +108,7 @@ fun AddEventScreen(
                             isArrowRequired = false,
                             isActive = true,
                             onClick = {
-                                viewModel.onDeleteClick(transactionId, subjectId)
-                                navController.navigateUp()
+                                viewModel.showDeleteDialog.value = true
                             }
                         )
                         Spacer(modifier = Modifier.width(10.dp))
@@ -111,7 +131,7 @@ fun AddEventScreen(
                 }
             }
         },
-        onSettingClick = {},
+        onSettingClick = { onSettingClick() },
         onRetry = {},
         onContentUI = { paddingValues, b, function ->
             LazyColumn(
@@ -128,6 +148,9 @@ fun AddEventScreen(
                         title = "Date",
                         isEditable = true,
                         hintText = "Select" ?: BLANK_STRING,
+                        datePickerState = datePickerState,
+                        datePickerProperties = datePickerProperties,
+                        datePickerDialogProperties = datePickerDialogProperties,
                         onDateSelected = { date ->
                             viewModel.selectedDate.value = date.value().getDate()
                             viewModel.selectedDateInLong = date.value()
@@ -285,7 +308,22 @@ fun AddEventScreen(
 
             }
 
+            if (viewModel.showDeleteDialog.value) {
+                ShowCustomDialog(
+                    message = stringResource(R.string.are_you_sure_you_want_to_delete),
+                    negativeButtonTitle = stringResource(R.string.no),
+                    positiveButtonTitle = stringResource(R.string.yes),
+                    onNegativeButtonClick = {
+                        viewModel.showDeleteDialog.value = false
+                    },
+                    onPositiveButtonClick = {
+                        viewModel.onDeleteClick(transactionId, subjectId)
+                        navController.navigateUp()
+                        viewModel.showDeleteDialog.value = false
 
+                    }
+                )
+            }
         }
     )
 }
@@ -293,5 +331,5 @@ fun AddEventScreen(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun AddEventScreenPreview() {
-    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "")
+    AddEventScreen(subjectId = 0, subjectName = "", transactionId = "", onSettingClick = {})
 }

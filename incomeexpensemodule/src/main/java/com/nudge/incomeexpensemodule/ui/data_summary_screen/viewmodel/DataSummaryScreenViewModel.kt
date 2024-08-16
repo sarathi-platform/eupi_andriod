@@ -3,14 +3,18 @@ package com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
@@ -43,7 +47,12 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     private val tag = DataSummaryScreenViewModel::class.java.simpleName
 
-    val tabs = listOf<SubTabs>(SubTabs.LastWeekTab, SubTabs.LastMonthTab, SubTabs.Last3MonthsTab)
+    val tabs = listOf<SubTabs>(
+        SubTabs.LastWeekTab,
+        SubTabs.LastMonthTab,
+        SubTabs.Last3MonthsTab,
+        SubTabs.CustomDateRange
+    )
 
     var subjectId: Int = -1
 
@@ -62,9 +71,9 @@ class DataSummaryScreenViewModel @Inject constructor(
     private val _livelihoodModel = mutableListOf<LivelihoodModel>()
     val livelihoodModel: List<LivelihoodModel> get() = _livelihoodModel
 
-    private val _incomeExpenseSummaryUiModel: MutableState<IncomeExpenseSummaryUiModel?> =
-        mutableStateOf(IncomeExpenseSummaryUiModel.getDefaultIncomeExpenseSummaryUiModel(subjectId))
-    val incomeExpenseSummaryUiModel: State<IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
+    private val _incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> =
+        mutableStateMapOf()
+    val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
     private val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
@@ -81,6 +90,16 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     var filtersTuple: Triple<Int, Int, Int> = Triple(0, 0, 0)
 
+    val showCustomDatePicker = mutableStateOf(false)
+
+    private val _dateRangeFilter: MutableState<Pair<Long, Long>> = mutableStateOf(
+        Pair(
+            getDayPriorCurrentTimeMillis(DEFAULT_DATE_RANGE_DURATION), System.currentTimeMillis()
+        )
+    )
+
+    val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataSummaryScreenState -> {
@@ -93,6 +112,25 @@ class DataSummaryScreenViewModel @Inject constructor(
 
             is DialogEvents.ShowDialogEvent -> {
                 _showAssetDialog.value = event.showDialog
+            }
+
+            is CommonEvents.UpdateDateRange -> {
+                if (event.startDate != null && event.endDate != null) {
+                    _dateRangeFilter.value =
+                        _dateRangeFilter.value.copy(event.startDate!!, event.endDate!!)
+                }
+            }
+
+            is DataSummaryScreenEvents.CustomDateRangeFilterSelected -> {
+
+                filtersTuple = Triple(
+                    event.selectedTabIndex,
+                    selectedLivelihood.value,
+                    selectedEventsSubFilter.value
+                )
+
+                updateEventsList()
+
             }
 
             is DataSummaryScreenEvents.FilterDataForLivelihood -> {
@@ -221,6 +259,12 @@ class DataSummaryScreenViewModel @Inject constructor(
                 }
             }
 
+            SubTabs.CustomDateRange.id -> {
+                result.filter {
+                    (it.date.value() >= dateRangeFilter.value.first) && (it.date.value() <= dateRangeFilter.value.second)
+                }
+            }
+
             else -> {
                 result
             }
@@ -267,13 +311,23 @@ class DataSummaryScreenViewModel @Inject constructor(
                         getLivelihoodListFromDbUseCase.invoke(livelihoodIds)
                     )
 
-                    _incomeExpenseSummaryUiModel.value =
-                        fetchSubjectIncomeExpenseSummaryUseCase.invoke(
+                    _incomeExpenseSummaryUiModel.clear()
+                    _incomeExpenseSummaryUiModel.putAll(
+                        fetchSubjectIncomeExpenseSummaryUseCase.getLivelihoodIncomeExpenseSummaryMap(
                             subjectId = subjectId,
                             subjectLivelihoodMappingEntity = it
                         )
+                    )
 
                     createLivelihoodDropDownList()
+
+                    with(TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex)) {
+                        if (this.equals(-1))
+                            TabsCore.setSubTabIndex(TabsEnum.DataSummaryTab.tabIndex, 0)
+                        else
+                            TabsCore.setSubTabIndex(TabsEnum.DataSummaryTab.tabIndex, this)
+
+                    }
 
                     updateEventsList()
 

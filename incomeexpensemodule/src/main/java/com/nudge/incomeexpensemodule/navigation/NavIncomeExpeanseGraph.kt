@@ -46,7 +46,8 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                 ) ?: 0,
                 subjectName = it.arguments?.getString(
                     ARG_SUBJECT_NAME
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
             )
         }
         composable(
@@ -76,7 +77,8 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                 transactionId = it.arguments?.getString(
                     ARG_TRANSACTION_ID
                 ) ?: BLANK_STRING,
-                showDeleteButton = it.arguments?.getBoolean(ARG_SHOW_DELETE_BUTTON).value()
+                showDeleteButton = it.arguments?.getBoolean(ARG_SHOW_DELETE_BUTTON).value(),
+                onSettingClick = onSettingIconClick
             )
         }
     }
@@ -91,7 +93,7 @@ fun navigateToAddEventScreen(
     subjectId: Int,
     subjectName: String,
     transactionID: String,
-    showDeleteButton: Boolean
+    showDeleteButton: Boolean,
 ) {
     val mTransactionId = if (!TextUtils.equals(transactionID, BLANK_STRING)) transactionID else null
     navController.navigate("${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/$subjectId/$subjectName/$mTransactionId/$showDeleteButton")

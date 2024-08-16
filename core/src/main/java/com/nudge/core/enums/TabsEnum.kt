@@ -21,5 +21,7 @@ sealed class SubTabs(val id: Int) {
     object LastMonthTab : SubTabs(6)
     object Last3MonthsTab : SubTabs(7)
 
+    object CustomDateRange : SubTabs(8)
+
 
 }

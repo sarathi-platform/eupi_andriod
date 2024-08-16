@@ -17,7 +17,14 @@ class SaveLivelihoodEventUseCase @Inject constructor(
 
         subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(eventData)
 
-
+        assetJournalRepository.softDeleteAssetJournalEvent(
+            eventData.transactionId,
+            eventData.subjectId
+        )
+        moneyJournalRepo.deleteMoneyJournalTransaction(
+            transactionId = eventData.transactionId,
+            eventData.subjectId
+        )
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
             assetJournalRepository.saveOrEditAssetJournal(
                 particular = particular,
@@ -46,7 +53,7 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             )
         }
         selectedEvent.moneyJournalEntryFlowType?.let {
-            moneyJournalRepo.deleteMoneyJournalTransaction(transactionId)
+            moneyJournalRepo.deleteMoneyJournalTransaction(transactionId, subjectId)
         }
     }
 

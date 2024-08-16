@@ -20,7 +20,7 @@ interface IMoneyJournalRepository {
         eventData: LivelihoodEventScreenData
     )
 
-    suspend fun deleteMoneyJournalTransaction(transactionId: String)
+    suspend fun deleteMoneyJournalTransaction(transactionId: String, subjectId: Int)
     suspend fun getMoneyJournalTransaction(
         transactionId: String,
         subjectId: Int

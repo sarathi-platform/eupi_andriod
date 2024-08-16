@@ -72,22 +72,22 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             dateFormat = "dd/MM/yyyy",
 
             )
-        if (moneyJournalDao.isTransactionAlreadyExist(
-                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                transactionId = eventData.transactionId
-            ) > 0
-        ) {
-            deleteMoneyJournalTransaction(eventData.transactionId)
-        }
         moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
 
     }
 
-    override suspend fun deleteMoneyJournalTransaction(transactionId: String) {
+    override suspend fun deleteMoneyJournalTransaction(transactionId: String, subjectId: Int) {
+        if (moneyJournalDao.isTransactionAlreadyExist(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                transactionId = transactionId
+            ) > 0
+        ) {
         moneyJournalDao.softDeleteTransaction(
             transactionId = transactionId,
+            subjectId = subjectId,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
+        }
     }
 
     override suspend fun getMoneyJournalTransaction(

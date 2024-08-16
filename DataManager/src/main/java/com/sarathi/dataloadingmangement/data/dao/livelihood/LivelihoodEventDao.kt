@@ -21,7 +21,7 @@ interface LivelihoodEventDao {
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
                 " livelihood_language_reference_table.userId=:userId and" +
                 " livelihood_event_table.userId=:userId  and" +
-                " livelihood_event_table.livelihoodId=:livelihoodId "
+                " livelihood_event_table.livelihoodId=:livelihoodId group by livelihood_event_table.eventId "
     )
     fun getEventsForLivelihood(
         livelihoodId: Int,
@@ -38,7 +38,7 @@ interface LivelihoodEventDao {
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
                 " livelihood_language_reference_table.userId=:userId and" +
                 " livelihood_event_table.userId=:userId  and" +
-                " livelihood_event_table.livelihoodId in (:livelihoodIds)"
+                " livelihood_event_table.livelihoodId in (:livelihoodIds) "
     )
     fun getEventsForLivelihood(
         livelihoodIds: List<Int>,

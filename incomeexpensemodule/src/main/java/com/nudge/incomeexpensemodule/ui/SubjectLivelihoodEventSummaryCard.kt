@@ -30,6 +30,7 @@ import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
@@ -73,18 +74,13 @@ fun SubjectLivelihoodEventSummaryCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(incomeCardTopViewColor),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
                     Text(
-                        text = "Last updated: $lastUpdated",
+                        text = "Last updated: $lastUpdated days ago",
                         style = getTextColor(textColor = smallerTextStyle),
-                        modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_5_dp)
+                        modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_10_dp)
                     )
                 }
             }

@@ -908,6 +908,15 @@ fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
     return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
 }
 
+fun getDurationDifferenceInDays(sourceDuration: Long): String {
+    if (sourceDuration == -1L)
+        return BLANK_STRING
+
+    return TimeUnit.MILLISECONDS.toDays(Math.abs(getCurrentTimeInMillis() - sourceDuration))
+        .toString();
+
+}
+
 @RequiresApi(Build.VERSION_CODES.N)
 fun String.getDateTimeInMillis(): Long {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
