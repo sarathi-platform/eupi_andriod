@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.LIVELIHOOD
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
@@ -619,16 +620,26 @@ fun NavGraphBuilder.MatNavigation(
             }
         )) {
             ActivitySuccessScreen(
-                onNavigateBack = { isFromActivity ->
-                    navController.popBackStack(
-                        MATHomeScreens.LivelihoodTaskScreen.route,
-                        inclusive = isFromActivity
-                    )
+                onNavigateBack = { isFromActivity ,activityName->
+                    if (activityName== LIVELIHOOD) {
+                        navController.popBackStack(
+                            MATHomeScreens.LivelihoodTaskScreen.route,
+                            inclusive = isFromActivity
+                        )
+                    }
+                    else{
+                        navController.popBackStack(
+                            MATHomeScreens.GrantTaskScreen.route,
+                            inclusive = isFromActivity
+                        )
+                    }
                 },
                 navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE
                 ) ?: BLANK_STRING,
+                activityName ="Grant",
                 isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
+
             )
         }
 
@@ -897,9 +908,10 @@ fun navigateToSectionScreen(
 fun navigateToActivityCompletionScreen(
     navController: NavController,
     activityMsg: String,
-    isFromActivity: Boolean = false
+    isFromActivity: Boolean = false,
+    activityName:String? ="Grant"
 ) {
-    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity")
+    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity/$activityName")
 }
 
 fun navigateToLivelihoodDropDownScreen(
