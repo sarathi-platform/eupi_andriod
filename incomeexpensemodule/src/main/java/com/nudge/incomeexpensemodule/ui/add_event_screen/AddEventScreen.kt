@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
@@ -29,6 +31,9 @@ import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.commonUi.componet_.component.InputComponent
 import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
+import com.nudge.core.ui.commonUi.rememberCustomDatePickerDialogProperties
+import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
+import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_72_dp
@@ -44,7 +49,7 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventScreen(
     navController: NavHostController = rememberNavController(),
@@ -66,8 +71,20 @@ fun AddEventScreen(
         )
     }
 
+    val datePickerState =
+        rememberCustomDatePickerState()
+
+    val datePickerProperties = rememberDatePickerProperties(
+        state = datePickerState,
+        dateValidator = {
+            it <= getCurrentTimeInMillis()
+        }
+    )
+
+    val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
+
     ToolBarWithMenuComponent(
-        title = "Add Event",
+        title = if (showDeleteButton) "Edit Event" else "Add Event",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.navigateUp() },
@@ -131,6 +148,9 @@ fun AddEventScreen(
                         title = "Date",
                         isEditable = true,
                         hintText = "Select" ?: BLANK_STRING,
+                        datePickerState = datePickerState,
+                        datePickerProperties = datePickerProperties,
+                        datePickerDialogProperties = datePickerDialogProperties,
                         onDateSelected = { date ->
                             viewModel.selectedDate.value = date.value().getDate()
                             viewModel.selectedDateInLong = date.value()

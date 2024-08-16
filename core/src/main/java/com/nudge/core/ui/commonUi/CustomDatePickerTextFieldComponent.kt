@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -46,19 +47,13 @@ fun CustomDatePickerTextFieldComponent(
     defaultValue: String = BLANK_STRING,
     isMandatory: Boolean = false,
     isEditable: Boolean = true,
+    datePickerState: DatePickerState,
+    datePickerProperties: DatePickerProperties,
+    datePickerDialogProperties: CustomDatePickerDialogProperties,
     onDateSelected: (selectedDate: Long?) -> Unit,
 ) {
 
     var text by remember(defaultValue) { mutableStateOf(defaultValue) }
-
-    val datePickerState =
-        rememberCustomDatePickerState()
-
-    val datePickerProperties = rememberDatePickerProperties(
-        state = datePickerState
-    )
-
-    val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
 
 
     CustomDatePickerComponent(

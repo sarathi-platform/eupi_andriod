@@ -47,7 +47,7 @@ fun TotalIncomeExpenseAssetSummaryView(
                 onAssetCountClicked()
             }
     ) {
-        Text(text = "Asset Value", style = getTextColor(newMediumTextStyle))
+        Text(text = "Asset Count", style = getTextColor(newMediumTextStyle))
         Row(verticalAlignment = Alignment.CenterVertically) {
             incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
                 if (it.value != 0) {

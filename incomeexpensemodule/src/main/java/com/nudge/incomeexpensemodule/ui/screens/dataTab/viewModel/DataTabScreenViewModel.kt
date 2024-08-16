@@ -268,16 +268,16 @@ class DataTabScreenViewModel @Inject constructor(
             }
 
             SubTabs.NoEntryWeekTab -> {
-                lastEventDateMapForSubject.filter {
-                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
+                filteredDataTabScreenUiEntityList.value.filterNot {
+                    it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
                         WEEK_DURATION_RANGE
                     )
                 }.size
             }
 
             SubTabs.NoEntryMonthTab -> {
-                lastEventDateMapForSubject.filter {
-                    it.value <= currentTime && it.value >= getDayPriorCurrentTimeMillis(
+                filteredDataTabScreenUiEntityList.value.filterNot {
+                    it.lastUpdated <= currentTime && it.lastUpdated >= getDayPriorCurrentTimeMillis(
                         DEFAULT_DATE_RANGE_DURATION
                     )
                 }.size

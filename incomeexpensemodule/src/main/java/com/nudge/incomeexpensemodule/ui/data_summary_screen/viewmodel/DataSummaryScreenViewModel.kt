@@ -319,8 +319,15 @@ class DataSummaryScreenViewModel @Inject constructor(
                         )
                     )
 
-
                     createLivelihoodDropDownList()
+
+                    with(TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex)) {
+                        if (this.equals(-1))
+                            TabsCore.setSubTabIndex(TabsEnum.DataSummaryTab.tabIndex, 0)
+                        else
+                            TabsCore.setSubTabIndex(TabsEnum.DataSummaryTab.tabIndex, this)
+
+                    }
 
                     updateEventsList()
 
