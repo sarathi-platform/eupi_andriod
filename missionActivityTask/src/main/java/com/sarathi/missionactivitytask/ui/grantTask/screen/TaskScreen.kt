@@ -35,7 +35,6 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.LIVELIHOOD
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
@@ -145,9 +144,7 @@ fun TaskScreen(
                                     R.string.activity_completion_message,
                                     activityName
                                 ),
-                                activityName =if(activityName.contains(LIVELIHOOD)) LIVELIHOOD else "Grant"
-
-
+                                activityName = activityName
                             )
                         })
 

@@ -617,6 +617,12 @@ fun NavGraphBuilder.MatNavigation(
                 name = ARG_IS_FROM_ACTIVITY
             ) {
                 type = NavType.BoolType
+            },
+            navArgument(
+                name = ARG_ACTIVITY_NAME
+            ) {
+                type = NavType.StringType
+                nullable = true
             }
         )) {
             ActivitySuccessScreen(
@@ -637,7 +643,7 @@ fun NavGraphBuilder.MatNavigation(
                 navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE
                 ) ?: BLANK_STRING,
-                activityName ="Grant",
+                activityName = it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING,
                 isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
 
             )
@@ -909,9 +915,10 @@ fun navigateToActivityCompletionScreen(
     navController: NavController,
     activityMsg: String,
     isFromActivity: Boolean = false,
-    activityName:String? ="Grant"
+    activityName: String = BLANK_STRING
 ) {
-    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity/$activityName")
+    var activityNameWithNullable = if (!TextUtils.isEmpty(activityName)) activityName else null
+    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity/$activityNameWithNullable")
 }
 
 fun navigateToLivelihoodDropDownScreen(
