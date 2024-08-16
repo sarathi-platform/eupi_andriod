@@ -11,5 +11,6 @@ interface ICoreLivelihoodRepository {
         languageReferences: List<LanguageReference>,
         referenceType: String
     )
+    suspend fun deleteLivelihoodCoreDataForUser()
 
 }
