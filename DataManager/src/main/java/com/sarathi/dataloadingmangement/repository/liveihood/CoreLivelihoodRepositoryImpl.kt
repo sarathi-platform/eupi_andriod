@@ -117,4 +117,12 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
         }
         livelihoodLanguageDao.insertLivelihoodLanguage(languageEntity = languageReferenceEntities)
     }
+
+    override suspend fun deleteLivelihoodCoreDataForUser() {
+        assetDao.deleteAssetsForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
+        livelihoodDao.deleteLivelihoodForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
+        productDao.deleteProductForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
+        livelihoodEventDao.deleteLivelihoodEventForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
+    }
+
 }

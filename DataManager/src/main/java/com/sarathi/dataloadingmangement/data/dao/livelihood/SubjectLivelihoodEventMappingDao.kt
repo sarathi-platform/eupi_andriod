@@ -65,4 +65,6 @@ interface SubjectLivelihoodEventMappingDao {
         subjectId: Int
     ): Long?
 
+    @Query("DELETE from subject_livelihood_event_mapping_table where userId = :userId")
+    fun deleteSubjectLivelihoodEventMappingForUser(userId: String)
 }
