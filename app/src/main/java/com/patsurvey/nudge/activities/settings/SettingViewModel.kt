@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.CountDownTimer
 import android.os.Environment
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -978,14 +979,17 @@ class SettingViewModel @Inject constructor(
                 var didiList: List<DidiEntity> =
                     didiDao.getAllDidisForVillage(selectedVillageId)
 
-                val isFormAGenerated = generateFormA(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
-                addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, uris)
+                val formAFilePath =
+                    generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+                addFormToUriList(formAFilePath, uris)
 
-                val isFormBGenerated = generateFormB(prefRepo.getStateId() ,casteList, selectedVillageId, didiList)
-                addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, uris)
+                val formBFilePath =
+                    generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+                addFormToUriList(formBFilePath, uris)
 
-                val isFormCGenerated = generateFormc(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
-                addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, uris)
+                val formCFilePath =
+                    generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+                addFormToUriList(formCFilePath, uris)
 
             }
         } catch (exception: Exception) {
@@ -1015,18 +1019,12 @@ class SettingViewModel @Inject constructor(
     }
 
     private fun addFormToUriList(
-        isFormGenerated: Boolean,
-        selectedVillageId: Int,
-        formName: String,
+        filePath: String,
         uris: ArrayList<Pair<String, Uri?>>
     ) {
-        if (isFormGenerated) {
-            val formFile = PdfUtils.getPdfPath(
-                context = NudgeCore.getAppContext(),
-                formName = formName,
-                selectedVillageId
-            )
+        if (!TextUtils.isEmpty(filePath)) {
 
+            val formFile = File(filePath)
             uris.add(
                 Pair(
                     formFile.name, uriFromFile(

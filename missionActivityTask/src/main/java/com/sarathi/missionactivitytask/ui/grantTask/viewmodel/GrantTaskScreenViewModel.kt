@@ -15,7 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
@@ -93,7 +93,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         if (activityConfigUiModel?.taskCompletion == SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED) {
             taskList.value.entries.forEach { task ->
                 try {
-                    if (task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
+                    if (task.value[TaskCardSlots.TASK_SUBTITLE_5.name]?.value?.toInt() == task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt() && (task.value[TaskCardSlots.TASK_STATUS.name]?.value != SurveyStatusEnum.COMPLETED.name || task.value[TaskCardSlots.TASK_STATUS.name]?.value != SurveyStatusEnum.NOT_AVAILABLE.name)) {
                         taskListSanctionedEqualDisbursed.add(task.key.toString())
                     }
                 } catch (exception: Exception) {
