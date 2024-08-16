@@ -627,7 +627,7 @@ fun NavGraphBuilder.MatNavigation(
         )) {
             ActivitySuccessScreen(
                 onNavigateBack = { isFromActivity ,activityName->
-                    if (activityName== LIVELIHOOD) {
+                    if (activityName.contains(LIVELIHOOD)) {
                         navController.popBackStack(
                             MATHomeScreens.LivelihoodTaskScreen.route,
                             inclusive = isFromActivity
