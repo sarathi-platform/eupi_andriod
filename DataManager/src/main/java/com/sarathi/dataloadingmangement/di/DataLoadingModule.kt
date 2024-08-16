@@ -1183,17 +1183,6 @@ class DataLoadingModule {
         )
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideSaveLivelihoodOptionUseCase(
-//        fetchLivelihoodOptionRepository: FetchLivelihoodOptionRepository,
-//        coreSharedPrefs: CoreSharedPrefs
-//    ): FetchLivelihoodOptionNetworkUseCase {
-//        return FetchLivelihoodOptionNetworkUseCase(
-//            repository = fetchLivelihoodOptionRepository,
-//            coreSharedPrefs =   coreSharedPrefs)
-//    }
-
     @Provides
     @Singleton
     fun provideLivelihoodEventUseCase(
