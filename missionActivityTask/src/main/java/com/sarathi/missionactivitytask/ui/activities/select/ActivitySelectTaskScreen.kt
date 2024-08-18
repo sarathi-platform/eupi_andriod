@@ -3,32 +3,25 @@ package com.sarathi.missionactivitytask.ui.activities.select
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
@@ -39,27 +32,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ANIMATE_COLOR
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
-import com.nudge.core.json
+import com.nudge.core.ROTATION_DEGREE_TRANSITION
+import com.nudge.core.TRANSITION
+import com.nudge.core.customGridHeight
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CardArrow
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
-import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -72,10 +61,8 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
-import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
@@ -87,12 +74,12 @@ import com.sarathi.missionactivitytask.ui.basic_content.component.SubContainerVi
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.OptionCard
 import com.sarathi.missionactivitytask.ui.components.RadioOptionTypeComponent
+import com.sarathi.missionactivitytask.ui.components.ShowDidiImageDialog
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ActivitySelectTaskScreen(
     navController: NavController = rememberNavController(),
@@ -115,17 +102,17 @@ fun ActivitySelectTaskScreen(
 
         },
         isSecondaryButtonEnable = false,
-        secondaryButtonText = stringResource(id = R.string.generate_form_e),
+        secondaryButtonText = BLANK_STRING,
         isSecondaryButtonVisible = false,
-        taskList = emptyList(),//viewModel.taskUiList.value,
+        taskList = emptyList(),
         navController = navController,
-        taskScreenContent = { vm, mNavController ->
-            SelectActivityTaskScreenContent(viewModel = viewModel)
+        taskScreenContent = { _, _ ->
+            selectActivityTaskScreenContent(viewModel = viewModel)
         }
     )
 }
 
-fun LazyListScope.SelectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
+fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
     item {
         viewModel.filterList.value.keys.let {
             CustomTextView(
@@ -158,13 +145,12 @@ fun CustomTextView(title: String) {
             .padding(dimen_20_dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        title?.let {
-            Text(
-                text = it,
-                style = buttonTextStyle,
-                color = blueDark
-            )
-        }
+        Text(
+            text = title,
+            style = buttonTextStyle,
+            color = blueDark
+        )
+
     }
 }
 
@@ -185,7 +171,6 @@ fun ExpandableTaskCardRow(
         ) ?: Uri.EMPTY,
         modifier = Modifier,
         questionUiModel = questionUIModel,
-        viewModel = viewModel,
         expanded = viewModel.expandedIds.contains(task.key),
         onExpendClick = { _, _ ->
             if (viewModel.expandedIds.contains(task.key)) {
@@ -212,9 +197,9 @@ fun ExpandableTaskCardRow(
             }
         },
         isActivityCompleted = viewModel.isActivityCompleted.value,
-        onAnswerSelection = { optionValue, optionId ->
+        viewModel = viewModel,
+        onAnswerSelection = { _, _ ->
             if (questionUIModel != null) {
-                Log.d("TAG", "ExpandableTaskCardRow Option: ${questionUIModel.json()} ")
                 viewModel.saveSingleAnswerIntoDb(
                     currentQuestionUiModel = questionUIModel,
                     subjectType = BLANK_STRING,
@@ -229,8 +214,6 @@ fun ExpandableTaskCardRow(
         }
 
     )
-//    }
-
 }
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -241,50 +224,41 @@ fun ExpandableTaskCard(
     status: TaskCardModel?,
     imagePath: Uri,
     modifier: Modifier,
+    viewModel: ActivitySelectTaskViewModel,
     questionUiModel: QuestionUiModel?,
     expanded: Boolean,
-    viewModel: ActivitySelectTaskViewModel,
     onExpendClick: (Boolean, TaskCardModel) -> Unit,
     isNotAvailableButtonEnable: Boolean,
     isActivityCompleted: Boolean,
     onNotAvailableClick: () -> Unit,
     onAnswerSelection: (optionValue: String, optionId: Int) -> Unit
 ) {
-    Log.d("TAG", "ExpandableTaskCardtaskStatus: ${status?.value} ")
     val taskStatus = remember(status?.value) {
         mutableStateOf(status?.value)
     }
-    val transition = updateTransition(expanded, label = "transition")
     val taskMarkedNotAvailable = remember(status?.value) {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
     }
+    val transition = updateTransition(expanded, label = TRANSITION)
+    val context = LocalContext.current
 
     val animateColor by transition.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
-    }, label = "animate color") {
-        if (it) {
-            greenOnline
-        } else {
-            textColorDark
-        }
+    }, label = ANIMATE_COLOR) {
+        if (it) greenOnline else textColorDark
     }
-
-    val context = LocalContext.current
 
     val arrowRotationDegree by transition.animateFloat({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
-    }, label = "rotationDegreeTransition") {
+    }, label = ROTATION_DEGREE_TRANSITION) {
         if (it) 180f else 0f
     }
+
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimen_16_dp)
-            .border(
-                width = dimen_1_dp,
-                color = greenOnline,
-                shape = RoundedCornerShape(dimen_6_dp)
-            )
+            .border(width = dimen_1_dp, color = greenOnline, shape = RoundedCornerShape(dimen_6_dp))
             .background(Color.Transparent)
     ) {
         Column(
@@ -292,135 +266,174 @@ fun ExpandableTaskCard(
                 .fillMaxWidth()
                 .background(white)
         ) {
+            CardHeader(
+                title = title,
+                subTitle1 = subTitle1,
+                imagePath = imagePath,
+                expanded = expanded,
+                onExpendClick = onExpendClick,
+                arrowRotationDegree = arrowRotationDegree,
+                animateColor = animateColor,
+                viewModel = viewModel
+            )
+
+            CardContent(
+                expanded = expanded,
+                questionUiModel = questionUiModel,
+                taskMarkedNotAvailable = taskMarkedNotAvailable,
+                onAnswerSelection = onAnswerSelection,
+                isActivityCompleted = isActivityCompleted,
+                taskStatus = taskStatus,
+                onNotAvailableClick = onNotAvailableClick,
+                context = context,
+                isNotAvailableButtonEnable = isNotAvailableButtonEnable
+            )
+        }
+    }
+}
+
+@Composable
+fun CardHeader(
+    title: TaskCardModel?,
+    subTitle1: TaskCardModel?,
+    imagePath: Uri,
+    expanded: Boolean,
+    onExpendClick: (Boolean, TaskCardModel) -> Unit,
+    arrowRotationDegree: Float,
+    animateColor: Color,
+    viewModel: ActivitySelectTaskViewModel
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = dimen_16_dp,
+                top = dimen_10_dp,
+                bottom = dimen_5_dp,
+                end = dimen_16_dp
+            ),
+        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (imagePath != Uri.EMPTY) {
+            CircularImageViewComponent(modifier = Modifier, imagePath = imagePath, onImageClick = {
+                viewModel.isDidiImageDialogVisible.value = true
+            })
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimen_16_dp, vertical = dimen_5_dp),
-                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (imagePath != null) {
-                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath)
-                }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        title?.value?.let {
-                            if (it.contains("vo", true)) {
-                                title.icon?.let {
-                                    ImageViewer(it)
-                                    Spacer(modifier = Modifier.width(dimen_5_dp))
-                                }
-                                Spacer(modifier = Modifier.width(dimen_3_dp))
-                            }
-                            Text(
-                                text = title.value,
-                                style = buttonTextStyle,
-                                color = blueDark
-                            )
+                title?.value?.let {
+                    if (it.contains("vo", true)) {
+                        title.icon?.let {
+                            ImageViewer(it)
+                            Spacer(modifier = Modifier.width(dimen_5_dp))
                         }
+                        Spacer(modifier = Modifier.width(dimen_3_dp))
                     }
-                    SubContainerView(subTitle1)
+                    Text(text = title.value, style = buttonTextStyle, color = blueDark)
                 }
-
-                CardArrow(
-                    modifier = Modifier,
-                    degrees = arrowRotationDegree,
-                    iconColor = animateColor,
-                    arrowIcon = R.drawable.ic_baseline_keyboard_arrow_down_24,
-                    onClick = {
-                        if (title != null) {
-                            onExpendClick(expanded, title)
-                        }
-                    }
-                )
             }
+            SubContainerView(subTitle1)
         }
 
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxHeight()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(maxHeight)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Log.d("TAG", "ExpandableTaskCardv1: ${expanded}  ")
-                if (expanded) {
-
-                    RadioTypeOptionsUI(
-                        questionUiModel = questionUiModel,
-                        taskMarkedNotAvailable = taskMarkedNotAvailable,
-                        onAnswerSelection = onAnswerSelection,
-                        isActivityCompleted = isActivityCompleted,
-                        taskStatus = taskStatus,
-                        onNotAvailableClick = onNotAvailableClick,
-                        context = context,
-                        isNotAvailableButtonEnable = isNotAvailableButtonEnable,
-                        maxHeight = 0.dp
-                    )
-
-
-                } else {
-                    var options =
-                        questionUiModel?.options?.find { it.isSelected == true }?.selectedValue
-                    if (options.isNullOrEmpty() && taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
-                        options = stringResource(id = R.string.not_available)
-                    }
-                    Log.d("TAG", "ExpandableTaskCardv1 1: ${options}")
-                    if (options?.isNotEmpty() == true) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = dimen_5_dp)
-                        ) {
-                            Divider(
-                                modifier = Modifier
-                                    .height(dimen_1_dp)
-                                    .weight(1f)
-
-                            )
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    start = dimen_16_dp,
-                                    end = dimen_16_dp,
-                                    bottom = dimen_8_dp,
-                                    top = dimen_8_dp
-                                ),
-                            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
-                        ) {
-                            Log.d("TAG", "ExpandableTaskCardv1 2: ${options?.json()}")
-                            SubContainerView(
-                                TaskCardModel(
-                                    label = options.toString(),
-                                    value = BLANK_STRING,
-                                    icon = null
-                                )
-                            )
-                        }
-                    }
-                }
-
-            }
-        }
-
+        CardArrow(
+            modifier = Modifier,
+            degrees = arrowRotationDegree,
+            iconColor = animateColor,
+            arrowIcon = R.drawable.ic_baseline_keyboard_arrow_down_24,
+            onClick = { title?.let { onExpendClick(expanded, it) } }
+        )
     }
-
+    if (viewModel.isDidiImageDialogVisible.value) {
+        ShowDidiImageDialog(didiName = title?.value ?: BLANK_STRING, imagePath = imagePath) {
+            viewModel.isDidiImageDialogVisible.value = false
+        }
+    }
 }
+
+@Composable
+fun CardContent(
+    expanded: Boolean,
+    questionUiModel: QuestionUiModel?,
+    taskMarkedNotAvailable: MutableState<Boolean>,
+    onAnswerSelection: (optionValue: String, optionId: Int) -> Unit,
+    isActivityCompleted: Boolean,
+    taskStatus: MutableState<String?>,
+    onNotAvailableClick: () -> Unit,
+    context: Context,
+    isNotAvailableButtonEnable: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimen_16_dp)
+    ) {
+        if (expanded) {
+            RadioTypeOptionsUI(
+                questionUiModel = questionUiModel,
+                taskMarkedNotAvailable = taskMarkedNotAvailable,
+                onAnswerSelection = onAnswerSelection,
+                isActivityCompleted = isActivityCompleted,
+                taskStatus = taskStatus,
+                onNotAvailableClick = onNotAvailableClick,
+                context = context,
+                isNotAvailableButtonEnable = isNotAvailableButtonEnable
+            )
+        } else {
+            DisplaySelectedOption(questionUiModel, taskStatus.value)
+        }
+    }
+}
+
+@Composable
+fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?) {
+    var options = questionUiModel?.options?.find { it.isSelected == true }?.selectedValue
+    if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
+        options = stringResource(id = R.string.not_available)
+    }
+    if (!options.isNullOrEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = dimen_5_dp)
+        ) {
+            Divider(
+                modifier = Modifier
+                    .height(dimen_1_dp)
+                    .weight(1f)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimen_16_dp,
+                    end = dimen_16_dp,
+                    bottom = dimen_8_dp,
+                    top = dimen_8_dp
+                ),
+            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+        ) {
+            SubContainerView(
+                TaskCardModel(
+                    label = options.toString(),
+                    value = BLANK_STRING,
+                    icon = null
+                )
+            )
+        }
+    }
+}
+
 
 
 @Composable
@@ -432,19 +445,12 @@ private fun RadioTypeOptionsUI(
     taskStatus: MutableState<String?>,
     onNotAvailableClick: () -> Unit,
     context: Context,
-    isNotAvailableButtonEnable: Boolean,
-    maxHeight: Dp
+    isNotAvailableButtonEnable: Boolean
 ) {
-    LazyVerticalGrid(
-        userScrollEnabled = false,
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(
-                min = 60.dp,
-                max = 80.dp
-            ),
-        columns = GridCells.Fixed(1),
-
+            .heightIn(100.dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
         ) {
         item {
             questionUiModel?.options?.sortedBy { it.order }?.let {
@@ -475,7 +481,7 @@ private fun RadioTypeOptionsUI(
                             questionDisplay = questionUiModel.questionDisplay,
                             optionUiModelList = it,
                             questionIndex = 0,
-                            maxCustomHeight = 0.dp,
+                            maxCustomHeight = customGridHeight(it.size),
                             isQuestionDisplay = false,
                             onAnswerSelection = { selectedOptionIndex, isSelected ->
                                 questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
@@ -488,6 +494,7 @@ private fun RadioTypeOptionsUI(
                 }
 
             }
+
         }
     }
     CustomVerticalSpacer()
@@ -497,6 +504,27 @@ private fun RadioTypeOptionsUI(
             .height(dimen_2_dp)
     )
     CustomVerticalSpacer()
+    NotAvailableUI(
+        isNotAvailableButtonEnable = isNotAvailableButtonEnable,
+        taskMarkedNotAvailable = taskMarkedNotAvailable,
+        isActivityCompleted = isActivityCompleted,
+        taskStatus = taskStatus,
+        onNotAvailableClick = onNotAvailableClick,
+        context = context
+    )
+
+    CustomVerticalSpacer()
+}
+
+@Composable
+private fun NotAvailableUI(
+    isNotAvailableButtonEnable: Boolean,
+    taskMarkedNotAvailable: MutableState<Boolean>,
+    isActivityCompleted: Boolean,
+    taskStatus: MutableState<String?>,
+    onNotAvailableClick: () -> Unit,
+    context: Context
+) {
     if (isNotAvailableButtonEnable) {
         OptionCard(
             modifier = Modifier
@@ -518,52 +546,5 @@ private fun RadioTypeOptionsUI(
             }
         }
     }
-
-    CustomVerticalSpacer()
 }
 
-@Composable
-fun GridOptionCard(
-    modifier: Modifier = Modifier,
-    optionItem: OptionsUiModel,
-    index: Int,
-    isEnabled: Boolean = true,
-    selectedIndex: List<Int>,
-    onOptionSelected: (Int) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(if (selectedIndex.contains(optionItem.optionId)) blueDark else languageItemActiveBg)
-            .clickable {
-                onOptionSelected(optionItem.optionId ?: -1)
-            }
-            .then(modifier)) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(
-                Modifier.padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = optionItem.description.toString() ?: BLANK_STRING,
-                    style = TextStyle(
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center
-                    ),
-                    color = if (selectedIndex.contains(optionItem.optionId)) white else textColorDark.copy(
-                        alpha = if (isEnabled) 1f else 0.5f
-                    )
-                )
-            }
-        }
-
-    }
-
-}

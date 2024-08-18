@@ -93,3 +93,6 @@ val eventWriters = listOf<IEventWriter>(
 )
 
 var EXPANSTION_TRANSITION_DURATION: Int = 450
+const val TRANSITION = "transition"
+const val ANIMATE_COLOR = "animate color"
+const val ROTATION_DEGREE_TRANSITION = "rotationDegreeTransition"

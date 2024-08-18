@@ -15,7 +15,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
@@ -45,7 +44,6 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val grantConfigUseCase: GrantConfigUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase
 ) : TaskScreenViewModel(
@@ -139,7 +137,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
                 grantId = grantID,
-                grantType = grantType,
+                grantType = ActivityTypeEnum.SELECT.name,
                 taskId = taskId,
                 uriList = ArrayList()
             )

@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +27,11 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -36,14 +40,12 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 @Composable
 fun RadioOptionTypeComponent(
     optionItemEntityState: List<OptionsUiModel>,
-    isMandatory: Boolean = false,
-    isContent: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     selectedValue: String = BLANK_STRING,
     onOptionSelected: (index: Int, optionValue: String, optionId: Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
-        mutableStateOf(0.dp)
+        mutableStateOf(dimen_0_dp)
     }
     val localDensity = LocalDensity.current
 
@@ -59,10 +61,10 @@ fun RadioOptionTypeComponent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp)
-                .clip(RoundedCornerShape(6.dp))
+                .padding(top = dimen_10_dp)
+                .clip(RoundedCornerShape(dimen_6_dp))
                 .background(
-                    white, shape = RoundedCornerShape(6.dp)
+                    white, shape = RoundedCornerShape(dimen_6_dp)
                 )
                 .padding(0.dp)
         ) {
@@ -75,23 +77,19 @@ fun RadioOptionTypeComponent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.width(5.dp))
-                optionItemEntityState?.forEachIndexed { index, optionValueText ->
-                    Log.d("TAG", "RadioOptionTypeComponent: ${isTaskMarkedNotAvailable.value}")
+                Spacer(modifier = Modifier.width(dimen_5_dp))
+                optionItemEntityState.forEachIndexed { index, optionValueText ->
                     OptionCard(
                         modifier = Modifier.weight(1f),
                         textColor = if (selectedValueState.value.equals(
                                 optionValueText.description, ignoreCase = true
                             )
                         ) white else textColorDark,
-                        backgroundColor = if (selectedValueState.value == BLANK_STRING && optionValueText.selectedValue.toString() == BLANK_STRING) {
-                            if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
-                        } else if (selectedValueState.value.equals(
-                                optionValueText.description.toString(), ignoreCase = true
-                            )
-                        ) blueDark else {
-                            if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
-                        },
+                        backgroundColor = selectBackgroundColor(
+                            selectedValueState,
+                            optionValueText,
+                            isTaskMarkedNotAvailable
+                        ),
                         optionText = optionValueText.description.toString()
                     ) {
                         if (!isTaskMarkedNotAvailable.value) {
@@ -103,13 +101,29 @@ fun RadioOptionTypeComponent(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.width(5.dp))
+                    Spacer(modifier = Modifier.width(dimen_5_dp))
                 }
             }
         }
     }
 
 
+}
+
+@Composable
+private fun selectBackgroundColor(
+    selectedValueState: MutableState<String>,
+    optionValueText: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+) = if (selectedValueState.value == BLANK_STRING
+    && optionValueText.selectedValue.toString() == BLANK_STRING
+) {
+    if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
+} else if (selectedValueState.value.equals(
+        optionValueText.description.toString(), ignoreCase = true
+    )
+) blueDark else {
+    if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
 }
 
 @Composable
@@ -126,10 +140,10 @@ fun OptionCard(
         }, modifier = Modifier
             .background(
                 backgroundColor, RoundedCornerShape(
-                    topStart = 6.dp, bottomStart = 6.dp, bottomEnd = 6.dp, topEnd = 6.dp
+                    dimen_6_dp
                 )
             )
-            .border(1.dp, color = lightGray2, RoundedCornerShape(6.dp))
+            .border(dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_6_dp))
             .then(modifier)
 
     ) {
