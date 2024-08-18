@@ -626,8 +626,8 @@ fun NavGraphBuilder.MatNavigation(
             }
         )) {
             ActivitySuccessScreen(
-                onNavigateBack = { isFromActivity ,activityName->
-                    if (activityName.contains(LIVELIHOOD)) {
+                onNavigateBack = { isFromActivity ,activityRoutePath->
+                    if (activityRoutePath.contains(LIVELIHOOD)) {
                         navController.popBackStack(
                             MATHomeScreens.LivelihoodTaskScreen.route,
                             inclusive = isFromActivity
@@ -643,7 +643,7 @@ fun NavGraphBuilder.MatNavigation(
                 navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE
                 ) ?: BLANK_STRING,
-                activityName = it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING,
+                activityRoutePath = it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING,
                 isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
 
             )
@@ -819,8 +819,6 @@ fun NavGraphBuilder.MatNavigation(
             subjectName = it.arguments?.getString(
                 ARG_SUBJECT_NAME
             ).value(),
-//            isActivityComplete = it.arguments?.getBoolean(ACTIVITY_COMPLETED).value(),
-
             onSettingClicked = {
 
             })
@@ -915,9 +913,9 @@ fun navigateToActivityCompletionScreen(
     navController: NavController,
     activityMsg: String,
     isFromActivity: Boolean = false,
-    activityName: String = BLANK_STRING
+    activityRoutePath: String = BLANK_STRING
 ) {
-    var activityNameWithNullable = if (!TextUtils.isEmpty(activityName)) activityName else null
+    var activityNameWithNullable = if (!TextUtils.isEmpty(activityRoutePath)) activityRoutePath else null
     navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity/$activityNameWithNullable")
 }
 

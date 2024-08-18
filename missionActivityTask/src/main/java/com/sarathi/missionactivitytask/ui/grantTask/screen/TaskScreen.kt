@@ -144,7 +144,7 @@ fun TaskScreen(
                                     R.string.activity_completion_message,
                                     activityName
                                 ),
-                                activityName = activityName
+                                activityRoutePath = activityName
                             )
                         })
 

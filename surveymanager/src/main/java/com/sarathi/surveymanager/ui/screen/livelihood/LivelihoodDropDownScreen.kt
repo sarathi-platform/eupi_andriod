@@ -131,7 +131,6 @@ fun DropdownView(
             isEditAllowed = true,
             title = "Select first livelihood for didi",
             isMandatory = true,
-//            diableItem = selectedItem2 ?: 0,
             enableItem = selectedItem1 ?: -1,
             sources = firstDropDownItems,
             onAnswerSelection = { selectedValue ->
