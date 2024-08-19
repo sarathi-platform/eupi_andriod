@@ -59,5 +59,9 @@
     <string name="exit">"বেরিয়ে যান "</string>
     <string name="cancel">"বাতিল করুন "</string>
     <string name="search">"সার্চ করুন  "</string>
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="asset">Assets:</string>
+    <string name="add_event">Add Event</string>
 
 </resources>

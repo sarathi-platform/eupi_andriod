@@ -73,7 +73,6 @@ import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -564,7 +563,7 @@ private fun EventHeader(
     ) {
         Row {
             TextWithPaddingEnd(
-                text = "Event:",
+                text = stringResource(R.string.event),
                 style = getTextColor(smallTextStyle, color = eventTextColor)
             )
             Text(
@@ -591,7 +590,7 @@ private fun EventDetails(
         item.transactionAmount?.let {
             Row {
                 TextWithPaddingEnd(
-                    text = "Amount: ",
+                    text = stringResource(id = R.string.amount),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 Text(
@@ -604,7 +603,7 @@ private fun EventDetails(
         item.assetCount?.let {
             Row {
                 TextWithPaddingEnd(
-                    text = "Assets: ",
+                    text = stringResource(id = R.string.asset),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 Text(
@@ -665,7 +664,11 @@ private fun TextWithPaddingEnd(text: String, style: TextStyle) {
 
 @Composable
 private fun AddEventButton(onAddEventButtonClicked: () -> Unit) {
-    ButtonPositive(buttonTitle = "Add Event", isActive = true, isArrowRequired = true) {
+    ButtonPositive(
+        buttonTitle = stringResource(R.string.add_event),
+        isActive = true,
+        isArrowRequired = true
+    ) {
         onAddEventButtonClicked()
     }
 }

@@ -229,7 +229,7 @@ fun DataTabScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(1f),
-                                        placeholderString = "Search by didis", //TODO pick this from string file with translations
+                                        placeholderString = stringResource(R.string.search_by_didis), //TODO pick this from string file with translations
                                         searchFieldHeight = dimen_50_dp,
                                         onSearchValueChange = {
                                             dataTabScreenViewModel.onEvent(
@@ -314,7 +314,7 @@ fun DataTabScreen(
                                         SubjectLivelihoodEventSummaryCard(
                                             subjectId = subject.subjectId!!,
                                             name = subject.subjectName,
-                                            address = subject.houseNo + ", " + subject.cohortName,
+                                            dadaName = subject.dadaName,
                                             location = subject.villageName,
                                             lastUpdated = getDurationDifferenceInDays(
                                                 subject.lastUpdated

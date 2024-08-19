@@ -29,6 +29,7 @@
     <string name="delete">Delete</string>
     <string name="date">Date:</string>
     <string name="amount">Amount:</string>
+    <string name="asset">Assets:</string>
     <string name="nature">Nature:</string>
     <string name="mode">Mode:</string>
     <string name="no_of_didi_s">Didis:</string>
@@ -58,5 +59,8 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="search">Search</string>
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="add_event">Add Event</string>
 
 </resources>

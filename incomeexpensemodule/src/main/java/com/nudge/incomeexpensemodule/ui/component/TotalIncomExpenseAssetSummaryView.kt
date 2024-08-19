@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.example.incomeexpensemodule.R
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.theme.assetValueIconColor
@@ -47,28 +48,33 @@ fun TotalIncomeExpenseAssetSummaryView(
                 onAssetCountClicked()
             }
     ) {
-        Text(text = "Asset Count", style = getTextColor(newMediumTextStyle))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
-                if (it.value != 0) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.goat_icon),
-                        contentDescription = null,
-                        tint = assetValueIconColor
-                    )
-                    CustomHorizontalSpacer(size = dimen_5_dp)
-                    Text(
-                        text = it.value.toString(),
-                        style = getTextColor(didiDetailItemStyle),
-                    )
-                    Spacer(modifier = Modifier.width(dimen_5_dp))
+        Text(text = stringResource(R.string.total_asset), style = getTextColor(newMediumTextStyle))
+        if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.isNotEmpty() == true &&
+            incomeExpenseSummaryUiModel.totalAssetCountForLivelihood.filter { it.value != 0 }
+                .isNotEmpty()
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
+                    if (it.value != 0) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.goat_icon),
+                            contentDescription = null,
+                            tint = assetValueIconColor
+                        )
+                        CustomHorizontalSpacer(size = dimen_5_dp)
+                        Text(
+                            text = it.value.toString(),
+                            style = getTextColor(didiDetailItemStyle),
+                        )
+                        Spacer(modifier = Modifier.width(dimen_5_dp))
+                    }
                 }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_right_circle),
+                    contentDescription = null,
+                    tint = assetValueIconColor
+                )
             }
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right_circle),
-                contentDescription = null,
-                tint = assetValueIconColor
-            )
         }
     }
 }
