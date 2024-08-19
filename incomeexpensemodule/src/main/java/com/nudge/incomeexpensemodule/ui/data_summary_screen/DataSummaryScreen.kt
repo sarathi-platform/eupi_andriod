@@ -52,7 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
-import com.nudge.core.DD_MMM_YYYY_FORMAT
+import com.nudge.core.DD_mmm_YY_FORMAT
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
@@ -73,6 +73,7 @@ import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -83,14 +84,16 @@ import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
+import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
+import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
@@ -199,20 +202,22 @@ fun DataSummaryScreen(
             },
             onSearchValueChange = {},
             onBottomUI = {
-                BottomAppBar(
-                    backgroundColor = Color.White,
-                    elevation = 10.dp
-                ) {
-                    AddEventButton() {
-                        navigateToAddEventScreen(
-                            navController = navController,
-                            subjectName = subjectName,
-                            subjectId = subjectId,
-                            transactionID = UUID.randomUUID().toString(),
-                            showDeleteButton = false
-                        )
-                    }
+                if (!viewModel.areEventsNotAvailableForSubject.value) {
+                    BottomAppBar(
+                        backgroundColor = Color.White,
+                        elevation = 10.dp
+                    ) {
+                        AddEventButton() {
+                            navigateToAddEventScreen(
+                                navController = navController,
+                                subjectName = subjectName,
+                                subjectId = subjectId,
+                                transactionID = UUID.randomUUID().toString(),
+                                showDeleteButton = false
+                            )
+                        }
 
+                    }
                 }
             },
             onContentUI = { a, b, c ->
@@ -560,16 +565,16 @@ private fun EventHeader(
         Row {
             TextWithPaddingEnd(
                 text = "Event:",
-                style = getTextColor(quesOptionTextStyle)
+                style = getTextColor(smallTextStyle, color = eventTextColor)
             )
             Text(
                 text = livelihoodEventUiModels.find(item.livelihoodEventId.value())?.name.value(),
-                style = getTextColor(newMediumTextStyle)
+                style = getTextColor(newBoldTextStyle)
             )
         }
         Text(
-            text = item.date.getDate(pattern = DD_MMM_YYYY_FORMAT),
-            style = getTextColor(quesOptionTextStyle)
+            text = item.date.getDate(pattern = DD_mmm_YY_FORMAT),
+            style = getTextColor(smallTextStyle, color = eventTextColor)
         )
 
     }
@@ -587,7 +592,7 @@ private fun EventDetails(
             Row {
                 TextWithPaddingEnd(
                     text = "Amount: ",
-                    style = getTextColor(quesOptionTextStyle)
+                    style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 Text(
                     text = getAmountForEvent(item),
@@ -600,7 +605,7 @@ private fun EventDetails(
             Row {
                 TextWithPaddingEnd(
                     text = "Assets: ",
-                    style = getTextColor(quesOptionTextStyle)
+                    style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 Text(
                     text = getAssetCountForEvent(item),

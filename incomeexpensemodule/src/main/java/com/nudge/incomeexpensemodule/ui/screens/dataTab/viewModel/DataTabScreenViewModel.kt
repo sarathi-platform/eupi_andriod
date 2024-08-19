@@ -209,7 +209,7 @@ class DataTabScreenViewModel @Inject constructor(
         return filteredDataTabScreenUiEntityList.value
     }
 
-    fun updateDataTabScreenUiEntityListForSubTab(subTabs: SubTabs) {
+    private fun updateDataTabScreenUiEntityListForSubTab(subTabs: SubTabs) {
         val currentTime = getCurrentTimeInMillis()
         when (subTabs) {
             SubTabs.All -> {
