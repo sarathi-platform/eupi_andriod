@@ -340,38 +340,6 @@ fun TaskRowView(
                     else -> {}
                 }
             }
-
-            //TODO @Anupam uncomment when survey type screen is used
-            /*viewModel.activityConfigUiModel?.let {
-                if (subjectName.isNotBlank()) {
-                    val sanctionedAmount = try {
-                        task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
-                            ?: DEFAULT_ID
-                    } catch (ex: Exception) {
-                        CoreLogger.e(
-                            tag = TAG,
-                            msg = "TaskRowView: exception -> ${ex.message}",
-                            ex = ex,
-                            stackTrace = true
-                        )
-                        DEFAULT_ID
-                    }
-                    navigateToSectionScreen(
-                        navController,
-                        missionId = viewModel.missionId,
-                        activityId = viewModel.activityId,
-                        taskId = task.key,
-                        surveyId = it.surveyId,
-                        subjectType = it.subject,
-                        subjectName = subjectName,
-                        activityType = viewModel.activityType,
-                        activityConfigId = it.activityConfigId,
-                        sanctionedAmount = sanctionedAmount,
-                    )
-                }
-
-            }*/
-            //
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {

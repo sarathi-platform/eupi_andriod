@@ -16,8 +16,7 @@ interface FetchLivelihoodOptionRepository {
         selectedPrimaryLivelihood: Int,
         selectedSecondaryLivelihood: Int
     ): SubjectLivelihoodMappingEntity
-    suspend fun deleteContentFromDB()
-    suspend fun saveAllFormDetails(formDetails: List<SubjectLivelihoodMappingEntity>)
+    suspend fun saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
     suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>?
 suspend fun getActivityIdForLivelihood():Int
 

@@ -37,11 +37,7 @@ class FetchLivelihoodOptionRepositoryImpl @Inject constructor(
         return subjectLivelihoodOptionRepository
     }
 
-    override suspend fun deleteContentFromDB() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun saveAllFormDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>) {
+    override suspend fun saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>) {
         subjectLivelihoodMappingDao.insertAllSubjectLivehoodMapping(subjectLivelihoodMappingEntity)
     }
     override suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>? {

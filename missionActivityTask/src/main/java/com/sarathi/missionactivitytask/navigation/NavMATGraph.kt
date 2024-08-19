@@ -26,6 +26,8 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_PENDING_COUNT
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_TOTAL_COUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
@@ -182,7 +184,15 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_ACTIVITY_PENDING_COUNT) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_TOTAL_COUNT) {
+                    type = NavType.IntType
+                },
+
+            )
         ) {
           LivelihoodTaskScreen(
                 navController = navController,
@@ -196,6 +206,12 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+              pendingCount  = it.arguments?.getInt(
+                  ARG_ACTIVITY_PENDING_COUNT
+              ) ?: 0,
+              totalCount= it.arguments?.getInt(
+                  ARG_ACTIVITY_TOTAL_COUNT
+              ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -969,13 +985,15 @@ fun navigateToGrantTaskScreen(
 ) {
     navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }
-fun navigateToLiveliHoodScreen(
+fun navigateToLivelihoodTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    pendingCount:Int,
+    totalCount:Int
 ) {
-    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$pendingCount/$totalCount")
 }
 
 fun navigateToSurveyTaskScreen(

@@ -34,7 +34,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                         )
                     )
                 }
-                repository.saveAllFormDetails(subjectLivelihoodMappingEntities)
+                repository.saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntities)
                 return true
             }
         } else {

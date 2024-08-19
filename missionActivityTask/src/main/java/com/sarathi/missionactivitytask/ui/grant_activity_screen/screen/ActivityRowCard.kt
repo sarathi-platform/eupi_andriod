@@ -18,7 +18,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
-import com.sarathi.missionactivitytask.navigation.navigateToLiveliHoodScreen
+import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodTaskScreen
 import com.sarathi.missionactivitytask.navigation.navigateToSurveyTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 import com.sarathi.missionactivitytask.utils.getFilePathUri
@@ -81,11 +81,14 @@ fun ActivityRowCard(
                         ActivityTypeEnum.LIVELIHOOD.name.lowercase(
                             Locale.ENGLISH
                         ) -> {
-                            navigateToLiveliHoodScreen(
+
+                            navigateToLivelihoodTaskScreen(
                                 navController,
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
-                                activityName = activity.description
+                                activityName = activity.description,
+                                pendingCount = activity.pendingTaskCount,
+                                totalCount = activity.taskCount
                             )
                         }
 

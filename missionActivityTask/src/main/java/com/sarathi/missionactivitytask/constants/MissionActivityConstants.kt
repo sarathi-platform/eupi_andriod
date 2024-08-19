@@ -53,5 +53,7 @@ object MissionActivityConstants {
     const val ARG_FORM_PATH = "form_path"
     const val ARG_MAT_ID = "mat_id"
     const val ARG_CONTENT_SCREEN_CATEGORY = "content_screen_category"
+    const val ARG_ACTIVITY_TOTAL_COUNT = "activity_total_count"
+    const val ARG_ACTIVITY_PENDING_COUNT = "activity_pending_count"
 
 }

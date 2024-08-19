@@ -154,7 +154,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
         }
     }
 
-    @SuppressLint("SuspiciousIndentation")
     private suspend fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
             val subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity?

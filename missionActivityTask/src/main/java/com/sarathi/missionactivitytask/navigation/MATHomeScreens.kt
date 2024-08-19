@@ -48,7 +48,7 @@ sealed class MATHomeScreens(val route: String) {
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
     object LivelihoodTaskScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_ACTIVITY_PENDING_COUNT}}/{${MissionActivityConstants.ARG_ACTIVITY_TOTAL_COUNT}}")
 
     object LivelihoodDropDownScreen :
         MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}")
