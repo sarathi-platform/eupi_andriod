@@ -35,4 +35,7 @@ interface AssetDao {
     @Query("SELECT * from assets_table where livelihoodId in (:livelihoodIds) and userId = :userId")
     fun getAllAssetsForLivelihoods(livelihoodIds: List<Int>, userId: String): List<AssetEntity>
 
+    @Query("DELETE from assets_table where userId = :userId")
+    fun deleteAssetsForUser(userId: String)
+
 }

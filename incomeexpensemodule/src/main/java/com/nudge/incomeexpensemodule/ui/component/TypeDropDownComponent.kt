@@ -25,18 +25,19 @@ fun TypeDropDownComponent(
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
+    selectedValue: String? = null,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
         sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember(defaultSourceList.size) {
-        mutableStateOf(
-            defaultSourceList.find { it.isSelected == true }?.value
-                ?: hintText
-        )
-    }
+//    var selectedOptionText by remember(defaultSourceList.size) {
+//        mutableStateOf(
+//            defaultSourceList.find { it.isSelected == true }?.value
+//                ?: hintText
+//        )
+    //   }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -48,7 +49,7 @@ fun TypeDropDownComponent(
         title = title,
         diableItem = diableItem,
         isMandatory = isMandatory,
-        selectedItem = selectedOptionText,
+        selectedItem = selectedValue ?: hintText,
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it
@@ -67,8 +68,8 @@ fun TypeDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            selectedOptionText =
-                defaultSourceList[defaultSourceList.indexOf(it)].value
+//            selectedOptionText =
+//                defaultSourceList[defaultSourceList.indexOf(it)].value
             onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
             expanded = false
 

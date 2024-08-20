@@ -47,5 +47,7 @@ interface LivelihoodEventDao {
         languageCode: String,
     ): List<LivelihoodEventUiModel>
 
+    @Query("DELETE from livelihood_event_table where userId = :userId")
+    fun deleteLivelihoodEventForUser(userId: String)
 
 }

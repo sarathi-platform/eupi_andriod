@@ -85,6 +85,7 @@ const val ATTENDANCE_DELETED = "Deleted"
 const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
 const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
+const val DD_mmm_YY_FORMAT = "dd MMM, yy"
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 

@@ -107,8 +107,8 @@ class AddEventViewModel @Inject constructor(
                 getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
                     questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
                 }
-
-                fetchAssestEventProductValues()
+                fetEventValues()
+                fetchAssestProductValues()
             }
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
@@ -136,22 +136,13 @@ class AddEventViewModel @Inject constructor(
             _livelihoodEventDropdownValue.clear()
             _livelihoodAssetDropdownValue.clear()
             _livelihoodProductDropdownValue.clear()
-
-            fetchAssestEventProductValues()
+            fetEventValues()
+            fetchAssestProductValues()
             validateForm()
         }
     }
 
-    private suspend fun fetchAssestEventProductValues() {
-        eventList = fetchLivelihoodEventUseCase.invoke(selectedLivelihoodId.value)
-        _livelihoodEventDropdownValue.addAll(eventList.map {
-            ValuesDto(
-                id = it.id,
-                value = it.name,
-                isSelected = it.id == selectedEventId.value,
-                originalName = it.originalName
-            )
-        })
+    private suspend fun fetchAssestProductValues() {
         _livelihoodAssetDropdownValue.addAll(
             fetchAssetUseCase.invoke(
                 selectedLivelihoodId.value,
@@ -164,6 +155,18 @@ class AddEventViewModel @Inject constructor(
                 selectedProductId.value
             )
         )
+    }
+
+    private suspend fun fetEventValues() {
+        eventList = fetchLivelihoodEventUseCase.invoke(selectedLivelihoodId.value)
+        _livelihoodEventDropdownValue.addAll(eventList.map {
+            ValuesDto(
+                id = it.id,
+                value = it.name,
+                isSelected = it.id == selectedEventId.value,
+                originalName = it.originalName
+            )
+        })
     }
 
     private fun resetForm() {
@@ -193,9 +196,12 @@ class AddEventViewModel @Inject constructor(
         selectedEventId.value = selectedValue.id
         selectedProductId.value = -1
         selectedAssetTypeId.value = -1
+
         assetCount.value = BLANK_STRING
         amount.value = BLANK_STRING
 
+        _livelihoodAssetDropdownValue.clear()
+        _livelihoodProductDropdownValue.clear()
 
         getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
             if (questionVisibilityMap.containsKey(it)) {
@@ -205,7 +211,9 @@ class AddEventViewModel @Inject constructor(
             }
         }
         validateForm()
-
+        ioViewModelScope {
+            fetchAssestProductValues()
+        }
     }
 
     fun onSubmitButtonClick(subjectId: Int, transactionId: String) {

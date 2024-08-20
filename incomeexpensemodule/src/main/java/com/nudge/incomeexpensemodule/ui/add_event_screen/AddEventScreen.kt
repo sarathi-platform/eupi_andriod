@@ -165,6 +165,8 @@ fun AddEventScreen(
                         title = "Livelihood",
                         isMandatory = true,
                         sources = viewModel.livelihoodDropdownValue,
+                        selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
+
                         onAnswerSelection = { selectedValue ->
                             viewModel.onLivelihoodSelect(selectedValue.id)
                             viewModel.validateForm()
@@ -232,6 +234,7 @@ fun AddEventScreen(
                         isEditAllowed = true,
                         title = "Events",
                         isMandatory = true,
+                        selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
                         sources = viewModel.livelihoodEventDropdownValue,
                         onAnswerSelection = { selectedValue ->
                             viewModel.onEventSelected(selectedValue)
@@ -245,9 +248,11 @@ fun AddEventScreen(
                         TypeDropDownComponent(
                             isEditAllowed = true,
                             title = "Type of Asset*",
+                            selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
+
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
                                 viewModel.validateForm()
                             }
@@ -263,6 +268,7 @@ fun AddEventScreen(
                             title = "Products*",
                             isMandatory = true,
                             sources = viewModel.livelihoodProductDropdownValue,
+                            selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
                                 viewModel.validateForm()

@@ -53,7 +53,7 @@ fun InputComponent(
     remainingAmount: Int = 0,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
-    val txt = remember {
+    val txt = remember(defaultValue) {
         mutableStateOf(defaultValue)
     }
 

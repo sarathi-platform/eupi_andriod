@@ -17,7 +17,7 @@ class LivelihoodUseCase @Inject constructor(
             val apiResponse = coreLivelihoodRepositoryImpl.getLivelihoodConfigFromNetwork()
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let {
-
+                    coreLivelihoodRepositoryImpl.deleteLivelihoodCoreDataForUser()
                     saveLivelihoodConfigInDb(it)
                 }
                 return true

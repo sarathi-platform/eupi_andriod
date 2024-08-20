@@ -45,11 +45,11 @@ class FetchAllDataUseCase @Inject constructor(
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
                 fetchLivelihoodSaveEventUseCase.invoke()
-                livelihoodUseCase.invoke()
                 moneyJournalUseCase.invoke()
                 fetchLivelihoodOptionNetworkUseCase.invoke()
                 assetJournalUseCase.invoke()
             }
+            livelihoodUseCase.invoke()
             fetchContentDataFromNetworkUseCase.invoke()
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)

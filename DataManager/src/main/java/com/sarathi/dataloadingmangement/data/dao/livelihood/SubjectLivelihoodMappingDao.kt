@@ -40,6 +40,8 @@ interface SubjectLivelihoodMappingDao {
         userId: String
     ): SubjectLivelihoodMappingEntity?
 
+    @Query("DELETE from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where userId = :userId")
+    fun deleteSubjectLivelihoodMappingForUser(userId: String)
 
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME" +
             " where subjectId IN (:subjectIds) and userId = :userId")
