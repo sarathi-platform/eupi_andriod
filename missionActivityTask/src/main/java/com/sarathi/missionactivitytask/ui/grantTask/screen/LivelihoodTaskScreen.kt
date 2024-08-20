@@ -220,8 +220,6 @@ fun LivelihoodPlaningTaskScreen(
     isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
     onSettingClick: () -> Unit,
-    totalCount:Int?=0,
-    pendingCount:Int?=0,
     activities: List<ActivityUiModel>,
     taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit
 ) {
