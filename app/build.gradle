@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "com.nrlm.sarathi"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 58
         versionName version
 
@@ -26,7 +26,6 @@ android {
             useSupportLibrary true
         }
     }
-
 
     bundle {
         language {
