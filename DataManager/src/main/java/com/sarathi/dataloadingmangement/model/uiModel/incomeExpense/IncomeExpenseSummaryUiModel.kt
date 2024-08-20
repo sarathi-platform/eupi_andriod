@@ -8,7 +8,8 @@ data class IncomeExpenseSummaryUiModel(
     val totalExpense: Double,
     val livelihoodAssetMap: Map<Int, List<AssetEntity>>,
     val totalAssetCountForLivelihood: Map<Int, Int>,
-    val assetsCountWithValue: List<AssetsCountWithValueUiModel>
+    val assetsCountWithValue: List<AssetsCountWithValueUiModel>,
+    val imageUriForLivelihood: Map<Int, String>
 ) {
 
     companion object {
@@ -20,7 +21,8 @@ data class IncomeExpenseSummaryUiModel(
                 totalExpense = DEFAULT_INCOME_EXPENSE_VALUE,
                 livelihoodAssetMap = mapOf(),
                 totalAssetCountForLivelihood = mapOf(),
-                assetsCountWithValue = listOf()
+                assetsCountWithValue = listOf(),
+                imageUriForLivelihood = mapOf()
             )
         }
 
@@ -30,6 +32,7 @@ data class IncomeExpenseSummaryUiModel(
             totalExpense: Double,
             livelihoodAssetMap: Map<Int, List<AssetEntity>>,
             totalAssetCountForLivelihood: Map<Int, Int>,
+            imageUriForLivelihood: Map<Int, String>,
             assetsCountWithValue: List<AssetsCountWithValueUiModel>
         ): IncomeExpenseSummaryUiModel {
 
@@ -39,7 +42,8 @@ data class IncomeExpenseSummaryUiModel(
                 totalExpense = totalExpense,
                 livelihoodAssetMap = livelihoodAssetMap,
                 totalAssetCountForLivelihood = totalAssetCountForLivelihood,
-                assetsCountWithValue = assetsCountWithValue
+                assetsCountWithValue = assetsCountWithValue,
+                imageUriForLivelihood = imageUriForLivelihood
             )
 
         }

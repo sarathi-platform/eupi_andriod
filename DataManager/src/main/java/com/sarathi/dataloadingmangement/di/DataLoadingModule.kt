@@ -436,7 +436,8 @@ class DataLoadingModule {
         contentConfigDao: ContentConfigDao,
         uiConfigDao: UiConfigDao,
         surveyAnswersDao: SurveyAnswersDao,
-        activityConfigDao: ActivityConfigDao
+        activityConfigDao: ActivityConfigDao,
+        livelihoodDao: LivelihoodDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
@@ -445,7 +446,8 @@ class DataLoadingModule {
             contentConfigDao = contentConfigDao,
             uiConfigDao = uiConfigDao,
             surveyAnswersDao = surveyAnswersDao,
-            activityConfigDao = activityConfigDao
+            activityConfigDao = activityConfigDao,
+            livelihoodDao = livelihoodDao
         )
     }
 

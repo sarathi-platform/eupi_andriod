@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +44,7 @@ import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.FileUtils
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
@@ -51,6 +53,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpens
 fun SubjectLivelihoodEventSummaryCard(
     subjectId: Int,
     name: String,
+    imageFileName: String?,
     dadaName: String,
     location: String,
     lastUpdated: String,
@@ -59,6 +62,7 @@ fun SubjectLivelihoodEventSummaryCard(
     onAssetCountClicked: (subjectId: Int) -> Unit,
     onSummaryCardClicked: () -> Unit
 ) {
+    val context = LocalContext.current
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,7 +96,17 @@ fun SubjectLivelihoodEventSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
-                    CircularImageViewComponent(modifier = Modifier, Uri.EMPTY)
+                    val imageUri =
+                        if (TextUtils.isEmpty(imageFileName)) Uri.EMPTY else imageFileName?.let {
+                            FileUtils.getImageUri(
+                                context = context,
+                                fileName = it
+                            )
+                        }
+                    CircularImageViewComponent(
+                        modifier = Modifier,
+                        imagePath = imageUri ?: Uri.EMPTY
+                    )
                     Spacer(modifier = Modifier.width(dimen_8_dp))
                     Column {
                         Text(text = name, style = getTextColor(buttonTextStyle))
@@ -179,6 +193,7 @@ fun UserProfileCardList() {
         SubjectLivelihoodEventSummaryCard(
             subjectId = 123,
             name = "Shanti Devi",
+            imageFileName = null,
             dadaName = "Killu dada",
             location = "Sundar Pahari",
             lastUpdated = "10 days ago",

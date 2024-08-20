@@ -314,6 +314,7 @@ fun DataTabScreen(
                                         SubjectLivelihoodEventSummaryCard(
                                             subjectId = subject.subjectId!!,
                                             name = subject.subjectName,
+                                            imageFileName = subject.imageFileName,
                                             dadaName = subject.dadaName,
                                             location = subject.villageName,
                                             lastUpdated = getDurationDifferenceInDays(
