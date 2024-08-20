@@ -59,5 +59,9 @@
     <string name="exit">"Ongkhorlam "</string>
     <string name="cancel">"Mwthakma "</string>
     <string name="search">"Naitukdi "</string>
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="asset">Assets:</string>
+    <string name="add_event">Add Event</string>
 
 </resources>

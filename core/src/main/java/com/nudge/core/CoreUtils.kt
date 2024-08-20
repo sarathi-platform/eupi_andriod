@@ -1188,3 +1188,6 @@ fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
     return this[index]
 
 }
+fun String.removeExtension(extensionCode: String = "."): String {
+    return this.substringBeforeLast(extensionCode)
+}
