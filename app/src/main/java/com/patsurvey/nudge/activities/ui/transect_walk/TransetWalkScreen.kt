@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -114,6 +116,9 @@ fun TransectWalkScreen(
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
+    val showLoadConfirmationDialog = remember {
+        mutableStateOf(false)
+    }
 
     DisposableEffect(key1 = Unit) {
         LocationUtil.setLocation((context as MainActivity))
@@ -129,6 +134,21 @@ fun TransectWalkScreen(
             navController.popBackStack()
         }
     }
+    if (showLoadConfirmationDialog.value) {
+        ShowCustomDialog(
+            title = "",
+            message = "Are you sure you want to continue?",
+            positiveButtonTitle = "ok",
+            negativeButtonTitle = "cancel",
+            onPositiveButtonClick = {
+                completeTransetWalk(viewModel, context, villageId, stepId, navController)
+                showLoadConfirmationDialog.value = false
+            }, onNegativeButtonClick = {
+                showLoadConfirmationDialog.value = false
+            }
+        )
+    }
+
 
     ConstraintLayout(
         modifier = Modifier
@@ -464,45 +484,7 @@ fun TransectWalkScreen(
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     if (completeTolaAdditionClicked) {
-                        viewModel.saveTransectWalkCompletionDate()
-                        //TODO Integrate Api when backend fixes the response.
-                        if ((context as MainActivity).isOnline.value ?: false) {
-                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
-                            viewModel.addTolasToNetwork(object : NetworkCallbackListener {
-                                override fun onSuccess() {
-                                    NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onSuccess")
-                                    viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
-                                        override fun onSuccess() {
-
-                                        }
-                                        override fun onFailed() {
-                                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked callWorkFlowAPI -> onFailed")
-                                        }
-                                    })
-                                }
-                                override fun onFailed() {
-                                    NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onFailed")
-                                }
-
-                            })
-
-//                            viewModel.updateTolaNeedTOPostList(villageId)
-                        }
-                        viewModel.markTransectWalkComplete(villageId, stepId)
-                        viewModel.updateWorkflowStatusInEvent(
-                            stepStatus = StepStatus.COMPLETED,
-                            villageId = villageId,
-                            stepId = stepId
-                        )
-                        navController.navigate(
-                            "step_completion_screen/${
-                                context.getString(R.string.transect_walk_completed_message).replace(
-                                    "{VILLAGE_NAME}",
-                                    viewModel.villageEntity.value?.name ?: ""
-                                )
-                            }"
-                        )
-
+                        showLoadConfirmationDialog.value = true
                     } else {
                         completeTolaAdditionClicked = true
                     }
@@ -513,6 +495,58 @@ fun TransectWalkScreen(
             bottomPadding = 0.dp
         }
     }
+}
+
+private fun completeTransetWalk(
+    viewModel: TransectWalkViewModel,
+    context: Context,
+    villageId: Int,
+    stepId: Int,
+    navController: NavController
+) {
+    viewModel.saveTransectWalkCompletionDate()
+    //TODO Integrate Api when backend fixes the response.
+    if ((context as MainActivity).isOnline.value ?: false) {
+        NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
+        viewModel.addTolasToNetwork(object : NetworkCallbackListener {
+            override fun onSuccess() {
+                NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onSuccess")
+                viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener {
+                    override fun onSuccess() {
+
+                    }
+
+                    override fun onFailed() {
+                        NudgeLogger.d(
+                            "TransectWalkScreen",
+                            "completeTolaAdditionClicked callWorkFlowAPI -> onFailed"
+                        )
+                    }
+                })
+            }
+
+            override fun onFailed() {
+                NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onFailed")
+            }
+
+        })
+
+//                            viewModel.updateTolaNeedTOPostList(villageId)
+    }
+    viewModel.markTransectWalkComplete(villageId, stepId)
+    viewModel.updateWorkflowStatusInEvent(
+        stepStatus = StepStatus.COMPLETED,
+        villageId = villageId,
+        stepId = stepId
+    )
+    navController.navigate(
+        "step_completion_screen/${
+            context.getString(R.string.transect_walk_completed_message).replace(
+                "{VILLAGE_NAME}",
+                viewModel.villageEntity.value?.name ?: ""
+            )
+        }"
+    )
 }
 
 @Composable
@@ -558,3 +592,5 @@ fun VillageDetailView(
         }
     }
 }
+
+
