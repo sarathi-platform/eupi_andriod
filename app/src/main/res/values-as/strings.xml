@@ -379,6 +379,7 @@
     <string name="total_pat_attempted_string">মুঠ PAT চেষ্টা কৰা হৈছে</string>
     <string name="didis_marked_as_not_available_string">উপলব্ধ নাই বুলি চিহ্নিত কৰা বাইদেউসকল</string>
     <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম শৰীৰৰ \n মহিলা আছে নেকি?</string>
+    <string name="able_bodied_women_flag_text_1">পৰিয়ালত সক্ষম শৰীৰৰ মহিলা আছে নেকি?</string>
     <string name="something_went_wrong">কিবা ভুল হৈছে</string>
     <string name="score_comparison_section_1_text">ভাগ 1</string>
     <string name="village_is_not_vo_endorsed_right_now">এই মুহূৰ্তত গাওঁখনৰ VO অনুমোদন কৰা হোৱা নাই !</string>

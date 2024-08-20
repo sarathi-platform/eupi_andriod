@@ -490,6 +490,7 @@
     <string name="total_pat_attempted_string">Baroh kiba la pyrshan ban pynrung ha ka PAT</string>
     <string name="didis_marked_as_not_available_string">I kong ba la kdew ba ym don</string>
     <string name="able_bodied_women_flag_text">Don na ki riew kynthei ha ka \nlonging ki ba biang ha ka dkhot met?</string>
+    <string name="able_bodied_women_flag_text_1">Don na ki riew kynthei ha ka longing ki ba biang ha ka dkhot met?</string>
     <string name="something_went_wrong">Kaei kaei ka don kaba bakla.</string>
     <string name="score_comparison_section_1_text">Ka bynta 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Ka jing bym mynjur da ka VO ia kane ka shnong mynta!</string>

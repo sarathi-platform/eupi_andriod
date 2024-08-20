@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
@@ -52,12 +54,14 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.navigation.selection.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.selection.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
@@ -194,6 +198,46 @@ fun PatSurveyCompleteSummary(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    item {
+                        Column(modifier = Modifier.padding(bottom = dimen_10_dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.shg_question_text),
+                                    style = smallTextStyleMediumWeight2.copy(
+                                        textColorDark
+                                    )
+                                )
+                                Spacer(modifier = Modifier.weight(1.0f))
+                                Text(
+                                    text = SHGFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.shgFlag)
+                                        .toString(), style = smallTextStyleMediumWeight2.copy(
+                                        textColorDark
+                                    )
+                                )
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.able_bodied_women_flag_text_1),
+                                    style = smallTextStyleMediumWeight2.copy(
+                                        textColorDark
+                                    )
+                                )
+                                Spacer(modifier = Modifier.weight(1.0f))
+                                Text(
+                                    text = AbleBodiedFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.ableBodiedFlag)
+                                        .toString(), style = smallTextStyleMediumWeight2.copy(
+                                        textColorDark
+                                    )
+                                )
+                            }
+                        }
+                    }
                     item {
                         Text(
                             text = stringResource(R.string.section_1_text),
