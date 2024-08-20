@@ -39,7 +39,6 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
-import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
@@ -329,26 +328,6 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun subjectLivelihoodMappingDao(db: NudgeGrantDatabase) = db.subjectLivelihoodMappingDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodDao(db: NudgeGrantDatabase) = db.livelihoodDao()
-
-    @Provides
-    @Singleton
-    fun provideAssetDao(db: NudgeGrantDatabase) = db.assetDao()
-
-    @Provides
-    @Singleton
-    fun provideProductDao(db: NudgeGrantDatabase) = db.productDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodEventDao(db: NudgeGrantDatabase) = db.livelihoodEventDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodLanguageDao(db: NudgeGrantDatabase) = db.livelihoodLanguageDao()
 
     @Provides
     @Singleton
