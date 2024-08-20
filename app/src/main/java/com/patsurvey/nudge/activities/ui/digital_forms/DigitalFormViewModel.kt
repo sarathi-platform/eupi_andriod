@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -17,11 +18,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
-import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
-import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
@@ -109,7 +106,7 @@ class DigitalFormViewModel @Inject constructor(
                         "generateFormAPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}"
                     )
                 }
-                PdfUtils.getFormAPdfForBpc(
+                val filePath = PdfUtils.getFormAPdfForBpc(
                     context = context,
                     getStateId(),
                     villageEntity = villageEntity,
@@ -121,12 +118,18 @@ class DigitalFormViewModel @Inject constructor(
                         )
                     ) ?: BLANK_STRING
                 )
+                withContext(Dispatchers.Main) {
+                    delay(500)
+                    if (!TextUtils.isEmpty(filePath)) {
+                        callBack(true, File(filePath))
+                    }
+                }
             } else {
                 NudgeLogger.d("DigitalFormViewModel", "generateFormAPdf -> villageEntity: ${villageEntity.id}")
                 didiDetailList.value.forEach {
                     NudgeLogger.d("DigitalFormViewModel", "generateFormAPdf -> didi.id = ${it.id}, didi.name = ${it.name}")
                 }
-                PdfUtils.getFormAPdf(
+                val filePath = PdfUtils.getFormAPdf(
                     context = context,
                     getStateId() ,
                     villageEntity = villageEntity,
@@ -138,12 +141,14 @@ class DigitalFormViewModel @Inject constructor(
                         )
                     ) ?: BLANK_STRING
                 )
+                withContext(Dispatchers.Main) {
+                    delay(500)
+                    if (!TextUtils.isEmpty(filePath)) {
+                        callBack(true, File(filePath))
+                    }
+                }
             }
-            withContext(Dispatchers.Main) {
-                delay(500)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.id) else null
-                callBack(success, path)
-            }
+
         }
     }
 
@@ -161,7 +166,7 @@ class DigitalFormViewModel @Inject constructor(
                         "generateFormBPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}"
                     )
                 }
-                PdfUtils.getFormBPdfForBpc(
+                val filePath = PdfUtils.getFormBPdfForBpc(
                     context,
                     getStateId(),
                     villageEntity = digitalFormRepository.getSelectedVillage(),
@@ -174,6 +179,12 @@ class DigitalFormViewModel @Inject constructor(
                         )
                     ) ?: BLANK_STRING
                 )
+                withContext(Dispatchers.Main) {
+                    delay(500)
+                    if (!TextUtils.isEmpty(filePath)) {
+                        callBack(true, File(filePath))
+                    }
+                }
             } else {
                 NudgeLogger.d(
                     "DigitalFormViewModel",
@@ -185,7 +196,7 @@ class DigitalFormViewModel @Inject constructor(
                         "generateFormBPdf -> didi.id = ${it.id}, didi.name = ${it.name}"
                     )
                 }
-                PdfUtils.getFormBPdf(
+                val filePath = PdfUtils.getFormBPdf(
                     context,
                     getStateId(),
                     villageEntity = digitalFormRepository.getSelectedVillage(),
@@ -198,12 +209,14 @@ class DigitalFormViewModel @Inject constructor(
                         )
                     ) ?: BLANK_STRING
                 )
+                withContext(Dispatchers.Main) {
+                    delay(500)
+                    if (!TextUtils.isEmpty(filePath)) {
+                        callBack(true, File(filePath))
+                    }
+                }
             }
-            withContext(Dispatchers.Main) {
-                delay(500)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.id) else null
-                callBack(success, path)
-            }
+
         }
     }
 
@@ -221,7 +234,7 @@ class DigitalFormViewModel @Inject constructor(
                         "generateFormCPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}"
                     )
                 }
-                PdfUtils.getFormCPdfForBpc(
+                val filePath = PdfUtils.getFormCPdfForBpc(
                     context,
                     getStateId(),
                     villageEntity = digitalFormRepository.getSelectedVillage(),
@@ -234,6 +247,12 @@ class DigitalFormViewModel @Inject constructor(
                         )
                     ) ?: BLANK_STRING
                 )
+                withContext(Dispatchers.Main) {
+                    delay(500)
+                    if (!TextUtils.isEmpty(filePath)) {
+                        callBack(true, File(filePath))
+                    }
+                }
             } else {
                 NudgeLogger.d(
                     "DigitalFormViewModel",
@@ -245,7 +264,7 @@ class DigitalFormViewModel @Inject constructor(
                         "generateFormCPdf -> didi.id = ${it.id}, didi.name = ${it.name}"
                     )
                 }
-                PdfUtils.getFormCPdf(
+                val filePath = PdfUtils.getFormCPdf(
                     context,
                     getStateId(),
                     villageEntity = digitalFormRepository.getSelectedVillage(),
@@ -258,11 +277,12 @@ class DigitalFormViewModel @Inject constructor(
                         )
                     ) ?: BLANK_STRING
                 )
-            }
-            withContext(Dispatchers.Main) {
-                delay(500)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.id) else null
-                callBack(success, path)
+                withContext(Dispatchers.Main) {
+                    delay(500)
+                    if (!TextUtils.isEmpty(filePath)) {
+                        callBack(true, File(filePath))
+                    }
+                }
             }
         }
     }

@@ -92,4 +92,7 @@ interface PrefRepo {
 
    fun setDataSyncStatus(status: Boolean)
    fun getLoggedInUserType():String
+   fun savePageOpenFromOTPScreen(status: Boolean)
+   fun getPageOpenFromOTPScreen(): Boolean
+
 }

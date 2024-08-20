@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
@@ -51,9 +52,6 @@ import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
-import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
-import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -367,18 +365,18 @@ class SettingBSViewModel @Inject constructor(
         )
         val didiList =
             settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(selectedVillageId)
-
-        val isFormAGenerated =
+        val formAFilePath =
             generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
-        addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, fileAndDbZipList)
+        addFormToUriList(formAFilePath, fileAndDbZipList)
 
-        val isFormBGenerated =
+        val formBFilePath =
             generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
-        addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, fileAndDbZipList)
+        addFormToUriList(formBFilePath, fileAndDbZipList)
 
-        val isFormCGenerated =
+        val formCFilePath =
             generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
-        addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, fileAndDbZipList)
+        addFormToUriList(formCFilePath, fileAndDbZipList)
+
     }
 
     private fun generateZipFileName(): String {
@@ -409,19 +407,12 @@ class SettingBSViewModel @Inject constructor(
     }
 
     suspend fun checkFormAAvailability(context: Context, villageId: Int) {
-        val formAFilePath =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
         var didiList =
             settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
         if (userType == BPC_USER_TYPE) {
             didiList =
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
-        if (formAFilePath.isFile && formAFilePath.exists()) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formAAvailable.value = true
-            }
-        } else {
             if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
             ) {
                 withContext(CoreDispatchers.mainDispatcher) {
@@ -435,22 +426,16 @@ class SettingBSViewModel @Inject constructor(
                 }
             }
         }
-    }
+
 
     suspend fun checkFormBAvailability(context: Context, villageId: Int) {
-        val formBFilePath =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
         var didiList =
             settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
         if (userType == BPC_USER_TYPE) {
             didiList =
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
-        if (formBFilePath.isFile && formBFilePath.exists()) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formBAvailable.value = true
-            }
-        } else {
+
             if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
             ) {
                 withContext(CoreDispatchers.mainDispatcher) {
@@ -460,19 +445,13 @@ class SettingBSViewModel @Inject constructor(
                 withContext(CoreDispatchers.mainDispatcher) {
                     formBAvailable.value = false
                 }
+
             }
-        }
     }
 
-    suspend fun checkFormCAvailability(context: Context, villageId: Int) {
-        val formCFilePath =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_C_PDF_NAME}_${villageId}.pdf")
 
-        if (formCFilePath.isFile && formCFilePath.exists()) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formCAvailable.value = true
-            }
-        } else {
+    suspend fun checkFormCAvailability(context: Context, villageId: Int) {
+
             val stepList =
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
@@ -483,7 +462,7 @@ class SettingBSViewModel @Inject constructor(
                 formCAvailable.value = false
             }
         }
-    }
+
     fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
 
@@ -606,23 +585,20 @@ class SettingBSViewModel @Inject constructor(
         )
 
     private fun addFormToUriList(
-        isFormGenerated: Boolean,
-        selectedVillageId: Int,
-        formName: String,
-        uriList: ArrayList<Pair<String, Uri?>>
+        filePath: String,
+        uris: ArrayList<Pair<String, Uri?>>
     ) {
-        if (isFormGenerated) {
-            val formFile = PdfUtils.getPdfPath(
-                context = mAppContext,
-                formName = formName,
-                selectedVillageId
+        if (!TextUtils.isEmpty(filePath)) {
+
+            val formFile = File(filePath)
+            uris.add(
+                Pair(
+                    formFile.name, com.patsurvey.nudge.utils.uriFromFile(
+                        NudgeCore.getAppContext(),
+                        formFile
+                    )
+                )
             )
-            val formUri=uriFromFile(context = mAppContext, file = formFile, applicationID = applicationId.value)
-           formUri?.let {
-               if(it != Uri.EMPTY){
-                   uriList.add(Pair(formFile.name,it))
-               }
-           }
         }
     }
 

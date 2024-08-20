@@ -79,4 +79,7 @@ class OtpVerificationViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
+    fun savePageFromOTPScreen() {
+        otpVerificationRepository.savePageFrom()
+    }
 }
