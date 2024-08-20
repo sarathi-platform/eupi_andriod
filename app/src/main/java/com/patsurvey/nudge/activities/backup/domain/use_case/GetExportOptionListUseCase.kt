@@ -56,14 +56,14 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
             )
         }
         // Removing this for now in Merged build, may get completely removed later.
-        /*list.add(
+        list.add(
             SettingOptionModel(
                 6,
                 context.getString(R.string.import_data),
                 BLANK_STRING,
                 SettingTagEnum.IMPORT_DATA.name
             )
-        )*/
+        )
 
         list.add(
             SettingOptionModel(

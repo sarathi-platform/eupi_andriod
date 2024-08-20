@@ -6,7 +6,7 @@ enum class StepStatus {
     COMPLETED;
 
     companion object {
-        fun getStepFromOrdinal (ordinal: Int): String {
+        fun getStepFromOrdinal(ordinal: Int): String {
             return when (ordinal) {
                 0 -> NOT_STARTED.name
                 1 -> INPROGRESS.name
@@ -15,7 +15,16 @@ enum class StepStatus {
             }
         }
 
-        fun getOrdinalFromStep (step: String): Int {
+        fun getStepStatusFromOrdinal(ordinal: Int): StepStatus {
+            return when (ordinal) {
+                0 -> NOT_STARTED
+                1 -> INPROGRESS
+                2 -> COMPLETED
+                else -> NOT_STARTED
+            }
+        }
+
+        fun getOrdinalFromStep(step: String): Int {
             return when (step) {
                 NOT_STARTED.name -> NOT_STARTED.ordinal
                 INPROGRESS.name -> INPROGRESS.ordinal
