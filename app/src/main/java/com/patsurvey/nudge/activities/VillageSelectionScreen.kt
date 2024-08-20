@@ -86,7 +86,6 @@ import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -192,6 +191,7 @@ fun VillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+                            viewModel.savePageOpenFromOTPScreen()
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -381,9 +381,7 @@ fun VillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
-                            Log.d("TAG", "VillageSelectionScreen: ${viewModel.prefRepo.getPref(
-                                PREF_KEY_TYPE_NAME, ""
-                            ) ?: ""}")
+                            viewModel.savePageOpenFromOTPScreen()
                             if (viewModel.prefRepo.isUserBPC()) {
                                val stepId= villages[viewModel.villageSelected.value].stepId
                                val statusId= villages[viewModel.villageSelected.value].statusId
