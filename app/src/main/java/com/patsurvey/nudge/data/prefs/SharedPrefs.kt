@@ -40,6 +40,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+        const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
 
     }
 
@@ -265,5 +266,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun getLoggedInUserType(): String {
         return prefs.getString(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun savePageOpenFromOTPScreen(status: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_FROM_OTP_SCREEN, status).apply()
+
+    }
+
+    override fun getPageOpenFromOTPScreen(): Boolean {
+        return prefs.getBoolean(PREF_KEY_FROM_OTP_SCREEN, false)
     }
 }
