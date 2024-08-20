@@ -21,7 +21,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     private val moneyJournalDao: MoneyJournalDao,
     private val assetJournalDao: AssetJournalDao,
     private val livelihoodDao: LivelihoodDao,
-    private val assetDao: AssetDao
+    private val assetDao: AssetDao,
 ) : FetchSubjectIncomeExpenseSummaryRepository {
 
     private val LIVELIHOOD_EVENT_REFERENCE_TYPE: String = "LivelihoodEvent"
@@ -41,9 +41,10 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
             .getAssetsCountWithValueUiModelList(assetsList = assets, assetCounts)
 
         val totalAssetCountForLivelihood = hashMapOf<Int, Int>()
+        val imageUriForLivelihood = hashMapOf<Int, String>()
 
         livelihoodAssetMap.forEach { mapEntry ->
-
+            setLivelihoodImageMapping(mapEntry, imageUriForLivelihood)
             var totalAssetCount = 0
             mapEntry.value.forEach {
                 totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
@@ -59,8 +60,25 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
                 totalExpense = totalExpense,
                 livelihoodAssetMap = livelihoodAssetMap,
                 totalAssetCountForLivelihood = totalAssetCountForLivelihood,
-                assetsCountWithValue = assetsCountWithValue
+                assetsCountWithValue = assetsCountWithValue,
+                imageUriForLivelihood = imageUriForLivelihood
             )
+    }
+
+    private fun setLivelihoodImageMapping(
+        mapEntry: Map.Entry<Int, List<AssetEntity>>,
+        imageUriForLivelihood: HashMap<Int, String>
+    ) {
+        livelihoodDao.getLivelihoodImageForUser(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            mapEntry.key
+        ).image
+            ?.let {
+                imageUriForLivelihood.put(
+                    mapEntry.key,
+                    it
+                )
+            }
     }
 
     override suspend fun getIncomeExpenseSummaryForSubject(
@@ -78,8 +96,10 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
             .getAssetsCountWithValueUiModelList(assetsList = assets, assetCounts)
 
         val totalAssetCountForLivelihood = hashMapOf<Int, Int>()
+        val imageUriForLivelihood = hashMapOf<Int, String>()
 
         livelihoodAssetMap.forEach { mapEntry ->
+            setLivelihoodImageMapping(mapEntry, imageUriForLivelihood)
 
             var totalAssetCount = 0
             mapEntry.value.forEach {
@@ -96,7 +116,8 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
                 totalExpense = totalExpense,
                 livelihoodAssetMap = livelihoodAssetMap,
                 totalAssetCountForLivelihood = totalAssetCountForLivelihood,
-                assetsCountWithValue = assetsCountWithValue
+                assetsCountWithValue = assetsCountWithValue,
+                imageUriForLivelihood = imageUriForLivelihood
             )
     }
 
@@ -201,9 +222,10 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
             .getAssetsCountWithValueUiModelList(assetsList = assets, assetCounts)
 
         val totalAssetCountForLivelihood = hashMapOf<Int, Int>()
+        val imageUriForLivelihood = hashMapOf<Int, String>()
 
         livelihoodAssetMap.forEach { mapEntry ->
-
+            setLivelihoodImageMapping(mapEntry, imageUriForLivelihood)
             var totalAssetCount = 0
             mapEntry.value.forEach {
                 totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
@@ -219,7 +241,8 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
                 totalExpense = totalExpense,
                 livelihoodAssetMap = livelihoodAssetMap,
                 totalAssetCountForLivelihood = totalAssetCountForLivelihood,
-                assetsCountWithValue = assetsCountWithValue
+                assetsCountWithValue = assetsCountWithValue,
+                imageUriForLivelihood = imageUriForLivelihood
             )
     }
 
@@ -294,5 +317,4 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     }
 
     override fun getUserId() = coreSharedPrefs.getUniqueUserIdentifier()
-
 }

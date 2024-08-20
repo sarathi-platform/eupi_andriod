@@ -29,6 +29,7 @@
     <string name="delete">Delete</string>
     <string name="date">Date:</string>
     <string name="amount">Amount:</string>
+    <string name="asset">Assets:</string>
     <string name="nature">Nature:</string>
     <string name="mode">Mode:</string>
     <string name="no_of_didi_s">Didis:</string>
@@ -62,5 +63,8 @@
     <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
     <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
 
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="add_event">Add Event</string>
 
 </resources>

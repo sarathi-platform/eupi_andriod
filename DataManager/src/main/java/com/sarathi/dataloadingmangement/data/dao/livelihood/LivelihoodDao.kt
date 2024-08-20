@@ -26,6 +26,17 @@ interface LivelihoodDao {
         referenceType: String = LivelihoodLanguageReferenceType.Livelihood.name
     ): List<LivelihoodModel>
 
+    @Query("SELECT* from $LIVELIHOOD_TABLE_NAME where userId=:userId ")
+    fun getLivelihoodForUser(
+        userId: String,
+    ): List<LivelihoodEntity>
+
+    @Query("SELECT* from $LIVELIHOOD_TABLE_NAME where userId=:userId  and livelihoodId=:livelihoodId")
+    fun getLivelihoodImageForUser(
+        userId: String,
+        livelihoodId: Int
+    ): LivelihoodEntity
+
     @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.id Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.livelihoodId in(:ids)")
     fun getLivelihoodList(
         userId: String,
