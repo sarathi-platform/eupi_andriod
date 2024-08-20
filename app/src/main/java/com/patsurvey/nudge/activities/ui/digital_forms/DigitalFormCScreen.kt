@@ -66,7 +66,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
-import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -481,17 +480,10 @@ fun DigitalFormCScreen(
                         .fillMaxWidth()
                         .weight(1f),
                 ) {
-                    val pdfFile = File(
-                        "${
-                            context.getExternalFilesDir(
-                                Environment.DIRECTORY_DOCUMENTS
-                            )?.absolutePath
-                        }",
-                        "${FORM_C_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf"
-                    )
+
                     viewModel.generateFormCPdf(context) { formGenerated, formPath ->
                         Log.d("DigitalFormBScreen", "Digital Form C Downloaded")
-                        val fileUri = uriFromFile(context, pdfFile)
+                        val fileUri = formPath?.let { uriFromFile(context, it) }
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.type = "application/pdf"
                         shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
@@ -516,7 +508,7 @@ fun DigitalFormCScreen(
                     showLoader = showLoader.value,
                 ) {
                     if (formPathState.value.isFile) {
-                        navController.navigate("pdf_viewer/${FORM_C_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf")
+                        navController.navigate("pdf_viewer/${formPathState.value.name}")
                     } else {
                         showLoader.value = true
                         viewModel.generateFormCPdf(context) { formGenerated, formPath ->
