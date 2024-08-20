@@ -19,23 +19,13 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     suspend operator fun invoke(): Boolean {
         try {
             activityConfigDao.getSurveyIds().forEach { surveyId ->
-                if (surveyId == 1) { //TODO Uncomment this once api gives correct data
-                    callSurveyApi(
-                        SurveyRequest(
-                            referenceId = 27,
-                            referenceType = STATE,
-                            surveyId = surveyId
-                        )
-                    )
-                } else {
-                    callSurveyApi(
+                callSurveyApi(
                         SurveyRequest(
                             referenceId = getReferenceId(),
                             referenceType = STATE,
                             surveyId = surveyId
                         )
                     )
-                }
             }
             return false
         } catch (apiException: ApiException) {

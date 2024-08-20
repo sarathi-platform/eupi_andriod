@@ -67,7 +67,7 @@ import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
-
+const val TAG = "TaskScreen"
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskScreen(
@@ -379,4 +379,3 @@ fun TaskRowView(
     )
 }
 
-const val TAG = "TaskScreen"
