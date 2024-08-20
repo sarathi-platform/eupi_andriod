@@ -68,8 +68,6 @@ fun LivelihoodPlanningDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-//            selectedOptionText =
-//                defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name
             selectedOptionText =
                 defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name.value()
             onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])

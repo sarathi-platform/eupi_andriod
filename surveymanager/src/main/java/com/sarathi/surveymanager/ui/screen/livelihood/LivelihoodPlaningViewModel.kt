@@ -39,7 +39,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val livelihoodEventWriterUseCase: LivelihoodEventWriterUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
-    private val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
@@ -154,7 +153,8 @@ class LivelihoodPlaningViewModel @Inject constructor(
         }
     }
 
-    private suspend fun saveLivelihoodMappingToDb() {
+    @SuppressLint("SuspiciousIndentation")
+     fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
             val subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity?
                         = subjectId?.let {
@@ -164,20 +164,12 @@ class LivelihoodPlaningViewModel @Inject constructor(
                     primaryLivelihoodId.value, secondaryLivelihoodId.value
                 )
             }
-
-            fetchLivelihoodOptionNetworkUseCase.saveLivelihoodMappingData(activityId = activityId!!,
-                subjectId = subjectId!!,
-               selectedPrimaryLivelihood =  primaryLivelihoodId.value,
-                selectedSecondaryLivelihood =  secondaryLivelihoodId.value,
-                )
             val livelihoodPlanActivityDto = LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName()
                 , primaryLivelihoodId.value, secondaryLivelihoodId.value,
                 activityId!!,missionId!!,subjectId!!,DIDI)
             livelihoodEventWriterUseCase.writeLivelihoodEvent(
-               livelihoodPlanActivityDto,
-
-                )
-                taskStatusUseCase.markTaskCompleted(
+               livelihoodPlanActivityDto)
+            taskStatusUseCase.markTaskCompleted(
                     taskId = taskId!!
                 )
             taskEntity = getTaskUseCase.getTask(taskId!!)

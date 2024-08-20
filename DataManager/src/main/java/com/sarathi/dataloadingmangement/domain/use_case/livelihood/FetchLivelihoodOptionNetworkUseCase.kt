@@ -42,20 +42,6 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
         }
         return false
     }
-    suspend fun saveLivelihoodMappingData(
-        subjectId: Int,
-
-        selectedPrimaryLivelihood: Int,
-        selectedSecondaryLivelihood: Int,
-        activityId: Int,
-    ): SubjectLivelihoodMappingEntity {
-        return repository.saveFromToDB(
-            subjectId = subjectId,
-            selectedPrimaryLivelihood = selectedPrimaryLivelihood,
-            selectedSecondaryLivelihood = selectedSecondaryLivelihood,
-            activityId = activityId
-        )
-    }
     suspend fun invoke(): Boolean {
         try {
 

@@ -56,10 +56,7 @@ fun LivelihoodDropDownScreen(
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
         viewModel.onEvent(InitDataEvent.InitDataState)
-
     }
-
-
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
@@ -123,8 +120,6 @@ fun LivelihoodDropDownScreen(
                     CircularProgressIndicator()
                 }
             } else {
-
-
                     DropdownView(
                         livelihoodList = viewModel.livelihoodList.value,
                         primaryLivelihoodId = viewModel.primaryLivelihoodId.value,

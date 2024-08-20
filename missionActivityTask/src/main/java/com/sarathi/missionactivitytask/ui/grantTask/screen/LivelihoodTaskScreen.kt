@@ -47,6 +47,7 @@ import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -55,9 +56,9 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
-import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -83,12 +84,11 @@ fun LivelihoodTaskScreen(
     missionId: Int,
     activityName: String,
     activityId: Int,
-    totalCount:Int,
-    pendingCount:Int,
     onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(Unit) {
+        viewModel.getActivityList(missionId)
         viewModel.onEvent(InitDataEvent.InitLivelihoodPlanningScreenState(missionId, activityId))
     }
     LivelihoodPlaningTaskScreen(
@@ -104,9 +104,9 @@ fun LivelihoodTaskScreen(
         isSecondaryButtonVisible = false,
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,
-        pendingCount = pendingCount,
-        totalCount =totalCount,
-        taskScreenContent = { vm: TaskScreenViewModel, nvController: NavController ->
+        activities = viewModel.activityList.value,
+
+            taskScreenContent = { vm: TaskScreenViewModel, nvController: NavController ->
             livelihoodTaskScreenContent((vm as LivelihoodTaskScreenViewModel),nvController)
         }
 
@@ -176,7 +176,10 @@ fun LivelihoodTaskRowView(
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
                 viewModel.isActivityCompleted()
+
             }
+            viewModel.getActivityList(viewModel.missionId)
+
         },
         imagePath = viewModel.getFilePathUri(
             task.value[TaskCardSlots.TASK_IMAGE.name]?.value ?: BLANK_STRING
@@ -189,8 +192,8 @@ fun LivelihoodTaskRowView(
         subtitle2 = task.value[TaskCardSlots.TASK_SUBTITLE_2.name],
         subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
         subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
-        subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name]?.copy(value = viewModel.livelihoodsEntityList.find { it.livelihoodId==viewModel.subjectLivelihoodMappingMap.get(viewModel.taskUiModel?.find { it.taskId==task.key }?.subjectId)?.primaryLivelihoodId.value() }?.name.value()),
-        subtitle7 = task.value[TaskCardSlots.TASK_SUBTITLE_6.name]?.copy(value = viewModel.livelihoodsEntityList.find { it.livelihoodId==viewModel.subjectLivelihoodMappingMap.get(viewModel.taskUiModel?.find { it.taskId==task.key }?.subjectId)?.secondaryLivelihoodId.value() }?.name.value()) ,
+        subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name]?.copy(value =viewModel.getPrimaryLivelihoodValue(task.key)),
+        subtitle7 = task.value[TaskCardSlots.TASK_SUBTITLE_6.name]?.copy(value = viewModel.getSecondaryLivelihoodValue(task.key)) ,
         subtitle6 = task.value[TaskCardSlots.TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
         isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
@@ -219,6 +222,7 @@ fun LivelihoodPlaningTaskScreen(
     onSettingClick: () -> Unit,
     totalCount:Int?=0,
     pendingCount:Int?=0,
+    activities: List<ActivityUiModel>,
     taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit
 ) {
     val context = LocalContext.current
@@ -345,22 +349,39 @@ fun LivelihoodPlaningTaskScreen(
                                     )
                                 )
                             })
-                        Row(verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            LinearProgressBarComponent( modifier = Modifier
-                                .weight(1f)
-                                .padding( 10.dp)
-                                .clip(RoundedCornerShape(14.dp)),
-                                progress = (pendingCount?.toFloat()?.div(totalCount!!)
-                                    ?: 0) as Float,
-                            )
-                            Spacer(modifier = Modifier.width(dimen_5_dp))
 
-                            Text(
-                                text = "$pendingCount / $totalCount ",
-                                style = smallTextStyle.copy(color = blueDark),
-                            )
-                        }
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimen_16_dp)
+                            ) {
+                                itemsIndexed(
+                                    items = activities
+                                ) { index, activity ->
+                                    Row(verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        LinearProgressBarComponent(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(10.dp)
+                                                .clip(RoundedCornerShape(14.dp)),
+                                            progress = (activity.pendingTaskCount?.toFloat()
+                                                ?.div(activity.taskCount!!)
+                                                ?: 0) as Float,
+                                        )
+                                        Spacer(modifier = Modifier.width(dimen_5_dp))
+
+                                        Text(
+                                            text = "${activity.pendingTaskCount} / ${activity.taskCount} ",
+                                            style = smallTextStyle.copy(color = blueDark),
+                                        )
+                                    }
+                                }
+                                }
+
+
+
+
                     }
                 }
 

@@ -1,6 +1,9 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -12,6 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -47,6 +51,8 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     getActivityUseCase,
     fetchAllDataUseCase
 ) {
+    private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
+    val activityList: State<List<ActivityUiModel>> get() = _activityList
         val livelihoodsEntityList=ArrayList<LivelihoodModel>()
         val subjectLivelihoodMappingMap:MutableMap<Int,SubjectLivelihoodMappingEntity> =HashMap()
 
@@ -60,8 +66,21 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
             }
         }
     }
+    fun getPrimaryLivelihoodValue(key: Int):String{
+        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.primaryLivelihoodId.value() }?.name.value()
+    }
+    fun getSecondaryLivelihoodValue(key: Int):String{
+        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.secondaryLivelihoodId.value() }?.name.value()
+    }
+     fun getActivityList(missionId: Int){
 
-    private fun initLivelihoodPlanningScreen(missionId: Int, activityId: Int) {
+
+         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+             _activityList.value = getActivityUseCase.getActivities(missionId)
+         }
+    }
+
+    private  fun initLivelihoodPlanningScreen(missionId: Int, activityId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(true))

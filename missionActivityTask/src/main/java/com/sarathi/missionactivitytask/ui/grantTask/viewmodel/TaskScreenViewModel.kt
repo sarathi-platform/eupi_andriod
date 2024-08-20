@@ -51,13 +51,12 @@ open class TaskScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase,
+    val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
     var activityType: String? = null
-    var  mission:MissionUiModel?=null
     var activityConfigUiModel: ActivityConfigUiModel? = null
     var activityConfigUiModelWithoutSurvey: ActivityConfigEntity? = null
     private val _taskList =
@@ -315,8 +314,6 @@ open class TaskScreenViewModel @Inject constructor(
             )
         }
     }
-
-
 
     fun getFilePathUri(filePath: String): Uri? {
         return fetchContentUseCase.getFilePathUri(filePath)

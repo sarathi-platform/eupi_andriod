@@ -87,8 +87,6 @@ fun ActivityRowCard(
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
                                 activityName = activity.description,
-                                pendingCount = activity.pendingTaskCount,
-                                totalCount = activity.taskCount
                             )
                         }
 
