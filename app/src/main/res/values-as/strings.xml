@@ -289,7 +289,10 @@
     <string name="take_photo_text">ফটো তোলক</string>
     <string name="retake_photo_text">পুনৰ ফটো তোলক</string>
     <string name="previous_step_not_complete_messgae_text">পূৰ্ববৰ্তী পৰ্যায় সম্পূৰ্ণ হোৱা নাই</string>
-    <string name="vo_endorsement_inprogress_village_banner_text">VO অনুমোদন প্ৰগতিশীল অৱস্থাত আছে</string>
+    <plurals name="vo_endorsement_inprogress_village_banner_text">
+        <item quantity="one">VO অনুমোদন প্ৰগতিশীল অৱস্থাত আছে</item>
+        <item quantity="other">VO অনুমোদন প্ৰগতিশীল অৱস্থাত আছে</item>
+    </plurals>
     <string name="latest_status_text">শেহতীয়া স্থিতি:</string>
     <string name="ranking_text_rich">ধনী</string>
     <string name="ranking_text_medium">মধ্যমীয়া</string>
@@ -300,8 +303,15 @@
     <string name="pat_completed_for_didi_plural">%1$s বাইদেউ সকলৰ বাবে PAT সম্পূৰ্ণ কৰা হৈছে</string>
     <string name="pat_marked_not_available_singular">%1$s বাইদেউ উপলব্ধ নাই হিচাপে চিহ্নিত কৰা হৈছে</string>
     <string name="pat_marked_not_available_plural">%1$s বাইদেউ সকল উপলব্ধ নাই হিচাপে চিহ্নিত কৰা হৈছে</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
+    <plurals name="pat_didi_sent_to_vo_endorsement_singular">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</item>
+    </plurals>
+    <plurals name="pat_didi_sent_to_vo_endorsement_plural">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</item>
+    </plurals>
+
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s অতি দৰিদ্ৰ বাইদেউ BPM অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s অতি দৰিদ্ৰ বাইদেউ সকল BPM অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
     <string name="link_form_c">লিংক ফর্ম C</string>
@@ -387,7 +397,7 @@
     <string name="total_members_can_not_be_less_than_earning_members">পৰিয়ালৰ মুঠ সদস্য আৰ্নিং সদস্যতকৈ কম হ’ব নোৱাৰে।</string>
     <string name="logout_confirmation">আপুনি নিশ্চিত নেকি যে আপুনি লগআউট কৰিব বিচাৰে?</string>
     <string name="warning">সতৰ্কবাণী!</string>
-    <string name="data_lost_message">" আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব"</string>
+    <string name="data_lost_message">আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব</string>
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
