@@ -9,6 +9,7 @@ enum class TaskCardSlots(val type: String) {
     TASK_SUBTITLE_3(type = "text"),
     TASK_SUBTITLE_4(type = "text"),
     TASK_SUBTITLE_5(type = "text"),
+    TASK_SUBTITLE_6(type = "text"),
     TASK_SUBTITLE_8(type = "text"),
     TASK_PRIMARY_BUTTON(type = "text"),
     TASK_SECONDARY_BUTTON(type = "text"),
@@ -20,7 +21,9 @@ enum class TaskCardSlots(val type: String) {
     TASK_NOT_AVAILABLE_ENABLE(type = "text"),
     SEARCH_LABEL(type = "text"),
 
+    TASK_PROGRESS(type = "text"),
 }
+
 enum class GrantTaskSearchBarSlots(val type: String) {
     GRANT_TASK_SEARCH_TITLE(type = "text"),
 

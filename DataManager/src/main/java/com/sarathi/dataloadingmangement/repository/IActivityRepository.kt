@@ -11,4 +11,6 @@ interface IActivityRepository {
     suspend fun getActiveForm(
         formType: String
     ): List<ActivityFormUIModel>
+
+    suspend fun getTypeForActivity(missionId: Int, activityId: Int): String?
 }

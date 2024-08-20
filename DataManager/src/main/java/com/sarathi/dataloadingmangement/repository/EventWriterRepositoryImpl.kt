@@ -21,6 +21,7 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
+import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
@@ -42,8 +43,8 @@ class EventWriterRepositoryImpl @Inject constructor(
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
     val coreSharedPrefs: CoreSharedPrefs
-) :
-    IEventWriterRepository {
+) : IEventWriterRepository {
+
     override suspend fun <T> createAndSaveEvent(
         eventItem: T,
         eventName: EventName,
@@ -104,6 +105,9 @@ class EventWriterRepositoryImpl @Inject constructor(
             EventName.SAVE_SUBJECT_ATTENDANCE_EVENT,
             EventName.DELETE_SUBJECT_ATTENDANCE_EVENT -> {
                 requestPayload = (eventItem as SaveAttendanceEventDto).json()
+            }
+            EventName.LIVELIHOOD_OPTION_EVENT ->{
+                requestPayload = (eventItem as LivelihoodPlanActivityEventDto).json()
             }
 
             EventName.MONEY_JOURNAL_RESPONSE_EVENT -> {

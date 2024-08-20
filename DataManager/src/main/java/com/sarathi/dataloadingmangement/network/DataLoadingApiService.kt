@@ -4,6 +4,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodOptionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.AssetJournalApiResponse
@@ -38,6 +39,7 @@ interface DataLoadingApiService {
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
+
     // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
     //  @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -63,6 +65,9 @@ interface DataLoadingApiService {
         @Query("surveyId") surveyId: Int,
         @Query("formType") formType: String
     ): ApiResponseModel<List<FormDetailResponseModel>>
+    @GET(SUBPATH_FETCH_LIVELIHOOD_OPTION)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchLivelihoodPlanData(@Query("activityId") activityId: Int): ApiResponseModel<List<LivelihoodOptionResponse>>
 
     @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
     suspend fun getSmallGroupBeneficiaryMapping(@Body smallGroupApiRequest: SmallGroupApiRequest): ApiResponseModel<List<SmallGroupMappingResponseModel>>

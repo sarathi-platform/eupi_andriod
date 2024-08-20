@@ -17,4 +17,6 @@ sealed class InitDataEvent {
     data class InitLivelihoodPlanningScreenState(val missionId: Int, val activityId: Int) :
         InitDataEvent()
 
+    data class InitSurveyTaskScreenState(val missionId: Int, val activityId: Int) : InitDataEvent()
+
 }

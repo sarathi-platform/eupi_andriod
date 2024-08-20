@@ -885,6 +885,10 @@ fun Boolean?.value() = this ?: false
 
 fun Double?.value() = this ?: 0.0
 
+fun <T> List<T>?.value(): List<T> {
+    return this ?: emptyList()
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -1162,6 +1166,10 @@ fun onlyNumberField(value: String): Boolean {
         return true
     }
     return false
+}
+
+fun getQuestionNumber(questionIndex: Int): String {
+    return "${questionIndex + 1}. "
 }
 
 fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {

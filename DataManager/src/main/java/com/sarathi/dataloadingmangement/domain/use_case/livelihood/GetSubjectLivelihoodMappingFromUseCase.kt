@@ -13,6 +13,11 @@ class GetSubjectLivelihoodMappingFromUseCase @Inject constructor(
             subjectId
         )
     }
+    suspend  fun getLivelihoodMappingForSubject(subjectId: List<Int>): List<SubjectLivelihoodMappingEntity>{
+        return getLivelihoodMappingForSubjectFromDbRepository.getLivelihoodMappingForSubjects(
+            subjectId
+        )
+    }
     suspend fun getLivelihoodForDidi(subjectId: Int): SubjectLivelihoodMappingEntity? {
         return getLivelihoodMappingForSubjectFromDbRepository.getLivelihoodMappingForSubject(
             subjectId
