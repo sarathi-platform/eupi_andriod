@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
@@ -37,6 +38,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
@@ -178,6 +180,7 @@ class DataLoadingModule {
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .addMigrations(NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2)
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
@@ -329,8 +332,29 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideLivelihoodDao(db: NudgeGrantDatabase) = db.livelihoodDao()
+
+    @Provides
+    @Singleton
+    fun provideAssetDao(db: NudgeGrantDatabase) = db.assetDao()
+
+    @Provides
+    @Singleton
+    fun provideProductDao(db: NudgeGrantDatabase) = db.productDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventDao(db: NudgeGrantDatabase) = db.livelihoodEventDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodLanguageDao(db: NudgeGrantDatabase) = db.livelihoodLanguageDao()
+
+    @Provides
+    @Singleton
     fun subjectLivelihoodEventMappingDao(db: NudgeGrantDatabase) =
         db.subjectLivelihoodEventMappingDao()
+
 
     @Provides
     @Singleton

@@ -26,6 +26,11 @@ interface MoneyJournalDao {
     @Query("Select count(*) from money_journal_table where userId=:userId and transactionId=:transactionId and status=1")
     suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
 
+    @Query("Select * from money_journal_table where userId=:userId and transactionId=:transactionId and status=1")
+    suspend fun getMoneyJournalTransaction(
+        userId: String,
+        transactionId: String
+    ): MoneyJournalEntity
 
     @Query("update money_journal_table set transactionAmount=:amount, transactionDate=:date, transactionDetails=:particulars, modifiedDate=:modifiedDate where userId=:userId and transactionId=:transactionId ")
     suspend fun updateMoneyJournal(
@@ -42,6 +47,13 @@ interface MoneyJournalDao {
     suspend fun softDeleteTransaction(
         transactionId: String,
         subjectId: Int,
+        userId: String
+    )
+
+    @Query("update money_journal_table set status=0 where transactionId=:transactionId and userId=:userId and transactionFlow=:transactionFlow")
+    suspend fun softDeleteTransaction(
+        transactionId: String,
+        transactionFlow: String,
         userId: String
     )
 
