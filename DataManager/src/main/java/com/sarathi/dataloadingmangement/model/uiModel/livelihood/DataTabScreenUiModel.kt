@@ -6,6 +6,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 data class DataTabScreenUiModel(
     val subjectId: Int,
     val subjectName: String,
+    val imageFileName: String?,
     val dadaName: String,
     val cohortId: Int,
     val cohortName: String,
@@ -43,6 +44,7 @@ data class DataTabScreenUiModel(
                         secondaryLivelihoodId = subjectEntity.secondaryLivelihoodId,
                         lastUpdated = lastEventDateMapForSubject.get(subjectEntity.subjectId)
                             .value(),
+                        imageFileName = subjectEntity.image
                     )
                 )
 

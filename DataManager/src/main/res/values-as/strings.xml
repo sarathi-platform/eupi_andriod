@@ -59,5 +59,9 @@
     <string name="exit">"প্ৰস্থান "</string>
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="asset">Assets:</string>
+    <string name="add_event">Add Event</string>
 
 </resources>

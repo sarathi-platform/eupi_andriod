@@ -5,6 +5,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 data class SubjectEntityWithLivelihoodMappingUiModel(
     val subjectId: Int,
     val subjectName: String,
+    val image: String?,
     val dadaName: String,
     val cohortId: Int,
     val cohortName: String,
