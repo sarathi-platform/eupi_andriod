@@ -27,4 +27,8 @@ interface CasteListDao {
 
     @Query("DELETE from $CASTE_TABLE")
     fun deleteCasteTable()
+
+
+    @Query("DELETE from $CASTE_TABLE where languageId =:languageId")
+    fun deleteCasteTableForLanguage(languageId: Int)
 }
