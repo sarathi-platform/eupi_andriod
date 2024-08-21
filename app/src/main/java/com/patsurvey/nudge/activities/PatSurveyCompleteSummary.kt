@@ -41,14 +41,15 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
-import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.smallTextStyle
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.redDark
+import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.navigation.selection.BpcDidiListScreens
@@ -199,42 +200,53 @@ fun PatSurveyCompleteSummary(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
-                        Column(modifier = Modifier.padding(bottom = dimen_10_dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.shg_question_text),
-                                    style = smallTextStyleMediumWeight2.copy(
-                                        textColorDark
+                        val shgFlagValue =
+                            SHGFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.shgFlag).value
+                        val ableBodiedFlagValue =
+                            AbleBodiedFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.ableBodiedFlag).value
+
+                        if (shgFlagValue != -1 && ableBodiedFlagValue != -1) {
+                            Column(modifier = Modifier.padding(bottom = dimen_5_dp)) {
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.shg_question_text),
+                                        style = smallTextStyle.copy(
+                                            textColorDark
+                                        )
                                     )
-                                )
-                                Spacer(modifier = Modifier.weight(1.0f))
-                                Text(
-                                    text = SHGFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.shgFlag)
-                                        .toString(), style = smallTextStyleMediumWeight2.copy(
-                                        textColorDark
+                                    Spacer(modifier = Modifier.weight(1.0f))
+                                    Text(
+                                        modifier = Modifier.padding(end = dimen_5_dp),
+                                        text = SHGFlag.fromInt(shgFlagValue).toString(),
+                                        style = smallTextStyle.copy(
+                                            if (shgFlagValue == 1) textColorDark else redNoAnswer
+                                        )
                                     )
-                                )
-                            }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.able_bodied_women_flag_text_1),
-                                    style = smallTextStyleMediumWeight2.copy(
-                                        textColorDark
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.able_bodied_women_flag_text_1),
+                                        style = smallTextStyle.copy(
+                                            textColorDark
+                                        )
                                     )
-                                )
-                                Spacer(modifier = Modifier.weight(1.0f))
-                                Text(
-                                    text = AbleBodiedFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.ableBodiedFlag)
-                                        .toString(), style = smallTextStyleMediumWeight2.copy(
-                                        textColorDark
+                                    Spacer(modifier = Modifier.weight(1.0f))
+                                    Text(
+                                        modifier = Modifier.padding(end = dimen_5_dp),
+                                        text = AbleBodiedFlag.fromInt(ableBodiedFlagValue)
+                                            .toString(),
+                                        style = smallTextStyle.copy(
+                                            if (ableBodiedFlagValue == 1) textColorDark else redNoAnswer
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }
