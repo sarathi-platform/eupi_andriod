@@ -487,7 +487,6 @@
     <string name="total_pat_attempted_string">মোট PAT শুরু করেছে</string>
     <string name="didis_marked_as_not_available_string">দিদিদের উপলব্ধ নেই হিসাবে চিহ্নিত করা হয়েছে</string>
     <string name="able_bodied_women_flag_text">পরিবারে কি সদর্থ \n নারী আছে?</string>
-    <string name="able_bodied_women_flag_text_1">পরিবারে কি সদর্থ নারী আছে?</string>
     <string name="something_went_wrong">কিছু ভুল হয়েছে</string>
     <string name="score_comparison_section_1_text">ভাগ 1</string>
     <string name="village_is_not_vo_endorsed_right_now">এই গ্রাম এখনো VO অনুমোদিত হয়নি</string>
@@ -515,4 +514,6 @@
     <string name="recover_old_data">পুরানো ডেটা পুনরুদ্ধার করুন</string>
     <string name="this_language_is_not_available_for_selection">এই ভাষা নির্বাচনের জন্য উপলব্ধ নয়</string>
     <string name="change_language">ভাষা পরিবর্তন করুন</string>
+    <string name="shg_member_text">1. এসএইচজি (SHG) সদস্য</string>
+    <string name="able_bodied_women_text">2. কর্মক্ষম নারী</string>
 </resources>

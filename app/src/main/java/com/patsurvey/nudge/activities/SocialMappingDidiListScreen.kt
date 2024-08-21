@@ -1253,7 +1253,7 @@ fun DidiItemCard(
                                         if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                             didiMarkedNotAvailable.value = false
                                         }
-                                        navController.navigate("didi_pat_summary/${didi.id}")
+                                        navController.navigate("didi_pat_summary/${didi.id}/${false}")
 
                                     } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
                                         val quesIndex = 0

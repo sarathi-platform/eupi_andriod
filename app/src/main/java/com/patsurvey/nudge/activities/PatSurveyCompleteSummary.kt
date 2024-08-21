@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +51,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
@@ -209,10 +214,16 @@ fun PatSurveyCompleteSummary(
                             Column(modifier = Modifier.padding(bottom = dimen_5_dp)) {
 
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                                navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                            }
+                                        },
                                 ) {
                                     Text(
-                                        text = stringResource(id = R.string.shg_question_text),
+                                        text = stringResource(id = R.string.shg_member_text),
                                         style = smallTextStyle.copy(
                                             textColorDark
                                         )
@@ -225,14 +236,38 @@ fun PatSurveyCompleteSummary(
                                             if (shgFlagValue == 1) textColorDark else redNoAnswer
                                         )
                                     )
+                                    if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForward,
+                                            contentDescription = "Forward Arrow",
+                                            tint = textColorDark,
+                                            modifier = Modifier.padding(5.dp)
+                                        )
+                                    }
+
                                 }
+                                Divider(
+                                    color = borderGrey,
+                                    thickness = 1.dp,
+                                    modifier = Modifier
+                                        .padding(
+                                            vertical = 10.dp
+                                        )
+                                        .fillMaxWidth()
+                                )
 
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                                navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                            }
+                                        },
                                 ) {
                                     Text(
-                                        text = stringResource(id = R.string.able_bodied_women_flag_text_1),
+                                        text = stringResource(id = R.string.able_bodied_women_text),
                                         style = smallTextStyle.copy(
                                             textColorDark
                                         )
@@ -246,6 +281,15 @@ fun PatSurveyCompleteSummary(
                                             if (ableBodiedFlagValue == 1) textColorDark else redNoAnswer
                                         )
                                     )
+                                    if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForward,
+                                            contentDescription = "Forward Arrow",
+                                            tint = textColorDark,
+                                            modifier = Modifier.padding(5.dp)
+                                        )
+                                    }
+
                                 }
                             }
                         }

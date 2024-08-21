@@ -488,7 +488,6 @@
     <string name="total_pat_attempted_string">PAT Chugimik ko Dakaha</string>
     <string name="didis_marked_as_not_available_string">Didi jerangkon dongja ine chin dakaha</string>
     <string name="able_bodied_women_flag_text">Be.en bimangni gita namgipa \nmechik nokdango dongama?</string>
-    <string name="able_bodied_women_flag_text_1">Be.en bimangni gita namgipa mechik nokdango dongama?</string>
     <string name="something_went_wrong">Maiba ong.aha</string>
     <string name="score_comparison_section_1_text">Section 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Da.o VO songko rachakuja!</string>
@@ -513,6 +512,8 @@
     <string name="save_next_section_button_text">Save kabo aro Gipin Section ona re.angani</string>
     <string name="questions_data_tab_title">Singgiminrangni Data</string>
     <string name="section_information_tab_title">Section ni gimin uiatanirang</string>
+    <string name="shg_member_text">1. SHG member</string>
+    <string name="able_bodied_women_text">2. Able-bodied women</string>
 
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->

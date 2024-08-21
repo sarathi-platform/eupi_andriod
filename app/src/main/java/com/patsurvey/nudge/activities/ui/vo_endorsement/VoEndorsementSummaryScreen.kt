@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -56,6 +58,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.smallTextStyle
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.SectionOneSummeryItem
 import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
@@ -63,8 +67,10 @@ import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementColor
 import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
 import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementColor
 import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -81,6 +87,7 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showDidiImageDialog
 import com.patsurvey.nudge.utils.visible
@@ -263,6 +270,70 @@ fun VoEndorsementSummaryScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                item {
+                                    val shgFlagValue =
+                                        SHGFlag.fromInt(viewModel.didiEntity.value.shgFlag).value
+                                    val ableBodiedFlagValue =
+                                        AbleBodiedFlag.fromInt(viewModel.didiEntity.value.ableBodiedFlag).value
+
+                                    if (shgFlagValue != -1 && ableBodiedFlagValue != -1) {
+                                        Column(modifier = Modifier.padding(bottom = dimen_5_dp)) {
+
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.shg_member_text),
+                                                    style = smallTextStyle.copy(
+                                                        textColorDark
+                                                    )
+                                                )
+                                                Spacer(modifier = Modifier.weight(1.0f))
+                                                Text(
+                                                    modifier = Modifier.padding(end = dimen_5_dp),
+                                                    text = SHGFlag.fromInt(shgFlagValue).toString(),
+                                                    style = smallTextStyle.copy(
+                                                        if (shgFlagValue == 1) textColorDark else redNoAnswer
+                                                    )
+                                                )
+                                            }
+                                            Divider(
+                                                color = borderGrey,
+                                                thickness = 1.dp,
+                                                modifier = Modifier
+                                                    .padding(
+                                                        vertical = 10.dp
+                                                    )
+                                                    .fillMaxWidth()
+                                            )
+
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.able_bodied_women_text),
+                                                    style = smallTextStyle.copy(
+                                                        textColorDark
+                                                    )
+                                                )
+                                                Spacer(modifier = Modifier.weight(1.0f))
+                                                Text(
+                                                    modifier = Modifier.padding(end = dimen_5_dp),
+                                                    text = AbleBodiedFlag.fromInt(
+                                                        ableBodiedFlagValue
+                                                    )
+                                                        .toString(),
+                                                    style = smallTextStyle.copy(
+                                                        if (ableBodiedFlagValue == 1) textColorDark else redNoAnswer
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                                 item {
                                     Text(
                                         text = stringResource(R.string.section_1_text),

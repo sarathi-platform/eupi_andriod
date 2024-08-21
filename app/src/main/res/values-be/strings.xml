@@ -470,7 +470,6 @@
     <string name="total_pat_attempted_string">गासै PAT नाजाबाय</string>
     <string name="didis_marked_as_not_available_string">आबमोननि मोन्नो हानाय नङा होनना सिन होनाय जादों</string>
     <string name="able_bodied_women_flag_text">नख \'राव देहा गोनां \n आयजोफोर दं नामा?</string>
-    <string name="able_bodied_women_flag_text_1">नख \'राव देहा गोनां आयजोफोर दं नामा?</string>
     <string name="something_went_wrong">माबा गोरोन्थि जादों</string>
     <string name="score_comparison_section_1_text">खोन्दो 1</string>
     <!--    <string name="village_is_not_vo_endorsed_right_now">गामिया दा VO गनायथि होजायाखै!</string>-->
@@ -498,5 +497,7 @@
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
     <string name="change_language">भाषा बदलें</string>
+    <string name="shg_member_text">1. सेल्फ हेल्प ग्रुपनि सोद्रोमा</string>
+    <string name="able_bodied_women_text">2. गोहो गोनां आयजो</string>
 
 </resources>
