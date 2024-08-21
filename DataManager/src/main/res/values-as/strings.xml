@@ -54,7 +54,6 @@
     <string name="sanctioned_amount_has_been_fully_disbursed">"অনুমোদিত পৰিমাণ সম্পূৰ্ণৰূপে বিতৰণ কৰা হৈছে "</string>
     <string name="complete">"সম্পূৰ্ণ "</string>
     <string name="references">প্ৰসংগসমূহ  (%1$s)</string>
-    <string name="are_you_sure">"আপুনি নিশ্চিত নে?  "</string>
     <string name="do_you_want_to_exit_the_app">"আপুনি এপ্পটোৰ পৰা প্ৰস্থান কৰিব বিচাৰে নেকি? "</string>
     <string name="exit">"প্ৰস্থান "</string>
     <string name="cancel">"বাতিল কৰা "</string>
@@ -63,5 +62,12 @@
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
     <string name="add_event">Add Event</string>
+    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
+    <string name="select_first_livelihood_for_didi">বাইদেউৰ বাবে প্ৰথম জীৱিকা বাছনি কৰক</string>
+    <string name="select_second_livelihood_for_didi">বাইদেউৰ বাবে দ্বিতীয় জীৱিকা বাছনি কৰক</string>
+    <string name="proceed">" আগবাঢ়ক"</string>
+    <string name="cancel_text">বাতিল কৰক</string>
+    <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
+    <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
 
 </resources>

@@ -16,14 +16,12 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLiveliho
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.SaveLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
-import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LivelihoodPlanningEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -58,7 +56,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var missionId: Int? = null
     var subjectName: String? = null
     private var taskEntity: ActivityTaskEntity? = null
-
+    var checkDialogueValidation = mutableStateOf(false)
     var primaryLivelihoodId = mutableStateOf(-1)
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
 
@@ -84,11 +82,10 @@ class LivelihoodPlaningViewModel @Inject constructor(
             }
             is DialogEvents.ShowDialogEvent -> {
                 _showUserChangedDialog.value = _showUserChangedDialog.value.copy(
-                    isDialogVisible = event.showDialog
-                )
+                        isDialogVisible = event.showDialog
+                    )
             }
         }
-
     }
 
     private fun initLivelihoodPlanningScreen() {
@@ -109,6 +106,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 subjectLivelihoodMapping.secondaryLivelihoodId
                             )
                         )
+                        checkDialogueValidation.value = if((subjectLivelihoodMapping.primaryLivelihoodId!=null &&  subjectLivelihoodMapping.secondaryLivelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.primaryLivelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.secondaryLivelihoodId))true else false
                         _livelihoodList.value = mLivelihoodUiEntityList
                         primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId

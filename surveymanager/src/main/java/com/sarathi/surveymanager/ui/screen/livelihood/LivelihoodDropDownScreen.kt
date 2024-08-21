@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -64,7 +63,7 @@ fun LivelihoodDropDownScreen(
     BackHandler {
         handleBackPress(viewModel = viewModel, navController = navController)
     }
-    if (viewModel.showUserChangedDialog.value.isDialogVisible) {
+    if (viewModel.showUserChangedDialog.value.isDialogVisible ) {
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
             message = stringResource(R.string.form_alert_dialog_message),
@@ -149,6 +148,7 @@ fun LivelihoodDropDownScreen(
                     primaryLivelihoodId = viewModel.primaryLivelihoodId.value,
                     secondaryLivelihoodId = viewModel.secondaryLivelihoodId.value,
                     onPrimaryLivelihoodSelected = {
+                        viewModel.checkDialogueValidation.value=false
                         viewModel.onEvent(
                             LivelihoodPlanningEvent.PrimaryLivelihoodPlanningEvent(
                                 it
@@ -156,13 +156,15 @@ fun LivelihoodDropDownScreen(
                         )
                     },
                     onSecondaryLivelihoodSelected = {
+                        viewModel.checkDialogueValidation.value=false
+
                         viewModel.onEvent(
                             LivelihoodPlanningEvent.SecondaryLivelihoodPlanningEvent(
                                 it
                             )
                         )
-                    }
-                )
+                    },
+                    )
             }
         }
     )
@@ -170,7 +172,7 @@ fun LivelihoodDropDownScreen(
 
 fun handleBackPress(viewModel: LivelihoodPlaningViewModel, navController: NavController) {
 
-    if ((viewModel.primaryLivelihoodId.value != -1 || viewModel.secondaryLivelihoodId.value != -1)) {
+    if ((viewModel.primaryLivelihoodId.value != -1 || viewModel.secondaryLivelihoodId.value != -1) && !viewModel.checkDialogueValidation.value) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     } else {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
