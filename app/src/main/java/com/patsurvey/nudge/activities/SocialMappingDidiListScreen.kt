@@ -218,10 +218,10 @@ fun SocialMappingDidiListScreen(
     }
     if (showLoadConfirmationDialog.value) {
         ShowCustomDialog(
-            title = "",
-            message = "Are you sure you want to continue?",
-            positiveButtonTitle = "ok",
-            negativeButtonTitle = "cancel",
+            title = BLANK_STRING,
+            message = "Are you sure you want to continue? You wont be able to make changes to this section once it's completed",
+            positiveButtonTitle = stringResource(id = R.string.ok),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onPositiveButtonClick = {
                 completeSocialMapping(didiViewModel, stepId, context, villageId, navController)
                 showLoadConfirmationDialog.value = false
