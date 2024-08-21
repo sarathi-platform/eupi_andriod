@@ -195,7 +195,7 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    subtitle = question.questionSummary,
+                                    subtitle = question.display,
                                     isEditable = viewModel.isActivityNotCompleted.value,
                                     maxCustomHeight = maxHeight,
                                 ) { selectedValue, isDeleted ->
