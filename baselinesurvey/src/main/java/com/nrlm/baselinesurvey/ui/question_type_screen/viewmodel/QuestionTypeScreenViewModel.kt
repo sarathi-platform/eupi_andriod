@@ -194,7 +194,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 when (conditionsDto?.resultType) {
                     ResultType.Questions.name -> {
                         conditionsDto?.resultList?.forEach { questionList ->
-                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true
+                                || questionList.type?.equals(
+                                    QuestionType.FormWithNone.name,
+                                    true
+                                ) == true
+                            ) {
                                 val mOptionItemEntityList =
                                     questionList.convertFormTypeQuestionListToOptionItemEntity(
                                         optionItemEntity.sectionId,
