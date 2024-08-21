@@ -59,5 +59,6 @@
     <string name="exit">"Ongkhorlam "</string>
     <string name="cancel">"Mwthakma "</string>
     <string name="search">"Naitukdi "</string>
+    <string name="search_for_mission">Mission bai Naitukti</string>
 
 </resources>

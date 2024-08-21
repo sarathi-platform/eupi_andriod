@@ -58,5 +58,6 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="search">Search</string>
+    <string name="search_for_mission">Search by Mission</string>
 
 </resources>
