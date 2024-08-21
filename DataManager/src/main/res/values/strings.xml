@@ -66,5 +66,8 @@
     <string name="search_by_didis">Search by didis</string>
     <string name="event">Event:</string>
     <string name="add_event">Add Event</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">Cancel</string>
 
 </resources>

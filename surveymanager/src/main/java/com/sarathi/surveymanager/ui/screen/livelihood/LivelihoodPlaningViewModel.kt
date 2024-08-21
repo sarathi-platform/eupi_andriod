@@ -8,7 +8,9 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.state.DialogState
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -41,11 +43,14 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
+    var areResponsesChanged: Boolean = false
 
     private val TAG = LivelihoodPlaningViewModel::class.java.simpleName
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private val _livelihoodList = mutableStateOf<List<LivelihoodUiEntity>>(emptyList())
     val livelihoodList: State<List<LivelihoodUiEntity>> get() = _livelihoodList
+    private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
+    val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
 
     var taskId: Int? = null
     var subjectId: Int? = null
@@ -76,6 +81,11 @@ class LivelihoodPlaningViewModel @Inject constructor(
             is LivelihoodPlanningEvent.SecondaryLivelihoodPlanningEvent -> {
                 secondaryLivelihoodId.value = event.livelihoodId
                 checkButtonValidation()
+            }
+            is DialogEvents.ShowDialogEvent -> {
+                _showUserChangedDialog.value = _showUserChangedDialog.value.copy(
+                    isDialogVisible = event.showDialog
+                )
             }
         }
 
@@ -185,6 +195,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 }
                 subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingForSubject(it) }
         }
+    }
+    fun setResponseChangedFlag(responseChanged: Boolean) {
+        areResponsesChanged = responseChanged
     }
 
 }
