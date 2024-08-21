@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.ProgressScreen
@@ -21,7 +20,9 @@ fun HomeUserScreen(
     onSettingIconClick: () -> Unit
 ) {
     if (prefRepo.getLoggedInUserType() == UPCM_USER) {
-        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
+
+//        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(

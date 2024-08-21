@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.R
@@ -15,17 +14,20 @@ import com.nrlm.baselinesurvey.ui.common_components.ShowCustomDialog
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.DataLoadingScreenViewModel
+import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 
 @Composable
 fun DataLoadingScreenComponent(
     modifier: Modifier = Modifier,
     viewModel: DataLoadingScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    missionId: Int,
+    missionDescription: String
 ) {
 
     val loaderState = viewModel.loaderState.value
-    val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
         if (viewModel.isUserLoggedIn()) {
@@ -33,23 +35,37 @@ fun DataLoadingScreenComponent(
             if (!viewModel.isAllDataFetched()) {
                 viewModel.fetchAllData {
                     viewModel.setAllDataFetched()
-                    navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
-//                    navController.navigate(HomeScreens.Home_SCREEN.route)
+                    navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                        popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                            inclusive = true
+                        }
+                    }
+
+
                 }
             } else {
-                navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
-//                navController.navigate(HomeScreens.Home_SCREEN.route)
+                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                    popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
             }
         } else {
-            navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
-//            navController.navigate(HomeScreens.Home_SCREEN.route)
+            navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                    inclusive = true
+                }
+            }
         }
     }
 
     if (viewModel.errorNavigate.value) {
         viewModel.setAllDataFetched()
-        navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
-//        navController.navigate(HomeScreens.Home_SCREEN.route)
+        navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+            popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                inclusive = true
+            }
+        }
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         LoaderComponentWithText(visible = loaderState.isLoaderVisible)
@@ -71,8 +87,11 @@ fun DataLoadingScreenComponent(
                     viewModel.clearLocalDB {
                         viewModel.fetchAllData {
                             viewModel.setAllDataFetched()
-                            navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
-//                            navController.navigate(HomeScreens.Home_SCREEN.route)
+                            navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                                popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     }
                 }
