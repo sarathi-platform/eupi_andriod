@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -55,7 +54,7 @@ fun SplashScreen(
         showCustomToast(context,networkErrorMessage)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
-    val isLoggedIn = viewModel.isLoggedIn()
+    val isLoggedIn = viewModel.isLoggedIn()/*false*/
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
@@ -69,18 +68,6 @@ fun SplashScreen(
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value=false
                 openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
-                /*if (viewModel.getLoggedInUserType() == UPCM_USER) {
-                    navController.popBackStack()
-                    navController.navigate(
-                        Graph.HOME
-                    )
-                } else {
-                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                        popUpTo(AuthScreen.START_SCREEN.route) {
-                            inclusive = true
-                        }
-                    }
-                }*/
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
@@ -228,7 +215,6 @@ fun SplashScreen(
 
 fun openUserHomeScreen(userType:String,navController: NavController) {
     try {
-        Log.d("TAG", "openUserHomeScreen:m${userType} :: ${navController.graph.route    }")
         if (userType==UPCM_USER) {
             if(navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true){
                 navController.navigate(route = HomeScreens.DATA_LOADING_SCREEN.route) {

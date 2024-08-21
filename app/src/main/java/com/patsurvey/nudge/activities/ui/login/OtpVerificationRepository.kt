@@ -66,4 +66,7 @@ class OtpVerificationRepository @Inject constructor(
     fun saveLastSyncDateTime(syncDateTime: Long) {
         prefRepo.savePref(LAST_SYNC_TIME, syncDateTime)
     }
+    fun savePageFrom() {
+        prefRepo.savePageOpenFromOTPScreen(true)
+    }
 }
