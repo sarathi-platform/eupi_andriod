@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -19,7 +20,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +46,7 @@ import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
@@ -216,7 +217,6 @@ fun BottomContent(
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(vertical = 16.dp)
                 ) {
@@ -225,13 +225,15 @@ fun BottomContent(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (viewModel.failedEventList.value.isNotEmpty()) {
                             Text(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(dimen_5_dp),
                                 text = stringResource(id = R.string.sync_failed_message),
                                 style = smallTextStyle,
                                 color = textColorDark
                             )
                             ButtonPositive(
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.wrapContentHeight(),
                                 buttonTitle = stringResource(id = R.string.export_failed_event),
                                 isActive = true,
                                 isArrowRequired = false,
