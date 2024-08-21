@@ -249,6 +249,28 @@ fun Modifier.debounceClickable(
     )
 }
 
+inline fun Modifier.debounceClickable(
+    debounceInterval: Long = 500,
+    crossinline onClick: () -> Unit,
+): Modifier {
+    var lastClickTime = 0L
+    var clickCount = 0
+    return clickable() {
+        Log.d("Utils", "debounceClickable, initial clickCount = $clickCount")
+        val currentTime = System.currentTimeMillis()
+        if ((currentTime - lastClickTime) < debounceInterval) {
+            clickCount = clickCount++
+            return@clickable
+        }
+        lastClickTime = currentTime
+        Log.d(
+            "Utils",
+            "debounceClickable: buttonClicked lastClickTime = $lastClickTime, clickCount = $clickCount"
+        )
+        onClick()
+    }
+}
+
 fun Context.setScreenOrientation(orientation: Int) {
     val activity = this.findActivity() ?: return
     activity.requestedOrientation = orientation

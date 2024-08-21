@@ -339,16 +339,19 @@ fun ButtonPositive(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(if (isActive) blueDark else languageItemActiveBg)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = Color.White
-                )
-
-            ) {
+            .debounceClickable {
                 if (isActive) onClick()
             }
+//            .clickable(
+//                interactionSource = remember { MutableInteractionSource() },
+//                indication = rememberRipple(
+//                    bounded = true,
+//                    color = Color.White
+//                )
+//
+//            ) {
+//                if (isActive) onClick()
+//            }
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
