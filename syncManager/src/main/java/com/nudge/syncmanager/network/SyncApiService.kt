@@ -36,6 +36,14 @@ interface SyncApiService {
         @Part("fileEvents") imagePayload: RequestBody
     ): ApiResponseModel<List<SyncImageStatusResponse>>
 
+    @Multipart
+    @POST("sync-server/sync/upload/file-event-v1")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun syncImageWithEvent(
+        @Part imageFileList: List<MultipartBody.Part>,
+        @Part("fileEvents") imagePayload: RequestBody
+    ): ApiResponseModel<List<SyncEventResponse>>
+
 
     @GET("/sync-server/lastSync/status")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

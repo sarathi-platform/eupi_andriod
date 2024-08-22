@@ -162,7 +162,7 @@ class VillageSelectionViewModel @Inject constructor(
     val showUserChangedDialog = mutableStateOf(false)
 
     val multiVillageRequest = mutableStateOf("2")
-    private var checkStatusCount = 0
+    var isFromOTPScreen: Boolean = false
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
@@ -214,11 +214,12 @@ class VillageSelectionViewModel @Inject constructor(
         prefRepo.saveMobileNumber(mobileNo)
     }
     fun init(context: Context) {
+        isFromOTPScreen = prefRepo.getPageOpenFromOTPScreen()
         showLoader.value = true
         fetchUserDetails { success ->
             if (success) {
-                fetchQuestions()
-                fetchCastList()
+                fetchQuestions(isFromOTPScreen)
+                fetchCastList(isFromOTPScreen)
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                     if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
                         fetchUserWiseData()
@@ -244,18 +245,19 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun fetchQuestions(){
+    private fun fetchQuestions(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localLanguageList = languageListDao.getAllLanguages()
+            stateId.value = getStateId()
             localLanguageList?.let {
                 localLanguageList.forEach { languageEntity ->
                     try {
                         // Fetch QuestionList from Server
-                        val localLanguageQuesList =
+                        var localLanguageQuesList =
                             questionListDao.getAllQuestionsForLanguage(languageEntity.id)
-                        if (localLanguageQuesList.isEmpty()) {
-                            NudgeLogger.d("TAG", "fetchQuestions: QuestionList")
+
+                        if (localLanguageQuesList.isEmpty() || isRefresh) {
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
                                     languageId = languageEntity.id,
@@ -265,6 +267,9 @@ class VillageSelectionViewModel @Inject constructor(
                             )
                             if (quesListResponse.status.equals(SUCCESS, true)) {
                                 quesListResponse.data?.let { questionList ->
+                                    if (isRefresh) {
+                                        questionListDao.deleteQuestionTableForLanguage(languageId = languageEntity.id)
+                                    }
                                     questionList.listOfQuestionSectionList?.forEach { list ->
                                         list?.questionList?.forEach { question ->
                                             question?.sectionOrderNumber = list.orderNumber
@@ -316,13 +321,11 @@ class VillageSelectionViewModel @Inject constructor(
                             if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
                         )
                     } finally {
-                        /*withContext(Dispatchers.Main) {
-                            delay(250)
-                            showLoader.value = false
-                        }*/
+                        savePageOpenFromOTPScreen()
                     }
                 }
             }
+
         }
     }
 
@@ -970,17 +973,20 @@ class VillageSelectionViewModel @Inject constructor(
             showLoader.value = false
         }
     }
-    private fun fetchCastList() {
+    private fun fetchCastList(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val languageList = languageListDao.getAllLanguages()
             languageList.forEach { language ->
-                val localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-                if (localCasteList.isEmpty()) {
+                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
+                if (localCasteList.isEmpty() || isRefresh) {
                     try {
                         val casteResponse = apiService.getCasteList(language.id)
                         if (casteResponse.status.equals(SUCCESS, true)) {
                             casteResponse.data?.let { casteList ->
+                                if (isRefresh) {
+                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
+                                }
                                 casteList.forEach { casteEntity ->
                                     casteEntity.languageId = language.id
                                 }
@@ -1795,7 +1801,8 @@ class VillageSelectionViewModel @Inject constructor(
                 showLoader.value = false
 
             }
-
+                fetchQuestions(true)
+                fetchCastList(true)
             } else {
                 showCustomToast(
                     context,
@@ -1819,6 +1826,8 @@ class VillageSelectionViewModel @Inject constructor(
                     _villagList.value = userAndVillageDetailModel.villageList.distinctBy {
                 it.id
             }
+                    fetchQuestions(true)
+                    fetchCastList(true)
                     refreshStepData(context)
             } else {
                     isNeedToCallVillageApi = true
@@ -1869,6 +1878,9 @@ class VillageSelectionViewModel @Inject constructor(
         prefRepo.saveMobileNumber("")
         prefRepo.saveSettingOpenFrom(0)
 
+    }
+    fun savePageOpenFromOTPScreen() {
+        prefRepo.savePageOpenFromOTPScreen(false)
     }
 
 }

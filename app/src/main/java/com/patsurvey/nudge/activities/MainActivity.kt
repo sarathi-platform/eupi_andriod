@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -237,7 +238,12 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
         }
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        registerReceiver(smsBroadcastReceiver, intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            registerReceiver(smsBroadcastReceiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(smsBroadcastReceiver, intentFilter)
+
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -294,6 +300,13 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         super.onDestroy()
     }
 
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        val configOverride = Configuration(newBase?.resources?.configuration)
+        configOverride.fontScale = 1.0f
+        applyOverrideConfiguration(configOverride)
+    }
+
     override fun onAfterLocaleChanged() {
 
     }
@@ -304,11 +317,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     override fun onResume() {
         localizationDelegate.onResume(applicationContext)
         super.onResume()
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        applyOverrideConfiguration(localizationDelegate.updateConfigurationLocale(newBase))
-        super.attachBaseContext(newBase)
     }
 
     override fun getApplicationContext(): Context {

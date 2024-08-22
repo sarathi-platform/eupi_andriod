@@ -12,6 +12,7 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.EventsTable
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
+import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
 import com.nudge.core.utils.SyncType
@@ -202,4 +203,10 @@ interface EventsDao {
 
     @Query("SELECT * FROM $EventsTable WHERE status IN (:status) and mobile_number =:mobileNumber")
     fun fetchAllFailedEventList(mobileNumber: String, status: List<String>): List<Events>
+
+    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.file_name as fileName,image_status_table.file_path as filePath from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.image_event_id where  events_table.mobile_number == image_status_table.mobile_number AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
+    fun fetchAllImageEventsWithImageDetails(
+        mobileNumber: String,
+        eventIds: List<String>
+    ): List<ImageEventDetailsModel>
 }

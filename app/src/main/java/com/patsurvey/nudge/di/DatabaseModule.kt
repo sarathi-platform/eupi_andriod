@@ -25,6 +25,7 @@ object DatabaseModule {
             // Add Migrations for each migration object created.
             .addMigrations(NudgeDatabase.MIGRATION_1_2)
             .addCallback(NudgeDatabase.NudgeDatabaseCallback())
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .fallbackToDestructiveMigration()
             .build()
 

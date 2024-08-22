@@ -12,6 +12,7 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventConsumerRequest
@@ -41,6 +42,15 @@ class SyncApiRepository @Inject constructor(
         return apiService.syncEvent(eventRequest)
     }
 
+    suspend fun fetchAllImageEventDetails(eventIds: List<String>): List<ImageEventDetailsModel> {
+        return eventDao.fetchAllImageEventsWithImageDetails(
+            mobileNumber = prefRepo.getMobileNo(),
+            eventIds = eventIds
+        )
+    }
+
+
+
     suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest)
             : ApiResponseModel<List<SyncEventResponse>> {
         return apiService.syncConsumerStatusApi(eventConsumerRequest)
@@ -69,6 +79,14 @@ class SyncApiRepository @Inject constructor(
         imagePayload: RequestBody
     ): ApiResponseModel<List<SyncImageStatusResponse>> {
         return apiService.syncImage(imageFile = image, imagePayload = imagePayload)
+    }
+
+
+    suspend fun syncImageWithEventToServer(
+        imageList: List<MultipartBody.Part>,
+        imagePayload: RequestBody
+    ): ApiResponseModel<List<SyncEventResponse>> {
+        return apiService.syncImageWithEvent(imageFileList = imageList, imagePayload = imagePayload)
     }
 
     suspend fun getPendingEventCount(syncType: Int): Int {

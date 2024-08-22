@@ -181,7 +181,7 @@ class VillageSelectionRepository @Inject constructor(
             val awaitDeff = CoroutineScope(Dispatchers.IO).async {
                 try {
                     //Fetch PAT Question
-                    fetchQuestions(prefRepo)
+//                    fetchQuestions(prefRepo)
 
                     val villageList =
                         villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
@@ -420,7 +420,7 @@ class VillageSelectionRepository @Inject constructor(
             val awaitDeff = CoroutineScope(Dispatchers.IO).async {
                 try {
                     //Fetch PAT Question
-                    fetchQuestions(prefRepo)
+//                    fetchQuestions(prefRepo)
 
                     val villageList =
                         villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
@@ -2352,7 +2352,7 @@ class VillageSelectionRepository @Inject constructor(
         }
     }
 
-    private fun fetchQuestions(prefRepo: PrefRepo){
+    private fun fetchQuestions(prefRepo: PrefRepo, isRefresh: Boolean) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localLanguageList = languageListDao.getAllLanguages()
             localLanguageList?.let {
@@ -2362,7 +2362,7 @@ class VillageSelectionRepository @Inject constructor(
                         // Fetch QuestionList from Server
                         val localLanguageQuesList =
                             questionDao.getAllQuestionsForLanguage(languageEntity.id)
-                        if (localLanguageQuesList.isEmpty()) {
+                        if (localLanguageQuesList.isEmpty() || isRefresh) {
                             NudgeLogger.d("TAG", "fetchQuestions: QuestionList")
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
@@ -2372,7 +2372,11 @@ class VillageSelectionRepository @Inject constructor(
                                 )
                             )
                             if (quesListResponse.status.equals(SUCCESS, true)) {
+
                                 quesListResponse.data?.let { questionList ->
+                                    if (isRefresh) {
+                                        questionDao.deleteQuestionTableForLanguage(languageId = languageEntity.id)
+                                    }
                                     questionList.listOfQuestionSectionList?.forEach { list ->
                                         list?.questionList?.forEach { question ->
                                             question?.sectionOrderNumber = list.orderNumber
@@ -4078,8 +4082,8 @@ class VillageSelectionRepository @Inject constructor(
         prefRepo.saveSettingOpenFrom(fromPage)
     }
 
-    fun fetchPatQuestionsFromNetwork() {
-        fetchQuestions(prefRepo)
+    fun fetchPatQuestionsFromNetwork(isRefresh: Boolean) {
+        fetchQuestions(prefRepo, isRefresh)
     }
 
 }

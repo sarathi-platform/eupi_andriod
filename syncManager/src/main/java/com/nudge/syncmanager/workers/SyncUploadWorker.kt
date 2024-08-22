@@ -18,14 +18,16 @@ import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
-import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.datamodel.Data
+import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.datamodel.SyncImageMetadataRequest
 import com.nudge.core.datamodel.SyncImageUploadPayload
+import com.nudge.core.enums.EventName
 import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
 import com.nudge.core.getFileMimeType
 import com.nudge.core.json
+import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
@@ -102,23 +104,36 @@ class SyncUploadWorker @AssistedInject constructor(
                     TAG,
                     "doWork: pendingEvents List: ${mPendingEventList.json()}"
                 )
+                val dataEventList =
+                    mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) }
+                if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
+                    val apiResponse = syncApiRepository.syncProducerEventToServer(dataEventList)
+                    totalPendingEventCount =
+                        handleAPIResponse(
+                            apiResponse,
+                            totalPendingEventCount,
+                            selectedSyncType,
+                            mPendingEventList
+                        )
+                }
 
-                val apiResponse = syncApiRepository.syncProducerEventToServer(mPendingEventList)
-                if (apiResponse.status == SUCCESS) {
-                    apiResponse.data?.let { eventList ->
-                        if (eventList.isNotEmpty()) {
-                            processEventList(eventList)
-                            totalPendingEventCount = syncApiRepository.getPendingEventCount(
-                                syncType = selectedSyncType
-                            )
-                            CoreLogger.d(
-                                applicationContext,
-                                TAG,
-                                "doWork: After totalPendingEventCount: $totalPendingEventCount"
-                            )
-                        } else handleEmptyEventListResponse(mPendingEventList)
-                    } ?: handleNullApiResponse(mPendingEventList)
-                } else handleFailedApiResponse(mPendingEventList)
+                val imageEventIdsList =
+                    mPendingEventList.filter { it.name.contains(IMAGE_EVENT_STRING) }.map { it.id }
+                if ((selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && imageEventIdsList.isNotEmpty()) {
+                    val imageEventList =
+                        syncApiRepository.fetchAllImageEventDetails(eventIds = imageEventIdsList)
+                    if (imageEventList.isNotEmpty()) {
+                        findImageEventAndImage(imageEventList) { response ->
+                            totalPendingEventCount =
+                                handleAPIResponse(
+                                    response,
+                                    totalPendingEventCount,
+                                    selectedSyncType,
+                                    mPendingEventList
+                                )
+                        }
+                    }
+                }
             }
 
             fetchConsumerStatus(
@@ -143,6 +158,31 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
+    private suspend fun SyncUploadWorker.handleAPIResponse(
+        apiResponse: ApiResponseModel<List<SyncEventResponse>>,
+        totalPendingEventCount: Int,
+        selectedSyncType: Int,
+        mPendingEventList: List<Events>
+    ): Int {
+        var totalPendingEventCount1 = totalPendingEventCount
+        if (apiResponse.status == SUCCESS) {
+            apiResponse.data?.let { eventList ->
+                if (eventList.isNotEmpty()) {
+                    processEventList(eventList)
+                    totalPendingEventCount1 = syncApiRepository.getPendingEventCount(
+                        syncType = selectedSyncType
+                    )
+                    CoreLogger.d(
+                        applicationContext,
+                        TAG,
+                        "doWork: After totalPendingEventCount: $totalPendingEventCount1"
+                    )
+                } else handleEmptyEventListResponse(mPendingEventList)
+            } ?: handleNullApiResponse(mPendingEventList)
+        } else handleFailedApiResponse(mPendingEventList)
+        return totalPendingEventCount1
+    }
+
     private suspend fun processEventList(eventList: List<SyncEventResponse>) {
         val eventSuccessList =
             eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
@@ -159,12 +199,6 @@ class SyncUploadWorker @AssistedInject constructor(
                 context = applicationContext,
                 eventList = eventSuccessList
             )
-
-            eventSuccessList.forEach { successEvent ->
-                if (successEvent.eventName.contains(IMAGE_EVENT_STRING)) {
-                    findImageEventAndImage(successEvent.clientId)
-                }
-            }
         }
 
         if (eventFailedList.isNotEmpty()) {
@@ -247,91 +281,101 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-
-    private suspend fun syncImageToServerAPI(
+    private fun convertFileIntoMultipart(
         imageFile: File,
-        imageStatusEvent: ImageStatusEntity
-    ) {
-
+        imageEventDetail: ImageEventDetailsModel
+    ): MultipartBody.Part? {
         try {
             val imageRequest = imageFile
                 .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
             val multipartRequest = MultipartBody.Part.createFormData(
                 MULTIPART_IMAGE_PARAM_NAME,
-                imageStatusEvent.fileName,
+                imageEventDetail.fileName,
                 imageRequest
             )
-            val imagePayloadRequest = listOf(
-                SyncImageUploadPayload(
-                createdBy = imageStatusEvent.createdBy,
-                    fileEventClientId = imageStatusEvent.imageEventId ?: BLANK_STRING,
-                eventTopic = imageStatusEvent.type,
-                clientId = imageStatusEvent.id,
-                fileName = imageStatusEvent.fileName,
-                filePath = imageStatusEvent.filePath,
-                eventName = imageStatusEvent.name,
-                    mobileNo = imageStatusEvent.mobileNumber,
-                    metadata = SyncImageMetadataRequest(
-                        data = Data(
-                            filePath = imageFile.absolutePath,
-                            contentType = getFileMimeType(file = imageFile)
-                        ),
-                        dependsOn = emptyList()
-                    ).json()
-                )
-            ).json()
+            return multipartRequest
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return null
+        }
+    }
+
+    private suspend fun syncImageToServerAPI(
+        imageMultipartList: List<MultipartBody.Part>,
+        imageStatusEventList: List<ImageEventDetailsModel>,
+        onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
+    ) {
+
+        try {
+            val imagePayloadRequest: ArrayList<SyncImageUploadPayload> = arrayListOf()
+            imageStatusEventList.forEach { imageEvent ->
+                imageEvent.filePath?.let {
+                    val file = File(it)
+                    imagePayloadRequest.add(
+                        SyncImageUploadPayload(
+                            createdBy = imageEvent.createdBy,
+                            fileEventClientId = imageEvent.imageStatusId ?: BLANK_STRING,
+                            eventTopic = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                            clientId = imageEvent.id,
+                            fileName = imageEvent.fileName ?: BLANK_STRING,
+                            filePath = imageEvent.filePath ?: BLANK_STRING,
+                            eventName = imageEvent.name,
+                            mobileNo = imageEvent.mobile_number,
+                            payload = imageEvent.request_payload ?: BLANK_STRING,
+                            driveType = "Selection",
+                            metadata = SyncImageMetadataRequest(
+                                data = Data(
+                                    filePath = file.absolutePath,
+                                    contentType = getFileMimeType(file = file)
+                                ),
+                                dependsOn = emptyList()
+                            ).json()
+                        )
+                    )
+                }
+
+            }
+
 
             val multipartData =
-                imagePayloadRequest.toRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+                imagePayloadRequest.json().toRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
             CoreLogger.d(
                 context = applicationContext,
                 TAG,
                 "syncImageToServerAPI: SyncImageAPI Request: ${imagePayloadRequest.json()}",
             )
-            val response = syncApiRepository.syncImageToServer(
-                image = multipartRequest,
+            val response = syncApiRepository.syncImageWithEventToServer(
+                imageList = imageMultipartList,
                 imagePayload = multipartData
             )
-            if (response.status == SUCCESS) {
-                response.data?.let { imageEventList ->
-                    if (imageEventList.isNotEmpty()) {
-                        handleSuccessImageStatus(imageEventList[0])
-                    } else handleFailedImageStatus(
-                        event = imageStatusEvent,
-                        errorMessage = SyncException.RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION.message
-                    )
-                } ?: handleFailedImageStatus(
-                    event = imageStatusEvent,
-                    errorMessage = SyncException.RESPONSE_DATA_IS_NULL_EXCEPTION.message
-                )
-            } else handleFailedImageStatus(
-                event = imageStatusEvent,
-                errorMessage = SyncException.RESPONSE_STATUS_FAILED_EXCEPTION.message
-            )
+            onAPIResponse(response)
         } catch (ex: Exception) {
             CoreLogger.e(
                 applicationContext,
                 TAG,
-                "syncImageToServerAPI: Exception: ${ex.message} :: ${imageStatusEvent.json()}",
+                "syncImageToServerAPI: Exception: ${ex.message} :: ${imageStatusEventList.json()}",
                 ex,
                 true
             )
-            handleFailedImageStatus(
-                event = imageStatusEvent,
-                errorMessage = ex.message ?: SOMETHING_WENT_WRONG
-            )
+//            handleFailedImageStatus(
+//                imageEventDetail = imageStatusEvent,
+//                errorMessage = ex.message ?: SOMETHING_WENT_WRONG
+//            )
         }
     }
 
 
-    private suspend fun handleFailedImageStatus(event: ImageStatusEntity, errorMessage: String) {
+    private suspend fun handleFailedImageStatus(
+        imageEventDetail: ImageEventDetailsModel,
+        errorMessage: String
+    ) {
         CoreLogger.d(
             applicationContext,
             TAG,
-            "handleFailedImageStatus: ${event.json()} ::Message: $errorMessage"
+            "handleFailedImageStatus: ${imageEventDetail.json()} ::Message: $errorMessage"
         )
         syncApiRepository.updateImageEventStatus(
-            eventId = event.id,
+            eventId = imageEventDetail.id,
             errorMessage = errorMessage,
             status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
         )
@@ -348,36 +392,59 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private suspend fun findImageEventAndImage(
-        eventId: String
+        imageEventList: List<ImageEventDetailsModel>,
+        onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
-        val imageStatusEvent =
-            syncApiRepository.fetchImageStatusFromEventId(eventId = eventId)
-        imageStatusEvent?.let {
-            if (it.status != EventSyncStatus.PRODUCER_IN_PROGRESS.name
-                && it.status != EventSyncStatus.PRODUCER_SUCCESS.name
-                && it.status != EventSyncStatus.CONSUMER_IN_PROGRESS.name
-                && it.status != EventSyncStatus.CONSUMER_SUCCESS.name
-            ) {
-                CoreLogger.d(applicationContext, TAG, "findImageEventAndImage: ${it.json()} ")
-                try {
-                    val imageFile = File(it.filePath)
-                    if (imageFile.exists() && imageFile.isFile) {
-                        syncImageToServerAPI(imageFile = imageFile, imageStatusEvent = it)
-                    } else
-                        handleFailedImageStatus(
-                            event = imageStatusEvent,
-                            errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
-                        )
+        try {
+            if (imageEventList.isNotEmpty()) {
+                CoreLogger.d(
+                    applicationContext,
+                    TAG,
+                    "findImageEventAndImageList: ${imageEventList.json()} "
+                )
+                val imageMultiPartList = ArrayList<MultipartBody.Part>()
+                imageEventList.forEach { imageDetail ->
+                    try {
+                        imageDetail.filePath?.let { path ->
+                            val imageFile = File(path)
+                            if (imageFile.exists() && imageFile.isFile) {
+                                val imageMultiPart = convertFileIntoMultipart(
+                                    imageFile = imageFile,
+                                    imageEventDetail = imageDetail
+                                )
+                                imageMultiPart?.let {
+                                    imageMultiPartList.add(it)
+                                }
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    handleFailedImageStatus(
-                        event = imageStatusEvent,
-                        errorMessage = e.message
-                            ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
-                    )
+                            } else
+                                handleFailedImageStatus(
+                                    imageEventDetail = imageDetail,
+                                    errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
+                                )
+                        }
+
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        handleFailedImageStatus(
+                            imageEventDetail = imageDetail,
+                            errorMessage = e.message
+                                ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
+                        )
+                    }
+
+                    if (imageMultiPartList.isNotEmpty()) {
+                        syncImageToServerAPI(
+                            imageMultipartList = imageMultiPartList,
+                            imageStatusEventList = imageEventList
+                        ) {
+                            onAPIResponse(it)
+                        }
+                    }
                 }
             }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 
@@ -424,7 +491,17 @@ suspend fun fetchConsumerStatus(
         endDate = date,
         startDate = date
     )
+    CoreLogger.d(
+        context = context,
+        "SyncUploadWorker",
+        "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
+    )
     val consumerAPIResponse = syncApiRepository.fetchConsumerEventStatus(eventConsumerRequest)
+    CoreLogger.d(
+        context = context,
+        "SyncUploadWorker",
+        "fetchConsumerStatus Consumer Response: ${consumerAPIResponse.json()}"
+    )
     if (consumerAPIResponse.status == SUCCESS) {
         consumerAPIResponse.data?.let {
             if (it.isNotEmpty()) {
