@@ -18,6 +18,7 @@ const val EventsStatusTable = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
 const val ImageStatusTable = "image_status_table"
+const val RequestStatusTable = "request_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
