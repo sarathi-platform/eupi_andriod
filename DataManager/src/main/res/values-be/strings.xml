@@ -62,11 +62,11 @@
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
     <string name="add_event">Add Event</string>
-    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
+    <string name="primary_and_secondary_value_not_same">सेथि आरो नैथि जिउ राहाया रोखोमसे जानो हाया।</string>
     <string name="select_first_livelihood_for_didi">"आब'नि थाखाय गिबि जिउ राहा सायख'"</string>
     <string name="select_second_livelihood_for_didi">"आब'नि थाखाय नैथि जिउ राहा सायख'"</string>
     <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
-    <string name="proceed">Proceed</string>
+    <string name="proceed">आगे बढ़ना</string>
     <string name="cancel_text">रद्द करना</string>
     <string name="are_you_sure">"नों थार नामा? "</string>
 

@@ -62,7 +62,7 @@
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
     <string name="add_event">Add Event</string>
-    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
+    <string name="primary_and_secondary_value_not_same">"প্ৰথম আৰু দ্বিতীয় জীৱিকা একে হ'ব নোৱাৰে"</string>
     <string name="select_first_livelihood_for_didi">বাইদেউৰ বাবে প্ৰথম জীৱিকা বাছনি কৰক</string>
     <string name="select_second_livelihood_for_didi">বাইদেউৰ বাবে দ্বিতীয় জীৱিকা বাছনি কৰক</string>
     <string name="proceed">" আগবাঢ়ক"</string>

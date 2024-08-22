@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.LIVELIHOOD
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
@@ -282,7 +283,7 @@ fun LivelihoodPlaningTaskScreen(
                                     R.string.activity_completion_message,
                                     activityName
                                 ),
-                                activityRoutePath = activityName
+                                activityRoutePath = LIVELIHOOD
                             )
                         })
 
