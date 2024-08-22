@@ -18,12 +18,12 @@ object CoreDispatchers {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit
     ) {
-        launchVieModelScope(ioDispatcher, start) {
+        launchViewModelScope(ioDispatcher, start) {
             block()
         }
     }
 
-    fun launchVieModelScope(
+    fun launchViewModelScope(
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit

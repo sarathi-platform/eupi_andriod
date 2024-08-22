@@ -26,7 +26,6 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -87,7 +86,7 @@ class BpcVillageScreenViewModel @Inject constructor(
 
     private fun fetchUserAndVillageDetails() {
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = false) {
-            villageSelectionRepository.fetchPatQuestionsFromNetwork()
+            villageSelectionRepository.fetchPatQuestionsFromNetwork(prefRepo.getPageOpenFromOTPScreen())
             _villagList.value = it.villageList
             _filterVillageList.value = villageList.value
             showLoader.value = false
@@ -149,6 +148,7 @@ class BpcVillageScreenViewModel @Inject constructor(
             if (it.success) {
                 _villagList.value = it.villageList
                 _filterVillageList.value = villageList.value
+                villageSelectionRepository.fetchPatQuestionsFromNetwork(true)
                 showCustomToast(context, context.getString(R.string.fetched_successfully))
 
             } else {
@@ -205,4 +205,7 @@ class BpcVillageScreenViewModel @Inject constructor(
         prefRepo.saveSettingOpenFrom(0)
     }
 
+    fun savePageOpenFromOTPScreen() {
+        prefRepo.savePageOpenFromOTPScreen(false)
+    }
 }

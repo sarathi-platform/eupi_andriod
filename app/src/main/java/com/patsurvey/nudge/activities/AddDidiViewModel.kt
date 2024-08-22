@@ -39,7 +39,6 @@ import com.patsurvey.nudge.utils.HUSBAND_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_DIDI_UNAVAILABLE
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
@@ -653,7 +652,13 @@ class AddDidiViewModel @Inject constructor(
                     localUniqueId = _didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).localUniqueId,
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
-                        .indexOf(didiId)).ableBodiedFlag
+                        .indexOf(didiId)).ableBodiedFlag,
+                    rankingEdit = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).rankingEdit,
+                    patEdit = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).patEdit,
+                    voEndorsementEdit = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).voEndorsementEdit,
                 )
                 val selectedTolaEntity =
                     addDidiRepository.fetchSingleTolaFromServerId(selectedTola.value.first)

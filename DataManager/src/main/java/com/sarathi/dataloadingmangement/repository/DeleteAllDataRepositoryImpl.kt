@@ -86,6 +86,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
 
             //Livelihood Table delete..
             moneyJournalDao().deleteMoneyJournal(userId)
+            subjectLivelihoodMappingDao().deleteLivelihoodSubjectsForUsers(userId)
             assetDao().deleteAssetsForUser(userId)
             assetJournalDao().deleteAssetJournal(userId)
             livelihoodDao().deleteLivelihoodForUser(userId)

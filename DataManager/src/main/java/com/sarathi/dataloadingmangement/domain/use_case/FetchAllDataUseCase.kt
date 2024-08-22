@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
@@ -24,6 +25,7 @@ class FetchAllDataUseCase @Inject constructor(
     val moneyJournalUseCase: FetchMoneyJournalUseCase,
     val assetJournalUseCase: FetchAssetJournalUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
+    val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
@@ -44,6 +46,7 @@ class FetchAllDataUseCase @Inject constructor(
                 formUseCase.invoke()
                 fetchLivelihoodSaveEventUseCase.invoke()
                 moneyJournalUseCase.invoke()
+                fetchLivelihoodOptionNetworkUseCase.invoke()
                 assetJournalUseCase.invoke()
             }
             livelihoodUseCase.invoke()
@@ -53,6 +56,7 @@ class FetchAllDataUseCase @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
             }
+
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
             }
@@ -60,4 +64,7 @@ class FetchAllDataUseCase @Inject constructor(
             onComplete(true, BLANK_STRING)
         }
     }
+
+    //TODO Temp code remove after data is fetched from API
+    fun getStateId() = coreSharedPrefs.getStateId()
 }

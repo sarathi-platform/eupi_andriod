@@ -35,6 +35,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -73,6 +74,7 @@ import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
+import com.sarathi.dataloadingmangement.data.entities.SectionStatusEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
@@ -133,8 +135,10 @@ const val NUDGE_GRANT_DATABASE_VERSION = 2
         MoneyJournalEntity::class,
         AssetJournalEntity::class,
         SubjectLivelihoodMappingEntity::class,
-        SubjectLivelihoodEventMappingEntity::class
+        SubjectLivelihoodEventMappingEntity::class,
+        SectionStatusEntity::class
     ],
+
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
 )
@@ -180,7 +184,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun grantConfigDao(): GrantConfigDao
     abstract fun surveyLanguageAttributeDao(): SurveyLanguageAttributeDao
 
-
     abstract fun subjectEntityDao(): SubjectEntityDao
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
@@ -195,13 +198,16 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun subjectLivelihoodMappingDao(): SubjectLivelihoodMappingDao
 
+    abstract fun sectionStatusEntityDao(): SectionStatusEntityDao
+
+    class NudgeDatabaseCallback : Callback()
     abstract fun subjectLivelihoodEventMappingDao(): SubjectLivelihoodEventMappingDao
 
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
         private val CREATE_MONEY_JOUNRAL_TABLE =
-            "CREATE TABLE IF NOT EXISTS $MONEY_JOURNAL_TABLE_NAME (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `transactionId` TEXT NOT NULL, `transactionDate` INTEGER NOT NULL, `transactionDetails` TEXT NOT NULL, `transactionFlow` TEXT NOT NULL, `transactionType` TEXT NOT NULL, `transactionAmount` REAL NOT NULL, `referenceId` INTEGER NOT NULL, `referenceType` TEXT NOT NULL, `subjectId` INTEGER NOT NULL, `subjectType` TEXT NOT NULL, `status` INTEGER NOT NULL, `modifiedDate` INTEGER NOT NULL)"
+            "CREATE TABLE IF NOT EXISTS $MONEY_JOURNAL_TABLE_NAME (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `transactionId` TEXT NOT NULL, `transactionDate` INTEGER NOT NULL, `transactionDetails` TEXT NOT NULL, `transactionFlow` TEXT NOT NULL, `transactionType` TEXT NOT NULL, `transactionAmount` REAL NOT NULL, `referenceId` INTEGER NOT NULL, `referenceType` TEXT NOT NULL, `subjectId` INTEGER NOT NULL, `subjectType` TEXT NOT NULL, `status` INTEGER NOT NULL, `modifiedDate` INTEGER NOT NULL,`createdDate` INTEGER NOT NULL)"
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val NUDGE_GRANT_DATABASE_MIGRATION_1_2 = object : Migration(1, 2) {
