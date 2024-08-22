@@ -342,16 +342,6 @@ fun ButtonPositive(
             .debounceClickable {
                 if (isActive) onClick()
             }
-//            .clickable(
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = rememberRipple(
-//                    bounded = true,
-//                    color = Color.White
-//                )
-//
-//            ) {
-//                if (isActive) onClick()
-//            }
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
