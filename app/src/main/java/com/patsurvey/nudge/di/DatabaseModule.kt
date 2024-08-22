@@ -33,6 +33,7 @@ object DatabaseModule {
     @Singleton
     fun provideSyncDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
+            .addMigrations(SyncManagerDatabase.MIGRATION_1_2)
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .fallbackToDestructiveMigration()
             .build()

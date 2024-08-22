@@ -4,8 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventsStatusTable
 import com.nudge.core.database.converters.DateConverter
@@ -33,6 +31,9 @@ data class EventStatusEntity(
 
     @ColumnInfo("status")
     val status: String,
+
+    @ColumnInfo("request_id")
+    val requestId: String? = BLANK_STRING,
 
     @ColumnInfo("error_message")
     val errorMessage: String? = BLANK_STRING,

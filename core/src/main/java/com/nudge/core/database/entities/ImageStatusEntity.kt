@@ -54,6 +54,9 @@ data class ImageStatusEntity(
     val errorMessage: String? = BLANK_STRING,
 
     @ColumnInfo("image_event_id")
-    val imageEventId: String? = BLANK_STRING
+    val imageEventId: String? = BLANK_STRING,
+
+    @ColumnInfo("request_id")
+    val requestId: String? = BLANK_STRING,
 
 )

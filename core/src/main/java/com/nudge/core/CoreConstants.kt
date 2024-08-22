@@ -21,7 +21,7 @@ const val ImageStatusTable = "image_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
-const val SYNC_MANAGER_DB_VERSION = 1
+const val SYNC_MANAGER_DB_VERSION = 2
 
 //FirebaseDb Properties
 const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
