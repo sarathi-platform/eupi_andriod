@@ -263,8 +263,9 @@ fun LivelihoodTaskCard(
                         Row(modifier = Modifier.clickable {
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
+
                             Text(
-                                text = stringResource(R.string.task_view),
+                                text = if (isActivityCompleted) stringResource(R.string.task_view) else stringResource(R.string.edit),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -279,7 +280,9 @@ fun LivelihoodTaskCard(
                             )
                         }
 
-                    } else {
+
+                    }
+                    else {
                         PrimarySecondaryButtonView(
                             modifier = Modifier.weight(1.0f),
                             secondaryButtonText?.value ?: BLANK_STRING,
