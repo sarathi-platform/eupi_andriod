@@ -215,6 +215,7 @@ class BaseLineStartViewModel @Inject constructor(
     private suspend fun writeImageUploadEvent(didiId: Int) {
         val question = sectionDetails.questionList.first()
 
+        val stateId = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getStateId().toString()
 
         val imageUploadEvent = eventsWriterHelperImpl.createImageUploadEvent(
             didi = didiEntity.value,
@@ -223,7 +224,7 @@ class BaseLineStartViewModel @Inject constructor(
             userType = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getUserType()
                 ?: BLANK_STRING,
             questionId = question.questionId ?: 0,
-            referenceId = didiId.toString() ?: "0",
+            referenceId = stateId,
             sectionDetails = sectionDetails,
             subjectType = "Didi"
         )
