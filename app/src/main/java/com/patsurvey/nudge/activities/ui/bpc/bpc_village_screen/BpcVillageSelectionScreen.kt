@@ -190,6 +190,7 @@ fun BpcVillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+                            viewModel.savePageOpenFromOTPScreen()
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -374,6 +375,7 @@ fun BpcVillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
+                            viewModel.savePageOpenFromOTPScreen()
                             if (viewModel.isUserBpc()) {
                                 val stepId= villages[viewModel.villageSelected.value].stepId
                                 val statusId= villages[viewModel.villageSelected.value].statusId

@@ -269,6 +269,7 @@ fun OtpVerificationScreen(
                                     )
                                 }
                             }else{
+                                viewModel.savePageFromOTPScreen()
                                 if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
                                     navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
                                         launchSingleTop = true

@@ -55,4 +55,7 @@ class OtpVerificationRepository @Inject constructor(
     fun getMobileNumber(): String?{
        return prefRepo.getMobileNumber();
     }
+    fun savePageFrom() {
+        prefRepo.savePageOpenFromOTPScreen(true)
+    }
 }
