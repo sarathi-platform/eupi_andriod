@@ -36,7 +36,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_LANGUAGE_ID = "language_id"
 
         const val PREF_CASTE_LIST = "caste_list"
-        const val PREF_KEY_USER_ID = "user_id"
+        const val PREF_KEY_USER_ID = "key_user_name"
         const val PREF_KEY_DATA_LOADED = "is_data_loaded"
         const val PREF_KEY_DIDI_TAB_DATA_LOADED = "is_didi_tab_data_loaded"
 

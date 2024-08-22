@@ -491,7 +491,17 @@ suspend fun fetchConsumerStatus(
         endDate = date,
         startDate = date
     )
+    CoreLogger.d(
+        context = context,
+        "SyncUploadWorker",
+        "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
+    )
     val consumerAPIResponse = syncApiRepository.fetchConsumerEventStatus(eventConsumerRequest)
+    CoreLogger.d(
+        context = context,
+        "SyncUploadWorker",
+        "fetchConsumerStatus Consumer Response: ${consumerAPIResponse.json()}"
+    )
     if (consumerAPIResponse.status == SUCCESS) {
         consumerAPIResponse.data?.let {
             if (it.isNotEmpty()) {

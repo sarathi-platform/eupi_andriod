@@ -252,33 +252,27 @@ class SyncHomeViewModel @Inject constructor(
     }
 
     fun checkSyncProgressBarStatus(isWorkerRunning: Boolean) {
+        val isDataInProgress =
+            (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
+        val isImageInProgress =
+            (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
+
         when (selectedSyncType.intValue) {
             SyncType.SYNC_ONLY_DATA.ordinal -> {
-                isDataStatusVisible.value
-                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
-
-                isDataPBVisible.value =
-                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1 && isWorkerRunning
+                isDataStatusVisible.value = isDataInProgress
+                isDataPBVisible.value = isDataInProgress && isWorkerRunning
             }
 
             SyncType.SYNC_ONLY_IMAGES.ordinal -> {
-                isImageStatusVisible.value =
-                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
-
-                isImagePBVisible.value =
-                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1 && isWorkerRunning
+                isImageStatusVisible.value = isImageInProgress
+                isImagePBVisible.value = isImageInProgress && isWorkerRunning
             }
 
             SyncType.SYNC_ALL.ordinal -> {
-                isDataStatusVisible.value =
-                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
-                isImageStatusVisible.value =
-                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
-
-                isDataPBVisible.value =
-                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1 && isWorkerRunning
-                isImagePBVisible.value =
-                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1 && isWorkerRunning
+                isDataStatusVisible.value = isDataInProgress
+                isImageStatusVisible.value = isImageInProgress
+                isDataPBVisible.value = isDataInProgress && isWorkerRunning
+                isImagePBVisible.value = isImageInProgress && isWorkerRunning
             }
         }
     }

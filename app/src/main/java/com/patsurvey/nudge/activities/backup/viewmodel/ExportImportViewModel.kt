@@ -40,6 +40,7 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
@@ -48,7 +49,6 @@ import com.nudge.core.enums.EventType
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDatabase
 import com.nudge.core.exportLogFile
-import com.nudge.core.exportOldData
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
@@ -151,31 +151,21 @@ class ExportImportViewModel @Inject constructor(
         BaselineLogger.d("ExportImportViewModel","exportLocalDatabase -----")
          try {
              onEvent(LoaderEvent.UpdateLoaderState(true))
-             if (loggedInUserType.value == UPCM_USER) {
-                 exportDatabase(
-                     appContext = mAppContext,
-                     applicationID = applicationId.value,
-                     mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                     databaseName = listOf(NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE),
-                     userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                     moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
-                 ) {
-                     BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
-                     onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
-                 }
-             } else {
-                 exportOldData(
-                     appContext = mAppContext,
-                     applicationID = applicationId.value,
-                     mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                     databaseName = NUDGE_DATABASE,
-                     userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                     moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value)
-                 ) {
-                     BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
-                     onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
-                 }
+             exportDatabase(
+                 appContext = mAppContext,
+                 applicationID = applicationId.value,
+                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                 databaseName = if (loggedInUserType.value == UPCM_USER) listOf(
+                     NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE,
+                     SYNC_MANAGER_DATABASE
+                 ) else listOf(NUDGE_DATABASE, SYNC_MANAGER_DATABASE),
+                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
+                 moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
+             ) {
+                 BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
+                 onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
              }
+
 
          } catch (e: Exception) {
              onEvent(LoaderEvent.UpdateLoaderState(false))

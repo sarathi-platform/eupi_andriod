@@ -27,10 +27,10 @@ import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
-import com.nudge.core.exportDbFile
 import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
 import com.nudge.core.findImagesExistInPictureFolder
@@ -328,36 +328,24 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private suspend fun processDatabaseFiles(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        if (userType != UPCM_USER) {
-            val dbUri = exportDbFile(
-                appContext = mAppContext,
-                applicationID = applicationId.value,
-                databaseName = NUDGE_DATABASE
+        val dbUrisList = exportDbFiles(
+            mAppContext,
+            applicationId.value,
+            if (userType == UPCM_USER) listOf(
+                NUDGE_BASELINE_DATABASE,
+                NUDGE_GRANT_DATABASE,
+                SYNC_MANAGER_DATABASE
             )
-            if (dbUri != Uri.EMPTY) {
-                dbUri?.let {
+            else listOf(NUDGE_DATABASE, SYNC_MANAGER_DATABASE)
+        )
+        if (dbUrisList.isNotEmpty()) {
+            dbUrisList.forEach { dbUri ->
+                dbUri.second?.let {
                     NudgeLogger.d(
                         "SettingBSViewModel",
                         "Database File Uri: ${it.path}---------------"
                     )
-                    fileAndDbZipList.add(Pair(NUDGE_DATABASE, it))
-                }
-            }
-        } else {
-            val dbUrisList = exportDbFiles(
-                mAppContext,
-                applicationId.value,
-                listOf(NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE)
-            )
-            if (dbUrisList.isNotEmpty()) {
-                dbUrisList.forEach { dbUri ->
-                    dbUri.second?.let {
-                        NudgeLogger.d(
-                            "SettingBSViewModel",
-                            "Database File Uri: ${it.path}---------------"
-                        )
-                        fileAndDbZipList.add(Pair(dbUri.first, it))
-                    }
+                    fileAndDbZipList.add(Pair(dbUri.first, it))
                 }
             }
         }
