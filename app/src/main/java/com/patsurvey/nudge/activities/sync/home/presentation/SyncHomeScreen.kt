@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,7 +19,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -38,12 +39,14 @@ import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
+import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
@@ -55,6 +58,9 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.showCustomToast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -63,6 +69,7 @@ fun SyncHomeScreen(
     navController: NavController,
     viewModel: SyncHomeViewModel
 ) {
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(PRODUCER_WORKER_TAG)
         .observeAsState().value
@@ -78,7 +85,8 @@ fun SyncHomeScreen(
         navController = navController,
         viewModel = viewModel,
         uploadWorkerInfo = uploadWorkerInfo,
-        isNetworkAvailable = isNetworkAvailable
+        isNetworkAvailable = isNetworkAvailable,
+        scope = scope
     )
 }
 
@@ -156,7 +164,8 @@ fun SyncHomeContent(
     navController: NavController,
     viewModel: SyncHomeViewModel,
     uploadWorkerInfo: WorkInfo?,
-    isNetworkAvailable: MutableState<Boolean>
+    isNetworkAvailable: MutableState<Boolean>,
+    scope: CoroutineScope
 ) {
     val context = LocalContext.current
     ToolbarWithMenuComponent(
@@ -189,7 +198,7 @@ fun SyncHomeContent(
                 isNetworkAvailable = isNetworkAvailable,
                 totalImageEventCount = viewModel.totalImageEventCount
             )
-            HandleWorkerState(uploadWorkerInfo, viewModel, context)
+            HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
         }
     }
 }
@@ -208,21 +217,30 @@ fun BottomContent(
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(vertical = 16.dp)
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
 
-                    if (viewModel.failedEventList.value.isNotEmpty()) {
-                        ButtonPositive(
-                            modifier = Modifier.weight(1f),
-                            buttonTitle = stringResource(id = R.string.export_failed_event),
-                            isActive = true,
-                            isArrowRequired = false,
-                            textColor = white,
-                        ) {
-                            viewModel.findFailedEventAndWriteIntoFile()
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        if (viewModel.failedEventList.value.isNotEmpty()) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(dimen_5_dp),
+                                text = stringResource(id = R.string.sync_failed_message),
+                                style = smallTextStyle,
+                                color = textColorDark
+                            )
+                            ButtonPositive(
+                                modifier = Modifier.wrapContentHeight(),
+                                buttonTitle = stringResource(id = R.string.export_failed_event),
+                                isActive = true,
+                                isArrowRequired = false,
+                                textColor = white,
+                            ) {
+                                viewModel.findFailedEventAndWriteIntoFile()
+                            }
                         }
                     }
                 }
@@ -275,10 +293,20 @@ fun List<Events>.filterAndCountEvents(predicate: (Events) -> Boolean): Pair<Int,
     return totalCount to successCount
 }
 
-fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context) {
+fun HandleWorkerState(
+    uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context,
+    scope: CoroutineScope
+) {
     when (uploadWorkerInfo?.state) {
         WorkInfo.State.RUNNING -> {
-            viewModel.checkSyncProgressBarStatus()
+            if (viewModel.isSyncStarted.value) {
+                when (viewModel.selectedSyncType.intValue) {
+                    SyncType.SYNC_ONLY_DATA.ordinal -> viewModel.isDataPBVisible.value = true
+                    SyncType.SYNC_ONLY_IMAGES.ordinal -> viewModel.isImagePBVisible.value = true
+                    SyncType.SYNC_ALL.ordinal -> viewModel.isDataPBVisible.value = true
+                }
+            }
+            viewModel.checkSyncProgressBarStatus(isWorkerRunning = true)
             viewModel.findFailedEventList()
             CoreLogger.d(
                 context,
@@ -289,7 +317,8 @@ fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel,
 
         WorkInfo.State.ENQUEUED -> {
             viewModel.isSyncStarted.value = true
-            viewModel.checkSyncProgressBarStatus()
+            scope.launch { delay(300) }
+            viewModel.checkSyncProgressBarStatus(isWorkerRunning = false)
             viewModel.findFailedEventList()
             CoreLogger.d(
                 context,
@@ -305,8 +334,8 @@ fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel,
         )
 
         WorkInfo.State.FAILED -> {
-            viewModel.isDataPBVisible.value = false
-            viewModel.isImagePBVisible.value = false
+            viewModel.isDataStatusVisible.value = false
+            viewModel.isImageStatusVisible.value = false
             CoreLogger.d(
                 context,
                 "SyncHomeScreen",
@@ -315,8 +344,8 @@ fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel,
         }
 
         WorkInfo.State.BLOCKED -> {
-            viewModel.isDataPBVisible.value = false
-            viewModel.isImagePBVisible.value = false
+            viewModel.isDataStatusVisible.value = false
+            viewModel.isImageStatusVisible.value = false
             CoreLogger.d(
                 context,
                 "SyncHomeScreen",
@@ -325,8 +354,8 @@ fun HandleWorkerState(uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel,
         }
 
         WorkInfo.State.CANCELLED -> {
-            viewModel.isDataPBVisible.value = false
-            viewModel.isImagePBVisible.value = false
+            viewModel.isDataStatusVisible.value = false
+            viewModel.isImageStatusVisible.value = false
             CoreLogger.d(
                 context,
                 "SyncHomeScreen",
@@ -363,6 +392,7 @@ private fun SyncDataCard(
             )
             startSyncProcess(context, viewModel, isNetworkAvailable.value)
         },
+        isStatusVisible = viewModel.isDataStatusVisible.value,
         onCardClick = {
 
         }
@@ -391,6 +421,7 @@ private fun SyncImageCard(
                 startSyncProcess(context, viewModel, isNetworkAvailable.value)
             },
             syncButtonTitle = stringResource(id = R.string.sync_only_images),
+            isStatusVisible = viewModel.isImageStatusVisible.value,
             onCardClick = {
             }
         )

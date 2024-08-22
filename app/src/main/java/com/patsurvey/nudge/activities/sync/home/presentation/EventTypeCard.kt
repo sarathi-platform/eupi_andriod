@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -35,6 +36,9 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
+import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.core.ui.theme.grayColor
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
@@ -50,6 +54,7 @@ fun EventTypeCard(
     syncButtonTitle:String,
     progress: Float? = 0f,
     isProgressBarVisible: Boolean,
+    isStatusVisible: Boolean,
     onCardClick: () -> Unit,
     onSyncButtonClick:() -> Unit
 ) {
@@ -69,7 +74,7 @@ fun EventTypeCard(
                     color = Color.Transparent,
                 )
         ) {
-            val (titleText, circularProgressBar, progressBar, countText, syncButton, descText) = createRefs()
+            val (titleText, circularProgressBar, progressBar, countText, syncButton, descText, statusText) = createRefs()
             Text(
                 text = title,
                 style = mediumTextStyle,
@@ -98,6 +103,19 @@ fun EventTypeCard(
                             .align(Alignment.Center)
                     )
                 }
+            }
+
+            if (isStatusVisible) {
+                Text(
+                    text = stringResource(id = R.string.in_progress),
+                    style = smallerTextStyleNormalWeight,
+                    color = grayColor,
+                    modifier = Modifier.constrainAs(statusText) {
+                        end.linkTo(if (isProgressBarVisible) circularProgressBar.start else parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(circularProgressBar.bottom)
+                    }
+                )
             }
 
             LinearProgressIndicator(
@@ -182,9 +200,10 @@ fun CommonSyncScreenPreview() {
     EventTypeCard(
         title = "Sync Data",
         progress = 1f,
-        isProgressBarVisible = true,
+        isProgressBarVisible = false,
         onCardClick = {},
         syncButtonTitle = "Sync Data",
+        isStatusVisible = true,
         onSyncButtonClick = {}
     )
 }

@@ -145,6 +145,11 @@ class SyncApiRepository @Inject constructor(
 
     suspend fun updateEventConsumerStatus(context: Context, eventList: List<SyncEventResponse>) {
         try {
+            CoreLogger.d(
+                context = context,
+                "SyncApiRepository",
+                "updateEventConsumerStatus: ${eventList.json()}"
+            )
             prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             eventDao.updateConsumerStatus(eventList)
             eventList.forEach {

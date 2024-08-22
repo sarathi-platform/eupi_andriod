@@ -16,17 +16,20 @@ import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.BASELINE
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.FAILED_EVENT_STRING
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SELECTION
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.UPCM_USER
 import com.nudge.core.ZIP_EXTENSION
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.exportDbFile
 import com.nudge.core.getFirstName
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
@@ -60,6 +63,8 @@ class SyncHomeViewModel @Inject constructor(
     val totalImageEventCount = mutableIntStateOf(0)
     val isDataPBVisible = mutableStateOf(false)
     val isImagePBVisible = mutableStateOf(false)
+    val isDataStatusVisible = mutableStateOf(false)
+    val isImageStatusVisible = mutableStateOf(false)
     val isSyncStarted = mutableStateOf(false)
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
     val lastSyncTime = mutableLongStateOf(0L)
@@ -84,10 +89,19 @@ class SyncHomeViewModel @Inject constructor(
                 cancelSyncUploadWorker()
                 isSyncStarted.value = true
                 when (selectedSyncType.intValue) {
-                    SyncType.SYNC_ONLY_DATA.ordinal -> isDataPBVisible.value = true
-                    SyncType.SYNC_ONLY_IMAGES.ordinal -> isImagePBVisible.value = true
+                    SyncType.SYNC_ONLY_DATA.ordinal -> {
+                        isDataPBVisible.value = true
+                        isDataStatusVisible.value = true
+                    }
+
+                    SyncType.SYNC_ONLY_IMAGES.ordinal -> {
+                        isImagePBVisible.value = true
+                        isImageStatusVisible.value = true
+                    }
                     SyncType.SYNC_ALL.ordinal -> {
                         isDataPBVisible.value = true
+                        isDataStatusVisible.value = true
+                        isImageStatusVisible.value = true
                         isImagePBVisible.value = true
                     }
                 }
@@ -141,6 +155,7 @@ class SyncHomeViewModel @Inject constructor(
 
     fun findFailedEventAndWriteIntoFile() {
         val fileAndDbZipList = ArrayList<Uri>()
+        val filePairUriList = ArrayList<Pair<String, Uri>>()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _failedEventList.value =
                 syncEventDetailUseCase.getSyncEventsUseCase.getAllFailedEventListFromDB()
@@ -149,7 +164,7 @@ class SyncHomeViewModel @Inject constructor(
             val eventFileName =
                 getFirstName(syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserName()) +
                         "_${syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()}_" +
-                        "${SARATHI}_${moduleName}_Failed_events_${System.currentTimeMillis()}"
+                        "${SARATHI}_${moduleName}_Failed_Events_${System.currentTimeMillis()}"
             if (failedEventList.value.isNotEmpty()) {
                 failedEventList.value.forEach {
                     syncEventDetailUseCase.eventsWriterUseCase.writeFailedEventIntoEventFile(
@@ -165,13 +180,48 @@ class SyncHomeViewModel @Inject constructor(
                     extVolumeUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
                     filePathToZipped = Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()
                 )
-
-                if (!eventFileUrisList.isNullOrEmpty()) {
-                    val eventFiles = eventFileUrisList.filter {
-                        it.first.contains(FAILED_EVENT_STRING) && !it.first.contains(
-                            ZIP_EXTENSION
-                        )
+                if (eventFileUrisList.isNotEmpty()) {
+                    eventFileUrisList.forEach { item ->
+                        filePairUriList.add(item as Pair<String, Uri>)
                     }
+                }
+
+                val dbUri = exportDbFile(
+                    appContext = CoreAppDetails.getApplicationContext().applicationContext,
+                    applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
+                        ?: BLANK_STRING,
+                    databaseName = SYNC_MANAGER_DATABASE
+                )
+                if (dbUri != Uri.EMPTY) {
+                    dbUri?.let {
+                        NudgeLogger.d(
+                            "SyncHomeViewModel",
+                            "Sync Database File Uri: ${it.path}---------------"
+                        )
+                        filePairUriList.add(Pair(SYNC_MANAGER_DATABASE, it))
+                    }
+                }
+
+                val zipFileName = generateZipFileName()
+                val zipLogDbFileUri = compression.compressData(
+                    context = CoreAppDetails.getApplicationContext().applicationContext,
+                    zipFileName = zipFileName,
+                    filePathToZipped = BLANK_STRING,
+                    extraUris = filePairUriList,
+                    folderName = syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()
+                )
+                zipLogDbFileUri?.let {
+                    if (it != Uri.EMPTY) {
+                        fileAndDbZipList.add(it)
+                    }
+                }
+                if (eventFileUrisList.isNotEmpty()) {
+                    val eventFiles = eventFileUrisList.filter {
+                        (it.first.contains(FAILED_EVENT_STRING) && !it.first.contains(
+                            ZIP_EXTENSION
+                        )) || it.first.contains(SYNC_MANAGER_DATABASE)
+                    }
+
                     eventFiles.forEach { it.second?.let { it1 -> fileAndDbZipList.add(it1) } }
                     NudgeLogger.d("SyncHomeViewModel", "Failed Event File: ${eventFiles.json()}")
                     openShareSheet(
@@ -201,24 +251,39 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    fun checkSyncProgressBarStatus() {
+    fun checkSyncProgressBarStatus(isWorkerRunning: Boolean) {
         when (selectedSyncType.intValue) {
             SyncType.SYNC_ONLY_DATA.ordinal -> {
-                isDataPBVisible.value =
+                isDataStatusVisible.value
                     (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
+
+                isDataPBVisible.value =
+                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1 && isWorkerRunning
             }
 
             SyncType.SYNC_ONLY_IMAGES.ordinal -> {
-                isImagePBVisible.value =
+                isImageStatusVisible.value =
                     (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
+
+                isImagePBVisible.value =
+                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1 && isWorkerRunning
             }
 
             SyncType.SYNC_ALL.ordinal -> {
-                isDataPBVisible.value =
+                isDataStatusVisible.value =
                     (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1
-                isImagePBVisible.value =
+                isImageStatusVisible.value =
                     (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1
+
+                isDataPBVisible.value =
+                    (isSyncStarted.value || dataEventProgress.floatValue > 0) && dataEventProgress.floatValue < 1 && isWorkerRunning
+                isImagePBVisible.value =
+                    (isSyncStarted.value || imageEventProgress.floatValue > 0) && imageEventProgress.floatValue < 1 && isWorkerRunning
             }
         }
+    }
+
+    private fun generateZipFileName(): String {
+        return "${getFirstName(syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserName())}_${syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()}_${SARATHI}_Failed_Events_${System.currentTimeMillis()}"
     }
 }
