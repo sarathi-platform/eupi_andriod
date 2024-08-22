@@ -41,6 +41,7 @@ import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
 import com.nrlm.baselinesurvey.utils.findOptionExist
 import com.nrlm.baselinesurvey.utils.isNumeric
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -275,6 +276,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }
             }
         }
+        Log.d(
+            TAG,
+            "getOptionsInDefaultLanguage: updatedOptionListInDefaultLanguage -> ${updatedOptionListInDefaultLanguage.json()}"
+        )
     }
 
     private fun getOptionItemEntityState(
