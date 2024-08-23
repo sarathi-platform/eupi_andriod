@@ -35,11 +35,11 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.lightBlue
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.R
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LivelihoodPlanningEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
-import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.LivelihoodPlanningDropDownComponent
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog

@@ -821,7 +821,7 @@ fun NavGraphBuilder.MatNavigation(
                 ARG_SUBJECT_NAME
             ).value(),
             onSettingClicked = {
-
+                onSettingIconClick()
             })
     }
 }
