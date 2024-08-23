@@ -218,7 +218,11 @@ fun PatSurveyCompleteSummary(
                                         .fillMaxWidth()
                                         .clickable {
                                             if (isArrowVisible(patSectionSummaryViewModel, didi)) {
-                                                navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                                if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
+                                                    navController.navigate("bcp_didi_pat_summary/${didiId}/${true}")
+                                                } else {
+                                                    navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                                }
                                             }
                                         },
                                 ) {
@@ -262,7 +266,11 @@ fun PatSurveyCompleteSummary(
                                         .fillMaxWidth()
                                         .clickable {
                                             if (isArrowVisible(patSectionSummaryViewModel, didi)) {
-                                                navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                                if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
+                                                    navController.navigate("bcp_didi_pat_summary/${didiId}/${true}")
+                                                } else {
+                                                    navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                                }
                                             }
                                         },
                                 ) {
