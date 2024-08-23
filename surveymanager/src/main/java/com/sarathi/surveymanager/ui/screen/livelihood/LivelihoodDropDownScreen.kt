@@ -63,14 +63,13 @@ fun LivelihoodDropDownScreen(
     BackHandler {
         handleBackPress(viewModel = viewModel, navController = navController)
     }
-    if (viewModel.showUserChangedDialog.value.isDialogVisible ) {
+    if (viewModel.showCustomDialog.value.isDialogVisible ) {
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
             message = stringResource(R.string.form_alert_dialog_message),
             positiveButtonTitle = stringResource(id = R.string.proceed),
             negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onPositiveButtonClick = {
-                viewModel.setResponseChangedFlag(false)
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navController.popBackStack()
             }, onNegativeButtonClick = {

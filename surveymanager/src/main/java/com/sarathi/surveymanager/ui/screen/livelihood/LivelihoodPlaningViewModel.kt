@@ -41,14 +41,13 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
-    var areResponsesChanged: Boolean = false
 
     private val TAG = LivelihoodPlaningViewModel::class.java.simpleName
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private val _livelihoodList = mutableStateOf<List<LivelihoodUiEntity>>(emptyList())
     val livelihoodList: State<List<LivelihoodUiEntity>> get() = _livelihoodList
-    private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
-    val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
+    private val _showCustomDialog = mutableStateOf<DialogState>(DialogState())
+    val showCustomDialog: State<DialogState> get() = _showCustomDialog
 
     var taskId: Int? = null
     var subjectId: Int? = null
@@ -81,7 +80,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 checkButtonValidation()
             }
             is DialogEvents.ShowDialogEvent -> {
-                _showUserChangedDialog.value = _showUserChangedDialog.value.copy(
+                _showCustomDialog.value = _showCustomDialog.value.copy(
                         isDialogVisible = event.showDialog
                     )
             }
@@ -106,7 +105,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 subjectLivelihoodMapping.secondaryLivelihoodId
                             )
                         )
-                        checkDialogueValidation.value = if((subjectLivelihoodMapping.primaryLivelihoodId!=null &&  subjectLivelihoodMapping.secondaryLivelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.primaryLivelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.secondaryLivelihoodId))true else false
+                        checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                         _livelihoodList.value = mLivelihoodUiEntityList
                         primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId
@@ -132,6 +131,10 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun checkDialogueValidation(subjectLivelihoodMapping: SubjectLivelihoodMappingEntity) :Boolean{
+       return if((subjectLivelihoodMapping.primaryLivelihoodId!=null &&  subjectLivelihoodMapping.secondaryLivelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.primaryLivelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.secondaryLivelihoodId))true else false
     }
 
     fun setPreviousScreenData(
@@ -194,8 +197,4 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingForSubject(it) }
         }
     }
-    fun setResponseChangedFlag(responseChanged: Boolean) {
-        areResponsesChanged = responseChanged
-    }
-
 }
