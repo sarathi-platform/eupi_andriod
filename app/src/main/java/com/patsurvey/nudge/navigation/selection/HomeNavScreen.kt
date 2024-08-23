@@ -65,13 +65,12 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
                 painterResource(R.drawable.ic_mission_icon),
                 TabsEnum.MissionTab
             ),
-            // TODO 23 Aug'24, Removing this for now, as it is not required for this release.
-            /*BottomNavItem(
+            BottomNavItem(
                 "Data",
                 HomeScreens.DATA_TAB_SCREEN.route,
                 painterResource(id = R.drawable.data_tab_icon),
                 TabsEnum.DataTab
-            ),*/
+            ),
             BottomNavItem(
                 stringResource(R.string.didis_item_text_plural),
                 HomeScreens.DIDI_TAB_SCREEN.route,
