@@ -51,6 +51,7 @@ import com.nudge.core.ui.commonUi.CardArrow
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
@@ -118,7 +119,9 @@ fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskV
             CustomTextView(
                 title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
             )
-            viewModel.expandedIds.addAll(it)
+            if (!viewModel.isActivityCompleted.value) {
+                viewModel.expandedIds.addAll(it)
+            }
         }
     }
     itemsIndexed(
@@ -396,9 +399,13 @@ fun CardContent(
 
 @Composable
 fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?) {
-    var options = questionUiModel?.options?.find { it.isSelected == true }?.selectedValue
-    if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
-        options = stringResource(id = R.string.not_available)
+    var options = BLANK_STRING
+
+    options = if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
+        stringResource(id = R.string.not_available)
+    } else {
+        questionUiModel?.options?.filter { it.isSelected == true }?.map { it.selectedValue }
+            ?.joinToString(",").toString()
     }
     if (!options.isNullOrEmpty()) {
         Row(
@@ -416,7 +423,7 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    start = dimen_16_dp,
+                    start = dimen_0_dp,
                     end = dimen_16_dp,
                     bottom = dimen_8_dp,
                     top = dimen_8_dp
