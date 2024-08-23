@@ -46,6 +46,7 @@ import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.findImageLocationFromPath
@@ -96,13 +97,13 @@ class SettingRepository @Inject constructor(
                     generateAddTolaEvent(it.id)
                     generateAddDidiEvent(it.id)
                     generateWealthRankingEvent(it.id)
-                        generatePatEvents(it.id)
-                        generateVOEvents(it.id)
-                        generateRankingEditEvent(it.id)
-                        generateWorkFlowStatusEvent(it.id)
-                        generateDidiImageEvent(it.id)
-                    }
+                    generatePatEvents(it.id)
+                    generateVOEvents(it.id)
+                    generateRankingEditEvent(it.id)
+                    generateWorkFlowStatusEvent(it.id)
+                    generateDidiImageEvent(it.id)
                 }
+            }
 
         } catch (exception: Exception) {
             NudgeLogger.e("RegenerateEvent", exception.message ?: "")
@@ -218,11 +219,15 @@ class SettingRepository @Inject constructor(
 
     private suspend fun generateRankingEditEvent(villageId: Int) {
         stepsListDao.getAllStepsForVillage(villageId).forEach {
-            saveEvent(
-                eventItem = it,
-                eventName = EventName.RANKING_FLAG_EDIT,
-                eventType = EventType.STATEFUL
+            val event = createRankingFlagEditEvent(
+                it,
+                it.villageId,
+                stepType = StepType.getStepTypeFromId(it.id).name,
+                prefRepo.getMobileNumber() ?: BLANK_STRING,
+                prefRepo.getUserId()
             )
+
+            saveEventToMultipleSources(event, listOf())
 
         }
     }
@@ -231,14 +236,13 @@ class SettingRepository @Inject constructor(
         stepsListDao.getAllStepsForVillage(villageId).forEach {
             val workFlowEvent = createWorkflowEvent(
                 eventItem = it,
-                eventName = EventName.SAVE_WEALTH_RANKING,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
                 eventType = EventType.STATEFUL,
-                stepStatus = StepStatus.valueOf(it.status),
+                stepStatus = StepStatus.getStepStatusFromOrdinal(it.isComplete),
                 prefRepo = prefRepo
             )
             workFlowEvent?.let {
                 saveEventToMultipleSources(it, listOf())
-
             }
 
         }
