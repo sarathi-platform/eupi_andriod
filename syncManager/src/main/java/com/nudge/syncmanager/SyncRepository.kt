@@ -49,6 +49,7 @@ class SyncApiRepository @Inject constructor(
         )
     }
 
+    fun loggedInUserType() = prefRepo.getUserType()
 
 
     suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest)

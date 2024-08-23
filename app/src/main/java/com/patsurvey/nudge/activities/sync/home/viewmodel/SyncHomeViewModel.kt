@@ -145,11 +145,21 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    fun calculateBarProgress(totalEventCount: Int, successEventCount: Int): Float {
+    fun calculateBarProgress(totalEventCount: Int, successEventCount: Int, type: String): Float {
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            "SyncHomeViewModel",
+            "calculateBarProgress $type :: Total Event: $totalEventCount :: SuccessEventCount: $successEventCount"
+        )
         var progState = successEventCount.toFloat() / totalEventCount
         if (totalEventCount == 0 && successEventCount == 0) {
             progState = 0f
         }
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            "SyncHomeViewModel",
+            "calculateBarProgress $type :: Total Percentage: $progState"
+        )
         return progState
     }
 

@@ -118,4 +118,8 @@ object DatabaseModule {
     @Singleton
     fun provideImageEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.imageStatusDao()
 
+    @Provides
+    @Singleton
+    fun provideRequestEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.requestStatusDao()
+
 }

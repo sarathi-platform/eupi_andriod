@@ -14,11 +14,13 @@ import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.database.entities.RequestStatusEntity
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import java.sql.SQLException
@@ -29,7 +31,8 @@ import java.sql.SQLException
         EventDependencyEntity::class,
         ApiStatusEntity::class,
         EventStatusEntity::class,
-        ImageStatusEntity::class
+        ImageStatusEntity::class,
+        RequestStatusEntity::class
     ],
     version = SYNC_MANAGER_DB_VERSION,
     exportSchema = false
@@ -45,6 +48,7 @@ abstract class SyncManagerDatabase : RoomDatabase() {
     abstract fun eventStatusDao(): EventStatusDao
 
     abstract fun imageStatusDao(): ImageStatusDao
+    abstract fun requestStatusDao(): RequestStatusDao
 
     companion object {
         private const val ADD_REQUEST_ID_IN_EVENT_STATUS_TABLE =
