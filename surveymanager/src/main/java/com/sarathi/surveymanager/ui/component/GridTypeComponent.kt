@@ -237,8 +237,10 @@ fun GridOptionCard(
             .clip(RoundedCornerShape(6.dp))
             .background(if (isSelected.value) blueDark else languageItemActiveBg)
             .clickable {
-                isSelected.value = !isSelected.value
-                onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                if (isEnabled) {
+                    isSelected.value = !isSelected.value
+                    onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                }
             }
             .then(modifier)) {
         Box(

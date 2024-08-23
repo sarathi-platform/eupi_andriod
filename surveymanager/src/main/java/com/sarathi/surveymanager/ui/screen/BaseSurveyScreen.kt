@@ -153,7 +153,9 @@ fun BaseSurveyScreen(
                         .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
-                    item { CustomVerticalSpacer() }
+                    if (!grantType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
+                        item { CustomVerticalSpacer() }
+                    }
                     itemsIndexed(
                         items = viewModel.questionUiModel.value
                     ) { index, question ->
@@ -286,7 +288,10 @@ fun BaseSurveyScreen(
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
                                     isQuestionTypeToggle = false,
-                                    showCardView = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
+                                    showCardView = grantType.equals(
+                                        ActivityTypeEnum.SURVEY.name,
+                                        ignoreCase = true
+                                    ),
                                     optionUiModelList = question.options.value(),
                                     onAnswerSelection = { questionIndex, optionItemIndex ->
                                         question.options?.forEachIndexed { index, _ ->
@@ -327,7 +332,7 @@ fun BaseSurveyScreen(
                                     questionDisplay = question.questionDisplay,
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
-                                    isQuestionTypeToggle = false,
+                                    isQuestionTypeToggle = true,
                                     showCardView = false,
                                     optionUiModelList = question.options.value(),
                                     onAnswerSelection = { questionIndex, optionItemIndex ->

@@ -463,6 +463,7 @@ private fun RadioTypeOptionsUI(
                             optionItemEntityState = it,
                             isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                             selectedValue = selectedValue,
+                            isActivityCompleted = isActivityCompleted
                         ) { selectedIndex, optionValue, optionId ->
                             questionUiModel.options?.let { options ->
                                 options.forEach {
@@ -481,12 +482,17 @@ private fun RadioTypeOptionsUI(
                             questionDisplay = questionUiModel.questionDisplay,
                             optionUiModelList = it,
                             questionIndex = 0,
+                            areOptionsEnabled = !isActivityCompleted,
                             maxCustomHeight = customGridHeight(it.size),
                             isQuestionDisplay = false,
+
                             onAnswerSelection = { selectedOptionIndex, isSelected ->
-                                questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
-                                    isSelected
-                                onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                                if (!isActivityCompleted) {
+                                    questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
+                                        isSelected
+                                    taskMarkedNotAvailable.value = false
+                                    onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                                }
 
                             }, questionDetailExpanded = {}
                         )

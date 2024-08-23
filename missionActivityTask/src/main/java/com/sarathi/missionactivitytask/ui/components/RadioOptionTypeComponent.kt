@@ -42,6 +42,7 @@ fun RadioOptionTypeComponent(
     optionItemEntityState: List<OptionsUiModel>,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     selectedValue: String = BLANK_STRING,
+    isActivityCompleted: Boolean,
     onOptionSelected: (index: Int, optionValue: String, optionId: Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
@@ -92,8 +93,9 @@ fun RadioOptionTypeComponent(
                         ),
                         optionText = optionValueText.description.toString()
                     ) {
-                        if (!isTaskMarkedNotAvailable.value) {
+                        if (!isActivityCompleted) {
                             selectedValueState.value = optionValueText.description.toString()
+                            isTaskMarkedNotAvailable.value = false
                             onOptionSelected(
                                 index,
                                 optionValueText.description.toString(),

@@ -42,6 +42,7 @@ import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -75,14 +76,13 @@ fun RadioQuestionBoxComponent(
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
     val context = LocalContext.current
-
     BoxWithConstraints(
         modifier = modifier
             .scrollable(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = if (isQuestionTypeToggle) 60.dp else 100.dp, maxCustomHeight)
     ) {
         Card(
             elevation = CardDefaults.cardElevation(
@@ -101,13 +101,16 @@ fun RadioQuestionBoxComponent(
             Column(modifier = Modifier.background(white)) {
 
                 Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
+                    Modifier.padding(top = if (isQuestionTypeToggle) dimen_5_dp else dimen_16_dp),
+                    verticalArrangement = Arrangement.spacedBy(if (isQuestionTypeToggle) dimen_5_dp else dimen_18_dp)
                 ) {
                     LazyColumn(
                         state = outerState,
                         modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+                            .heightIn(
+                                min = if (isQuestionTypeToggle) 60.dp else 100.dp,
+                                max = maxCustomHeight
+                            )
                     ) {
 
                         item {
@@ -136,7 +139,7 @@ fun RadioQuestionBoxComponent(
                                             modifier = Modifier.weight(1f),
                                             index = _index,
                                             optionsItem = option,
-                                            isIconRequired = isQuestionTypeToggle,
+                                            isIconRequired = !isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
                                             if (isEditAllowed) {
@@ -162,12 +165,14 @@ fun RadioQuestionBoxComponent(
                                 )
                             }
                         }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_10_dp)
-                            )
+                        if (!isQuestionTypeToggle) {
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_10_dp)
+                                )
+                            }
                         }
                     }
                 }
