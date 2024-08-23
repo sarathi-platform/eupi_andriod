@@ -7,6 +7,7 @@ import com.nudge.core.model.response.LastSyncResponseModel
 
 interface SyncHomeRepository {
     fun getTotalEvents():LiveData<List<Events>>
+    fun getTotalEventCount(): Int
     fun getAllFailedEventListFromDB(): List<Events>
     fun getUserMobileNumber(): String
     fun getUserID(): String

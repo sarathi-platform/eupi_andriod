@@ -7,5 +7,6 @@ class GetSyncEventsUseCase @Inject constructor(
     val repository: SyncHomeRepository
 ) {
     fun getTotalEvents() = repository.getTotalEvents()
+    fun getTotalEventCount() = repository.getTotalEventCount()
     fun getAllFailedEventListFromDB() = repository.getAllFailedEventListFromDB()
 }

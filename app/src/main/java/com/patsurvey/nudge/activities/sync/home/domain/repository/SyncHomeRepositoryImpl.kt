@@ -24,6 +24,10 @@ class SyncHomeRepositoryImpl(
         return eventsDao.getTotalSyncEvent(corePrefRepo.getMobileNo())
     }
 
+    override fun getTotalEventCount(): Int {
+        return eventsDao.getTotalSyncEventCount(corePrefRepo.getMobileNo())
+    }
+
     override fun getAllFailedEventListFromDB(
     ): List<Events> {
         return eventsDao.fetchAllFailedEventList(

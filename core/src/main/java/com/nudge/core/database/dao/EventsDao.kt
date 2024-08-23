@@ -97,6 +97,9 @@ interface EventsDao {
     @Query("SELECT * FROM $EventsTable WHERE mobile_number= :mobileNumber")
     fun getTotalSyncEvent(mobileNumber:String):LiveData<List<Events>>
 
+    @Query("SELECT COUNT(*) FROM $EventsTable WHERE mobile_number= :mobileNumber")
+    fun getTotalSyncEventCount(mobileNumber: String): Int
+
     @Query("SELECT * FROM $EventsTable WHERE status= :status AND mobile_number= :mobileNumber")
     fun getSuccessEventCount(status:String,mobileNumber:String):List<Events>
 

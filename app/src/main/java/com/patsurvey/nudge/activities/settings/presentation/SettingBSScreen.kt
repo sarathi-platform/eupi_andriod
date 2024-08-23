@@ -123,7 +123,12 @@ fun SettingBSScreen(
                     }
 
                     SettingTagEnum.SYNC_DATA_NOW.name -> {
-                        navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
+                        if (viewModel.syncEventCount.value > 0)
+                            navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
+                        else showCustomToast(
+                            context,
+                            context.getString(R.string.data_is_not_available_for_sync_please_perform_some_action)
+                        )
                     }
                 }
             },
