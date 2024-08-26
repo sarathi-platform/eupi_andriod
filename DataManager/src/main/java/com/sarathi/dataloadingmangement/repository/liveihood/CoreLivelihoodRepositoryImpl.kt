@@ -123,6 +123,7 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
         livelihoodDao.deleteLivelihoodForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
         productDao.deleteProductForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
         livelihoodEventDao.deleteLivelihoodEventForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
+        livelihoodLanguageDao.deleteLivelihoodLanguageForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
     }
 
 }
