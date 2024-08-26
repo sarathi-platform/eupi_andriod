@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
@@ -196,6 +195,7 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
+                                    subtitle = question.display,
                                     isEditable = viewModel.isActivityNotCompleted.value,
                                     maxCustomHeight = maxHeight,
                                 ) { selectedValue, isDeleted ->
