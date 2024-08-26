@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
@@ -56,7 +57,9 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             )
         }
         subjectLivelihoodEventMappingDao.insertSubjectLivelihoodEventMapping(
-            subjectLivelihoodEventMappingEntity = subjectLivelihoodEventMappingEntity
+            subjectLivelihoodEventMappingEntity = subjectLivelihoodEventMappingEntity.copy(
+                modifiedDate = getCurrentTimeInMillis()
+            )
         )
 
 
@@ -93,6 +96,12 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
 
     override suspend fun getUserId(): Int {
         return coreSharedPrefs.getUserName().toInt()
+    }
+
+    override suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(transactionId: String): List<SubjectLivelihoodEventMappingEntity>? {
+        return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = transactionId
+        )
     }
 
 

@@ -24,4 +24,9 @@ interface ISubjectLivelihoodEventMapping {
 
     suspend fun getLivelihoodEventDto(eventData: LivelihoodEventScreenData): SaveLivelihoodEventDto
     suspend fun getUserId(): Int
+
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+        transactionId: String
+    ): List<SubjectLivelihoodEventMappingEntity>?
+
 }

@@ -13,6 +13,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.add_event_screen.AddEventScreen
 import com.nudge.incomeexpensemodule.ui.data_summary_screen.DataSummaryScreen
+import com.nudge.incomeexpensemodule.ui.edit_history_screen.EditHistoryScreen
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SHOW_DELETE_BUTTON
 import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.ARG_SUBJECT_ID
@@ -81,11 +82,31 @@ fun NavGraphBuilder.IncomeExpenseNavigation(
                 onSettingClick = onSettingIconClick
             )
         }
+
+        composable(route = IncomeExpenseScreens.EditHistoryScreen.route, arguments = listOf(
+            navArgument(name = ARG_TRANSACTION_ID) {
+                type = NavType.StringType
+                nullable = true
+            }
+        )) {
+            EditHistoryScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                transactionId = it.arguments?.getString(
+                    ARG_TRANSACTION_ID
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
+            )
+        }
+
     }
 }
 
 fun navigateToDataSummaryScreen(navController: NavController, subjectId: Int, subjectName: String) {
     navController.navigate("${IncomeExpenseConstants.DATA_TAB_SUMMARY_SCREEN_ROUTE_NAME}/$subjectId/$subjectName")
+}
+fun navigateToEditHistoryScreen(navController: NavController, transactionID: String) {
+    navController.navigate("${IncomeExpenseConstants.EDIT_HISTORY_SCREEN_ROUTE_NAME}/$transactionID")
 }
 
 fun navigateToAddEventScreen(

@@ -97,6 +97,7 @@ import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
 import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
+import com.nudge.incomeexpensemodule.navigation.navigateToEditHistoryScreen
 import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
@@ -265,6 +266,12 @@ fun DataSummaryScreen(
                                 },
                                 onShowModeClicked = {
                                     showMoreItems.value = !showMoreItems.value
+                                },
+                                onViewEditItemClicked = { transactionId ->
+                                    navigateToEditHistoryScreen(
+                                        navController = navController,
+                                        transactionID = transactionId
+                                    )
                                 }
                             )
                         }
@@ -285,6 +292,7 @@ private fun DataSummaryView(
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
     dateRangePickerClicked: () -> Unit,
+    onViewEditItemClicked: (transactionId: String) -> Unit,
     onShowModeClicked: () -> Unit
 ) {
     TabBarContainer(viewModel.tabs) {
@@ -339,6 +347,7 @@ private fun DataSummaryView(
         viewModel.selectedLivelihood.value,
         showMoreItems = showMoreItems,
         onEventItemClicked = onEventItemClicked,
+        onViewEditItemClicked = onViewEditItemClicked,
         onShowModeClicked = {
             onShowModeClicked()
         }
@@ -477,6 +486,7 @@ private fun EventView(
     selectedLivelihoodId: Int,
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
+    onViewEditItemClicked: (transactionId: String) -> Unit,
     onShowModeClicked: () -> Unit
 ) {
 
@@ -492,11 +502,16 @@ private fun EventView(
         ) { index, subjectLivelihoodEventSummaryUiModel ->
             Column(modifier = Modifier
                 .clickable {
-                    onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                    //  onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                 }
             ) {
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
-                EventDetails(subjectLivelihoodEventSummaryUiModel)
+                EventDetails(subjectLivelihoodEventSummaryUiModel) {
+                    onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                }
+                ViewEditHistoryView {
+                    onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                }
                 CustomVerticalSpacer(size = dimen_5_dp)
                 if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
                     Divider(thickness = dimen_1_dp, color = borderGreyLight)
@@ -517,7 +532,7 @@ private fun EventView(
                     ).forEachIndexed { index, subjectLivelihoodEventSummaryUiModel ->
                         Column(modifier = Modifier
                             .clickable {
-                                onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                                // onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                             }
                         ) {
                             EventHeader(
@@ -526,7 +541,12 @@ private fun EventView(
                             )
                             EventDetails(
                                 subjectLivelihoodEventSummaryUiModel,
-                            )
+                            ) {
+                                onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                            }
+                            ViewEditHistoryView {
+                                onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                            }
                             CustomVerticalSpacer(size = dimen_5_dp)
                             Divider(thickness = dimen_1_dp, color = greyBorder)
                         }
@@ -548,6 +568,15 @@ private fun EventView(
         }
 
     }
+}
+
+@Composable
+private fun ViewEditHistoryView(onClick: () -> Unit) {
+    Text(
+        modifier = Modifier.clickable { onClick() },
+        text = "View edit history",
+        style = newMediumTextStyle.copy(assetValueIconColor)
+    )
 }
 
 const val DEFAULT_EVENT_LIST_VIEW_SIZE = 3
@@ -582,6 +611,7 @@ private fun EventHeader(
 @Composable
 private fun EventDetails(
     item: SubjectLivelihoodEventSummaryUiModel,
+    onClick: () -> Unit
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -616,7 +646,9 @@ private fun EventDetails(
         Icon(
             imageVector = Icons.Default.ArrowForward,
             contentDescription = "ArrowForward Icon",
-            modifier = Modifier.size(dimen_24_dp),
+            modifier = Modifier
+                .size(dimen_24_dp)
+                .clickable { onClick() },
             tint = blueDark
         )
 

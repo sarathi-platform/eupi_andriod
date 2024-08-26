@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.data.dao.livelihood
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.nudge.core.getCurrentTimeInMillis
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
@@ -37,11 +38,12 @@ interface SubjectLivelihoodEventMappingDao {
         livelihoodEventType: String, subjectId: Int
     )
 
-    @Query("Update subject_livelihood_event_mapping_table set status = 2 where transactionId=:transactionId and subjectId=:subjectId and userId=:userId")
+    @Query("Update subject_livelihood_event_mapping_table set status = 2, modifiedDate=:modifiedDate where transactionId=:transactionId and subjectId=:subjectId and userId=:userId and status=1")
     suspend fun softDeleteLivelihoodEventMapping(
         userId: String,
         transactionId: String,
-        subjectId: Int
+        subjectId: Int,
+        modifiedDate: Long = getCurrentTimeInMillis()
     )
 
     @Query(
@@ -67,4 +69,10 @@ interface SubjectLivelihoodEventMappingDao {
 
     @Query("DELETE from subject_livelihood_event_mapping_table where userId = :userId")
     fun deleteSubjectLivelihoodEventMappingForUser(userId: String)
+
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME where transactionId = :transactionId and userId = :userId order by modifiedDate DESC")
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+        transactionId: String,
+        userId: String
+    ): List<SubjectLivelihoodEventMappingEntity>?
 }

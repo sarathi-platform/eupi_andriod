@@ -25,4 +25,10 @@ class FetchSubjectLivelihoodEventMappingUseCase @Inject constructor(
         )
     }
 
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(transactionId: String): List<SubjectLivelihoodEventMappingEntity>? {
+        return subjectLivelihoodEventMappingRepositoryImpl.getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+            transactionId = transactionId
+        )
+    }
+
 }
