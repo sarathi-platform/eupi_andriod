@@ -43,6 +43,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.roundOffDecimalFloat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -145,11 +146,21 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    fun calculateBarProgress(totalEventCount: Int, successEventCount: Int): Float {
+    fun calculateBarProgress(totalEventCount: Int, successEventCount: Int, type: String): Float {
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            "SyncHomeViewModel",
+            "calculateBarProgress $type :: Total Event: $totalEventCount :: SuccessEventCount: $successEventCount"
+        )
         var progState = successEventCount.toFloat() / totalEventCount
         if (totalEventCount == 0 && successEventCount == 0) {
             progState = 0f
         }
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            "SyncHomeViewModel",
+            "calculateBarProgress $type :: Total Percentage: ${roundOffDecimalFloat((progState ?: 0f) * 100)}%"
+        )
         return progState
     }
 

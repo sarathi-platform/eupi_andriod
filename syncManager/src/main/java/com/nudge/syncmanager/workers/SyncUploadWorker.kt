@@ -17,6 +17,9 @@ import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_DATE_TIME_FORMAT
+import com.nudge.core.SYNC_POST_SELECTION_DERIVE
+import com.nudge.core.SYNC_SELECTION_DERIVE
+import com.nudge.core.UPCM_USER
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
 import com.nudge.core.datamodel.ImageEventDetailsModel
@@ -322,7 +325,8 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventName = imageEvent.name,
                             mobileNo = imageEvent.mobile_number,
                             payload = imageEvent.request_payload ?: BLANK_STRING,
-                            driveType = "Selection",
+                            driveType = if (syncApiRepository.loggedInUserType() == UPCM_USER)
+                                SYNC_POST_SELECTION_DERIVE else SYNC_SELECTION_DERIVE,
                             metadata = SyncImageMetadataRequest(
                                 data = Data(
                                     filePath = file.absolutePath,

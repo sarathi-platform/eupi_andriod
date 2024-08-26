@@ -239,6 +239,9 @@ class SyncApiRepository @Inject constructor(
     suspend fun findEventAndUpdateRetryCount(eventId: String) {
         eventDao.findEventAndUpdateRetryCount(eventId = eventId)
     }
+
+    fun loggedInUserType() = prefRepo.getUserType()
+
 }
 
 
