@@ -10,10 +10,10 @@ import javax.inject.Inject
 class FetchMissionDataUseCase @Inject constructor(
     private val repository: IMissionRepository,
 ) {
-    suspend fun invoke(missionId: Int): Boolean {
+    suspend fun invoke(missionId: Int, programId: Int): Boolean {
         try {
 
-            val apiResponse = repository.fetchMissionDataFromServer(missionId)
+            val apiResponse = repository.fetchActivityDataFromServer(programId, missionId)
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { activityApiResponse ->
 

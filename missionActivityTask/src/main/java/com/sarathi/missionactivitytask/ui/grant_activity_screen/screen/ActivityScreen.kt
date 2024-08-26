@@ -28,13 +28,14 @@ import java.util.Locale
 fun ActivityScreen(
     navController: NavController = rememberNavController(),
     viewModel: ActivityScreenViewModel = hiltViewModel(),
+    programId: Int,
     missionId: Int,
     missionName: String,
     isMissionCompleted: Boolean,
     onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.setMissionDetail(missionId, isMissionCompleted)
+        viewModel.setMissionDetail(missionId, isMissionCompleted, programId)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }

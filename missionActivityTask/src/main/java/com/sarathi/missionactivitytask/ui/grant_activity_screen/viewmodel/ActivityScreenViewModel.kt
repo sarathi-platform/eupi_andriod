@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -35,6 +34,7 @@ class ActivityScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
+    var programId: Int = 0
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
@@ -55,7 +55,14 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAllDataUseCase.fetchMissionRelatedData(missionId)
+            fetchAllDataUseCase.fetchMissionRelatedData(
+                missionId = missionId,
+                programId = 2,
+                isRefresh = false,
+                { isSuccess, successMsg ->
+
+
+                })
             _activityList.value = getActivityUseCase.getActivities(missionId)
             getContentValue(_activityList.value)
             checkButtonValidation()
@@ -63,26 +70,27 @@ class ActivityScreenViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+
         }
     }
 
-    private fun loadMissionRelatedData(isRefresh: Boolean) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//    private fun loadMissionRelatedData(isRefresh: Boolean) {
+//        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//
+//            fetchAllDataUseCase.invoke(missionId = missionId, { isSuccess, successMsg ->
+//                // Temp method to be removed after baseline is migrated to Grant flow.
+//                updateStatusForBaselineMission() { success ->
+//                    CoreLogger.i(
+//                        tag = "MissionScreenViewMode",
+//                        msg = "updateStatusForBaselineMission: success: $success"
+//                    )
+//                    initActivityScreen()
+//                }
+//            }, isRefresh = isRefresh)
+//        }
+//    }
 
-            fetchAllDataUseCase.invoke(missionId = missionId, { isSuccess, successMsg ->
-                // Temp method to be removed after baseline is migrated to Grant flow.
-                updateStatusForBaselineMission() { success ->
-                    CoreLogger.i(
-                        tag = "MissionScreenViewMode",
-                        msg = "updateStatusForBaselineMission: success: $success"
-                    )
-                    initActivityScreen()
-                }
-            }, isRefresh = isRefresh)
-        }
-    }
-
-    fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean) {
+    fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean, programId: Int) {
         this.missionId = missionId
         this.isMissionCompleted = isMissionCompleted
     }

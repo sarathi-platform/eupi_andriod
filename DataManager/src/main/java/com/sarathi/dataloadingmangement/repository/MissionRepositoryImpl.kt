@@ -30,7 +30,7 @@ import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.domain.MissionRequest
+import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
@@ -65,11 +65,14 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao
 ) : IMissionRepository {
 
-    override suspend fun fetchMissionDataFromServer(missionId: Int): ApiResponseModel<List<ActivityResponse>> {
-        val missionRequest =
-            MissionRequest(stateId = sharedPrefs.getStateId(), missionId = missionId)
+    override suspend fun fetchActivityDataFromServer(
+        programId: Int,
+        missionId: Int
+    ): ApiResponseModel<List<ActivityResponse>> {
+        val activityRequest =
+            ActivityRequest(programId = programId, missionId = programId)
 
-        return apiInterface.getMissions(missionRequest)
+        return apiInterface.getActivityDetails(activityRequest)
     }
 
     override suspend fun fetchMissionListFromServer(): ApiResponseModel<List<ProgrameResponse>> {

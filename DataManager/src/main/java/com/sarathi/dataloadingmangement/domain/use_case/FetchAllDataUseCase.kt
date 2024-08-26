@@ -44,10 +44,11 @@ class FetchAllDataUseCase @Inject constructor(
 
     suspend fun fetchMissionRelatedData(
         missionId: Int,
+        programId: Int,
         isRefresh: Boolean,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
     ) {
-        fetchMissionDataUseCase.invoke(missionId)
+        fetchMissionDataUseCase.invoke(missionId, programId)
         fetchSurveyDataFromNetworkUseCase.invoke(missionId)
         if (!isRefresh) {
             fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
