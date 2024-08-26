@@ -68,6 +68,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
@@ -101,6 +102,7 @@ import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
@@ -128,6 +130,7 @@ import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepos
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SelectActivitySurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -793,6 +796,27 @@ class DataLoadingModule {
         grantConfigDao: GrantConfigDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyDao,
+            grantConfigDao = grantConfigDao
+
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSelectActivitySurveyRepository(
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyDao: SurveyEntityDao,
+        grantConfigDao: GrantConfigDao
+    ): IActivitySelectSurveyRepository {
+        return SelectActivitySurveyRepositoryImpl(
             questionDao = questionEntityDao,
             surveyAnswersDao = surveyAnswersDao,
             optionItemDao = optionItemDao,

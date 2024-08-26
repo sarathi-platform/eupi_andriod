@@ -21,6 +21,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SELECT_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
@@ -63,6 +64,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSIO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.ui.activities.select.ActivitySelectTaskScreen
 import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysicalFormScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
@@ -750,7 +752,7 @@ fun NavGraphBuilder.MatNavigation(
                 taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
                 subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
                 subjectName = it.arguments?.getString(ARG_SUBJECT_NAME).value(),
-                activityType = it.arguments?.getString(ARG_ACTIVITY_NAME).value(),
+                activityType = it.arguments?.getString(ARG_ACTIVITY_TYPE).value(),
                 activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
                 sanctionedAmount = it.arguments?.getInt(ARG_SANCTIONED_AMOUNT).value(),
                 onNavigateToGrantSurveySummaryScreen = { navController, surveyId, sectionId, taskId, subjectType, subjectName, activityConfigId, sanctionedAmount ->
@@ -775,7 +777,7 @@ fun NavGraphBuilder.MatNavigation(
                 onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
 
                 },
-                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId ->
+                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId, activityType ->
                     navigateToSurveyScreen(
                         navController = navController,
                         missionId = missionId,
@@ -787,11 +789,39 @@ fun NavGraphBuilder.MatNavigation(
                         toolbarName = sectionName,
                         activityConfigId = activityConfigId,
                         grantId = 0,
-                        activityType = "Survey",
+                        activityType = activityType,
                         sanctionedAmount = 0,
                         totalSubmittedAmount = 0
                     )
                 }
+            )
+        }
+
+        composable(
+            route = MATHomeScreens.ActivitySelectTaskScreen.route, arguments = listOf(
+                navArgument(name = ARG_MISSION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_ACTIVITY_NAME) {
+                    type = NavType.StringType
+                })
+        ) {
+            ActivitySelectTaskScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                missionId = it.arguments?.getInt(
+                    ARG_MISSION_ID
+                ) ?: 0,
+                activityId = it.arguments?.getInt(
+                    ARG_ACTIVITY_ID
+                ) ?: 0,
+                activityName = it.arguments?.getString(
+                    ARG_ACTIVITY_NAME
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
             )
         }
     }
@@ -986,4 +1016,13 @@ fun navigateToSurveyTaskScreen(
     activityName: String
 ) {
     navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+}
+
+fun navigateToActivitySelectTaskScreen(
+    navController: NavController,
+    missionId: Int,
+    activityId: Int,
+    activityName: String
+) {
+    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }

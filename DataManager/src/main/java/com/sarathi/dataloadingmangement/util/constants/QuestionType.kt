@@ -6,9 +6,10 @@ enum class QuestionType {
     MultiImage,
     SingleSelectDropDown,
     MultiSelectDropDown,
+    ToggleGrid,
+    MultiSelect,
     AutoCalculation,
     RadioButton,
-    MultiSelect,
     Grid,
     Toggle,
     DropDown

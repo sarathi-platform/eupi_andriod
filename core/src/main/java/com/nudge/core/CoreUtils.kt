@@ -22,6 +22,8 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
@@ -1170,6 +1172,16 @@ fun onlyNumberField(value: String): Boolean {
 
 fun getQuestionNumber(questionIndex: Int): String {
     return "${questionIndex + 1}. "
+}
+
+fun String.stringToInt(): Int {
+    return if (this.isNullOrEmpty())
+        0
+    else this.toInt()
+}
+
+fun customGridHeight(optionListSize: Int): Dp {
+    return if (optionListSize > 2) (60 * 80).dp else 0.dp
 }
 
 fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {

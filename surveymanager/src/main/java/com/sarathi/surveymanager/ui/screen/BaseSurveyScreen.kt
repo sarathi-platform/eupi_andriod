@@ -97,7 +97,14 @@ fun BaseSurveyScreen(
         title = toolbarTitle,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            if (grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase())
+                navController.popBackStack()
+            else {
+                navController.popBackStack()
+                navController.popBackStack()
+            }
+        },
         isSearch = false,
         onSearchValueChange = {
 
@@ -146,7 +153,9 @@ fun BaseSurveyScreen(
                         .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
-                    item { CustomVerticalSpacer() }
+                    if (!grantType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
+                        item { CustomVerticalSpacer() }
+                    }
                     itemsIndexed(
                         items = viewModel.questionUiModel.value
                     ) { index, question ->
@@ -278,6 +287,11 @@ fun BaseSurveyScreen(
                                     questionDisplay = question.questionDisplay,
                                     isRequiredField = question.isMandatory,
                                     maxCustomHeight = maxHeight,
+                                    isQuestionTypeToggle = false,
+                                    showCardView = grantType.equals(
+                                        ActivityTypeEnum.SURVEY.name,
+                                        ignoreCase = true
+                                    ),
                                     optionUiModelList = question.options.value(),
                                     onAnswerSelection = { questionIndex, optionItemIndex ->
                                         question.options?.forEachIndexed { index, _ ->
@@ -313,6 +327,23 @@ fun BaseSurveyScreen(
                             }
 
                             QuestionType.Toggle.name -> {
+                                RadioQuestionBoxComponent(
+                                    questionIndex = index,
+                                    questionDisplay = question.questionDisplay,
+                                    isRequiredField = question.isMandatory,
+                                    maxCustomHeight = maxHeight,
+                                    isQuestionTypeToggle = true,
+                                    showCardView = false,
+                                    optionUiModelList = question.options.value(),
+                                    onAnswerSelection = { questionIndex, optionItemIndex ->
+                                        question.options?.forEachIndexed { index, _ ->
+                                            question.options?.get(index)?.isSelected = false
+                                        }
+                                        question.options?.get(optionItemIndex)?.isSelected = true
+                                        onAnswerSelect(question)
+                                        viewModel.checkButtonValidation()
+                                    }
+                                )
                             }
                         }
                     }

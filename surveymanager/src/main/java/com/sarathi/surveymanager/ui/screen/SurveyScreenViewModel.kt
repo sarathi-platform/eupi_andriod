@@ -77,8 +77,7 @@ class SurveyScreenViewModel @Inject constructor(
                 uriList = ArrayList()
             )
         }
-
-        }
+    }
 
 
     fun updateTaskStatus(taskId: Int) {

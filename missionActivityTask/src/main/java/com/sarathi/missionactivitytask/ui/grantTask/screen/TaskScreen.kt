@@ -49,6 +49,7 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
@@ -61,13 +62,16 @@ import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSectionScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+
 const val TAG = "TaskScreen"
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskScreen(
@@ -337,7 +341,36 @@ fun TaskRowView(
                         )
                     }
 
-                    else -> {}
+                    else -> {
+                        viewModel.activityConfigUiModel?.let {
+                            if (subjectName.isNotBlank()) {
+                                val sanctionedAmount = try {
+                                    task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+                                        ?: DEFAULT_ID
+                                } catch (ex: Exception) {
+                                    CoreLogger.e(
+                                        tag = TAG,
+                                        msg = "TaskRowView: exception -> ${ex.message}",
+                                        ex = ex,
+                                        stackTrace = true
+                                    )
+                                    DEFAULT_ID
+                                }
+                                navigateToSectionScreen(
+                                    navController,
+                                    missionId = viewModel.missionId,
+                                    activityId = viewModel.activityId,
+                                    taskId = task.key,
+                                    surveyId = it.surveyId,
+                                    subjectType = it.subject,
+                                    subjectName = subjectName,
+                                    activityType = viewModel.activityType,
+                                    activityConfigId = it.activityConfigId,
+                                    sanctionedAmount = sanctionedAmount,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         },

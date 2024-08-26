@@ -154,7 +154,10 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         questionUiModel.options?.forEach { optionItem ->
             if (optionItem.isSelected == true) {
 
-                if (questionUiModel.type == QuestionType.MultiSelectDropDown.name || questionUiModel.type == QuestionType.SingleSelectDropDown.name) {
+                if (questionUiModel.type == QuestionType.MultiSelectDropDown.name
+                    || questionUiModel.type == QuestionType.SingleSelectDropDown.name
+                    || questionUiModel.type == QuestionType.MultiSelect.name
+                ) {
                     result.add(
                     SaveAnswerEventOptionItemDto(
                         optionId = optionItem.optionId ?: 0,

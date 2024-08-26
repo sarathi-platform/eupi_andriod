@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -59,6 +60,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
@@ -69,6 +71,7 @@ fun GridTypeComponent(
     questionIndex: Int,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
+    isQuestionDisplay: Boolean = true,
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -120,15 +123,17 @@ fun GridTypeComponent(
                         modifier = Modifier
                             .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
                     ) {
-                        item {
-                            Row(
-                                modifier = Modifier.padding(horizontal = dimen_16_dp)
-                            ) {
-                                QuestionComponent(
-                                    title = questionDisplay,
-                                    questionNumber = getQuestionNumber(questionIndex),
-                                    isRequiredField = isRequiredField
-                                )
+                        if (isQuestionDisplay) {
+                            item {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = dimen_16_dp)
+                                ) {
+                                    QuestionComponent(
+                                        title = questionDisplay,
+                                        questionNumber = getQuestionNumber(questionIndex),
+                                        isRequiredField = isRequiredField
+                                    )
+                                }
                             }
                         }
                         item {
@@ -232,8 +237,10 @@ fun GridOptionCard(
             .clip(RoundedCornerShape(6.dp))
             .background(if (isSelected.value) blueDark else languageItemActiveBg)
             .clickable {
-                isSelected.value = !isSelected.value
-                onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                if (isEnabled) {
+                    isSelected.value = !isSelected.value
+                    onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                }
             }
             .then(modifier)) {
         Box(
