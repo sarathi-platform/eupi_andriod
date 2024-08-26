@@ -65,11 +65,15 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao
 ) : IMissionRepository {
 
-    override suspend fun fetchMissionDataFromServer(
-    ): ApiResponseModel<List<ProgrameResponse>> {
-        val missionRequest = MissionRequest(stateId = sharedPrefs.getStateId())
+    override suspend fun fetchMissionDataFromServer(missionId: Int): ApiResponseModel<List<ActivityResponse>> {
+        val missionRequest =
+            MissionRequest(stateId = sharedPrefs.getStateId(), missionId = missionId)
 
         return apiInterface.getMissions(missionRequest)
+    }
+
+    override suspend fun fetchMissionListFromServer(): ApiResponseModel<List<ProgrameResponse>> {
+        return apiInterface.getMissionList()
     }
 
     override suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int) {
@@ -177,48 +181,54 @@ class MissionRepositoryImpl @Inject constructor(
                         missionActivityModel.id
                     )
                 }
-                deleteContentConfig(missionActivityModel.id, ContentCategoryEnum.ACTIVITY.ordinal)
-                saveContentConfig(
-                    missionActivityModel.id,
-                    missionActivityModel.activityConfig?.content ?: listOf(),
-                    ContentCategoryEnum.ACTIVITY.ordinal
-                )
-                deleteActivityConfig(missionActivityModel.id)
-
-
-                missionActivityModel.activityConfig?.let {
-                    val activityConfigId = saveActivityConfig(
-                        it,
-                        missionActivityModel.id,
-
-                        missionId
-                    )
-                    deleteGrantConfig(activityConfigId)
-                    it.grantConfig?.let { it1 ->
-                        saveGrantActivityConfig(
-                            it1,
-                            missionActivityModel.activityConfig.surveyId,
-                            activityConfigId
-                        )
-
-
-                    }
-                    it.formConfig?.let { it1 ->
-                        saveFormUiConfig(it1, missionId, missionActivityModel.id)
-                    }
-
-                }
-                deleteActivityUiConfig(activityId = missionActivityModel.id, missionId = missionId)
-                saveActivityUiConfig(
-                    missionActivityModel.id,
-                    missionId,
-                    missionActivityModel.activityConfig?.uiConfig ?: listOf()
-                )
 
             }
         } catch (exception: Exception) {
             Log.e("Exception", exception.localizedMessage)
         }
+    }
+
+    override suspend fun saveActivityConfig(
+        missionActivityModel: ActivityResponse,
+        missionId: Int,
+    ) {
+        deleteContentConfig(missionActivityModel.id, ContentCategoryEnum.ACTIVITY.ordinal)
+        saveContentConfig(
+            missionActivityModel.id,
+            missionActivityModel.activityConfig?.content ?: listOf(),
+            ContentCategoryEnum.ACTIVITY.ordinal
+        )
+        deleteActivityConfig(missionActivityModel.id)
+
+
+        missionActivityModel.activityConfig?.let {
+            val activityConfigId = saveActivityConfig(
+                it,
+                missionActivityModel.id,
+
+                missionId
+            )
+            deleteGrantConfig(activityConfigId)
+            it.grantConfig?.let { it1 ->
+                saveGrantActivityConfig(
+                    it1,
+                    missionActivityModel.activityConfig.surveyId,
+                    activityConfigId
+                )
+
+
+            }
+            it.formConfig?.let { it1 ->
+                saveFormUiConfig(it1, missionId, missionActivityModel.id)
+            }
+
+        }
+        deleteActivityUiConfig(activityId = missionActivityModel.id, missionId = missionId)
+        saveActivityUiConfig(
+            missionActivityModel.id,
+            missionId,
+            missionActivityModel.activityConfig?.uiConfig ?: listOf()
+        )
     }
 
     private fun deleteActivityUiConfig(missionId: Int, activityId: Int) {

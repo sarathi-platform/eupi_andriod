@@ -3,13 +3,15 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.CoreObserverManager
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
-import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityScreenViewModel @Inject constructor(
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
@@ -52,6 +55,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            fetchAllDataUseCase.fetchMissionRelatedData(missionId)
             _activityList.value = getActivityUseCase.getActivities(missionId)
             getContentValue(_activityList.value)
             checkButtonValidation()
@@ -59,6 +63,22 @@ class ActivityScreenViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+        }
+    }
+
+    private fun loadMissionRelatedData(isRefresh: Boolean) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            fetchAllDataUseCase.invoke(missionId = missionId, { isSuccess, successMsg ->
+                // Temp method to be removed after baseline is migrated to Grant flow.
+                updateStatusForBaselineMission() { success ->
+                    CoreLogger.i(
+                        tag = "MissionScreenViewMode",
+                        msg = "updateStatusForBaselineMission: success: $success"
+                    )
+                    initActivityScreen()
+                }
+            }, isRefresh = isRefresh)
         }
     }
 
@@ -92,8 +112,9 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateActivityStatus(){
-        val updateActivityStatusList = updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
+    private suspend fun updateActivityStatus() {
+        val updateActivityStatusList =
+            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
         val updateMissionStatusList = updateMissionActivityTaskStatusUseCase.reCheckMissionStatus()
         updateActivityStatusList.forEach {
             matStatusEventWriterUseCase.updateActivityStatus(
@@ -106,6 +127,12 @@ class ActivityScreenViewModel @Inject constructor(
                 surveyName = BLANK_STRING,
                 missionEntity = it
             )
+        }
+    }
+
+    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
+        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
+            onSuccess(it)
         }
     }
 }

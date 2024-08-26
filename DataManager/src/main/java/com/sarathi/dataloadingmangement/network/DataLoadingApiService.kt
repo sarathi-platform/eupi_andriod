@@ -4,6 +4,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
+import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
@@ -30,7 +31,12 @@ import retrofit2.http.Query
 interface DataLoadingApiService {
     @POST(SUB_PATH_GET_MISSION)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ProgrameResponse>>
+    suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ActivityResponse>>
+
+    @GET(SUB_PATH_GET_MISSION_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getMissionList(): ApiResponseModel<List<ProgrameResponse>>
+
 
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>

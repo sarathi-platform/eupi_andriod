@@ -28,24 +28,40 @@ class FetchAllDataUseCase @Inject constructor(
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
             fetchLanguageUseCase.invoke()
             fetchUserDetailUseCase.invoke()
-            fetchMissionDataUseCase.invoke()
-            fetchSurveyDataFromNetworkUseCase.invoke()
-            if (!isRefresh) {
-                fetchSurveyAnswerFromNetworkUseCase.invoke()
-                formUseCase.invoke()
-                moneyJournalUseCase.invoke()
-            }
+            fetchMissionDataUseCase.getAllMissionList()
+
             fetchContentDataFromNetworkUseCase.invoke()
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
             }
-            CoroutineScope(Dispatchers.IO).launch {
-                contentDownloaderUseCase.surveyRelateContentDownlaod()
-            }
+
         } else {
             onComplete(true, BLANK_STRING)
         }
     }
+
+    suspend fun fetchMissionRelatedData(
+        missionId: Int,
+        isRefresh: Boolean,
+        onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
+    ) {
+        fetchMissionDataUseCase.invoke(missionId)
+        fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+        if (!isRefresh) {
+            fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
+            formUseCase.invoke(missionId)
+            if (missionId == 3 || missionId == 4) {
+                moneyJournalUseCase.invoke()
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            contentDownloaderUseCase.surveyRelateContentDownlaod()
+        }
+        onComplete(true, BLANK_STRING)
+
+    }
+
+
 }

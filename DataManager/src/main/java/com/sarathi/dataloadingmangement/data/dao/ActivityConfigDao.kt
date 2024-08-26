@@ -21,11 +21,11 @@ interface ActivityConfigDao {
         userId: String,
     ): ActivityConfigUiModel
 
-    @Query("Select  DISTINCT surveyId from $ACTIVITY_CONFIG_TABLE_NAME")
-    fun getSurveyIds(): List<Int>
+    @Query("Select  DISTINCT surveyId from $ACTIVITY_CONFIG_TABLE_NAME where missionId=:missionId")
+    fun getSurveyIds(missionId: Int): List<Int>
 
-    @Query("Select  * from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId")
-    fun getActivityConfigUiModel(userId: String): List<ActivityConfigEntity>?
+    @Query("Select  * from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId and missionId=:missionId")
+    fun getActivityConfigUiModel(userId: String, missionId: Int): List<ActivityConfigEntity>?
 
     @Query("Select icon from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId and icon <> ''")
     fun getAllActivityIconsKey(userId: String): List<String>?

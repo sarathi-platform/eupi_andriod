@@ -114,7 +114,10 @@ class FormRepositoryImpl @Inject constructor(
         formDao.insertAllFormDetail(formDetails)
     }
 
-    override suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>? {
-        return activityConfigDao.getActivityConfigUiModel(userId = coreSharedPrefs.getUniqueUserIdentifier())
+    override suspend fun getActivityConfigUiModel(missionId: Int): List<ActivityConfigEntity>? {
+        return activityConfigDao.getActivityConfigUiModel(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId
+        )
     }
 }

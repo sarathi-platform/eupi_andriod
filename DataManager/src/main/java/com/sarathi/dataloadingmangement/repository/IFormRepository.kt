@@ -45,6 +45,6 @@ interface IFormRepository {
     fun getFormEFileName(): String
 
     suspend fun saveAllFormDetails(formDetails: List<FormEntity>)
-    suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>?
+    suspend fun getActivityConfigUiModel(missionId: Int): List<ActivityConfigEntity>?
 
 }

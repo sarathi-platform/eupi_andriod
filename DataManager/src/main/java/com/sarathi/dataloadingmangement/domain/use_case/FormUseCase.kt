@@ -45,9 +45,9 @@ class FormUseCase @Inject constructor(
         return false
     }
 
-    suspend fun invoke(): Boolean {
+    suspend fun invoke(missionId: Int): Boolean {
         try {
-            repository.getActivityConfigUiModel()?.forEach { config ->
+            repository.getActivityConfigUiModel(missionId)?.forEach { config ->
                 getFormDetailFromApi(
                     FormDetailRequest(
                         activityId = config.activityId,

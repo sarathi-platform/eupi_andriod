@@ -5,9 +5,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
@@ -25,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    private val fetchMissionDataUseCase: FetchMissionDataUseCase,
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
@@ -78,7 +77,7 @@ class MissionScreenViewModel @Inject constructor(
     private fun initMissionScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateMissionActivityStatus()
-            _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
+            _missionList.value = fetchMissionDataUseCase.getAllMission()
             _filterMissionList.value = _missionList.value
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -89,16 +88,11 @@ class MissionScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
-                // Temp method to be removed after baseline is migrated to Grant flow.
-                updateStatusForBaselineMission() { success ->
-                    CoreLogger.i(
-                        tag = "MissionScreenViewMode",
-                        msg = "updateStatusForBaselineMission: success: $success"
-                    )
-                    initMissionScreen() // Move this out of the lambda block once the above method is removed
-                }
-            }, isRefresh = isRefresh)
+            fetchMissionDataUseCase.getAllMissionList()
+            initMissionScreen()
+            withContext(Dispatchers.Main) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
         }
     }
 

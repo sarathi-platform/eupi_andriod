@@ -364,7 +364,7 @@ open class TaskScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
+            fetchAllDataUseCase.invoke(missionId = missionId, { isSuccess, successMsg ->
                 // Temp method to be removed after baseline is migrated to Grant flow.
                 updateStatusForBaselineMission() { success ->
                     CoreLogger.i(
