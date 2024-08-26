@@ -37,6 +37,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MA
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_PROGRAM_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SANCTIONED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
@@ -127,6 +128,9 @@ fun NavGraphBuilder.MatNavigation(
                 isMissionCompleted = it.arguments?.getBoolean(
                     ARG_MISSION_COMPLETED
                 ) ?: false,
+                programId = it.arguments?.getInt(
+                    ARG_PROGRAM_ID
+                ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -140,7 +144,11 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                }
+            )
         ) {
             GrantTaskScreen(
                 navController = navController,

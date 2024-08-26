@@ -57,7 +57,7 @@ class ActivityScreenViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
-                programId = 2,
+                programId = programId,
                 isRefresh = false,
                 { isSuccess, successMsg ->
 
@@ -93,6 +93,7 @@ class ActivityScreenViewModel @Inject constructor(
     fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean, programId: Int) {
         this.missionId = missionId
         this.isMissionCompleted = isMissionCompleted
+        this.programId = programId
     }
 
     fun isFilePathExists(filePath: String): Boolean {
