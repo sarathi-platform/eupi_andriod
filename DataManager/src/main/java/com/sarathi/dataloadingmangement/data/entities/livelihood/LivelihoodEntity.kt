@@ -16,8 +16,9 @@ data class LivelihoodEntity(
     var name: String,
     var status: Int,
     var type: Int? = 0,
+    var image: String?
 
-    ) {
+) {
     companion object {
         fun getLivelihoodEntity(
             userId: String,
@@ -30,6 +31,7 @@ data class LivelihoodEntity(
                 userId = userId,
                 name = livelihood.name ?: BLANK_STRING,
                 status = livelihood.status ?: 0,
+                image = livelihood.image ?: BLANK_STRING
             )
         }
 

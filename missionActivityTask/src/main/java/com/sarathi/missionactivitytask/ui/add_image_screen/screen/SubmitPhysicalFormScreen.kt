@@ -86,7 +86,9 @@ fun SubmitPhysicalFormScreen(
                                         context.getString(
                                             R.string.form_e_generated_successfully_for_didis,
                                             viewModel.totalDidi.value.toString()
-                                        )                                    )
+                                        )
+
+                                    )
                                 })
 
                         })

@@ -3,4 +3,7 @@
     <string name="search_label">Search</string>
 
     <string name="date_range_picker_label_text">From - To</string>
+
+
+    <string name="total_asset">Total Asset</string>
 </resources>

@@ -4,7 +4,7 @@ enum class ActivityTypeEnum {
     GRANT, SURVEY, SELECT, BASIC, LIVELIHOOD;
 
     companion object {
-        fun getActivityTypeFromId(activityConfigId: Int): ActivityTypeEnum {
+        fun getActivityTypeFromId(activityConfigId: Int?): ActivityTypeEnum {
             return when (activityConfigId) {
                 1 -> GRANT
                 2 -> SURVEY

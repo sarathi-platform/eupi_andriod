@@ -37,7 +37,7 @@ interface SubjectEntityDao {
     @Query("DELETE from $SUBJECT_TABLE where userId = :userId")
     fun deleteSubjectsForUsers(userId: String)
 
-    @Query("SELECT  subject_table.subjectId, subject_table.subjectName, subject_table.dadaName, subject_table.cohortId, subject_table.cohortName, subject_table.houseNo, subject_table.villageId, subject_table.villageName, subject_table.crpImageLocalPath, subject_table.voName, subject_livelihood_mapping_table.primaryLivelihoodId, subject_livelihood_mapping_table.secondaryLivelihoodId from subject_table inner join subject_livelihood_mapping_table on subject_table.subjectId = subject_livelihood_mapping_table.subjectId where subject_table.userId = :userId and subject_livelihood_mapping_table.userId = :userId")
+    @Query("SELECT  subject_table.subjectId, subject_table.subjectName,subject_table.crpImageName, subject_table.dadaName, subject_table.cohortId, subject_table.cohortName, subject_table.houseNo, subject_table.villageId, subject_table.villageName, subject_table.crpImageLocalPath, subject_table.voName, subject_livelihood_mapping_table.primaryLivelihoodId, subject_livelihood_mapping_table.secondaryLivelihoodId from subject_table inner join subject_livelihood_mapping_table on subject_table.subjectId = subject_livelihood_mapping_table.subjectId where subject_table.userId = :userId and subject_livelihood_mapping_table.userId = :userId")
     fun getSubjectEntityWithLivelihoodMappingUiModelList(userId: String): List<SubjectEntityWithLivelihoodMappingUiModel>
 
 }

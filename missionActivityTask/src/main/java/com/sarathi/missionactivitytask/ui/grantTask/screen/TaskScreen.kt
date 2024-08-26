@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
@@ -36,7 +37,9 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
+import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.rememberCustomProgressState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -64,7 +67,7 @@ import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
-
+const val TAG = "TaskScreen"
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskScreen(
@@ -77,8 +80,10 @@ fun TaskScreen(
     isSecondaryButtonEnable: Boolean = false,
     onSecondaryButtonClick: () -> Unit,
     isSecondaryButtonVisible: Boolean = false,
+    isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -95,10 +100,14 @@ fun TaskScreen(
             }
 
         })
+
+    val linearProgressState = rememberCustomProgressState()
+
     LaunchedEffect(taskList?.size) {
         viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
+
     ToolBarWithMenuComponent(
         title = activityName,
         modifier = Modifier.fillMaxSize(),
@@ -134,13 +143,15 @@ fun TaskScreen(
                                 activityMsg = context.getString(
                                     R.string.activity_completion_message,
                                     activityName
-                                )
+                                ),
+                                activityRoutePath = activityName
                             )
                         })
 
                     if (isSecondaryButtonVisible) {
                         Spacer(modifier = Modifier.width(10.dp))
-                        ButtonPositive(modifier = Modifier.weight(0.5f),
+                        ButtonPositive(
+                            modifier = Modifier.weight(0.5f),
                             buttonTitle = secondaryButtonText,
                             isActive = isSecondaryButtonEnable,
                             isArrowRequired = false,
@@ -200,12 +211,12 @@ fun TaskScreen(
                             })
                     }
                 }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
-                )
-                {
+                ) {
                     PullRefreshIndicator(
                         refreshing = viewModel.loaderState.value.isLoaderVisible,
                         state = pullRefreshState,
@@ -215,10 +226,17 @@ fun TaskScreen(
                         contentColor = blueDark,
                     )
                     Spacer(modifier = Modifier.height(dimen_10_dp))
-                    if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
-                        LazyColumn(
-                            modifier = Modifier.padding(bottom = dimen_50_dp)
-                        ) {
+                    LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+                        if (/*viewModel.isProgressEnable.value*/false) {
+                            item {
+                                CustomLinearProgressIndicator(
+                                    modifier = Modifier
+                                        .padding(dimen_10_dp),
+                                    progressState = linearProgressState
+                                )
+                            }
+                        }
+                        if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
                             viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                                 item {
                                     Row(
@@ -246,29 +264,15 @@ fun TaskScreen(
                                 item {
                                     CustomVerticalSpacer()
                                 }
-                                itemsIndexed(
-                                    items = itemsInCategory
-                                ) { _, task ->
-                                    TaskRowView(viewModel, navController, task)
-                                    CustomVerticalSpacer()
-                                }
-                                item {
-                                    CustomVerticalSpacer(size = dimen_20_dp)
-                                }
+
+                                taskScreenContent(viewModel, navController)
                             }
-                        }
-                    } else {
-                        if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-                            LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-                                itemsIndexed(
-                                    items = viewModel.filterList.value.entries.toList()
-                                ) { _, task ->
-                                    TaskRowView(viewModel, navController, task)
-                                    CustomVerticalSpacer()
-                                }
-                                item {
-                                    CustomVerticalSpacer(size = dimen_20_dp)
-                                }
+
+                        } else {
+                            if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
+
+                                taskScreenContent(viewModel, navController)
+
                             }
                         }
                     }
@@ -279,11 +283,27 @@ fun TaskScreen(
     )
 }
 
+fun LazyListScope.TaskScreenContent(viewModel: TaskScreenViewModel, navController: NavController) {
+
+    itemsIndexed(
+        items = viewModel.filterList.value.entries.toList()
+    ) { _, task ->
+
+        TaskRowView(viewModel, navController, task)
+
+        CustomVerticalSpacer()
+    }
+    item {
+        CustomVerticalSpacer(size = dimen_20_dp)
+    }
+
+}
+
 @Composable
-private fun TaskRowView(
+fun TaskRowView(
     viewModel: TaskScreenViewModel,
     navController: NavController,
-    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
+    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
@@ -317,12 +337,9 @@ private fun TaskRowView(
                         )
                     }
 
-                    else -> {
-
-                    }
+                    else -> {}
                 }
             }
-
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
@@ -350,6 +367,7 @@ private fun TaskRowView(
         subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
         subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
         subtitle5 = task.value[TaskCardSlots.TASK_SUBTITLE_5.name],
+        subtitle7 = task.value[TaskCardSlots.TASK_SUBTITLE_6.name],
         subtitle6 = task.value[TaskCardSlots.TASK_SUBTITLE_8.name],
         isActivityCompleted = viewModel.isActivityCompleted.value,
         isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
@@ -358,8 +376,6 @@ private fun TaskRowView(
         isShowSecondaryStatusIcon = task.value[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
         ),
-
-
     )
 }
 

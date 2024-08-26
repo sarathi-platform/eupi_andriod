@@ -21,4 +21,13 @@ class GetLivelihoodMappingForSubjectFromDbRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getLivelihoodMappingForSubjects(subjectId: List<Int>): List<SubjectLivelihoodMappingEntity> {
+        return  subjectLivelihoodMappingDao.getSubjectsLivelihoodMapping(
+            subjectIds=subjectId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+
+
+        )
+    }
+
 }
