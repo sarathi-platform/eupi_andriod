@@ -35,10 +35,10 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     eventWriterUseCase: MATStatusEventWriterUseCase,
-    getActivityUseCase: GetActivityUseCase,
+    val getActivityUseCase: GetActivityUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
-  var  getLivelihoodListFromDbUseCase:GetLivelihoodListFromDbUseCase,
-   var getLivelihoodMappingUseCase: GetSubjectLivelihoodMappingFromUseCase,
+    var getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+    var getLivelihoodMappingUseCase: GetSubjectLivelihoodMappingFromUseCase,
 
     ) : TaskScreenViewModel(
     getTaskUseCase,

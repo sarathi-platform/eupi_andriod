@@ -1,7 +1,7 @@
 package com.nudge.core.enums
 
 enum class ActivityTypeEnum {
-    GRANT, SURVEY, SELECT, BASIC, LIVELIHOOD;
+    GRANT, SURVEY, SELECT, BASIC, LIVELIHOOD, LIVELIHOOD_PoP;
 
     companion object {
         fun getActivityTypeFromId(activityConfigId: Int?): ActivityTypeEnum {
@@ -11,6 +11,7 @@ enum class ActivityTypeEnum {
                 3 -> BASIC
                 4 -> SELECT
                 5 -> LIVELIHOOD
+                6 -> LIVELIHOOD_PoP
                 else -> SURVEY
             }
         }

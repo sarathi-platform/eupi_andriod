@@ -200,6 +200,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun sectionStatusEntityDao(): SectionStatusEntityDao
 
+    abstract fun subjectLivelihoodEventMappingDao(): SubjectLivelihoodEventMappingDao
+
     class NudgeDatabaseCallback : Callback()
 
     class NudgeGrantDatabaseCallback : Callback()
