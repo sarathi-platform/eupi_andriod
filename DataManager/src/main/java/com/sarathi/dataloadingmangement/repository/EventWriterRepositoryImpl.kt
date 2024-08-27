@@ -115,7 +115,7 @@ class EventWriterRepositoryImpl @Inject constructor(
             createdBy = coreSharedPrefs.getUserName(),
             mobile_number = coreSharedPrefs.getMobileNo(),
             request_payload = requestPayload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
             payloadLocalId = BLANK_STRING,
             metadata = MetadataDto(

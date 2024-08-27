@@ -659,12 +659,14 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesSearchScreenUseCase(
-        sectionListScreenRepository: SectionListScreenRepository
+        sectionListScreenRepository: SectionListScreenRepository,
+        questionScreenRepository: QuestionScreenRepository
     ): SearchScreenUseCase {
         return SearchScreenUseCase(
             getSectionListForSurveyUseCase = GetSectionListForSurveyUseCase(
                 sectionListScreenRepository
-            )
+            ),
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository)
         )
     }
 

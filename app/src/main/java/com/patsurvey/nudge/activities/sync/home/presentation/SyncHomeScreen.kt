@@ -56,6 +56,7 @@ import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.utils.DATA_STRING
 import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
@@ -142,9 +143,9 @@ fun ObserveEventCounts(
             }
             viewModel.totalImageEventCount.intValue = totalImageCount
             viewModel.imageEventProgress.floatValue =
-                viewModel.calculateBarProgress(totalImageCount, successImageCount)
+                viewModel.calculateBarProgress(totalImageCount, successImageCount, IMAGE_STRING)
             viewModel.dataEventProgress.floatValue =
-                viewModel.calculateBarProgress(totalDataCount, successDataCount)
+                viewModel.calculateBarProgress(totalDataCount, successDataCount, DATA_STRING)
 
             CoreLogger.d(
                 CoreAppDetails.getApplicationContext().applicationContext,
