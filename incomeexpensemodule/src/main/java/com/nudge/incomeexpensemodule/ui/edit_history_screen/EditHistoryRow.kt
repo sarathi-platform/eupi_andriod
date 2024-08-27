@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.edit_history_screen
 
+import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DD_MMM_YYYY_FORMAT
-import com.nudge.core.DD_mmm_hh_MM_FORMAT
+import com.nudge.core.DD_mmm_hh_mm_FORMAT
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -45,7 +46,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEv
 
 @Composable
 fun EditHistoryRow(
-    event: SubjectLivelihoodEventMappingEntity,
+    currentHistoryData: SubjectLivelihoodEventMappingEntity,
+    nextHistoryData: SubjectLivelihoodEventMappingEntity?,
     isDeleted: Boolean = false,
     isRecentData: Boolean = false
 ) {
@@ -54,7 +56,8 @@ fun EditHistoryRow(
             .background(Color.Transparent)
 
     ) {
-        val savedEvent = getData(event.surveyResponse)
+        val currentSavedEvent = getData(currentHistoryData.surveyResponse)
+        val nextSavedEvent = getData(nextHistoryData?.surveyResponse)
         // Event details
         Column(
             modifier = Modifier
@@ -81,29 +84,53 @@ fun EditHistoryRow(
                     }
                 }
                 Column(modifier = Modifier.padding(dimen_10_dp)) {
-                    TextRowView_1(
+                    TextDataRowView(
                         text1 = "Event:",
-                        text2 = " ${savedEvent?.eventValue ?: BLANK_STRING}",
-                        text3 = event.modifiedDate.getDate(DD_mmm_hh_MM_FORMAT)
+                        text2Color = textColor(
+                            data1 = if (currentSavedEvent != null && !TextUtils.isEmpty(
+                                    currentSavedEvent?.eventValue
+                                )
+                            ) currentSavedEvent?.eventValue else BLANK_STRING,
+                            data2 = if (nextSavedEvent != null && !TextUtils.isEmpty(nextSavedEvent?.eventValue)) nextSavedEvent?.eventValue else BLANK_STRING,
+                        ),
+                        text2 = " ${currentSavedEvent?.eventValue ?: BLANK_STRING}",
+                        text3 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_FORMAT)
                     )
                     Divider()
                     Spacer(modifier = Modifier.height(4.dp))
-                    TextRowView_1(
+                    TextDataRowView(
                         text1 = "Asset Type:",
-                        text2 = " ${event.livelihoodEventType}",
-                        text3 = formatToIndianRupee("${savedEvent?.amount}"),
-                        text3Color = if (!isRecentData) darkBlueColor else blueDark
+                        text2 = " ${currentSavedEvent?.assetTypeValue}",
+                        text2Color = textColor(
+                            data1 = if (currentSavedEvent != null && !TextUtils.isEmpty(
+                                    currentSavedEvent?.assetTypeValue
+                                )
+                            ) currentSavedEvent?.assetTypeValue else BLANK_STRING,
+                            data2 = if (nextSavedEvent != null && !TextUtils.isEmpty(nextSavedEvent?.assetTypeValue)) nextSavedEvent?.assetTypeValue else BLANK_STRING,
+                        ),
+                        text3 = formatToIndianRupee("${currentSavedEvent?.amount}"),
+                        text3Color = textColor(
+                            data1 = (if (currentSavedEvent != null && currentSavedEvent.amount != null) currentSavedEvent?.amount else 0).toString(),
+                            data2 = (if (nextSavedEvent != null && nextSavedEvent.amount != null) nextSavedEvent?.amount else 0).toString(),
+                        )
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    TextRowView_1(
+                    TextDataRowView(
                         text1 = "Increase in Number:",
-                        text2Color = if (isRecentData) darkBlueColor else blueDark,
-                        text2 = " ${savedEvent?.assetCount}"
+                        text2Color = textColor(
+                            data1 = (if (currentSavedEvent != null && currentSavedEvent.assetCount != null) currentSavedEvent?.assetCount else 0).toString(),
+                            data2 = (if (nextSavedEvent != null && nextSavedEvent.assetCount != null) nextSavedEvent?.assetCount else 0).toString(),
+                        ),
+                        text2 = " ${currentSavedEvent?.assetCount}"
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    TextRowView_1(
+                    TextDataRowView(
                         text1 = "Event Date:",
-                        text2 = event.date.getDate(DD_MMM_YYYY_FORMAT)
+                        text2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
+                        text2Color = textColor(
+                            data1 = (if (currentHistoryData != null && currentSavedEvent?.date != null) currentHistoryData?.date else 0).toString(),
+                            data2 = (if (nextHistoryData != null && nextHistoryData.date != null) nextHistoryData?.date else 0).toString(),
+                        ),
                     )
                 }
             }
@@ -122,16 +149,14 @@ fun EditHistoryRow(
                 borderWidth = 2f
             )
             Spacer(modifier = Modifier.height(8.dp))
-            if (!isDeleted) {
-                for (i in 1..17) {
-                    androidx.compose.material.Divider(
-                        color = dividerColor,
-                        modifier = Modifier
-                            .height(dimen_8_dp)
-                            .width(dimen_1_dp)
-                            .padding(vertical = dimen_2_dp)
-                    )
-                }
+            for (i in 1..17) {
+                androidx.compose.material.Divider(
+                    color = dividerColor,
+                    modifier = Modifier
+                        .height(dimen_8_dp)
+                        .width(dimen_1_dp)
+                        .padding(vertical = dimen_2_dp)
+                )
             }
         }
     }
@@ -139,7 +164,7 @@ fun EditHistoryRow(
 
 
 @Composable
-private fun TextRowView_1(
+private fun TextDataRowView(
     text1: String? = null,
     text1Color: Color = blueDark,
     text2: String? = null,
@@ -178,4 +203,15 @@ private fun getData(savedEvent: String?): LivelihoodEventScreenData? {
         return Gson().fromJson<LivelihoodEventScreenData>(savedEvent, type)
     }
     return null
+}
+
+private fun textColor(data1: String?, data2: String?): Color {
+    return if ((TextUtils.isEmpty(data1) || data1.equals(BLANK_STRING) || data1.equals("0")) || (TextUtils.isEmpty(
+            data2
+        ) || data2.equals(BLANK_STRING) || data2.equals("0"))
+    ) {
+        blueDark
+    } else {
+        if (data1 != data2) darkBlueColor else blueDark
+    }
 }

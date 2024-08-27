@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
@@ -125,14 +124,15 @@ fun EditHistoryScreen(
                             .padding(horizontal = dimen_10_dp)
                     ) {
                         customVerticalSpacer()
-                        itemsIndexed(
-                            viewModel.subjectLivelihoodEventSummaryUiModelList
-                        ) { index, subjectLivelihoodEventSummaryUiModel ->
+                        val items = viewModel.subjectLivelihoodEventSummaryUiModelList
+                        items(items.size) { index ->
+                            val currentItem = items[index]
+                            val nextItem = if (index < items.size - 1) items[index + 1] else null
                             EditHistoryRow(
-                                event = subjectLivelihoodEventSummaryUiModel,
+                                currentHistoryData = currentItem,
+                                nextHistoryData = nextItem,
                                 isRecentData = index == 0,
                                 isDeleted = isDeletedAllData
-
                             )
                         }
                         customVerticalSpacer()

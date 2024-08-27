@@ -86,7 +86,7 @@ const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
 const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
 const val DD_mmm_YY_FORMAT = "dd MMM, yy"
-const val DD_mmm_hh_MM_FORMAT = "dd MMM, hh:MM"
+const val DD_mmm_hh_mm_FORMAT = "dd MMM, hh:mm"
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 

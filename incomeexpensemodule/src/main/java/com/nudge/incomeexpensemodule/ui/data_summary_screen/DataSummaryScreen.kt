@@ -87,8 +87,10 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
+import com.nudge.core.ui.theme.incomeCardTopViewColor
 import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
@@ -226,12 +228,12 @@ fun DataSummaryScreen(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                 ) {
-                    if (viewModel.areEventsNotAvailableForSubject.value) {
+                    if (viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.isEmpty()) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            AddEventButton() {
+                            AddEventButton {
                                 navigateToAddEventScreen(
                                     navController = navController,
                                     subjectName = subjectName,
@@ -507,7 +509,9 @@ private fun EventView(
             ) {
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
                 EventDetails(subjectLivelihoodEventSummaryUiModel) {
-                    onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                    if (subjectLivelihoodEventSummaryUiModel.status != 2) {
+                        onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                    }
                 }
                 ViewEditHistoryView {
                     onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
@@ -586,6 +590,20 @@ private fun EventHeader(
     item: SubjectLivelihoodEventSummaryUiModel,
     livelihoodEventUiModels: List<LivelihoodEventUiModel>?
 ) {
+    if (item.status == 2) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(incomeCardTopViewColor)
+        ) {
+            Spacer(modifier = Modifier.weight(1.0f))
+            androidx.compose.material3.Text(
+                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                text = "Delete",
+                style = smallTextStyle.copy(redIconColor)
+            )
+        }
+    }
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -642,15 +660,16 @@ private fun EventDetails(
                 )
             }
         }
-
-        Icon(
-            imageVector = Icons.Default.ArrowForward,
-            contentDescription = "ArrowForward Icon",
-            modifier = Modifier
-                .size(dimen_24_dp)
-                .clickable { onClick() },
-            tint = blueDark
-        )
+        if (item.status != 2) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "ArrowForward Icon",
+                modifier = Modifier
+                    .size(dimen_24_dp)
+                    .clickable { onClick() },
+                tint = blueDark
+            )
+        }
 
     }
 }
