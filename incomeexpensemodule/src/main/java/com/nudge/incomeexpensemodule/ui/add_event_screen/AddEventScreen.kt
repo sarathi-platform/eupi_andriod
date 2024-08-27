@@ -161,7 +161,7 @@ fun AddEventScreen(
 
                 item {
                     TypeDropDownComponent(
-                        isEditAllowed = true,
+                        isEditAllowed = !showDeleteButton,
                         title = "Livelihood",
                         isMandatory = true,
                         sources = viewModel.livelihoodDropdownValue,
@@ -231,7 +231,7 @@ fun AddEventScreen(
 
                 item {
                     TypeDropDownComponent(
-                        isEditAllowed = true,
+                        isEditAllowed = !showDeleteButton,
                         title = "Events",
                         isMandatory = true,
                         selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
@@ -252,7 +252,6 @@ fun AddEventScreen(
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
-
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
                                 viewModel.validateForm()
                             }

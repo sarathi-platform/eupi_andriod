@@ -204,7 +204,7 @@ fun DataSummaryScreen(
             },
             onSearchValueChange = {},
             onBottomUI = {
-                if (!viewModel.areEventsNotAvailableForSubject.value) {
+                if (!viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.isEmpty()) {
                     BottomAppBar(
                         backgroundColor = Color.White,
                         elevation = 10.dp
