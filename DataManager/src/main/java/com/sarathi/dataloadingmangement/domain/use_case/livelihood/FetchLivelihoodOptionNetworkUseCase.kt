@@ -4,6 +4,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepository
 import javax.inject.Inject
 
@@ -29,8 +30,13 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                         SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             subjectId = subjectLivelihoodMapping.subjectId,
-                            primaryLivelihoodId =subjectLivelihoodMapping.selectedPrimaryLivelihood!! ,
-                            secondaryLivelihoodId = subjectLivelihoodMapping.selectedSecondaryLivelihood
+                            livelihoodId =subjectLivelihoodMapping.selectedPrimaryLivelihood!!,
+                            primaryLivelihoodId =1,
+                            secondaryLivelihoodId = 1,
+                            status = 1,
+                            type = LivelihoodTypeEnum.PRIMARY.typeId
+
+
                         )
                     )
                 }

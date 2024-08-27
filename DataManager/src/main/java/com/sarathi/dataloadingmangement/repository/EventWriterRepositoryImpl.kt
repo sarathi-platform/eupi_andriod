@@ -106,7 +106,7 @@ class EventWriterRepositoryImpl @Inject constructor(
             EventName.DELETE_SUBJECT_ATTENDANCE_EVENT -> {
                 requestPayload = (eventItem as SaveAttendanceEventDto).json()
             }
-            EventName.LIVELIHOOD_OPTION_EVENT ->{
+            EventName.LIVELIHOOD_OPTIONS_EVENT ->{
                 requestPayload = (eventItem as LivelihoodPlanActivityEventDto).json()
             }
 

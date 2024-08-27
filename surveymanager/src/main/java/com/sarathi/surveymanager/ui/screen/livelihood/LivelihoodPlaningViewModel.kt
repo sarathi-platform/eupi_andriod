@@ -11,6 +11,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.state.DialogState
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -20,7 +21,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihood
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.SaveLivelihoodMappingUseCase
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
+import com.sarathi.dataloadingmangement.model.events.LivelihoodTypeEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LivelihoodPlanningEvent
@@ -58,6 +61,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var checkDialogueValidation = mutableStateOf(false)
     var primaryLivelihoodId = mutableStateOf(-1)
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
+
 
     override fun <T> onEvent(event: T) {
 
@@ -97,28 +101,35 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         getSubjectLivelihoodMappingFromUseCase.invoke(subjectId!!)
 
 
-                    if (subjectLivelihoodMapping != null) {
+                    if (subjectLivelihoodMapping != null && subjectLivelihoodMapping.size!=0) {
                         val mLivelihoodUiEntityList = LivelihoodUiEntity.getLivelihoodUiEntityList(
                             livelihoodUiModelList = livelihoodList,
+
                             selectedIds = listOf(
-                                subjectLivelihoodMapping.primaryLivelihoodId,
-                                subjectLivelihoodMapping.secondaryLivelihoodId
+                                subjectLivelihoodMapping.first()?.livelihoodId.value(),
+                                subjectLivelihoodMapping.last()?.livelihoodId.value()
                             )
                         )
-                        checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
+//                        checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                         _livelihoodList.value = mLivelihoodUiEntityList
-                        primaryLivelihoodId.value = subjectLivelihoodMapping.primaryLivelihoodId
-                        secondaryLivelihoodId.value = subjectLivelihoodMapping.secondaryLivelihoodId
-                    } else {
+                        primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
+                        secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
+                    }
+                else {
                         val mLivelihoodUiEntityList =
                             LivelihoodUiEntity.getLivelihoodUiEntityList(
                                 livelihoodUiModelList = livelihoodList,
-                                selectedIds = listOf()
+                                selectedIds = listOf(
+
+                                )
                             )
                         _livelihoodList.value = mLivelihoodUiEntityList
                     }
                     checkButtonValidation()
+                    checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
+
                 }
+
             } catch (ex: Exception) {
                 CoreLogger.e(
                     tag = TAG,
@@ -130,11 +141,12 @@ class LivelihoodPlaningViewModel @Inject constructor(
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             }
+
         }
     }
 
-    private fun checkDialogueValidation(subjectLivelihoodMapping: SubjectLivelihoodMappingEntity) :Boolean{
-       return if((subjectLivelihoodMapping.primaryLivelihoodId!=null &&  subjectLivelihoodMapping.secondaryLivelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.primaryLivelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.secondaryLivelihoodId))true else false
+    private fun checkDialogueValidation(subjectLivelihoodMapping: List<SubjectLivelihoodMappingEntity?>) :Boolean{
+       return if((subjectLivelihoodMapping.first()?.livelihoodId!=null &&  subjectLivelihoodMapping.last()?.secondaryLivelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.first()?.livelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.last()?.livelihoodId)) true else false
     }
 
     fun setPreviousScreenData(
@@ -167,19 +179,41 @@ class LivelihoodPlaningViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
      fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
-            val subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity?
+            var subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity?
                         = subjectId?.let {
                             SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                        userId = saveLivelihoodMappingUseCase.getUserId(),
+                        subjectId = it,
+                        livelihoodId = primaryLivelihoodId.value,
+                        type = LivelihoodTypeEnum.PRIMARY.typeId,
+                        primaryLivelihoodId = 1,
+                        secondaryLivelihoodId = 1,
+                        status = 1
+                    )
+                }
+            var subjectLivelihoodMappingEntityy: SubjectLivelihoodMappingEntity?
+            subjectLivelihoodMappingEntityy= subjectId?.let {
+
+                SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                     userId = saveLivelihoodMappingUseCase.getUserId(),
                     subjectId = it,
-                    primaryLivelihoodId.value, secondaryLivelihoodId.value
+                    livelihoodId =   secondaryLivelihoodId.value,
+                    type =LivelihoodTypeEnum.SECONDARY.typeId,
+                    primaryLivelihoodId = 1,
+                    secondaryLivelihoodId = 1,
+                    status = 1
                 )
             }
-            val livelihoodPlanActivityDto = LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName()
-                , primaryLivelihoodId.value, secondaryLivelihoodId.value,
-                activityId!!,missionId!!,subjectId!!,DIDI)
-            livelihoodEventWriterUseCase.writeLivelihoodEvent(
-               livelihoodPlanActivityDto)
+            var livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
+            livelihoodTypeEventDto.add(LivelihoodTypeEventDto(primaryLivelihoodId.value,LivelihoodTypeEnum.PRIMARY.typeId))
+                    livelihoodTypeEventDto.add(LivelihoodTypeEventDto(secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId))
+            var livelihoodPlanActivityDto =
+                LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(),
+                    livelihoodTypeEventDto,
+                    activityId!!,missionId!!,subjectId!!,DIDI)
+                livelihoodEventWriterUseCase.writeLivelihoodEvent(
+                    livelihoodPlanActivityDto)
+
             taskStatusUseCase.markTaskCompleted(
                     taskId = taskId!!
                 )
@@ -194,7 +228,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
                     )
                 }
-                subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingForSubject(it) }
+            subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingPrimaryForSubject(it) }
+            subjectLivelihoodMappingEntityy?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingSecondaryForSubject(it) }
+
         }
     }
 }

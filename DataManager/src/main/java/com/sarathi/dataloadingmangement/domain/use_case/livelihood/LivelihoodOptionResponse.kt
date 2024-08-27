@@ -17,6 +17,8 @@ data class LivelihoodOptionResponse(
     val selectedSecondaryLivelihood: Int,
     @SerializedName("activityId")
     val activityId: Int?,
+    @SerializedName("type")
+    val type: Int,
    @SerializedName("status")
     val status: Int?,
 
