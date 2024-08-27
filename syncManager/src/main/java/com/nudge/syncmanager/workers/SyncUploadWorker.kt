@@ -1,8 +1,6 @@
 package com.nudge.syncmanager.workers
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -15,9 +13,9 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.MULTIPART_FORM_DATA
 import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
+import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
-import com.nudge.core.SYNC_DATE_TIME_FORMAT
 import com.nudge.core.SYNC_POST_SELECTION_DERIVE
 import com.nudge.core.SYNC_SELECTION_DERIVE
 import com.nudge.core.UPCM_USER
@@ -35,7 +33,6 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
-import com.nudge.core.model.response.SyncImageStatusResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.SyncApiRepository
@@ -48,8 +45,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
 
 @HiltWorker
 class SyncUploadWorker @AssistedInject constructor(
@@ -188,8 +183,6 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private suspend fun processEventList(eventList: List<SyncEventResponse>) {
-        val list = eventList.groupBy { it.requestId }.json()
-        Log.d(TAG, "processEventList: ${list.json()}")
         val eventSuccessList =
             eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
         val eventFailedList =
@@ -218,6 +211,11 @@ class SyncUploadWorker @AssistedInject constructor(
                 eventList = eventFailedList
             )
         }
+
+        if (eventList.isNotEmpty()) {
+            syncApiRepository.findRequestEvents(eventList, PRODUCER)
+        }
+
     }
 
     private suspend fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
@@ -364,10 +362,6 @@ class SyncUploadWorker @AssistedInject constructor(
                 ex,
                 true
             )
-//            handleFailedImageStatus(
-//                imageEventDetail = imageStatusEvent,
-//                errorMessage = ex.message ?: SOMETHING_WENT_WRONG
-//            )
         }
     }
 
@@ -381,21 +375,12 @@ class SyncUploadWorker @AssistedInject constructor(
             TAG,
             "handleFailedImageStatus: ${imageEventDetail.json()} ::Message: $errorMessage"
         )
-        syncApiRepository.updateImageEventStatus(
+        syncApiRepository.updateImageDetailsEventStatus(
             eventId = imageEventDetail.id,
             errorMessage = errorMessage,
-            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+            requestId = imageEventDetail.requestId ?: BLANK_STRING
         )
-    }
-
-    private suspend fun handleSuccessImageStatus(imageResponse: SyncImageStatusResponse) {
-        CoreLogger.d(applicationContext, TAG, "handleSuccessImageStatus: ${imageResponse.json()} ")
-        syncApiRepository.updateImageEventStatus(
-            eventId = imageResponse.clientId,
-            errorMessage = BLANK_STRING,
-            status = imageResponse.status
-        )
-
     }
 
     private suspend fun findImageEventAndImage(
@@ -485,18 +470,20 @@ fun createEventResponseList(
 }
 
 
-@SuppressLint("SimpleDateFormat")
+
 suspend fun fetchConsumerStatus(
     context: Context,
     syncApiRepository: SyncApiRepository,
     mobileNumber: String
 ) {
-    val date = SimpleDateFormat(SYNC_DATE_TIME_FORMAT).format(Date())
+    val requestIdList =
+        syncApiRepository.fetchAllRequestEventForConsumerStatus().map { it.requestId }
+
     val eventConsumerRequest = EventConsumerRequest(
-        requestId = BLANK_STRING,
-        mobile = mobileNumber,
-        endDate = date,
-        startDate = date
+        requestId = requestIdList,
+        mobile = BLANK_STRING,
+        endDate = BLANK_STRING,
+        startDate = BLANK_STRING
     )
     CoreLogger.d(
         context = context,

@@ -13,6 +13,7 @@ import com.nudge.core.EventsTable
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.datamodel.RequestIdCountModel
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
 import com.nudge.core.utils.SyncType
@@ -41,8 +42,16 @@ interface EventsDao {
 
     @Query("DELETE FROM events_table")
     fun deleteAllEvents()
-    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount WHERE id = :clientId")
-    fun updateEventStatus(clientId: String, newStatus: String,modifiedDate:Date,errorMessage:String,retryCount:Int)
+
+    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount,request_id =:requestId WHERE id = :clientId")
+    fun updateEventStatus(
+        clientId: String,
+        newStatus: String,
+        modifiedDate: Date,
+        errorMessage: String,
+        retryCount: Int,
+        requestId: String
+    )
 
     @SuppressLint("SuspiciousIndentation")
     @Transaction
@@ -54,7 +63,8 @@ interface EventsDao {
                     newStatus = EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus,
                     modifiedDate = modifiedDate,
                     errorMessage = BLANK_STRING,
-                    retryCount = 0
+                    retryCount = 0,
+                    requestId = it.requestId
                 )
             }
     }
@@ -74,7 +84,8 @@ interface EventsDao {
                     newStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                     modifiedDate = modifiedDate,
                     errorMessage = it.eventResult.message ?: SOMETHING_WENT_WRONG,
-                    retryCount=retryCount
+                    retryCount = retryCount,
+                    requestId = it.requestId
                 )
             }
 
@@ -89,7 +100,8 @@ interface EventsDao {
                 newStatus = it.status,
                 modifiedDate = modifiedDate,
                 errorMessage = it.errorMessage,
-                retryCount = 0
+                retryCount = 0,
+                requestId = it.requestId
             )
         }
     }
@@ -212,4 +224,10 @@ interface EventsDao {
         mobileNumber: String,
         eventIds: List<String>
     ): List<ImageEventDetailsModel>
+
+    @Query("SELECT COUNT(*) from $EventsTable where request_id =:requestId and mobile_number=:mobileNumber")
+    fun fetchEventCountDetailForRequestId(requestId: String, mobileNumber: String): Int
+
+    @Query("SELECT status,request_id AS requestId,COUNT(*) AS count from $EventsTable WHERE request_id =:requestId AND mobile_number =:mobileNumber  group by request_id, status")
+    fun fetchEventStatusCount(requestId: String, mobileNumber: String): List<RequestIdCountModel>
 }
