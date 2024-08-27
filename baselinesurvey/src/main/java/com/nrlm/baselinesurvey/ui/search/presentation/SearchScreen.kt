@@ -73,6 +73,7 @@ fun SearchScreens(
     modifier: Modifier = Modifier,
     viewModel: SearchScreenViewModel,
     surveyId: Int,
+    sectionId: Int,
     surveyeeId: Int,
     fromScreen: String = ARG_FROM_SECTION_SCREEN,
     navController: NavController
@@ -84,7 +85,7 @@ fun SearchScreens(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.initSearch(surveyId)
+        viewModel.initSearch(surveyId, sectionId)
     }
 
     var selectedTabIndex = remember { mutableIntStateOf(0) }
@@ -280,10 +281,16 @@ fun SearchScreens(
                                 }
                             }
                         }, modifier = Modifier.clickable {
-                            navController.navigateToSelectedSectionFromSearch(surveyId = surveyId, didiId = surveyeeId,
-                                sectionId = if (item.itemParentId != -1) item.itemParentId else item.itemId, isFromQuestionSearch = fromScreen == ARG_FROM_QUESTION_SCREEN)
-                           /*showCustomToast(context, "item-> sectionName${item.sectionName}," +
-                                    " questionTitle: ${item.questionTitle}")*/
+                            if (sectionId == 0) {
+                                navController.navigateToSelectedSectionFromSearch(
+                                    surveyId = surveyId,
+                                    didiId = surveyeeId,
+                                    sectionId = if (item.itemParentId != -1) item.itemParentId else item.itemId,
+                                    isFromQuestionSearch = fromScreen == ARG_FROM_QUESTION_SCREEN
+                                )
+                            } else {
+                                navController.navigateUp()
+                            }
                         })
                         Spacer(modifier = Modifier
                             .fillMaxWidth()

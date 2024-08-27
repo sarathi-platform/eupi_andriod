@@ -327,7 +327,8 @@ fun NestedLazyList(
             item {
                 ComplexSearchComponent {
                     navController.navigateToSearchScreen(
-                        surveyeId = sectionDetails.sectionId,
+                        surveyeId = sectionDetails.surveyId,
+                        sectionId = sectionDetails.sectionId,
                         surveyeeId = surveyeeId,
                         fromScreen = ARG_FROM_QUESTION_SCREEN
                     )
