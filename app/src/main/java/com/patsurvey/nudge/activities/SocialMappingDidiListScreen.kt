@@ -219,7 +219,7 @@ fun SocialMappingDidiListScreen(
     if (showLoadConfirmationDialog.value) {
         ShowCustomDialog(
             title = BLANK_STRING,
-            message = "Are you sure you want to continue? You wont be able to make changes to this section once it's completed",
+            message = stringResource(R.string.are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed),
             positiveButtonTitle = stringResource(id = R.string.ok),
             negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onPositiveButtonClick = {
