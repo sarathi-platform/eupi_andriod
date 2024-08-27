@@ -14,15 +14,15 @@
     <string name="not_available">"मोननो थाङा "</string>
     <string name="share">"राननानै ला "</string>
     <string name="download">"दाउनलड "</string>
-    <string name="generate_form_e">र्फम E सोरजि</string>
+    <string name="generate_form_e">र्फम C सोरजि</string>
     <string name="go_back">"थांफिन "</string>
-    <string name="submit_form_e">र्फम E खौ जमा हो</string>
-    <string name="attach_physical_form_e_signed_sealed">"फिसिकेल र्फम E खौ सुजाब( सागान आरो सिल) "</string>
+    <string name="submit_form_e">र्फम C खौ जमा हो</string>
+    <string name="attach_physical_form_e_signed_sealed">"फिसिकेल र्फम C खौ सुजाब( सागान आरो सिल) "</string>
     <string name="activity_completed_unable_to_edit">"हाबाफारिया जाजुबनायनि उनाव नों सुजुनो हाया "</string>
     <string name="refresh_failed_please_try_again">"रिफ्रेस फेलें जादों, अननानै फिन नाजा "</string>
     <string name="csg_disbursed">सि.एस.जि बिलायनाय जाबाय</string>
     <string name="activity_completion_message">"नोंथाङा जाफुंसारै %1$s हाबाफारिखौ फोजोबबाय "</string>
-    <string name="form_e_generated_successfully_for_didis">"%1$s आब'नि थाखाय जाफुंसारै र्फम E खौ दिहुनदोंमोन"</string>
+    <string name="form_e_generated_successfully_for_didis">%1$s आब\'नि थाखाय जाफुंसारै र्फम C खौ दिहुनदोंमोन</string>
     <string name="select">सायख\'</string>
     <string name="edit_disable_message">"खामानिया जाजुबनायनि उनाव सुजुनायखौ होनाय जानाय नङा "</string>
     <string name="submit">"जमा हो "</string>
@@ -40,12 +40,12 @@
     <string name="amount_limit">रांनि सिमाया जाबाय %1$d</string>
     <string name="amount_limit_message">बिबाङा गनायथि होनाय बिबांनिख्रुइ बांसिनः %1$d</string>
     <string name="summary">गुदिखिथागुदिखिथा</string>
-    <string name="form_e_generated">र्फम E सोरजिनाय</string>
+    <string name="form_e_generated">र्फम C सोरजिनाय</string>
     <string name="done">खालामनाय जाबाय</string>
     <string name="more">"+%1$s गोबां  "</string>
     <string name="ok">"जागोन "</string>
     <string name="disbursement_summary">बिलायनायनि सुंद\' फोरमायथि</string>
-    <string name="attach_physical_form_e">फिसिकेल र्फम E खौ सरजाब</string>
+    <string name="attach_physical_form_e">फिसिकेल र्फम C खौ सरजाब</string>
     <string name="close">बन्द खालाम</string>
     <string name="didis">आब’मोन</string>
     <string name="file_not_exists">"फाइलआ गैया "</string>
@@ -58,6 +58,7 @@
     <string name="exit">"ओंखार "</string>
     <string name="cancel">"दान "</string>
     <string name="search">"नागिर "</string>
+    <string name="search_for_mission">मिसनजों नागिर</string>
     <string name="search_by_didis">Search by didis</string>
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
@@ -66,8 +67,8 @@
     <string name="select_first_livelihood_for_didi">"आब'नि थाखाय गिबि जिउ राहा सायख'"</string>
     <string name="select_second_livelihood_for_didi">"आब'नि थाखाय नैथि जिउ राहा सायख'"</string>
     <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
-    <string name="proceed">आगे बढ़ना</string>
-    <string name="cancel_text">रद्द करना</string>
+    <string name="proceed">"दावगा "</string>
+    <string name="cancel_text">"दान "</string>
     <string name="are_you_sure">"नों थार नामा? "</string>
 
 </resources>

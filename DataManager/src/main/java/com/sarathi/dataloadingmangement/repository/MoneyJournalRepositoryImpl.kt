@@ -13,7 +13,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEv
 import javax.inject.Inject
 
 class MoneyJournalRepositoryImpl @Inject constructor(
-    val moneyJournalDao: MoneyJournalDao, val coreSharedPrefs: CoreSharedPrefs
+    val moneyJournalDao: MoneyJournalDao,
+    val coreSharedPrefs: CoreSharedPrefs
 ) : IMoneyJournalRepository {
     override suspend fun saveAndUpdateMoneyJournalTransaction(
         amount: Int,

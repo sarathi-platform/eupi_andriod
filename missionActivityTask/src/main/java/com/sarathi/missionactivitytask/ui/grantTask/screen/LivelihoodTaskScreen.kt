@@ -349,38 +349,34 @@ fun LivelihoodPlaningTaskScreen(
                                 )
                             })
 
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = dimen_16_dp)
-                            ) {
-                                itemsIndexed(
-                                    items = activities
-                                ) { index, activity ->
-                                    Row(verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        LinearProgressBarComponent(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .padding(10.dp)
-                                                .clip(RoundedCornerShape(14.dp)),
-                                            progress = (activity.pendingTaskCount?.toFloat()
-                                                ?.div(activity.taskCount!!)
-                                                ?: 0) as Float,
-                                        )
-                                        Spacer(modifier = Modifier.width(dimen_5_dp))
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = dimen_16_dp)
+                        ) {
+                            itemsIndexed(
+                                items = activities
+                            ) { index, activity ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    LinearProgressBarComponent(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clip(RoundedCornerShape(14.dp)),
+                                        progress = (activity.pendingTaskCount?.toFloat()
+                                            ?.div(activity.taskCount!!)
+                                            ?: 0) as Float,
+                                    )
+                                    Spacer(modifier = Modifier.width(dimen_5_dp))
 
-                                        Text(
-                                            text = "${activity.pendingTaskCount} / ${activity.taskCount} ",
-                                            style = smallTextStyle.copy(color = blueDark),
-                                        )
-                                    }
+                                    Text(
+                                        text = "${activity.pendingTaskCount} / ${activity.taskCount} ",
+                                        style = smallTextStyle.copy(color = blueDark),
+                                    )
                                 }
-                                }
-
-
-
-
+                            }
+                        }
                     }
                 }
 

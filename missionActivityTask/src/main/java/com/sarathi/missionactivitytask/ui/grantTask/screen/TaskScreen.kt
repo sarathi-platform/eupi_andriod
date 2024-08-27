@@ -83,7 +83,7 @@ fun TaskScreen(
     isProgressBarVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
     onSettingClick: () -> Unit,
-    taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit
+    taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController, itemsInCategory: List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>?) -> Unit
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
@@ -265,13 +265,13 @@ fun TaskScreen(
                                     CustomVerticalSpacer()
                                 }
 
-                                taskScreenContent(viewModel, navController)
+                                taskScreenContent(viewModel, navController, itemsInCategory)
                             }
 
                         } else {
                             if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
 
-                                taskScreenContent(viewModel, navController)
+                                taskScreenContent(viewModel, navController, null)
 
                             }
                         }
@@ -283,10 +283,15 @@ fun TaskScreen(
     )
 }
 
-fun LazyListScope.TaskScreenContent(viewModel: TaskScreenViewModel, navController: NavController) {
+
+fun LazyListScope.TaskScreenContent(
+    viewModel: TaskScreenViewModel,
+    navController: NavController,
+    items: List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>?
+) {
 
     itemsIndexed(
-        items = viewModel.filterList.value.entries.toList()
+        items = items ?: viewModel.filterList.value.entries.toList()
     ) { _, task ->
 
         TaskRowView(viewModel, navController, task)

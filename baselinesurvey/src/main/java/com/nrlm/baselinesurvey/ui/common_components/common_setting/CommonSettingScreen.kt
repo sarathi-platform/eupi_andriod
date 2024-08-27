@@ -89,7 +89,7 @@ fun CommonSettingScreen(
     } else {
         if (activityForm.isNotEmpty()) {
             activityForm.forEach {
-                formList.add("${it.missionName} - ${"Form E"}")
+                formList.add("${it.missionName} - ${stringResource(R.string.form_e)}")
             }
         }
     }
