@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
-    private val fetchMissionDataUseCase: FetchMissionDataUseCase,
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
@@ -77,7 +77,7 @@ class MissionScreenViewModel @Inject constructor(
     private fun initMissionScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateMissionActivityStatus()
-            _missionList.value = fetchMissionDataUseCase.getAllMission()
+            _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
             _filterMissionList.value = _missionList.value
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -88,8 +88,10 @@ class MissionScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchMissionDataUseCase.getAllMissionList()
-            initMissionScreen()
+            fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
+                initMissionScreen()
+            }
+            )
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

@@ -47,19 +47,24 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
     ) {
 
         composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route,
-            arguments = listOf(navArgument(ARG_MISSION_ID) {
-                type = NavType.IntType
-            },
+            arguments = listOf(
+                navArgument(ARG_MISSION_ID) {
+                    type = NavType.IntType
+                },
                 navArgument(ARG_MISSION_NAME) {
                     type = NavType.StringType
-                })) {
+                },
+
+                )
+        ) {
             DataLoadingScreenComponent(
                 viewModel = hiltViewModel(),
                 navController = navController,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME)
-                    ?: com.patsurvey.nudge.utils.BLANK_STRING
-            )
+                    ?: com.patsurvey.nudge.utils.BLANK_STRING,
+
+                )
         }
         composable(route = HomeScreens.MISSION_SUMMARY_SCREEN.route, arguments = listOf(
             navArgument(name = ARG_MISSION_ID) {

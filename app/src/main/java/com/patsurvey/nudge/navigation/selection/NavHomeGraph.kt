@@ -926,7 +926,7 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
                 viewModel = hiltViewModel(),
                 navController = navController,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
-                missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING
+                missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
             )
         }
     }

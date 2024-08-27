@@ -70,7 +70,7 @@ class MissionRepositoryImpl @Inject constructor(
         missionId: Int
     ): ApiResponseModel<List<ActivityResponse>> {
         val activityRequest =
-            ActivityRequest(programId = programId, missionId = programId)
+            ActivityRequest(programId = programId, missionId = missionId)
 
         return apiInterface.getActivityDetails(activityRequest)
     }
@@ -191,10 +191,18 @@ class MissionRepositoryImpl @Inject constructor(
         }
     }
 
+
     override suspend fun saveActivityConfig(
         missionActivityModel: ActivityResponse,
         missionId: Int,
     ) {
+        missionActivityModel.activityConfig?.activityTitle?.let {
+            saveActivityLanguageAttributes(
+                missionId,
+                missionActivityModel.id,
+                it
+            )
+        }
         deleteContentConfig(missionActivityModel.id, ContentCategoryEnum.ACTIVITY.ordinal)
         saveContentConfig(
             missionActivityModel.id,
@@ -387,6 +395,11 @@ class MissionRepositoryImpl @Inject constructor(
         id: Int,
         activityTitle: List<ActivityTitle>
     ) {
+        activityLanguageDao.deleteActivityLanguageAttributeForActivity(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = id
+        )
         activityTitle.forEach {
             activityLanguageDao.insertActivityLanguage(
                 ActivityLanguageAttributesEntity.getActivityLanguageAttributesEntity(

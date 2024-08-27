@@ -47,6 +47,10 @@ interface CorePrefRepo {
 
     fun isDataLoaded(): Boolean
 
+    fun setMissionDataLoaded(isDataLoaded: Boolean, missionId: Int, programId: Int)
+
+    fun isMissionDataLoaded(missionId: Int, programId: Int): Boolean
+
     fun isDidiTabDataLoaded(): Boolean
 
     fun setDidiTabDataLoaded(isDataLoaded: Boolean)

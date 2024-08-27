@@ -99,7 +99,8 @@ fun NavGraphBuilder.MatNavigation(
                         navController,
                         missionName = mission.description,
                         missionId = mission.missionId,
-                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
+                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name,
+                        programId = mission.programId
                     )
                 }
             }
@@ -114,6 +115,9 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_MISSION_COMPLETED) {
                     type = NavType.BoolType
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
                 })
         ) {
             ActivityScreen(
@@ -144,9 +148,6 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                },
-                navArgument(name = ARG_PROGRAM_ID) {
-                    type = NavType.IntType
                 }
             )
         ) {
@@ -552,9 +553,10 @@ fun navigateToActivityScreen(
     navController: NavController,
     missionId: Int,
     missionName: String,
-    isMissionCompleted: Boolean
+    isMissionCompleted: Boolean,
+    programId: Int
 ) {
-    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted")
+    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted/$programId")
 }
 
 fun navigateToAddImageScreen(navController: NavController, activityId: Int, taskIdList: String) {

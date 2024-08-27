@@ -48,21 +48,35 @@ class FetchAllDataUseCase @Inject constructor(
         isRefresh: Boolean,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
     ) {
-        fetchMissionDataUseCase.invoke(missionId, programId)
+        if (isRefresh || !coreSharedPrefs.isMissionDataLoaded(missionId = missionId, programId)) {
+
+            fetchMissionDataUseCase.invoke(missionId, programId)
         fetchSurveyDataFromNetworkUseCase.invoke(missionId)
         if (!isRefresh) {
             fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
             formUseCase.invoke(missionId)
-            if (missionId == 3 || missionId == 4) {
+            if (missionId == 2 || missionId == 3) {
                 moneyJournalUseCase.invoke()
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
             contentDownloaderUseCase.surveyRelateContentDownlaod()
         }
-        onComplete(true, BLANK_STRING)
+            coreSharedPrefs.setMissionDataLoaded(
+                isDataLoaded = true,
+                missionId = missionId,
+                programId = programId
+            )
+
+            onComplete(true, BLANK_STRING)
+
+        } else {
+            onComplete(true, BLANK_STRING)
+
+        }
 
     }
+
 
 
 }

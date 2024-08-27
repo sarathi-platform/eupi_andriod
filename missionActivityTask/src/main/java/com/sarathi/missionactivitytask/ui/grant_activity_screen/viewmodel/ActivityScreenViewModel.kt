@@ -42,7 +42,7 @@ class ActivityScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                initActivityScreen()
+                loadMissionRelatedData(isRefresh = false)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -55,14 +55,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAllDataUseCase.fetchMissionRelatedData(
-                missionId = missionId,
-                programId = programId,
-                isRefresh = false,
-                { isSuccess, successMsg ->
 
-
-                })
             _activityList.value = getActivityUseCase.getActivities(missionId)
             getContentValue(_activityList.value)
             checkButtonValidation()
@@ -74,21 +67,19 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
 
-//    private fun loadMissionRelatedData(isRefresh: Boolean) {
-//        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//
-//            fetchAllDataUseCase.invoke(missionId = missionId, { isSuccess, successMsg ->
-//                // Temp method to be removed after baseline is migrated to Grant flow.
-//                updateStatusForBaselineMission() { success ->
-//                    CoreLogger.i(
-//                        tag = "MissionScreenViewMode",
-//                        msg = "updateStatusForBaselineMission: success: $success"
-//                    )
-//                    initActivityScreen()
-//                }
-//            }, isRefresh = isRefresh)
-//        }
-//    }
+    private fun loadMissionRelatedData(isRefresh: Boolean) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            fetchAllDataUseCase.fetchMissionRelatedData(
+                missionId = missionId,
+                programId = programId,
+                isRefresh = false,
+                { isSuccess, successMsg ->
+
+                    initActivityScreen()
+                })
+        }
+    }
 
     fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean, programId: Int) {
         this.missionId = missionId
