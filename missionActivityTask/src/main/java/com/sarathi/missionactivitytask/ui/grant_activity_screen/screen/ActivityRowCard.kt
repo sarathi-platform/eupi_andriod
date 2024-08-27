@@ -95,6 +95,8 @@ fun ActivityRowCard(
                             Locale.ENGLISH
                         ), ActivityTypeEnum.BASIC.name.lowercase(
                             Locale.ENGLISH
+                        ), ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(
+                            Locale.ENGLISH
                         ) -> {
                             navigateToSurveyTaskScreen(
                                 navController,
@@ -104,16 +106,16 @@ fun ActivityRowCard(
                             )
                         }
 
-                    ActivityTypeEnum.SELECT.name.lowercase(
-                        Locale.ENGLISH
-                    ) -> {
-                    navigateToActivitySelectTaskScreen(
-                        navController,
-                        missionId = activity.missionId,
-                        activityId = activity.activityId,
-                        activityName = activity.description
-                    )
-                }
+                        ActivityTypeEnum.SELECT.name.lowercase(
+                            Locale.ENGLISH
+                        ) -> {
+                            navigateToActivitySelectTaskScreen(
+                                navController,
+                                missionId = activity.missionId,
+                                activityId = activity.activityId,
+                                activityName = activity.description
+                            )
+                        }
                     }
                 }
             }
