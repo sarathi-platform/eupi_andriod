@@ -275,6 +275,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }
             }
         }
+
     }
 
     private fun getOptionItemEntityState(

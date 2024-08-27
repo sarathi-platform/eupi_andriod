@@ -43,6 +43,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.roundOffDecimalFloat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -158,7 +159,7 @@ class SyncHomeViewModel @Inject constructor(
         CoreLogger.d(
             CoreAppDetails.getApplicationContext(),
             "SyncHomeViewModel",
-            "calculateBarProgress $type :: Total Percentage: $progState"
+            "calculateBarProgress $type :: Total Percentage: ${roundOffDecimalFloat((progState ?: 0f) * 100)}%"
         )
         return progState
     }

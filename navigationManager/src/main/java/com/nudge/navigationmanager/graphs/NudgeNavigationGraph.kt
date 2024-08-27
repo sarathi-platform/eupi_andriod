@@ -82,10 +82,11 @@ object NudgeNavigationGraph {
  */
 fun NavController.navigateToSearchScreen(
     surveyeId: Int,
+    sectionId: Int = 0,
     surveyeeId: Int,
     fromScreen: String
 ) {
-    this.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId/$surveyeeId/$fromScreen")
+    this.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId/$sectionId/$surveyeeId/$fromScreen")
 }
 
 fun NavController.navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int,sectionId:Int) {
@@ -175,7 +176,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}")
 
     object SearchScreen :
-        HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_FROM_SCREEN.value}}")
+        HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_FROM_SCREEN.value}}")
 
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
