@@ -6,29 +6,38 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
+import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.R
 import com.nudge.core.getCurrentTimeInMillis
+import com.nudge.core.getDate
+import com.nudge.core.ui.date_picker_component.datepicker.DatePicker
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.searchFieldBg
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +66,23 @@ fun CustomDatePickerComponent(
                 )
             }
         ) {
-            DatePicker(
+            CustomVerticalSpacer()
+            Text(
+                text = datePickerProperties.state.selectedDateMillis.getDate(pattern = DD_MMM_YYYY_FORMAT),
+                style = MaterialTheme.typography.headlineLarge,
+                color = blueDark,
+                modifier = Modifier.padding(horizontal = dimen_8_dp)
+            )
+            Divider(thickness = dimen_1_dp, color = Color.Black)
+            DatePicker(onDateSelected = { yrs, month, day ->
+                val calender = Calendar.getInstance()
+                calender.set(yrs, month, day)
+                val dateInLong = calender.timeInMillis
+                datePickerProperties.state.setSelection(dateInLong)
+                onConfirmButtonClicked()
+            })
+
+            /*DatePicker(
                 state = datePickerProperties.state,
                 dateValidator = datePickerProperties.dateValidator,
                 dateFormatter = datePickerProperties.dateFormatter,
@@ -65,7 +90,7 @@ fun CustomDatePickerComponent(
                 headline = datePickerProperties.headline,
                 showModeToggle = datePickerProperties.showModeToggle,
                 colors = datePickerDialogProperties.colors
-            )
+            )*/
         }
     }
 

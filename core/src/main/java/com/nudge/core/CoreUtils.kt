@@ -1082,7 +1082,7 @@ fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
     if (this == null)
         return BLANK_STRING
 
-    val formatter = SimpleDateFormat(pattern)
+    val formatter = SimpleDateFormat(pattern, Locale.ENGLISH)
     return formatter.format(Date(this))
 }
 
