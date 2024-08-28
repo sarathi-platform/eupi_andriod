@@ -276,10 +276,10 @@ class DataSummaryScreenViewModel @Inject constructor(
     fun setPreviousScreenData(mSubjectId: Int) {
         subjectId = mSubjectId
     }
+    //Todo UNCOMENT After livelihood Mapping Refactor
 
     private fun loadAddDataSummaryData(subjectId: Int) {
 
-        //Todo UNCOMENT After livelihood Mapping Refactor
 //        ioViewModelScope {
 //            try {
 //                fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
@@ -296,8 +296,8 @@ class DataSummaryScreenViewModel @Inject constructor(
 //                subjectLivelihoodMapping?.let {
 //
 //                    val livelihoodIds = listOf(
-//                        it.primaryLivelihoodId,
-//                        it.secondaryLivelihoodId
+//                        it.first()?.livelihoodId.value(),
+//                        it.last()?.livelihoodId.value()
 //                    )
 //
 //                    val livelihoodEventList = fetchLivelihoodEventUseCase.invoke(livelihoodIds)
