@@ -73,6 +73,7 @@ fun ActivityScreen(
                 ActivityRowCard(
                     missionId = missionId,
                     activities = viewModel.activityList.value,
+                    programId = programId,
                     navController = navController,
                 ) { contentValue, contentKey, contentType, contentTitle ->
 

@@ -211,6 +211,7 @@ fun DatePickerComponent(
                         val month = calendar[Calendar.MONTH]
                         val day = calendar[Calendar.DAY_OF_MONTH]
                         DatePickerDialog(
+
                             context,
                             R.style.my_dialog_theme,
                             { _, selectedYear, selectedMonth, selectedDay ->

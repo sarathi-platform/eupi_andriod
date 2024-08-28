@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
@@ -19,11 +19,12 @@ import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
-import java.util.Locale
 import com.sarathi.missionactivitytask.utils.getFilePathUri
+import java.util.Locale
 
 @Composable
 fun ActivityRowCard(
+    programId: Int,
     missionId: Int,
     navController: NavController,
     contents: List<BasicContent> = listOf(),
@@ -69,12 +70,13 @@ fun ActivityRowCard(
                         )
                     ) {
                         navigateToGrantTaskScreen(
-                        navController,
-                        missionId = activity.missionId,
-                        activityId = activity.activityId,
-                        activityName = activity.description
-                    )
-                }
+                            navController,
+                            missionId = activity.missionId,
+                            activityId = activity.activityId,
+                            activityName = activity.description,
+                            programId = programId
+                        )
+                    }
                 }
             }
             item {

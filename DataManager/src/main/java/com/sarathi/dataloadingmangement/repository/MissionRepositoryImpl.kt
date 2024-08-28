@@ -283,7 +283,7 @@ class MissionRepositoryImpl @Inject constructor(
             val taskCount =
                 taskDao.getTaskByIdCount(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    taskId = task.id
+                    taskId = task.id,
                 )
             if (taskCount == 0) {
                 taskDao.insertActivityTask(

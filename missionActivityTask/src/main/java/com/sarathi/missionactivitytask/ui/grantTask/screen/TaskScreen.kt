@@ -68,6 +68,7 @@ import com.sarathi.surveymanager.ui.component.ButtonPositive
 fun TaskScreen(
     navController: NavController,
     viewModel: TaskScreenViewModel,
+    programId: Int,
     missionId: Int,
     activityName: String,
     activityId: Int,
@@ -94,7 +95,7 @@ fun TaskScreen(
 
         })
     LaunchedEffect(taskList?.size) {
-        viewModel.setMissionActivityId(missionId, activityId)
+        viewModel.setMissionActivityId(missionId, activityId, programId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
     ToolBarWithMenuComponent(
