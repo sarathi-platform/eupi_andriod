@@ -110,7 +110,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 subjectLivelihoodMapping.last()?.livelihoodId.value()
                             )
                         )
-//                        checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                         _livelihoodList.value = mLivelihoodUiEntityList
                         primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
@@ -179,7 +178,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
      fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
-            var subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity?
+            var subjectLivelihoodPrimaryMappingEntity: SubjectLivelihoodMappingEntity?
                         = subjectId?.let {
                             SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                         userId = saveLivelihoodMappingUseCase.getUserId(),
@@ -191,8 +190,8 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         status = 1
                     )
                 }
-            var subjectLivelihoodMappingEntityy: SubjectLivelihoodMappingEntity?
-            subjectLivelihoodMappingEntityy= subjectId?.let {
+            var subjectLivelihoodSecondaryMappingEntity: SubjectLivelihoodMappingEntity?
+                     = subjectId?.let {
 
                 SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                     userId = saveLivelihoodMappingUseCase.getUserId(),
@@ -204,10 +203,10 @@ class LivelihoodPlaningViewModel @Inject constructor(
                     status = 1
                 )
             }
-            var livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
+            val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
             livelihoodTypeEventDto.add(LivelihoodTypeEventDto(primaryLivelihoodId.value,LivelihoodTypeEnum.PRIMARY.typeId))
                     livelihoodTypeEventDto.add(LivelihoodTypeEventDto(secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId))
-            var livelihoodPlanActivityDto =
+            val livelihoodPlanActivityDto =
                 LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(),
                     livelihoodTypeEventDto,
                     activityId!!,missionId!!,subjectId!!,DIDI)
@@ -228,8 +227,8 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
                     )
                 }
-            subjectLivelihoodMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingPrimaryForSubject(it) }
-            subjectLivelihoodMappingEntityy?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingSecondaryForSubject(it) }
+            subjectLivelihoodPrimaryMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingPrimaryForSubject(it) }
+            subjectLivelihoodSecondaryMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingSecondaryForSubject(it) }
 
         }
     }

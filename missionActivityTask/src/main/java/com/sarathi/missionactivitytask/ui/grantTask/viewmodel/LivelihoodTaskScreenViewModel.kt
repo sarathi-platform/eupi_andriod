@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -67,10 +68,10 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         }
     }
     fun getPrimaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.first()?.livelihoodId.value() }?.name.value()
+        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.PRIMARY.typeId && it.status==1 }?.livelihoodId.value() }?.name.value()
     }
     fun getSecondaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.last()?.livelihoodId.value() }?.name.value()
+        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.SECONDARY.typeId && it.status==1  }?.livelihoodId.value() }?.name.value()
     }
      fun getActivityList(missionId: Int){
 

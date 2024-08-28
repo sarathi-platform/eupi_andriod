@@ -15,7 +15,7 @@ interface SubjectLivelihoodMappingDao {
     @Insert
     suspend fun insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllSubjectLivehoodMapping(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
+    fun insertAllSubjectLivelihoodMapping(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
 
     @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set  status =:status where userId = :userId and subjectId = :subjectId")
     suspend fun updatePrimaryLivelihoodForSubject(

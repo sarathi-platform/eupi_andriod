@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
@@ -29,12 +30,25 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     subjectLivelihoodMappingEntities.add(
                         SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            subjectId = subjectLivelihoodMapping.subjectId,
-                            livelihoodId =subjectLivelihoodMapping.selectedPrimaryLivelihood!!,
+                            subjectId = subjectLivelihoodMapping.didiId,
+                            livelihoodId =subjectLivelihoodMapping.livelihoodDTO.find { it?.order==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                            primaryLivelihoodId =1,
+                            secondaryLivelihoodId = 1,
+                            status =1,
+                            type = subjectLivelihoodMapping.livelihoodDTO.first().order
+
+
+                        )
+                    )
+                    subjectLivelihoodMappingEntities.add(
+                        SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            subjectId = subjectLivelihoodMapping.didiId,
+                            livelihoodId =subjectLivelihoodMapping.livelihoodDTO.find { it?.order==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value(),
                             primaryLivelihoodId =1,
                             secondaryLivelihoodId = 1,
                             status = 1,
-                            type = LivelihoodTypeEnum.PRIMARY.typeId
+                            type = subjectLivelihoodMapping.livelihoodDTO.last().order
 
 
                         )
