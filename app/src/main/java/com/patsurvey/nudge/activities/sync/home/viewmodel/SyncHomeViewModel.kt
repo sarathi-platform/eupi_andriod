@@ -17,6 +17,7 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.BASELINE
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.FAILED_EVENT_STRING
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.SARATHI
@@ -48,6 +49,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -73,6 +75,8 @@ class SyncHomeViewModel @Inject constructor(
     val failedEventList: State<List<Events>> get() = _failedEventList
 
     private val _loaderState = mutableStateOf(LoaderState(false))
+    val loaderState: State<LoaderState> get() = _loaderState
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -290,5 +294,19 @@ class SyncHomeViewModel @Inject constructor(
 
     private fun generateZipFileName(): String {
         return "${getFirstName(syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserName())}_${syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()}_${SARATHI}_Failed_Events_${System.currentTimeMillis()}"
+    }
+
+    fun refreshConsumerStatus() {
+        job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            CoreLogger.d(
+                CoreAppDetails.getApplicationContext(),
+                "SyncHomeViewModel",
+                "PullToRefresh: Get Sync Consumer Status"
+            )
+            syncEventDetailUseCase.syncAPIUseCase.fetchConsumerEventStatus()
+            withContext(CoreDispatchers.mainDispatcher) {
+                loaderState.value.isLoaderVisible = false
+            }
+        }
     }
 }
