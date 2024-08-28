@@ -420,7 +420,10 @@ fun EventsListHeaderWithDropDownFilter(
 
 
         Text(
-            if (showMoreItems) "All Events:" else "Last $DEFAULT_EVENT_LIST_VIEW_SIZE events:",
+            if (showMoreItems) stringResource(R.string.all_events) else stringResource(
+                R.string.last_events,
+                DEFAULT_EVENT_LIST_VIEW_SIZE
+            ),
             style = getTextColor(defaultTextStyle)
         )
         MeasureUnconstrainedViewWidthComponent(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
@@ -465,7 +468,9 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = if (showMoreItems) "Show Less" else "Show more",
+                    text = if (showMoreItems) stringResource(R.string.show_less) else stringResource(
+                        R.string.show_more
+                    ),
                     textAlign = TextAlign.Center,
                     style = getTextColor(defaultTextStyle),
                 )
@@ -502,11 +507,7 @@ private fun EventView(
             filteredSubjectLivelihoodEventSummaryUiModelList.toList()
                 .take(DEFAULT_EVENT_LIST_VIEW_SIZE)
         ) { index, subjectLivelihoodEventSummaryUiModel ->
-            Column(modifier = Modifier
-                .clickable {
-                    //  onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
-                }
-            ) {
+            Column {
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
                 EventDetails(subjectLivelihoodEventSummaryUiModel) {
                     if (subjectLivelihoodEventSummaryUiModel.status != 2) {
@@ -534,11 +535,7 @@ private fun EventView(
                     filteredSubjectLivelihoodEventSummaryUiModelList.toList().drop(
                         DEFAULT_EVENT_LIST_VIEW_SIZE
                     ).forEachIndexed { index, subjectLivelihoodEventSummaryUiModel ->
-                        Column(modifier = Modifier
-                            .clickable {
-                                // onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
-                            }
-                        ) {
+                        Column {
                             EventHeader(
                                 subjectLivelihoodEventSummaryUiModel,
                                 eventsList[selectedLivelihoodId]
@@ -578,7 +575,7 @@ private fun EventView(
 private fun ViewEditHistoryView(onClick: () -> Unit) {
     Text(
         modifier = Modifier.clickable { onClick() },
-        text = "View edit history",
+        text = stringResource(R.string.view_edit_history),
         style = newMediumTextStyle.copy(assetValueIconColor)
     )
 }
@@ -599,7 +596,7 @@ private fun EventHeader(
             Spacer(modifier = Modifier.weight(1.0f))
             androidx.compose.material3.Text(
                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                text = "Delete",
+                text = stringResource(R.string.delete),
                 style = smallTextStyle.copy(redIconColor)
             )
         }

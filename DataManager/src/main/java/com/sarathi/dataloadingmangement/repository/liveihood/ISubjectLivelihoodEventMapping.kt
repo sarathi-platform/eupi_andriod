@@ -8,7 +8,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivel
 interface ISubjectLivelihoodEventMapping {
 
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel>
-    suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel>
+    suspend fun getDeletedLivelihoodEventsWithAssetAndMoneyEntry(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel>
 
     suspend fun getSubjectLivelihoodEventMappingListFromDb(
         subjectId: Int

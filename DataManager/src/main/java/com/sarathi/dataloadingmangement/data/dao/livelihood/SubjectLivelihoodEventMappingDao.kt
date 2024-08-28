@@ -72,7 +72,7 @@ interface SubjectLivelihoodEventMappingDao {
                 "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId  GROUP BY subject_livelihood_event_mapping_table.transactionId\n" +
                 "HAVING COUNT(*) = SUM(CASE WHEN subject_livelihood_event_mapping_table.status = 2 THEN 1 ELSE 0 END) order by subject_livelihood_event_mapping_table.modifiedDate desc\n"
     )
-    suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(
+    suspend fun getDeletedLivelihoodEventsWithAssetAndMoneyEntry(
         userId: String,
         subjectId: Int
     ): List<SubjectLivelihoodEventSummaryUiModel>

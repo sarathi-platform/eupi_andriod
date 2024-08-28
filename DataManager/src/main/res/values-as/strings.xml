@@ -70,5 +70,17 @@
     <string name="cancel_text">বাতিল কৰক</string>
     <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
+    <string name="livelihood">Livelihood</string>
+    <string name="date_range_picker_label_text">From - To</string>
+    <string name="total_asset">Total Asset</string>
+    <string name="events">Events</string>
+    <string name="type_of_asset">Type of Asset</string>
+    <string name="increase_in_number">Increase in Number</string>
+    <string name="products">Products</string>
+    <string name="view_edit_history">View edit history</string>
+    <string name="show_less">Show Less</string>
+    <string name="show_more">Show more</string>
+    <string name="all_events">All Events:</string>
+    <string name="last_events">Last %1$s events:</string>
 
 </resources>

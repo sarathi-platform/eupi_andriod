@@ -17,7 +17,7 @@ class FetchSubjectLivelihoodEventMappingUseCase @Inject constructor(
 
     }
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel> {
-        return subjectLivelihoodEventMappingRepositoryImpl.getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(
+        return subjectLivelihoodEventMappingRepositoryImpl.getDeletedLivelihoodEventsWithAssetAndMoneyEntry(
             subjectId = subjectId
         )
     }

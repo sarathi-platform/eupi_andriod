@@ -1,6 +1,5 @@
 package com.nudge.incomeexpensemodule.ui.edit_history_screen
 
-import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,8 +55,8 @@ fun EditHistoryRow(
             .background(Color.Transparent)
 
     ) {
-        val currentSavedEvent = getData(currentHistoryData.surveyResponse)
-        val nextSavedEvent = getData(nextHistoryData?.surveyResponse)
+        val currentSavedEvent = getSavedEventData(currentHistoryData.surveyResponse)
+        val nextSavedEvent = getSavedEventData(nextHistoryData?.surveyResponse)
         // Event details
         Column(
             modifier = Modifier
@@ -85,51 +84,45 @@ fun EditHistoryRow(
                 }
                 Column(modifier = Modifier.padding(dimen_10_dp)) {
                     TextDataRowView(
-                        text1 = "Event:",
-                        text2Color = textColor(
-                            data1 = if (currentSavedEvent != null && !TextUtils.isEmpty(
-                                    currentSavedEvent?.eventValue
-                                )
-                            ) currentSavedEvent?.eventValue else BLANK_STRING,
-                            data2 = if (nextSavedEvent != null && !TextUtils.isEmpty(nextSavedEvent?.eventValue)) nextSavedEvent?.eventValue else BLANK_STRING,
+                        data1 = "Event:",
+                        data2textColor = dataChangeTextColor(
+                            data1 = getEventValue(savedEvent = currentSavedEvent),
+                            data2 = getEventValue(savedEvent = nextSavedEvent),
                         ),
-                        text2 = " ${currentSavedEvent?.eventValue ?: BLANK_STRING}",
-                        text3 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_FORMAT)
+                        data2 = " ${currentSavedEvent?.eventValue ?: BLANK_STRING}",
+                        data3 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_FORMAT)
                     )
                     Divider()
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        text1 = "Asset Type:",
-                        text2 = " ${currentSavedEvent?.assetTypeValue}",
-                        text2Color = textColor(
-                            data1 = if (currentSavedEvent != null && !TextUtils.isEmpty(
-                                    currentSavedEvent?.assetTypeValue
-                                )
-                            ) currentSavedEvent?.assetTypeValue else BLANK_STRING,
-                            data2 = if (nextSavedEvent != null && !TextUtils.isEmpty(nextSavedEvent?.assetTypeValue)) nextSavedEvent?.assetTypeValue else BLANK_STRING,
+                        data1 = "Asset Type:",
+                        data2 = " ${currentSavedEvent?.assetTypeValue}",
+                        data2textColor = dataChangeTextColor(
+                            data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
+                            data2 = getAssetTypeValue(savedEvent = nextSavedEvent),
                         ),
-                        text3 = formatToIndianRupee("${currentSavedEvent?.amount}"),
-                        text3Color = textColor(
-                            data1 = (if (currentSavedEvent != null && currentSavedEvent.amount != null) currentSavedEvent?.amount else 0).toString(),
-                            data2 = (if (nextSavedEvent != null && nextSavedEvent.amount != null) nextSavedEvent?.amount else 0).toString(),
+                        data3 = formatToIndianRupee("${currentSavedEvent?.amount}"),
+                        data3TextColor = dataChangeTextColor(
+                            data1 = getEventAmount(currentSavedEvent),
+                            data2 = getEventAmount(nextSavedEvent),
                         )
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        text1 = "Increase in Number:",
-                        text2Color = textColor(
-                            data1 = (if (currentSavedEvent != null && currentSavedEvent.assetCount != null) currentSavedEvent?.assetCount else 0).toString(),
-                            data2 = (if (nextSavedEvent != null && nextSavedEvent.assetCount != null) nextSavedEvent?.assetCount else 0).toString(),
+                        data1 = "Increase in Number:",
+                        data2textColor = dataChangeTextColor(
+                            data1 = getAssetCount(currentSavedEvent),
+                            data2 = getAssetCount(nextSavedEvent),
                         ),
-                        text2 = " ${currentSavedEvent?.assetCount}"
+                        data2 = " ${currentSavedEvent?.assetCount}"
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        text1 = "Event Date:",
-                        text2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
-                        text2Color = textColor(
-                            data1 = (if (currentHistoryData != null && currentSavedEvent?.date != null) currentHistoryData?.date else 0).toString(),
-                            data2 = (if (nextHistoryData != null && nextHistoryData.date != null) nextHistoryData?.date else 0).toString(),
+                        data1 = "Event Date:",
+                        data2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
+                        data2textColor = dataChangeTextColor(
+                            data1 = getEventDate(currentHistoryData),
+                            data2 = getEventDate(nextHistoryData),
                         ),
                     )
                 }
@@ -165,39 +158,38 @@ fun EditHistoryRow(
 
 @Composable
 private fun TextDataRowView(
-    text1: String? = null,
-    text1Color: Color = blueDark,
-    text2: String? = null,
-    text2Color: Color = blueDark,
-    text3: String? = null,
-    text3Color: Color = blueDark,
-
-    ) {
+    data1: String? = null,
+    data1TextColor: Color = blueDark,
+    data2: String? = null,
+    data2textColor: Color = blueDark,
+    data3: String? = null,
+    data3TextColor: Color = blueDark,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
 
-        text1?.let {
+        data1?.let {
             Text(
                 text = it,
-                style = defaultTextStyle.copy(text1Color)
+                style = defaultTextStyle.copy(data1TextColor)
             )
         }
-        text2?.let {
+        data2?.let {
             Text(
                 text = it,
-                style = defaultTextStyle.copy(text2Color)
+                style = defaultTextStyle.copy(data2textColor)
             )
         }
         Spacer(modifier = Modifier.weight(1.0f))
-        text3?.let {
+        data3?.let {
             Text(
                 text = it,
-                style = defaultTextStyle.copy(text3Color)
+                style = defaultTextStyle.copy(data3TextColor)
             )
         }
     }
 }
 
-private fun getData(savedEvent: String?): LivelihoodEventScreenData? {
+private fun getSavedEventData(savedEvent: String?): LivelihoodEventScreenData? {
     savedEvent?.let {
         val type = object : TypeToken<LivelihoodEventScreenData?>() {}.type
         return Gson().fromJson<LivelihoodEventScreenData>(savedEvent, type)
@@ -205,13 +197,29 @@ private fun getData(savedEvent: String?): LivelihoodEventScreenData? {
     return null
 }
 
-private fun textColor(data1: String?, data2: String?): Color {
-    return if ((TextUtils.isEmpty(data1) || data1.equals(BLANK_STRING) || data1.equals("0")) || (TextUtils.isEmpty(
-            data2
-        ) || data2.equals(BLANK_STRING) || data2.equals("0"))
-    ) {
-        blueDark
-    } else {
-        if (data1 != data2) darkBlueColor else blueDark
+private fun dataChangeTextColor(data1: String?, data2: String?): Color {
+    val isData1Invalid = data1.isNullOrEmpty() || data1 == BLANK_STRING || data1 == "0"
+    val isData2Invalid = data2.isNullOrEmpty() || data2 == BLANK_STRING || data2 == "0"
+
+    return when {
+        isData1Invalid || isData2Invalid -> blueDark
+        data1 != data2 -> darkBlueColor
+        else -> blueDark
     }
 }
+
+private fun getEventValue(savedEvent: LivelihoodEventScreenData?): String =
+    savedEvent?.assetTypeValue?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: BLANK_STRING
+
+private fun getAssetTypeValue(savedEvent: LivelihoodEventScreenData?): String =
+    savedEvent?.assetTypeValue?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: BLANK_STRING
+
+private fun getEventAmount(savedEvent: LivelihoodEventScreenData?): String =
+    savedEvent?.amount?.toString()?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: "0"
+
+private fun getAssetCount(savedEvent: LivelihoodEventScreenData?): String =
+    savedEvent?.assetCount?.toString()?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: "0"
+
+private fun getEventDate(eventData: SubjectLivelihoodEventMappingEntity?): String =
+    eventData?.date?.toString()?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: "0"
+

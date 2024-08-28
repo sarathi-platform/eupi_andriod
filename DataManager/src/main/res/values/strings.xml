@@ -69,6 +69,22 @@
     <string name="search_by_didis">Search by didis</string>
     <string name="event">Event:</string>
     <string name="add_event">Add Event</string>
+    <string name="livelihood">Livelihood</string>
 
 
+    <string name="date_range_picker_label_text">From - To</string>
+
+
+    <string name="total_asset">Total Asset</string>
+    <string name="events">Events</string>
+    <string name="type_of_asset">Type of Asset</string>
+    <string name="increase_in_number">Increase in Number</string>
+    <string name="products">Products</string>
+
+
+    <string name="view_edit_history">View edit history</string>
+    <string name="show_less">Show Less</string>
+    <string name="show_more">Show more</string>
+    <string name="all_events">All Events:</string>
+    <string name="last_events">Last %1$s events:</string>
 </resources>

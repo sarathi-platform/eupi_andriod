@@ -21,8 +21,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel> {
-        return subjectLivelihoodEventMappingDao.getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(
+    override suspend fun getDeletedLivelihoodEventsWithAssetAndMoneyEntry(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel> {
+        return subjectLivelihoodEventMappingDao.getDeletedLivelihoodEventsWithAssetAndMoneyEntry(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId
         )
