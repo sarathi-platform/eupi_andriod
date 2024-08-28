@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
+import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
@@ -214,6 +215,17 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_1_2")
                 migration(db, listOf(CREATE_MONEY_JOUNRAL_TABLE))
+            }
+        }
+
+        private const val ALTER_SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE =
+            "ALTER TABLE $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME ADD COLUMN 'modifiedDate' TEXT,ADD COLUMN 'createdDate' TEXT"
+
+        // CREATE MIGRATION OBJECT FOR MIGRATION 2 to 3.
+        val NUDGE_GRANT_DATABASE_MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_2_3")
+                migration(db, listOf(ALTER_SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE))
             }
         }
 

@@ -247,7 +247,7 @@ fun AddEventScreen(
                     item {
                         TypeDropDownComponent(
                             isEditAllowed = true,
-                            title = "Type of Asset*",
+                            title = "Type of Asset",
                             selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
@@ -264,7 +264,7 @@ fun AddEventScreen(
                     item {
                         TypeDropDownComponent(
                             isEditAllowed = true,
-                            title = "Products*",
+                            title = "Products",
                             isMandatory = true,
                             sources = viewModel.livelihoodProductDropdownValue,
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
@@ -281,7 +281,7 @@ fun AddEventScreen(
                     item {
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
-                            title = "Increase in Number*",
+                            title = "Increase in Number",
                             isEditAllowed = true,
                             currentValue = viewModel.assetCount.value,
                             onAnswerSelection = { inputValue ->
