@@ -38,9 +38,9 @@ fun SurveyTaskScreen(
         isSecondaryButtonVisible = false,
         taskList = emptyList(),
         navController = navController,
-        taskScreenContent = { vm, mNavController ->
-            TaskScreenContent(vm, mNavController)
-        }
+        taskScreenContent = { vm, mNavController, itemInCategory ->
+            TaskScreenContent(vm, mNavController, itemInCategory)
+        },
     )
 
 
