@@ -49,8 +49,8 @@
     <string name="attach_physical_form_e">Attach physical form E</string>
     <string name="didis">Didis</string>
     <string name="file_not_exists">"फाइल उपलब्ध नही है  "</string>
-    <string name="activities_completed">Activities Completed</string>
-    <string name="start">Start</string>
+    <string name="activities_completed">पूर्ण गतिविधियाँ</string>
+    <string name="start">शुरू करें</string>
     <string name="sanctioned_amount_has_been_fully_disbursed">Sanctioned amount has been fully disbursed</string>
     <string name="complete">"पूर्ण  "</string>
     <string name="references">मुंख\'नायफोर  (%1$s)</string>
@@ -59,9 +59,15 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="search">"खोजे  "</string>
+    <string name="search_for_mission">"अभियान-वार खोजे "</string>
     <string name="search_by_didis">Search by didis</string>
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
     <string name="add_event">Add Event</string>
-
+    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
+    <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
+    <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">Cancel</string>
 </resources>

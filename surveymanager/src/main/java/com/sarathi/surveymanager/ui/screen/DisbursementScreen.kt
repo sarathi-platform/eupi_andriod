@@ -73,7 +73,6 @@ fun DisbursementSummaryScreen(
         navController = navController,
         onBackIconClick = {
             navController.navigateUp()
-            navController.navigateUp()
         },
         isSearch = false,
         onSearchValueChange = {
@@ -114,7 +113,7 @@ fun DisbursementSummaryScreen(
                     .fillMaxSize()
             ) {
                 item {
-                    if (!viewModel.isAddDisbursementButtonEnable.value && sanctionedAmount != 0) {
+                    if (!viewModel.isAddDisbursementButtonEnable.value && sanctionedAmount != 0 && viewModel.taskList.value.isNotEmpty()) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -207,6 +207,7 @@ fun BaseSurveyScreen(
                                     title = question.questionDisplay,
                                     isEditable = viewModel.isActivityNotCompleted.value,
                                     maxCustomHeight = maxHeight,
+                                    subtitle = question.display
                                 ) { selectedValue, isDeleted ->
                                     saveMultiImageTypeAnswer(
                                         selectedValue,

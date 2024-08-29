@@ -413,7 +413,7 @@ object FileUtils {
         return filename
     }
 
-    private fun getName(filename: String?): String? {
+    fun getName(filename: String?): String? {
         if (filename == null) {
             return null
         }
@@ -440,6 +440,15 @@ object FileUtils {
                 File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
         }
         return file
+    }
+
+    fun findImageFileUsingFilePath(context: Context, filePath: String): Uri? {
+        val path = if (filePath.contains("|")) filePath.split("|")[0] else filePath
+        val fileName = getName(filename = path)
+        fileName?.let {
+            return getImageUri(context, it)
+        }
+        return Uri.EMPTY
     }
 
 }

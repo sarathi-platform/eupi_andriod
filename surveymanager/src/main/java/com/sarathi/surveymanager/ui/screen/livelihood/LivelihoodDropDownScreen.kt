@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.screen.livelihood
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,17 +30,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.lightBlue
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.R
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LivelihoodPlanningEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
-import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.LivelihoodPlanningDropDownComponent
+import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 
 @Composable
@@ -57,11 +60,30 @@ fun LivelihoodDropDownScreen(
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
+    BackHandler {
+        handleBackPress(viewModel = viewModel, navController = navController)
+    }
+    if (viewModel.showCustomDialog.value.isDialogVisible ) {
+        ShowCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message = stringResource(R.string.form_alert_dialog_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            onPositiveButtonClick = {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                navController.popBackStack()
+            }, onNegativeButtonClick = {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+            }
+        )
+    }
     ToolBarWithMenuComponent(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            handleBackPress(viewModel = viewModel, navController = navController)
+        },
         isSearch = false,
         onSearchValueChange = {},
         onSettingClick = {
@@ -120,29 +142,41 @@ fun LivelihoodDropDownScreen(
                     CircularProgressIndicator()
                 }
             } else {
-                    DropdownView(
-                        livelihoodList = viewModel.livelihoodList.value,
-                        primaryLivelihoodId = viewModel.primaryLivelihoodId.value,
-                        secondaryLivelihoodId = viewModel.secondaryLivelihoodId.value,
-                        onPrimaryLivelihoodSelected = {
-                            viewModel.onEvent(
-                                LivelihoodPlanningEvent.PrimaryLivelihoodPlanningEvent(
-                                    it
-                                )
+                DropdownView(
+                    livelihoodList = viewModel.livelihoodList.value,
+                    primaryLivelihoodId = viewModel.primaryLivelihoodId.value,
+                    secondaryLivelihoodId = viewModel.secondaryLivelihoodId.value,
+                    onPrimaryLivelihoodSelected = {
+                        viewModel.checkDialogueValidation.value=false
+                        viewModel.onEvent(
+                            LivelihoodPlanningEvent.PrimaryLivelihoodPlanningEvent(
+                                it
                             )
-                        },
-                        onSecondaryLivelihoodSelected = {
-                            viewModel.onEvent(
-                                LivelihoodPlanningEvent.SecondaryLivelihoodPlanningEvent(
-                                    it
-                                )
-                            )
-                        }
-                    )
+                        )
+                    },
+                    onSecondaryLivelihoodSelected = {
+                        viewModel.checkDialogueValidation.value=false
 
+                        viewModel.onEvent(
+                            LivelihoodPlanningEvent.SecondaryLivelihoodPlanningEvent(
+                                it
+                            )
+                        )
+                    },
+                    )
             }
         }
     )
+}
+
+fun handleBackPress(viewModel: LivelihoodPlaningViewModel, navController: NavController) {
+
+    if ((viewModel.primaryLivelihoodId.value != -1 || viewModel.secondaryLivelihoodId.value != -1) && !viewModel.checkDialogueValidation.value) {
+        viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
+    } else {
+        viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+        navController.popBackStack()
+    }
 }
 
 @Composable
@@ -153,13 +187,11 @@ fun DropdownView(
     onPrimaryLivelihoodSelected: (primaryLivelihoodId: Int) -> Unit,
     onSecondaryLivelihoodSelected: (secondaryLivelihoodId: Int) -> Unit,
 ) {
-
     var selectedItem1 by remember { mutableStateOf<Int?>(primaryLivelihoodId) }
     var selectedItem2 by remember { mutableStateOf<Int?>(secondaryLivelihoodId) }
 
     Column(modifier = Modifier.padding(dimen_10_dp)) {
         val firstDropDownItems = livelihoodList
-
 
         LivelihoodPlanningDropDownComponent(
             isEditAllowed = true,
