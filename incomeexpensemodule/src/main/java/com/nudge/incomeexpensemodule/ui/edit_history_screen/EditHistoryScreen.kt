@@ -117,14 +117,14 @@ fun EditHistoryScreen(
                         }
                     }
                     val isDeletedAllData =
-                        !viewModel.subjectLivelihoodEventSummaryUiModelList.any { it.status == 1 }
+                        !viewModel.filterSubjectLivelihoodEventSummaryUiModelList.any { it.status == 1 }
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(dimen_10_dp), modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = dimen_10_dp)
                     ) {
                         customVerticalSpacer()
-                        val items = viewModel.subjectLivelihoodEventSummaryUiModelList
+                        val items = viewModel.filterSubjectLivelihoodEventSummaryUiModelList
                         items(items.size) { index ->
                             val currentItem = items[index]
                             val nextItem = if (index < items.size - 1) items[index + 1] else null
