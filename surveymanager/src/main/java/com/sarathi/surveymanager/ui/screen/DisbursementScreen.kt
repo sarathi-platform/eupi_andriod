@@ -73,7 +73,6 @@ fun DisbursementSummaryScreen(
         navController = navController,
         onBackIconClick = {
             navController.navigateUp()
-            navController.navigateUp()
         },
         isSearch = false,
         onSearchValueChange = {
