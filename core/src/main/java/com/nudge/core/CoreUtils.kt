@@ -202,12 +202,12 @@ fun renameFile(context: Context, oldName: String, newName: String, mobileNumber:
             }
 
             // Optionally, you can handle the renaming success or failure
-            if (newFileUri != null) {
-                return true
+            return if (newFileUri != null) {
+                true
                 // Renaming succeeded
                 // You can notify the user or take further action if needed
             } else {
-                return false
+                false
                 // Renaming failed
                 // You can notify the user or take further action if needed
             }
@@ -1161,6 +1161,21 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
         filePath = _uri!!.path
     }
     Log.d("", "Chosen path = $filePath")
+}
+
+fun getImageUri(context: Context, fileName: String): Uri? {
+    var file =
+        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+    if (!file.exists()) {
+        file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+    }
+    return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+        uriFromFile(
+            context, file,
+            it
+        )
+    }
 }
 
 fun onlyNumberField(value: String): Boolean {
