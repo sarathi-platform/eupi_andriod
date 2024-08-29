@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.R
@@ -51,7 +52,7 @@ fun CustomDatePickerComponent(
 
     if (datePickerDialogProperties.getDatePickerDialogVisibilityState().value) {
         DatePickerDialog(
-            modifier = modifier,
+            modifier = modifier.padding(all = 20.dp),
             shape = datePickerDialogProperties.shape,
             tonalElevation = datePickerDialogProperties.tonalElevation,
             properties = datePickerDialogProperties.properties,
@@ -81,16 +82,6 @@ fun CustomDatePickerComponent(
                 datePickerProperties.state.setSelection(dateInLong)
                 onConfirmButtonClicked()
             })
-
-            /*DatePicker(
-                state = datePickerProperties.state,
-                dateValidator = datePickerProperties.dateValidator,
-                dateFormatter = datePickerProperties.dateFormatter,
-                title = datePickerProperties.title,
-                headline = datePickerProperties.headline,
-                showModeToggle = datePickerProperties.showModeToggle,
-                colors = datePickerDialogProperties.colors
-            )*/
         }
     }
 

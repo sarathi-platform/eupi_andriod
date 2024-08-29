@@ -52,6 +52,7 @@ import com.nudge.core.ui.date_picker_component.datepicker.data.model.SelectionLi
 import com.nudge.core.ui.date_picker_component.datepicker.enums.Days
 import com.nudge.core.ui.date_picker_component.datepicker.ui.viewmodel.DatePickerViewModel
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.white
 import com.vsnappy1.datepicker.ui.model.DatePickerConfiguration
 import com.vsnappy1.datepicker.ui.model.DatePickerUiState
 import com.vsnappy1.extension.noRippleClickable
@@ -86,10 +87,13 @@ fun DatePicker(
     }
 
     var height by remember { mutableStateOf(configuration.height) }
-    Box(modifier = modifier.onGloballyPositioned {
-        if (it.size.height == 0) return@onGloballyPositioned
-        height = it.size.height.toDp() - configuration.headerHeight// Update the height
-    }) {
+
+    Box(modifier = modifier
+        .background(white)
+        .onGloballyPositioned {
+            if (it.size.height == 0) return@onGloballyPositioned
+            height = it.size.height.toDp() - configuration.headerHeight// Update the height
+        }) {
         // TODO add sliding effect when next or previous arrow is pressed
 
         CalendarHeader(

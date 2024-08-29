@@ -55,6 +55,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -62,12 +63,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.nudge.core.getCurrentTimeInMillis
+import com.gmail.orlandroyd.composecalendar.DateRangePickerDlg
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.ContentWithImage
-import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
 import com.nudge.core.ui.commonUi.ImageProperties
-import com.nudge.core.ui.commonUi.SheetHeight
 import com.nudge.core.ui.commonUi.rememberCustomDateRangePickerSheetState
 import com.nudge.core.ui.commonUi.rememberDateRangePickerBottomSheetProperties
 import com.nudge.core.ui.commonUi.rememberDateRangePickerProperties
@@ -99,7 +98,6 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_1_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_24_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_2_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_48_dp
-import com.sarathi.smallgroupmodule.ui.theme.dimen_56_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_80_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.ui.theme.green
@@ -127,7 +125,9 @@ fun SmallGroupAttendanceHistoryScreen(
     smallGroupAttendanceHistoryViewModel: SmallGroupAttendanceHistoryViewModel,
     onSettingClick: () -> Unit
 ) {
-
+    var isVisibleDateRangePickerDialog by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(key1 = Unit) {
 
         smallGroupAttendanceHistoryViewModel.onEvent(
@@ -187,33 +187,34 @@ fun SmallGroupAttendanceHistoryScreen(
     }
 
 
-    CustomDateRangePickerBottomSheetComponent(
-        customDateRangePickerBottomSheetProperties = sheetProperties,
-        dateRangePickerProperties = dateRangePickerProperties,
-        sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
-        onSheetConfirmButtonClicked = {
-            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
-                dateRangePickerProperties.state.setSelection(
-                    dateRangePickerProperties.state.selectedStartDateMillis,
-                    getCurrentTimeInMillis()
-                )
-            }
-            smallGroupAttendanceHistoryViewModel
-                .onEvent(
-                    CommonEvents.UpdateDateRange(
-                        dateRangePickerProperties.state.selectedStartDateMillis,
-                        dateRangePickerProperties.state.selectedEndDateMillis
-                    )
-                )
-            smallGroupAttendanceHistoryViewModel
-                .onEvent(
-                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
-                )
-            scope.launch {
-                sheetState.hide()
-            }
-        }
-    ) {
+//    CustomDateRangePickerBottomSheetComponent(
+//        customDateRangePickerBottomSheetProperties = sheetProperties,
+//        dateRangePickerProperties = dateRangePickerProperties,
+//        sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
+//        onSheetConfirmButtonClicked = {
+//            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
+//                dateRangePickerProperties.state.setSelection(
+//                    dateRangePickerProperties.state.selectedStartDateMillis,
+//                    getCurrentTimeInMillis()
+//                )
+//            }
+//            smallGroupAttendanceHistoryViewModel
+//                .onEvent(
+//                    CommonEvents.UpdateDateRange(
+//                        dateRangePickerProperties.state.selectedStartDateMillis,
+//                        dateRangePickerProperties.state.selectedEndDateMillis
+//                    )
+//                )
+//            smallGroupAttendanceHistoryViewModel
+//                .onEvent(
+//                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
+//                )
+//            scope.launch {
+//                sheetState.hide()
+//            }
+//        }
+//    ) {
+
         ToolBarWithMenuComponent(
             title = smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupName,
             modifier = Modifier,
@@ -306,6 +307,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 .weight(1f)
                                                 .clickable {
                                                     scope.launch {
+
                                                         sheetState.show()
                                                     }
                                                 },
@@ -348,9 +350,8 @@ fun SmallGroupAttendanceHistoryScreen(
                                             },
                                             trailingIcon = {
                                                 IconButton(onClick = {
-                                                    scope.launch {
-                                                        sheetState.show()
-                                                    }
+                                                    isVisibleDateRangePickerDialog = true
+
                                                 }) {
                                                     Icon(
                                                         painter = painterResource(id = R.drawable.calendar),
@@ -414,11 +415,34 @@ fun SmallGroupAttendanceHistoryScreen(
                     }
                 }
 
+
             }
         )
+    DateRangePickerDlg(
+        visible = isVisibleDateRangePickerDialog,
+        onClose = {
+            isVisibleDateRangePickerDialog = false
+        },
+        onDatesSelected = { range ->
+            smallGroupAttendanceHistoryViewModel
+                .onEvent(
+                    CommonEvents.UpdateDateRange(
+                        range.first.time,
+                        range.second.time
+                    )
+                )
+            smallGroupAttendanceHistoryViewModel
+                .onEvent(
+                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
+                )
+            isVisibleDateRangePickerDialog = false
 
-    }
+        }
+
+    )
+
 }
+
 
 @Composable
 fun EmptyHistoryView(
