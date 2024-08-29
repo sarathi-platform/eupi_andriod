@@ -1155,10 +1155,10 @@ fun getFileMimeType(file: File): String? {
     return type
 }
 
-fun getImageUri(context: Context, fileName: String, isNewImage: Boolean): Uri? {
+fun getImageUri(context: Context, fileName: String): Uri? {
     var file =
         File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
-    if (!isNewImage && !file.exists()) {
+    if (!file.exists()) {
         file =
             File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
     }
