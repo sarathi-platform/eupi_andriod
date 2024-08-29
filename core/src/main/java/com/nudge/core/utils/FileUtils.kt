@@ -11,7 +11,8 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
-import com.nudge.core.getImageUri
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.uriFromFile
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -439,15 +440,6 @@ object FileUtils {
                 File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
         }
         return file
-    }
-
-    fun findImageFileUsingFilePath(context: Context, filePath: String): Uri? {
-        val path = if (filePath.contains("|")) filePath.split("|")[0] else filePath
-        val fileName = getName(filename = path)
-        fileName?.let {
-            return getImageUri(context, it)
-        }
-        return Uri.EMPTY
     }
 
 }
