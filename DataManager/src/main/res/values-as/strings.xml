@@ -60,9 +60,9 @@
     <string name="search">"সন্ধান কৰক "</string>
     <string name="search_for_mission">মিছনৰ দ্বাৰা সন্ধান কৰক</string>
     <string name="search_by_didis">Search by didis</string>
-    <string name="event">Event:</string>
-    <string name="asset">Assets:</string>
-    <string name="add_event">Add Event</string>
+    <string name="event">কাৰ্য্য:</string>
+    <string name="asset">সম্পদ:</string>
+    <string name="add_event">কাৰ্য্য যোগ কৰক</string>
     <string name="primary_and_secondary_value_not_same">"প্ৰথম আৰু দ্বিতীয় জীৱিকা একে হ'ব নোৱাৰে"</string>
     <string name="select_first_livelihood_for_didi">বাইদেউৰ বাবে প্ৰথম জীৱিকা বাছনি কৰক</string>
     <string name="select_second_livelihood_for_didi">বাইদেউৰ বাবে দ্বিতীয় জীৱিকা বাছনি কৰক</string>
@@ -85,6 +85,6 @@
     <string name="asset_type">সম্পদৰ প্ৰকাৰ:</string>
     <string name="event_date">কাৰ্য্যৰ তাৰিখ:</string>
     <string name="edit_history">Edit history</string>
-    <string name="increase_in_number">Increase in Number</string>
+    <string name="increase_in_number">"সংখ্যা বৃদ্ধি "</string>
 
 </resources>
