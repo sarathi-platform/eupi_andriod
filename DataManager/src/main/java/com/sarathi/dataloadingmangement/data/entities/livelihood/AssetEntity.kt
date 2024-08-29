@@ -10,7 +10,7 @@ import com.sarathi.dataloadingmangement.model.response.Asset
 @Entity(tableName = ASSETS_TABLE_NAME)
 data class AssetEntity(
     @PrimaryKey(autoGenerate = true)
-    var primaryKey: Int = 0,
+    var id: Int = 0,
     var assetId: Int,
     var livelihoodId: Int,
     var userId: String,
@@ -30,7 +30,7 @@ data class AssetEntity(
         ): AssetEntity {
 
             return AssetEntity(
-                primaryKey = 0,
+                id = 0,
                 assetId = asset.id ?: 0,
                 userId = userId,
                 name = asset.name ?: BLANK_STRING,
