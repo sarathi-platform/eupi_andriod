@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -31,12 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.searchFieldBg
 import kotlinx.coroutines.launch
@@ -163,12 +166,14 @@ fun <T> SelectionSheetItemView(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(dimen_20_dp)
     ) {
         items.forEachIndexed { index, item ->
             Column {
+                CustomVerticalSpacer()
                 SelectionSheetItem(index, item)
                 CustomVerticalSpacer()
+                Divider(thickness = dimen_1_dp, color = greyBorder)
             }
         }
     }
