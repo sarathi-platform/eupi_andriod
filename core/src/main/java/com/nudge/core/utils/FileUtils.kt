@@ -443,7 +443,8 @@ object FileUtils {
     }
 
     fun findImageFileUsingFilePath(context: Context, filePath: String): Uri? {
-        val fileName = getName(filename = filePath)
+        val path = if (filePath.contains("|")) filePath.split("|")[0] else filePath
+        val fileName = getName(filename = path)
         fileName?.let {
             return getImageUri(context, it)
         }

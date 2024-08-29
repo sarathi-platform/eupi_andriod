@@ -305,16 +305,19 @@ class BaseLineStartViewModel @Inject constructor(
                 )
             }
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
-                photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
-                    FileUtils.findImageFileUsingFilePath(
-                        CoreAppDetails.getApplicationContext().applicationContext,
-                        didiEntity.value.crpImageLocalPath.split("|")[0]
-                    ) ?: Uri.EMPTY
-                else
-                    FileUtils.findImageFileUsingFilePath(
-                        CoreAppDetails.getApplicationContext().applicationContext,
-                        didiEntity.value.crpImageLocalPath
-                    ) ?: Uri.EMPTY
+                CoreAppDetails.getContext()?.applicationContext?.let {
+
+                    photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
+                        FileUtils.findImageFileUsingFilePath(
+                            it,
+                            didiEntity.value.crpImageLocalPath.split("|")[0]
+                        ) ?: Uri.EMPTY
+                    else
+                        FileUtils.findImageFileUsingFilePath(
+                            it,
+                            didiEntity.value.crpImageLocalPath
+                        ) ?: Uri.EMPTY
+                }
                 shouldShowPhoto.value = true
             }
             isAdharCard.value = didiInfo.value?.isAdharCard ?: -1

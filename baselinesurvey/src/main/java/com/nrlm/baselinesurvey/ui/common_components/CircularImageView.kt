@@ -35,10 +35,13 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
             .then(modifier)
     ) {
         if (imagePath != BLANK_STRING) {
-            val imageUri = FileUtils.findImageFileUsingFilePath(
-                context = CoreAppDetails.getApplicationContext().applicationContext,
-                imagePath
-            )
+
+            val imageUri = CoreAppDetails.getContext()?.applicationContext?.let {
+                FileUtils.findImageFileUsingFilePath(
+                    context = it,
+                    imagePath
+                )
+            }
             Image(
                 painter = rememberAsyncImagePainter(
                     imageUri
