@@ -413,7 +413,7 @@ object FileUtils {
         return filename
     }
 
-    private fun getName(filename: String?): String? {
+    fun getName(filename: String?): String? {
         if (filename == null) {
             return null
         }
@@ -450,6 +450,5 @@ object FileUtils {
         }
         return Uri.EMPTY
     }
-
 
 }
