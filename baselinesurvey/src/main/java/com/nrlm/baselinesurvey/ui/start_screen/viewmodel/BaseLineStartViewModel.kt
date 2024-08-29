@@ -44,6 +44,8 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.FileUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -303,10 +305,19 @@ class BaseLineStartViewModel @Inject constructor(
                 )
             }
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
-                photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
-                    didiEntity.value.crpImageLocalPath.split("|")[0].toUri()
-                else
-                    _didiEntity.value.crpImageLocalPath.toUri()
+                CoreAppDetails.getContext()?.applicationContext?.let {
+
+                    photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
+                        FileUtils.findImageFileUsingFilePath(
+                            it,
+                            didiEntity.value.crpImageLocalPath.split("|")[0]
+                        ) ?: Uri.EMPTY
+                    else
+                        FileUtils.findImageFileUsingFilePath(
+                            it,
+                            didiEntity.value.crpImageLocalPath
+                        ) ?: Uri.EMPTY
+                }
                 shouldShowPhoto.value = true
             }
             isAdharCard.value = didiInfo.value?.isAdharCard ?: -1
