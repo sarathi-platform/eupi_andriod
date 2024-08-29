@@ -22,6 +22,7 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel.Activi
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import java.util.Locale
 
 @Composable
@@ -61,8 +62,7 @@ fun ActivityScreen(
                     isActive = viewModel.isButtonEnable.value,
                     isArrowRequired = false,
                     onClick = {
-                        viewModel.markMissionCompleteStatus()
-                        navController.popBackStack()
+                        viewModel.showDialog.value = true
                     }
                 )
             }
@@ -89,6 +89,22 @@ fun ActivityScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                }
+
+                if (viewModel.showDialog.value) {
+                    ShowCustomDialog(
+                        message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_mission),
+                        negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
+                        positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                        onNegativeButtonClick = {
+                            viewModel.showDialog.value = false
+                        },
+                        onPositiveButtonClick = {
+                            viewModel.markMissionCompleteStatus()
+                            navController.popBackStack()
+                            viewModel.showDialog.value = false
+                        }
+                    )
                 }
             }
         },

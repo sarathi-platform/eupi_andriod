@@ -67,6 +67,8 @@ import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.component.ShowCustomDialog
+
 const val TAG = "TaskScreen"
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -135,17 +137,7 @@ fun TaskScreen(
                         isActive = viewModel.isButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
-                            viewModel.markActivityCompleteStatus()
-
-                            navigateToActivityCompletionScreen(
-                                isFromActivity = true,
-                                navController = navController,
-                                activityMsg = context.getString(
-                                    R.string.activity_completion_message,
-                                    activityName
-                                ),
-                                activityRoutePath = activityName
-                            )
+                            viewModel.showDialog.value = true
                         })
 
                     if (isSecondaryButtonVisible) {
@@ -277,6 +269,30 @@ fun TaskScreen(
                         }
                     }
                 }
+            }
+            if (viewModel.showDialog.value) {
+                ShowCustomDialog(
+                    message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_activity),
+                    negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
+                    positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                    onNegativeButtonClick = {
+                        viewModel.showDialog.value = false
+                    },
+                    onPositiveButtonClick = {
+                        viewModel.markActivityCompleteStatus()
+
+                        navigateToActivityCompletionScreen(
+                            isFromActivity = true,
+                            navController = navController,
+                            activityMsg = context.getString(
+                                R.string.activity_completion_message,
+                                activityName
+                            ),
+                            activityRoutePath = activityName
+                        )
+                        viewModel.showDialog.value = false
+                    }
+                )
             }
         },
         onSettingClick = onSettingClick

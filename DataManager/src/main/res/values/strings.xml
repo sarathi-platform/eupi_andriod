@@ -70,5 +70,7 @@
     <string name="event">Event:</string>
     <string name="add_event">Add Event</string>
 
+    <string name="not_be_able_to_make_changes_after_completing_this_activity" translatable="false">Are you sure you want to continue? You will not be able to make changes after completing this activity</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission" translatable="false">Are you sure you want to continue? You will not be able to make changes after completing this mission</string>
 
 </resources>
