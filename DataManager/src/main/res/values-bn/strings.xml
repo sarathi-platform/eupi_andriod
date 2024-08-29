@@ -73,13 +73,17 @@
     <string name="livelihood">Livelihood</string>
     <string name="date_range_picker_label_text">From - To</string>
     <string name="total_asset">Total Asset</string>
-    <string name="events">Events</string>
-    <string name="type_of_asset">Type of Asset</string>
-    <string name="increase_in_number">Increase in Number</string>
+    <string name="events">"ইভেন্ট "</string>
+    <string name="type_of_asset">"সম্পদের ধরন "</string>
+    <string name="">সংখ্যা বেড়েছে</string>
     <string name="products">Products</string>
-    <string name="view_edit_history">View edit history</string>
+    <string name="view_edit_history">"ডাটা এডিট এর ইতিহাস দেখুন "</string>
     <string name="show_less">Show Less</string>
     <string name="show_more">Show more</string>
     <string name="all_events">All Events:</string>
     <string name="last_events">Last %1$s events:</string>
+    <string name="increse_in_number">"সংখ্যা বেড়েছে "</string>
+    <string name="asset_type">সম্পদের ধরন:</string>
+    <string name="event_date">ইভেন্ট তারিখ:</string>
+    <string name="edit_history">Edit history</string>
 </resources>

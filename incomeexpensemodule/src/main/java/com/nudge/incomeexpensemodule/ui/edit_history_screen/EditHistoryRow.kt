@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.incomeexpensemodule.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
@@ -77,14 +79,14 @@ fun EditHistoryRow(
                         Spacer(modifier = Modifier.weight(1.0f))
                         Text(
                             modifier = Modifier.padding(horizontal = dimen_5_dp),
-                            text = "Delete",
+                            text = stringResource(R.string.delete),
                             style = smallTextStyle.copy(redIconColor)
                         )
                     }
                 }
                 Column(modifier = Modifier.padding(dimen_10_dp)) {
                     TextDataRowView(
-                        data1 = "Event:",
+                        data1 = stringResource(R.string.event),
                         data2textColor = dataChangeTextColor(
                             data1 = getEventValue(savedEvent = currentSavedEvent),
                             data2 = getEventValue(savedEvent = nextSavedEvent),
@@ -95,7 +97,7 @@ fun EditHistoryRow(
                     Divider()
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = "Asset Type:",
+                        data1 = stringResource(R.string.asset_type),
                         data2 = " ${currentSavedEvent?.assetTypeValue}",
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
@@ -109,7 +111,7 @@ fun EditHistoryRow(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = "Increase in Number:",
+                        data1 = stringResource(R.string.increse_in_number),
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetCount(currentSavedEvent),
                             data2 = getAssetCount(nextSavedEvent),
@@ -118,7 +120,7 @@ fun EditHistoryRow(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = "Event Date:",
+                        data1 = stringResource(R.string.event_date),
                         data2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
                         data2textColor = dataChangeTextColor(
                             data1 = getEventDate(currentHistoryData),

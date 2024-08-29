@@ -78,7 +78,7 @@
     <string name="total_asset">Total Asset</string>
     <string name="events">Events</string>
     <string name="type_of_asset">Type of Asset</string>
-    <string name="increase_in_number">Increase in Number</string>
+    <string name="increse_in_number">Increase in Number:</string>
     <string name="products">Products</string>
 
 
@@ -87,4 +87,9 @@
     <string name="show_more">Show more</string>
     <string name="all_events">All Events:</string>
     <string name="last_events">Last %1$s events:</string>
+
+    <string name="asset_type">Asset Type:</string>
+    <string name="event_date">Event Date:</string>
+    <string name="edit_history">Edit history</string>
+
 </resources>

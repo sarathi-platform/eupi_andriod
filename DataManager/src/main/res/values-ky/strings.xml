@@ -75,11 +75,15 @@
     <string name="total_asset">Total Asset</string>
     <string name="events">Events</string>
     <string name="type_of_asset">Type of Asset</string>
-    <string name="increase_in_number">Increase in Number</string>
+    <string name="">Increase in Number</string>
     <string name="products">Products</string>
-    <string name="view_edit_history">View edit history</string>
+    <string name="view_edit_history">"Laihjak kok no mithingma ni nukmung "</string>
     <string name="show_less">Show Less</string>
     <string name="show_more">Show more</string>
     <string name="all_events">All Events:</string>
     <string name="last_events">Last %1$s events:</string>
+    <string name="increse_in_number">"Rem bai Bangrima "</string>
+    <string name="asset_type">Prodrepot rwbai:</string>
+    <string name="event_date">Wngmung  ni  wnjora:</string>
+    <string name="edit_history">Edit history</string>
 </resources>

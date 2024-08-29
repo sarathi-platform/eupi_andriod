@@ -96,7 +96,7 @@ fun EditHistoryScreen(
         }
     ) {
         ToolBarWithMenuComponent(
-            title = "Edit history",
+            title = stringResource(R.string.edit_history),
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},

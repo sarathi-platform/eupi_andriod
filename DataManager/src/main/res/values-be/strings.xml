@@ -73,14 +73,18 @@
     <string name="livelihood">Livelihood</string>
     <string name="date_range_picker_label_text">From - To</string>
     <string name="total_asset">Total Asset</string>
-    <string name="events">Events</string>
-    <string name="type_of_asset">Type of Asset</string>
-    <string name="increase_in_number">Increase in Number</string>
+    <string name="events">"जाथाय "</string>
+    <string name="type_of_asset">"सम्पदनि रोखोम "</string>
+    <string name="">अनजिमा बारायनाय</string>
     <string name="products">Products</string>
-    <string name="view_edit_history">View edit history</string>
+    <string name="view_edit_history">" सुजुनाय जारिमिनखौ नाय "</string>
     <string name="show_less">Show Less</string>
     <string name="show_more">Show more</string>
     <string name="all_events">All Events:</string>
     <string name="last_events">Last %1$s events:</string>
+    <string name="increse_in_number">"अनजिमा बारायनाय "</string>
+    <string name="asset_type">सम्पदनि रोखोम:</string>
+    <string name="event_date">" जाथायनि सम:"</string>
+    <string name="edit_history">Edit history</string>
 
 </resources>
