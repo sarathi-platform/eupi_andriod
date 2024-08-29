@@ -20,7 +20,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
@@ -1144,15 +1143,6 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
         filePath = _uri!!.path
     }
     Log.d("", "Chosen path = $filePath")
-}
-
-fun getFileMimeType(file: File): String? {
-    var type: String? = null
-    val extension = MimeTypeMap.getFileExtensionFromUrl(file.path)
-    if (extension != null) {
-        type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-    }
-    return type
 }
 
 fun getImageUri(context: Context, fileName: String): Uri? {
