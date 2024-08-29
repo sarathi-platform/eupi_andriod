@@ -4,14 +4,19 @@ import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.ui.commonUi.CustomProgressState
+import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
-import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.ALL
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
@@ -22,7 +27,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
-import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -33,6 +37,7 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -68,16 +73,26 @@ open class TaskScreenViewModel @Inject constructor(
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isGroupByEnable = mutableStateOf(false)
-    var isFilterEnable = mutableStateOf(false)
+    var isGroupingApplied = mutableStateOf(false)
+    var isFilterEnabled = mutableStateOf(false)
+    var isFilterApplied = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
 
     var isProgressEnable = mutableStateOf(true)
-    val isTaskProgressBarVisible = mutableStateOf(false)
 
     var matId = mutableStateOf<Int>(0)
     var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
     var taskUiModel: List<TaskUiModel>? = null
+
+    private val _filterByList: SnapshotStateList<String?> = mutableStateListOf()
+    val filterByList: SnapshotStateList<String?> get() = _filterByList
+
+    private val _filterByValueKey: MutableState<String> = mutableStateOf(ALL)
+    val filterByValueKey: State<String> get() = _filterByValueKey
+
+    val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
+
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
             mutableState.value = newValue
@@ -96,8 +111,48 @@ open class TaskScreenViewModel @Inject constructor(
                 )
             }
 
-            is SearchEvent.PerformSearch -> {
-                performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
+            is com.sarathi.missionactivitytask.utils.event.SearchEvent.PerformSearch -> {
+                performSearchQuery(
+                    queryTerm = event.searchTerm,
+                    isGroupingApplied = event.isGroupingApplied,
+                    isFilterApplied = event.isFilterApplied
+                )
+            }
+
+            is TaskScreenEvent.OnFilterSelected -> {
+
+                _filterByValueKey.value = filterByList[event.index].value()
+
+                if (filterByValueKey.value != ALL) {
+                    isFilterApplied.value = true
+                    if (isGroupingApplied.value) {
+                        val tempFilterList = taskList.value
+                            .filter {
+                                it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
+                                    filterByValueKey.value, ignoreCase = true
+                                )
+                            } as HashMap<Int, HashMap<String, TaskCardModel>>
+                        filterTaskMap =
+                            tempFilterList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                    } else {
+                        val tempFilterList = taskList.value.filter {
+                            it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
+                                filterByValueKey.value, ignoreCase = true
+                            )
+                        }
+                        _filterList.value =
+                            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+                    }
+                } else {
+                    isFilterApplied.value = false
+                    if (isGroupingApplied.value) {
+                        filterTaskMap =
+                            taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+
+                    } else {
+                        _filterList.value = taskList.value
+                    }
+                }
             }
         }
     }
@@ -141,7 +196,7 @@ open class TaskScreenViewModel @Inject constructor(
                         componentType = ComponentEnum.Search.name,
                         activityConfig
 
-                        )
+                    )
                     searchLabel.value =
                         searchUiComponent[TaskCardSlots.SEARCH_LABEL.name]?.value
                             ?: BLANK_STRING
@@ -150,7 +205,12 @@ open class TaskScreenViewModel @Inject constructor(
                             ?: BLANK_STRING).isNotBlank()
                     ) {
                         isGroupByEnable.value = true
-                        isFilterEnable.value = true
+                        isGroupingApplied.value = true
+                    }
+                    if ((uiComponent[TaskCardSlots.FILTER_BY.name]?.value
+                            ?: BLANK_STRING).isNotBlank()
+                    ) {
+                        isFilterEnabled.value = true
                     }
                     val progressUiComponent = getUiComponentValues(
                         taskId = it.taskId,
@@ -176,10 +236,35 @@ open class TaskScreenViewModel @Inject constructor(
 
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+
+            createFilterByList()
+
+            updateProgress()
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun createFilterByList() {
+        _filterByList.clear()
+        _filterByList.add(ALL)
+        _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.value }.let {
+            _filterByList.addAll(it.distinct())
+        }
+    }
+
+    private fun updateProgress() {
+        val completedCount = (filterList.value.entries.filter {
+            it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name
+                    || it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.COMPLETED.name
+        }.size)
+        val totalCount = (filterList.value.entries.size)
+
+        progressState.updateProgress(completedCount.toFloat() / totalCount.toFloat())
+        progressState.updateProgressText("$completedCount/$totalCount")
+
     }
 
 
@@ -271,26 +356,34 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     private fun performSearchQuery(
-        queryTerm: String, isFilterApplied: Boolean, fromScreen: String
+        queryTerm: String, isGroupingApplied: Boolean, isFilterApplied: Boolean
     ) {
-        val filteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
+        val taskListForAppliedFilter = if (isFilterApplied) {
+            val tempFilterList =
+                taskList.value.filter { it.value[TaskCardSlots.FILTER_BY.name]?.value == filterByValueKey.value }
+            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+        } else {
+            taskList.value
+        }
+
+        val finalFilteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
         if (queryTerm.isNotEmpty()) {
-            taskList.value.entries.forEach { task ->
+            taskListForAppliedFilter.entries.forEach { task ->
                 if (task.value[TaskCardSlots.SEARCH_ON.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true || task.value[TaskCardSlots.GROUP_BY.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true
                 ) {
-                    filteredList[task.key] = task.value
+                    finalFilteredList[task.key] = task.value
                 }
             }
         } else {
-            filteredList.putAll(taskList.value)
+            finalFilteredList.putAll(taskListForAppliedFilter)
         }
-        if (isFilterApplied) {
+        if (isGroupingApplied) {
             filterTaskMap =
-                filteredList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                finalFilteredList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
         } else {
-            _filterList.value = filteredList
+            _filterList.value = finalFilteredList
         }
     }
 
@@ -339,6 +432,7 @@ open class TaskScreenViewModel @Inject constructor(
                 taskId = taskId,
                 status = status
             )
+            updateProgress()
         }
     }
 

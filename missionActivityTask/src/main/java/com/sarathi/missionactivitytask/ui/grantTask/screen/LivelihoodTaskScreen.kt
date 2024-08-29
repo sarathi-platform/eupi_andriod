@@ -57,6 +57,7 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
@@ -92,7 +93,8 @@ fun LivelihoodTaskScreen(
         viewModel.getActivityList(missionId)
         viewModel.onEvent(InitDataEvent.InitLivelihoodPlanningScreenState(missionId, activityId))
     }
-    LivelihoodPlaningTaskScreen(
+
+    TaskScreen(
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,
@@ -105,18 +107,42 @@ fun LivelihoodTaskScreen(
         isSecondaryButtonVisible = false,
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,
-        activities = viewModel.activityList.value,
-
-            taskScreenContent = { vm: TaskScreenViewModel, nvController: NavController ->
-            livelihoodTaskScreenContent((vm as LivelihoodTaskScreenViewModel),nvController)
+        taskScreenContent = { vm: TaskScreenViewModel, nvController: NavController ->
+            livelihoodTaskScreenContent((vm as LivelihoodTaskScreenViewModel), nvController)
+        },
+        taskScreenContentForGroup = { groupKey, _, _ ->
+            livelihoodTaskScreenContentForGroup(groupKey, viewModel, navController)
         }
 
     )
 }
-fun LazyListScope.livelihoodTaskScreenContent(viewModel: LivelihoodTaskScreenViewModel, navController: NavController) {
+
+fun LazyListScope.livelihoodTaskScreenContent(
+    viewModel: LivelihoodTaskScreenViewModel,
+    navController: NavController
+) {
 
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
+    ) { _, task ->
+        LivelihoodTaskRowView(viewModel, navController, task)
+
+        CustomVerticalSpacer()
+    }
+    item {
+        CustomVerticalSpacer(size = dimen_20_dp)
+    }
+
+}
+
+fun LazyListScope.livelihoodTaskScreenContentForGroup(
+    groupKey: String,
+    viewModel: LivelihoodTaskScreenViewModel,
+    navController: NavController
+) {
+
+    itemsIndexed(
+        items = viewModel.filterTaskMap[groupKey].value()
     ) { _, task ->
         LivelihoodTaskRowView(viewModel, navController, task)
 
@@ -333,7 +359,7 @@ fun LivelihoodPlaningTaskScreen(
                             placeholderString = viewModel.searchLabel.value,
                             filterSelected = viewModel.isGroupByEnable.value,
                             modifier = Modifier.padding(horizontal = 10.dp),
-                            showFilter = viewModel.isFilterEnable.value,
+                            showFilter = viewModel.isGroupingApplied.value,
                             onFilterSelected = {
                                 if (viewModel.filterList.value.isNotEmpty()) {
                                     viewModel.isGroupByEnable.value = !it
@@ -404,7 +430,7 @@ fun LivelihoodPlaningTaskScreen(
                                 )
                             }
                         }
-                        if (viewModel.isFilterEnable.value && viewModel.isGroupByEnable.value) {
+                        if (viewModel.isGroupingApplied.value && viewModel.isGroupByEnable.value) {
                             viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
                                 item {
                                     Row(

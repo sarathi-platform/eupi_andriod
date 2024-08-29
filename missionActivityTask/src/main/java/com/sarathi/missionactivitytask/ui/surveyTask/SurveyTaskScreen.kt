@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreenContent
+import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreenContentForGroup
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.SurveyTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 
@@ -38,9 +39,12 @@ fun SurveyTaskScreen(
         isSecondaryButtonVisible = false,
         taskList = emptyList(),
         navController = navController,
-        taskScreenContent = { vm, mNavController, itemInCategory ->
-            TaskScreenContent(vm, mNavController, itemInCategory)
+        taskScreenContent = { vm, mNavController ->
+            TaskScreenContent(vm, mNavController)
         },
+        taskScreenContentForGroup = { groupKey, vm, navController ->
+            TaskScreenContentForGroup(groupKey, vm, navController)
+        }
     )
 
 
