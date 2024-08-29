@@ -50,6 +50,7 @@ fun <T> BottomSheetScaffoldComponent(
     bottomSheetScaffoldProperties: CustomBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties(),
     defaultValue: String = BLANK_STRING,
     bottomSheetContentItemList: List<T>,
+    selectedIndex: Int = 0,
     onBottomSheetItemSelected: (selectedItemIndex: Int) -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -57,7 +58,7 @@ fun <T> BottomSheetScaffoldComponent(
     val coroutineScope = rememberCoroutineScope()
 
     val selectedItemIndex = remember(bottomSheetContentItemList) {
-        mutableStateOf(0)
+        mutableStateOf(selectedIndex)
     }
 
     ModalBottomSheetLayout(
@@ -95,7 +96,15 @@ fun <T> BottomSheetScaffoldComponent(
                                 is String? -> {
                                     (item as String?)?.let {
                                         Row(
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    coroutineScope.launch {
+                                                        selectedItemIndex.value = index
+                                                        onBottomSheetItemSelected(index)
+                                                        bottomSheetScaffoldProperties.sheetState.hide()
+                                                    }
+                                                },
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
                                             val itemValue =
@@ -110,13 +119,6 @@ fun <T> BottomSheetScaffoldComponent(
                                                     .copy(
                                                         style = mediumTextStyle,
                                                         modifier = Modifier
-                                                            .clickable {
-                                                                coroutineScope.launch {
-                                                                    selectedItemIndex.value = index
-                                                                    onBottomSheetItemSelected(index)
-                                                                    bottomSheetScaffoldProperties.sheetState.hide()
-                                                                }
-                                                            }
                                                     )
                                             )
                                             if (index == selectedItemIndex.value) {

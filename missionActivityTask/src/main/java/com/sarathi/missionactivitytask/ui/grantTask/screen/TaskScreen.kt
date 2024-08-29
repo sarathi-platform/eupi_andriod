@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -44,6 +45,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.FilterCore
 import com.nudge.core.NO_SG_FILTER_LABEL
 import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.enums.ActivityTypeEnum
@@ -62,8 +64,8 @@ import com.nudge.core.ui.theme.defaultSpanStyle
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
@@ -71,18 +73,17 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
+import com.sarathi.dataloadingmangement.R
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
-import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
-import com.sarathi.missionactivitytask.ui.components.GroupByIcon
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -140,8 +141,9 @@ fun TaskScreen(
 
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-        defaultValue = NO_SG_FILTER_LABEL,
+        defaultValue = stringResource(R.string.no_small_group_assgned_label),
         bottomSheetContentItemList = viewModel.filterByList,
+        selectedIndex = FilterCore.getFilterValueForActivity(activityId),
         onBottomSheetItemSelected = {
             viewModel.onEvent(TaskScreenEvent.OnFilterSelected(it))
         }
@@ -243,7 +245,7 @@ fun TaskScreen(
                                         viewModel.onEvent(
                                             SearchEvent.PerformSearch(
                                                 queryTerm,
-                                                viewModel.isGroupByEnable.value,
+                                                viewModel.isGroupingApplied.value,
                                                 viewModel.isFilterApplied.value
                                             )
                                         )
@@ -257,7 +259,7 @@ fun TaskScreen(
                                                 customBottomSheetScaffoldProperties.sheetState.show()
                                             }
                                         },
-                                        icon = painterResource(id = CoreRes.drawable.filter_icon),
+                                        icon = painterResource(id = if (viewModel.isFilterApplied.value) CoreRes.drawable.filter_active_icon else CoreRes.drawable.filter_icon),
                                         iconTintColor = if (viewModel.isFilterApplied.value) white else blueDark,
                                         contentDescription = "filter_list",
                                         buttonContainerColor = if (viewModel.isFilterApplied.value) blueDark else Color.Transparent,
@@ -269,9 +271,25 @@ fun TaskScreen(
                                 }
 
                                 if (viewModel.isGroupByEnable.value) {
-                                    GroupByIcon(
-                                        modifier = Modifier,
-                                        size = Pair(dimen_45_dp, dimen_45_dp),
+                                    CustomIconButton(
+                                        onClick = {
+                                            if (viewModel.filterList.value.isNotEmpty()) {
+                                                viewModel.onEvent(TaskScreenEvent.OnGroupBySelected)
+                                            }
+                                        },
+                                        icon = painterResource(id = if (viewModel.isGroupingApplied.value) CoreRes.drawable.ic_group_by_active_icon else CoreRes.drawable.ic_group_by_icon),
+                                        iconTintColor = if (viewModel.isGroupingApplied.value) white else blueDark,
+                                        contentDescription = "filter_list",
+                                        buttonContainerColor = if (viewModel.isGroupingApplied.value) blueDark else Color.Transparent,
+                                        colors = IconButtonDefaults.iconButtonColors(
+                                            containerColor = if (viewModel.isGroupingApplied.value) blueDark else Color.Transparent,
+                                            contentColor = if (viewModel.isGroupingApplied.value) white else blueDark
+                                        )
+                                    )
+                                    /*GroupByIcon(
+                                        modifier = Modifier
+                                            .absolutePadding(top = dimen_2_dp),
+                                        size = Pair(dimen_50_dp, dimen_50_dp),
                                         groupingSelected = viewModel.isGroupingApplied.value,
                                         focusManager = focusManager,
                                         onFilterSelected = {
@@ -279,7 +297,7 @@ fun TaskScreen(
                                                 viewModel.isGroupingApplied.value = !it
                                             }
                                         }
-                                    )
+                                    )*/
                                 }
                             }
                         }
@@ -385,12 +403,17 @@ fun TaskScreen(
 }
 
 @Composable
-private fun getFilterAppliedText(viewModel: TaskScreenViewModel) =
-    buildAnnotatedString {
-        withStyle(style = defaultSpanStyle.copy(fontWeight = FontWeight.Normal)) {
+private fun getFilterAppliedText(viewModel: TaskScreenViewModel): AnnotatedString {
+
+    //TODO Anupam Handle translations with annotated string.
+    val normalSpanStyle =
+        defaultSpanStyle.copy(fontWeight = FontWeight.Normal, fontSize = dimen_16_sp)
+    val highlightedSpanStyle = defaultSpanStyle.copy(fontSize = dimen_16_sp)
+    return buildAnnotatedString {
+        withStyle(style = normalSpanStyle) {
             append("Showing ")
         }
-        withStyle(style = defaultSpanStyle) {
+        withStyle(style = highlightedSpanStyle) {
             append(
                 if (viewModel.isGroupingApplied.value) {
                     var size = 0
@@ -403,10 +426,10 @@ private fun getFilterAppliedText(viewModel: TaskScreenViewModel) =
                 }
             )
         }
-        withStyle(defaultSpanStyle.copy(fontWeight = FontWeight.Normal)) {
+        withStyle(defaultSpanStyle.copy(fontWeight = FontWeight.Normal, fontSize = dimen_16_sp)) {
             append(" Didis for ")
         }
-        withStyle(style = defaultSpanStyle) {
+        withStyle(style = highlightedSpanStyle) {
             val filterByKey = viewModel.filterByValueKey.value
             append(
                 if (filterByKey.equals(
@@ -417,6 +440,7 @@ private fun getFilterAppliedText(viewModel: TaskScreenViewModel) =
             )
         }
     }
+}
 
 fun LazyListScope.TaskScreenContent(
     viewModel: TaskScreenViewModel,

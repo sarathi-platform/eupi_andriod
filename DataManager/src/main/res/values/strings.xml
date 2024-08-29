@@ -70,5 +70,6 @@
     <string name="event">Event:</string>
     <string name="add_event">Add Event</string>
 
+    <string name="no_small_group_assgned_label">No Small Group Assigned</string>
 
 </resources>

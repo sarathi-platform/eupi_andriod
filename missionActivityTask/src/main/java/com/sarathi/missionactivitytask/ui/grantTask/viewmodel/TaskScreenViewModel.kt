@@ -11,6 +11,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.FilterCore
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.utils.CoreLogger
@@ -37,6 +38,7 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -71,13 +73,38 @@ open class TaskScreenViewModel @Inject constructor(
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
+
+    /**
+     * Handles the state of Activity Completion button
+     * */
     val isButtonEnable = mutableStateOf<Boolean>(false)
+
+    /**
+     * Handles the visibility of groupBy button
+     * */
     var isGroupByEnable = mutableStateOf(false)
+
+    /**
+     * Handles the state of groupBy button
+     * */
     var isGroupingApplied = mutableStateOf(false)
+
+    /**
+     * Handles the visibility of filter button
+     * */
     var isFilterEnabled = mutableStateOf(false)
+
+    /**
+     * Handles the state of filter button
+     * */
+
     var isFilterApplied = mutableStateOf(false)
+
     var isActivityCompleted = mutableStateOf(false)
 
+    /**
+     * Handles the visibility of progress bar
+     * */
     var isProgressEnable = mutableStateOf(true)
 
     var matId = mutableStateOf<Int>(0)
@@ -111,7 +138,7 @@ open class TaskScreenViewModel @Inject constructor(
                 )
             }
 
-            is com.sarathi.missionactivitytask.utils.event.SearchEvent.PerformSearch -> {
+            is SearchEvent.PerformSearch -> {
                 performSearchQuery(
                     queryTerm = event.searchTerm,
                     isGroupingApplied = event.isGroupingApplied,
@@ -119,42 +146,53 @@ open class TaskScreenViewModel @Inject constructor(
                 )
             }
 
+            is TaskScreenEvent.OnGroupBySelected -> {
+                isGroupingApplied.value = !isGroupingApplied.value
+            }
+
             is TaskScreenEvent.OnFilterSelected -> {
-
                 _filterByValueKey.value = filterByList[event.index].value()
-
-                if (filterByValueKey.value != ALL) {
-                    isFilterApplied.value = true
-                    if (isGroupingApplied.value) {
-                        val tempFilterList = taskList.value
-                            .filter {
-                                it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
-                                    filterByValueKey.value, ignoreCase = true
-                                )
-                            } as HashMap<Int, HashMap<String, TaskCardModel>>
-                        filterTaskMap =
-                            tempFilterList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-                    } else {
-                        val tempFilterList = taskList.value.filter {
-                            it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
-                                filterByValueKey.value, ignoreCase = true
-                            )
-                        }
-                        _filterList.value =
-                            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
-                    }
-                } else {
-                    isFilterApplied.value = false
-                    if (isGroupingApplied.value) {
-                        filterTaskMap =
-                            taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-
-                    } else {
-                        _filterList.value = taskList.value
-                    }
-                }
+                FilterCore.setFilterValueForActivity(activityId, event.index)
+                onFilterSelected()
             }
         }
+    }
+
+    private fun onFilterSelected() {
+        if (filterByValueKey.value != ALL) {
+            isFilterApplied.value = true
+            updateListForSelectedFilter()
+        } else {
+            isFilterApplied.value = false
+
+            updateListForAllFilter()
+        }
+    }
+
+    private fun updateListForAllFilter() {
+        filterTaskMap =
+            taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+        _filterList.value = taskList.value
+    }
+
+    private fun updateListForSelectedFilter() {
+
+        val tempFilterTaskMap = taskList.value
+            .filter {
+                it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
+                    filterByValueKey.value, ignoreCase = true
+                )
+            } as HashMap<Int, HashMap<String, TaskCardModel>>
+        filterTaskMap =
+            tempFilterTaskMap.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+
+        val tempFilterList = taskList.value.filter {
+            it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
+                filterByValueKey.value, ignoreCase = true
+            )
+        }
+        _filterList.value =
+            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
     }
 
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
@@ -231,13 +269,13 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value
-            updateValueInMainThread(_filterList, _filterListt)
+            updateListForAllFilter()
 
-            filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+            if (isFilterEnabled.value) {
 
-            createFilterByList()
+                createFilterByList()
+                updateFilterForActivity(activityId) //TODO Anupam Handle navigation back from next screen.
+            }
 
             updateProgress()
 
@@ -245,6 +283,17 @@ open class TaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun updateFilterForActivity(activityId: Int) {
+        val filterValueFromCore = FilterCore.getFilterValueForActivity(activityId)
+        val defaultFilterIndex = filterByList.indexOf(filterByValueKey.value).value(0)
+        if (filterValueFromCore != defaultFilterIndex) {
+            isFilterApplied.value = true
+            _filterByValueKey.value = filterByList[filterValueFromCore].value()
+            onEvent(TaskScreenEvent.OnFilterSelected(filterValueFromCore))
+        }
+
     }
 
     private fun createFilterByList() {
@@ -473,10 +522,6 @@ open class TaskScreenViewModel @Inject constructor(
         )
 
     }
-
-
-
-
 
     override fun refreshData() {
         super.refreshData()

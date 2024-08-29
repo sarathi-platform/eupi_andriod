@@ -71,4 +71,7 @@
     <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
 
+    <string name="no_small_group_assgned_label">কোনো সৰু গোট আৱণ্টন কৰা হোৱা নাই</string>
+
+
 </resources>
