@@ -20,7 +20,7 @@ interface VillageListDao {
     @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id and isActive=1")
     fun getVillage(id: Int): VillageEntity
 
-    @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id and languageId=:languageId and isActive=1")
+    @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id and languageId=:languageId")
     fun getVillageFromId(id: Int, languageId: Int): VillageEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertVillage(village: VillageEntity)
@@ -34,7 +34,7 @@ interface VillageListDao {
         villages.forEach {
             val localVillage = getVillageFromId(it.id, it.languageId)
             if (localVillage == null) {
-                insertVillage(it)
+                insertVillage(it.copy(isActive = 1))
             } else if (!userBPC) {
                 updateVillageData(
                     name = it.name,
@@ -42,9 +42,9 @@ interface VillageListDao {
                     villageId = it.id,
                     languageId = it.languageId
                 )
-            } else if (localVillage.isDataLoadTriedOnce != 1 && userBPC) {
+            } else if (localVillage.isDataLoadTriedOnce != 1) {
                 deleteVillageById(localVillage.localVillageId)
-                insertVillage(it)
+                insertVillage(it.copy(isActive = 1))
             }
         }
     }
