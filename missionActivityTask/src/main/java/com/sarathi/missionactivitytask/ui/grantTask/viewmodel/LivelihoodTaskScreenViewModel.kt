@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
+import com.nudge.core.valueAsMinusTwo
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -67,11 +68,16 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
             }
         }
     }
-    fun getPrimaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.PRIMARY.typeId && it.status==1 }?.livelihoodId.value() }?.name.value()
-    }
+    fun getPrimaryLivelihoodValue(key: Int):String {
+          return livelihoodsEntityList.find {
+                it.livelihoodId == subjectLivelihoodMappingMap.get(
+                    taskUiModel?.find { it.taskId == key }?.subjectId
+                )
+                    ?.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId && it.status == 1 }?.livelihoodId.valueAsMinusTwo()
+            }?.name.value() }
+
     fun getSecondaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.SECONDARY.typeId && it.status==1  }?.livelihoodId.value() }?.name.value()
+        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.SECONDARY.typeId && it.status==1  }?.livelihoodId.valueAsMinusTwo() }?.name.value()
     }
      fun getActivityList(missionId: Int){
 
@@ -91,14 +97,13 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
             livelihoodsEntityList.clear()
             livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
 
-           var getLivelihoodSupbjectMapping= taskUiModel?.map { it.subjectId }
+            var getLivelihoodSupbjectMapping = taskUiModel?.map { it.subjectId }
                 ?.let { getLivelihoodMappingUseCase.getLivelihoodMappingForSubject(it) }
-
-     getLivelihoodSupbjectMapping?.groupBy { it.subjectId}
-                ?.let {
-                    subjectLivelihoodMappingMap.clear()
-                    subjectLivelihoodMappingMap.putAll(it)
-                }
+                getLivelihoodSupbjectMapping?.groupBy { it.subjectId }
+                    ?.let {
+                        subjectLivelihoodMappingMap.clear()
+                        subjectLivelihoodMappingMap.putAll(it)
+                    }
         }
     }
     }

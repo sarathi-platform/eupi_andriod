@@ -879,6 +879,8 @@ fun String?.value(): String {
 
 fun Int?.value() = this ?: -1
 
+fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
+
 fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false

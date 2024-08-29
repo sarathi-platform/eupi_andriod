@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
 import com.nudge.core.preference.CoreSharedPrefs
@@ -59,8 +60,8 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var subjectName: String? = null
     private var taskEntity: ActivityTaskEntity? = null
     var checkDialogueValidation = mutableStateOf(false)
-    var primaryLivelihoodId = mutableStateOf(-1)
-    var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(-1)
+    var primaryLivelihoodId = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
+    var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
 
 
     override fun <T> onEvent(event: T) {
@@ -113,6 +114,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         _livelihoodList.value = mLivelihoodUiEntityList
                         primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
+                        checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                     }
                 else {
                         val mLivelihoodUiEntityList =
@@ -125,7 +127,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         _livelihoodList.value = mLivelihoodUiEntityList
                     }
                     checkButtonValidation()
-                    checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
 
                 }
 
@@ -166,7 +167,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
             isButtonEnable.value=false
         }
         else{
-            isButtonEnable.value = primaryLivelihoodId.value != -1 && secondaryLivelihoodId.value != -1 }
+            isButtonEnable.value = primaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID && secondaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID }
     }
 
     fun saveButtonClicked() {

@@ -33,21 +33,6 @@ interface SubjectLivelihoodMappingDao {
         status:Int,
         type: Int
     )
-    @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set primaryLivelihoodId = :primaryLivelihoodId, status =:status where userId = :userId  and subjectId = :subjectId")
-    suspend fun updatePrimaryLivelihoodForSubject(
-        subjectId: Int,
-        userId: String,
-        primaryLivelihoodId: Int,
-        status:Int
-    )
-
-    @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set secondaryLivelihoodId = :secondaryLivelihoodId, status=:status where userId = :userId and subjectId = :subjectId")
-    suspend fun updateSecondaryLivelihoodForSubject(
-        subjectId: Int,
-        userId: String,
-        secondaryLivelihoodId: Int,
-        status: Int
-    )
 
     @Query("SELECT COUNT(*) from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and type = :type and userId = :userId" )
     suspend fun isSubjectLivelihoodMappingAvailable(subjectId: Int, userId: String,type:Int): Int
