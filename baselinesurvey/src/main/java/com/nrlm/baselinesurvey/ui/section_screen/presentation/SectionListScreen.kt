@@ -39,7 +39,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
@@ -93,7 +92,6 @@ import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
-import com.nudge.navigationmanager.graphs.navigateBackToSurveyeeListScreen
 import com.nudge.navigationmanager.graphs.navigateToQuestionScreen
 import com.nudge.navigationmanager.graphs.navigateToSearchScreen
 import com.nudge.navigationmanager.routes.VIDEO_PLAYER_SCREEN_ROUTE_NAME
@@ -389,7 +387,11 @@ fun SectionListScreen(
 
                         item {
                             ComplexSearchComponent {
-                                navController.navigateToSearchScreen(surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
+                                navController.navigateToSearchScreen(
+                                    surveyeId = surveyId,
+                                    surveyeeId = didiId,
+                                    fromScreen = ARG_FROM_SECTION_SCREEN
+                                )
                             }
                         }
 
