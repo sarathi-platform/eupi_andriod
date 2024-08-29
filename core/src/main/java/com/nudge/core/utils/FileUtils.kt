@@ -11,8 +11,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
-import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.uriFromFile
+import com.nudge.core.getImageUri
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -413,6 +412,14 @@ object FileUtils {
         return filename
     }
 
+    private fun getName(filename: String?): String? {
+        if (filename == null) {
+            return null
+        }
+        val index = filename.lastIndexOf('/')
+        return filename.substring(index + 1)
+    }
+
     fun getImageUri(context: Context, fileName: String): Uri? {
         val file =
             findImageFile(context, fileName)
@@ -422,14 +429,6 @@ object FileUtils {
                 it
             )
         }
-    }
-
-    fun getName(filename: String?): String? {
-        if (filename == null) {
-            return null
-        }
-        val index = filename.lastIndexOf('/')
-        return filename.substring(index + 1)
     }
 
     fun findImageFile(context: Context, fileName: String): File {
