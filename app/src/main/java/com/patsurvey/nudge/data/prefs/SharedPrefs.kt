@@ -6,6 +6,9 @@ import android.util.Log
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_BATCH_SIZE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_ENABLED
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_RETRY_COUNT
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
@@ -38,7 +41,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_VO_SUMMARY_OPEN_FROM = "questions_open_from"
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
-        const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
 
@@ -275,5 +277,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun getPageOpenFromOTPScreen(): Boolean {
         return prefs.getBoolean(PREF_KEY_FROM_OTP_SCREEN, false)
+    }
+
+    override fun saveSyncBatchSize(batchSize: Long) {
+        prefs.edit().putLong(PREF_KEY_SYNC_BATCH_SIZE, batchSize).apply()
+    }
+
+    override fun saveSyncRetryCount(retryCount: Long) {
+        prefs.edit().putLong(PREF_KEY_SYNC_RETRY_COUNT, retryCount).apply()
     }
 }

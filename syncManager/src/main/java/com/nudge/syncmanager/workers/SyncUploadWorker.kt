@@ -53,7 +53,7 @@ class SyncUploadWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG = SyncUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
-    private val retryCount = RETRY_DEFAULT_COUNT
+    private var retryCount = RETRY_DEFAULT_COUNT
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
 
@@ -63,8 +63,9 @@ class SyncUploadWorker @AssistedInject constructor(
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             DeviceBandwidthSampler.getInstance().startSampling()
-
-            if (runAttemptCount > 0) {
+            batchLimit = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncBatchSize()
+            retryCount = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncRetryCount()
+            if (runAttemptCount >= 0) {
                 batchLimit = getBatchSize(connectionQuality)
             }
 

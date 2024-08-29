@@ -39,6 +39,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_USER_ID = "key_user_name"
         const val PREF_KEY_DATA_LOADED = "is_data_loaded"
         const val PREF_KEY_DIDI_TAB_DATA_LOADED = "is_didi_tab_data_loaded"
+        const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
+        const val PREF_KEY_SYNC_BATCH_SIZE = "sync_batch_size"
+        const val PREF_KEY_SYNC_RETRY_COUNT = "sync_retry_count"
 
 
         @Volatile
@@ -239,6 +242,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun getPref(key: String, defaultValue: Float): Float {
         return prefs.getFloat(key, defaultValue)
+    }
+
+    override fun getSyncBatchSize(): Int {
+        return prefs.getLong(PREF_KEY_SYNC_BATCH_SIZE, 0L).toInt()
+    }
+
+    override fun getSyncRetryCount(): Int {
+        return prefs.getLong(PREF_KEY_SYNC_RETRY_COUNT, 0L).toInt()
     }
 
 }

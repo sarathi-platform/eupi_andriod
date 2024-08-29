@@ -338,5 +338,13 @@ class SyncRepositoryImpl(
         return apiService.syncConsumerStatusApi(eventConsumerRequest)
     }
 
+    override fun getSyncBatchSize(): Int {
+        return corePrefRepo.getSyncBatchSize()
+    }
+
+    override fun getSyncRetryCount(): Int {
+        return corePrefRepo.getSyncRetryCount()
+    }
+
 
 }

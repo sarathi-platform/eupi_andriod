@@ -57,4 +57,7 @@ interface SyncRepository {
     suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest)
             : ApiResponseModel<List<SyncEventResponse>>
 
+    fun getSyncBatchSize(): Int
+    fun getSyncRetryCount(): Int
+
 }
