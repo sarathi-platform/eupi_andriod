@@ -46,7 +46,7 @@ class MissionScreenViewModel @Inject constructor(
             }
 
             is SearchEvent.PerformSearch -> {
-                performSearchQuery(event.searchTerm, event.isSearchApplied)
+                performSearchQuery(event.searchTerm, event.isGroupingApplied)
             }
 
             is LoaderEvent.UpdateLoaderState -> {

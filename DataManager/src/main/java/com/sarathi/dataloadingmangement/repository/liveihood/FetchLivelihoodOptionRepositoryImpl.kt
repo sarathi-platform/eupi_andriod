@@ -22,23 +22,8 @@ class FetchLivelihoodOptionRepositoryImpl @Inject constructor(
         return apiInterface.fetchLivelihoodPlanData(activityId)
     }
 
-    override suspend fun saveFromToDB(
-        subjectId: Int,
-        activityId: Int,
-        selectedPrimaryLivelihood: Int,
-        selectedSecondaryLivelihood: Int
-    ): SubjectLivelihoodMappingEntity {
-        val subjectLivelihoodOptionRepository = SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            subjectId = subjectId,
-            primaryLivelihoodId = selectedPrimaryLivelihood,
-            secondaryLivelihoodId = selectedSecondaryLivelihood,
-        )
-        return subjectLivelihoodOptionRepository
-    }
-
     override suspend fun saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>) {
-        subjectLivelihoodMappingDao.insertAllSubjectLivehoodMapping(subjectLivelihoodMappingEntity)
+        subjectLivelihoodMappingDao.insertAllSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
     }
     override suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>? {
         return activityConfigDao.getActivityConfigUiModel(userId = coreSharedPrefs.getUniqueUserIdentifier())

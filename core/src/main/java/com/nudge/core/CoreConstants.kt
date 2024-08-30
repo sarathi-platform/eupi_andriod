@@ -86,6 +86,7 @@ const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
 const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
 const val DD_mmm_YY_FORMAT = "dd MMM, yy"
+const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 
@@ -95,5 +96,14 @@ val eventWriters = listOf<IEventWriter>(
     LogEventWriter(),
     ImageEventWriter()
 )
+
+var EXPANSTION_TRANSITION_DURATION: Int = 450
+const val TRANSITION = "transition"
+const val ANIMATE_COLOR = "animate color"
+const val ROTATION_DEGREE_TRANSITION = "rotationDegreeTransition"
+
 const val MAXIMUM_RANGE = 999999
 const val MAXIMUM_RANGE_LENGTH = 10
+
+const val NO_SG_FILTER_VALUE = "null"
+const val NO_SG_FILTER_LABEL = "No Small Group Assigned"

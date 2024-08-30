@@ -49,6 +49,7 @@ fun EditTextWithTitleComponent(
     defaultValue: String = BLANK_STRING,
     showQuestion: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     isOnlyNumber: Boolean = false,
+    additionalValidation: (text: String, question: OptionItemEntityState?) -> Boolean,
     maxLength: Int = 150,
     isContent: Boolean = false,
     resetResponse: Boolean = false,
@@ -102,17 +103,19 @@ fun EditTextWithTitleComponent(
                     .padding(top = 6.dp),
                 value = txt.value,
                 onValueChange = {
-                    if (it.length <= maxLength) {
                         if (isOnlyNumber) {
                             if (onlyNumberField(it)) {
                                 if (it.length <= MAXIMUM_RANGE_LENGTH) {
-                                    txt.value = numberInEnglishFormat(it)
+                                    if (additionalValidation.invoke(it, showQuestion)) {
+                                        txt.value = numberInEnglishFormat(it)
+                                    }
                                 }
                             }
                         } else {
-                            txt.value = it
+                            if (it.length <= maxLength) {
+                                txt.value = it
+                            }
                         }
-                    }
                     onAnswerSelection(txt.value)
                 },
                 keyboardOptions = if (isOnlyNumber) {
@@ -148,5 +151,9 @@ fun EditTextWithTitleComponent(
 @Composable
 @Preview(showBackground = true)
 fun EditTextWithTitleComponentPreview() {
-    EditTextWithTitleComponent(title = "select", defaultValue = "", onInfoButtonClicked = {}) {}
+    EditTextWithTitleComponent(
+        title = "select",
+        defaultValue = "",
+        onInfoButtonClicked = {},
+        additionalValidation = { text, question -> true }) {}
 }

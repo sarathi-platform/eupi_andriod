@@ -70,4 +70,11 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">আপনি কি সাবমিট করতে চান? এটি সম্পূর্ণ হওয়ার পরে আপনি এই কার্যকলাপে এডিট করতে পারবেন না।</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">আপনি কি সাবমিট করতে চান? আপনি এই মিশনটি সম্পূর্ণ হওয়ার পরে এডিট করতে পারবেন না।</string>
+
+    <string name="no_small_group_assgned_label">কোন ছোট গ্রুপ নিযুক্ত করা হয়নি</string>
+    <string name="filter_item_count_label"><b>%1$s</b> দিদি  দেখানো হচ্ছে <b>%2$s</b> এর জন্য</string>
+    <string name="all_filter_text">সব</string>
+
 </resources>
