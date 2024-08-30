@@ -402,7 +402,8 @@ fun GridTypeComponent(
                                                 defaultValue = optionItemEntityState?.optionItemEntity?.selectedValue
                                                     ?: BLANK_STRING,
                                                 isOnlyNumber = optionItemEntityState?.optionItemEntity?.optionType == QuestionType.InputNumber.name,
-                                                onInfoButtonClicked = {}
+                                                onInfoButtonClicked = {},
+                                                additionalValidation = { _, _ -> true }
                                             ) { value ->
                                                 if (isEditAllowed) {
                                                     val updatedOptionItem =
