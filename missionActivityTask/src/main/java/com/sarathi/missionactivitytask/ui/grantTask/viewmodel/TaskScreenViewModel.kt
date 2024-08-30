@@ -172,13 +172,20 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun updateListForAllFilter() {
         filterTaskMap =
-            taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-        _filterList.value = taskList.value
+            taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+                .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+        _filterList.value = taskList.value.toList()
+            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
+            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
     }
 
     private fun updateListForSelectedFilter() {
 
-        val tempFilterTaskMap = taskList.value
+        val sortedList = taskList.value.toList()
+            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
+            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+
+        val tempFilterTaskMap = sortedList
             .filter {
                 it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
                     filterByValueKey.value, ignoreCase = true
@@ -187,7 +194,7 @@ open class TaskScreenViewModel @Inject constructor(
         filterTaskMap =
             tempFilterTaskMap.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
-        val tempFilterList = taskList.value.filter {
+        val tempFilterList = sortedList.filter {
             it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
                 filterByValueKey.value, ignoreCase = true
             )
@@ -419,12 +426,15 @@ open class TaskScreenViewModel @Inject constructor(
     private fun performSearchQuery(
         queryTerm: String, isGroupingApplied: Boolean, isFilterApplied: Boolean
     ) {
+
+        val sortedList = taskList.value
+
         val taskListForAppliedFilter = if (isFilterApplied) {
             val tempFilterList =
-                taskList.value.filter { it.value[TaskCardSlots.FILTER_BY.name]?.value == filterByValueKey.value }
+                sortedList.filter { it.value[TaskCardSlots.FILTER_BY.name]?.value == filterByValueKey.value }
             tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
         } else {
-            taskList.value
+            sortedList
         }
 
         val finalFilteredList = HashMap<Int, HashMap<String, TaskCardModel>>()
