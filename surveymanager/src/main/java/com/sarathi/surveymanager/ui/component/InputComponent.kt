@@ -50,7 +50,7 @@ fun InputComponent(
     isEditable: Boolean = true,
     sanctionedAmount: Int = 0,
     remainingAmount: Int = 0,
-    isZeroAllowed: Boolean = false,
+    isZeroNotAllowed: Boolean = false,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
     val txt = remember {
@@ -78,7 +78,7 @@ fun InputComponent(
             onValueChange = { value ->
                 if (value.length <= maxLength) {
                     if (isOnlyNumber && onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
-                        if (isZeroAllowed) {
+                        if (isZeroNotAllowed) {
                             if (!value.all { it == '0' }) {
                                 txt.value = value
                             }
