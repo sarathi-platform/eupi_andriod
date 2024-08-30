@@ -70,6 +70,8 @@
     <string name="cancel_text">বাতিল কৰক</string>
     <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">"\"আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ'ব। "</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই অভিযানটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি এই অভিযানত পৰিৱৰ্তন কৰিব নোৱাৰিব।</string>
 
     <string name="no_small_group_assgned_label">কোনো সৰু গোট আৱণ্টন কৰা হোৱা নাই</string>
 

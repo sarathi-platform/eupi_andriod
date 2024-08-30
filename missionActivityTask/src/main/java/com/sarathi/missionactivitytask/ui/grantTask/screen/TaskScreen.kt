@@ -83,6 +83,8 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.component.ShowCustomDialog
+
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
@@ -163,24 +165,14 @@ fun TaskScreen(
                             .padding(horizontal = dimen_10_dp),
                     ) {
 
-                        ButtonPositive(
-                            modifier = Modifier.weight(0.5f),
-                            buttonTitle = stringResource(R.string.complete_activity),
-                            isActive = viewModel.isButtonEnable.value,
-                            isArrowRequired = false,
-                            onClick = {
-                                viewModel.markActivityCompleteStatus()
-
-                                navigateToActivityCompletionScreen(
-                                    isFromActivity = true,
-                                    navController = navController,
-                                    activityMsg = context.getString(
-                                        R.string.activity_completion_message,
-                                        activityName
-                                    ),
-                                    activityRoutePath = activityName
-                                )
-                            })
+                    ButtonPositive(
+                        modifier = Modifier.weight(0.5f),
+                        buttonTitle = stringResource(R.string.complete_activity),
+                        isActive = viewModel.isButtonEnable.value,
+                        isArrowRequired = false,
+                        onClick = {
+                            viewModel.showDialog.value = true
+                        })
 
                         if (isSecondaryButtonVisible) {
                             Spacer(modifier = Modifier.width(10.dp))
@@ -371,15 +363,39 @@ fun TaskScreen(
 
                                     taskScreenContent(viewModel, navController)
 
-                                }
                             }
                         }
                     }
                 }
-            },
-            onSettingClick = onSettingClick
-        )
-    }
+            }
+            if (viewModel.showDialog.value) {
+                ShowCustomDialog(
+                    message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_activity),
+                    negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
+                    positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                    onNegativeButtonClick = {
+                        viewModel.showDialog.value = false
+                    },
+                    onPositiveButtonClick = {
+                        viewModel.markActivityCompleteStatus()
+
+                        navigateToActivityCompletionScreen(
+                            isFromActivity = true,
+                            navController = navController,
+                            activityMsg = context.getString(
+                                R.string.activity_completion_message,
+                                activityName
+                            ),
+                            activityRoutePath = activityName
+                        )
+                        viewModel.showDialog.value = false
+                    }
+                )
+            }
+        },
+        onSettingClick = onSettingClick
+    )
+}
 
 
 }

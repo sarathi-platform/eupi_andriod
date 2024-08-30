@@ -111,6 +111,7 @@ open class TaskScreenViewModel @Inject constructor(
     var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
     var taskUiModel: List<TaskUiModel>? = null
+    var showDialog = mutableStateOf<Boolean>(false)
 
     private val _filterByList: SnapshotStateList<String?> = mutableStateListOf()
     val filterByList: SnapshotStateList<String?> get() = _filterByList
@@ -268,6 +269,17 @@ open class TaskScreenViewModel @Inject constructor(
                     _taskList.value[it.taskId] = uiComponent
 
             }
+
+            var _filterListt = _taskList.value.toList()
+                .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
+            updateValueInMainThread(
+                _filterList,
+                _filterListt as HashMap<Int, HashMap<String, TaskCardModel>>
+            )
+
+            filterTaskMap =
+                _taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
             updateListForAllFilter()
 

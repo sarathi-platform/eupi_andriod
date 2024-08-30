@@ -34,6 +34,7 @@ class ActivityScreenViewModel @Inject constructor(
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    var showDialog = mutableStateOf<Boolean>(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {

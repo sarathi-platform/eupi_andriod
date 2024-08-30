@@ -70,8 +70,10 @@
     <string name="event">Event:</string>
     <string name="add_event">Add Event</string>
 
-    <string name="no_small_group_assgned_label">No Small Group Assigned</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">Are you sure you want to continue? You will not be able to make changes to this mission after it\'s completed.</string>
 
+    <string name="no_small_group_assgned_label">No Small Group Assigned</string>
     <string name="filter_item_count_label">Showing <b>%1$s</b> didis for <b>%2$s</b> </string>
 
 </resources>
