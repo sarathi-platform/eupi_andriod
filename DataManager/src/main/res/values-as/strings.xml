@@ -74,8 +74,7 @@
     <string name="not_be_able_to_make_changes_after_completing_this_mission">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই অভিযানটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি এই অভিযানত পৰিৱৰ্তন কৰিব নোৱাৰিব।</string>
 
     <string name="no_small_group_assgned_label">কোনো সৰু গোট আৱণ্টন কৰা হোৱা নাই</string>
-
     <string name="filter_item_count_label"><b>%2$s</b> বাবে <b>%1$s</b> বাইদেউ প্ৰদৰ্শন কৰা</string>
-
+    <string name="all_filter_text">সকলো</string>
 
 </resources>

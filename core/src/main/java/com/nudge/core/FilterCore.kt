@@ -5,7 +5,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 
 object FilterCore {
 
-    private const val DEFAULT_FILTER_INDEX_VALUE = 0
+    const val DEFAULT_FILTER_INDEX_VALUE = 0
 
     private val activityFilterMap: SnapshotStateMap<Int, Int> = mutableStateMapOf()
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.FilterCore
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.utils.CoreLogger
@@ -35,6 +36,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -160,7 +162,7 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     private fun onFilterSelected() {
-        if (filterByValueKey.value != ALL) {
+        if (filterByList.indexOf(filterByValueKey.value) != FilterCore.DEFAULT_FILTER_INDEX_VALUE) {
             isFilterApplied.value = true
             updateListForSelectedFilter()
         } else {
@@ -316,19 +318,21 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     private fun createFilterByList() {
+        val context = CoreAppDetails.getContext()
+        val allOption = context?.getString(R.string.all_filter_text)
         _filterByList.clear()
-        _filterByList.add(ALL)
+        _filterByList.add(allOption)
         _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.value }.let {
             _filterByList.addAll(it.distinct())
         }
     }
 
     private fun updateProgress() {
-        val completedCount = (filterList.value.entries.filter {
+        val completedCount = (taskList.value.entries.filter {
             it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name
                     || it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.COMPLETED.name
         }.size)
-        val totalCount = (filterList.value.entries.size)
+        val totalCount = (taskList.value.entries.size)
 
         progressState.updateProgress(completedCount.toFloat() / totalCount.toFloat())
         progressState.updateProgressText("$completedCount/$totalCount")

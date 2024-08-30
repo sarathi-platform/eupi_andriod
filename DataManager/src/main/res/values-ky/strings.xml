@@ -75,6 +75,6 @@
 
     <string name="no_small_group_assgned_label">No Small Group Assigned</string>
     <string name="filter_item_count_label">Showing <b>%1$s</b> didis for <b>%2$s</b> </string>
-
+    <string name="all_filter_text">Bebak</string>
 
 </resources>
