@@ -102,6 +102,11 @@ fun AddImageComponent(
             }
         }
     )
+    LaunchedEffect(key1 = context) {
+        requestCameraPermission(context as Activity) {
+            shouldRequestPermission.value = it
+        }
+    }
 
     val boxModifier = if (imageList.isNotEmpty()) {
         Modifier
