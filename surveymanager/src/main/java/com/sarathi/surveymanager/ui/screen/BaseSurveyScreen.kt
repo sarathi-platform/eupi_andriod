@@ -34,7 +34,6 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
-import com.sarathi.dataloadingmangement.RECEIVED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -156,9 +155,7 @@ fun BaseSurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     maxLength = 7,
-                                    isZeroAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG) || question.tagId.contains(
-                                        RECEIVED_AMOUNT_TAG
-                                    ),
+                                    isZeroAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                                     sanctionedAmount = sanctionedAmount,
                                     remainingAmount = getSanctionedAmountMessage(
                                         question,

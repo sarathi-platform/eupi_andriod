@@ -70,5 +70,7 @@
     <string name="proceed">"दावगा "</string>
     <string name="cancel_text">"दान "</string>
     <string name="are_you_sure">"नों थार नामा? "</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे हाबाफारिखौ फोजोबनायनि उनाव सोलायनो हानाय नङा।</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे मिसनखौ फोजोबनायनि उनाव सोलायनो हानाय नङा</string>
 
 </resources>

@@ -172,11 +172,17 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value
+            var _filterListt = _taskList.value.toList()
+                .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
+            updateValueInMainThread(
+                _filterList,
+                _filterListt as HashMap<Int, HashMap<String, TaskCardModel>>
+            )
             updateValueInMainThread(_filterList, _filterListt)
 
             filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                _taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
