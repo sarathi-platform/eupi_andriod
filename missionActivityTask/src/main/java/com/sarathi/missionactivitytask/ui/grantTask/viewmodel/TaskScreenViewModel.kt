@@ -22,7 +22,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
-import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -78,6 +77,8 @@ open class TaskScreenViewModel @Inject constructor(
     var contentCategory = mutableStateOf<Int>(0)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
     var taskUiModel: List<TaskUiModel>? = null
+    var showDialog = mutableStateOf<Boolean>(false)
+
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
             mutableState.value = newValue
@@ -171,11 +172,17 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value
+            var _filterListt = _taskList.value.toList()
+                .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
+            updateValueInMainThread(
+                _filterList,
+                _filterListt as HashMap<Int, HashMap<String, TaskCardModel>>
+            )
             updateValueInMainThread(_filterList, _filterListt)
 
             filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                _taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
