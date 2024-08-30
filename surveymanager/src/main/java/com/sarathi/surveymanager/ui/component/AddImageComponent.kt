@@ -1,9 +1,14 @@
 package com.sarathi.surveymanager.ui.component
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -27,6 +32,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,9 +50,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.openSettings
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -81,6 +90,9 @@ fun AddImageComponent(
     val innerState: LazyGridState = rememberLazyGridState()
     var imageList by remember { mutableStateOf(getSavedImageUri(context, filePaths)) }
     var currentImageUri by remember { mutableStateOf<Uri?>(null) }
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
+    }
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
@@ -90,6 +102,11 @@ fun AddImageComponent(
             }
         }
     )
+    LaunchedEffect(key1 = context) {
+        requestCameraPermission(context as Activity) {
+            shouldRequestPermission.value = it
+        }
+    }
 
     val boxModifier = if (imageList.isNotEmpty()) {
         Modifier
@@ -162,8 +179,63 @@ fun AddImageComponent(
             }
         }
     }
+    if (shouldRequestPermission.value) {
+        ShowCustomDialog(
+            message = stringResource(R.string.permission_dialog_prompt_message),
+            negativeButtonTitle = stringResource(R.string.no),
+            positiveButtonTitle = stringResource(R.string.yes),
+            onNegativeButtonClick = {
+                shouldRequestPermission.value = false
+            },
+            onPositiveButtonClick = {
+                openSettings()
 
+                shouldRequestPermission.value = false
 
+            }
+        )
+    }
+
+}
+
+fun requestCameraPermission(
+    context: Activity,
+    requestPermission: (Boolean) -> Unit
+) {
+    val permissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    } else {
+        arrayOf(Manifest.permission.CAMERA)
+    }
+
+    val allPermissionsGranted = permissions.all { permission ->
+        ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    val shouldShowRationale = permissions.any { permission ->
+        ActivityCompat.shouldShowRequestPermissionRationale(context, permission)
+    }
+
+    when {
+        allPermissionsGranted -> {
+            Log.i("PatImagePreviewScreen", "Permission previously granted")
+            requestPermission(false)
+        }
+
+        shouldShowRationale -> {
+            Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
+            ActivityCompat.requestPermissions(context, permissions, 1)
+        }
+
+        else -> {
+            Log.d("requestCameraPermission", "Permission not granted")
+            requestPermission(true)
+        }
+    }
 }
 
 fun getImageUri(context: Context, fileName: String, isNewImage:Boolean): Uri? {
@@ -270,4 +342,5 @@ fun DrawScope.drawDottedLine(
         currentPosition += spacing
     }
 }
+
 
