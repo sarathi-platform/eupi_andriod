@@ -13,8 +13,13 @@ class SaveLivelihoodMappingUseCase @Inject constructor(
             subjectLivelihoodMappingEntity
         )
     }
-    suspend  fun saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
-        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForSubject(
+    suspend  fun saveAndUpdateSubjectLivelihoodMappingPrimaryForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForPrimarySubject(
+            subjectLivelihoodMappingEntity
+        )
+    }
+    suspend  fun saveAndUpdateSubjectLivelihoodMappingSecondaryForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForSecondarySubject(
             subjectLivelihoodMappingEntity
         )
     }

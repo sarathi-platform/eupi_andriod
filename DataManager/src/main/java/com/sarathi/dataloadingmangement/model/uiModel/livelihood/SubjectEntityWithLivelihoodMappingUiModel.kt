@@ -15,5 +15,5 @@ data class SubjectEntityWithLivelihoodMappingUiModel(
     val crpImageLocalPath: String = BLANK_STRING,
     val voName: String = BLANK_STRING,
     val primaryLivelihoodId: Int,
-    val secondaryLivelihoodId: Int
+    val secondaryLivelihoodId: Int,
 )

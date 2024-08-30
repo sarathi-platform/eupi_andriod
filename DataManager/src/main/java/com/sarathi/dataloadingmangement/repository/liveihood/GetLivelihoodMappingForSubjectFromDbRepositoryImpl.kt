@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository.liveihood
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import javax.inject.Inject
 
 class GetLivelihoodMappingForSubjectFromDbRepositoryImpl @Inject constructor(
@@ -10,10 +11,11 @@ class GetLivelihoodMappingForSubjectFromDbRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) : GetLivelihoodMappingForSubjectFromDbRepository {
 
-    override suspend fun getLivelihoodMappingForSubject(subjectId: Int): SubjectLivelihoodMappingEntity? {
+    override suspend fun getLivelihoodMappingForSubject(subjectId: Int): List<SubjectLivelihoodMappingEntity> {
         return subjectLivelihoodMappingDao.getSubjectLivelihoodMappingAvailable(
             subjectId = subjectId,
-            userId = coreSharedPrefs.getUniqueUserIdentifier()
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            type= listOf(LivelihoodTypeEnum.PRIMARY.typeId,LivelihoodTypeEnum.SECONDARY.typeId)
         )
     }
 

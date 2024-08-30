@@ -115,8 +115,8 @@ class AddEventViewModel @Inject constructor(
             if (livelihoodForDidi != null) {
                 val livelihoodDropDown = getLivelihoodListFromDbUseCase.invoke(
                     listOf(
-                        livelihoodForDidi.primaryLivelihoodId,
-                        livelihoodForDidi.secondaryLivelihoodId
+                        livelihoodForDidi.first()?.livelihoodId.value(),
+                        livelihoodForDidi.last()?.livelihoodId.value()
                     )
                 )
                 _livelihoodDropdownValue.clear()

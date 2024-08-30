@@ -9,13 +9,6 @@ interface FetchLivelihoodOptionRepository {
     suspend fun getLivelihoodOptionNetwork(
         activityId: Int,
     ): ApiResponseModel<List<LivelihoodOptionResponse>>
-
-    suspend fun saveFromToDB(
-        subjectId: Int,
-        activityId: Int,
-        selectedPrimaryLivelihood: Int,
-        selectedSecondaryLivelihood: Int
-    ): SubjectLivelihoodMappingEntity
     suspend fun saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
     suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>?
 suspend fun getActivityIdForLivelihood():Int

@@ -1,9 +1,11 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepository
 import javax.inject.Inject
 
@@ -28,9 +30,27 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     subjectLivelihoodMappingEntities.add(
                         SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            subjectId = subjectLivelihoodMapping.subjectId,
-                            primaryLivelihoodId =subjectLivelihoodMapping.selectedPrimaryLivelihood!! ,
-                            secondaryLivelihoodId = subjectLivelihoodMapping.selectedSecondaryLivelihood
+                            subjectId = subjectLivelihoodMapping.didiId,
+                            livelihoodId =subjectLivelihoodMapping.livelihoodDTO.find { it?.order==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                            primaryLivelihoodId =1,
+                            secondaryLivelihoodId = 1,
+                            status =1,
+                            type = subjectLivelihoodMapping.livelihoodDTO.first().order
+
+
+                        )
+                    )
+                    subjectLivelihoodMappingEntities.add(
+                        SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            subjectId = subjectLivelihoodMapping.didiId,
+                            livelihoodId =subjectLivelihoodMapping.livelihoodDTO.find { it?.order==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value(),
+                            primaryLivelihoodId =1,
+                            secondaryLivelihoodId = 1,
+                            status = 1,
+                            type = subjectLivelihoodMapping.livelihoodDTO.last().order
+
+
                         )
                     )
                 }
