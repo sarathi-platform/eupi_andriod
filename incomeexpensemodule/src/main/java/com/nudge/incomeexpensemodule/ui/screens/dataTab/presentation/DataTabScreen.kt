@@ -67,6 +67,8 @@ import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.launch
+import com.nudge.core.R as CoreRes
+import com.sarathi.dataloadingmangement.R as DataRes
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -229,7 +231,7 @@ fun DataTabScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(1f),
-                                        placeholderString = stringResource(R.string.search_by_didis), //TODO pick this from string file with translations
+                                        placeholderString = stringResource(DataRes.string.search_by_didis),
                                         searchFieldHeight = dimen_50_dp,
                                         onSearchValueChange = {
                                             dataTabScreenViewModel.onEvent(
@@ -246,7 +248,7 @@ fun DataTabScreen(
                                                 customBottomSheetScaffoldProperties.sheetState.show()
                                             }
                                         },
-                                        icon = painterResource(id = R.drawable.filter_icon),
+                                        icon = painterResource(id = CoreRes.drawable.filter_icon),
                                         iconTintColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark,
                                         contentDescription = "filter_list",
                                         buttonContainerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
@@ -263,7 +265,7 @@ fun DataTabScreen(
                                             dataTabScreenViewModel.onEvent(DataTabEvents.LivelihoodSortApplied)
                                         },
                                         iconTintColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark,
-                                        icon = painterResource(id = R.drawable.sort_icon),
+                                        icon = painterResource(id = CoreRes.drawable.sort_icon),
                                         buttonContainerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
                                         colors = IconButtonDefaults.iconButtonColors(
                                             containerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,

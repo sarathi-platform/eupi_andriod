@@ -882,6 +882,8 @@ fun Int?.value() = this ?: -1
 
 fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
 
+fun Int?.value(defaultValue: Int) = this ?: defaultValue
+
 fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
