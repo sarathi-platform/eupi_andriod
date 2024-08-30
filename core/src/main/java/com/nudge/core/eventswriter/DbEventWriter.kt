@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.core.net.toFile
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.FORM_C_TOPIC
+import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
@@ -31,7 +33,7 @@ class DbEventWrite() : IEventWriter {
         imageStatusDao: ImageStatusDao
     ) {
         eventsDao.insert(event)
-        if (event.name.contains(IMAGE_EVENT_STRING)) {
+        if (event.name.contains(IMAGE_EVENT_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC) {
             uri?.let {
                 if (it != Uri.EMPTY) {
                     imageStatusDao.insert(

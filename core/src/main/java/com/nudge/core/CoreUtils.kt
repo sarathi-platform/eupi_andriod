@@ -127,7 +127,7 @@ fun getBatchSize(connectionQuality: ConnectionQuality): Int {
         ConnectionQuality.GOOD -> return 15
         ConnectionQuality.MODERATE -> return 10
         ConnectionQuality.POOR -> 5
-        ConnectionQuality.UNKNOWN -> -1
+        ConnectionQuality.UNKNOWN -> 3
     }
 }
 

@@ -10,6 +10,8 @@ import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.FORM_C_TOPIC
+import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.MULTIPART_FORM_DATA
 import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
@@ -65,7 +67,12 @@ class SyncUploadWorker @AssistedInject constructor(
             DeviceBandwidthSampler.getInstance().startSampling()
             batchLimit = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncBatchSize()
             retryCount = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncRetryCount()
-            if (runAttemptCount >= 0) {
+            CoreLogger.d(
+                applicationContext,
+                TAG,
+                "doWork Started: batchLimit: $batchLimit  retryCount: $retryCount"
+            )
+            if (runAttemptCount > 0) {
                 batchLimit = getBatchSize(connectionQuality)
             }
 
@@ -105,7 +112,7 @@ class SyncUploadWorker @AssistedInject constructor(
                     "doWork: pendingEvents List: ${mPendingEventList.json()}"
                 )
                 val dataEventList =
-                    mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) }
+                    mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
                     val apiResponse =
                         syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
@@ -119,7 +126,13 @@ class SyncUploadWorker @AssistedInject constructor(
                 }
 
                 val imageEventIdsList =
-                    mPendingEventList.filter { it.name.contains(IMAGE_EVENT_STRING) }.map { it.id }
+                    mPendingEventList.filter { it.name.contains(IMAGE_EVENT_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC }
+                        .map { it.id }
+                CoreLogger.d(
+                    applicationContext,
+                    TAG,
+                    "doWork: imageEventIdsList List: ${imageEventIdsList.json()}"
+                )
                 if ((selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && imageEventIdsList.isNotEmpty()) {
                     val imageEventList =
                         syncManagerUseCase.fetchEventsFromDBUseCase.fetchAllImageEventDetails(
@@ -137,6 +150,14 @@ class SyncUploadWorker @AssistedInject constructor(
                         }
                     }
                 }
+
+                batchLimit = getBatchSize(connectionQuality)
+                CoreLogger.d(
+                    applicationContext,
+                    TAG,
+                    "doWork: Next batchLimit: $batchLimit"
+                )
+
             }
 
             syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus()

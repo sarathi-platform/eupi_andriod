@@ -51,6 +51,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.FORM_C_TOPIC
+import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.isOnline
@@ -148,10 +150,12 @@ fun ObserveEventCounts(
         val eventListLive = viewModel.syncEventDetailUseCase.getSyncEventsUseCase.getTotalEvents()
         eventListLive.observe(lifeCycleOwner) { eventList ->
             val (totalDataCount, successDataCount) = eventList.filterAndCountEvents {
-                !it.name.toLowerCase(Locale.current).contains(IMAGE_STRING)
+                !it.name.toLowerCase(Locale.current)
+                    .contains(IMAGE_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC
             }
             val (totalImageCount, successImageCount) = eventList.filterAndCountEvents {
-                it.name.toLowerCase(Locale.current).contains(IMAGE_STRING)
+                it.name.toLowerCase(Locale.current)
+                    .contains(IMAGE_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC
             }
             viewModel.totalImageEventCount.intValue = totalImageCount
             viewModel.imageEventProgress.floatValue =
