@@ -73,5 +73,7 @@
 
     <string name="no_small_group_assgned_label">কোনো সৰু গোট আৱণ্টন কৰা হোৱা নাই</string>
 
+    <string name="filter_item_count_label"><b>%2$s</b> বাবে <b>%1$s</b> বাইদেউ প্ৰদৰ্শন কৰা</string>
+
 
 </resources>

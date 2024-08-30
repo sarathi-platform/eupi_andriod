@@ -72,5 +72,7 @@
     <string name="are_you_sure">"नों थार नामा? "</string>
 
     <string name="no_small_group_assgned_label">जेबो फिसा हानजा थि खालामाखै</string>
+    <string name="filter_item_count_label"><b>%1$s</b> बेनि थाखाय <b>%2$s</b> आब\'मोन दिन्थिदों</string>
+
 
 </resources>

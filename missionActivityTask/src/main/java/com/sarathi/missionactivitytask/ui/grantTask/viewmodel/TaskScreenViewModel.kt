@@ -274,7 +274,7 @@ open class TaskScreenViewModel @Inject constructor(
             if (isFilterEnabled.value) {
 
                 createFilterByList()
-                updateFilterForActivity(activityId) //TODO Anupam Handle navigation back from next screen.
+                updateFilterForActivity(activityId)
             }
 
             updateProgress()
@@ -291,8 +291,8 @@ open class TaskScreenViewModel @Inject constructor(
         if (filterValueFromCore != defaultFilterIndex) {
             isFilterApplied.value = true
             _filterByValueKey.value = filterByList[filterValueFromCore].value()
-            onEvent(TaskScreenEvent.OnFilterSelected(filterValueFromCore))
         }
+        onEvent(TaskScreenEvent.OnFilterSelected(filterValueFromCore))
 
     }
 

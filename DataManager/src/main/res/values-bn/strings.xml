@@ -72,5 +72,7 @@
     <string name="cancel_text">Cancel</string>
 
     <string name="no_small_group_assgned_label">কোন ছোট গ্রুপ নিযুক্ত করা হয়নি</string>
+    <string name="filter_item_count_label"><b>%1$s</b> দিদি  দেখানো হচ্ছে <b>%2$s</b> এর জন্য</string>
+
 
 </resources>

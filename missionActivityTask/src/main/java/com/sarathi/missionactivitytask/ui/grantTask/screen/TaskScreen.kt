@@ -36,10 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -53,14 +49,11 @@ import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
-import com.nudge.core.ui.commonUi.CustomTextViewComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
-import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.defaultSpanStyle
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -90,6 +83,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
+import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
 
@@ -286,18 +280,6 @@ fun TaskScreen(
                                             contentColor = if (viewModel.isGroupingApplied.value) white else blueDark
                                         )
                                     )
-                                    /*GroupByIcon(
-                                        modifier = Modifier
-                                            .absolutePadding(top = dimen_2_dp),
-                                        size = Pair(dimen_50_dp, dimen_50_dp),
-                                        groupingSelected = viewModel.isGroupingApplied.value,
-                                        focusManager = focusManager,
-                                        onFilterSelected = {
-                                            if (viewModel.filterList.value.isNotEmpty()) {
-                                                viewModel.isGroupingApplied.value = !it
-                                            }
-                                        }
-                                    )*/
                                 }
                             }
                         }
@@ -336,11 +318,11 @@ fun TaskScreen(
                             if (viewModel.isFilterApplied.value) {
                                 customVerticalSpacer()
                                 item {
-                                    CustomTextViewComponent(
-                                        textProperties = TextProperties.getBasicTextProperties(
-                                            text = getFilterAppliedText(viewModel)
-                                        )
-                                            .copy(modifier = Modifier.padding(horizontal = dimen_16_dp))
+                                    HtmlText(
+                                        text = getFilterAppliedText(viewModel),
+                                        modifier = Modifier.padding(horizontal = dimen_16_dp),
+                                        style = defaultTextStyle,
+                                        fontSize = dimen_16_sp
                                     )
                                 }
                                 customVerticalSpacer()
@@ -403,43 +385,26 @@ fun TaskScreen(
 }
 
 @Composable
-private fun getFilterAppliedText(viewModel: TaskScreenViewModel): AnnotatedString {
+private fun getFilterAppliedText(viewModel: TaskScreenViewModel): String {
 
-    //TODO Anupam Handle translations with annotated string.
-    val normalSpanStyle =
-        defaultSpanStyle.copy(fontWeight = FontWeight.Normal, fontSize = dimen_16_sp)
-    val highlightedSpanStyle = defaultSpanStyle.copy(fontSize = dimen_16_sp)
-    return buildAnnotatedString {
-        withStyle(style = normalSpanStyle) {
-            append("Showing ")
+    val count = if (viewModel.isGroupingApplied.value) {
+        var size = 0
+        viewModel.filterTaskMap.forEach {
+            size += it.value.size
         }
-        withStyle(style = highlightedSpanStyle) {
-            append(
-                if (viewModel.isGroupingApplied.value) {
-                    var size = 0
-                    viewModel.filterTaskMap.forEach {
-                        size += it.value.size
-                    }
-                    size.toString()
-                } else {
-                    viewModel.filterList.value.size.toString()
-                }
-            )
-        }
-        withStyle(defaultSpanStyle.copy(fontWeight = FontWeight.Normal, fontSize = dimen_16_sp)) {
-            append(" Didis for ")
-        }
-        withStyle(style = highlightedSpanStyle) {
-            val filterByKey = viewModel.filterByValueKey.value
-            append(
-                if (filterByKey.equals(
-                        NO_SG_FILTER_VALUE,
-                        true
-                    )
-                ) NO_SG_FILTER_LABEL else filterByKey
-            )
-        }
+        size.toString()
+    } else {
+        viewModel.filterList.value.size.toString()
     }
+    val filterByKey = viewModel.filterByValueKey.value
+    val filterValue = if (filterByKey.equals(
+            NO_SG_FILTER_VALUE,
+            true
+        )
+    ) NO_SG_FILTER_LABEL else filterByKey
+
+
+    return stringResource(id = R.string.filter_item_count_label, count, filterValue)
 }
 
 fun LazyListScope.TaskScreenContent(
