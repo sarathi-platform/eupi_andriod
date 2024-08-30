@@ -77,5 +77,10 @@
     <string name="filter_item_count_label">Showing <b>%1$s</b> didis for <b>%2$s</b> </string>
 
     <string name="all_filter_text">All</string>
+    <string name="present">Present</string>
+    <string name="absent">Absent</string>
+    <string name="search_didi">Search didi</string>
+    <string name="search_by_small_groups">Search by small groups</string>
+    <string name="total_didis">Total Didis - %1$s</string>
 
 </resources>

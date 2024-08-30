@@ -114,7 +114,6 @@ import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
 import com.sarathi.smallgroupmodule.ui.theme.uncheckedTrackColor
 import com.sarathi.smallgroupmodule.ui.theme.white
-import com.sarathi.smallgroupmodule.utils.getAttendanceFromBoolean
 import com.sarathi.smallgroupmodule.utils.getDate
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -766,7 +765,9 @@ fun HistorySummaryCardItem(
         }
 
         Text(
-            text = subjectAttendanceHistoryState.attendance.getAttendanceFromBoolean(),
+            text = if (subjectAttendanceHistoryState.attendance) stringResource(id = R.string.present) else stringResource(
+                id = R.string.absent
+            ),
             style = defaultTextStyle,
             color = if (subjectAttendanceHistoryState.attendance) green else redOffline
         )

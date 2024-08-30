@@ -77,4 +77,9 @@
     <string name="filter_item_count_label"><b>%1$s</b> बेनि थाखाय <b>%2$s</b> आब\'मोन दिन्थिदों</string>
     <string name="all_filter_text">गासैबो</string>
 
+    <string name="present">आथिखाल</string>
+    <string name="absent">गैया।</string>
+    <string name="search_didi">आब\'खौ नागिर</string>
+    <string name="search_by_small_groups">फिसा हानजाजों नागिर</string>
+    <string name="total_didis">गासै आब\'मोन - %1$s</string>
 </resources>

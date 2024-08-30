@@ -77,4 +77,10 @@
     <string name="filter_item_count_label"><b>%2$s</b> বাবে <b>%1$s</b> বাইদেউ প্ৰদৰ্শন কৰা</string>
     <string name="all_filter_text">সকলো</string>
 
+    <string name="present">উপস্থিত</string>
+    <string name="absent">অনুপস্থিত</string>
+    <string name="search_didi">বাইদেউঅনুসন্ধান কৰক</string>
+    <string name="search_by_small_groups">সৰু গোটৰ দ্বাৰা সন্ধান কৰক</string>
+    <string name="total_didis">মুঠ বাইদেউ - %1$s</string>
+
 </resources>

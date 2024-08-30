@@ -77,4 +77,9 @@
     <string name="filter_item_count_label"><b>%1$s</b> দিদি  দেখানো হচ্ছে <b>%2$s</b> এর জন্য</string>
     <string name="all_filter_text">সব</string>
 
+    <string name="present">উপস্থিত</string>
+    <string name="absent">অনুপস্থিত</string>
+    <string name="search_didi">দিদি সার্চ করুন</string>
+    <string name="search_by_small_groups">ছোট গ্রুপ দ্বারা সার্চ করুন</string>
+    <string name="total_didis">মোট দিদি - %1$s</string>
 </resources>
