@@ -19,15 +19,8 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePickerColors
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.DateRangePickerDefaults
-import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nudge.core.R
+import com.nudge.core.ui.CustomDateRangePicker
+import com.nudge.core.ui.CustomDateRangePickerDefaults
+import com.nudge.core.ui.CustomDateRangePickerState
+import com.nudge.core.ui.date_picker_component.CustomDatePickerColors
+import com.nudge.core.ui.date_picker_component.CustomDatePickerDefaults
+import com.nudge.core.ui.date_picker_component.CustomDatePickerFormatter
+import com.nudge.core.ui.rememberDateRangePickerState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
@@ -100,7 +100,7 @@ fun CustomDateRangePickerBottomSheetComponent(
                     .padding(top = dimen_14_dp)
                     .background(searchFieldBg)
             ) {
-                DateRangePicker(
+                CustomDateRangePicker(
                     state = dateRangePickerProperties.state,
                     modifier = dateRangePickerProperties.modifier,
                     dateFormatter = dateRangePickerProperties.dateFormatter,
@@ -163,25 +163,25 @@ fun rememberCustomDateRangePickerSheetState(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberDateRangePickerProperties(
-    state: DateRangePickerState = rememberDateRangePickerState(),
+    state: CustomDateRangePickerState = rememberDateRangePickerState(),
     modifier: Modifier = Modifier,
-    dateFormatter: DatePickerFormatter = remember { DatePickerFormatter() },
+    dateFormatter: CustomDatePickerFormatter = remember { CustomDatePickerFormatter() },
     dateValidator: (Long) -> Boolean = { true },
     title: (@Composable () -> Unit)? = {
-        DateRangePickerDefaults.DateRangePickerTitle(
+        /*CustomDateRangePickerDefaults.DateRangePickerTitle(
             state = state,
             modifier = Modifier.padding(DateRangePickerTitlePadding)
-        )
+        )*/
     },
     headline: (@Composable () -> Unit)? = {
-        DateRangePickerDefaults.DateRangePickerHeadline(
+        CustomDateRangePickerDefaults.DateRangePickerHeadline(
             state,
             dateFormatter,
             modifier = Modifier.padding(DateRangePickerHeadlinePadding)
         )
     },
     showModeToggle: Boolean = true,
-    colors: DatePickerColors = DatePickerDefaults.colors(
+    colors: CustomDatePickerColors = CustomDatePickerDefaults.colors(
         containerColor = searchFieldBg,
         todayDateBorderColor = blueDark,
         dayInSelectionRangeContainerColor = blueDark.copy(0.5f),
@@ -204,13 +204,13 @@ fun rememberDateRangePickerProperties(
 @OptIn(ExperimentalMaterial3Api::class)
 data class DateRangePickerProperties(
     val modifier: Modifier,
-    val state: DateRangePickerState,
-    val dateFormatter: DatePickerFormatter,
+    val state: CustomDateRangePickerState,
+    val dateFormatter: CustomDatePickerFormatter,
     val dateValidator: (Long) -> Boolean,
     val title: (@Composable () -> Unit)?,
     val headline: (@Composable () -> Unit)?,
     val showModeToggle: Boolean,
-    val colors: DatePickerColors
+    val colors: CustomDatePickerColors
 )
 
 
@@ -247,9 +247,9 @@ data class CustomDateRangePickerBottomSheetProperties(
     val scrimColor: Color,
 )
 
-private val DateRangePickerTitlePadding = PaddingValues(start = 64.dp, end = 12.dp)
+private val DateRangePickerTitlePadding = PaddingValues(start = 12.dp, end = 12.dp)
 private val DateRangePickerHeadlinePadding =
-    PaddingValues(start = 64.dp, end = 12.dp, bottom = 12.dp)
+    PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp)
 
 sealed class SheetHeight() {
 

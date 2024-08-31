@@ -82,6 +82,7 @@ const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
 const val ATTENDANCE_DELETED = "Deleted"
 const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
+const val MMM_DD_YYYY_FORMAT = "MMM dd, yyyy"
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 

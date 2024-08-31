@@ -63,10 +63,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.gmail.orlandroyd.composecalendar.DateRangePickerDlg
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.ContentWithImage
+import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
 import com.nudge.core.ui.commonUi.ImageProperties
+import com.nudge.core.ui.commonUi.SheetHeight
 import com.nudge.core.ui.commonUi.rememberCustomDateRangePickerSheetState
 import com.nudge.core.ui.commonUi.rememberDateRangePickerBottomSheetProperties
 import com.nudge.core.ui.commonUi.rememberDateRangePickerProperties
@@ -74,6 +76,7 @@ import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.deleteButtonBg
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
@@ -187,33 +190,33 @@ fun SmallGroupAttendanceHistoryScreen(
     }
 
 
-//    CustomDateRangePickerBottomSheetComponent(
-//        customDateRangePickerBottomSheetProperties = sheetProperties,
-//        dateRangePickerProperties = dateRangePickerProperties,
-//        sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
-//        onSheetConfirmButtonClicked = {
-//            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
-//                dateRangePickerProperties.state.setSelection(
-//                    dateRangePickerProperties.state.selectedStartDateMillis,
-//                    getCurrentTimeInMillis()
-//                )
-//            }
-//            smallGroupAttendanceHistoryViewModel
-//                .onEvent(
-//                    CommonEvents.UpdateDateRange(
-//                        dateRangePickerProperties.state.selectedStartDateMillis,
-//                        dateRangePickerProperties.state.selectedEndDateMillis
-//                    )
-//                )
-//            smallGroupAttendanceHistoryViewModel
-//                .onEvent(
-//                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
-//                )
-//            scope.launch {
-//                sheetState.hide()
-//            }
-//        }
-//    ) {
+    CustomDateRangePickerBottomSheetComponent(
+        customDateRangePickerBottomSheetProperties = sheetProperties,
+        dateRangePickerProperties = dateRangePickerProperties,
+        sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
+        onSheetConfirmButtonClicked = {
+            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
+                dateRangePickerProperties.state.setSelection(
+                    dateRangePickerProperties.state.selectedStartDateMillis,
+                    getCurrentTimeInMillis()
+                )
+            }
+            smallGroupAttendanceHistoryViewModel
+                .onEvent(
+                    CommonEvents.UpdateDateRange(
+                        dateRangePickerProperties.state.selectedStartDateMillis,
+                        dateRangePickerProperties.state.selectedEndDateMillis
+                    )
+                )
+            smallGroupAttendanceHistoryViewModel
+                .onEvent(
+                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
+                )
+            scope.launch {
+                sheetState.hide()
+            }
+        }
+    ) {
 
         ToolBarWithMenuComponent(
             title = smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupName,
@@ -401,9 +404,11 @@ fun SmallGroupAttendanceHistoryScreen(
                             }
 
                             item {
-                                Spacer(modifier = modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_100_dp))
+                                Spacer(
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_100_dp)
+                                )
                             }
 
                         }
@@ -418,29 +423,29 @@ fun SmallGroupAttendanceHistoryScreen(
 
             }
         )
-    DateRangePickerDlg(
-        visible = isVisibleDateRangePickerDialog,
-        onClose = {
-            isVisibleDateRangePickerDialog = false
-        },
-        onDatesSelected = { range ->
-            smallGroupAttendanceHistoryViewModel
-                .onEvent(
-                    CommonEvents.UpdateDateRange(
-                        range.first.time,
-                        range.second.time
+        /*DateRangePickerDlg(
+            visible = isVisibleDateRangePickerDialog,
+            onClose = {
+                isVisibleDateRangePickerDialog = false
+            },
+            onDatesSelected = { range ->
+                smallGroupAttendanceHistoryViewModel
+                    .onEvent(
+                        CommonEvents.UpdateDateRange(
+                            range.first.time,
+                            range.second.time
+                        )
                     )
-                )
-            smallGroupAttendanceHistoryViewModel
-                .onEvent(
-                    SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
-                )
-            isVisibleDateRangePickerDialog = false
+                smallGroupAttendanceHistoryViewModel
+                    .onEvent(
+                        SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
+                    )
+                isVisibleDateRangePickerDialog = false
 
-        }
+            }
 
-    )
-
+        )*/
+    }
 }
 
 

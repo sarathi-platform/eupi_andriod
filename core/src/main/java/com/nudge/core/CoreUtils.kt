@@ -1077,6 +1077,7 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
 }
 
 const val YYYY_MM_DD = "yyyy-MM-dd"
+const val dd_MM_yyyy = "dd/MM/yyyy"
 
 fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
     if (this == null)
