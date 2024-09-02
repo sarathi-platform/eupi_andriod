@@ -99,6 +99,7 @@ fun RangePickerComponent(
                         title = getFirstTitle(typePicker),
                         maxLength = 2,
                         onInfoButtonClicked = { /*TODO*/ },
+                        additionalValidation = { _, _ -> true }
                     ) { selectValue ->
                         firstInputValue.value = selectValue
                         val secondValue =

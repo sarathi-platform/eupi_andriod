@@ -335,6 +335,9 @@ const val NO = "NO"
 
 const val LIVELIHOOD_SOURCE_TAG_CONSTANT = "Livelihood Sources"
 const val HOUSEHOLD_INFO_TAG_CONSTANT = "Household information"
-const val ACTIVITY_HAMLET_SURVEY="Conduct Hamlet Survey"
+const val ACTIVITY_HAMLET_SURVEY = "Conduct Hamlet Survey"
+
+const val AGE_TAG_VALUE = 74
+const val AGE_FIELD_LOWER_LIMIT = "0"
 
 
