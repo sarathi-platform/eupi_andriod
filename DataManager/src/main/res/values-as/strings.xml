@@ -59,7 +59,7 @@
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
     <string name="search_for_mission">মিছনৰ দ্বাৰা সন্ধান কৰক</string>
-    <string name="search_by_didis">Search by didis</string>
+    <string name="search_by_didis">"বাইদেউৰ দ্বাৰা সন্ধান কৰক "</string>
     <string name="event">কাৰ্য্য:</string>
     <string name="asset">সম্পদ:</string>
     <string name="add_event">কাৰ্য্য যোগ কৰক</string>
@@ -70,21 +70,21 @@
     <string name="cancel_text">বাতিল কৰক</string>
     <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
-    <string name="livelihood">Livelihood</string>
+    <string name="livelihood">"জীৱিকা "</string>
     <string name="date_range_picker_label_text">From - To</string>
-    <string name="total_asset">Total Asset</string>
+    <string name="total_asset">"মুঠ সম্পত্তি "</string>
     <string name="events">"কাৰ্য্য "</string>
     <string name="type_of_asset">"সম্পদৰ প্ৰকাৰ "</string>
-    <string name="products">Products</string>
+    <string name="products">"সামগ্ৰীসমূহ "</string>
     <string name="view_edit_history">"সম্পাদনাৰ ইতিহাস চাওক "</string>
-    <string name="show_less">Show Less</string>
-    <string name="show_more">Show more</string>
+    <string name="show_less">"কম দেখুৱাওক "</string>
+    <string name="show_more">"অধিক দেখুৱাওক "</string>
     <string name="all_events">All Events:</string>
     <string name="last_events">Last %1$s events:</string>
     <string name="increse_in_number">"সংখ্যা বৃদ্ধি "</string>
     <string name="asset_type">সম্পদৰ প্ৰকাৰ:</string>
     <string name="event_date">কাৰ্য্যৰ তাৰিখ:</string>
-    <string name="edit_history">Edit history</string>
+    <string name="edit_history">"ইতিহাস সম্পাদনা কৰক "</string>
     <string name="increase_in_number">"সংখ্যা বৃদ্ধি "</string>
 
 </resources>

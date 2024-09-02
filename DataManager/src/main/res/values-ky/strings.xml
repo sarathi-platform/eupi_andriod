@@ -60,7 +60,7 @@
     <string name="cancel">"Mwthakma "</string>
     <string name="search">"Naitukdi "</string>
     <string name="search_for_mission">Mission bai Naitukti</string>
-    <string name="search_by_didis">Search by didis</string>
+    <string name="search_by_didis">"Aibi bai naituk di "</string>
     <string name="event">Wngmung:</string>
     <string name="asset">Rwbai:</string>
     <string name="add_event">Tisadi wngmungrok</string>
@@ -70,21 +70,21 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
-    <string name="livelihood">Livelihood</string>
+    <string name="livelihood">"Tangchamung "</string>
     <string name="date_range_picker_label_text">From - To</string>
-    <string name="total_asset">Total Asset</string>
+    <string name="total_asset">"Bebak rwbai "</string>
     <string name="events">Events</string>
     <string name="type_of_asset">Type of Asset</string>
-    <string name="products">Products</string>
+    <string name="products">"Wngmanui "</string>
     <string name="view_edit_history">"Laihjak kok no mithingma ni nukmung "</string>
-    <string name="show_less">Show Less</string>
-    <string name="show_more">Show more</string>
+    <string name="show_less">"Kisisa phunukdi "</string>
+    <string name="show_more">"Teibo phunuk di "</string>
     <string name="all_events">All Events:</string>
     <string name="last_events">Last %1$s events:</string>
     <string name="increse_in_number">"Rem bai Bangrima "</string>
     <string name="asset_type">Prodrepot rwbai:</string>
     <string name="event_date">Wngmung  ni  wnjora:</string>
-    <string name="edit_history">Edit history</string>
+    <string name="edit_history">"Laihjak kok no mithingdi "</string>
     <string name="increase_in_number">"Rem bai Bangrima "</string>
 
 </resources>
