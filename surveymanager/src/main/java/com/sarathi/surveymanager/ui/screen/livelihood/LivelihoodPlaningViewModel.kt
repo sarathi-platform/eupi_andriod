@@ -179,7 +179,10 @@ class LivelihoodPlaningViewModel @Inject constructor(
         ioViewModelScope {
             subjectId?.let {
                 saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
-                    primaryLivelihoodId.value, it, secondaryLivelihoodId.value
+                    primaryLivelihoodId.value, LivelihoodTypeEnum.PRIMARY.typeId,it
+                )
+                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                 secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId,it
                 )
             }
             val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()

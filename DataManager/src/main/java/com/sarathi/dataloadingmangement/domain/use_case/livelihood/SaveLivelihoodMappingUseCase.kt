@@ -14,13 +14,14 @@ class SaveLivelihoodMappingUseCase @Inject constructor(
         )
     }
     suspend fun saveAndUpdateLivelihoodMappingForSubject(
-        primaryLivelihoodId: Int,
+        livelihoodId: Int,
+        type:Int,
         subjectId: Int,
-        secondaryLivelihoodId:Int
-    )
+        )
     {
-        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForSubject(primaryLivelihoodId,subjectId,secondaryLivelihoodId)
+        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForSubject(livelihoodId,type,subjectId,)
     }
+
     fun getUserId() = saveLivelihoodMappingForSubjectRepository.getUserId()
 
 }

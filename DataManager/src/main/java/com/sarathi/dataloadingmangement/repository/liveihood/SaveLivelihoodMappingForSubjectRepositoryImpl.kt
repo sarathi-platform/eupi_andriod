@@ -39,30 +39,20 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
 
         }
     }
-    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(primaryLivelihoodId: Int,subjectId:Int,secondaryLivelihoodId:Int) {
 
-        val subjectLivelihoodPrimaryMappingEntity =
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(livelihoodId: Int,type:Int,subjectId:Int) {
+
+        val subjectLivelihoodMappingEntity =
             SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 subjectId = subjectId,
-                livelihoodId = primaryLivelihoodId,
-                type = LivelihoodTypeEnum.PRIMARY.typeId,
+                livelihoodId = livelihoodId,
+                type = type,
                 primaryLivelihoodId = 1,
                 secondaryLivelihoodId = 1,
                 status = 1
             )
-        val subjectLivelihoodSecondaryMappingEntity =
-            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                subjectId = subjectId,
-                livelihoodId = secondaryLivelihoodId,
-                type = LivelihoodTypeEnum.SECONDARY.typeId,
-                primaryLivelihoodId = 1,
-                secondaryLivelihoodId = 1,
-                status = 1
-            )
-        saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodPrimaryMappingEntity)
-        saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodSecondaryMappingEntity)
+        saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity)
     }
 
     override fun getUserId() = coreSharedPrefs.getUniqueUserIdentifier()
