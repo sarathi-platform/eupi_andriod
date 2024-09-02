@@ -68,8 +68,8 @@ fun LivelihoodDropDownScreen(
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
             message = stringResource(R.string.form_alert_dialog_message),
-            positiveButtonTitle = stringResource(id = R.string.proceed),
-            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            positiveButtonTitle = stringResource(id = R.string.proceed_txt),
+            negativeButtonTitle = stringResource(id = R.string.cancel_txt),
             onPositiveButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navController.popBackStack()
