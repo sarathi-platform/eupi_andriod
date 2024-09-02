@@ -86,6 +86,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -107,6 +108,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.nudge.core.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -278,7 +280,7 @@ object CustomDatePickerDefaults {
     fun DatePickerTitle(state: CustomDatePickerState, modifier: Modifier = Modifier) {
         when (state.displayMode) {
             DisplayMode.Picker -> Text(
-                text = "Select Date",
+                text = stringResource(R.string.select_date_label),
                 modifier = modifier
             )
 

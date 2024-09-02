@@ -30,6 +30,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.ScrollAxisRange
@@ -43,6 +44,7 @@ import androidx.compose.ui.semantics.verticalScrollAxisRange
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.nudge.core.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -198,8 +200,8 @@ object CustomDateRangePickerDefaults {
         dateFormatter: CustomDatePickerFormatter,
         modifier: Modifier = Modifier
     ) {
-        val startDateText = "Start date"
-        val endDateText = "End date"
+        val startDateText = stringResource(R.string.start_date_label)
+        val endDateText = stringResource(R.string.end_date_label)
         DateRangePickerHeadline(
             state = state,
             dateFormatter = dateFormatter,

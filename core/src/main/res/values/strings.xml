@@ -21,4 +21,7 @@
 
 
     <string name="permission_dialog_prompt_message">Camera Permission required, please grant permission.</string>
+    <string name="select_date_label">Select Date</string>
+    <string name="start_date_label">Start date</string>
+    <string name="end_date_label">End date</string>
 </resources>
