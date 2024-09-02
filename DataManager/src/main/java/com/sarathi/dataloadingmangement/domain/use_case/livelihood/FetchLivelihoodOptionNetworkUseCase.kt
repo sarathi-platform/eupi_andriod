@@ -32,8 +32,6 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             subjectId = subjectLivelihoodMapping.didiId,
                             livelihoodId =subjectLivelihoodMapping.livelihoodDTO.find { it?.order==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
-                            primaryLivelihoodId =1,
-                            secondaryLivelihoodId = 1,
                             status =1,
                             type = subjectLivelihoodMapping.livelihoodDTO.first().order
 
@@ -45,8 +43,6 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             subjectId = subjectLivelihoodMapping.didiId,
                             livelihoodId =subjectLivelihoodMapping.livelihoodDTO.find { it?.order==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value(),
-                            primaryLivelihoodId =1,
-                            secondaryLivelihoodId = 1,
                             status = 1,
                             type = subjectLivelihoodMapping.livelihoodDTO.last().order
 

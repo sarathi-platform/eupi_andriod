@@ -16,29 +16,22 @@ data class SubjectLivelihoodMappingEntity(
     val type: Int,
     val status:Int,
 
-    //Todo Remove After livelihood income Expense Refactor
-    val primaryLivelihoodId: Int,
-    val secondaryLivelihoodId: Int,
-
 ) {
     companion object {
         fun getSubjectLivelihoodMappingEntity(
             userId: String,
             subjectId: Int,
-            primaryLivelihoodId: Int,
-            secondaryLivelihoodId: Int,
-             livelihoodId: Int,
+
+            livelihoodId: Int,
              type: Int,
              status:Int
         ): SubjectLivelihoodMappingEntity {
             return SubjectLivelihoodMappingEntity(
                 userId = userId,
                 subjectId = subjectId,
-                primaryLivelihoodId = primaryLivelihoodId,
                 livelihoodId = livelihoodId,
                 type = type,
                 status = status,
-                secondaryLivelihoodId = secondaryLivelihoodId
             )
         }
     }

@@ -11,16 +11,20 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLiveliho
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 
-fun SubjectEntityWithLivelihoodMappingUiModel.getSubjectLivelihoodMappingEntity(userId: String): SubjectLivelihoodMappingEntity {
-    return SubjectLivelihoodMappingEntity(
-        userId = userId,
-        subjectId = this.subjectId,
-        primaryLivelihoodId = this.primaryLivelihoodId,
-        secondaryLivelihoodId = this.secondaryLivelihoodId,
-        livelihoodId =  this.primaryLivelihoodId,
-        status = 1,
-        type = 1
-    )
+fun List<SubjectEntityWithLivelihoodMappingUiModel>.getSubjectLivelihoodMappingEntity(userId: String): List<SubjectLivelihoodMappingEntity> {
+    val list = ArrayList<SubjectLivelihoodMappingEntity>()
+    this.forEach {
+        list.add(
+            SubjectLivelihoodMappingEntity(
+                userId = userId,
+                subjectId = it.subjectId,
+                livelihoodId = it.livelihoodId,
+                status = 1,
+                type = 1
+            )
+        )
+    }
+    return list
 }
 
 fun getColorForComponent(status: String, componentName: ComponentName): Color {
