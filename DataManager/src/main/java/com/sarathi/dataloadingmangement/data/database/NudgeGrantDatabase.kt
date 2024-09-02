@@ -212,7 +212,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val NUDGE_GRANT_DATABASE_MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_1_2")
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_2_3")
                 migration(db, listOf(CREATE_MONEY_JOUNRAL_TABLE))
             }
         }
