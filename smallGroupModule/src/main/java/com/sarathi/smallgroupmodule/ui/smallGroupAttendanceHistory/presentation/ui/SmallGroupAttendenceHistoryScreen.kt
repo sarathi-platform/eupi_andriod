@@ -423,28 +423,6 @@ fun SmallGroupAttendanceHistoryScreen(
 
             }
         )
-        /*DateRangePickerDlg(
-            visible = isVisibleDateRangePickerDialog,
-            onClose = {
-                isVisibleDateRangePickerDialog = false
-            },
-            onDatesSelected = { range ->
-                smallGroupAttendanceHistoryViewModel
-                    .onEvent(
-                        CommonEvents.UpdateDateRange(
-                            range.first.time,
-                            range.second.time
-                        )
-                    )
-                smallGroupAttendanceHistoryViewModel
-                    .onEvent(
-                        SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent
-                    )
-                isVisibleDateRangePickerDialog = false
-
-            }
-
-        )*/
     }
 }
 
