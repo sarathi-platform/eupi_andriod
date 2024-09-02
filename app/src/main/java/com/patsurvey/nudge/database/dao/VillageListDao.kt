@@ -35,17 +35,18 @@ interface VillageListDao {
             val localVillage = getVillageFromId(it.id, it.languageId)
             if (localVillage == null) {
                 insertVillage(it.copy(isActive = 1))
-            } else if (!userBPC) {
+            } else if (localVillage.isDataLoadTriedOnce != 1 && userBPC) {
+                deleteVillageById(localVillage.localVillageId)
+                insertVillage(it.copy(isActive = 1))
+            } else {
                 updateVillageData(
                     name = it.name,
                     federationName = it.federationName,
                     villageId = it.id,
                     languageId = it.languageId
                 )
-            } else if (localVillage.isDataLoadTriedOnce != 1) {
-                deleteVillageById(localVillage.localVillageId)
-                insertVillage(it.copy(isActive = 1))
             }
+
         }
     }
 
