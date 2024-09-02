@@ -1,7 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
@@ -18,7 +17,7 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun saveAndUpdateSubjectLivelihoodMappingForPrimarySubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
         if (subjectLivelihoodMappingDao.isSubjectLivelihoodMappingAvailable(
                 subjectId = subjectLivelihoodMappingEntity.subjectId,
                 userId = subjectLivelihoodMappingEntity.userId,
@@ -40,45 +39,31 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
 
         }
     }
-    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSecondarySubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
-        if (subjectLivelihoodMappingDao.isSubjectLivelihoodMappingAvailable(
-                subjectId = subjectLivelihoodMappingEntity.subjectId,
-                userId = subjectLivelihoodMappingEntity.userId,
-                type = subjectLivelihoodMappingEntity.type
-            ) == 0
-        ) {
-            subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
-        }
-        else {
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(primaryLivelihoodId: Int,subjectId:Int,secondaryLivelihoodId:Int) {
 
-                subjectLivelihoodMappingDao.softDeleteLivelihoodForSubject(
-                    userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
-                    subjectId = subjectLivelihoodMappingEntity.subjectId,
-                    type = subjectLivelihoodMappingEntity.type,
-                    status = 2
-                )
-                subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(
-                    subjectLivelihoodMappingEntity
-                )
-        }
-    }
-    override suspend fun addOrUpdateLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
-
-        val subjectLivelihoodEventMappingEntity =
+        val subjectLivelihoodPrimaryMappingEntity =
             SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                subjectId = subjectLivelihoodMappingEntity.subjectId.value(),
-                livelihoodId = subjectLivelihoodMappingEntity.primaryLivelihoodId.value(),
+                subjectId = subjectId,
+                livelihoodId = primaryLivelihoodId,
                 type = LivelihoodTypeEnum.PRIMARY.typeId,
                 primaryLivelihoodId = 1,
                 secondaryLivelihoodId = 1,
                 status = 1
             )
-        saveAndUpdateSubjectLivelihoodMappingForPrimarySubject(subjectLivelihoodEventMappingEntity)
-
-
+        val subjectLivelihoodSecondaryMappingEntity =
+            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                subjectId = subjectId,
+                livelihoodId = secondaryLivelihoodId,
+                type = LivelihoodTypeEnum.SECONDARY.typeId,
+                primaryLivelihoodId = 1,
+                secondaryLivelihoodId = 1,
+                status = 1
+            )
+        saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodPrimaryMappingEntity)
+        saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodSecondaryMappingEntity)
     }
-
 
     override fun getUserId() = coreSharedPrefs.getUniqueUserIdentifier()
 
