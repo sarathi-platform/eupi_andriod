@@ -179,6 +179,18 @@ class LivelihoodPlaningViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
      fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
+//                 var subjectLivelihoodPrimaryMappingEntity: SubjectLivelihoodMappingEntity?=null
+
+
+//            if (subjectLivelihoodPrimaryMappingEntity != null) {
+//            subjectLivelihoodPrimaryMappingEntity?.let {
+//                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+//                    it
+//                )
+//            }
+//            }
+
+
             var subjectLivelihoodPrimaryMappingEntity: SubjectLivelihoodMappingEntity?
                         = subjectId?.let {
                             SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(

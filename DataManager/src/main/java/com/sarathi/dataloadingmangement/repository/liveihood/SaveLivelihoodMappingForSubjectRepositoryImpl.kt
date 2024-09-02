@@ -1,9 +1,11 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import javax.inject.Inject
 
 class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
@@ -14,6 +16,7 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
     override suspend fun saveSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
         subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
     }
+
 
     override suspend fun saveAndUpdateSubjectLivelihoodMappingForPrimarySubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
         if (subjectLivelihoodMappingDao.isSubjectLivelihoodMappingAvailable(
@@ -59,6 +62,23 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
                 )
         }
     }
+    override suspend fun addOrUpdateLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+
+        val subjectLivelihoodEventMappingEntity =
+            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                subjectId = subjectLivelihoodMappingEntity.subjectId.value(),
+                livelihoodId = subjectLivelihoodMappingEntity.primaryLivelihoodId.value(),
+                type = LivelihoodTypeEnum.PRIMARY.typeId,
+                primaryLivelihoodId = 1,
+                secondaryLivelihoodId = 1,
+                status = 1
+            )
+        saveAndUpdateSubjectLivelihoodMappingForPrimarySubject(subjectLivelihoodEventMappingEntity)
+
+
+    }
+
 
     override fun getUserId() = coreSharedPrefs.getUniqueUserIdentifier()
 
