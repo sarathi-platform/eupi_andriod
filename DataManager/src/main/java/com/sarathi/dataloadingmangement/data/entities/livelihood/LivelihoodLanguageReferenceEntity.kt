@@ -16,7 +16,7 @@ data class LivelihoodLanguageReferenceEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int = 0,
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "livelihoodId")
     var livelihoodId: Int,
     @ColumnInfo(name = "referenceType")
     var referenceType: String,

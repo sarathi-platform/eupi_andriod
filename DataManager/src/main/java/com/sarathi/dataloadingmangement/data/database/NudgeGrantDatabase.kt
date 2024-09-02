@@ -54,6 +54,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_TABLE
@@ -236,7 +237,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         CREATE_LIVELIHOOD_ASSET_TABLE,
                         CREATE_LIVELIHOOD_EVENT_TABLE,
                         CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_,
-                        CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE
+                        CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE,
+                        ALTER_ACTIVITY_CONFIG_TABLE
                     )
                 )
             }
