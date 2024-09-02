@@ -371,7 +371,8 @@ private fun InputType(optionsItem: OptionItemEntity) {
     EditTextWithTitleComponent(
         optionsItem.display,
         optionsItem.selectedValue ?: "",
-        onInfoButtonClicked = {}
+        onInfoButtonClicked = {},
+        additionalValidation = { _, _ -> true }
     ) {
         //  onAnswerSelection(optionsItem.optionId?:0,it)
     }
