@@ -1604,7 +1604,10 @@ class VillageSelectionViewModel @Inject constructor(
                                     )
                                 )
 
-                                villageListDao.insertAll(it.villageList ?: listOf())
+                                villageListDao.insertOnlyNewData(
+                                    it.villageList ?: listOf(),
+                                    userBPC = prefRepo.isUserBPC()
+                                )
                                 stateId.value = it.villageList?.firstOrNull()?.stateId ?: 1
                                 if (it.typeName.equals(UPCM_USER)) {
                                     prefRepo.savePref(
