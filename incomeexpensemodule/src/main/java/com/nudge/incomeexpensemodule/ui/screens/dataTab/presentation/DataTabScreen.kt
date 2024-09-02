@@ -207,7 +207,6 @@ fun DataTabScreen(
                             contentColor = blueDark,
                         )
 
-                        if (true) {
                             Column(
                                 modifier = Modifier
                                     .padding(horizontal = dimen_16_dp)
@@ -349,7 +348,7 @@ fun DataTabScreen(
 
                                 }
                             }
-                        }
+
                     }
                 }
             )
