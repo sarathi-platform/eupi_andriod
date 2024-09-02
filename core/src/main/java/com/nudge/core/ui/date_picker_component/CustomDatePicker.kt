@@ -46,8 +46,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,7 +59,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -110,10 +107,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.CustomLegacyCalendarModelImpl
-import com.nudge.core.ui.CustomSelectedRangeInfo
-import com.nudge.core.ui.CustomSnapFlingBehavior
-import com.nudge.core.ui.customDrawRangeBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -174,19 +167,6 @@ fun CustomDatePicker(
     }
 }
 
-/**
- * Creates a [CustomDatePickerState] for a [CustomDatePicker] that is remembered across compositions.
- *
- * @param initialSelectedDateMillis timestamp in _UTC_ milliseconds from the epoch that represents
- * an initial selection of a date. Provide a `null` to indicate no selection.
- * @param initialDisplayedMonthMillis timestamp in _UTC_ milliseconds from the epoch that represents
- * an initial selection of a month to be displayed to the user. By default, in case an
- * `initialSelectedDateMillis` is provided, the initial displayed month would be the month of the
- * selected date. Otherwise, in case `null` is provided, the displayed month would be the
- * current one.
- * @param yearRange an [IntRange] that holds the year range that the date picker will be limited to
- * @param initialDisplayMode an initial [DisplayMode] that this state will hold
- */
 @Composable
 @ExperimentalMaterial3Api
 fun rememberDatePickerState(
@@ -205,34 +185,10 @@ fun rememberDatePickerState(
     )
 }
 
-/**
- * A state object that can be hoisted to observe the date picker state. See
- * [rememberDatePickerState].
- *
- * The state's [selectedDateMillis] will provide a timestamp that represents the _start_ of the day.
- */
 @ExperimentalMaterial3Api
 @Stable
 class CustomDatePickerState private constructor(val stateData: CustomStateData) {
 
-    /**
-     * Constructs a CustomDatePickerState.
-     *
-     * @param initialSelectedDateMillis timestamp in _UTC_ milliseconds from the epoch that
-     * represents an initial selection of a date. Provide a `null` to indicate no selection. Note
-     * that the state's
-     * [selectedDateMillis] will provide a timestamp that represents the _start_ of the day, which
-     * may be different than the provided initialSelectedDateMillis.
-     * @param initialDisplayedMonthMillis timestamp in _UTC_ milliseconds from the epoch that
-     * represents an initial selection of a month to be displayed to the user. In case `null` is
-     * provided, the displayed month would be the current one.
-     * @param yearRange an [IntRange] that holds the year range that the date picker will be limited
-     * to
-     * @param initialDisplayMode an initial [DisplayMode] that this state will hold
-     * @see rememberDatePickerState
-     * @throws [IllegalArgumentException] if the initial selected date or displayed month represent
-     * a year that is out of the year range.
-     */
     constructor(
         @Suppress("AutoBoxing") initialSelectedDateMillis: Long?,
         @Suppress("AutoBoxing") initialDisplayedMonthMillis: Long?,
@@ -248,40 +204,16 @@ class CustomDatePickerState private constructor(val stateData: CustomStateData) 
         )
     )
 
-    /**
-     * A timestamp that represents the _start_ of the day of the selected date in _UTC_ milliseconds
-     * from the epoch.
-     *
-     * In case no date was selected or provided, the state will hold a `null` value.
-     *
-     * @see [setSelection]
-     */
     val selectedDateMillis: Long?
         @Suppress("AutoBoxing") get() = stateData.selectedStartDate.value?.utcTimeMillis
 
-    /**
-     * Sets the selected date.
-     *
-     * @param dateMillis timestamp in _UTC_ milliseconds from the epoch that represents the date
-     * selection, or `null` to indicate no selection.
-     *
-     * @throws IllegalArgumentException in case the given timestamps do not fall within the year
-     * range this state was created with.
-     */
     fun setSelection(@Suppress("AutoBoxing") dateMillis: Long?) {
         stateData.setSelection(startDateMillis = dateMillis, endDateMillis = null)
     }
 
-    /**
-     * A mutable state of [DisplayMode] that represents the current display mode of the UI
-     * (i.e. picker or input).
-     */
     var displayMode by stateData.displayMode
 
     companion object {
-        /**
-         * The default [Saver] implementation for [CustomDatePickerState].
-         */
         fun Saver(): Saver<CustomDatePickerState, *> = Saver(
             save = { with(CustomStateData.Saver()) { save(it.stateData) } },
             restore = { value -> CustomDatePickerState(with(CustomStateData.Saver()) { restore(value)!! }) }
@@ -289,44 +221,10 @@ class CustomDatePickerState private constructor(val stateData: CustomStateData) 
     }
 }
 
-/**
- * Contains default values used by the date pickers.
- */
 @ExperimentalMaterial3Api
 @Stable
 object CustomDatePickerDefaults {
 
-    /**
-     * Creates a [CustomDatePickerColors] that will potentially animate between the provided colors
-     * according to the Material specification.
-     *
-     * @param containerColor the color used for the date picker's background
-     * @param titleContentColor the color used for the date picker's title
-     * @param headlineContentColor the color used for the date picker's headline
-     * @param weekdayContentColor the color used for the weekday letters
-     * @param subheadContentColor the color used for the month and year subhead labels that appear
-     * when the date picker is scrolling calendar months vertically
-     * @param yearContentColor the color used for the year item when selecting a year
-     * @param currentYearContentColor the color used for the current year content when selecting a
-     * year
-     * @param selectedYearContentColor the color used for the selected year content when selecting a
-     * year
-     * @param selectedYearContainerColor the color used for the selected year container when
-     * selecting a year
-     * @param dayContentColor the color used for days content
-     * @param disabledDayContentColor the color used for disabled days content
-     * @param selectedDayContentColor the color used for selected days content
-     * @param disabledSelectedDayContentColor the color used for disabled selected days content
-     * @param selectedDayContainerColor the color used for a selected day container
-     * @param disabledSelectedDayContainerColor the color used for a disabled selected day container
-     * @param todayContentColor the color used for the day that marks the current date
-     * @param todayDateBorderColor the color used for the border of the day that marks the current
-     * date
-     * @param dayInSelectionRangeContentColor the content color used for days that are within a date
-     * range selection
-     * @param dayInSelectionRangeContainerColor the container color used for days that are within a
-     * date range selection
-     */
     @Composable
     fun colors(
         containerColor: Color = MaterialTheme.colorScheme.surface,
@@ -376,12 +274,6 @@ object CustomDatePickerDefaults {
             dayInSelectionRangeContainerColor = dayInSelectionRangeContainerColor
         )
 
-    /**
-     * A default date picker title composable.
-     *
-     * @param state a [CustomDatePickerState] that will help determine the title's content
-     * @param modifier a [Modifier] to be applied for the title
-     */
     @Composable
     fun DatePickerTitle(state: CustomDatePickerState, modifier: Modifier = Modifier) {
         when (state.displayMode) {
@@ -397,14 +289,6 @@ object CustomDatePickerDefaults {
         }
     }
 
-    /**
-     * A default date picker headline composable that displays a default headline text when there is
-     * no date selection, and an actual date string when there is.
-     *
-     * @param state a [CustomDatePickerState] that will help determine the title's headline
-     * @param dateFormatter a [CustomDatePickerFormatter]
-     * @param modifier a [Modifier] to be applied for the headline
-     */
     @Composable
     fun DatePickerHeadline(
         state: CustomDatePickerState,
@@ -452,13 +336,6 @@ object CustomDatePickerDefaults {
         }
     }
 
-    /**
-     * Creates and remembers a [FlingBehavior] that will represent natural fling curve with snap to
-     * the most visible month in the months list.
-     *
-     * @param lazyListState a [LazyListState]
-     * @param decayAnimationSpec the decay to use
-     */
     @Composable
     fun rememberSnapFlingBehavior(
         lazyListState: LazyListState,
@@ -475,39 +352,19 @@ object CustomDatePickerDefaults {
         }
     }
 
-    /** The range of years for the date picker dialogs. */
     val YearRange: IntRange = IntRange(1900, 2100)
 
-    /** The default tonal elevation used for [DatePickerDialog]. */
     val TonalElevation: Dp = ContainerElevation
 
-    /** The default shape for date picker dialogs. */
     val shape: Shape @Composable get() = RoundedCornerShape(8.dp)
 
-    /**
-     * A date format skeleton used to format the date picker's year selection menu button (e.g.
-     * "March 2021")
-     */
     const val YearMonthSkeleton: String = "yMMMM"
 
-    /**
-     * A date format skeleton used to format a selected date (e.g. "Mar 27, 2021")
-     */
     const val YearAbbrMonthDaySkeleton: String = "yMMMd"
 
-    /**
-     * A date format skeleton used to format a selected date to be used as content description for
-     * screen readers (e.g. "Saturday, March 27, 2021")
-     */
     const val YearMonthWeekdayDaySkeleton: String = "yMMMMEEEEd"
 }
 
-/**
- * Represents the colors used by the date picker.
- *
- * See [CustomDatePickerDefaults.colors] for the default implementation that follows Material
- * specifications.
- */
 @ExperimentalMaterial3Api
 @Immutable
 class CustomDatePickerColors constructor(
@@ -531,14 +388,7 @@ class CustomDatePickerColors constructor(
     val dayInSelectionRangeContainerColor: Color,
     private val dayInSelectionRangeContentColor: Color,
 ) {
-    /**
-     * Represents the content color for a calendar day.
-     *
-     * @param isToday indicates that the color is for a date that represents today
-     * @param selected indicates that the color is for a selected day
-     * @param inRange indicates that the day is part of a selection range of days
-     * @param enabled indicates that the day is enabled for selection
-     */
+
     @Composable
     fun dayContentColor(
         isToday: Boolean,
@@ -568,13 +418,6 @@ class CustomDatePickerColors constructor(
         }
     }
 
-    /**
-     * Represents the container color for a calendar day.
-     *
-     * @param selected indicates that the color is for a selected day
-     * @param enabled indicates that the day is enabled for selection
-     * @param animate whether or not to animate a container color change
-     */
     @Composable
     fun dayContainerColor(
         selected: Boolean,
@@ -597,12 +440,6 @@ class CustomDatePickerColors constructor(
         }
     }
 
-    /**
-     * Represents the content color for a calendar year.
-     *
-     * @param currentYear indicates that the color is for a year that represents the current year
-     * @param selected indicates that the color is for a selected year
-     */
     @Composable
     fun yearContentColor(currentYear: Boolean, selected: Boolean): State<Color> {
         val target = if (selected) {
@@ -620,11 +457,6 @@ class CustomDatePickerColors constructor(
         )
     }
 
-    /**
-     * Represents the container color for a calendar year.
-     *
-     * @param selected indicates that the color is for a selected day
-     */
     @Composable
     fun yearContainerColor(selected: Boolean): State<Color> {
         val target = if (selected) selectedYearContainerColor else Color.Transparent
@@ -688,23 +520,6 @@ class CustomDatePickerColors constructor(
     }
 }
 
-/**
- * A date formatter used by [CustomDatePicker].
- *
- * The date formatter will apply the best possible localized form of the given skeleton and Locale.
- * A skeleton is similar to, and uses the same format characters as, a Unicode
- * <a href="http://www.unicode.org/reports/tr35/#Date_Format_Patterns">UTS #35</a> pattern.
- *
- * One difference is that order is irrelevant. For example, "MMMMd" will return "MMMM d" in the
- * `en_US` locale, but "d. MMMM" in the `de_CH` locale.
- *
- * @param yearSelectionSkeleton a date format skeleton used to format the date picker's year
- * selection menu button (e.g. "March 2021").
- * @param selectedDateSkeleton a date format skeleton used to format a selected date (e.g.
- * "Mar 27, 2021")
- * @param selectedDateDescriptionSkeleton a date format skeleton used to format a selected date to
- * be used as content description for screen readers (e.g. "Saturday, March 27, 2021")
- */
 @ExperimentalMaterial3Api
 @Immutable
 class CustomDatePickerFormatter constructor(
@@ -758,19 +573,14 @@ class CustomDatePickerFormatter constructor(
     }
 }
 
-/**
- * Represents the different modes that a date picker can be at.
- */
 @Immutable
 @JvmInline
 @ExperimentalMaterial3Api
 value class DisplayMode constructor(val value: Int) {
 
     companion object {
-        /** Date picker mode */
         val Picker = DisplayMode(0)
 
-        /** Date text input mode */
         val Input = DisplayMode(1)
     }
 
@@ -781,25 +591,6 @@ value class DisplayMode constructor(val value: Int) {
     }
 }
 
-/**
- * Holds the state's data for the date picker.
- *
- * Note that the representation is capable of holding a start and end date. However, the
- * the [CustomDatePickerState] and the [DateRangePickerState] that use this class will only expose
- * publicly the relevant functionality for their purpose.
- *
- * @param initialSelectedStartDateMillis timestamp in _UTC_ milliseconds from the epoch that
- * represents an initial selection of a start date. Provide a `null` to indicate no selection.
- * @param initialSelectedEndDateMillis timestamp in _UTC_ milliseconds from the epoch that
- * represents an initial selection of an end date. Provide a `null` to indicate no selection. This
- * value will be ignored in case it's smaller or equals to the initial start value.
- * @param initialDisplayedMonthMillis timestamp in _UTC_ milliseconds from the epoch that represents
- * an initial selection of a month to be displayed to the user. In case `null` is provided, the
- * displayed month would be the current one.
- * @param yearRange an [IntRange] that holds the year range that the date picker will be limited to
- * @param initialDisplayMode an initial [DisplayMode] that this state will hold
- * @see rememberDatePickerState
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Stable
 class CustomStateData constructor(
@@ -812,21 +603,10 @@ class CustomStateData constructor(
 
     val calendarModel: CustomCalendarModel = GetCustomCalendarModel()
 
-    /**
-     * A mutable state of [CalendarDate] that represents the start date for a selection.
-     */
     var selectedStartDate = mutableStateOf<CustomCalendarDate?>(null)
 
-    /**
-     * A mutable state of [CalendarDate] that represents the end date for a selection.
-     *
-     * Single date selection states that use this [CustomStateData] should always have this as `null`.
-     */
     var selectedEndDate = mutableStateOf<CustomCalendarDate?>(null)
 
-    /**
-     * Initialize the state with the provided initial selections.
-     */
     init {
         setSelection(
             startDateMillis = initialSelectedStartDateMillis,
@@ -834,10 +614,6 @@ class CustomStateData constructor(
         )
     }
 
-    /**
-     * A mutable state for the month that is displayed to the user. In case an initial month was not
-     * provided, the current month will be the one to be displayed.
-     */
     var displayedMonth by mutableStateOf(
         if (initialDisplayedMonthMillis != null) {
             val month = calendarModel.getMonth(initialDisplayedMonthMillis)
@@ -851,50 +627,17 @@ class CustomStateData constructor(
         }
     )
 
-    /**
-     * The current [CalendarMonth] that represents the present's day month.
-     */
     val currentMonth: CustomCalendarMonth
         get() = calendarModel.getMonth(calendarModel.today)
 
-    /**
-     * A mutable state of [DisplayMode] that represents the current display mode of the UI
-     * (i.e. picker or input).
-     */
     var displayMode = mutableStateOf(initialDisplayMode)
 
-    /**
-     * The displayed month index within the total months at the defined years range.
-     *
-     * @see [displayedMonth]
-     * @see [yearRange]
-     */
     val displayedMonthIndex: Int
         get() = displayedMonth.indexIn(yearRange)
 
-    /**
-     * The total month count for the defined years range.
-     *
-     * @see [yearRange]
-     */
     val totalMonthsInRange: Int
         get() = (yearRange.last - yearRange.first + 1) * 12
 
-    /**
-     * Sets a start and end selection dates.
-     *
-     * The function expects the dates to be within the state's year-range, and for the start date to
-     * appear before, or be equal, the end date. Also, if an end date is provided (e.g. not `null`),
-     * a start date is also expected to be provided. In any other case, an
-     * [IllegalArgumentException] is thrown.
-     *
-     * @param startDateMillis timestamp in _UTC_ milliseconds from the epoch that represents the
-     * start date selection. Provide a `null` to indicate no selection.
-     * @param endDateMillis timestamp in _UTC_ milliseconds from the epoch that represents the
-     * end date selection. Provide a `null` to indicate no selection.
-     * @throws IllegalArgumentException in case the given timestamps do not comply with the expected
-     * values specified above.
-     */
     fun setSelection(startDateMillis: Long?, endDateMillis: Long?) {
         val startDate = if (startDateMillis != null) {
             calendarModel.getCanonicalDate(startDateMillis)
@@ -946,9 +689,7 @@ class CustomStateData constructor(
     }
 
     companion object {
-        /**
-         * A [Saver] implementation for [CustomStateData].
-         */
+
         fun Saver(): Saver<CustomStateData, Any> = listSaver(
             save = {
                 listOf(
@@ -982,10 +723,6 @@ fun GetCustomCalendarModel(): CustomCalendarModel {
     }
 }
 
-/**
- * A base container for the date picker and the date input. This container composes the top common
- * area of the UI, and accepts [content] for the actual calendar picker or text field input.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateEntryContainer(
@@ -1064,10 +801,6 @@ fun DisplayModeToggleButton(
     }
 }
 
-/**
- * Date entry content that displays a [DatePickerContent] or a [DateInputContent] according to the
- * state's display mode.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwitchableDateEntryContent(
@@ -1076,8 +809,7 @@ private fun SwitchableDateEntryContent(
     dateValidator: (Long) -> Boolean,
     colors: CustomDatePickerColors
 ) {
-    // TODO(b/266480386): Apply the motion spec for this once we have it. Consider replacing this
-    //  with AnimatedContent when it's out of experimental.
+
     Crossfade(
         targetState = state.displayMode,
         animationSpec = spring(),
@@ -1170,8 +902,6 @@ private fun DatePickerContent(
             ) {
                 // Apply a paneTitle to make the screen reader focus on a relevant node after this
                 // column is hidden and disposed.
-                // TODO(b/186443263): Have the screen reader focus on a year in the list when the
-                //  list is revealed.
                 val yearsPaneTitle = "DatePickerYearPickerPaneTitle"
                 Column(modifier = Modifier.semantics { paneTitle = yearsPaneTitle }) {
                     YearPicker(
@@ -1247,9 +977,6 @@ fun DatePickerHeader(
     }
 }
 
-/**
- * Composes a horizontal pageable list of months.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HorizontalMonthsList(
@@ -1275,8 +1002,6 @@ private fun HorizontalMonthsList(
             horizontalScrollAxisRange = ScrollAxisRange(value = { 0f }, maxValue = { 0f })
         },
         state = lazyListState,
-        // TODO(b/264687693): replace with the framework's rememberSnapFlingBehavior(lazyListState)
-        //  when promoted to stable
         flingBehavior = CustomDatePickerDefaults.rememberSnapFlingBehavior(lazyListState)
     ) {
         items(stateData.totalMonthsInRange) {
@@ -1328,9 +1053,6 @@ suspend fun updateDisplayedMonth(
     }
 }
 
-/**
- * Composes the weekdays letters.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeekDays(colors: CustomDatePickerColors, calendarModel: CustomCalendarModel) {
@@ -1378,9 +1100,6 @@ fun WeekDays(colors: CustomDatePickerColors, calendarModel: CustomCalendarModel)
     }
 }
 
-/**
- * A composable that renders a calendar month and displays a date selection.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Month(
@@ -1739,10 +1458,6 @@ private fun Year(
     }
 }
 
-/**
- * A composable that shows a year menu button and a couple of buttons that enable navigation between
- * displayed months.
- */
 @Composable
 private fun MonthsNavigation(
     modifier: Modifier,
@@ -1807,7 +1522,6 @@ private fun MonthsNavigation(
     }
 }
 
-// TODO: Replace with the official MenuButton when implemented.
 @Composable
 private fun YearPickerMenuButton(
     onClick: () -> Unit,
@@ -1876,9 +1590,6 @@ private fun customScrollActions(
     )
 }
 
-/**
- * Returns a string representation of an integer at the current Locale.
- */
 fun Int.toLocalString(): String {
     val formatter = NumberFormat.getIntegerInstance(Locale.ENGLISH)
     // Eliminate any use of delimiters when formatting the integer.

@@ -1,4 +1,4 @@
-package com.nudge.core.ui
+package com.nudge.core.ui.date_picker_component
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.spring
@@ -11,15 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -31,7 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -49,23 +43,6 @@ import androidx.compose.ui.semantics.verticalScrollAxisRange
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.date_picker_component.CustomCalendarDate
-import com.nudge.core.ui.date_picker_component.CustomCalendarMonth
-import com.nudge.core.ui.date_picker_component.CustomDatePickerColors
-import com.nudge.core.ui.date_picker_component.CustomDatePickerDefaults
-import com.nudge.core.ui.date_picker_component.CustomDatePickerFormatter
-import com.nudge.core.ui.date_picker_component.CustomStateData
-import com.nudge.core.ui.date_picker_component.DateEntryContainer
-import com.nudge.core.ui.date_picker_component.DatePickerHorizontalPadding
-import com.nudge.core.ui.date_picker_component.DatePickerModeTogglePadding
-import com.nudge.core.ui.date_picker_component.DateStateLayerHeight
-import com.nudge.core.ui.date_picker_component.DaysInWeek
-import com.nudge.core.ui.date_picker_component.DisplayMode
-import com.nudge.core.ui.date_picker_component.DisplayModeToggleButton
-import com.nudge.core.ui.date_picker_component.Month
-import com.nudge.core.ui.date_picker_component.RecommendedSizeForAccessibility
-import com.nudge.core.ui.date_picker_component.WeekDays
-import com.nudge.core.ui.date_picker_component.updateDisplayedMonth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -126,21 +103,6 @@ fun CustomDateRangePicker(
     }
 }
 
-/**
- * Creates a [CustomDateRangePickerState] for a [DateRangePicker] that is remembered across compositions.
- *
- * @param initialSelectedStartDateMillis timestamp in _UTC_ milliseconds from the epoch that
- * represents an initial selection of a start date. Provide a `null` to indicate no selection.
- * @param initialSelectedEndDateMillis timestamp in _UTC_ milliseconds from the epoch that
- * represents an initial selection of an end date. Provide a `null` to indicate no selection.
- * @param initialDisplayedMonthMillis timestamp in _UTC_ milliseconds from the epoch that represents
- * an initial selection of a month to be displayed to the user. By default, in case an
- * `initialSelectedStartDateMillis` is provided, the initial displayed month would be the month of
- * the selected date. Otherwise, in case `null` is provided, the displayed month would be the
- * current one.
- * @param yearRange an [IntRange] that holds the year range that the date picker will be limited to
- * @param initialDisplayMode an initial [DisplayMode] that this state will hold
- */
 @Composable
 @ExperimentalMaterial3Api
 fun rememberDateRangePickerState(
@@ -162,37 +124,10 @@ fun rememberDateRangePickerState(
     )
 }
 
-/**
- * A state object that can be hoisted to observe the date picker state. See
- * [rememberDateRangePickerState].
- *
- * The state's [selectedStartDateMillis] and [selectedEndDateMillis] will provide timestamps for the
- * _beginning_ of the selected days (i.e. midnight in _UTC_ milliseconds from the epoch).
- */
 @ExperimentalMaterial3Api
 @Stable
 class CustomDateRangePickerState private constructor(val stateData: CustomStateData) {
 
-    /**
-     * Constructs a DateRangePickerState.
-     *
-     * @param initialSelectedStartDateMillis timestamp in _UTC_ milliseconds from the epoch that
-     * represents an initial selection of a start date. Provide a `null` to indicate no selection.
-     * @param initialSelectedEndDateMillis timestamp in _UTC_ milliseconds from the epoch that
-     * represents an initial selection of an end date. Provide a `null` to indicate no selection.
-     * @param initialDisplayedMonthMillis timestamp in _UTC_ milliseconds from the epoch that
-     * represents an initial selection of a month to be displayed to the user. By default, in case
-     * an `initialSelectedStartDateMillis` is provided, the initial displayed month would be the
-     * month of the selected date. Otherwise, in case `null` is provided, the displayed month would
-     * be the current one.
-     * @param yearRange an [IntRange] that holds the year range that the date picker will be limited
-     * to
-     * @param initialDisplayMode an initial [DisplayMode] that this state will hold
-     * @see rememberDatePickerState
-     * @throws IllegalArgumentException if the initial timestamps do not fall within the year range
-     * this state is created with, or the end date precedes the start date, or when an end date is
-     * provided without a start date (e.g. the start date was null, while the end date was not).
-     */
     constructor(
         @Suppress("AutoBoxing") initialSelectedStartDateMillis: Long?,
         @Suppress("AutoBoxing") initialSelectedEndDateMillis: Long?,
@@ -209,45 +144,12 @@ class CustomDateRangePickerState private constructor(val stateData: CustomStateD
         )
     )
 
-    /**
-     * A timestamp that represents the selected range start date.
-     *
-     * The timestamp would hold a value for the _start_ of the day in _UTC_ milliseconds from the
-     * epoch.
-     *
-     * In case a start date was not selected or provided, the state will hold a `null` value.
-     *
-     * @see [setSelection]
-     */
-
     val selectedStartDateMillis: Long?
         @Suppress("AutoBoxing") get() = stateData.selectedStartDate.value?.utcTimeMillis
 
-    /**
-     * A timestamp that represents the selected range end date.
-     *
-     * The timestamp would hold a value for the _start_ of the day in _UTC_ milliseconds from the
-     * epoch.
-     *
-     * In case an end date was not selected or provided, the state will hold a `null` value.
-     *
-     * @see [setSelection]
-     */
     val selectedEndDateMillis: Long?
         @Suppress("AutoBoxing") get() = stateData.selectedEndDate.value?.utcTimeMillis
 
-    /**
-     * Sets the selected date.
-     *
-     * @param startDateMillis timestamp in _UTC_ milliseconds from the epoch that represents the
-     * start date selection, or `null` to indicate no selection.
-     * @param endDateMillis timestamp in _UTC_ milliseconds from the epoch that represents the end
-     * date selection, or `null` to indicate no selection.
-     *
-     * @throws IllegalArgumentException if the given timestamps do not fall within the year range
-     * this state was created with, or the end date precedes the start date, or when an end date is
-     * provided without a start date (e.g. the start date was null, while the end date was not).
-     */
     fun setSelection(
         @Suppress("AutoBoxing") startDateMillis: Long?,
         @Suppress("AutoBoxing") endDateMillis: Long?
@@ -255,16 +157,10 @@ class CustomDateRangePickerState private constructor(val stateData: CustomStateD
         stateData.setSelection(startDateMillis = startDateMillis, endDateMillis = endDateMillis)
     }
 
-    /**
-     * A mutable state of [DisplayMode] that represents the current display mode of the UI
-     * (i.e. picker or input).
-     */
     var displayMode by stateData.displayMode
 
     companion object {
-        /**
-         * The default [Saver] implementation for [CustomDateRangePickerState].
-         */
+
         fun Saver(): Saver<CustomDateRangePickerState, *> = Saver(
             save = { with(CustomStateData.Saver()) { save(it.stateData) } },
             restore = { value ->
@@ -274,19 +170,10 @@ class CustomDateRangePickerState private constructor(val stateData: CustomStateD
     }
 }
 
-/**
- * Contains default values used by the date range pickers.
- */
 @ExperimentalMaterial3Api
 @Stable
 object CustomDateRangePickerDefaults {
 
-    /**
-     * A default date picker title composable.
-     *
-     * @param state a [DatePickerState] that will help determine the title's content
-     * @param modifier a [Modifier] to be applied for the title
-     */
     @Composable
     fun DateRangePickerTitle(
         state: CustomDateRangePickerState,
@@ -305,14 +192,6 @@ object CustomDateRangePickerDefaults {
         }
     }
 
-    /**
-     * A default date picker headline composable lambda that displays a default headline text when
-     * there is no date selection, and an actual date string when there is.
-     *
-     * @param state a [CustomDateRangePickerState] that will help determine the headline
-     * @param dateFormatter a [DatePickerFormatter]
-     * @param modifier a [Modifier] to be applied for the headline
-     */
     @Composable
     fun DateRangePickerHeadline(
         state: CustomDateRangePickerState,
@@ -333,26 +212,6 @@ object CustomDateRangePickerDefaults {
         )
     }
 
-    /**
-     * A date picker headline composable lambda that displays a default headline text when
-     * there is no date selection, and an actual date string when there is.
-     *
-     * @param state a [CustomDateRangePickerState] that will help determine the headline
-     * @param dateFormatter a [DatePickerFormatter]
-     * @param modifier a [Modifier] to be applied for the headline
-     * @param startDateText a string that, by default, be used as the text content for the
-     * [startDatePlaceholder], as well as a prefix for the content description for the selected
-     * start date
-     * @param endDateText a string that, by default, be used as the text content for the
-     * [endDatePlaceholder], as well as a prefix for the content description for the selected
-     * end date
-     * @param startDatePlaceholder a composable to be displayed as a headline placeholder for the
-     * start date (i.e. a [Text] with a "Start date" string)
-     * @param endDatePlaceholder a composable to be displayed as a headline placeholder for the end
-     * date (i.e a [Text] with an "End date" string)
-     * @param datesDelimiter a composable to be displayed as a headline delimiter between the
-     * start and the end dates
-     */
     @Composable
     private fun DateRangePickerHeadline(
         state: CustomDateRangePickerState,
@@ -427,10 +286,6 @@ object CustomDateRangePickerDefaults {
     }
 }
 
-/**
- * Date entry content that displays a [CustomDateRangePickerContent] or a [DateRangeInputContent]
- * according to the state's display mode.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwitchableDateEntryContent(
@@ -439,8 +294,7 @@ private fun SwitchableDateEntryContent(
     dateValidator: (Long) -> Boolean,
     colors: CustomDatePickerColors
 ) {
-    // TODO(b/266480386): Apply the motion spec for this once we have it. Consider replacing this
-    //  with AnimatedContent when it's out of experimental.
+
     Crossfade(
         targetState = state.displayMode,
         animationSpec = spring(),
@@ -495,10 +349,6 @@ private fun CustomDateRangePickerContent(
     }
 }
 
-/**
- * Composes a continuous vertical scrollable list of calendar months. Each month will appear with a
- * header text indicating the month and the year.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun VerticalMonthsList(
@@ -605,25 +455,13 @@ val CalendarMonthSubheadPadding = PaddingValues(
     bottom = 8.dp
 )
 
-/**
- * a helper class for drawing a range selection. The class holds information about the selected
- * start and end dates as coordinates within the 7 x 6 calendar month grid, as well as information
- * regarding the first and last selected items.
- *
- * A SelectedRangeInfo is created when a [Month] is composed with an `rangeSelectionEnabled` flag.
- */
 class CustomSelectedRangeInfo(
     val gridCoordinates: Pair<IntOffset, IntOffset>,
     val firstIsSelectionStart: Boolean,
     val lastIsSelectionEnd: Boolean
 ) {
     companion object {
-        /**
-         * Calculates the selection coordinates within the current month's grid. The returned [Pair]
-         * holds the actual item x & y coordinates within the LazyVerticalGrid, and is later used to
-         * calculate the exact offset for drawing the selection rectangles when in range-selection
-         * mode.
-         */
+
         @OptIn(ExperimentalMaterial3Api::class)
         fun calculateRangeInfo(
             month: CustomCalendarMonth,
@@ -669,12 +507,6 @@ class CustomSelectedRangeInfo(
     }
 }
 
-/**
- * Draws the range selection background.
- *
- * This function is called during a [Modifier.drawWithContent] call when a [Month] is composed with
- * an `rangeSelectionEnabled` flag.
- */
 fun ContentDrawScope.customDrawRangeBackground(
     selectedRangeInfo: CustomSelectedRangeInfo,
     color: Color

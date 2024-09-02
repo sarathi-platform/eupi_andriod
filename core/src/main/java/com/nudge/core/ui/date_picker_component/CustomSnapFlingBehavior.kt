@@ -1,4 +1,4 @@
-package com.nudge.core.ui
+package com.nudge.core.ui.date_picker_component
 
 import androidx.compose.animation.core.AnimationScope
 import androidx.compose.animation.core.AnimationSpec
@@ -210,14 +210,6 @@ class CustomSnapFlingBehavior(
         }
     }
 
-    /**
-     * Run a [DecayAnimationSpec] animation up to before [targetOffset] using [animationState]
-     *
-     * @param targetOffset The destination of this animation. Since this is a decay animation, we can
-     * use this value to prevent the animation to run until the end.
-     * @param animationState The previous [AnimationState] for continuation purposes.
-     * @param decayAnimationSpec The [DecayAnimationSpec] that will drive this animation
-     */
     private suspend fun ScrollScope.animateDecay(
         targetOffset: Float,
         animationState: AnimationState<Float, AnimationVector1D>,
@@ -251,15 +243,6 @@ class CustomSnapFlingBehavior(
         )
     }
 
-    /**
-     * Runs a [AnimationSpec] to snap the list into [targetOffset]. Uses [cancelOffset] to stop this
-     * animation before it reaches the target.
-     *
-     * @param targetOffset The final target of this animation
-     * @param cancelOffset If we'd like to finish the animation earlier we use this value
-     * @param animationState The current animation state for continuation purposes
-     * @param snapAnimationSpec The [AnimationSpec] that will drive this animation
-     */
     private suspend fun ScrollScope.animateSnap(
         targetOffset: Float,
         cancelOffset: Float,

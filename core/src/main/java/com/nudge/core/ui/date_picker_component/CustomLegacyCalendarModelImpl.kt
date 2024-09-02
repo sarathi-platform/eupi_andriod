@@ -1,12 +1,6 @@
-package com.nudge.core.ui
+package com.nudge.core.ui.date_picker_component
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.nudge.core.ui.date_picker_component.CustomCalendarDate
-import com.nudge.core.ui.date_picker_component.CustomCalendarModel
-import com.nudge.core.ui.date_picker_component.CustomCalendarMonth
-import com.nudge.core.ui.date_picker_component.CustomDateInputFormat
-import com.nudge.core.ui.date_picker_component.DaysInWeek
-import com.nudge.core.ui.date_picker_component.datePatternAsInputFormat
 import java.text.DateFormat
 import java.text.DateFormatSymbols
 import java.text.ParseException
@@ -122,7 +116,7 @@ class CustomLegacyCalendarModelImpl : CustomCalendarModel {
     }
 
     override fun formatWithPattern(utcTimeMillis: Long, pattern: String, locale: Locale): String =
-        CustomLegacyCalendarModelImpl.formatWithPattern(utcTimeMillis, pattern, locale)
+        Companion.formatWithPattern(utcTimeMillis, pattern, locale)
 
     override fun parse(date: String, pattern: String): CustomCalendarDate? {
         val dateFormat = SimpleDateFormat(pattern)
@@ -149,13 +143,6 @@ class CustomLegacyCalendarModelImpl : CustomCalendarModel {
 
     companion object {
 
-        /**
-         * Formats a UTC timestamp into a string with a given date format pattern.
-         *
-         * @param utcTimeMillis a UTC timestamp to format (milliseconds from epoch)
-         * @param pattern a date format pattern
-         * @param locale the [Locale] to use when formatting the given timestamp
-         */
         fun formatWithPattern(utcTimeMillis: Long, pattern: String, locale: Locale): String {
             val dateFormat = SimpleDateFormat(pattern, locale)
             dateFormat.timeZone = utcTimeZone
@@ -164,16 +151,9 @@ class CustomLegacyCalendarModelImpl : CustomCalendarModel {
             return dateFormat.format(calendar.timeInMillis)
         }
 
-        /**
-         * Holds a UTC [TimeZone].
-         */
         internal val utcTimeZone: TimeZone = TimeZone.getTimeZone("UTC")
     }
 
-    /**
-     * Returns a given [Calendar] day number as a day representation under ISO-8601, where the first
-     * day is defined as Monday.
-     */
     private fun dayInISO8601(day: Int): Int {
         val shiftedDay = (day + 6) % 7
         return if (shiftedDay == 0) return /* Sunday */ 7 else shiftedDay

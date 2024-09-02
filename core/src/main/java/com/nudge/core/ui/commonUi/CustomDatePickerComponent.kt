@@ -2,7 +2,6 @@
 
 package com.nudge.core.ui.commonUi
 
-//import com.nudge.core.ui.date_picker_component.datepicker.DatePicker
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -63,22 +62,6 @@ fun CustomDatePickerComponent(
                 )
             }
         ) {
-            /*CustomVerticalSpacer()
-            Text(
-                text = datePickerProperties.state.selectedDateMillis.getDate(pattern = DD_MMM_YYYY_FORMAT),
-                style = MaterialTheme.typography.headlineLarge,
-                color = blueDark,
-                modifier = Modifier.padding(horizontal = dimen_8_dp)
-            )
-            Divider(thickness = dimen_1_dp, color = Color.Black)*/
-            /*DatePicker(onDateSelected = { yrs, month, day ->
-                val calender = Calendar.getInstance()
-                calender.set(yrs, month, day)
-                val dateInLong = calender.timeInMillis
-                datePickerProperties.state.setSelection(dateInLong)
-                onConfirmButtonClicked()
-            })*/
-
             CustomDatePicker(
                 state = datePickerProperties.state,
                 dateValidator = datePickerProperties.dateValidator,
@@ -90,8 +73,6 @@ fun CustomDatePickerComponent(
             )
         }
     }
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
