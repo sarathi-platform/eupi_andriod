@@ -15,30 +15,41 @@ interface SubjectLivelihoodMappingDao {
     @Insert
     suspend fun insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllSubjectLivehoodMapping(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
+    fun insertAllSubjectLivelihoodMapping(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
 
-    @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set primaryLivelihoodId = :primaryLivelihoodId where userId = :userId and subjectId = :subjectId")
+    @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set  status =:status where userId = :userId and subjectId = :subjectId")
     suspend fun updatePrimaryLivelihoodForSubject(
         subjectId: Int,
         userId: String,
-        primaryLivelihoodId: Int
+        status:Int,
+
     )
 
-    @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set secondaryLivelihoodId = :secondaryLivelihoodId where userId = :userId and subjectId = :subjectId")
-    suspend fun updateSecondaryLivelihoodForSubject(
+
+    @Query("UPDATE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME set  status =:status where userId = :userId and type=:type and subjectId = :subjectId")
+    suspend fun softDeleteLivelihoodForSubject(
         subjectId: Int,
         userId: String,
-        secondaryLivelihoodId: Int
+        status:Int,
+        type: Int
     )
 
-    @Query("SELECT COUNT(*) from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId")
-    suspend fun isSubjectLivelihoodMappingAvailable(subjectId: Int, userId: String): Int
+    @Query("SELECT COUNT(*) from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and type = :type and userId = :userId" )
+    suspend fun isSubjectLivelihoodMappingAvailable(subjectId: Int, userId: String,type:Int): Int
 
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId")
     suspend fun getSubjectLivelihoodMappingAvailable(
         subjectId: Int,
-        userId: String
+        userId: String,
+
     ): SubjectLivelihoodMappingEntity?
+
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId  and userId = :userId  and type IN (:type) And status =1")
+    suspend fun getSubjectLivelihoodMappingAvailable(
+        subjectId: Int,
+        userId: String,
+        type: List<Int>
+        ): List<SubjectLivelihoodMappingEntity>
 
     @Query("DELETE from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where userId = :userId")
     fun deleteSubjectLivelihoodMappingForUser(userId: String)
@@ -52,4 +63,10 @@ interface SubjectLivelihoodMappingDao {
 
     @Query("DELETE from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where userId = :userId")
     fun deleteLivelihoodSubjectsForUsers(userId: String)
+
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId")
+    suspend fun getSubjectLivelihoodMapping(
+        subjectId: Int,
+        userId: String
+    ): SubjectLivelihoodMappingEntity?
 }

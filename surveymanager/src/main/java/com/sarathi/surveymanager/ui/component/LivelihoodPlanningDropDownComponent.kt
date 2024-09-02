@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
+import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.showCustomToast
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -24,8 +25,8 @@ fun LivelihoodPlanningDropDownComponent(
     sources: List<LivelihoodUiEntity>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
-    diableItem: Int = -1,
-    enableItem: Int = -1,
+    diableItem: Int = DEFAULT_LIVELIHOOD_ID,
+    enableItem: Int = DEFAULT_LIVELIHOOD_ID,
     onAnswerSelection: (livelihoodUIEntity: LivelihoodUiEntity) -> Unit
 ) {
     val context = LocalContext.current

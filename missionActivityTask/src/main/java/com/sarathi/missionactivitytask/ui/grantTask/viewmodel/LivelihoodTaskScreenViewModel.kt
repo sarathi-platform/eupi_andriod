@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
+import com.nudge.core.valueAsMinusTwo
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -15,6 +16,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -54,7 +56,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
         val livelihoodsEntityList=ArrayList<LivelihoodModel>()
-        val subjectLivelihoodMappingMap:MutableMap<Int,SubjectLivelihoodMappingEntity> =HashMap()
+        val subjectLivelihoodMappingMap:MutableMap<Int,List<SubjectLivelihoodMappingEntity>> =HashMap()
 
 
     override fun <T> onEvent(event: T) {
@@ -62,15 +64,20 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitLivelihoodPlanningScreenState -> {
 
-                initLivelihoodPlanningScreen(event.missionId, event.activityId)
+                initLivelihoodPlanningScreen()
             }
         }
     }
-    fun getPrimaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.primaryLivelihoodId.value() }?.name.value()
-    }
+    fun getPrimaryLivelihoodValue(key: Int):String {
+          return livelihoodsEntityList.find {
+                it.livelihoodId == subjectLivelihoodMappingMap.get(
+                    taskUiModel?.find { it.taskId == key }?.subjectId
+                )
+                    ?.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId && it.status == 1 }?.livelihoodId.valueAsMinusTwo()
+            }?.name.value() }
+
     fun getSecondaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.secondaryLivelihoodId.value() }?.name.value()
+        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.SECONDARY.typeId && it.status==1  }?.livelihoodId.valueAsMinusTwo() }?.name.value()
     }
      fun getActivityList(missionId: Int){
 
@@ -80,7 +87,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
          }
     }
 
-    private  fun initLivelihoodPlanningScreen(missionId: Int, activityId: Int) {
+    private  fun initLivelihoodPlanningScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -90,13 +97,14 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
             livelihoodsEntityList.clear()
             livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
 
-           var getLivelihoodSupbjectMapping= taskUiModel?.map { it.subjectId }
+            var getLivelihoodSupbjectMapping = taskUiModel?.map { it.subjectId }
                 ?.let { getLivelihoodMappingUseCase.getLivelihoodMappingForSubject(it) }
-
-            getLivelihoodSupbjectMapping?.associateBy { it.subjectId }
-                ?.let {
-                    subjectLivelihoodMappingMap.clear()
-                    subjectLivelihoodMappingMap.putAll(it) }
+                getLivelihoodSupbjectMapping?.groupBy { it.subjectId }
+                    ?.let {
+                        subjectLivelihoodMappingMap.clear()
+                        subjectLivelihoodMappingMap.putAll(it)
+                    }
         }
     }
     }
+

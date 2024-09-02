@@ -58,6 +58,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -113,7 +114,6 @@ import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
 import com.sarathi.smallgroupmodule.ui.theme.uncheckedTrackColor
 import com.sarathi.smallgroupmodule.ui.theme.white
-import com.sarathi.smallgroupmodule.utils.getAttendanceFromBoolean
 import com.sarathi.smallgroupmodule.utils.getDate
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -165,8 +165,8 @@ fun SmallGroupAttendanceHistoryScreen(
     if (smallGroupAttendanceHistoryViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title = stringResource(R.string.confirmation_alert_dialog_title),
-            message = stringResource(R.string.delete_attendance_confirmation_msg),
+            title = pluralStringResource(R.plurals.confirmation_alert_dialog_title,1),
+            message = pluralStringResource(R.plurals.delete_attendance_confirmation_msg,1),
             positiveButtonTitle = stringResource(id = R.string.yes),
             negativeButtonTitle = stringResource(id = R.string.no),
             positiveButtonColor = deleteButtonBg,
@@ -237,7 +237,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                 .padding(dimen_10_dp)
                         ) {
                             ButtonPositiveComponent(
-                                buttonTitle = stringResource(R.string.take_attendance_button_text),
+                                buttonTitle = pluralStringResource(R.plurals.take_attendance_button_text,1),
                                 isActive = true,
                                 isArrowRequired = true,
                                 onClick = {
@@ -336,13 +336,13 @@ fun SmallGroupAttendanceHistoryScreen(
                                             ),
                                             label = {
                                                 Text(
-                                                    text = stringResource(R.string.date_range_picker_label_text),
+                                                    text = pluralStringResource(R.plurals.date_range_picker_label_text,1),
                                                     color = otpBorderColor
                                                 )
                                             },
                                             placeholder = {
                                                 Text(
-                                                    text = stringResource(R.string.date_range_picker_label_text),
+                                                    text = pluralStringResource(R.plurals.date_range_picker_label_text,1),
                                                     color = otpBorderColor
                                                 )
                                             },
@@ -368,7 +368,7 @@ fun SmallGroupAttendanceHistoryScreen(
 
                             item {
                                 Text(
-                                    text = stringResource(R.string.attendance_history_header_text),
+                                    text = pluralStringResource(R.plurals.attendance_history_header_text,1),
                                     style = defaultTextStyle,
                                     color = textColorDark
                                 )
@@ -448,17 +448,19 @@ fun EmptyHistoryView(
                     contentDescription = null,
                     blueDark,
                 ), textProperties = TextProperties(
-                    text = stringResource(
-                        R.string.total_didis_label_text,
+                    text =
+                    pluralStringResource(
+                        R.plurals.total_didis_label_text,1,
                         smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount
                     ),
+//                    "Total Didis - ${smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount}",
                     color = blueDark,
                     style = defaultTextStyle
                 )
             )
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
             ButtonPositiveComponent(
-                buttonTitle = stringResource(id = R.string.take_attendance_button_text),
+                buttonTitle = pluralStringResource(id = R.plurals.take_attendance_button_text,1),
                 isActive = true,
                 isArrowRequired = true,
                 onClick = {
@@ -543,8 +545,8 @@ fun AttendanceSummaryCard(
             ) {
                 Text(
                     text =
-                    stringResource(
-                        R.string.attendance_percentage_text,
+                    pluralStringResource(
+                        R.plurals.attendance_percentage_text,1,
                         attendancePercentage.value
                     ) + PERCENTAGE_SIGN,
                     style = defaultTextStyle,
@@ -567,8 +569,8 @@ fun AttendanceSummaryCard(
                         contentDescription = null,
                         tint = textColorDark
                     ), textProperties = TextProperties(
-                        text = stringResource(
-                            R.string.total_count_text,
+                        text = pluralStringResource(
+                            R.plurals.total_count_text,1,
                             counts.value.first,
                             counts.value.second
                         ),
@@ -628,7 +630,7 @@ fun AttendanceSummaryCard(
                             modifier = Modifier
                         ),
                         textProperties = TextProperties(
-                            text = stringResource(R.string.edit_button_text),
+                            text = pluralStringResource(R.plurals.edit_button_text,1),
                             style = defaultTextStyle,
                             color = textColorDark
                         )
@@ -658,7 +660,7 @@ fun AttendanceSummaryCard(
                             tint = redOffline,
                             modifier = Modifier.absolutePadding(top = dimen_2_dp)
                         ), textProperties = TextProperties(
-                            text = stringResource(R.string.delete_button_text),
+                            text = pluralStringResource(R.plurals.delete_button_text,1),
                             style = defaultTextStyle,
                             color = redOffline
                         )
@@ -763,7 +765,9 @@ fun HistorySummaryCardItem(
         }
 
         Text(
-            text = subjectAttendanceHistoryState.attendance.getAttendanceFromBoolean(),
+            text = if (subjectAttendanceHistoryState.attendance) stringResource(id = R.string.present) else stringResource(
+                id = R.string.absent
+            ),
             style = defaultTextStyle,
             color = if (subjectAttendanceHistoryState.attendance) green else redOffline
         )

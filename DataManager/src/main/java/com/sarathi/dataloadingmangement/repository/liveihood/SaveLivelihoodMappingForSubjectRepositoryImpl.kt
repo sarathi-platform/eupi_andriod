@@ -15,24 +15,48 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
         subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
     }
 
-    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForPrimarySubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
         if (subjectLivelihoodMappingDao.isSubjectLivelihoodMappingAvailable(
-                subjectId = subjectLivelihoodMappingEntity.subjectId!!,
-                userId = subjectLivelihoodMappingEntity.userId
+                subjectId = subjectLivelihoodMappingEntity.subjectId,
+                userId = subjectLivelihoodMappingEntity.userId,
+               type = subjectLivelihoodMappingEntity.type
             ) == 0
-        ) { subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
-        } else {
-            subjectLivelihoodMappingDao.updatePrimaryLivelihoodForSubject(
-                userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
-                subjectId = subjectLivelihoodMappingEntity.subjectId,
-                primaryLivelihoodId = subjectLivelihoodMappingEntity.primaryLivelihoodId
-            )
-            subjectLivelihoodMappingDao.updateSecondaryLivelihoodForSubject(
-                userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
-                subjectId = subjectLivelihoodMappingEntity.subjectId,
-                secondaryLivelihoodId = subjectLivelihoodMappingEntity.secondaryLivelihoodId
-            )
+        ) {
+            subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
+        }
+        else {
+            subjectLivelihoodMappingDao.softDeleteLivelihoodForSubject(
+                    userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
+                    subjectId = subjectLivelihoodMappingEntity.subjectId,
+                    type = subjectLivelihoodMappingEntity.type,
+                    status = 2
+                )
+                subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(
+                    subjectLivelihoodMappingEntity
+                )
 
+        }
+    }
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSecondarySubject(subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity) {
+        if (subjectLivelihoodMappingDao.isSubjectLivelihoodMappingAvailable(
+                subjectId = subjectLivelihoodMappingEntity.subjectId,
+                userId = subjectLivelihoodMappingEntity.userId,
+                type = subjectLivelihoodMappingEntity.type
+            ) == 0
+        ) {
+            subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
+        }
+        else {
+
+                subjectLivelihoodMappingDao.softDeleteLivelihoodForSubject(
+                    userId = subjectLivelihoodMappingEntity.userId ?: BLANK_STRING,
+                    subjectId = subjectLivelihoodMappingEntity.subjectId,
+                    type = subjectLivelihoodMappingEntity.type,
+                    status = 2
+                )
+                subjectLivelihoodMappingDao.insertSubjectLivelihoodMapping(
+                    subjectLivelihoodMappingEntity
+                )
         }
     }
 

@@ -19,6 +19,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -879,6 +880,10 @@ fun String?.value(): String {
 
 fun Int?.value() = this ?: -1
 
+fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
+
+fun Int?.value(defaultValue: Int) = this ?: defaultValue
+
 fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
@@ -1203,6 +1208,18 @@ fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
     return this[index]
 
 }
+
 fun String.removeExtension(extensionCode: String = "."): String {
     return this.substringBeforeLast(extensionCode)
+}
+
+fun openSettings() {
+    val appSettingsIntent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.parse("package:${CoreAppDetails.getContext()?.packageName}")
+    ).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+    }
+    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
 }

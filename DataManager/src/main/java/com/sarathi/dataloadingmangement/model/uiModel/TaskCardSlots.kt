@@ -22,6 +22,7 @@ enum class TaskCardSlots(val type: String) {
     SEARCH_LABEL(type = "text"),
 
     TASK_PROGRESS(type = "text"),
+    FILTER_BY(type = "text")
 }
 
 enum class GrantTaskSearchBarSlots(val type: String) {

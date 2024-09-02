@@ -70,5 +70,16 @@
     <string name="proceed">"दावगा "</string>
     <string name="cancel_text">"दान "</string>
     <string name="are_you_sure">"नों थार नामा? "</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे हाबाफारिखौ फोजोबनायनि उनाव सोलायनो हानाय नङा।</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे मिसनखौ फोजोबनायनि उनाव सोलायनो हानाय नङा</string>
 
+    <string name="no_small_group_assgned_label">जेबो फिसा हानजा थि खालामाखै</string>
+    <string name="filter_item_count_label"><b>%1$s</b> बेनि थाखाय <b>%2$s</b> आब\'मोन दिन्थिदों</string>
+    <string name="all_filter_text">गासैबो</string>
+
+    <string name="present">आथिखाल</string>
+    <string name="absent">गैया।</string>
+    <string name="search_didi">आब\'खौ नागिर</string>
+    <string name="search_by_small_groups">फिसा हानजाजों नागिर</string>
+    <string name="total_didis">गासै आब\'मोन - %1$s</string>
 </resources>
