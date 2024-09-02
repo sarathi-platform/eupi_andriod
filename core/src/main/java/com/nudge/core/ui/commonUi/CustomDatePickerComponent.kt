@@ -6,15 +6,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,9 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.R
 import com.nudge.core.getCurrentTimeInMillis
+import com.nudge.core.ui.date_picker_component.CustomDatePicker
+import com.nudge.core.ui.date_picker_component.CustomDatePickerColors
+import com.nudge.core.ui.date_picker_component.CustomDatePickerDefaults
+import com.nudge.core.ui.date_picker_component.CustomDatePickerFormatter
+import com.nudge.core.ui.date_picker_component.CustomDatePickerState
+import com.nudge.core.ui.date_picker_component.DisplayMode
+import com.nudge.core.ui.date_picker_component.rememberDatePickerState
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
@@ -42,11 +45,13 @@ fun CustomDatePickerComponent(
 
     if (datePickerDialogProperties.getDatePickerDialogVisibilityState().value) {
         DatePickerDialog(
-            modifier = modifier,
+            modifier = modifier.padding(all = 20.dp),
             shape = datePickerDialogProperties.shape,
             tonalElevation = datePickerDialogProperties.tonalElevation,
             properties = datePickerDialogProperties.properties,
-            colors = datePickerDialogProperties.colors,
+            colors = DatePickerDefaults.colors(
+                containerColor = searchFieldBg
+            ),
             onDismissRequest = { onDismissRequest() },
             confirmButton = {
                 TextButton(
@@ -57,7 +62,7 @@ fun CustomDatePickerComponent(
                 )
             }
         ) {
-            DatePicker(
+            CustomDatePicker(
                 state = datePickerProperties.state,
                 dateValidator = datePickerProperties.dateValidator,
                 dateFormatter = datePickerProperties.dateFormatter,
@@ -68,8 +73,6 @@ fun CustomDatePickerComponent(
             )
         }
     }
-
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +82,7 @@ fun rememberCustomDatePickerState(
     @Suppress("AutoBoxing") initialDisplayedMonthMillis: Long? = initialSelectedDateMillis,
     yearRange: IntRange = DatePickerDefaults.YearRange,
     initialDisplayMode: DisplayMode = DisplayMode.Picker
-): DatePickerState {
+): CustomDatePickerState {
     return rememberDatePickerState(
         initialSelectedDateMillis,
         initialDisplayedMonthMillis,
@@ -95,7 +98,7 @@ fun rememberCustomDatePickerDialogProperties(
     showDatePickerDialog: Boolean = false,
     shape: Shape = DatePickerDefaults.shape,
     tonalElevation: Dp = DatePickerDefaults.TonalElevation,
-    colors: DatePickerColors = DatePickerDefaults.colors(
+    colors: CustomDatePickerColors = CustomDatePickerDefaults.colors(
         containerColor = searchFieldBg
     ),
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
@@ -116,7 +119,7 @@ data class CustomDatePickerDialogProperties(
     var showDatePickerDialog: Boolean = false,
     val shape: Shape,
     val tonalElevation: Dp,
-    val colors: DatePickerColors,
+    val colors: CustomDatePickerColors,
     val properties: DialogProperties
 ) {
 
@@ -143,23 +146,23 @@ data class CustomDatePickerDialogProperties(
 @Composable
 fun rememberDatePickerProperties(
     modifier: Modifier = Modifier,
-    state: DatePickerState,
-    dateFormatter: DatePickerFormatter = remember { DatePickerFormatter() },
+    state: CustomDatePickerState,
+    dateFormatter: CustomDatePickerFormatter = remember { CustomDatePickerFormatter() },
     dateValidator: (Long) -> Boolean = { true },
     title: (@Composable () -> Unit)? = {
-        DatePickerDefaults.DatePickerTitle(
+        CustomDatePickerDefaults.DatePickerTitle(
             state,
             modifier = Modifier.padding(DatePickerTitlePadding)
         )
     },
     headline: (@Composable () -> Unit)? = {
-        DatePickerDefaults.DatePickerHeadline(
+        CustomDatePickerDefaults.DatePickerHeadline(
             state,
             dateFormatter,
             modifier = Modifier.padding(DatePickerHeadlinePadding)
         )
     },
-    showModeToggle: Boolean = true,
+    showModeToggle: Boolean = false,
     colors: DatePickerColors = DatePickerDefaults.colors()
 ): DatePickerProperties {
 
@@ -179,8 +182,8 @@ fun rememberDatePickerProperties(
 @OptIn(ExperimentalMaterial3Api::class)
 data class DatePickerProperties(
     val modifier: Modifier,
-    val state: DatePickerState,
-    val dateFormatter: DatePickerFormatter,
+    val state: CustomDatePickerState,
+    val dateFormatter: CustomDatePickerFormatter,
     val dateValidator: (Long) -> Boolean,
     val title: (@Composable () -> Unit)?,
     val headline: (@Composable () -> Unit)?,
