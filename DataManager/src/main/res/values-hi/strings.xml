@@ -68,8 +68,8 @@
     <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
     <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
-    <string name="proceed">Proceed</string>
-    <string name="cancel_text">Cancel</string>
+    <string name="proceed_txt">Proceed</string>
+    <string name="cancel_txt">Cancel</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
     <string name="not_be_able_to_make_changes_after_completing_this_mission">Are you sure you want to continue? You will not be able to make changes to this mission after it\'s completed.</string>
 
