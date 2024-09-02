@@ -65,12 +65,20 @@ abstract class NudgeDatabase : RoomDatabase() {
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
         private const val ALTER_VILLAGE_TABLE =
             "ALTER TABLE 'village_table' ADD COLUMN 'isDataLoadTriedOnce' INTEGER DEFAULT 0 NOT NULL"
+        private const val ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN =
+            "ALTER TABLE 'village_table' ADD COLUMN 'isActive' INTEGER DEFAULT 1 NOT NULL"
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 NudgeLogger.d("NudgeDatabase",  "MIGRATION_1_2")
                 migration(db, listOf(ALTER_VILLAGE_TABLE))
+            }
+        }
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                NudgeLogger.d("NudgeDatabase", "MIGRATION_2_3")
+                migration(db, listOf(ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN))
             }
         }
 
