@@ -93,10 +93,10 @@ class SyncUploadWorker @AssistedInject constructor(
             while (totalPendingEventCount > 0) {
                 mPendingEventList =
                     syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
-                    batchLimit = batchLimit,
-                    retryCount = retryCount,
-                    syncType = selectedSyncType
-                )
+                        batchLimit = batchLimit,
+                        retryCount = retryCount,
+                        syncType = selectedSyncType
+                    )
 
                 if (mPendingEventList.isEmpty()) {
                     return Result.success(
@@ -191,8 +191,8 @@ class SyncUploadWorker @AssistedInject constructor(
                     processEventList(eventList)
                     totalPendingEventCount1 =
                         syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(
-                        syncType = selectedSyncType
-                    )
+                            syncType = selectedSyncType
+                        )
                     CoreLogger.d(
                         applicationContext,
                         TAG,
