@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -245,6 +246,11 @@ fun SmallGroupAttendanceScreen(
                         smallGroupAttendanceScreenViewModel.selectedDate.value =
                             datePickerState.selectedDateMillis!!
                         datePickerDialogProperties.hide()
+                        smallGroupAttendanceScreenViewModel.onEvent(
+                            SmallGroupAttendanceEvent.MarkAttendanceForAllEvent(
+                                false
+                            )
+                        )
                         showDatePickerDialog.value = false
                     }
                 )
@@ -324,9 +330,10 @@ fun SmallGroupAttendanceScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = pluralStringResource(id = R.plurals.all,1),
+                                text = pluralStringResource(id = R.plurals.all, 1),
                                 style = defaultTextStyle,
-                                color = progressIndicatorColor
+                                color = progressIndicatorColor,
+                                overflow = TextOverflow.Ellipsis
                             )
 
                             Switch(
