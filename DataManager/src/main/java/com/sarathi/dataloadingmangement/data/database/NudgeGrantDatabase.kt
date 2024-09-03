@@ -61,6 +61,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LI
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MONEY_JOUNRAL_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_PRODUCT_CONFIG_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SECTION_STATUS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
@@ -224,7 +225,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
         }
         val NUDGE_GRANT_DATABASE_MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_1_2")
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_2_3")
                 migration(
                     db,
                     listOf(
@@ -236,7 +237,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         CREATE_LIVELIHOOD_ASSET_TABLE,
                         CREATE_LIVELIHOOD_EVENT_TABLE,
                         CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_,
-                        CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE
+                        CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE,
+                        CREATE_SECTION_STATUS_TABLE
                     )
                 )
             }

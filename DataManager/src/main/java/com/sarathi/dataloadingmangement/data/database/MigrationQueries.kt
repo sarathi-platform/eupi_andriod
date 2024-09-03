@@ -7,6 +7,7 @@ import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
+import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
 
@@ -106,10 +107,19 @@ object MigrationQueries {
                 "    subjectId INTEGER NOT NULL,\n" +
                 "    livelihoodId INTEGER NOT NULL,\n" +
                 "    type INTEGER NOT NULL,\n" +
-                "    status INTEGER NOT NULL\n" +
-                " primaryLivelihoodId INTEGER NOT NULL\n " +     //Todo Remove After livelihood income Expense Refactor
+                "    status INTEGER NOT NULL,\n" +
+                " primaryLivelihoodId INTEGER NOT NULL,\n " +     //Todo Remove After livelihood income Expense Refactor
                 " secondaryLivelihoodId INTEGER NOT NULL\n " +     //Todo Remove After livelihood income Expense Refactor
                 ")"
 
+    val CREATE_SECTION_STATUS_TABLE = "CREATE TABLE IF NOT EXISTS $SECTION_STATUS_TABLE_NAME (\n" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+            "userId TEXT DEFAULT '',\n" +
+            "missionId INTEGER NOT NULL,\n" +
+            "surveyId INTEGER NOT NULL,\n" +
+            "sectionId INTEGER NOT NULL,\n" +
+            " taskId INTEGER NOT NULL,\n" +
+            "sectionStatus TEXT\n" +
+            ")"
 }
 
