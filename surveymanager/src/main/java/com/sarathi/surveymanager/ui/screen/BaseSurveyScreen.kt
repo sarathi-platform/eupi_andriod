@@ -155,6 +155,7 @@ fun BaseSurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     maxLength = 7,
+                                    isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                                     sanctionedAmount = sanctionedAmount,
                                     remainingAmount = getSanctionedAmountMessage(
                                         question,

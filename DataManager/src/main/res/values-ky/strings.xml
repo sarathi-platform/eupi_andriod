@@ -60,6 +60,17 @@
     <string name="cancel">"Mwthakma "</string>
     <string name="search">"Naitukdi "</string>
     <string name="search_for_mission">Mission bai Naitukti</string>
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="asset">Assets:</string>
+    <string name="add_event">Add Event</string>
+    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
+    <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
+    <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">Cancel</string>
+
     <string name="search_by_didis">"Aibi bai naituk di "</string>
     <string name="event">Wngmung:</string>
     <string name="asset">Rwbai:</string>
@@ -87,4 +98,27 @@
     <string name="edit_history">"Laihjak kok no mithingdi "</string>
     <string name="increase_in_number">"Rem bai Bangrima "</string>
 
+
+    <string name="search_by_didis">Search by didis</string>
+    <string name="event">Event:</string>
+    <string name="asset">Assets:</string>
+    <string name="add_event">Add Event</string>
+    <string name="primary_and_secondary_value_not_same">Puila Tangchamung bai nwirem Tangchamung Sol wi manya</string>
+    <string name="select_first_livelihood_for_didi">Aibi ni Puila Tangchamung no chongdi</string>
+    <string name="select_second_livelihood_for_didi">Aibi ni nwirem Tangchamung no chongdi</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="proceed_txt">Proceed</string>
+    <string name="cancel_txt">Cancel</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">Are you sure you want to continue? You will not be able to make changes to this mission after it\'s completed.</string>
+
+    <string name="no_small_group_assgned_label">No Small Group Assigned</string>
+    <string name="filter_item_count_label">Showing <b>%1$s</b> didis for <b>%2$s</b> </string>
+    <string name="all_filter_text">Bebak</string>
+
+    <string name="present">Saktongjak</string>
+    <string name="absent">Sokphaiya</string>
+    <string name="search_didi">Naitukdi Aibi no</string>
+    <string name="search_by_small_groups">Chikon Bodolrok bai naituk di</string>
+    <string name="total_didis">Bebak Aibi song - %1$s</string>
 </resources>
