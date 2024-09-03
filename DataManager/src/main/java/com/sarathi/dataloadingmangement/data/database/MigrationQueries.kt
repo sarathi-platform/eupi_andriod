@@ -107,9 +107,7 @@ object MigrationQueries {
                 "    subjectId INTEGER NOT NULL,\n" +
                 "    livelihoodId INTEGER NOT NULL,\n" +
                 "    type INTEGER NOT NULL,\n" +
-                "    status INTEGER NOT NULL,\n" +
-                " primaryLivelihoodId INTEGER NOT NULL,\n " +     //Todo Remove After livelihood income Expense Refactor
-                " secondaryLivelihoodId INTEGER NOT NULL\n " +     //Todo Remove After livelihood income Expense Refactor
+                "    status INTEGER NOT NULL\n" +
                 ")"
 
     val CREATE_SECTION_STATUS_TABLE = "CREATE TABLE IF NOT EXISTS $SECTION_STATUS_TABLE_NAME (\n" +
