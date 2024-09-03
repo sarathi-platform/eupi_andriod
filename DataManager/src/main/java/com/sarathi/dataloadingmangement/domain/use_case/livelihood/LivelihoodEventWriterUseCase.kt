@@ -18,7 +18,7 @@ class LivelihoodEventWriterUseCase @Inject constructor(
         val saveLivelihoodEventDto = repository.getSaveLivelihoodEventDto(livelihoodPlanActivityEventDto)
         eventWriterRepositoryImpl.createAndSaveEvent(
             saveLivelihoodEventDto,
-            EventName.LIVELIHOOD_OPTION_EVENT,
+            EventName.LIVELIHOOD_OPTIONS_EVENT,
             EventType.STATEFUL,
             LIVELIHOOD
 

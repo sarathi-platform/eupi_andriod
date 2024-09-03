@@ -72,3 +72,5 @@ const val MANUAL_TASK_COMPLETION = "Manual"
 const val SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED = "sanctioned = disbursed + form e"
 const val ZERO = '0'
 const val FORM_E = "form"
+
+const val ALL = "All"

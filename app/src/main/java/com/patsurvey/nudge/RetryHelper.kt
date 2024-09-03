@@ -1052,7 +1052,10 @@ object RetryHelper {
                             prefRepo?.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
                             prefRepo?.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                             if (it.villageList?.isNotEmpty() == true) {
-                                villageListDao?.insertAll(it.villageList ?: listOf())
+                                villageListDao?.insertOnlyNewData(
+                                    it.villageList ?: listOf(),
+                                    userBPC = prefRepo?.isUserBPC() ?: false
+                                )
                                 delay(500)
                                 val localVillageList = villageListDao?.getAllVillages(prefRepo?.getAppLanguageId() ?:DEFAULT_LANGUAGE_ID)
                                 if (localVillageList.isNullOrEmpty()) {

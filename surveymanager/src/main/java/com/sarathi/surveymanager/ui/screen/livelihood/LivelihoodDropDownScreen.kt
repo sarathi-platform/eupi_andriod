@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_24_dp
@@ -67,8 +68,8 @@ fun LivelihoodDropDownScreen(
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
             message = stringResource(R.string.form_alert_dialog_message),
-            positiveButtonTitle = stringResource(id = R.string.proceed),
-            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            positiveButtonTitle = stringResource(id = R.string.proceed_txt),
+            negativeButtonTitle = stringResource(id = R.string.cancel_txt),
             onPositiveButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navController.popBackStack()
@@ -97,7 +98,7 @@ fun LivelihoodDropDownScreen(
             ) {
                 Column {
                     if (!viewModel.isButtonEnable.value) {
-                        if (viewModel.primaryLivelihoodId.value == viewModel.secondaryLivelihoodId.value && viewModel.secondaryLivelihoodId.value != -1 && viewModel.primaryLivelihoodId.value != -1) {
+                        if (viewModel.primaryLivelihoodId.value == viewModel.secondaryLivelihoodId.value && viewModel.secondaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID && viewModel.primaryLivelihoodId.value !=DEFAULT_LIVELIHOOD_ID) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -171,7 +172,7 @@ fun LivelihoodDropDownScreen(
 
 fun handleBackPress(viewModel: LivelihoodPlaningViewModel, navController: NavController) {
 
-    if ((viewModel.primaryLivelihoodId.value != -1 || viewModel.secondaryLivelihoodId.value != -1) && !viewModel.checkDialogueValidation.value) {
+    if ((viewModel.primaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID || viewModel.secondaryLivelihoodId.value !=DEFAULT_LIVELIHOOD_ID) && !viewModel.checkDialogueValidation.value) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     } else {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -187,6 +188,7 @@ fun DropdownView(
     onPrimaryLivelihoodSelected: (primaryLivelihoodId: Int) -> Unit,
     onSecondaryLivelihoodSelected: (secondaryLivelihoodId: Int) -> Unit,
 ) {
+
     var selectedItem1 by remember { mutableStateOf<Int?>(primaryLivelihoodId) }
     var selectedItem2 by remember { mutableStateOf<Int?>(secondaryLivelihoodId) }
 
@@ -197,7 +199,7 @@ fun DropdownView(
             isEditAllowed = true,
             title = stringResource(R.string.select_first_livelihood_for_didi),
             isMandatory = true,
-            enableItem = selectedItem1 ?: -1,
+            enableItem = selectedItem1 ?: DEFAULT_LIVELIHOOD_ID,
             sources = firstDropDownItems,
             onAnswerSelection = { selectedValue ->
                 selectedItem1 = selectedValue.id
@@ -209,7 +211,7 @@ fun DropdownView(
         LivelihoodPlanningDropDownComponent(title = stringResource(R.string.select_second_livelihood_for_didi),
             isMandatory = true,
             diableItem = selectedItem1 ?: 0,
-            enableItem = selectedItem2 ?: -1,
+            enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,
             sources = secondaryDropDownItems,
             onAnswerSelection = { selectedValue ->
                 selectedItem2 = selectedValue.id

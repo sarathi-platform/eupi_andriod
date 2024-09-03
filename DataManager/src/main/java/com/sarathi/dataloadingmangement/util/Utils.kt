@@ -16,7 +16,10 @@ fun SubjectEntityWithLivelihoodMappingUiModel.getSubjectLivelihoodMappingEntity(
         userId = userId,
         subjectId = this.subjectId,
         primaryLivelihoodId = this.primaryLivelihoodId,
-        secondaryLivelihoodId = this.secondaryLivelihoodId
+        secondaryLivelihoodId = this.secondaryLivelihoodId,
+        livelihoodId =  this.primaryLivelihoodId,
+        status = 1,
+        type = 1
     )
 }
 

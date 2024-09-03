@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.date_picker_component.CustomDatePickerState
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_60_dp
@@ -47,7 +47,7 @@ fun CustomDatePickerTextFieldComponent(
     defaultValue: String = BLANK_STRING,
     isMandatory: Boolean = false,
     isEditable: Boolean = true,
-    datePickerState: DatePickerState,
+    datePickerState: CustomDatePickerState,
     datePickerProperties: DatePickerProperties,
     datePickerDialogProperties: CustomDatePickerDialogProperties,
     onDateSelected: (selectedDate: Long?) -> Unit,

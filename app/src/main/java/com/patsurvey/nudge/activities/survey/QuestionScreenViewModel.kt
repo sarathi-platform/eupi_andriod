@@ -2,22 +2,13 @@ package com.patsurvey.nudge.activities.survey
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.nrlm.baselinesurvey.utils.json
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
@@ -25,6 +16,7 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.TOTAL_FAMILY_MEMBERS_OPTION_VALUE
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.roundOffDecimal
 import com.patsurvey.nudge.utils.updateStepStatus
@@ -311,7 +303,15 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
     fun calculateCountWeight(optionsItem: OptionsItem): Double {
-        return (optionsItem.count?:0)/*.times(optionsItem.weight?:0)*/.toDouble()
+        var countWeight = 0.0
+        countWeight =
+            if (optionsItem.optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && optionsItem.count == 0
+            ) {
+                1.0
+            } else {
+                (optionsItem.count ?: 0).toDouble()
+            }
+        return countWeight
     }
 
     fun updateAnswerOptions(questionIndex: Int, didiId: Int) {

@@ -141,6 +141,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -466,7 +467,8 @@ object BaselineModule {
         contentDao: ContentDao,
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        downloaderManager: DownloaderManager
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
@@ -484,7 +486,8 @@ object BaselineModule {
             contentDao,
             baselineDatabase,
             didiSectionProgressEntityDao,
-            apiStatusDao
+            apiStatusDao,
+            downloaderManager = downloaderManager
         )
     }
 
@@ -653,12 +656,14 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesSearchScreenUseCase(
-        sectionListScreenRepository: SectionListScreenRepository
+        sectionListScreenRepository: SectionListScreenRepository,
+        questionScreenRepository: QuestionScreenRepository
     ): SearchScreenUseCase {
         return SearchScreenUseCase(
             getSectionListForSurveyUseCase = GetSectionListForSurveyUseCase(
                 sectionListScreenRepository
-            )
+            ),
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository)
         )
     }
 
@@ -776,25 +781,4 @@ object BaselineModule {
     fun provideUpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository: UpdateBaselineStatusOnInitRepository): UpdateBaselineStatusOnInitUseCase {
         return UpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository)
     }
-
-    /*   @Singleton
-       @Provides
-       fun provideExportImportRepository(
-           prefRepo: PrefBSRepo,
-           nudgeBaselineDatabase: NudgeBaselineDatabase
-       ): ExportImportRepository {
-           return ExportImportRepositoryImpl(prefRepo, nudgeBaselineDatabase)
-       }
-
-        @Singleton
-        @Provides
-        fun provideExportImportUseCase(repository: ExportImportRepository): ExportImportUseCase {
-            return ExportImportUseCase(
-                getExportOptionListUseCase = GetExportOptionListUseCase(repository),
-                clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
-                getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
-            )
-        }*/
-
-
 }

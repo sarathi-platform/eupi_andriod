@@ -49,6 +49,9 @@ fun GrantTaskScreen(
         navController = navController,
         taskScreenContent = { vm, mNavController ->
             TaskScreenContent(vm, mNavController)
+        },
+        taskScreenContentForGroup = { groupKey, vm, navController ->
+            TaskScreenContentForGroup(groupKey, vm, navController)
         }
     )
 }

@@ -471,5 +471,6 @@
     <string name="only_one_entry_can_be_added">केवल एक प्रविष्टि जोड़ी जा सकती है</string>
     <string name="all_activities_marked_as_in_progress">सभी गतिविधियाँ प्रगति पर चिह्नित हैं</string>
     <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
+    <string name="form_e">फॉर्म E</string>
 
 </resources>
