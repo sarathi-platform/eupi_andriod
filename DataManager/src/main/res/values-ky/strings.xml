@@ -71,7 +71,7 @@
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
     <string name="livelihood">"Tangchamung "</string>
-    <string name="date_range_picker_label_text">From - To</string>
+    <string name="date_range_picker_label_text">"Simi - Bwkhak"</string>
     <string name="total_asset">"Bebak rwbai "</string>
     <string name="events">Events</string>
     <string name="type_of_asset">Type of Asset</string>
@@ -79,8 +79,8 @@
     <string name="view_edit_history">"Laihjak kok no mithingma ni nukmung "</string>
     <string name="show_less">"Kisisa phunukdi "</string>
     <string name="show_more">"Teibo phunuk di "</string>
-    <string name="all_events">All Events:</string>
-    <string name="last_events">Last %1$s events:</string>
+    <string name="all_events">Bebak wngmung:</string>
+    <string name="last_events">"Paithak %1$s wngmung:"</string>
     <string name="increse_in_number">"Rem bai Bangrima "</string>
     <string name="asset_type">Prodrepot rwbai:</string>
     <string name="event_date">Wngmung  ni  wnjora:</string>

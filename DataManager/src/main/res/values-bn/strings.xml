@@ -71,7 +71,7 @@
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
     <string name="livelihood">"জীবিকা "</string>
-    <string name="date_range_picker_label_text">From - To</string>
+    <string name="date_range_picker_label_text">"থেকে - অব্দি"</string>
     <string name="total_asset">"মোট সম্পদ "</string>
     <string name="events">"ইভেন্ট "</string>
     <string name="type_of_asset">"সম্পদের ধরন "</string>
@@ -79,8 +79,8 @@
     <string name="view_edit_history">"ডাটা এডিট এর ইতিহাস দেখুন "</string>
     <string name="show_less">"কম দেখান "</string>
     <string name="show_more">"আরও দেখুন "</string>
-    <string name="all_events">All Events:</string>
-    <string name="last_events">Last %1$s events:</string>
+    <string name="all_events">ইভেন্ট যোগ করুন:</string>
+    <string name="last_events">"গত %1$s ইভেন্ট : "</string>
     <string name="increse_in_number">"সংখ্যা বেড়েছে "</string>
     <string name="asset_type">সম্পদের ধরন:</string>
     <string name="event_date">ইভেন্ট তারিখ:</string>
