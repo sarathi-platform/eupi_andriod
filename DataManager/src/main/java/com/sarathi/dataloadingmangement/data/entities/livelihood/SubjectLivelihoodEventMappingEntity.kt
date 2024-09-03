@@ -21,8 +21,8 @@ data class SubjectLivelihoodEventMappingEntity(
     val livelihoodEventType: String,
     val surveyResponse: String,
     val status: Int,
-    val modifiedDate: Long,
-    val createdDate: Long
+    val createdDate: Long,
+    val modifiedDate: Long
 
 ) {
     companion object {
