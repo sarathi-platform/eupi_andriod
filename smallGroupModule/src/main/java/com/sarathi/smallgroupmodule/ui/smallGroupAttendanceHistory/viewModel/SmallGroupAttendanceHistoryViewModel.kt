@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.enums.EventType
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.state.DialogState
@@ -26,7 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SmallGroupAttendanceHistoryViewModel @Inject constructor(
     private val smallGroupAttendanceHistoryUseCase: SmallGroupAttendanceHistoryUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    val coreSharedPrefs: CoreSharedPrefs
+
 ) : BaseViewModel() {
 
     private val _smallGroupDetails: MutableState<SmallGroupSubTabUiModel> =
@@ -58,7 +61,9 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
     val alertDialogState: State<DialogState> get() = _alertDialogState
 
     private var deleteHistoryForDateState: Pair<Int, Long>? = null
-
+    fun getStateId():Int{
+        return coreSharedPrefs.getStateId()
+    }
     override fun <T> onEvent(event: T) {
         when (event) {
 

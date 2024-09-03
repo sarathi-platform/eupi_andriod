@@ -5,13 +5,11 @@
         <item quantity="other">Didi</item>
     </plurals>
     <plurals name="small_group_sub_tab_title">
-        <item quantity="one">
-ছোট গ্রুপ</item>
-        <item quantity="other">
-ছোট গ্রুপ</item>
+        <item quantity="one">ছোটো দল</item>
+        <item quantity="other">ছোট গ্রুপ</item>
     </plurals>
     <plurals name="delete_attendance_confirmation_msg">
-        <item quantity="one">আপনি কি নিশ্চিত হয়ে ছোট গ্রুপ উপস্থিতি  ডিলিট  করতে চান?</item>
+        <item quantity="one">আপনি কি নিশ্চিত যে আপনি ছোটো দলের উপস্থিতি  ডিলিট  করতে চান?</item>
         <item quantity="other">আপনি কি নিশ্চিত হয়ে ছোট গ্রুপ উপস্থিতি  ডিলিট  করতে চান?</item>
     </plurals>
     <plurals name="confirmation_alert_dialog_title">
@@ -33,12 +31,12 @@
     </plurals>
 
     <plurals name="date_range_picker_label_text">
-        <item quantity="one">থেকে - অব্দি</item>
+        <item quantity="one">থেকে- অব্দি</item>
         <item quantity="other">থেকে - অব্দি</item>
     </plurals>
     <plurals name="attendance_history_header_text">
-        <item quantity="one">"উপস্থিতির ইতিহাস: "</item>
-        <item quantity="other">"উপস্থিতির ইতিহাস: "</item>
+        <item quantity="one">"উপস্থিতি তালিকা : "</item>
+        <item quantity="other">"উপস্থিতির ইতিহাস : "</item>
     </plurals>
 
     <plurals name="edit_button_text">
@@ -76,7 +74,7 @@
     <string name="data_change_not_allow">"Date changes are not allowed for attendance edits!"</string>
 
     <plurals name="submit">
-        <item quantity="one">জমা দিন</item>
+        <item quantity="one">জমা করুন</item>
         <item quantity="other">জমা দিন</item>
     </plurals>
     <plurals name="do_you_want_mark_all_absent">
@@ -88,7 +86,7 @@
         <item quantity="other">Attendance already marked for the date:</item>
     </plurals>
     <plurals name="search_didi">
-        <item quantity="one">দিদি সার্চ করুন</item>
+        <item quantity="one">Search Didi</item>
         <item quantity="other">Search Didi</item>
     </plurals>
 </resources>

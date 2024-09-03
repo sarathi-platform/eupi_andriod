@@ -39,6 +39,7 @@ import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.utils.FileUtils.getVoNameForState
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.TextProperties
@@ -133,7 +134,10 @@ fun SmallGroupAttendanceEditScreen(
                         .padding(dimen_10_dp)
                 ) {
                     ButtonPositiveComponent(
-                        buttonTitle = stringResource(R.string.submit),
+                        buttonTitle = getVoNameForState(
+                            context, smallGroupAttendanceEditScreenViewModel.getStateId(),
+                           R.plurals.submit
+                        ),
                         isActive = true
                     ) {
                         if (smallGroupAttendanceEditScreenViewModel.selectedItems.value.filter { it.value }
@@ -181,7 +185,10 @@ fun SmallGroupAttendanceEditScreen(
                                         datePickerState.selectedDateMillis!!
                                     showDatePickerDialog.value = false
                                 },
-                                content = { Text(pluralStringResource(R.plurals.sg_ok,1)) }
+                                content = { Text( getVoNameForState(
+                                    context, smallGroupAttendanceEditScreenViewModel.getStateId(),
+                                    R.plurals.sg_ok
+                                )) }
                             )
                         }) {
                         DatePicker(
@@ -252,7 +259,10 @@ fun SmallGroupAttendanceEditScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = pluralStringResource(R.plurals.all,1),
+                                text =  getVoNameForState(
+                                    context, smallGroupAttendanceEditScreenViewModel.getStateId(),
+                                    R.plurals.all
+                                ),
                                 style = defaultTextStyle,
                                 color = progressIndicatorColor
                             )
