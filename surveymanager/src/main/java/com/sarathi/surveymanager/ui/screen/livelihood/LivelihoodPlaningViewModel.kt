@@ -145,7 +145,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     }
 
     private fun checkDialogueValidation(subjectLivelihoodMapping: List<SubjectLivelihoodMappingEntity?>) :Boolean{
-       return if((subjectLivelihoodMapping.first()?.livelihoodId!=null &&  subjectLivelihoodMapping.last()?.secondaryLivelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.first()?.livelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.last()?.livelihoodId)) true else false
+       return if((subjectLivelihoodMapping.first()?.livelihoodId!=null &&  subjectLivelihoodMapping.last()?.livelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.first()?.livelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.last()?.livelihoodId)) true else false
     }
 
     fun setPreviousScreenData(

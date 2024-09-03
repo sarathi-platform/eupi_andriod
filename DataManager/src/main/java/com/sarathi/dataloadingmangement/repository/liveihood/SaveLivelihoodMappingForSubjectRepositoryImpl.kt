@@ -48,8 +48,6 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
                 subjectId = subjectId,
                 livelihoodId = livelihoodId,
                 type = type,
-                primaryLivelihoodId = 1,
-                secondaryLivelihoodId = 1,
                 status = 1
             )
         saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity)
