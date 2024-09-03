@@ -63,12 +63,27 @@
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
     <string name="add_event">Add Event</string>
-    <string name="primary_and_secondary_value_not_same">सेथि आरो नैथि जिउ राहाया रोखोमसे जानो हाया।</string>
-    <string name="select_first_livelihood_for_didi">"आब'नि थाखाय गिबि जिउ राहा सायख'"</string>
-    <string name="select_second_livelihood_for_didi">"आब'नि थाखाय नैथि जिउ राहा सायख'"</string>
+    <plurals name="primary_and_secondary_value_not_same">
+        <item quantity="one">First and Second livelihood cannot be the same</item>
+        <item quantity="other">सेथि आरो नैथि जिउ राहाया रोखोमसे जानो हाया।</item>
+    </plurals>
+    <plurals name="select_first_livelihood_for_didi">
+        <item quantity="one">Select first livelihood for didi</item>
+        <item quantity="other">"आब'नि थाखाय गिबि जिउ राहा सायख'"</item>
+    </plurals>
+    <plurals name="select_second_livelihood_for_didi">
+        <item quantity="one">Select second livelihood for didi</item>
+        <item quantity="other">"आब'नि थाखाय नैथि जिउ राहा सायख'"</item>
+    </plurals>
     <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
-    <string name="proceed_txt">"दावगा "</string>
-    <string name="cancel_txt">"दान "</string>
+    <plurals name="proceed_txt">
+        <item quantity="one">Proceed</item>
+        <item quantity="other">"दावगा "</item>
+    </plurals>
+    <plurals name="cancel_txt">
+        <item quantity="one">Cancel</item>
+        <item quantity="other">"दान "</item>
+    </plurals>
     <string name="are_you_sure">"नों थार नामा? "</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे हाबाफारिखौ फोजोबनायनि उनाव सोलायनो हानाय नङा।</string>
     <string name="not_be_able_to_make_changes_after_completing_this_mission">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे मिसनखौ फोजोबनायनि उनाव सोलायनो हानाय नङा</string>

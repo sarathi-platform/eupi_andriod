@@ -11,7 +11,11 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
+import com.nudge.core.BENGAL_STATE_ID
+import com.nudge.core.BENGAL_STRING_VALUE
+import com.nudge.core.BENGAL_STRING_VALUE_OTHER
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.numberInEnglishFormat
 import com.nudge.core.uriFromFile
 import java.io.BufferedOutputStream
 import java.io.File
@@ -103,6 +107,18 @@ object FileUtils {
         } else null
     }
 
+    fun getVoNameForState(
+        context: Context,
+        stateId: Int,
+        value: Int,
+        formatArgs: Int? = null
+    ): String {
+        return context.resources.getQuantityString(
+            value,
+            if (stateId == BENGAL_STATE_ID) BENGAL_STRING_VALUE else BENGAL_STRING_VALUE_OTHER,
+            numberInEnglishFormat(formatArgs ?: 0, null)
+        )
+    }
     /**
      * @return The MIME type for the given file.
      */

@@ -107,3 +107,7 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+
+const val BENGAL_STATE_ID = 34
+const val BENGAL_STRING_VALUE = 1
+const val BENGAL_STRING_VALUE_OTHER = 2

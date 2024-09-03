@@ -1223,3 +1223,11 @@ fun openSettings() {
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
 }
+fun numberInEnglishFormat(number: Int, range: IntRange?): String {
+    var mNumber = number
+    if (range != null) {
+        mNumber = number.coerceIn(range)
+    }
+
+    return String.format(Locale.ENGLISH, "%s", mNumber)
+}

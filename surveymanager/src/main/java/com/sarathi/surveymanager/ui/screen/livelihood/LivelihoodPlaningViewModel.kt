@@ -63,7 +63,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var primaryLivelihoodId = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
 
-
+    fun getStateId():Int{
+        return coreSharedPrefs.getStateId()
+    }
     override fun <T> onEvent(event: T) {
 
         when (event) {

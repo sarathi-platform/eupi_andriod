@@ -63,11 +63,26 @@
     <string name="event">Event:</string>
     <string name="asset">Assets:</string>
     <string name="add_event">Add Event</string>
-    <string name="primary_and_secondary_value_not_same">"প্ৰথম আৰু দ্বিতীয় জীৱিকা একে হ'ব নোৱাৰে"</string>
-    <string name="select_first_livelihood_for_didi">বাইদেউৰ বাবে প্ৰথম জীৱিকা বাছনি কৰক</string>
-    <string name="select_second_livelihood_for_didi">বাইদেউৰ বাবে দ্বিতীয় জীৱিকা বাছনি কৰক</string>
-    <string name="proceed_txt">" আগবাঢ়ক"</string>
-    <string name="cancel_txt">বাতিল কৰক</string>
+    <plurals name="primary_and_secondary_value_not_same">
+        <item quantity="one">First and Second livelihood cannot be the same</item>
+        <item quantity="other">"প্ৰথম আৰু দ্বিতীয় জীৱিকা একে হ'ব নোৱাৰে"</item>
+    </plurals>
+    <plurals name="select_first_livelihood_for_didi">
+        <item quantity="one">Select first livelihood for didi</item>
+        <item quantity="other">বাইদেউৰ বাবে প্ৰথম জীৱিকা বাছনি কৰক</item>
+    </plurals>
+    <plurals name="select_second_livelihood_for_didi">
+        <item quantity="one">Select second livelihood for didi</item>
+        <item quantity="other">বাইদেউৰ বাবে দ্বিতীয় জীৱিকা বাছনি কৰক</item>
+    </plurals>
+    <plurals name="proceed_txt">
+        <item quantity="one">Proceed</item>
+        <item quantity="other">" আগবাঢ়ক"</item>
+    </plurals>
+    <plurals name="cancel_txt">
+        <item quantity="one">Cancel</item>
+        <item quantity="other">বাতিল কৰক</item>
+    </plurals>
     <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">"\"আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ'ব। "</string>

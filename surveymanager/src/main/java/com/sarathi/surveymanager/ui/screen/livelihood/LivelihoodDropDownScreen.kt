@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -35,6 +36,7 @@ import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.lightBlue
+import com.nudge.core.utils.FileUtils.getVoNameForState
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.R
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
@@ -56,6 +58,7 @@ fun LivelihoodDropDownScreen(
     subjectName: String,
     onSettingClicked: () -> Unit
 ) {
+    var context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
@@ -68,8 +71,14 @@ fun LivelihoodDropDownScreen(
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
             message = stringResource(R.string.form_alert_dialog_message),
-            positiveButtonTitle = stringResource(id = R.string.proceed_txt),
-            negativeButtonTitle = stringResource(id = R.string.cancel_txt),
+            positiveButtonTitle = getVoNameForState(
+                context, viewModel.getStateId(),
+                R.plurals.proceed_txt
+            ),
+            negativeButtonTitle = getVoNameForState(
+                context, viewModel.getStateId(),
+                R.plurals.cancel_txt
+            ),
             onPositiveButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navController.popBackStack()
@@ -114,7 +123,10 @@ fun LivelihoodDropDownScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 androidx.compose.material.Text(
-                                    text = stringResource(R.string.primary_and_secondary_value_not_same),
+                                    text = getVoNameForState(
+                                        context, viewModel.getStateId(),
+                                        R.plurals.primary_and_secondary_value_not_same
+                                    ),
                                     color = Color.Red,
                                     modifier = Modifier
                                         .padding(10.dp)
@@ -164,6 +176,7 @@ fun LivelihoodDropDownScreen(
                             )
                         )
                     },
+                    stateId=viewModel.getStateId()
                     )
             }
         }
@@ -187,8 +200,9 @@ fun DropdownView(
     secondaryLivelihoodId: Int,
     onPrimaryLivelihoodSelected: (primaryLivelihoodId: Int) -> Unit,
     onSecondaryLivelihoodSelected: (secondaryLivelihoodId: Int) -> Unit,
+    stateId:Int
 ) {
-
+  var context = LocalContext.current
     var selectedItem1 by remember { mutableStateOf<Int?>(primaryLivelihoodId) }
     var selectedItem2 by remember { mutableStateOf<Int?>(secondaryLivelihoodId) }
 
@@ -197,7 +211,10 @@ fun DropdownView(
 
         LivelihoodPlanningDropDownComponent(
             isEditAllowed = true,
-            title = stringResource(R.string.select_first_livelihood_for_didi),
+            title = getVoNameForState(
+                context, stateId,
+                R.plurals.select_first_livelihood_for_didi
+            ),
             isMandatory = true,
             enableItem = selectedItem1 ?: DEFAULT_LIVELIHOOD_ID,
             sources = firstDropDownItems,
@@ -208,7 +225,10 @@ fun DropdownView(
         )
         Spacer(modifier = Modifier.height(dimen_10_dp))
         val secondaryDropDownItems = livelihoodList
-        LivelihoodPlanningDropDownComponent(title = stringResource(R.string.select_second_livelihood_for_didi),
+        LivelihoodPlanningDropDownComponent(title = getVoNameForState(
+            context, stateId,
+            R.plurals.select_second_livelihood_for_didi
+        ),
             isMandatory = true,
             diableItem = selectedItem1 ?: 0,
             enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,

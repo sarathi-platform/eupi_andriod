@@ -60,12 +60,30 @@
     <string name="cancel">Cancel</string>
     <string name="search">Search</string>
     <string name="search_for_mission">Search by Mission</string>
-    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
-    <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
-    <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
+    <plurals name="primary_and_secondary_value_not_same">
+        <item quantity="one">First and Second livelihood cannot be the same</item>
+        <item quantity="other">First and Second livelihood cannot be the same</item>
+    </plurals>
+    <plurals name="select_first_livelihood_for_didi">
+        <item quantity="one">Select first livelihood for didi</item>
+        <item quantity="other">Select first livelihood for didi</item>
+    </plurals>
+    <plurals name="select_second_livelihood_for_didi">
+        <item quantity="one">Select second livelihood for didi</item>
+        <item quantity="other">Select second livelihood for didi</item>
+    </plurals>
+
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="proceed_txt">Proceed</string>
-    <string name="cancel_txt">Cancel</string>
+    <plurals name="proceed_txt">
+        <item quantity="one">Proceed</item>
+        <item quantity="other">Proceed</item>
+    </plurals>
+
+    <plurals name="cancel_txt">
+        <item quantity="one">Cancel</item>
+        <item quantity="other">Cancel</item>
+    </plurals>
     <string name="search_by_didis">Search by didis</string>
     <string name="event">Event:</string>
     <string name="add_event">Add Event</string>
