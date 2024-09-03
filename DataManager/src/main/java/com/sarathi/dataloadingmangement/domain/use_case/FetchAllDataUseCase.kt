@@ -48,26 +48,30 @@ class FetchAllDataUseCase @Inject constructor(
         isRefresh: Boolean,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
     ) {
-        if (isRefresh || !coreSharedPrefs.isMissionDataLoaded(missionId = missionId, programId)) {
+        if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
+                missionId = missionId,
+                programId
+            ) == 1
+        ) {
 
             fetchMissionDataUseCase.invoke(missionId, programId)
-        fetchSurveyDataFromNetworkUseCase.invoke(missionId)
-        if (!isRefresh) {
-            fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
-            formUseCase.invoke(missionId)
-            if (missionId == 2 || missionId == 3) {
-                moneyJournalUseCase.invoke()
+            fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+            if (!isRefresh) {
+                fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
+                formUseCase.invoke(missionId)
+                if (missionId == 2 || missionId == 3) {
+                    moneyJournalUseCase.invoke()
+                }
             }
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            contentDownloaderUseCase.surveyRelateContentDownlaod()
-        }
+            CoroutineScope(Dispatchers.IO).launch {
+                contentDownloaderUseCase.surveyRelateContentDownlaod()
+            }
             coreSharedPrefs.setMissionDataLoaded(
                 isDataLoaded = true,
                 missionId = missionId,
                 programId = programId
             )
-
+            fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
             onComplete(true, BLANK_STRING)
 
         } else {
@@ -76,7 +80,6 @@ class FetchAllDataUseCase @Inject constructor(
         }
 
     }
-
 
 
 }

@@ -35,6 +35,7 @@ fun DataLoadingScreenComponent(
             if (!viewModel.isAllDataFetched()) {
                 viewModel.fetchAllData {
                     viewModel.setAllDataFetched()
+                    viewModel.setGrantDbMissionDataLoaded()
                     navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
                         popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                             inclusive = true

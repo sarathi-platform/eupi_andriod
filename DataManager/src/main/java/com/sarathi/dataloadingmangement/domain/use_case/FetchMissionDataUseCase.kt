@@ -47,6 +47,13 @@ class FetchMissionDataUseCase @Inject constructor(
     suspend fun getAllMission(): List<MissionUiModel> {
         return repository.getAllMission()
     }
+    suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
+        return repository.isMissionLoaded(missionId, programId)
+    }
+
+    suspend fun setMissionLoaded(missionId: Int, programId: Int) {
+        return repository.setMissionLoaded(missionId, programId)
+    }
 
     suspend fun getAllMissionList(): Boolean {
         try {

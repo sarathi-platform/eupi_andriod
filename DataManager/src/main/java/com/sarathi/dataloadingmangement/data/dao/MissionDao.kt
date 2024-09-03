@@ -132,4 +132,13 @@ interface MissionDao {
         missionId: Int
     ): MissionEntity?
 
+    @Query("update  mission_table set isDataLoaded=1  where missionId=:missionId and programmeId=:programId and userId=:userId and isActive=1")
+    suspend fun updateMissionDataLoaded(userId: String, missionId: Int, programId: Int)
+
+    @Query("update  mission_table set isDataLoaded=1  where missionId=:missionId  and userId=:userId and isActive=1")
+    suspend fun updateMissionDataLoaded(userId: String, missionId: Int)
+
+    @Query("Select isDataLoaded from mission_table where missionId=:missionId and programmeId=:programId and userId=:userId and isActive=1")
+    suspend fun isMissionDataLoaded(userId: String, missionId: Int, programId: Int): Int
+
 }

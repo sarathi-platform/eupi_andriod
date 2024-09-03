@@ -31,6 +31,7 @@ data class MissionEntity(
     var activityComplete: Int,
     var actualStartDate: String = BLANK_STRING,
     var actualCompletedDate: String = BLANK_STRING,
+    var isDataLoaded: Int = 0,
     var isActive: Int = 1
 ) {
     companion object {
@@ -54,7 +55,8 @@ data class MissionEntity(
                 activityComplete = 0,
                 startOffset = mission.startOffset,
                 endOffset = mission.endOffset,
-                programmeId = programmeId
+                programmeId = programmeId,
+                isDataLoaded = 0
             )
         }
 

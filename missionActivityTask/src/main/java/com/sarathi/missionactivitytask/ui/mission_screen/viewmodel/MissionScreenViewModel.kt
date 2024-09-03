@@ -77,6 +77,9 @@ class MissionScreenViewModel @Inject constructor(
     private fun initMissionScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateMissionActivityStatus()
+            updateStatusForBaselineMission {
+
+            }
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
             _filterMissionList.value = _missionList.value
             withContext(Dispatchers.Main) {
@@ -121,6 +124,21 @@ class MissionScreenViewModel @Inject constructor(
                 surveyName = BLANK_STRING,
                 missionEntity = it
             )
+        }
+    }
+
+    fun isMissionLoaded(
+        missionId: Int,
+        programId: Int,
+        onComplete: (isDataLoaded: Boolean) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val isDataLoaded = fetchAllDataUseCase.fetchMissionDataUseCase.isMissionLoaded(
+                missionId = missionId,
+                programId = programId
+            )
+            onComplete(isDataLoaded == 1)
         }
     }
 }

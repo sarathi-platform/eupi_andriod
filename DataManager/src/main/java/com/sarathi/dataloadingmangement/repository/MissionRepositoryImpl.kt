@@ -242,6 +242,23 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
+
+        return missionDao.isMissionDataLoaded(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            programId = programId
+        )
+    }
+
+    override suspend fun setMissionLoaded(missionId: Int, programId: Int) {
+        missionDao.updateMissionDataLoaded(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            programId = programId
+        )
+    }
+
     private fun deleteActivityUiConfig(missionId: Int, activityId: Int) {
         uiConfigDao.deleteActivityUiConfig(
             missionId = missionId,
@@ -468,12 +485,12 @@ class MissionRepositoryImpl @Inject constructor(
         subject: String
     ) {
         subjectAttributeDao.updateSubjectAttribute(
-                userId = sharedPrefs.getUniqueUserIdentifier(),
-                missionId = missionId,
-                activityId = activityId,
-                taskId = id,
-                subjectId = subjectId,
-                subjectType = subject,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = activityId,
+            taskId = id,
+            subjectId = subjectId,
+            subjectType = subject,
         )
 
         val referenceId = subjectAttributeDao.getReferenceId(
@@ -484,13 +501,13 @@ class MissionRepositoryImpl @Inject constructor(
 
         taskData.forEach {
             val rowUpdated = attributeValueReferenceDao.updateAttributeValueReference(
-                    userId = sharedPrefs.getUniqueUserIdentifier(),
-                    parentReferenceId = referenceId.toLong(),
-                    key = it.key,
-                    value = it.value ?: BLANK_STRING,
-                )
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+                parentReferenceId = referenceId.toLong(),
+                key = it.key,
+                value = it.value ?: BLANK_STRING,
+            )
 
-            if(rowUpdated == 0) {
+            if (rowUpdated == 0) {
                 attributeValueReferenceDao.insertAttributesValueReferences(
                     AttributeValueReferenceEntity.getAttributeValueReferenceEntity(
                         userId = sharedPrefs.getUniqueUserIdentifier(),
