@@ -88,7 +88,7 @@
         <item quantity="other">Attendance already marked for the date:</item>
     </plurals>
     <plurals name="search_didi">
-        <item quantity="one">Search Didi</item>
+        <item quantity="one">দিদি সার্চ করুন</item>
         <item quantity="other">Search Didi</item>
     </plurals>
 </resources>

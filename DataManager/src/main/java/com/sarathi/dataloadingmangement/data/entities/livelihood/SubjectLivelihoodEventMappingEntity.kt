@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.json
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
@@ -21,7 +22,7 @@ data class SubjectLivelihoodEventMappingEntity(
     val surveyResponse: String,
     val status: Int,
     val createdDate: Long,
-    val modifiedDate: Long,
+    val modifiedDate: Long
 
 ) {
     companion object {
@@ -40,9 +41,8 @@ data class SubjectLivelihoodEventMappingEntity(
                 livelihoodEventType = eventData.selectedEvent.name,
                 surveyResponse = eventData.json(),
                 status = 1,
-                createdDate = System.currentTimeMillis(),
-                modifiedDate = System.currentTimeMillis()
-
+                modifiedDate = getCurrentTimeInMillis(),
+                createdDate = getCurrentTimeInMillis(),
             )
         }
 

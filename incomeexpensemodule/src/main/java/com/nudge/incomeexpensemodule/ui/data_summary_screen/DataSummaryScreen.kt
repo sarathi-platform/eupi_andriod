@@ -64,6 +64,7 @@ import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.MeasureUnconstrainedViewWidthComponent
 import com.nudge.core.ui.commonUi.SheetHeight
+import com.nudge.core.ui.commonUi.StrikethroughText
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.commonUi.rememberCustomDateRangePickerSheetState
@@ -89,6 +90,7 @@ import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
@@ -97,6 +99,7 @@ import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
 import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
+import com.nudge.incomeexpensemodule.navigation.navigateToEditHistoryScreen
 import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
@@ -201,7 +204,7 @@ fun DataSummaryScreen(
             },
             onSearchValueChange = {},
             onBottomUI = {
-                if (!viewModel.areEventsNotAvailableForSubject.value) {
+                if (!viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.isEmpty()) {
                     BottomAppBar(
                         backgroundColor = Color.White,
                         elevation = 10.dp
@@ -225,12 +228,12 @@ fun DataSummaryScreen(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                 ) {
-                    if (viewModel.areEventsNotAvailableForSubject.value) {
+                    if (viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.isEmpty()) {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            AddEventButton() {
+                            AddEventButton {
                                 navigateToAddEventScreen(
                                     navController = navController,
                                     subjectName = subjectName,
@@ -265,6 +268,12 @@ fun DataSummaryScreen(
                                 },
                                 onShowModeClicked = {
                                     showMoreItems.value = !showMoreItems.value
+                                },
+                                onViewEditItemClicked = { transactionId ->
+                                    navigateToEditHistoryScreen(
+                                        navController = navController,
+                                        transactionID = transactionId
+                                    )
                                 }
                             )
                         }
@@ -285,6 +294,7 @@ private fun DataSummaryView(
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
     dateRangePickerClicked: () -> Unit,
+    onViewEditItemClicked: (transactionId: String) -> Unit,
     onShowModeClicked: () -> Unit
 ) {
     TabBarContainer(viewModel.tabs) {
@@ -339,6 +349,7 @@ private fun DataSummaryView(
         viewModel.selectedLivelihood.value,
         showMoreItems = showMoreItems,
         onEventItemClicked = onEventItemClicked,
+        onViewEditItemClicked = onViewEditItemClicked,
         onShowModeClicked = {
             onShowModeClicked()
         }
@@ -409,7 +420,10 @@ fun EventsListHeaderWithDropDownFilter(
 
 
         Text(
-            if (showMoreItems) "All Events:" else "Last $DEFAULT_EVENT_LIST_VIEW_SIZE events:",
+            if (showMoreItems) stringResource(R.string.all_events) else stringResource(
+                R.string.last_events,
+                DEFAULT_EVENT_LIST_VIEW_SIZE
+            ),
             style = getTextColor(defaultTextStyle)
         )
         MeasureUnconstrainedViewWidthComponent(viewToMeasure = { Text(text = selectedOptionValue.value) }) {
@@ -454,7 +468,9 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = if (showMoreItems) "Show Less" else "Show more",
+                    text = if (showMoreItems) stringResource(R.string.show_less) else stringResource(
+                        R.string.show_more
+                    ),
                     textAlign = TextAlign.Center,
                     style = getTextColor(defaultTextStyle),
                 )
@@ -477,6 +493,7 @@ private fun EventView(
     selectedLivelihoodId: Int,
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
+    onViewEditItemClicked: (transactionId: String) -> Unit,
     onShowModeClicked: () -> Unit
 ) {
 
@@ -490,13 +507,18 @@ private fun EventView(
             filteredSubjectLivelihoodEventSummaryUiModelList.toList()
                 .take(DEFAULT_EVENT_LIST_VIEW_SIZE)
         ) { index, subjectLivelihoodEventSummaryUiModel ->
-            Column(modifier = Modifier
-                .clickable {
-                    onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
-                }
-            ) {
+            Column {
                 EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
-                EventDetails(subjectLivelihoodEventSummaryUiModel)
+                EventDetails(subjectLivelihoodEventSummaryUiModel) {
+                    if (subjectLivelihoodEventSummaryUiModel.status != 2) {
+                        onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                    }
+                }
+                ViewEditHistoryView(
+                    isEventDeleted = subjectLivelihoodEventSummaryUiModel.isEventNotActive(),
+                    onClick = {
+                        onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                    })
                 CustomVerticalSpacer(size = dimen_5_dp)
                 if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
                     Divider(thickness = dimen_1_dp, color = borderGreyLight)
@@ -515,18 +537,21 @@ private fun EventView(
                     filteredSubjectLivelihoodEventSummaryUiModelList.toList().drop(
                         DEFAULT_EVENT_LIST_VIEW_SIZE
                     ).forEachIndexed { index, subjectLivelihoodEventSummaryUiModel ->
-                        Column(modifier = Modifier
-                            .clickable {
-                                onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
-                            }
-                        ) {
+                        Column {
                             EventHeader(
                                 subjectLivelihoodEventSummaryUiModel,
                                 eventsList[selectedLivelihoodId]
                             )
                             EventDetails(
                                 subjectLivelihoodEventSummaryUiModel,
-                            )
+                            ) {
+                                onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                            }
+                            ViewEditHistoryView(
+                                isEventDeleted = subjectLivelihoodEventSummaryUiModel.isEventNotActive(),
+                                onClick = {
+                                    onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                                })
                             CustomVerticalSpacer(size = dimen_5_dp)
                             Divider(thickness = dimen_1_dp, color = greyBorder)
                         }
@@ -550,6 +575,25 @@ private fun EventView(
     }
 }
 
+@Composable
+private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+
+        Text(
+            modifier = Modifier.clickable { onClick() },
+            text = stringResource(R.string.view_edit_history),
+            style = newMediumTextStyle.copy(assetValueIconColor)
+        )
+        if (isEventDeleted) {
+            Spacer(modifier = Modifier.weight(1.0f))
+            Text(
+                text = stringResource(R.string.delete),
+                style = smallTextStyle.copy(redIconColor)
+            )
+        }
+    }
+}
+
 const val DEFAULT_EVENT_LIST_VIEW_SIZE = 3
 
 @Composable
@@ -566,22 +610,24 @@ private fun EventHeader(
                 text = stringResource(R.string.event),
                 style = getTextColor(smallTextStyle, color = eventTextColor)
             )
-            Text(
+            StrikethroughText(
                 text = livelihoodEventUiModels.find(item.livelihoodEventId.value())?.name.value(),
-                style = getTextColor(newBoldTextStyle)
+                textStyle = getTextColor(newBoldTextStyle),
+                isStrikethrough = item.isEventNotActive()
             )
         }
-        Text(
+        StrikethroughText(
             text = item.date.getDate(pattern = DD_mmm_YY_FORMAT),
-            style = getTextColor(smallTextStyle, color = eventTextColor)
+            textStyle = getTextColor(smallTextStyle, color = eventTextColor),
+            isStrikethrough = item.isEventNotActive()
         )
-
     }
 }
 
 @Composable
 private fun EventDetails(
     item: SubjectLivelihoodEventSummaryUiModel,
+    onClick: () -> Unit
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -593,9 +639,10 @@ private fun EventDetails(
                     text = stringResource(id = R.string.amount),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
-                Text(
+                StrikethroughText(
                     text = getAmountForEvent(item),
-                    style = getAmountColorForEvent(item)
+                    textStyle = getAmountColorForEvent(item),
+                    isStrikethrough = item.isEventNotActive()
                 )
             }
         }
@@ -606,26 +653,30 @@ private fun EventDetails(
                     text = stringResource(id = R.string.asset),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
-                Text(
+                StrikethroughText(
                     text = getAssetCountForEvent(item),
-                    style = getTextColor(newMediumTextStyle)
+                    textStyle = getTextColor(newMediumTextStyle),
+                    isStrikethrough = item.isEventNotActive()
                 )
             }
         }
-
-        Icon(
-            imageVector = Icons.Default.ArrowForward,
-            contentDescription = "ArrowForward Icon",
-            modifier = Modifier.size(dimen_24_dp),
-            tint = blueDark
-        )
+        if (item.status != 2) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "ArrowForward Icon",
+                modifier = Modifier
+                    .size(dimen_24_dp)
+                    .clickable { onClick() },
+                tint = blueDark
+            )
+        }
 
     }
 }
 
 fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
     return if (item.assetJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OutFlow.name.toLowerCase()) == true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
     ) {
         "- ${item.assetCount}"
     } else {
@@ -635,7 +686,7 @@ fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
 
 fun getAmountColorForEvent(item: SubjectLivelihoodEventSummaryUiModel): TextStyle {
     return if (item.moneyJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OutFlow.name.toLowerCase()) == true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
     ) {
         newMediumTextStyle.copy(color = redOffline)
     } else
@@ -645,7 +696,7 @@ fun getAmountColorForEvent(item: SubjectLivelihoodEventSummaryUiModel): TextStyl
 
 fun getAmountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
     return if (item.moneyJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OutFlow.name.toLowerCase()) == true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
     ) {
         "- ₹ ${item.transactionAmount}"
     } else {
@@ -655,10 +706,10 @@ fun getAmountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
 
 @Composable
 private fun TextWithPaddingEnd(text: String, style: TextStyle) {
-    Text(
+    StrikethroughText(
         modifier = Modifier.padding(end = dimen_5_dp),
         text = text,
-        style = style
+        textStyle = style
     )
 }
 
@@ -671,6 +722,10 @@ private fun AddEventButton(onAddEventButtonClicked: () -> Unit) {
     ) {
         onAddEventButtonClicked()
     }
+}
+
+fun SubjectLivelihoodEventSummaryUiModel.isEventNotActive(): Boolean {
+    return this.status == 2
 }
 
 
