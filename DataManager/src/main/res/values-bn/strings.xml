@@ -60,16 +60,32 @@
     <string name="cancel">"বাতিল করুন "</string>
     <string name="search">"সার্চ করুন  "</string>
     <string name="search_for_mission">"মিশন সার্চ করো "</string>
-    <string name="search_by_didis">Search by didis</string>
-    <string name="event">Event:</string>
-    <string name="asset">Assets:</string>
-    <string name="add_event">Add Event</string>
-    <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
-    <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
-    <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
+    <string name="search_by_didis">"দিদি দ্বারা সার্চ করুন "</string>
+    <string name="event">ইভেন্ট:</string>
+    <string name="asset">সম্পদ:</string>
+    <string name="add_event">ইভেন্ট যোগ করুন</string>
+    <string name="livelihood">"জীবিকা "</string>
+    <string name="date_range_picker_label_text">"থেকে - অব্দি"</string>
+    <string name="total_asset">"মোট সম্পদ "</string>
+    <string name="events">"ইভেন্ট "</string>
+    <string name="type_of_asset">"সম্পদের ধরন "</string>
+    <string name="products">"উত্পাদিত বস্তু "</string>
+    <string name="view_edit_history">"ডাটা এডিট এর ইতিহাস দেখুন "</string>
+    <string name="show_less">"কম দেখান "</string>
+    <string name="show_more">"আরও দেখুন "</string>
+    <string name="all_events">ইভেন্ট যোগ করুন:</string>
+    <string name="last_events">"গত %1$s ইভেন্ট : "</string>
+    <string name="increse_in_number">"সংখ্যা বেড়েছে "</string>
+    <string name="asset_type">সম্পদের ধরন:</string>
+    <string name="event_date">ইভেন্ট তারিখ:</string>
+    <string name="edit_history">ডাটা এডিট এর ইতিহাস</string>
+    <string name="increase_in_number">"সংখ্যা বেড়েছে "</string>
+    <string name="primary_and_secondary_value_not_same">প্রথম ও দ্বিতীয় জীবিকা এক হতে পারে না</string>
+    <string name="select_first_livelihood_for_didi">দিদির জন্য প্রথম জীবিকা বেছে নিন</string>
+    <string name="select_second_livelihood_for_didi">দিদির জন্য দ্বিতীয় জীবিকা বেছে নিন</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
-    <string name="proceed">Proceed</string>
-    <string name="cancel_text">Cancel</string>
+    <string name="proceed_txt">এগিয়ে যান</string>
+    <string name="cancel_txt">বাতিল করুন</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">আপনি কি সাবমিট করতে চান? এটি সম্পূর্ণ হওয়ার পরে আপনি এই কার্যকলাপে এডিট করতে পারবেন না।</string>
     <string name="not_be_able_to_make_changes_after_completing_this_mission">আপনি কি সাবমিট করতে চান? আপনি এই মিশনটি সম্পূর্ণ হওয়ার পরে এডিট করতে পারবেন না।</string>
 
@@ -77,4 +93,9 @@
     <string name="filter_item_count_label"><b>%1$s</b> দিদি  দেখানো হচ্ছে <b>%2$s</b> এর জন্য</string>
     <string name="all_filter_text">সব</string>
 
+    <string name="present">উপস্থিত</string>
+    <string name="absent">অনুপস্থিত</string>
+    <string name="search_didi">দিদি সার্চ করুন</string>
+    <string name="search_by_small_groups">ছোট গ্রুপ দ্বারা সার্চ করুন</string>
+    <string name="total_didis">মোট দিদি - %1$s</string>
 </resources>

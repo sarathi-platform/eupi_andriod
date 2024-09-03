@@ -15,8 +15,7 @@ data class DataTabScreenUiModel(
     val villageName: String,
     val crpImageLocalPath: String = BLANK_STRING,
     val voName: String = BLANK_STRING,
-    val primaryLivelihoodId: Int,
-    val secondaryLivelihoodId: Int,
+    val livelihoodIds: List<Int>,
     val lastUpdated: Long,
 
     ) {
@@ -27,10 +26,12 @@ data class DataTabScreenUiModel(
 
         ): List<DataTabScreenUiModel> {
             val dataTabList = ArrayList<DataTabScreenUiModel>()
-            subjectEntityWithLivelihoodMappingUiModelList.forEach { subjectEntity ->
+            subjectEntityWithLivelihoodMappingUiModelList.groupBy { it.subjectId }.entries.forEach { it ->
+                val subjectEntity = it.value.first()
+
                 dataTabList.add(
                     DataTabScreenUiModel(
-                        subjectId = subjectEntity.subjectId,
+                        subjectId = it.key,
                         subjectName = subjectEntity.subjectName,
                         dadaName = subjectEntity.dadaName,
                         cohortId = subjectEntity.cohortId,
@@ -40,8 +41,7 @@ data class DataTabScreenUiModel(
                         villageName = subjectEntity.villageName,
                         crpImageLocalPath = subjectEntity.crpImageLocalPath,
                         voName = subjectEntity.voName,
-                        primaryLivelihoodId = subjectEntity.primaryLivelihoodId,
-                        secondaryLivelihoodId = subjectEntity.secondaryLivelihoodId,
+                        livelihoodIds = it.value.map { it.livelihoodId },
                         lastUpdated = lastEventDateMapForSubject.get(subjectEntity.subjectId)
                             .value(),
                         imageFileName = subjectEntity.image

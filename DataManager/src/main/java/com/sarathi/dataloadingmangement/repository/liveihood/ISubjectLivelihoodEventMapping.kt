@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivel
 interface ISubjectLivelihoodEventMapping {
 
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel>
+    suspend fun getDeletedLivelihoodEventsWithAssetAndMoneyEntry(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel>
 
     suspend fun getSubjectLivelihoodEventMappingListFromDb(
         subjectId: Int
@@ -24,4 +25,9 @@ interface ISubjectLivelihoodEventMapping {
 
     suspend fun getLivelihoodEventDto(eventData: LivelihoodEventScreenData): SaveLivelihoodEventDto
     suspend fun getUserId(): Int
+
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+        transactionId: String
+    ): List<SubjectLivelihoodEventMappingEntity>?
+
 }

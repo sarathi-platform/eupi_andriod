@@ -8,7 +8,7 @@ class GetSubjectLivelihoodMappingFromUseCase @Inject constructor(
     private val getLivelihoodMappingForSubjectFromDbRepository: GetLivelihoodMappingForSubjectFromDbRepository
 ) {
 
-    suspend operator fun invoke(subjectId: Int): List<SubjectLivelihoodMappingEntity?> {
+    suspend operator fun invoke(subjectId: Int): List<SubjectLivelihoodMappingEntity> {
         return getLivelihoodMappingForSubjectFromDbRepository.getLivelihoodMappingForSubject(
             subjectId
         )

@@ -55,6 +55,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -76,6 +77,7 @@ import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.deleteButtonBg
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
@@ -100,7 +102,6 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_1_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_24_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_2_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_48_dp
-import com.sarathi.smallgroupmodule.ui.theme.dimen_56_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_80_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.ui.theme.green
@@ -114,7 +115,6 @@ import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
 import com.sarathi.smallgroupmodule.ui.theme.uncheckedTrackColor
 import com.sarathi.smallgroupmodule.ui.theme.white
-import com.sarathi.smallgroupmodule.utils.getAttendanceFromBoolean
 import com.sarathi.smallgroupmodule.utils.getDate
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -128,7 +128,9 @@ fun SmallGroupAttendanceHistoryScreen(
     smallGroupAttendanceHistoryViewModel: SmallGroupAttendanceHistoryViewModel,
     onSettingClick: () -> Unit
 ) {
-
+    var isVisibleDateRangePickerDialog by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(key1 = Unit) {
 
         smallGroupAttendanceHistoryViewModel.onEvent(
@@ -215,6 +217,7 @@ fun SmallGroupAttendanceHistoryScreen(
             }
         }
     ) {
+
         ToolBarWithMenuComponent(
             title = smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupName,
             modifier = Modifier,
@@ -307,6 +310,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 .weight(1f)
                                                 .clickable {
                                                     scope.launch {
+
                                                         sheetState.show()
                                                     }
                                                 },
@@ -349,9 +353,8 @@ fun SmallGroupAttendanceHistoryScreen(
                                             },
                                             trailingIcon = {
                                                 IconButton(onClick = {
-                                                    scope.launch {
-                                                        sheetState.show()
-                                                    }
+                                                    isVisibleDateRangePickerDialog = true
+
                                                 }) {
                                                     Icon(
                                                         painter = painterResource(id = R.drawable.calendar),
@@ -401,9 +404,11 @@ fun SmallGroupAttendanceHistoryScreen(
                             }
 
                             item {
-                                Spacer(modifier = modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_100_dp))
+                                Spacer(
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_100_dp)
+                                )
                             }
 
                         }
@@ -415,11 +420,12 @@ fun SmallGroupAttendanceHistoryScreen(
                     }
                 }
 
+
             }
         )
-
     }
 }
+
 
 @Composable
 fun EmptyHistoryView(
@@ -766,7 +772,9 @@ fun HistorySummaryCardItem(
         }
 
         Text(
-            text = subjectAttendanceHistoryState.attendance.getAttendanceFromBoolean(),
+            text = if (subjectAttendanceHistoryState.attendance) stringResource(id = R.string.present) else stringResource(
+                id = R.string.absent
+            ),
             style = defaultTextStyle,
             color = if (subjectAttendanceHistoryState.attendance) green else redOffline
         )

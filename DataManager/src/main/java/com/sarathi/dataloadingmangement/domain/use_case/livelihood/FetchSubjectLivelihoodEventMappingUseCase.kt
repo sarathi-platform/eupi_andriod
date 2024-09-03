@@ -16,12 +16,23 @@ class FetchSubjectLivelihoodEventMappingUseCase @Inject constructor(
         )
 
     }
+    suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(subjectId: Int): List<SubjectLivelihoodEventSummaryUiModel> {
+        return subjectLivelihoodEventMappingRepositoryImpl.getDeletedLivelihoodEventsWithAssetAndMoneyEntry(
+            subjectId = subjectId
+        )
+    }
 
     suspend fun getSubjectLivelihoodEventMappingListFromDb(
         subjectId: Int
     ): List<SubjectLivelihoodEventMappingEntity>? {
         return subjectLivelihoodEventMappingRepositoryImpl.getSubjectLivelihoodEventMappingListFromDb(
             subjectId = subjectId
+        )
+    }
+
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(transactionId: String): List<SubjectLivelihoodEventMappingEntity>? {
+        return subjectLivelihoodEventMappingRepositoryImpl.getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+            transactionId = transactionId
         )
     }
 

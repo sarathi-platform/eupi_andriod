@@ -86,7 +86,7 @@ fun AddImageComponent(
     fileNamePrefix: String,
     subtitle: String? = null,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
-    ) {
+) {
     val context = LocalContext.current
     val innerState: LazyGridState = rememberLazyGridState()
     var imageList by remember { mutableStateOf(getSavedImageUri(context, filePaths)) }
@@ -143,16 +143,25 @@ fun AddImageComponent(
                         modifier =
                         boxModifier
                             .clickable(enabled = isEditable) {
-                                currentImageUri = getImageUri(
-                                    context, "${fileNamePrefix}${
-                                        System.currentTimeMillis()
-                                    }.png",
-                                    true
-                                )
 
-                                cameraLauncher.launch(
-                                    currentImageUri
-                                )
+                                requestCameraPermission(context as Activity) {
+                                    shouldRequestPermission.value = it
+
+                                    if (!it) {
+                                        currentImageUri = getImageUri(
+                                            context, "${fileNamePrefix}${
+                                                System.currentTimeMillis()
+                                            }.png",
+                                            true
+                                        )
+
+                                        cameraLauncher.launch(
+                                            currentImageUri
+                                        )
+                                    }
+                                }
+
+
                             }
                             .background(white)
                             .dottedBorder(
@@ -239,12 +248,13 @@ fun requestCameraPermission(
     }
 }
 
-fun getImageUri(context: Context, fileName: String, isNewImage:Boolean): Uri? {
-    var file = File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
-  if(!isNewImage && !file.exists())
-  {
-      file=File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
-  }
+fun getImageUri(context: Context, fileName: String, isNewImage: Boolean): Uri? {
+    var file =
+        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+    if (!isNewImage && !file.exists()) {
+        file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+    }
     return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
         uriFromFile(
             context, file,
@@ -259,7 +269,7 @@ fun getSavedImageUri(
     val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
     filePaths.forEach {
         if (it.isNotEmpty()) {
-            uriList.add(getImageUri(context = context, getFileNameFromURL(it),false))
+            uriList.add(getImageUri(context = context, getFileNameFromURL(it), false))
         }
     }
     return uriList

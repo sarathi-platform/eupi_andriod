@@ -7,9 +7,9 @@ data class ActivityConfig(
     @SerializedName("languages")
     val activityTitle: List<ActivityTitle>,
     @SerializedName("activityType")
-    val activityType: String,
+    val activityType: String?,
     @SerializedName("activityTypeId")
-    val activityTypeId: Int,
+    val activityTypeId: Int?,
     @SerializedName("conditions")
     val conditions: List<Any>,
     @SerializedName("content")

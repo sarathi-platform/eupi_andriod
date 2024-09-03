@@ -103,7 +103,7 @@
     </plurals>
 
     <plurals name="search_didi">
-        <item quantity="one">Search Didi</item>
+        <item quantity="one">आब\'खौ नागिर</item>
         <item quantity="other">Search Didi</item>
     </plurals>
 </resources>
