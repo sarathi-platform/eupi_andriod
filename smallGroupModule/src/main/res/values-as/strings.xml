@@ -85,7 +85,7 @@
         <item quantity="other">Attendance already marked for the date:</item>
     </plurals>
     <plurals name="search_didi">
-        <item quantity="one">Search Didi</item>
+        <item quantity="one">বাইদেউঅনুসন্ধান কৰক</item>
         <item quantity="other">Search Didi</item>
     </plurals>
 </resources>

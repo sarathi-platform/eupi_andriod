@@ -3,7 +3,7 @@
     <string name="app_name">SARATHI</string>
     <string name="online_text">अनलाइन</string>
     <string name="offline_text">अफलाइन</string>
-    <string name="not_able_to_load">"डाटा ल'ड खालामनो हायाखै अननानै फिन नाजा । "</string>
+    <string name="not_able_to_load">"डाटा ल\'ड खालामनो हायाखै अननानै फिन नाजा । "</string>
     <string name="retry">"फिन नाजा "</string>
     <string name="in_progress">"सोलिगासिनो दं "</string>
     <string name="received">मोननाय जादों :</string>
