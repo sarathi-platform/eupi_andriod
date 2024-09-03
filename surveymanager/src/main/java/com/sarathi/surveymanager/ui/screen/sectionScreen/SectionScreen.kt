@@ -158,7 +158,14 @@ fun SectionScreen(
                             sanctionedAmount
                         )
                     }
-                } else if (activityType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
+                } else if (activityType.equals(
+                        ActivityTypeEnum.BASIC.name,
+                        ignoreCase = true
+                    ) || activityType.equals(
+                        ActivityTypeEnum.LIVELIHOOD_PoP.name,
+                        ignoreCase = true
+                    )
+                ) {
                     val sectionId: Int? =
                         sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
                     sectionId?.let {
