@@ -64,6 +64,7 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
@@ -109,6 +110,9 @@ fun ActivitySelectTaskScreen(
         navController = navController,
         taskScreenContent = { _, _ ->
             selectActivityTaskScreenContent(viewModel = viewModel)
+        },
+        taskScreenContentForGroup = { groupKey, _, _ ->
+            selectActivityTaskScreenContentForGroup(groupKey, viewModel)
         }
     )
 }
@@ -126,6 +130,36 @@ fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskV
     }
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
+    ) { _, task ->
+        ExpandableTaskCardRow(
+            viewModel = viewModel,
+            task = task,
+            questionUIModel = viewModel.questionUiModel.value[task.key],
+        )
+        CustomVerticalSpacer()
+    }
+    item {
+        CustomVerticalSpacer(size = dimen_20_dp)
+    }
+
+}
+
+fun LazyListScope.selectActivityTaskScreenContentForGroup(
+    groupKey: String,
+    viewModel: ActivitySelectTaskViewModel
+) {
+    item {
+        viewModel.filterList.value.keys.let {
+            CustomTextView(
+                title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
+            )
+            if (!viewModel.isActivityCompleted.value) {
+                viewModel.expandedIds.addAll(it)
+            }
+        }
+    }
+    itemsIndexed(
+        items = viewModel.filterTaskMap[groupKey].value()
     ) { _, task ->
         ExpandableTaskCardRow(
             viewModel = viewModel,
