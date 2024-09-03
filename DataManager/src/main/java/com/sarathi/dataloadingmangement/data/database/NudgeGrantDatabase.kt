@@ -216,7 +216,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                 migration(db, listOf(CREATE_MONEY_JOUNRAL_TABLE))
             }
         }
-
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
             for (sql in execSqls) {
                 try {
