@@ -5,10 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class LivelihoodPlanActivityEventDto(
     @SerializedName("userId")
     val userId: String,
-    @SerializedName("primaryLivelihoodId")
-    val primaryLivelihoodId: Int,
-    @SerializedName("secondaryLivelihoodId")
-    val secondaryLivelihoodId: Int,
+    @SerializedName("livelihoodType")
+    val livelihoodType: ArrayList<LivelihoodTypeEventDto>,
     @SerializedName("activityId")
     val activityId: Int,
     @SerializedName("missionId")
@@ -18,3 +16,10 @@ data class LivelihoodPlanActivityEventDto(
     @SerializedName("subjectType")
     val subjectType: String,
     )
+data class LivelihoodTypeEventDto(
+    @SerializedName("livelihoodId")
+    val livelihoodId: Int,
+    @SerializedName("order")
+    val order: Int
+)
+

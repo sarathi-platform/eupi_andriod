@@ -36,6 +36,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
@@ -161,9 +162,9 @@ fun DidiTabScreen(
                         Column {
                             SearchWithFilterViewComponent(
                                 placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
-                                    SubTabs.DidiTab.id -> "Search by didis"
-                                    SubTabs.SmallGroupTab.id -> "Search by small groups"
-                                    else -> "Search by didis"
+                                    SubTabs.DidiTab.id -> stringResource(R.string.search_didi)
+                                    SubTabs.SmallGroupTab.id -> stringResource(R.string.search_by_small_groups)
+                                    else -> stringResource(R.string.search_didi)
                                 },
                                 showFilter = false,
                                 onFilterSelected = {

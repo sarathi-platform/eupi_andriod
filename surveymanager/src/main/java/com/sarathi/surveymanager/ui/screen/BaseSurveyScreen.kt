@@ -164,6 +164,7 @@ fun BaseSurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     maxLength = 7,
+                                    isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                                     sanctionedAmount = sanctionedAmount,
                                     remainingAmount = getSanctionedAmountMessage(
                                         question,
@@ -216,6 +217,7 @@ fun BaseSurveyScreen(
                                     title = question.questionDisplay,
                                     isEditable = viewModel.isActivityNotCompleted.value,
                                     maxCustomHeight = maxHeight,
+                                    subtitle = question.display
                                 ) { selectedValue, isDeleted ->
                                     saveMultiImageTypeAnswer(
                                         selectedValue,
