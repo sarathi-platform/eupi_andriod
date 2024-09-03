@@ -1,6 +1,5 @@
 package com.sarathi.surveymanager.ui.screen.livelihood
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -146,7 +145,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     }
 
     private fun checkDialogueValidation(subjectLivelihoodMapping: List<SubjectLivelihoodMappingEntity?>) :Boolean{
-        return if ((subjectLivelihoodMapping.first()?.livelihoodId != null && subjectLivelihoodMapping.last()?.livelihoodId != null) || (primaryLivelihoodId.value == subjectLivelihoodMapping.first()?.livelihoodId) || (secondaryLivelihoodId.value == subjectLivelihoodMapping.last()?.livelihoodId)) true else false
+       return if((subjectLivelihoodMapping.first()?.livelihoodId!=null &&  subjectLivelihoodMapping.last()?.livelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.first()?.livelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.last()?.livelihoodId)) true else false
     }
 
     fun setPreviousScreenData(
@@ -176,28 +175,14 @@ class LivelihoodPlaningViewModel @Inject constructor(
         }
     }
 
-    @SuppressLint("SuspiciousIndentation")
      fun saveLivelihoodMappingToDb() {
         ioViewModelScope {
-            var subjectLivelihoodPrimaryMappingEntity: SubjectLivelihoodMappingEntity?
-                        = subjectId?.let {
-                            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-                        userId = saveLivelihoodMappingUseCase.getUserId(),
-                        subjectId = it,
-                        livelihoodId = primaryLivelihoodId.value,
-                        type = LivelihoodTypeEnum.PRIMARY.typeId,
-                        status = 1
-                    )
-                }
-            var subjectLivelihoodSecondaryMappingEntity: SubjectLivelihoodMappingEntity?
-                     = subjectId?.let {
-
-                SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-                    userId = saveLivelihoodMappingUseCase.getUserId(),
-                    subjectId = it,
-                    livelihoodId =   secondaryLivelihoodId.value,
-                    type =LivelihoodTypeEnum.SECONDARY.typeId,
-                    status = 1
+            subjectId?.let {
+                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                    primaryLivelihoodId.value, LivelihoodTypeEnum.PRIMARY.typeId,it
+                )
+                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                 secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId,it
                 )
             }
             val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
@@ -224,9 +209,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
                     )
                 }
-            subjectLivelihoodPrimaryMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingPrimaryForSubject(it) }
-            subjectLivelihoodSecondaryMappingEntity?.let { saveLivelihoodMappingUseCase.saveAndUpdateSubjectLivelihoodMappingSecondaryForSubject(it) }
-
         }
     }
 }
