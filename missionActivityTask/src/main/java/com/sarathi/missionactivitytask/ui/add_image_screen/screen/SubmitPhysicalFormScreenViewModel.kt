@@ -11,10 +11,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.download_manager.FileType
+import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -34,10 +36,14 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val formUiConfigUseCase: GetFormUiConfigUseCase
 ) : BaseViewModel() {
     val documentValues = mutableStateOf<ArrayList<DocumentUiModel>>(arrayListOf())
     val isButtonEnable = mutableStateOf<Boolean>(false)
     val totalDidi = mutableStateOf(0)
+    var submitPhysicalFormButtonText = mutableStateOf(BLANK_STRING)
+    var attachPhyicalFormTitle = mutableStateOf(BLANK_STRING)
+
     override fun <T> onEvent(event: T) {
     }
 
@@ -57,15 +63,35 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
         isButtonEnable.value = documentValues.value.isNotEmpty()
     }
 
-    fun setTotalDidi(activityId: Int) {
+    fun setTotalDidi(activityId: Int, missionId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            attachPhyicalFormTitle.value = formUiConfigUseCase.getFormConfigValue(
+                activityId = activityId,
+                missionId = missionId,
+                key = GrantTaskFormSlots.TASK_ATTACH_PHYSICAL_TITLE_FORM.name
+            )
+            submitPhysicalFormButtonText.value = formUiConfigUseCase.getFormConfigValue(
+                activityId = activityId,
+                missionId = missionId,
+                key = GrantTaskFormSlots.TASK_SUBMIT_BUTTON_FORM.name
+            )
             totalDidi.value = formUseCase.getNonGeneratedFormSummaryData(activityId = activityId)
                 .distinctBy { it.taskid }.size
         }
     }
 
-    fun updateFromTable(activityId: Int, taskIdList: String, onCompleted: () -> Unit) {
+    fun updateFromTable(
+        missionId: Int,
+        activityId: Int,
+        taskIdList: String,
+        onCompleted: (successMessage: String) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val successMessage = formUiConfigUseCase.getFormConfigValue(
+                activityId = activityId,
+                missionId = missionId,
+                key = GrantTaskFormSlots.TASK_SUCCESS_MESSAGE_FORM.name
+            )
             val formGeneratedDate = System.currentTimeMillis().toDate().toString()
             var subjectType: String = BLANK_STRING
             formUseCase.getNonGeneratedFormSummaryData(activityId = activityId).forEach {
@@ -83,7 +109,7 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
 
             updateTaskStatus(taskIdList, subjectType)
             withContext(Dispatchers.Main) {
-                onCompleted()
+                onCompleted(successMessage)
             }
         }
     }

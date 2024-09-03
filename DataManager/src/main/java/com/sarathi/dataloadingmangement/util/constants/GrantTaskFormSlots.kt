@@ -17,10 +17,15 @@ enum class GrantTaskFormSlots(val type: String) {
     TASK_IMAGE_FORM(type = "image"),
     SEARCH_ON_FORM(type = "text"),
     GROUP_BY_FORM(type = "text"),
-
-
     TASK_STATUS_FORM(type = "text"),
     SEARCH_LABEL_FORM(type = "text"),
+    TASK_SUBMIT_BUTTON_FORM(type = "text"),
+    TASK_STATUS_GENERATED_FORM(type = "text"),
+    TASK_ATTACH_PHYSICAL_BUTTON_FORM(type = "text"),
+    TASK_ATTACH_PHYSICAL_TITLE_FORM(type = "text"),
+    TASK_SUCCESS_MESSAGE_FORM(type = "text"),
+    TASK_PDF_FORM_NAME(type = "text"),
+
 
 }
 

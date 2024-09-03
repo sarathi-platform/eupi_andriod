@@ -57,7 +57,8 @@ fun DisbursementCard(
     isActivityCompleted: Boolean = false,
     onEditSurvey: () -> Unit,
     onDeleteSurvey: () -> Unit,
-    isFormgenerated: Boolean
+    isFormgenerated: Boolean,
+    formGeneratedMessage: String? = BLANK_STRING
 
 ) {
 
