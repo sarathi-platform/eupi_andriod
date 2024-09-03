@@ -15,14 +15,11 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
 
     suspend operator fun invoke(
         subjectId: Int,
-        subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity
+        subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>
     ): IncomeExpenseSummaryUiModel {
 
         val assets = assetRepositoryImpl.getAssetsEntityForLivelihood(
-            listOf(
-                subjectLivelihoodMappingEntity.primaryLivelihoodId,
-                subjectLivelihoodMappingEntity.secondaryLivelihoodId
-            )
+            subjectLivelihoodMappingEntity.map { it.livelihoodId }
         )
         return fetchSubjectIncomeExpenseSummaryRepository.getIncomeExpenseSummaryForSubject(
             subjectId,
@@ -33,15 +30,12 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
 
     suspend fun invoke(
         subjectId: Int,
-        subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity,
+        subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>,
         durationStart: Long,
         durationEnd: Long
     ): IncomeExpenseSummaryUiModel {
         val assets = assetRepositoryImpl.getAssetsEntityForLivelihood(
-            listOf(
-                subjectLivelihoodMappingEntity.primaryLivelihoodId,
-                subjectLivelihoodMappingEntity.secondaryLivelihoodId
-            )
+            subjectLivelihoodMappingEntity.map { it.livelihoodId }
         )
         return fetchSubjectIncomeExpenseSummaryRepository.getIncomeExpenseSummaryForSubjectForDuration(
             subjectId = subjectId,
@@ -53,13 +47,10 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
 
     suspend fun getLivelihoodIncomeExpenseSummaryMap(
         subjectId: Int,
-        subjectLivelihoodMappingEntity: SubjectLivelihoodMappingEntity
+        subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>
     ): Map<Int, IncomeExpenseSummaryUiModel> {
         val livelihoodIncomeExpenseMap: MutableMap<Int, IncomeExpenseSummaryUiModel> = HashMap()
-        val livelihoods = listOf(
-            subjectLivelihoodMappingEntity.primaryLivelihoodId,
-            subjectLivelihoodMappingEntity.secondaryLivelihoodId
-        )
+        val livelihoods = subjectLivelihoodMappingEntity.map { it.livelihoodId }
         livelihoods.forEach {
             val assets = assetRepositoryImpl.getAssetsEntityForLivelihood(
                 listOf(
@@ -81,9 +72,10 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
 
     suspend fun getSummaryForSubjects(subjectLivelihoodMappingEntityList: List<SubjectEntityWithLivelihoodMappingUiModel>): Map<Int, IncomeExpenseSummaryUiModel> {
         val summaryMap: HashMap<Int, IncomeExpenseSummaryUiModel> = hashMapOf()
-        subjectLivelihoodMappingEntityList.forEach {
-            summaryMap[it.subjectId] =
-                invoke(it.subjectId, it.getSubjectLivelihoodMappingEntity(getUserId()))
+        subjectLivelihoodMappingEntityList.groupBy { it.subjectId }.entries.forEach {
+
+            summaryMap[it.key] =
+                invoke(it.key, it.value.getSubjectLivelihoodMappingEntity(getUserId()))
         }
         return summaryMap
     }
@@ -94,11 +86,12 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
         durationEnd: Long
     ): Map<Int, IncomeExpenseSummaryUiModel> {
         val summaryMap: HashMap<Int, IncomeExpenseSummaryUiModel> = hashMapOf()
-        subjectLivelihoodMappingEntityList.forEach {
-            summaryMap[it.subjectId] =
-                invoke(
-                    subjectId = it.subjectId,
-                    subjectLivelihoodMappingEntity = it.getSubjectLivelihoodMappingEntity(getUserId()),
+        subjectLivelihoodMappingEntityList.groupBy { it.subjectId }.entries.forEach {
+            summaryMap[it.key] = invoke(
+                subjectId = it.key,
+                subjectLivelihoodMappingEntity = it.value.getSubjectLivelihoodMappingEntity(
+                    getUserId()
+                ),
                     durationStart = durationStart,
                     durationEnd = durationEnd
                 )

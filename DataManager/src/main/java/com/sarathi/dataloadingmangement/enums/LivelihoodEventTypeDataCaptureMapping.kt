@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.enums
 
-import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.Inflow
-import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.OutFlow
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.INFLOW
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.OUTFLOW
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.AMOUNT
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET
@@ -15,31 +15,31 @@ enum class LivelihoodEventTypeDataCaptureMapping(
 
     AssetIncrease(
         livelihoodEventDataCaptureTypes = listOf(TYPE_OF_ASSET, COUNT_OF_ASSET),
-        assetJournalEntryFlowType = Inflow
+        assetJournalEntryFlowType = INFLOW
     ),
     AssetDecrease(
         livelihoodEventDataCaptureTypes = listOf(TYPE_OF_ASSET, COUNT_OF_ASSET),
-        assetJournalEntryFlowType = OutFlow
+        assetJournalEntryFlowType = OUTFLOW
     ),
 
     AssetPurchase(
         livelihoodEventDataCaptureTypes = listOf(TYPE_OF_ASSET, COUNT_OF_ASSET, AMOUNT),
-        assetJournalEntryFlowType = Inflow,
-        moneyJournalEntryFlowType = OutFlow
+        assetJournalEntryFlowType = INFLOW,
+        moneyJournalEntryFlowType = OUTFLOW
     ),
     AssetSale(
         livelihoodEventDataCaptureTypes = listOf(TYPE_OF_ASSET, COUNT_OF_ASSET, AMOUNT),
-        assetJournalEntryFlowType = OutFlow,
-        moneyJournalEntryFlowType = Inflow
+        assetJournalEntryFlowType = OUTFLOW,
+        moneyJournalEntryFlowType = INFLOW
     ),
 
     ProductSale(
         livelihoodEventDataCaptureTypes = listOf(TYPE_OF_PRODUCT, AMOUNT),
-        moneyJournalEntryFlowType = Inflow
+        moneyJournalEntryFlowType = INFLOW
     ),
 
-    Income(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = Inflow),
-    Expense(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = OutFlow);
+    Income(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = INFLOW),
+    Expense(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = OUTFLOW);
 
     companion object {
 

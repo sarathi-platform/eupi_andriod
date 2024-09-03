@@ -4,8 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 
@@ -44,7 +42,7 @@ interface SubjectLivelihoodMappingDao {
 
     ): SubjectLivelihoodMappingEntity?
 
-    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId  and userId = :userId  and type IN (:type) And status =1")
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId  and userId = :userId  and type IN (:type) and livelihoodId !=-1 and status =1")
     suspend fun getSubjectLivelihoodMappingAvailable(
         subjectId: Int,
         userId: String,
