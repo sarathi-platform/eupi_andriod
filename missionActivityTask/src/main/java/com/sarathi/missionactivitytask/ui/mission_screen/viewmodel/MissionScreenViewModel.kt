@@ -138,7 +138,9 @@ class MissionScreenViewModel @Inject constructor(
                 missionId = missionId,
                 programId = programId
             )
+            withContext(Dispatchers.Main) {
             onComplete(isDataLoaded == 1)
+        }
         }
     }
 }

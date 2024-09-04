@@ -51,7 +51,7 @@ class FetchAllDataUseCase @Inject constructor(
         if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
                 missionId = missionId,
                 programId
-            ) == 1
+            ) == 0
         ) {
 
             fetchMissionDataUseCase.invoke(missionId, programId)
