@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
@@ -47,7 +46,7 @@ class FetchAllDataUseCase @Inject constructor(
                 formUseCase.invoke()
                 moneyJournalUseCase.invoke()
                 if (isMissionDataFetched && fetchMissionDataUseCase.isActivityTypeAvailable(
-                        ActivityTypeEnum.LIVELIHOOD.name
+                        LivelihoodActivityType
                     ) != 0
                 ) {
                     fetchLivelihoodSaveEventUseCase.invoke()
@@ -56,7 +55,7 @@ class FetchAllDataUseCase @Inject constructor(
                 }
             }
             if (isMissionDataFetched && fetchMissionDataUseCase.isActivityTypeAvailable(
-                    ActivityTypeEnum.LIVELIHOOD.name
+                    LivelihoodActivityType
                 ) != 0
             ) {
                 livelihoodUseCase.invoke()
@@ -79,3 +78,5 @@ class FetchAllDataUseCase @Inject constructor(
     //TODO Temp code remove after data is fetched from API
     fun getStateId() = coreSharedPrefs.getStateId()
 }
+
+const val LivelihoodActivityType = "Livelihood"
