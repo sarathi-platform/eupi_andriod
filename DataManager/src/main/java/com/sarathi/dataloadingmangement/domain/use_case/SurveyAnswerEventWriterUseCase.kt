@@ -125,10 +125,6 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                         activity = CoreAppDetails.getContext()!!,
                         name = getFileNameFromURL(uri.path ?: BLANK_STRING)
                     )
-                    eventWriterRepositoryImpl.saveImageEventToMultipleSources(
-                        it,
-                        uri = uri
-                    )
                     val imageEvent = it.also { event ->
                         event.id = UUID.randomUUID().toString()
                         event.name = EventName.UPLOAD_IMAGE_EVENT.topicName

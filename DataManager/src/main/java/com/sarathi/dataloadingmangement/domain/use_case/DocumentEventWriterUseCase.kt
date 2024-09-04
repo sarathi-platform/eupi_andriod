@@ -55,10 +55,6 @@ class DocumentEventWriterUseCase @Inject constructor(
                         activity = CoreAppDetails.getContext()!!,
                         name = getFileNameFromURL(uri.path ?: BLANK_STRING)
                     )
-//                    eventWriterRepositoryImpl.saveImageEventToMultipleSources(
-//                        event = event, uri
-//                    )
-
                     val imageEvent = event.also { eventDetail ->
                         eventDetail.id = UUID.randomUUID().toString()
                         eventDetail.name = EventName.UPLOAD_IMAGE_EVENT.topicName

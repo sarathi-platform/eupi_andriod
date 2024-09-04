@@ -66,7 +66,7 @@ data class SectionEntity(
                 surveyId = surveyId,
                 sectionName = section.originalValue,
                 sectionOrder = section.sectionOrder,
-                sectionIcon = section.sectionIcon,
+                sectionIcon = section.sectionIcon ?: BLANK_STRING,
                 questionSize = section.questionList?.size ?: 0,
                 contentEntities = section.contentList ?: listOf()
             )
