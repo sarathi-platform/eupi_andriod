@@ -55,4 +55,7 @@ class FetchMissionDataUseCase @Inject constructor(
         return repository.getAllMission()
     }
 
+    suspend fun isActivityTypeAvailable(activityType: String): Int =
+        repository.isActivityAvailable(activityType)
+
 }

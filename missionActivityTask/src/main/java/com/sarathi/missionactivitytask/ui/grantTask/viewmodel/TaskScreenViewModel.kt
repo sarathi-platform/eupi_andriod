@@ -42,6 +42,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
+import com.sarathi.missionactivitytask.utils.toHashMap
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -283,7 +284,7 @@ open class TaskScreenViewModel @Inject constructor(
                 .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
             updateValueInMainThread(
                 _filterList,
-                _filterListt as HashMap<Int, HashMap<String, TaskCardModel>>
+                _filterListt.toHashMap()
             )
 
             filterTaskMap =
