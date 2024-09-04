@@ -179,21 +179,21 @@ open class TaskScreenViewModel @Inject constructor(
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
         _filterList.value = taskList.value.toList()
             .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+            .toMap().toHashMap()
     }
 
     private fun updateListForSelectedFilter() {
 
         val sortedList = taskList.value.toList()
             .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+            .toMap().toHashMap()
 
         val tempFilterTaskMap = sortedList
             .filter {
                 it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
                     filterByValueKey.value, ignoreCase = true
                 )
-            } as HashMap<Int, HashMap<String, TaskCardModel>>
+            }.toHashMap()
         filterTaskMap =
             tempFilterTaskMap.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
@@ -203,7 +203,7 @@ open class TaskScreenViewModel @Inject constructor(
             )
         }
         _filterList.value =
-            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+            tempFilterList.toHashMap()
     }
 
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
@@ -437,7 +437,7 @@ open class TaskScreenViewModel @Inject constructor(
         val taskListForAppliedFilter = if (isFilterApplied) {
             val tempFilterList =
                 sortedList.filter { it.value[TaskCardSlots.FILTER_BY.name]?.value == filterByValueKey.value }
-            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+            tempFilterList.toHashMap()
         } else {
             sortedList
         }
