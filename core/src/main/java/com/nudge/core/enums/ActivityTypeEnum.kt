@@ -20,3 +20,49 @@ enum class ActivityTypeEnum {
 
 
 }
+
+enum class SurveyFlow {
+
+    GrantSurveySummaryScreen,
+    SurveyScreen,
+    SectionScreen,
+    LivelihoodPlanningScreen;
+
+    companion object {
+
+        fun getSurveyFlowFromSectionScreenForActivityType(activityType: String): SurveyFlow {
+            return when (activityType.toLowerCase()) {
+
+                ActivityTypeEnum.BASIC.name.toLowerCase(),
+                ActivityTypeEnum.LIVELIHOOD_PoP.name.toLowerCase() -> {
+                    SurveyScreen
+                }
+
+                ActivityTypeEnum.GRANT.name.toLowerCase() -> {
+                    GrantSurveySummaryScreen
+                }
+
+                else -> SurveyScreen
+            }
+
+        }
+
+        fun getSurveyFlowFromTaskScreenForActivityType(activityTypeId: Int?): SurveyFlow {
+            return when (ActivityTypeEnum.getActivityTypeFromId(activityTypeId)) {
+
+                ActivityTypeEnum.LIVELIHOOD -> {
+                    LivelihoodPlanningScreen
+                }
+
+                ActivityTypeEnum.GRANT -> {
+                    GrantSurveySummaryScreen
+                }
+
+                else -> SurveyScreen
+            }
+
+        }
+
+    }
+
+}

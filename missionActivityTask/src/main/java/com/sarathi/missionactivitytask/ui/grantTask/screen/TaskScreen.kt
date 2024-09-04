@@ -44,7 +44,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_SG_FILTER_LABEL
 import com.nudge.core.NO_SG_FILTER_VALUE
-import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
@@ -86,7 +86,6 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
-
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
@@ -471,7 +470,71 @@ fun TaskRowView(
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
-                when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
+
+                when (SurveyFlow.getSurveyFlowFromTaskScreenForActivityType(it.activityTypeId)) {
+
+                    SurveyFlow.GrantSurveySummaryScreen -> {
+                        viewModel.activityConfigUiModel?.let {
+                            if (subjectName.isNotBlank()) {
+                                navigateToGrantSurveySummaryScreen(
+                                    navController,
+                                    taskId = task.key,
+                                    surveyId = it.surveyId,
+                                    sectionId = it.sectionId,
+                                    subjectType = it.subject,
+                                    subjectName = subjectName,
+                                    activityConfigId = it.activityConfigId,
+                                    sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+                                        ?: DEFAULT_ID,
+                                )
+                            }
+                        }
+                    }
+
+                    SurveyFlow.LivelihoodPlanningScreen -> {
+                        navigateToLivelihoodDropDownScreen(
+                            navController,
+                            taskId = task.key,
+                            activityId = viewModel.activityId,
+                            missionId = viewModel.missionId,
+                            subjectName = subjectName
+                        )
+                    }
+
+                    else -> {
+                        viewModel.activityConfigUiModel?.let {
+                            if (subjectName.isNotBlank()) {
+                                val sanctionedAmount = try {
+                                    task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+                                        ?: DEFAULT_ID
+                                } catch (ex: Exception) {
+                                    CoreLogger.e(
+                                        tag = TAG,
+                                        msg = "TaskRowView: exception -> ${ex.message}",
+                                        ex = ex,
+                                        stackTrace = true
+                                    )
+                                    DEFAULT_ID
+                                }
+                                navigateToSectionScreen(
+                                    navController,
+                                    missionId = viewModel.missionId,
+                                    activityId = viewModel.activityId,
+                                    taskId = task.key,
+                                    surveyId = it.surveyId,
+                                    subjectType = it.subject,
+                                    subjectName = subjectName,
+                                    activityType = viewModel.activityType,
+                                    activityConfigId = it.activityConfigId,
+                                    sanctionedAmount = sanctionedAmount,
+                                )
+                            }
+                        }
+                    }
+
+                }
+
+                /*when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
                     ActivityTypeEnum.GRANT -> {
                         viewModel.activityConfigUiModel?.let {
                             if (subjectName.isNotBlank()) {
@@ -530,7 +593,7 @@ fun TaskRowView(
                             }
                         }
                     }
-                }
+                }*/
             }
         },
         onNotAvailable = {

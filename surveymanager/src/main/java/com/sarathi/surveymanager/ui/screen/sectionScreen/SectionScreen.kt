@@ -43,7 +43,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -141,9 +141,49 @@ fun SectionScreen(
         )
         sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
 
-            // Navigate to Grant Survey Summary Screen if it is grant type activity
             if (sectionScreenViewModel.sectionList.value.size == 1) {
-                if (activityType.toLowerCase() == ActivityTypeEnum.GRANT.name.toLowerCase()) {
+                when (SurveyFlow.getSurveyFlowFromSectionScreenForActivityType(activityType)) {
+                    SurveyFlow.GrantSurveySummaryScreen -> {
+                        val sectionId: Int? =
+                            sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                        sectionId?.let {
+                            onNavigateToGrantSurveySummaryScreen(
+                                navController,
+                                surveyId,
+                                sectionId,
+                                taskId,
+                                subjectType,
+                                subjectName,
+                                activityConfigId,
+                                sanctionedAmount
+                            )
+                        }
+                    }
+
+                    SurveyFlow.SurveyScreen -> {
+                        val sectionId: Int? =
+                            sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                        sectionId?.let {
+                            onNavigateToQuestionScreen(
+                                surveyId,
+                                sectionId,
+                                taskId,
+                                subjectName,
+                                subjectType,
+                                activityConfigId,
+                                missionId,
+                                activityId,
+                                activityType
+                            )
+                        }
+                    }
+
+                    else -> { /*
+                        Not required for now.
+                    */
+                    }
+                }
+                /*if (activityType.toLowerCase() == ActivityTypeEnum.GRANT.name.toLowerCase()) {
                     val sectionId: Int? =
                         sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
                     sectionId?.let {
@@ -181,7 +221,7 @@ fun SectionScreen(
                             activityType
                         )
                     }
-                }
+                }*/
             }
 
 
