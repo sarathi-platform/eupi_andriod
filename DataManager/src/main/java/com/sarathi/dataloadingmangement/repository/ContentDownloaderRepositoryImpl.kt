@@ -26,10 +26,10 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getContentValue(contentKey: String): String {
+    override suspend fun getContentValue(contentKey: String, languageCode: String?): String {
         return contentDao.getContentValue(
             contentKey,
-            coreSharedPrefs.getAppLanguage(),
+            languageCode ?: coreSharedPrefs.getAppLanguage(),
             coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
