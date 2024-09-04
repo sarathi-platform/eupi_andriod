@@ -94,8 +94,8 @@ fun ActivityRowCard(
                         ActivityTypeEnum.SURVEY.name.lowercase(
                             Locale.ENGLISH
                         ), ActivityTypeEnum.BASIC.name.lowercase(
-                            Locale.ENGLISH
-                        ) -> {
+                            Locale.ENGLISH)
+                         -> {
                             navigateToSurveyTaskScreen(
                                 navController,
                                 missionId = activity.missionId,
@@ -106,7 +106,10 @@ fun ActivityRowCard(
 
                     ActivityTypeEnum.SELECT.name.lowercase(
                         Locale.ENGLISH
-                    ) -> {
+                    ) ,
+                    ActivityTypeEnum.TRAINING.name.lowercase(
+                        Locale.ENGLISH
+                    )-> {
                     navigateToActivitySelectTaskScreen(
                         navController,
                         missionId = activity.missionId,
