@@ -58,6 +58,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.patsurvey.nudge.R
@@ -69,6 +72,7 @@ import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementColor
 import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.borderGrey
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
 import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementColor
@@ -245,8 +249,7 @@ fun VoEndorsementSummaryScreen(
                         viewModel.getSummaryQuesList(voDidiList[pagerState.currentPage].id)
                         Column(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp),
+                                .fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
@@ -284,26 +287,27 @@ fun VoEndorsementSummaryScreen(
                                                     .fillMaxWidth()
                                             ) {
                                                 Text(
+                                                    modifier = Modifier
+                                                        .weight(1f),
                                                     text = stringResource(id = R.string.shg_member_text),
                                                     style = smallTextStyle.copy(
                                                         textColorDark
                                                     )
                                                 )
-                                                Spacer(modifier = Modifier.weight(1.0f))
                                                 Text(
-                                                    modifier = Modifier.padding(end = dimen_5_dp),
+                                                    modifier = Modifier.padding(start = dimen_2_dp),
                                                     text = SHGFlag.fromInt(shgFlagValue).toString(),
                                                     style = smallTextStyle.copy(
-                                                        if (shgFlagValue == 1) textColorDark else redNoAnswer
+                                                        if (shgFlagValue == 1) greenOnline else redNoAnswer
                                                     )
                                                 )
                                             }
                                             Divider(
                                                 color = borderGrey,
-                                                thickness = 1.dp,
+                                                thickness = dimen_1_dp,
                                                 modifier = Modifier
                                                     .padding(
-                                                        vertical = 10.dp
+                                                        vertical = dimen_10_dp
                                                     )
                                                     .fillMaxWidth()
                                             )
@@ -314,20 +318,21 @@ fun VoEndorsementSummaryScreen(
                                                     .fillMaxWidth()
                                             ) {
                                                 Text(
+                                                    modifier = Modifier
+                                                        .weight(1f),
                                                     text = stringResource(id = R.string.able_bodied_women_text),
                                                     style = smallTextStyle.copy(
                                                         textColorDark
                                                     )
                                                 )
-                                                Spacer(modifier = Modifier.weight(1.0f))
                                                 Text(
-                                                    modifier = Modifier.padding(end = dimen_5_dp),
+                                                    modifier = Modifier.padding(start = dimen_2_dp),
                                                     text = AbleBodiedFlag.fromInt(
                                                         ableBodiedFlagValue
                                                     )
                                                         .toString(),
                                                     style = smallTextStyle.copy(
-                                                        if (ableBodiedFlagValue == 1) textColorDark else redNoAnswer
+                                                        if (ableBodiedFlagValue == 1) greenOnline else redNoAnswer
                                                     )
                                                 )
                                             }

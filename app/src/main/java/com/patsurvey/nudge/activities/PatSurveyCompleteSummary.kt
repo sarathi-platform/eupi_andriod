@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.patsurvey.nudge.R
@@ -53,6 +56,7 @@ import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.borderGrey
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -227,17 +231,18 @@ fun PatSurveyCompleteSummary(
                                         },
                                 ) {
                                     Text(
+                                        modifier = Modifier
+                                            .weight(1f),
                                         text = stringResource(id = R.string.shg_member_text),
                                         style = smallTextStyle.copy(
                                             textColorDark
                                         )
                                     )
-                                    Spacer(modifier = Modifier.weight(1.0f))
                                     Text(
-                                        modifier = Modifier.padding(end = dimen_5_dp),
+                                        modifier = Modifier.padding(start = dimen_2_dp),
                                         text = SHGFlag.fromInt(shgFlagValue).toString(),
                                         style = smallTextStyle.copy(
-                                            if (shgFlagValue == 1) textColorDark else redNoAnswer
+                                            if (shgFlagValue == 1) greenOnline else redNoAnswer
                                         )
                                     )
                                     if (isArrowVisible(patSectionSummaryViewModel, didi)) {
@@ -245,17 +250,17 @@ fun PatSurveyCompleteSummary(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "Forward Arrow",
                                             tint = textColorDark,
-                                            modifier = Modifier.padding(5.dp)
+                                            modifier = Modifier.padding(horizontal = dimen_5_dp)
                                         )
                                     }
 
                                 }
                                 Divider(
                                     color = borderGrey,
-                                    thickness = 1.dp,
+                                    thickness = dimen_1_dp,
                                     modifier = Modifier
                                         .padding(
-                                            vertical = 10.dp
+                                            vertical = dimen_10_dp
                                         )
                                         .fillMaxWidth()
                                 )
@@ -275,18 +280,19 @@ fun PatSurveyCompleteSummary(
                                         },
                                 ) {
                                     Text(
+                                        modifier = Modifier
+                                            .weight(1f),
                                         text = stringResource(id = R.string.able_bodied_women_text),
                                         style = smallTextStyle.copy(
                                             textColorDark
                                         )
                                     )
-                                    Spacer(modifier = Modifier.weight(1.0f))
                                     Text(
-                                        modifier = Modifier.padding(end = dimen_5_dp),
+                                        modifier = Modifier.padding(start = dimen_2_dp),
                                         text = AbleBodiedFlag.fromInt(ableBodiedFlagValue)
                                             .toString(),
                                         style = smallTextStyle.copy(
-                                            if (ableBodiedFlagValue == 1) textColorDark else redNoAnswer
+                                            if (ableBodiedFlagValue == 1) greenOnline else redNoAnswer
                                         )
                                     )
                                     if (isArrowVisible(patSectionSummaryViewModel, didi)) {
@@ -294,7 +300,7 @@ fun PatSurveyCompleteSummary(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "Forward Arrow",
                                             tint = textColorDark,
-                                            modifier = Modifier.padding(5.dp)
+                                            modifier = Modifier.padding(horizontal = dimen_5_dp)
                                         )
                                     }
 
