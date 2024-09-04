@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -87,7 +88,12 @@ class ActivityScreenViewModel @Inject constructor(
     fun getContentValue(actvityUiList: List<ActivityUiModel>) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             actvityUiList.forEach {
-                it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
+                it.icon = it.icon?.let { it1 ->
+                    fetchContentUseCase.getContentValue(
+                        it1,
+                        DEFAULT_LANGUAGE_CODE
+                    )
+                }
             }
         }
     }

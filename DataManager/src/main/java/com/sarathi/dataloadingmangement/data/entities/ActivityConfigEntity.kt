@@ -18,8 +18,8 @@ data class ActivityConfigEntity(
     @ColumnInfo(name = "id")
     var id: Int = 0,
     var userId: String? = BLANK_STRING,
-    var activityType: String? = BLANK_STRING,
-    var activityTypeId: Int?,
+    var activityType: String,
+    var activityTypeId: Int,
     var surveyId: Int,
     var doer: String,
     var reviewer: String,
@@ -40,8 +40,8 @@ data class ActivityConfigEntity(
             return ActivityConfigEntity(
                 id = 0,
                 userId = uniqueUserIdentifier,
-                activityType = activityConfig.activityType,
-                activityTypeId = activityConfig.activityTypeId,
+                activityType = activityConfig.activityType ?: BLANK_STRING,
+                activityTypeId = activityConfig.activityTypeId ?: -1,
                 surveyId = activityConfig.surveyId,
                 doer = activityConfig.doer,
                 reviewer = activityConfig.reviewer,

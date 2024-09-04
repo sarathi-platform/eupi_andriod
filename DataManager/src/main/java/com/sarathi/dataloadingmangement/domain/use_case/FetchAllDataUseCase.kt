@@ -2,9 +2,9 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -39,17 +39,27 @@ class FetchAllDataUseCase @Inject constructor(
             fetchLanguageUseCase.invoke()
             fetchUserDetailUseCase.invoke()
             fetchDidiDetailsFromNetworkUseCase.invoke()
-            fetchMissionDataUseCase.invoke()
+            val isMissionDataFetched = fetchMissionDataUseCase.invoke()
             fetchSurveyDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
-                fetchLivelihoodSaveEventUseCase.invoke()
                 moneyJournalUseCase.invoke()
-                fetchLivelihoodOptionNetworkUseCase.invoke()
-                assetJournalUseCase.invoke()
+                if (isMissionDataFetched && fetchMissionDataUseCase.isActivityTypeAvailable(
+                        LivelihoodActivityType
+                    ) != 0
+                ) {
+                    fetchLivelihoodSaveEventUseCase.invoke()
+                    fetchLivelihoodOptionNetworkUseCase.invoke()
+                    assetJournalUseCase.invoke()
+                }
             }
-            livelihoodUseCase.invoke()
+            if (isMissionDataFetched && fetchMissionDataUseCase.isActivityTypeAvailable(
+                    LivelihoodActivityType
+                ) != 0
+            ) {
+                livelihoodUseCase.invoke()
+            }
             fetchContentDataFromNetworkUseCase.invoke()
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)
@@ -68,3 +78,5 @@ class FetchAllDataUseCase @Inject constructor(
     //TODO Temp code remove after data is fetched from API
     fun getStateId() = coreSharedPrefs.getStateId()
 }
+
+const val LivelihoodActivityType = "Livelihood"

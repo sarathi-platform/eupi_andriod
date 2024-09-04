@@ -70,6 +70,24 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
+    <string name="livelihood">Livelihood</string>
+    <string name="date_range_picker_label_text">From - To</string>
+    <string name="total_asset">Total Asset</string>
+    <string name="events">Events</string>
+    <string name="type_of_asset">Type of Asset</string>
+    <string name="products">Products</string>
+    <string name="view_edit_history">View edit history</string>
+    <string name="show_less">Show Less</string>
+    <string name="show_more">Show more</string>
+    <string name="all_events">All Events:</string>
+    <string name="last_events">Last %1$s events:</string>
+    <string name="increse_in_number">Increase in Number</string>
+    <string name="asset_type">Asset Type:</string>
+    <string name="event_date">Event Date:</string>
+    <string name="edit_history">Edit history</string>
+    <string name="increase_in_number">Increase in Number</string>
+    <string name="proceed_txt">Proceed</string>
+    <string name="cancel_txt">Cancel</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
     <string name="not_be_able_to_make_changes_after_completing_this_mission">Are you sure you want to continue? You will not be able to make changes to this mission after it\'s completed.</string>
 

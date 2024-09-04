@@ -20,7 +20,7 @@ class MediaScreenViewModel @Inject constructor(
     var contentUrl = mutableStateOf(BLANK_STRING)
 
     private suspend fun getContentValue(contentKey: String): String {
-        return fetchContentUseCase.getContentValue(contentKey)
+        return fetchContentUseCase.getContentValue(contentKey, null)
     }
 
     fun initData(contentKey: String) {

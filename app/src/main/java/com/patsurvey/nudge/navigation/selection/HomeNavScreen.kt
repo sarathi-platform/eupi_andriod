@@ -56,21 +56,27 @@ fun HomeNavScreen(navController: NavHostController = rememberNavController(), pr
 
 @Composable
 fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
-    var screenList = emptyList<BottomNavItem>()
-    if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)){
-        screenList = listOf(
+    var screenList: MutableList<BottomNavItem> = mutableListOf<BottomNavItem>()
+    if (prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)) {
+        screenList.add(
             BottomNavItem(
                 stringResource(R.string.mission),
                 MATHomeScreens.MissionScreen.route,
                 painterResource(R.drawable.ic_mission_icon),
                 TabsEnum.MissionTab
-            ),
-            BottomNavItem(
-                "Data",
-                HomeScreens.DATA_TAB_SCREEN.route,
-                painterResource(id = R.drawable.data_tab_icon),
-                TabsEnum.DataTab
-            ),
+            )
+        )
+        if (prefRepo.isDataTabVisible()) {
+            screenList.add(
+                BottomNavItem(
+                    "Data",
+                    HomeScreens.DATA_TAB_SCREEN.route,
+                    painterResource(id = R.drawable.data_tab_icon),
+                    TabsEnum.DataTab
+                )
+            )
+        }
+        screenList.add(
             BottomNavItem(
                 stringResource(R.string.didis_item_text_plural),
                 HomeScreens.DIDI_TAB_SCREEN.route,
@@ -78,8 +84,8 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
                 TabsEnum.DidiUpcmTab
             )
         )
-    }else{
-        screenList = listOf(
+    } else {
+        screenList = mutableListOf(
             BottomNavItem(
                 stringResource(R.string.progress_item_text),
                 if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))

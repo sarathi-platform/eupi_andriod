@@ -9,6 +9,7 @@ object IncomeExpenseConstants {
 
     const val DATA_TAB_SUMMARY_SCREEN_ROUTE_NAME = "data_tab_summary_screen"
     const val ADD_EVENT_SCREEN_ROUTE_NAME = "add_event_screen"
+    const val EDIT_HISTORY_SCREEN_ROUTE_NAME = "edit_history_screen"
 
 
     const val WEEK_DURATION: Long = 7

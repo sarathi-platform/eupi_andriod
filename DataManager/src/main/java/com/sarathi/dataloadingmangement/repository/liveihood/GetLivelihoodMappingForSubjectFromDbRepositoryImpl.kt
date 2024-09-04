@@ -19,7 +19,7 @@ class GetLivelihoodMappingForSubjectFromDbRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getLivelihoodForSubject(subjectId: Int): SubjectLivelihoodMappingEntity? {
+    override suspend fun getLivelihoodForSubject(subjectId: Int): SubjectLivelihoodMappingEntity {
         TODO("Not yet implemented")
     }
 

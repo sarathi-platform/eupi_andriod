@@ -1,0 +1,192 @@
+package com.nudge.core.ui.date_picker_component
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import java.text.DateFormat
+import java.text.DateFormatSymbols
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+class CustomLegacyCalendarModelImpl : CustomCalendarModel {
+
+    override val today
+        get(): CustomCalendarDate {
+            val systemCalendar = Calendar.getInstance()
+            systemCalendar[Calendar.HOUR_OF_DAY] = 0
+            systemCalendar[Calendar.MINUTE] = 0
+            systemCalendar[Calendar.SECOND] = 0
+            systemCalendar[Calendar.MILLISECOND] = 0
+            val utcOffset =
+                systemCalendar.get(Calendar.ZONE_OFFSET) + systemCalendar.get(Calendar.DST_OFFSET)
+            return CustomCalendarDate(
+                year = systemCalendar[Calendar.YEAR],
+                month = systemCalendar[Calendar.MONTH] + 1,
+                dayOfMonth = systemCalendar[Calendar.DAY_OF_MONTH],
+                utcTimeMillis = systemCalendar.timeInMillis + utcOffset
+            )
+        }
+
+    override val firstDayOfWeek: Int = dayInISO8601(Calendar.getInstance().firstDayOfWeek)
+
+    override val weekdayNames: List<Pair<String, String>> = buildList {
+        val weekdays = DateFormatSymbols(Locale.ENGLISH).weekdays
+        val shortWeekdays = DateFormatSymbols(Locale.ENGLISH).shortWeekdays
+        // Skip the first item, as it's empty, and the second item, as it represents Sunday while it
+        // should be last according to ISO-8601.
+        weekdays.drop(2).forEachIndexed { index, day ->
+            add(Pair(day, shortWeekdays[index + 2]))
+        }
+        // Add Sunday to the end.
+        add(Pair(weekdays[1], shortWeekdays[1]))
+    }
+
+    override fun getDateInputFormat(locale: Locale): CustomDateInputFormat {
+        return datePatternAsInputFormat(
+            (DateFormat.getDateInstance(
+                DateFormat.SHORT,
+                locale
+            ) as SimpleDateFormat).toPattern()
+        )
+    }
+
+    override fun getCanonicalDate(timeInMillis: Long): CustomCalendarDate {
+        val calendar = Calendar.getInstance(utcTimeZone)
+        calendar.timeInMillis = timeInMillis
+        calendar[Calendar.HOUR_OF_DAY] = 0
+        calendar[Calendar.MINUTE] = 0
+        calendar[Calendar.SECOND] = 0
+        calendar[Calendar.MILLISECOND] = 0
+        return CustomCalendarDate(
+            year = calendar[Calendar.YEAR],
+            month = calendar[Calendar.MONTH] + 1,
+            dayOfMonth = calendar[Calendar.DAY_OF_MONTH],
+            utcTimeMillis = calendar.timeInMillis
+        )
+    }
+
+    override fun getMonth(timeInMillis: Long): CustomCalendarMonth {
+        val firstDayCalendar = Calendar.getInstance(utcTimeZone)
+        firstDayCalendar.timeInMillis = timeInMillis
+        firstDayCalendar[Calendar.DAY_OF_MONTH] = 1
+        firstDayCalendar[Calendar.HOUR_OF_DAY] = 0
+        firstDayCalendar[Calendar.MINUTE] = 0
+        firstDayCalendar[Calendar.SECOND] = 0
+        firstDayCalendar[Calendar.MILLISECOND] = 0
+        return getMonth(firstDayCalendar)
+    }
+
+    override fun getMonth(date: CustomCalendarDate): CustomCalendarMonth {
+        return getMonth(date.year, date.month)
+    }
+
+    override fun getMonth(year: Int, month: Int): CustomCalendarMonth {
+        val firstDayCalendar = Calendar.getInstance(utcTimeZone)
+        firstDayCalendar.clear()
+        firstDayCalendar[Calendar.YEAR] = year
+        firstDayCalendar[Calendar.MONTH] = month - 1
+        firstDayCalendar[Calendar.DAY_OF_MONTH] = 1
+        return getMonth(firstDayCalendar)
+    }
+
+    override fun getDayOfWeek(date: CustomCalendarDate): Int {
+        return dayInISO8601(date.toCalendar(TimeZone.getDefault())[Calendar.DAY_OF_WEEK])
+    }
+
+    override fun plusMonths(from: CustomCalendarMonth, addedMonthsCount: Int): CustomCalendarMonth {
+        if (addedMonthsCount <= 0) return from
+
+        val laterMonth = from.toCalendar()
+        laterMonth.add(Calendar.MONTH, addedMonthsCount)
+        return getMonth(laterMonth)
+    }
+
+    override fun minusMonths(
+        from: CustomCalendarMonth,
+        subtractedMonthsCount: Int
+    ): CustomCalendarMonth {
+        if (subtractedMonthsCount <= 0) return from
+
+        val earlierMonth = from.toCalendar()
+        earlierMonth.add(Calendar.MONTH, -subtractedMonthsCount)
+        return getMonth(earlierMonth)
+    }
+
+    override fun formatWithPattern(utcTimeMillis: Long, pattern: String, locale: Locale): String =
+        Companion.formatWithPattern(utcTimeMillis, pattern, locale)
+
+    override fun parse(date: String, pattern: String): CustomCalendarDate? {
+        val dateFormat = SimpleDateFormat(pattern)
+        dateFormat.timeZone = utcTimeZone
+        dateFormat.isLenient = false
+        return try {
+            val parsedDate = dateFormat.parse(date) ?: return null
+            val calendar = Calendar.getInstance(utcTimeZone)
+            calendar.time = parsedDate
+            CustomCalendarDate(
+                year = calendar[Calendar.YEAR],
+                month = calendar[Calendar.MONTH] + 1,
+                dayOfMonth = calendar[Calendar.DAY_OF_MONTH],
+                utcTimeMillis = calendar.timeInMillis
+            )
+        } catch (pe: ParseException) {
+            null
+        }
+    }
+
+    override fun toString(): String {
+        return "LegacyCalendarModel"
+    }
+
+    companion object {
+
+        fun formatWithPattern(utcTimeMillis: Long, pattern: String, locale: Locale): String {
+            val dateFormat = SimpleDateFormat(pattern, locale)
+            dateFormat.timeZone = utcTimeZone
+            val calendar = Calendar.getInstance(utcTimeZone)
+            calendar.timeInMillis = utcTimeMillis
+            return dateFormat.format(calendar.timeInMillis)
+        }
+
+        internal val utcTimeZone: TimeZone = TimeZone.getTimeZone("UTC")
+    }
+
+    private fun dayInISO8601(day: Int): Int {
+        val shiftedDay = (day + 6) % 7
+        return if (shiftedDay == 0) return /* Sunday */ 7 else shiftedDay
+    }
+
+    private fun getMonth(firstDayCalendar: Calendar): CustomCalendarMonth {
+        val difference = dayInISO8601(firstDayCalendar[Calendar.DAY_OF_WEEK]) - firstDayOfWeek
+        val daysFromStartOfWeekToFirstOfMonth = if (difference < 0) {
+            difference + DaysInWeek
+        } else {
+            difference
+        }
+        return CustomCalendarMonth(
+            year = firstDayCalendar[Calendar.YEAR],
+            month = firstDayCalendar[Calendar.MONTH] + 1,
+            numberOfDays = firstDayCalendar.getActualMaximum(Calendar.DAY_OF_MONTH),
+            daysFromStartOfWeekToFirstOfMonth = daysFromStartOfWeekToFirstOfMonth,
+            startUtcTimeMillis = firstDayCalendar.timeInMillis
+        )
+    }
+
+    private fun CustomCalendarMonth.toCalendar(): Calendar {
+        val calendar = Calendar.getInstance(utcTimeZone)
+        calendar.timeInMillis = this.startUtcTimeMillis
+        return calendar
+    }
+
+    private fun CustomCalendarDate.toCalendar(timeZone: TimeZone): Calendar {
+        val calendar = Calendar.getInstance(timeZone)
+        calendar.clear()
+        calendar[Calendar.YEAR] = this.year
+        calendar[Calendar.MONTH] = this.month - 1
+        calendar[Calendar.DAY_OF_MONTH] = this.dayOfMonth
+        return calendar
+    }
+}

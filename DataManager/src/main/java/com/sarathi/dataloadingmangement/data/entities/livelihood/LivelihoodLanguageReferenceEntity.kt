@@ -12,12 +12,12 @@ import com.sarathi.dataloadingmangement.model.response.LanguageReference
 @Entity(tableName = LIVELIHOOD_LANGUAGE_TABLE_NAME)
 data class LivelihoodLanguageReferenceEntity(
     @PrimaryKey(autoGenerate = true)
-    @SerializedName("primaryKey")
+    @SerializedName("id")
     @Expose
-    @ColumnInfo(name = "primaryKey")
-    var primaryKey: Int = 0,
     @ColumnInfo(name = "id")
-    var id: Int,
+    var id: Int = 0,
+    @ColumnInfo(name = "livelihoodId")
+    var livelihoodId: Int,
     @ColumnInfo(name = "referenceType")
     var referenceType: String,
     @ColumnInfo(name = "languageCode")
@@ -34,8 +34,8 @@ data class LivelihoodLanguageReferenceEntity(
             referenceType: String
         ): LivelihoodLanguageReferenceEntity {
             return LivelihoodLanguageReferenceEntity(
-                primaryKey = 0,
-                id = languageReference.id ?: 0,
+                id = 0,
+                livelihoodId = languageReference.id ?: 0,
                 userId = uniqueUserIdentifier,
                 languageCode = languageReference.languageCode ?: BLANK_STRING,
                 name = languageReference.name ?: BLANK_STRING,
