@@ -27,7 +27,8 @@ class FormConfigRepositoryImpl @Inject constructor(
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
             activityId = activityId,
             missionId = missionId,
-            key = key
+            key = key,
+            languageCode = coreSharedPrefs.getAppLanguage()
         ) ?: BLANK_STRING
     }
 
