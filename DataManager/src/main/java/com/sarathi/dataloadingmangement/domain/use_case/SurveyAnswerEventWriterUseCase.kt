@@ -128,6 +128,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                     val imageEvent = it.also { event ->
                         event.id = UUID.randomUUID().toString()
                         event.name = EventName.UPLOAD_IMAGE_EVENT.topicName
+                        event.type = EventName.UPLOAD_IMAGE_EVENT.topicName
                     }
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(
                         imageEvent,

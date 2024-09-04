@@ -113,6 +113,11 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
                 val dataEventList =
                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
+                CoreLogger.d(
+                    applicationContext,
+                    TAG,
+                    "doWork: dataEventList List: ${dataEventList.json()}"
+                )
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
                     val apiResponse =
                         syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
@@ -396,6 +401,25 @@ class SyncUploadWorker @AssistedInject constructor(
             errorMessage = errorMessage,
             status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
             requestId = imageEventDetail.requestId ?: BLANK_STRING
+        )
+
+        val event = SyncEventResponse(
+            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+            type = imageEventDetail.type,
+            errorMessage = errorMessage,
+            requestId = imageEventDetail.requestId ?: BLANK_STRING,
+            mobileNumber = imageEventDetail.mobile_number,
+            eventName = imageEventDetail.name,
+            clientId = imageEventDetail.eventId ?: BLANK_STRING,
+            eventResult = EventResult(
+                eventId = BLANK_STRING,
+                status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                message = errorMessage
+            )
+        )
+
+        syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
+            eventList = listOf(event)
         )
     }
 

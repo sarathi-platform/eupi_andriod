@@ -21,7 +21,7 @@ data class Events (
     var name: String,
 
     @ColumnInfo("type")
-    val type: String,
+    var type: String,
 
     @ColumnInfo("created_date")
     @TypeConverters(DateConverter::class)

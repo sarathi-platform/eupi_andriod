@@ -58,6 +58,7 @@ class DocumentEventWriterUseCase @Inject constructor(
                     val imageEvent = event.also { eventDetail ->
                         eventDetail.id = UUID.randomUUID().toString()
                         eventDetail.name = EventName.UPLOAD_IMAGE_EVENT.topicName
+                        event.type = EventName.UPLOAD_IMAGE_EVENT.topicName
                     }
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(
                         imageEvent,
