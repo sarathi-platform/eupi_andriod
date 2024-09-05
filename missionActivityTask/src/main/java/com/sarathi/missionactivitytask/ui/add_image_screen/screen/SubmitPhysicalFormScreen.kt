@@ -78,7 +78,7 @@ fun SubmitPhysicalFormScreen(
                         isArrowRequired = false,
                         onClick = {
                             viewModel.saveMultiImage(activityId)
-                            viewModel.updateFromTable(
+                            viewModel.updateFormTable(
                                 missionId = missionId,
                                 activityId = activityId,
                                 taskIdList,

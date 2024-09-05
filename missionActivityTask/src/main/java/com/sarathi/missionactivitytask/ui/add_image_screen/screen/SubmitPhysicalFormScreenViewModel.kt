@@ -80,7 +80,7 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateFromTable(
+    fun updateFormTable(
         missionId: Int,
         activityId: Int,
         taskIdList: String,
