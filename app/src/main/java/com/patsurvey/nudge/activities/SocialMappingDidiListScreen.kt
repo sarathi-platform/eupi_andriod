@@ -93,6 +93,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -201,6 +202,10 @@ fun SocialMappingDidiListScreen(
     val screenHeight = configuration.screenHeightDp
 
     val focusManager = LocalFocusManager.current
+    val showLoadConfirmationDialog = remember {
+        mutableStateOf(false)
+    }
+
     BackHandler() {
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
@@ -210,6 +215,20 @@ fun SocialMappingDidiListScreen(
             }
             navController.popBackStack()
         }
+    }
+    if (showLoadConfirmationDialog.value) {
+        ShowCustomDialog(
+            title = BLANK_STRING,
+            message = stringResource(R.string.are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed),
+            positiveButtonTitle = stringResource(id = R.string.ok),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            onPositiveButtonClick = {
+                completeSocialMapping(didiViewModel, stepId, context, villageId, navController)
+                showLoadConfirmationDialog.value = false
+            }, onNegativeButtonClick = {
+                showLoadConfirmationDialog.value = false
+            }
+        )
     }
 
     if(didiViewModel.showDidiImageDialog.value){
@@ -624,54 +643,7 @@ fun SocialMappingDidiListScreen(
                     ),
                     positiveButtonOnClick = {
                         if (completeTolaAdditionClicked) {
-                            didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
-                                if (isPreviousStepComplete) {
-                                    didiViewModel.saveSocialMappingCompletionDate()
-                                    //TODO Integrate Api when backend fixes the response.
-                                    if ((context as MainActivity).isOnline.value ?: false) {
-                                        if (didiViewModel.isTolaSynced.value == 2) {
-                                            didiViewModel.addDidisToNetwork(object : NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                    didiViewModel.callWorkFlowAPI(
-                                                        villageId,
-                                                        stepId,
-                                                        object : NetworkCallbackListener {
-                                                            override fun onSuccess() {
-                                                            }
-
-                                                            override fun onFailed() {
-//                                                                showCustomToast(context, SYNC_FAILED)
-                                                            }
-                                                        })
-                                                }
-                                                override fun onFailed() {
-
-                                                }
-
-                                            })
-
-                                        }
-                                    }
-                                    didiViewModel.markSocialMappingComplete(villageId, stepId)
-                                    didiViewModel.saveWorkflowEventIntoDb(
-                                        stepStatus = StepStatus.COMPLETED,
-                                        villageId = villageId,
-                                        stepId = stepId
-                                    )
-                                    (context as MainActivity).isFilterApplied.value = false
-                                    navController.navigate(
-                                        "sm_step_completion_screen/${
-                                            context.getString(R.string.social_mapping_completed_message)
-                                                .replace(
-                                                    "{VILLAGE_NAME}",
-                                                    didiViewModel.villageEntity.value?.name ?: ""
-                                                )
-                                        }"
-                                    )
-                                } else {
-                                    showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
-                                }
-                            }
+                            showLoadConfirmationDialog.value = true
                         } else {
                             completeTolaAdditionClicked = true
                         }
@@ -718,6 +690,63 @@ fun SocialMappingDidiListScreen(
     }
 }
 
+private fun completeSocialMapping(
+    didiViewModel: AddDidiViewModel,
+    stepId: Int,
+    context: Context,
+    villageId: Int,
+    navController: NavHostController
+) {
+    didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+        if (isPreviousStepComplete) {
+            didiViewModel.saveSocialMappingCompletionDate()
+            //TODO Integrate Api when backend fixes the response.
+            if ((context as MainActivity).isOnline.value ?: false) {
+                if (didiViewModel.isTolaSynced.value == 2) {
+                    didiViewModel.addDidisToNetwork(object : NetworkCallbackListener {
+                        override fun onSuccess() {
+                            didiViewModel.callWorkFlowAPI(
+                                villageId,
+                                stepId,
+                                object : NetworkCallbackListener {
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+//                                                                showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                        }
+
+                        override fun onFailed() {
+
+                        }
+
+                    })
+
+                }
+            }
+            didiViewModel.markSocialMappingComplete(villageId, stepId)
+            didiViewModel.saveWorkflowEventIntoDb(
+                stepStatus = StepStatus.COMPLETED,
+                villageId = villageId,
+                stepId = stepId
+            )
+            (context as MainActivity).isFilterApplied.value = false
+            navController.navigate(
+                "sm_step_completion_screen/${
+                    context.getString(R.string.social_mapping_completed_message)
+                        .replace(
+                            "{VILLAGE_NAME}",
+                            didiViewModel.villageEntity.value?.name ?: ""
+                        )
+                }"
+            )
+        } else {
+            showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
+        }
+    }
+}
 
 
 private fun decoupledConstraints(): ConstraintSet {
