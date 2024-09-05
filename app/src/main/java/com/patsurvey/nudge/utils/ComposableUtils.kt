@@ -321,9 +321,9 @@ fun DidiItemCardForPat(
                                             didiMarkedNotAvailable.value = false
                                         }
                                         if (prefRepo.isUserBPC())
-                                            navController.navigate("bcp_didi_pat_summary/${didi.id}")
+                                            navController.navigate("bcp_didi_pat_summary/${didi.id}/${false}")
                                         else
-                                            navController.navigate("didi_pat_summary/${didi.id}")
+                                            navController.navigate("didi_pat_summary/${didi.id}/${false}")
 
                                     } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                         val quesIndex = 0
