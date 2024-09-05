@@ -176,6 +176,7 @@ fun DisbursementSummaryScreen(
                                                 subTitle5 = surveyData.subTittle5,
                                                 isFormgenerated = surveyData.isFormGenerated,
                                                 isActivityCompleted = viewModel.isActivityCompleted.value,
+                                                formGeneratedMessage = viewModel.formGeneratedMessage.value,
                                                 onEditSurvey = {
                                                     CoreLogger.d(
                                                         context,

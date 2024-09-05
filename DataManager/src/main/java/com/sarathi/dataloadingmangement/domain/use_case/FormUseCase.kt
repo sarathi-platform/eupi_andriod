@@ -123,8 +123,8 @@ class FormUseCase @Inject constructor(
         repository.updateFormData(isFormGenerated, localReferenceId, generatedDate)
     }
 
-    fun getFormEFileName(): String {
-        return repository.getFormEFileName()
+    fun getFormEFileName(pdfName: String): String {
+        return repository.getFormEFileName(pdfName)
     }
 
 }
