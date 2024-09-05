@@ -175,18 +175,14 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun updateListForAllFilter() {
         filterTaskMap =
-            taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+            taskList.value.entries
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-        _filterList.value = taskList.value.toList()
-            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap().toHashMap()
+        _filterList.value = taskList.value
     }
 
     private fun updateListForSelectedFilter() {
 
-        val sortedList = taskList.value.toList()
-            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap().toHashMap()
+        val sortedList = taskList.value
 
         val tempFilterTaskMap = sortedList
             .filter {
@@ -280,16 +276,14 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value.toList()
-                .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
+            var _filterListt = _taskList.value
             updateValueInMainThread(
                 _filterList,
                 _filterListt.toHashMap()
             )
 
             filterTaskMap =
-                _taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
-                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
             updateListForAllFilter()
 
