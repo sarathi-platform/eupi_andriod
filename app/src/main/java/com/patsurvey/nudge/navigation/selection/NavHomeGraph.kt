@@ -69,6 +69,7 @@ import com.patsurvey.nudge.utils.ARG_DIDI_ID
 import com.patsurvey.nudge.utils.ARG_DIDI_STATUS
 import com.patsurvey.nudge.utils.ARG_FORM_PATH
 import com.patsurvey.nudge.utils.ARG_FOR_REPLACEMENT
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_SCREEN
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
@@ -487,13 +488,18 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         composable(route = PatScreens.DIDI_PAT_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            })){
+            }, navArgument(ARG_FROM_PAT_SUMMARY_SCREEN) {
+                type = NavType.BoolType
+            }
+            )) {
             PatDidiSummaryScreen(
-                navController=navController,
+                navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
+                isComingFromPatSummaryScreen = it.arguments?.getBoolean(ARG_FROM_PAT_SUMMARY_SCREEN)
+                    ?: false
             ) {
                 navController.popBackStack()
             }
@@ -646,7 +652,8 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
 
 sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
-    object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
+    object DIDI_PAT_SUMMARY_SCREEN :
+        PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}/{$ARG_FROM_PAT_SUMMARY_SCREEN}")
 
     object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object SINGLE_QUESTION_SCREEN : PatScreens(route = "single_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
@@ -1075,13 +1082,18 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         composable(route = BpcDidiListScreens.DIDI_PAT_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            })){
+            }, navArgument(ARG_FROM_PAT_SUMMARY_SCREEN) {
+                type = NavType.BoolType
+            })
+        ) {
             PatDidiSummaryScreen(
-                navController=navController,
+                navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
+                isComingFromPatSummaryScreen = it.arguments?.getBoolean(ARG_FROM_PAT_SUMMARY_SCREEN)
+                    ?: false
             ) {
                 navController.popBackStack()
             }
@@ -1115,7 +1127,8 @@ sealed class BpcDidiListScreens(val route: String) {
 
     object BPC_ADD_MORE_DIDI_LIST : BpcDidiListScreens(route = "bpc_add_more_didi_list/{$ARG_FOR_REPLACEMENT}")
 
-    object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}")
+    object DIDI_PAT_SUMMARY_SCREEN :
+        BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}/{$ARG_FROM_PAT_SUMMARY_SCREEN}")
 
     object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object SINGLE_QUESTION_SCREEN : PatScreens(route = "bpc_single_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
