@@ -279,7 +279,7 @@ open class TaskScreenViewModel @Inject constructor(
             var _filterListt = _taskList.value
             updateValueInMainThread(
                 _filterList,
-                _filterListt.toHashMap()
+                _filterListt
             )
 
             filterTaskMap =
