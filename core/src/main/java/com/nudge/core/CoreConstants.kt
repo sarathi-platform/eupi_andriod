@@ -110,3 +110,7 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+
+
+const val MAX_CELL_COUNT_FOR_SELECT_ACTIVITY = 2
+const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 60

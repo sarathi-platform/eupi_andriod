@@ -322,7 +322,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateProgress() {
+    fun updateProgress() {
         val completedCount = (taskList.value.entries.filter {
             it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name
                     || it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.COMPLETED.name

@@ -35,6 +35,7 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -1202,7 +1203,7 @@ fun String.stringToInt(): Int {
 }
 
 fun customGridHeight(optionListSize: Int): Dp {
-    return if (optionListSize > 2) (60 * 80).dp else 0.dp
+    return if (optionListSize >= MAX_CELL_COUNT_FOR_SELECT_ACTIVITY) (MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY * (optionListSize / MAX_CELL_COUNT_FOR_SELECT_ACTIVITY)).dp else dimen_60_dp
 }
 
 fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
