@@ -515,4 +515,6 @@
     <string name="recover_old_data">পুরানো ডেটা পুনরুদ্ধার করুন</string>
     <string name="this_language_is_not_available_for_selection">এই ভাষা নির্বাচনের জন্য উপলব্ধ নয়</string>
     <string name="change_language">ভাষা পরিবর্তন করুন</string>
+    <string name="shg_member_text">1. এসএইচজি (SHG) সদস্য</string>
+    <string name="able_bodied_women_text">2. কর্মক্ষম নারী</string>
 </resources>

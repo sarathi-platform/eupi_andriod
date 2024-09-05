@@ -519,5 +519,7 @@
         <item quantity="one">CLF: </item>
         <item quantity="other">VO: </item>
     </plurals>
+    <string name="shg_member_text">1. SHG सदस्य</string>
+    <string name="able_bodied_women_text">2.   सक्षम महिलाएं</string>
 
 </resources>

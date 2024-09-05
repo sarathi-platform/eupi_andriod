@@ -519,6 +519,8 @@
     </plurals>
 
     <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="shg_member_text">1. সহায়ক গোটৰ সদস্য</string>
+    <string name="able_bodied_women_text">2. সক্ষম মহিলা</string>
 
 
 </resources>
