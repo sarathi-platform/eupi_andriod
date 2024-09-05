@@ -1,6 +1,7 @@
 package com.nudge.syncmanager.workers
 
 import android.content.Context
+import android.os.Environment
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -399,27 +400,8 @@ class SyncUploadWorker @AssistedInject constructor(
         syncManagerUseCase.addUpdateEventUseCase.updateImageDetailsEventStatus(
             eventId = imageEventDetail.id,
             errorMessage = errorMessage,
-            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+            status = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus,
             requestId = imageEventDetail.requestId ?: BLANK_STRING
-        )
-
-        val event = SyncEventResponse(
-            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-            type = imageEventDetail.type,
-            errorMessage = errorMessage,
-            requestId = imageEventDetail.requestId ?: BLANK_STRING,
-            mobileNumber = imageEventDetail.mobile_number,
-            eventName = imageEventDetail.name,
-            clientId = imageEventDetail.eventId ?: BLANK_STRING,
-            eventResult = EventResult(
-                eventId = BLANK_STRING,
-                status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-                message = errorMessage
-            )
-        )
-
-        syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
-            eventList = listOf(event)
         )
     }
 
@@ -437,27 +419,8 @@ class SyncUploadWorker @AssistedInject constructor(
                 val imageMultiPartList = ArrayList<MultipartBody.Part>()
                 imageEventList.forEach { imageDetail ->
                     try {
-                        imageDetail.filePath?.let { path ->
-                            val imageFile = File(path)
-                            if (imageFile.exists() && imageFile.isFile) {
-                                val imageMultiPart = convertFileIntoMultipart(
-                                    imageFile = imageFile,
-                                    imageEventDetail = imageDetail
-                                )
-                                imageMultiPart?.let {
-                                    imageMultiPartList.add(it)
-                                }
-
-                            } else
-                                handleFailedImageStatus(
-                                    imageEventDetail = imageDetail,
-                                    errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
-                                )
-                        }
-
-
+                        addImageToMultipart(imageDetail, imageMultiPartList)
                     } catch (e: Exception) {
-                        e.printStackTrace()
                         handleFailedImageStatus(
                             imageEventDetail = imageDetail,
                             errorMessage = e.message
@@ -478,6 +441,45 @@ class SyncUploadWorker @AssistedInject constructor(
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+    }
+
+    private suspend fun SyncUploadWorker.addImageToMultipart(
+        imageDetail: ImageEventDetailsModel,
+        imageMultiPartList: ArrayList<MultipartBody.Part>
+    ) {
+        imageDetail.fileName?.let { imageName ->
+            if (imageName.isNotEmpty()) {
+                val file =
+                    File("${applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${imageName}")
+                CoreLogger.d(
+                    context = applicationContext,
+                    "addImageToMultipart",
+                    "ImagePath: ${file.path}"
+                )
+                if (file.exists() && file.isFile) {
+                    val imageMultiPart = convertFileIntoMultipart(
+                        imageFile = file,
+                        imageEventDetail = imageDetail
+                    )
+                    imageMultiPart?.let {
+                        imageMultiPartList.add(it)
+                    }
+                } else {
+                    handleFailedImageStatus(
+                        imageEventDetail = imageDetail,
+                        errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
+                    )
+                }
+            } else {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_EXCEPTION.message
+                )
+            }
+        } ?: handleFailedImageStatus(
+            imageEventDetail = imageDetail,
+            errorMessage = SyncException.IMAGE_NAME_IS_NULL_EXCEPTION.message
+        )
     }
 
 

@@ -1,6 +1,7 @@
 package com.nudge.syncmanager.domain.repository
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.RequestStatusEntity
 import com.nudge.core.datamodel.ImageEventDetailsModel
@@ -13,6 +14,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 interface SyncRepository {
+    val pendingEventStatusList: List<String>
+        get() = listOf(
+            EventSyncStatus.OPEN.eventSyncStatus,
+            EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
+            EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+        )
+
     fun getUserMobileNumber(): String
     fun getUserID(): String
     fun getUserEmail(): String
@@ -59,5 +67,5 @@ interface SyncRepository {
 
     fun getSyncBatchSize(): Int
     fun getSyncRetryCount(): Int
-
+    suspend fun fetchRetryCountForEvent(clientId: String): Int
 }

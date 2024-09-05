@@ -73,11 +73,7 @@ class SyncRepositoryImpl(
         syncType: Int
     ): List<Events> {
         return eventDao.getAllPendingEventList(
-            listOf(
-                EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
-            ),
+            pendingEventStatusList,
             batchLimit = batchLimit,
             retryCount = retryCount,
             mobileNumber = corePrefRepo.getMobileNo(),
@@ -87,11 +83,7 @@ class SyncRepositoryImpl(
 
     override suspend fun getPendingEventCount(syncType: Int): Int {
         return eventDao.getSyncPendingEventCount(
-            listOf(
-                EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
-            ),
+            pendingEventStatusList,
             mobileNumber = corePrefRepo.getMobileNo(),
             syncType = syncType
         )
@@ -207,17 +199,23 @@ class SyncRepositoryImpl(
         requestId: String,
         errorMessage: String?
     ) {
-
+        var retryCount = 0
+        if (status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+            || status == EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
+        ) {
+            retryCount = fetchRetryCountForEvent(eventId) + 1
+        }
         imageStatusDao.updateImageEventStatus(
             status = status,
             eventId = eventId,
             errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
-            mobileNumber = corePrefRepo.getMobileNo()
+            mobileNumber = corePrefRepo.getMobileNo(),
+            retryCount = retryCount
         )
 
         eventDao.updateEventStatus(
-            retryCount = 1,
+            retryCount = retryCount,
             clientId = eventId,
             errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
@@ -344,6 +342,10 @@ class SyncRepositoryImpl(
 
     override fun getSyncRetryCount(): Int {
         return corePrefRepo.getSyncRetryCount()
+    }
+
+    override suspend fun fetchRetryCountForEvent(clientId: String): Int {
+        return eventDao.fetchRetryCountForEvent(clientId)
     }
 
 

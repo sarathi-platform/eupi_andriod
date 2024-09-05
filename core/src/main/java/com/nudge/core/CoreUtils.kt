@@ -1156,16 +1156,16 @@ fun getFileMimeType(file: File): String? {
 }
 
 fun getImageUri(context: Context, fileName: String): Uri? {
-    var file =
+    Log.d(TAG, "getImageUri1: ${fileName} ")
+    val file =
         File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
-    if (!file.exists()) {
-        file =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
-    }
-    return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
-        uriFromFile(
-            context, file,
-            it
-        )
-    }
+    Log.d(TAG, "getImageUri: ${file.path}")
+    return if (file.exists() && file.isFile) {
+        CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+            uriFromFile(
+                context, file,
+                it
+            )
+        }
+    } else Uri.EMPTY
 }
