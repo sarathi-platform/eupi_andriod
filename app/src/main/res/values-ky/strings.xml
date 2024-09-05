@@ -536,6 +536,7 @@
     <string name="change_language">Change Language</string>
     <string name="shg_member_text">1. SHG member</string>
     <string name="able_bodied_women_text">2. Able-bodied women</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
 
 
 </resources>

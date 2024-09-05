@@ -183,7 +183,8 @@ fun MiscQuestionBoxComponent(
                                                     defaultValue = selectedOption?.selectedValue
                                                         ?: "",
                                                     isOnlyNumber = optionsItem?.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
-                                                    onInfoButtonClicked = {}
+                                                    onInfoButtonClicked = {},
+                                                    additionalValidation = { text, question -> true }
                                                 ) { inputValue ->
                                                     if (isEditAllowed) {
                                                         onAnswerSelection(

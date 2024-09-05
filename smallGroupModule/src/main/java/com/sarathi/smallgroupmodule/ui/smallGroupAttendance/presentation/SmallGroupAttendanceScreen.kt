@@ -244,6 +244,11 @@ fun SmallGroupAttendanceScreen(
                         smallGroupAttendanceScreenViewModel.selectedDate.value =
                             datePickerState.selectedDateMillis!!
                         datePickerDialogProperties.hide()
+                        smallGroupAttendanceScreenViewModel.onEvent(
+                            SmallGroupAttendanceEvent.MarkAttendanceForAllEvent(
+                                false
+                            )
+                        )
                         showDatePickerDialog.value = false
                     }
                 )

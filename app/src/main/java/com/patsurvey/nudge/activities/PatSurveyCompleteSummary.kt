@@ -452,9 +452,8 @@ fun PatSurveyCompleteSummary(
             negativeButtonRequired = false,
             positiveButtonOnClick = {
 
-                if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN) {
+                if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN && patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
                     patSectionSummaryViewModel.savePATEvent()
-
                 }
 
                 if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
