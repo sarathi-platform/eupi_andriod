@@ -17,8 +17,8 @@ class FetchContentUseCase @Inject constructor(
     }
 
 
-    suspend fun getContentValue(contentKey: String): String {
-        return repository.getContentValue(contentKey)
+    suspend fun getContentValue(contentKey: String, languageCode: String?): String {
+        return repository.getContentValue(contentKey, languageCode)
     }
 
     fun getFilePathUri(filePath: String): Uri? {

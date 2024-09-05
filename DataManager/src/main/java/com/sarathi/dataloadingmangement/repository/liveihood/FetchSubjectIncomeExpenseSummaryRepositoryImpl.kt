@@ -123,7 +123,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
     override suspend fun getTotalIncomeForSubject(subjectId: Int): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
-            transactionFlow = EntryFlowTypeEnum.Inflow.name,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
@@ -135,7 +135,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         livelihoodId: Int
     ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
-            transactionFlow = EntryFlowTypeEnum.Inflow.name,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
@@ -145,7 +145,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
     override suspend fun getTotalExpenseForSubject(subjectId: Int): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
-            transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
@@ -157,7 +157,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         livelihoodId: Int
     ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
-            transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
@@ -171,26 +171,26 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     ): List<AssetCountUiModel> {
         val assetCountUiModelList = ArrayList<AssetCountUiModel>()
         assetIds.forEach { assetId ->
-            val inflowAssetCount = assetJournalDao.getAssetCountForAsset(
+            val INFLOWAssetCount = assetJournalDao.getAssetCountForAsset(
                 assetId = assetId,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                transactionFlow = EntryFlowTypeEnum.Inflow.name,
+                transactionFlow = EntryFlowTypeEnum.INFLOW.name,
                 referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
             )
             val outFlowAssetCount = assetJournalDao.getAssetCountForAsset(
                 assetId = assetId,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+                transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
                 referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
             )
 
             val totalCount = AssetCountUiModel.getAssetCountUiModel(
                 subjectId = subjectId,
-                livelihoodId = inflowAssetCount?.livelihoodId.value(),
-                assetId = inflowAssetCount?.assetId.value(),
-                totalAssetCountForFlow = (inflowAssetCount?.totalAssetCountForFlow ?: 0)
+                livelihoodId = INFLOWAssetCount?.livelihoodId.value(),
+                assetId = INFLOWAssetCount?.assetId.value(),
+                totalAssetCountForFlow = (INFLOWAssetCount?.totalAssetCountForFlow ?: 0)
                         - (outFlowAssetCount?.totalAssetCountForFlow?.value() ?: 0),
             )
             assetCountUiModelList.add(totalCount)
@@ -252,7 +252,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         durationEnd: Long
     ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubjectForDuration(
-            transactionFlow = EntryFlowTypeEnum.Inflow.name,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
@@ -267,7 +267,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         durationEnd: Long
     ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubjectForDuration(
-            transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
@@ -284,11 +284,11 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     ): List<AssetCountUiModel> {
         val assetCountUiModelList = ArrayList<AssetCountUiModel>()
         assetIds.forEach { assetId ->
-            val inflowAssetCount = assetJournalDao.getAssetCountForAssetForDuration(
+            val INFLOWAssetCount = assetJournalDao.getAssetCountForAssetForDuration(
                 assetId = assetId,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                transactionFlow = EntryFlowTypeEnum.Inflow.name,
+                transactionFlow = EntryFlowTypeEnum.INFLOW.name,
                 referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
                 durationStart = durationStart,
                 durationEnd = durationEnd
@@ -297,7 +297,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
                 assetId = assetId,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                transactionFlow = EntryFlowTypeEnum.OutFlow.name,
+                transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
                 referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
                 durationStart = durationStart,
                 durationEnd = durationEnd
@@ -305,9 +305,9 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
             val totalCount = AssetCountUiModel.getAssetCountUiModel(
                 subjectId = subjectId,
-                livelihoodId = inflowAssetCount?.livelihoodId.value(),
-                assetId = inflowAssetCount?.assetId.value(),
-                totalAssetCountForFlow = (inflowAssetCount?.totalAssetCountForFlow ?: 0)
+                livelihoodId = INFLOWAssetCount?.livelihoodId.value(),
+                assetId = INFLOWAssetCount?.assetId.value(),
+                totalAssetCountForFlow = (INFLOWAssetCount?.totalAssetCountForFlow ?: 0)
                         - (outFlowAssetCount?.totalAssetCountForFlow?.value() ?: 0),
             )
             assetCountUiModelList.add(totalCount)

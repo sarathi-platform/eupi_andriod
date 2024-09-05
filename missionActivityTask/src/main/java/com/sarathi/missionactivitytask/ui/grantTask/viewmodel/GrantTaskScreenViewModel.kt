@@ -17,6 +17,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
+import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -54,6 +55,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     var isGenerateFormButtonEnable = mutableStateOf(false)
     var isGenerateFormButtonVisible = mutableStateOf(false)
+    var formEGenerateButtonText = mutableStateOf(BLANK_STRING)
 
     override fun <T> onEvent(event: T) {
         super.onEvent(event)
@@ -79,6 +81,11 @@ class GrantTaskScreenViewModel @Inject constructor(
         isGenerateFormButtonVisible.value =
             formUiConfigUseCase.getFormUiConfig(missionId = missionId, activityId = activityId)
                 .isNotEmpty()
+        formEGenerateButtonText.value = formUiConfigUseCase.getFormConfigValue(
+            missionId = missionId,
+            activityId = activityId,
+            key = GrantTaskFormSlots.TASK_SECONDARY_BUTTON_FORM.name
+        )
         if (isGenerateFormButtonVisible.value) {
             isGenerateFormButtonEnable.value =
                 formUseCase.getNonGeneratedFormSummaryData(activityId)

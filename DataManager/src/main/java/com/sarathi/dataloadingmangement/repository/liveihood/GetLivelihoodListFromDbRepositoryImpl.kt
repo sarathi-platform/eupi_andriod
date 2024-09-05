@@ -26,5 +26,12 @@ class GetLivelihoodListFromDbRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getLivelihoodListForFilterFromDb(): List<LivelihoodModel> {
+        return livelihoodDao.getLivelihoodListWithoutNotDecided(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            languageCode = coreSharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
 
 }
