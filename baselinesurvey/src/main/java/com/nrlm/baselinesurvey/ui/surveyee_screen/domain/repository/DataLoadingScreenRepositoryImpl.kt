@@ -71,6 +71,7 @@ import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
@@ -79,6 +80,9 @@ import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -97,7 +101,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val baselineDatabase: NudgeBaselineDatabase,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     val apiStatusDao: ApiStatusDao,
-    val corePrefRepo: CorePrefRepo
+    val corePrefRepo: CorePrefRepo,
+    val downloaderManager: DownloaderManager
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
 
@@ -809,6 +814,13 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         didiId = questionAnswerResponseModel.subjectId,
                         path = filePath ?: BLANK_STRING
                     )
+
+                    CoroutineScope(CoreDispatchers.ioDispatcher).launch {
+                        val downloadImageUrl = questionAnswerResponseModel.imageUrl ?: BLANK_STRING
+                        if (!downloadImageUrl.isNullOrEmpty()) {
+                            downloaderManager.downloadItem(downloadImageUrl)
+                        }
+                    }
                 }
             }
         } catch (exception: Exception) {

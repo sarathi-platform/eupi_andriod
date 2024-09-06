@@ -19,12 +19,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
@@ -1078,12 +1080,13 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
 }
 
 const val YYYY_MM_DD = "yyyy-MM-dd"
+const val dd_MM_yyyy = "dd/MM/yyyy"
 
 fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
     if (this == null)
         return BLANK_STRING
 
-    val formatter = SimpleDateFormat(pattern)
+    val formatter = SimpleDateFormat(pattern, Locale.ENGLISH)
     return formatter.format(Date(this))
 }
 
@@ -1145,6 +1148,65 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     }
     Log.d("", "Chosen path = $filePath")
 }
+
+fun getImageUri(context: Context, fileName: String): Uri? {
+    var file =
+        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+    if (!file.exists()) {
+        file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+    }
+    return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+        uriFromFile(
+            context, file,
+            it
+        )
+    }
+}
+
+fun onlyNumberField(value: String): Boolean {
+    if (value.isDigitsOnly() && value != "_" && value != "N") {
+        return true
+    }
+    return false
+}
+
+fun getQuestionNumber(questionIndex: Int): String {
+    return "${questionIndex + 1}. "
+}
+
+fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
+
+    if (id == -1)
+        return null
+
+    if (this.isEmpty())
+        return null
+
+    val index = this.map(transform).indexOf(id)
+
+    if (index == -1)
+        return null
+
+    return this[index]
+
+}
+
+fun String.removeExtension(extensionCode: String = "."): String {
+    return this.substringBeforeLast(extensionCode)
+}
+
+fun openSettings() {
+    val appSettingsIntent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.parse("package:${CoreAppDetails.getContext()?.packageName}")
+    ).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+    }
+    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
+}
+
 
 fun getFileMimeType(file: File): String? {
     var type: String? = null

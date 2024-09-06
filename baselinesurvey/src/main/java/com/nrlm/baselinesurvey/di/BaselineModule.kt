@@ -144,6 +144,7 @@ import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -471,7 +472,8 @@ object BaselineModule {
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         apiStatusDao: ApiStatusDao,
-        corePrefRepo: CorePrefRepo
+        corePrefRepo: CorePrefRepo,
+        downloaderManager: DownloaderManager
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
@@ -490,7 +492,8 @@ object BaselineModule {
             baselineDatabase,
             didiSectionProgressEntityDao,
             apiStatusDao,
-            corePrefRepo
+            corePrefRepo,
+            downloaderManager = downloaderManager
         )
     }
 
