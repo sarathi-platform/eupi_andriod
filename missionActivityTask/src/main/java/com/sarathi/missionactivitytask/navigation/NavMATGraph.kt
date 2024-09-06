@@ -198,6 +198,9 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
                 },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                }
             )
         ) {
           LivelihoodTaskScreen(
@@ -212,6 +215,9 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+              programId = it.arguments?.getInt(
+                  ARG_PROGRAM_ID
+              ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -226,7 +232,11 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                }
+            )
         ) {
             SurveyTaskScreen(
                 navController = navController,
@@ -240,6 +250,9 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+                programId = it.arguments?.getInt(
+                    ARG_PROGRAM_ID
+                ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -1000,16 +1013,18 @@ fun navigateToLivelihoodTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
 
 fun navigateToSurveyTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }

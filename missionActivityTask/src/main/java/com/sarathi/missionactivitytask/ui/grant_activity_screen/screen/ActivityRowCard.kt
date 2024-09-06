@@ -91,6 +91,7 @@ fun ActivityRowCard(
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
                                 activityName = activity.description,
+                                programId = programId
                             )
                         }
 
@@ -101,7 +102,8 @@ fun ActivityRowCard(
                                 navController,
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
-                                activityName = activity.description
+                                activityName = activity.description,
+                                programId = programId
                             )
                         }
                     }

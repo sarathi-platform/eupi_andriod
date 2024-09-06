@@ -4,10 +4,13 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -17,8 +20,12 @@ class DataTabUseCase @Inject constructor(
     val fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
     val fetchDidiDetailsWithLivelihoodMappingUseCase: FetchDidiDetailsWithLivelihoodMappingUseCase,
     val fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
-    val fetchSubjectLivelihoodEventHistoryUseCase: FetchSubjectLivelihoodEventHistoryUseCase
-) {
+    val fetchSubjectLivelihoodEventHistoryUseCase: FetchSubjectLivelihoodEventHistoryUseCase,
+    val assetJournalUseCase: FetchAssetJournalUseCase,
+    val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
+    val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
+
+    ) {
 
     suspend operator fun invoke(
         isRefresh: Boolean,
@@ -28,8 +35,12 @@ class DataTabUseCase @Inject constructor(
         try {
 
             if (isRefresh || !coreSharedPrefs.isDataTabDataLoaded()) {
-
-
+                fetchDidiDetailsFromDbUseCase.invoke()
+                if (!isRefresh) {
+                    fetchLivelihoodSaveEventUseCase.invoke()
+                    fetchLivelihoodOptionNetworkUseCase.invoke()
+                    assetJournalUseCase.invoke()
+                }
                 withContext(CoreDispatchers.mainDispatcher) {
                     onComplete(true, BLANK_STRING)
                 }
