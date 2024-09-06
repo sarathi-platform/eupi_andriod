@@ -26,7 +26,9 @@ interface ISurveyAnswerEventRepository {
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
     ): SaveAnswerEventDto
 
     suspend fun writeDeleteSaveAnswerEvent(

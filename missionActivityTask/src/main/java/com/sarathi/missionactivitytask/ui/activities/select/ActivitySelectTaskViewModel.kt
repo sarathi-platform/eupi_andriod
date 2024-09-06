@@ -142,7 +142,9 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 grantId = grantID,
                 grantType = ActivityTypeEnum.SELECT.name,
                 taskId = taskId,
-                uriList = ArrayList()
+                uriList = ArrayList(),
+                activityReferenceId = activityConfigUiModelWithoutSurvey?.referenceId,
+                activityReferenceType = activityConfigUiModelWithoutSurvey?.referenceType
             )
         }
     }

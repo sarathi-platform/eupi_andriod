@@ -41,5 +41,8 @@ data class SaveAnswerEventDto(
     @SerializedName("localTaskId")
     @Expose
     val localTaskId: String,
-
-    )
+    @SerializedName("activityReferenceId")
+    val activityReferenceId: Int?,
+    @SerializedName("activityReferenceType")
+    val activityReferenceType: String?
+)

@@ -17,7 +17,8 @@ class RegenerateGrantEventUsecase @Inject constructor(
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val documentEventWriterUseCase: DocumentEventWriterUseCase,
     private val attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 ) {
 
 
@@ -95,6 +96,10 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 activityId = taskEntity.activityId,
                 missionId = taskEntity.missionId
             )
+            val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
+                taskEntity.activityId,
+                taskEntity.missionId
+            )
             surveyAnswerEventWriterUseCase.invoke(
                 questionUiModels = questionUiModel,
                 taskId = surveyAnswer.taskId,
@@ -103,7 +108,9 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 grantId = surveyAnswer.grantId,
                 grantType = surveyAnswer.grantType,
                 taskLocalId = taskEntity.localTaskId,
-                subjectType = subjectType
+                subjectType = subjectType,
+                activityReferenceId = activityConfig?.referenceId,
+                activityReferenceType = activityConfig?.referenceType
             )
 
         }

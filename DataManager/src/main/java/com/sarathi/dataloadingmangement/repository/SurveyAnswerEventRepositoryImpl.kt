@@ -57,7 +57,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
     ): SaveAnswerEventDto {
         return SaveAnswerEventDto(
             surveyId = questionUiModel.surveyId,
@@ -71,9 +73,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             localTaskId = taskLocalId ?: BLANK_STRING,
             grantId = grantId,
             grantType = grantType,
-            taskId = taskId
-
-
+            taskId = taskId,
+            activityReferenceId = activityReferenceId,
+            activityReferenceType = activityReferenceType
         )
 
     }
@@ -130,7 +132,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
         val options = getOption(questionUiModel, "")
 
-        if (options.isNotEmpty()) {
+//        if (options.isNotEmpty()) {
 
             saveAnswerEventQuestionItemDto1 = SaveAnswerEventQuestionItemDto(
                 questionId = questionUiModel.questionId,
@@ -142,7 +144,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 formId = questionUiModel.formId
             )
 
-        }
+//        }
         return saveAnswerEventQuestionItemDto1
     }
 

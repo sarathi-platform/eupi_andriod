@@ -101,7 +101,7 @@ fun SectionScreen(
         contentType: String,
         contentTitle: String
     ) -> Unit,
-    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String) -> Unit
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String, surveyFlow: SurveyFlow) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -142,7 +142,9 @@ fun SectionScreen(
         sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
 
             if (sectionScreenViewModel.sectionList.value.size == 1) {
-                when (SurveyFlow.getSurveyFlowFromSectionScreenForActivityType(activityType)) {
+                val surveyFlow =
+                    SurveyFlow.getSurveyFlowFromSectionScreenForActivityType(activityType)
+                when (surveyFlow) {
                     SurveyFlow.GrantSurveySummaryScreen -> {
                         val sectionId: Int? =
                             sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
@@ -173,9 +175,31 @@ fun SectionScreen(
                                 activityConfigId,
                                 missionId,
                                 activityId,
-                                activityType
+                                activityType,
+                                surveyFlow
                             )
                         }
+                    }
+
+                    SurveyFlow.LivelihoodPopSurveyScreen -> {
+                        val sectionId =
+                            sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+
+                        sectionId?.let {
+                            onNavigateToQuestionScreen(
+                                surveyId,
+                                sectionId,
+                                taskId,
+                                subjectName,
+                                subjectType,
+                                activityConfigId,
+                                missionId,
+                                activityId,
+                                activityType,
+                                surveyFlow
+                            )
+                        }
+
                     }
 
                     else -> { /*
@@ -359,7 +383,8 @@ fun SectionScreen(
                                                 activityConfigId,
                                                 missionId,
                                                 activityId,
-                                                activityType
+                                                activityType,
+                                                SurveyFlow.SurveyScreen
                                             )
                                         }
                                     )

@@ -12,6 +12,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
@@ -57,6 +58,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
@@ -77,6 +79,7 @@ import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
 import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
+import com.sarathi.surveymanager.ui.screen.LivelihoodPopSurveyScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.sarathi.surveymanager.ui.screen.livelihood.LivelihoodDropDownScreen
 import com.sarathi.surveymanager.ui.screen.sectionScreen.SectionScreen
@@ -781,22 +784,41 @@ fun NavGraphBuilder.MatNavigation(
                 onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
 
                 },
-                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId, activityType ->
-                    navigateToSurveyScreen(
-                        navController = navController,
-                        missionId = missionId,
-                        activityId = activityId,
-                        surveyId = surveyId,
-                        sectionId = sectionId,
-                        taskId = taskId,
-                        subjectType = subjectType,
-                        toolbarName = sectionName,
-                        activityConfigId = activityConfigId,
-                        grantId = 0,
-                        activityType = activityType,
-                        sanctionedAmount = 0,
-                        totalSubmittedAmount = 0
-                    )
+                onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId, activityType, surveyFlow ->
+
+                    if (surveyFlow == SurveyFlow.LivelihoodPopSurveyScreen) {
+                        navigateToLivelihoodPopSurveyScreen(
+                            navController = navController,
+                            missionId = missionId,
+                            activityId = activityId,
+                            surveyId = surveyId,
+                            sectionId = sectionId,
+                            taskId = taskId,
+                            subjectType = subjectType,
+                            toolbarName = sectionName,
+                            activityConfigId = activityConfigId,
+                            grantId = 0,
+                            activityType = activityType,
+                            sanctionedAmount = 0,
+                            totalSubmittedAmount = 0
+                        )
+                    } else {
+                        navigateToSurveyScreen(
+                            navController = navController,
+                            missionId = missionId,
+                            activityId = activityId,
+                            surveyId = surveyId,
+                            sectionId = sectionId,
+                            taskId = taskId,
+                            subjectType = subjectType,
+                            toolbarName = sectionName,
+                            activityConfigId = activityConfigId,
+                            grantId = 0,
+                            activityType = activityType,
+                            sanctionedAmount = 0,
+                            totalSubmittedAmount = 0
+                        )
+                    }
                 }
             )
         }
@@ -857,6 +879,87 @@ fun NavGraphBuilder.MatNavigation(
             onSettingClicked = {
                 onSettingIconClick()
             })
+    }
+
+    composable(route = MATHomeScreens.LivelihoodPopSurveyScreen.route,
+        arguments = listOf(
+            navArgument(name = ARG_TASK_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_SECTION_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_SURVEY_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_SUBJECT_TYPE) {
+                type = NavType.StringType
+            },
+            navArgument(name = ARG_TOOLBAR_TITLE) {
+                type = NavType.StringType
+            },
+            navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_GRANT_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_GRANT_TYPE) {
+                type = NavType.StringType
+            },
+            navArgument(name = ARG_SANCTIONED_AMOUNT) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_TOTAL_SUBMITTED_AMOUNT) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_ACTIVITY_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_MISSION_ID) {
+                type = NavType.IntType
+            }
+        )
+    ) {
+        LivelihoodPopSurveyScreen(
+            navController = navController,
+            viewModel = hiltViewModel(),
+            taskId = it.arguments?.getInt(
+                ARG_TASK_ID
+            ) ?: 0,
+            surveyId = it.arguments?.getInt(
+                ARG_SURVEY_ID
+            ) ?: 0,
+            sectionId = it.arguments?.getInt(
+                ARG_SECTION_ID
+            ) ?: 0,
+            subjectType = it.arguments?.getString(
+                ARG_SUBJECT_TYPE
+            ) ?: BLANK_STRING,
+            toolbarTitle = it.arguments?.getString(
+                ARG_TOOLBAR_TITLE
+            ) ?: BLANK_STRING,
+
+            activityConfigId = it.arguments?.getInt(
+                ARG_ACTIVITY_CONFIG_ID
+            ) ?: 0,
+            grantId = it.arguments?.getInt(
+                ARG_GRANT_ID
+            ) ?: 0,
+            activityType = it.arguments?.getString(
+                ARG_GRANT_TYPE
+            ) ?: BLANK_STRING,
+            sanctionedAmount = it.arguments?.getInt(
+                ARG_SANCTIONED_AMOUNT
+            ) ?: 0,
+            referenceId = it.arguments?.getString(
+                ARG_REFERENCE_ID
+            ) ?: BLANK_STRING,
+            totalSubmittedAmount = it.arguments?.getInt(
+                ARG_TOTAL_SUBMITTED_AMOUNT
+            ) ?: 0,
+            onSettingClick = onSettingIconClick
+        )
     }
 }
 
@@ -943,6 +1046,24 @@ fun navigateToSectionScreen(
     navController.navigate("$MAT_SECTION_SCREEN_ROUTE_NAME/$surveyId/$taskId/$activityType/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount/$activityId/$missionId")
 }
 
+fun navigateToLivelihoodPopSurveyScreen(
+    navController: NavController,
+    missionId: Int,
+    activityId: Int,
+    surveyId: Int,
+    sectionId: Int,
+    taskId: Int,
+    subjectType: String,
+    toolbarName: String,
+    activityConfigId: Int,
+    grantId: Int,
+    activityType: String,
+    sanctionedAmount: Int?,
+    totalSubmittedAmount: Int?,
+) {
+    navController.navigate("$LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
+
+}
 
 fun navigateToActivityCompletionScreen(
     navController: NavController,

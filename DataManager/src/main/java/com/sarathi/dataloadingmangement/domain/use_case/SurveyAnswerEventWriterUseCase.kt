@@ -28,7 +28,9 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
     ) {
         val uriList = ArrayList<Uri>()
         val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
@@ -66,7 +68,9 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 grantId,
                 grantType,
                 taskId,
-                uriList
+                uriList,
+                activityReferenceId,
+                activityReferenceType
             )
         }
     }
@@ -80,7 +84,9 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         grantId: Int,
         grantType: String,
         taskId: Int,
-        uriList: ArrayList<Uri>
+        uriList: ArrayList<Uri>,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
     ) {
         val saveAnswerEventDto = repository.writeSaveAnswerEvent(
             questionUiModel,
@@ -90,7 +96,9 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             taskLocalId,
             grantId,
             grantType,
-            taskId
+            taskId,
+            activityReferenceId,
+            activityReferenceType
         )
         if (questionUiModel.type == QuestionType.MultiImage.name) {
             questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {
