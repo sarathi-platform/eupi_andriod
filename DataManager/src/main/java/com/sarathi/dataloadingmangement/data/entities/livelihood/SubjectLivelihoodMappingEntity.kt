@@ -12,7 +12,27 @@ data class SubjectLivelihoodMappingEntity(
     val id: Int = 0,
     val userId: String,
     val subjectId: Int,
-    val primaryLivelihoodId: Int,
-    val secondaryLivelihoodId: Int,
+    val livelihoodId: Int,
+    val type: Int,
+    val status:Int,
 
-    )
+) {
+    companion object {
+        fun getSubjectLivelihoodMappingEntity(
+            userId: String,
+            subjectId: Int,
+
+            livelihoodId: Int,
+             type: Int,
+             status:Int
+        ): SubjectLivelihoodMappingEntity {
+            return SubjectLivelihoodMappingEntity(
+                userId = userId,
+                subjectId = subjectId,
+                livelihoodId = livelihoodId,
+                type = type,
+                status = status,
+            )
+        }
+    }
+}

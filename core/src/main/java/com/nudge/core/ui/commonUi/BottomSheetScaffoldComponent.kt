@@ -3,18 +3,26 @@ package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.contentColorFor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,8 +34,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.NO_SG_FILTER_VALUE
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorder
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.searchFieldBg
 import kotlinx.coroutines.launch
 
@@ -35,12 +50,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun <T> BottomSheetScaffoldComponent(
     bottomSheetScaffoldProperties: CustomBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties(),
+    defaultValue: String = BLANK_STRING,
     bottomSheetContentItemList: List<T>,
+    selectedIndex: Int = 0,
     onBottomSheetItemSelected: (selectedItemIndex: Int) -> Unit,
     content: @Composable () -> Unit
 ) {
 
     val coroutineScope = rememberCoroutineScope()
+
+    val selectedItemIndex = remember(bottomSheetContentItemList) {
+        mutableStateOf(selectedIndex)
+    }
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetScaffoldProperties.sheetState,
@@ -52,25 +73,88 @@ fun <T> BottomSheetScaffoldComponent(
                     .clip(bottomSheetScaffoldProperties.sheetShape)
                     .background(MaterialTheme.colors.surface)
             ) {
-                SelectionSheetItemView(
-                    items = bottomSheetContentItemList,
-                    SelectionSheetItem = { index, item ->
-                        CustomTextViewComponent(
-                            textProperties = TextProperties
-                                .getBasicTextProperties(text = item)
-                                .copy(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            coroutineScope.launch {
-                                                onBottomSheetItemSelected(index)
-                                                bottomSheetScaffoldProperties.sheetState.hide()
+                if (bottomSheetContentItemList.isNotEmpty()) {
+                    SelectionSheetItemView(
+                        items = bottomSheetContentItemList,
+                        SelectionSheetItem = { index, item ->
+                            when (item) {
+                                is LivelihoodModel -> {
+                                    CustomTextViewComponent(
+                                        textProperties = TextProperties
+                                            .getBasicTextProperties(text = item.name)
+                                            .copy(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        coroutineScope.launch {
+                                                            onBottomSheetItemSelected(index)
+                                                            bottomSheetScaffoldProperties.sheetState.hide()
+                                                        }
+                                                    }
+                                            )
+                                    )
+                                }
+
+                                is String? -> {
+                                    (item as String?)?.let {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    coroutineScope.launch {
+                                                        selectedItemIndex.value = index
+                                                        onBottomSheetItemSelected(index)
+                                                        bottomSheetScaffoldProperties.sheetState.hide()
+                                                    }
+                                                },
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            val itemValue =
+                                                if (it.equals(NO_SG_FILTER_VALUE, true)) {
+                                                    defaultValue
+                                                } else {
+                                                    it
+                                                }
+                                            CustomTextViewComponent(
+                                                textProperties = TextProperties
+                                                    .getBasicTextProperties(text = itemValue)
+                                                    .copy(
+                                                        style = mediumTextStyle,
+                                                        modifier = Modifier
+                                                    )
+                                            )
+                                            if (index == selectedItemIndex.value) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "Selected item",
+                                                    tint = greenOnline
+                                                )
                                             }
                                         }
-                                )
-                        )
-                    }
-                )
+                                    }
+                                }
+
+                                else -> {
+                                    CustomTextViewComponent(
+                                        textProperties = TextProperties
+                                            .getBasicTextProperties(text = item)
+                                            .copy(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        coroutineScope.launch {
+                                                            onBottomSheetItemSelected(index)
+                                                            bottomSheetScaffoldProperties.sheetState.hide()
+                                                        }
+                                                    }
+                                            )
+                                    )
+                                }
+                            }
+
+                        }
+                    )
+                }
             }
         }
     ) {
@@ -83,13 +167,18 @@ fun <T> SelectionSheetItemView(
     items: List<T>,
     SelectionSheetItem: @Composable (index: Int, item: T) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(dimen_20_dp)
     ) {
-        items.forEachIndexed { index, item ->
-            SelectionSheetItem(index, item)
+        itemsIndexed(items) { index, item ->
+            Column {
+                CustomVerticalSpacer()
+                SelectionSheetItem(index, item)
+                CustomVerticalSpacer()
+                Divider(thickness = dimen_1_dp, color = greyBorder)
+            }
         }
     }
 }

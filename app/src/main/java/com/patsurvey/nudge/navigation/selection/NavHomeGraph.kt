@@ -16,6 +16,7 @@ import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.MissionUiModel
+import com.nudge.incomeexpensemodule.navigation.IncomeExpenseNavigation
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.presentation.DataTabScreen
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
@@ -189,6 +190,11 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         SmallGroupNavigation(
             navController = navController,
             onSettingIconClick = { navController.navigateToSettingScreen() })
+        IncomeExpenseNavigation(
+            navController = navController,
+            onBackPressed = { finishActivity() },
+            onSettingIconClick = { navController.navigateToSettingScreen() }
+        )
     }
 }
 

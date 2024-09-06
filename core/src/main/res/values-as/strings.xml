@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SARATHI</string>
+
+    <string name="not_able_to_load">ডাটা লোড কৰিব পৰা নাই অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক..</string>
+    <string name="retry">"পুনৰ চেষ্টা কৰক "</string>
+
+    <string name="select">নিৰ্বাচন কৰক</string>
+    <string name="edit_disable_message">"কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত মুছিব অনুমতি নাই "</string>
+
+    <string name="add_image">+ ছবি যোগ কৰক</string>
+
+    <string name="amount_limit">পৰিমাণৰ সীমা হৈছে  %1$d</string>
+
+    <string name="ok">"হ'ব "</string>
+
+    <string name="do_you_want_to_exit_the_app">"আপুনি এপ্পটোৰ পৰা প্ৰস্থান কৰিব বিচাৰে নেকি? "</string>
+    <string name="exit">"প্ৰস্থান "</string>
+    <string name="cancel">"বাতিল কৰা "</string>
+    <string name="search">"সন্ধান কৰক "</string>
+
+    <string name="didi_sub_tab_title">Didi</string>
+    <string name="small_group_sub_tab_title">Small Group</string>
+    <string name="search_label">Search</string>
+
+    <string name="are_you_sure">Are you sure?</string>
+
+
+    <string name="permission_dialog_prompt_message">Camera Permission required, please grant permission.</string>
+    <string name="select_date_label">তাৰিখ বাছক</string>
+    <string name="start_date_label">আৰম্ভৰ তাৰিখ</string>
+    <string name="end_date_label">অন্তিম তাৰিখ</string>
+
+</resources>

@@ -71,7 +71,9 @@ fun DisbursementSummaryScreen(
         title = subjectName,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            navController.navigateUp()
+        },
         isSearch = false,
         onSearchValueChange = {
 
@@ -111,7 +113,7 @@ fun DisbursementSummaryScreen(
                     .fillMaxSize()
             ) {
                 item {
-                    if (!viewModel.isAddDisbursementButtonEnable.value && sanctionedAmount != 0) {
+                    if (!viewModel.isAddDisbursementButtonEnable.value && sanctionedAmount != 0 && viewModel.taskList.value.isNotEmpty()) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -174,6 +176,7 @@ fun DisbursementSummaryScreen(
                                                 subTitle5 = surveyData.subTittle5,
                                                 isFormgenerated = surveyData.isFormGenerated,
                                                 isActivityCompleted = viewModel.isActivityCompleted.value,
+                                                formGeneratedMessage = viewModel.formGeneratedMessage.value,
                                                 onEditSurvey = {
                                                     CoreLogger.d(
                                                         context,

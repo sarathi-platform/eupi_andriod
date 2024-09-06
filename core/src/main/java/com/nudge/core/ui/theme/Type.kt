@@ -50,6 +50,11 @@ val newMediumTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 14.sp
 )
+val newBoldTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Bold,
+    fontSize = 14.sp
+)
 
 val defaultTextStyle = TextStyle(
     fontFamily = NotoSans,

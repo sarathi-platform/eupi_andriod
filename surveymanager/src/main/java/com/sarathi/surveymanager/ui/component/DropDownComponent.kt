@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
@@ -42,6 +43,7 @@ import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.surveymanager.R
 
 @Composable
@@ -51,12 +53,13 @@ fun <T> DropDownComponent(
     title: String = BLANK_STRING,
     isMandatory: Boolean = false,
     modifier: Modifier,
+    questionNumber: String = BLANK_STRING,
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
     selectedItem: String = BLANK_STRING,
     expanded: Boolean = false,
     mTextFieldSize: Size,
-    diableItem: Int = -1,
+    diableItem: Int = DEFAULT_LIVELIHOOD_ID,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
@@ -73,7 +76,11 @@ fun <T> DropDownComponent(
         horizontalAlignment = Alignment.Start
     ) {
         if (title.isNotBlank()) {
-            QuestionComponent(title = title, isRequiredField = isMandatory)
+            QuestionComponent(
+                title = title,
+                questionNumber = questionNumber,
+                isRequiredField = isMandatory
+            )
         }
         CustomOutlineTextField(
             value = selectedItem,
@@ -132,9 +139,11 @@ fun <T> DropDownComponent(
                     is ValuesDto -> {
                         title = item.value
                     }
-                    is LivelihoodUIEntity -> {
+
+                    is LivelihoodUiEntity -> {
                         title = item.livelihoodEntity.name
                     }
+
                     else -> {
                         title = item.toString()
                     }
@@ -157,8 +166,8 @@ fun <T> DropDownComponent(
 
 private fun <T> isDisable(item: T, disableItemId: Int): Boolean {
     return when (item) {
-        is LivelihoodUIEntity -> {
-            item.livelihoodEntity.id != disableItemId
+        is LivelihoodUiEntity -> {
+            item.livelihoodEntity.livelihoodId != disableItemId
         }
 
         else -> {

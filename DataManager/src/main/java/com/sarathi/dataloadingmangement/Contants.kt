@@ -43,6 +43,7 @@ const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
 const val SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME = "subject_livelihood_mapping_table"
 const val SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME = "subject_livelihood_event_mapping_table"
 
+const val SECTION_STATUS_TABLE_NAME = "section_status_table"
 const val SUCCESS_CODE = "200"
 const val STATE = "STATE"
 const val SUCCESS = "SUCCESS"
@@ -71,3 +72,5 @@ const val MANUAL_TASK_COMPLETION = "Manual"
 const val SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED = "sanctioned = disbursed + form e"
 const val ZERO = '0'
 const val FORM_E = "form"
+
+const val ALL = "All"

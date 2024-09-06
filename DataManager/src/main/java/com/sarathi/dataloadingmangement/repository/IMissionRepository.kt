@@ -30,4 +30,6 @@ interface IMissionRepository {
 
     suspend fun getAllMission(): List<MissionUiModel>
 
+    suspend fun isActivityAvailable(activityType: String): Int
+
 }

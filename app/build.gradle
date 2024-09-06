@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.71"
+def version = "2.0.75"
 def prodVersion = version
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 34
-        versionCode 74
+        versionCode 78
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -26,6 +26,7 @@ android {
             useSupportLibrary true
         }
     }
+
 
     bundle {
         language {
@@ -90,7 +91,7 @@ android {
                     appIcon: "@mipmap/ic_launcher_uat",
                     appIconRound: "@mipmap/ic_launcher_uat_round"
             ]
-            buildConfigField 'String', 'BASE_URL', '"https://staging.eupi-sarthi.in"'
+            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         production{
             versionName prodVersion

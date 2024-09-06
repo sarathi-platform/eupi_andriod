@@ -24,6 +24,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -33,11 +34,14 @@ import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodEventDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -57,13 +61,32 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetwo
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livlihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.SaveLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
@@ -99,6 +122,12 @@ import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
 import com.sarathi.dataloadingmangement.repository.MoneyJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionListRepository
+import com.sarathi.dataloadingmangement.repository.SectionListRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
+import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -106,13 +135,31 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.AssetJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.AssetRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.CoreLivelihoodRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsWithLivelihoodMappingRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectIncomeExpenseSummaryRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchSubjectLivelihoodEventHistoryRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodListFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.GetLivelihoodMappingForSubjectFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.IAssetRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.ICoreLivelihoodRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.ILivelihoodEventRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.IProductRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodEventRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodLanguageRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.liveihood.LivelihoodRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.ProductRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepository
-import com.sarathi.dataloadingmangement.repository.livelihood.FetchDidiDetailsFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.SaveLivelihoodMappingForSubjectRepository
+import com.sarathi.dataloadingmangement.repository.liveihood.SaveLivelihoodMappingForSubjectRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.liveihood.SubjectLivelihoodEventMappingRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.AttendanceEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
@@ -128,6 +175,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
+
 @InstallIn(SingletonComponent::class)
 @Module
 class DataLoadingModule {
@@ -142,10 +190,12 @@ class DataLoadingModule {
     @Singleton
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
-            .addMigrations(NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2)
+            .addMigrations(
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3
+            )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
-            .fallbackToDestructiveMigration()
             .build()
 
     @Provides
@@ -163,6 +213,26 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideActivityConfigDao(db: NudgeGrantDatabase) = db.activityConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodDao(db: NudgeGrantDatabase) = db.livelihoodDao()
+
+    @Provides
+    @Singleton
+    fun provideAssetDao(db: NudgeGrantDatabase) = db.assetDao()
+
+    @Provides
+    @Singleton
+    fun provideProductDao(db: NudgeGrantDatabase) = db.productDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventDao(db: NudgeGrantDatabase) = db.livelihoodEventDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodLanguageDao(db: NudgeGrantDatabase) = db.livelihoodLanguageDao()
 
     @Provides
     @Singleton
@@ -275,23 +345,12 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
-    fun provideLivelihoodDao(db: NudgeGrantDatabase) = db.livelihoodDao()
-
+    fun subjectLivelihoodEventMappingDao(db: NudgeGrantDatabase) =
+        db.subjectLivelihoodEventMappingDao()
     @Provides
     @Singleton
-    fun provideAssetDao(db: NudgeGrantDatabase) = db.assetDao()
+    fun provideSectionStatusEntityDao(db: NudgeGrantDatabase) = db.sectionStatusEntityDao()
 
-    @Provides
-    @Singleton
-    fun provideProductDao(db: NudgeGrantDatabase) = db.productDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodEventDao(db: NudgeGrantDatabase) = db.livelihoodEventDao()
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodLanguageDao(db: NudgeGrantDatabase) = db.livelihoodLanguageDao()
 
     @Provides
     @Singleton
@@ -397,7 +456,8 @@ class DataLoadingModule {
         contentConfigDao: ContentConfigDao,
         uiConfigDao: UiConfigDao,
         surveyAnswersDao: SurveyAnswersDao,
-        activityConfigDao: ActivityConfigDao
+        activityConfigDao: ActivityConfigDao,
+        livelihoodDao: LivelihoodDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
@@ -406,7 +466,8 @@ class DataLoadingModule {
             contentConfigDao = contentConfigDao,
             uiConfigDao = uiConfigDao,
             surveyAnswersDao = surveyAnswersDao,
-            activityConfigDao = activityConfigDao
+            activityConfigDao = activityConfigDao,
+            livelihoodDao = livelihoodDao
         )
     }
 
@@ -543,7 +604,10 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         formUseCase: FormUseCase,
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
-        livelihoodUseCase: LivelihoodUseCase
+        livelihoodUseCase: LivelihoodUseCase,
+        fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
+        assetJournalUseCase: FetchAssetJournalUseCase,
+        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -565,10 +629,13 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
             moneyJournalUseCase = fetchMoneyJournalUseCase,
+            livelihoodUseCase = livelihoodUseCase,
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
                 fetchDidiDetailsFromNetworkRepository
             ),
-            livelihoodUseCase = livelihoodUseCase
+            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
+            assetJournalUseCase = assetJournalUseCase,
+            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
         )
     }
 
@@ -933,87 +1000,6 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchMoneyJournalUseCase(moneyJournalNetworkRepository: MoneyJournalNetworkRepository) =
         FetchMoneyJournalUseCase(moneyJournalNetworkRepository)
-    @Provides
-    @Singleton
-    fun provideLivelihoodRepository(
-        apiInterface: DataLoadingApiService,
-        livelihoodDao: LivelihoodDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): LivelihoodRepositoryImpl {
-        return LivelihoodRepositoryImpl(
-            apiInterface = apiInterface,
-            livelihoodDao = livelihoodDao,
-            coreSharedPrefs = coreSharedPrefs
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodEventRepository(
-        livelihoodEventDao: LivelihoodEventDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): LivelihoodEventRepositoryImpl {
-        return LivelihoodEventRepositoryImpl(
-            livelihoodEventDao = livelihoodEventDao,
-            coreSharedPrefs = coreSharedPrefs
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideAssetRepository(
-        assetDao: AssetDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): AssetRepositoryImpl {
-        return AssetRepositoryImpl(
-            assetDao = assetDao,
-            coreSharedPrefs = coreSharedPrefs
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideProductRepository(
-        productDao: ProductDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): ProductRepositoryImpl {
-        return ProductRepositoryImpl(
-            productDao = productDao,
-            coreSharedPrefs = coreSharedPrefs
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodLanguageRepository(
-        apiInterface: DataLoadingApiService,
-        livelihoodLanguageDao: LivelihoodLanguageDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): LivelihoodLanguageRepositoryImpl {
-        return LivelihoodLanguageRepositoryImpl(
-            apiInterface = apiInterface,
-            coreSharedPrefs = coreSharedPrefs,
-            livelihoodLanguageDao = livelihoodLanguageDao
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideLivelihoodUseCase(
-        livelihoodRepositoryImpl: LivelihoodRepositoryImpl,
-        livelihoodLanguageRepositoryImpl: LivelihoodLanguageRepositoryImpl,
-        livelihoodEventRepositoryImpl: LivelihoodEventRepositoryImpl,
-        assetRepositoryImpl: AssetRepositoryImpl,
-        productRepositoryImpl: ProductRepositoryImpl,
-    ): LivelihoodUseCase {
-        return LivelihoodUseCase(
-            livelihoodRepositoryImpl = livelihoodRepositoryImpl,
-            livelihoodLanguageRepositoryImpl = livelihoodLanguageRepositoryImpl,
-            livelihoodEventRepositoryImpl = livelihoodEventRepositoryImpl,
-            assetRepositoryImpl = assetRepositoryImpl,
-            productRepositoryImpl = productRepositoryImpl
-        )
-    }
 
     @Provides
     @Singleton
@@ -1022,6 +1008,15 @@ class DataLoadingModule {
     ): FetchDidiDetailsFromDbUseCase {
         return FetchDidiDetailsFromDbUseCase(fetchDidiDetailsFromDbRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectLivelihoodEventMappingUseCase(
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl
+    ): FetchSubjectLivelihoodEventMappingUseCase {
+        return FetchSubjectLivelihoodEventMappingUseCase(subjectLivelihoodEventMappingRepositoryImpl)
+    }
+
 
     @Provides
     @Singleton
@@ -1036,4 +1031,369 @@ class DataLoadingModule {
         )
     }
 
+
+    @Provides
+    @Singleton
+    fun provideGetLivelihoodListFromDbRepository(
+        corePrefRepo: CoreSharedPrefs,
+        livelihoodDao: LivelihoodDao
+    ): GetLivelihoodListFromDbRepository {
+        return GetLivelihoodListFromDbRepositoryImpl(
+            livelihoodDao = livelihoodDao,
+            coreSharedPrefs = corePrefRepo,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetLivelihoodListFromDbUseCase(
+        getLivelihoodListFromDbRepository: GetLivelihoodListFromDbRepository
+    ): GetLivelihoodListFromDbUseCase {
+        return GetLivelihoodListFromDbUseCase(getLivelihoodListFromDbRepository = getLivelihoodListFromDbRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSubjectLivelihoodMappingFromUseCase(
+        getLivelihoodMappingForSubjectFromDbRepository: GetLivelihoodMappingForSubjectFromDbRepository
+    ): GetSubjectLivelihoodMappingFromUseCase {
+        return GetSubjectLivelihoodMappingFromUseCase(getLivelihoodMappingForSubjectFromDbRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetLivelihoodMappingForSubjectFromDbRepository(
+        subjectLivelihoodMappingDao: SubjectLivelihoodMappingDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): GetLivelihoodMappingForSubjectFromDbRepository {
+        return GetLivelihoodMappingForSubjectFromDbRepositoryImpl(
+            subjectLivelihoodMappingDao = subjectLivelihoodMappingDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveLivelihoodMappingForSubjectUseCase(
+        saveLivelihoodMappingForSubjectRepository: SaveLivelihoodMappingForSubjectRepository
+    ): SaveLivelihoodMappingUseCase {
+        return SaveLivelihoodMappingUseCase(
+            saveLivelihoodMappingForSubjectRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsWithLivelihoodMappingRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao
+    ): FetchDidiDetailsWithLivelihoodMappingRepository {
+        return FetchDidiDetailsWithLivelihoodMappingRepositoryImpl(
+            coreSharedPrefs, subjectEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiDetailsWithLivelihoodMappingUseCase(
+        fetchDidiDetailsWithLivelihoodMappingRepository: FetchDidiDetailsWithLivelihoodMappingRepository
+    ): FetchDidiDetailsWithLivelihoodMappingUseCase {
+        return FetchDidiDetailsWithLivelihoodMappingUseCase(
+            fetchDidiDetailsWithLivelihoodMappingRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodUseCase(
+        coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository
+    ): LivelihoodUseCase {
+        return LivelihoodUseCase(
+            coreLivelihoodRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCoreLivelihoodRepositoryImpl(
+        assetDao: AssetDao,
+        productDao: ProductDao,
+        livelihoodEventDao: LivelihoodEventDao,
+        livelihoodDao: LivelihoodDao,
+        livelihoodLanguageDao: LivelihoodLanguageDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        dataLoadingApiService: DataLoadingApiService
+    ): ICoreLivelihoodRepository {
+        return CoreLivelihoodRepositoryImpl(
+            assetDao,
+            productDao,
+            livelihoodEventDao,
+            livelihoodDao,
+            livelihoodLanguageDao,
+            coreSharedPrefs,
+            dataLoadingApiService
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveLivelihoodMappingForSubjectRepository(
+        subjectLivelihoodMappingDao: SubjectLivelihoodMappingDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): SaveLivelihoodMappingForSubjectRepository {
+        return SaveLivelihoodMappingForSubjectRepositoryImpl(
+            subjectLivelihoodMappingDao = subjectLivelihoodMappingDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAssetRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        assetDao: AssetDao
+    ): IAssetRepository {
+        return AssetRepositoryImpl(coreSharedPrefs = coreSharedPrefs, assetDao = assetDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        productDao: ProductDao
+    ): IProductRepository {
+        return ProductRepositoryImpl(coreSharedPrefs = coreSharedPrefs, productDao = productDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        livelihoodEventDao: LivelihoodEventDao
+    ): ILivelihoodEventRepository {
+        return LivelihoodEventRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            livelihoodEventDao = livelihoodEventDao
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideSaveLivelihoodOptionUseCase(
+        repository: FetchLivelihoodOptionRepositoryImpl,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchLivelihoodOptionNetworkUseCase {
+        return FetchLivelihoodOptionNetworkUseCase(
+            repository = repository,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventUseCase(
+        livelihoodEventRepositoryImpl: LivelihoodEventRepositoryImpl
+    ): FetchLivelihoodEventUseCase {
+        return FetchLivelihoodEventUseCase(
+            livelihoodEventRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAssetUseCase(
+        assetRepositoryImpl: AssetRepositoryImpl
+    ): FetchAssetUseCase {
+        return FetchAssetUseCase(assetRepositoryImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductUseCase(
+        productRepositoryImpl: ProductRepositoryImpl
+    ): FetchProductUseCase {
+        return FetchProductUseCase(productRepositoryImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAssetJournalRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        assetJournalDao: AssetJournalDao
+    ): AssetJournalRepositoryImpl {
+        return AssetJournalRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            assetJournalDao = assetJournalDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl
+    ): SaveLivelihoodEventUseCase {
+        return SaveLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectIncomeExpenseSummaryUseCase(
+        fetchSubjectIncomeExpenseSummaryRepository: FetchSubjectIncomeExpenseSummaryRepository,
+        assetRepositoryImpl: AssetRepositoryImpl
+    ): FetchSubjectIncomeExpenseSummaryUseCase {
+        return FetchSubjectIncomeExpenseSummaryUseCase(
+            fetchSubjectIncomeExpenseSummaryRepository,
+            assetRepositoryImpl
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideFetchSubjectIncomeExpenseSummaryRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        livelihoodEventDao: LivelihoodEventDao,
+        moneyJournalDao: MoneyJournalDao,
+        assetJournalDao: AssetJournalDao,
+        livelihoodDao: LivelihoodDao,
+        assetDao: AssetDao
+    ): FetchSubjectIncomeExpenseSummaryRepository {
+        return FetchSubjectIncomeExpenseSummaryRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            livelihoodEventDao = livelihoodEventDao,
+            moneyJournalDao = moneyJournalDao,
+            assetJournalDao = assetJournalDao,
+            livelihoodDao = livelihoodDao,
+            assetDao = assetDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSavesLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl
+    ): FetchSavedEventUseCase {
+        return FetchSavedEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl
+        )
+    }
+    @Provides
+    @Singleton
+    fun provideSectionListRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyEntityDao: SurveyEntityDao,
+        sectionEntityDao: SectionEntityDao,
+        sectionSectionEntityDao: SectionStatusEntityDao
+
+    ): SectionListRepository {
+        return SectionListRepositoryImpl(
+            coreSharedPrefs,
+            surveyEntityDao,
+            sectionEntityDao,
+            sectionSectionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSectionListUseCase(
+        sectionListRepository: SectionListRepository
+    ): GetSectionListUseCase {
+        return GetSectionListUseCase(sectionListRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusUpdateUseCase(
+        sectionStatusUpdateRepository: SectionStatusUpdateRepository
+    ): SectionStatusUpdateUseCase {
+        return SectionStatusUpdateUseCase(sectionStatusUpdateRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusUpdateRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        sectionSectionEntityDao: SectionStatusEntityDao
+    ): SectionStatusUpdateRepository {
+
+        return SectionStatusUpdateRepositoryImpl(coreSharedPrefs, sectionSectionEntityDao)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusEventWriterUserCase(
+        sectionStatusEventWriterRepository: SectionStatusEventWriterRepository,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): SectionStatusEventWriterUserCase {
+        return SectionStatusEventWriterUserCase(
+            sectionStatusEventWriterRepository,
+            eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionStatusEventWriterRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        taskDao: TaskDao,
+        sectionStatusEntityDao: SectionStatusEntityDao,
+        surveyEntityDao: SurveyEntityDao
+    ): SectionStatusEventWriterRepository {
+        return SectionStatusEventWriterRepositoryImpl(
+            coreSharedPrefs,
+            taskDao,
+            sectionStatusEntityDao,
+            surveyEntityDao
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideWriteLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): WriteLivelihoodEventUseCase {
+        return WriteLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
+            eventWriterRepository = eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectLivelihoodEventHistoryUseCase(
+        fetchSubjectLivelihoodEventHistoryRepository: FetchSubjectLivelihoodEventHistoryRepository
+    ): FetchSubjectLivelihoodEventHistoryUseCase {
+        return FetchSubjectLivelihoodEventHistoryUseCase(
+            fetchSubjectLivelihoodEventHistoryRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSubjectLivelihoodEventHistoryRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectLivelihoodEventMappingDao: SubjectLivelihoodEventMappingDao
+    ): FetchSubjectLivelihoodEventHistoryRepository {
+        return FetchSubjectLivelihoodEventHistoryRepositoryImpl(
+            coreSharedPrefs, subjectLivelihoodEventMappingDao
+        )
+    }
 }

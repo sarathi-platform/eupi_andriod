@@ -1,8 +1,9 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
-import com.sarathi.dataloadingmangement.model.response.Product
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.ProductAssetUiModel
 
 interface IProductRepository {
-    //suspend fun fetchLivelihoodFromServer(mainLivelihood: LivelihoodResponse): ApiResponseModel<LivelihoodResponse>
-    suspend fun saveProductEntityToDB(product: Product)
+
+    suspend fun getProductsForLivelihood(livelihoodId: Int): List<ProductAssetUiModel>
+
 }

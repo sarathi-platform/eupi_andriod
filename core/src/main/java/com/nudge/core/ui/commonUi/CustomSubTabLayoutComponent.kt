@@ -67,6 +67,36 @@ fun CustomSubTabLayout(
 }
 
 @Composable
+fun CustomSubTabLayoutWithCallBack(
+    parentTabIndex: Int,
+    tabs: List<SubTabs>,
+    countMap: Map<SubTabs, Int> = mapOf(),
+    onClick: () -> Unit
+) {
+
+    val state = rememberLazyListState()
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+        modifier = Modifier.fillMaxWidth(),
+        state = state
+    ) {
+
+        itemsIndexed(tabs) { index, tab ->
+            TabItem(
+                isSelected = TabsCore.getSubTabForTabIndex(parentTabIndex) == index,
+                onClick = {
+                    TabsCore.setSubTabIndex(parentTabIndex, index)
+                    onClick()
+                },
+                text = getTabTitle(countMap, tab)
+            )
+        }
+
+    }
+}
+
+@Composable
 fun TabItem(
     modifier: Modifier = Modifier,
     isSelected: Boolean,
@@ -126,10 +156,12 @@ private fun getTabTitle(
     countMap: Map<SubTabs, Int>,
     tab: SubTabs
 ): String {
-    val count = countMap[tab]
     var tabTitle = getTabName(tab = tab)
-    count?.let {
-        tabTitle = "$tabTitle ($it)"
+    if (countMap.isNotEmpty()) {
+        val count = countMap[tab]
+        count?.let {
+            tabTitle = "$tabTitle ($it)"
+        }
     }
     return tabTitle
 }
@@ -143,6 +175,10 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.All -> "All"
         SubTabs.NoEntryMonthTab -> "No entry this month"
         SubTabs.NoEntryWeekTab -> "No entry this week"
+        SubTabs.LastWeekTab -> "Last week"
+        SubTabs.LastMonthTab -> "Last month"
+        SubTabs.Last3MonthsTab -> "Last 3 months"
+        SubTabs.CustomDateRange -> "Custom Date"
         else -> {
             BLANK_STRING
         }
