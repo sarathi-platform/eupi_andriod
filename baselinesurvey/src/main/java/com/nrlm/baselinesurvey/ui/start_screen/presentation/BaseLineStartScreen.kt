@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,7 +53,6 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -80,10 +78,8 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
-import com.nudge.core.Core
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.uriFromFile
-import com.nudge.navigationmanager.graphs.HomeScreens
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
@@ -227,7 +223,8 @@ fun BaseLineStartScreen(
                         .copy(showQuestion = true),
                     isOnlyNumber = true,
                     maxLength = 10,
-                    onInfoButtonClicked = {}
+                    onInfoButtonClicked = {},
+                    additionalValidation = { _, _ -> true }
                 ) {
                     baseLineStartViewModel.phoneNumber.value = it
                     updateDidiDetails(didi, baseLineStartViewModel)

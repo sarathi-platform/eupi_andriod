@@ -27,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.AGE_FIELD_LOWER_LIMIT
+import com.nrlm.baselinesurvey.AGE_TAG_VALUE
 import com.nrlm.baselinesurvey.BANNER
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
@@ -296,12 +298,21 @@ fun NestedLazyListForFormQuestions(
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
-                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
+                                    isContent = option.optionItemEntity.contentEntities.filter { it.contentType != BANNER }
+                                        .isNotEmpty(),
                                     resetResponse = responseValue == BLANK_STRING,
                                     defaultValue = responseValue,
                                     isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
                                     onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType != BANNER })
+                                    },
+                                    additionalValidation = { text, question ->
+                                        if (question?.optionItemEntity?.optionTag == AGE_TAG_VALUE) {
+                                            !text.equals(AGE_FIELD_LOWER_LIMIT)
+                                        } else {
+                                            true
+                                        }
+
                                     }
                                 ) { value ->
                                     questionTypeScreenViewModel.formTypeOption.let { it1 ->
