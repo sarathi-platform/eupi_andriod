@@ -127,7 +127,7 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    private fun cancelSyncUploadWorker() {
+    fun cancelSyncUploadWorker() {
         isSyncStarted.value = false
         syncWorkerInfoState?.let {
             if (it == WorkInfo.State.RUNNING || it == WorkInfo.State.ENQUEUED) {

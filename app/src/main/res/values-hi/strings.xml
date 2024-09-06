@@ -524,5 +524,6 @@
     </plurals>
     <string name="shg_member_text">1. SHG सदस्य</string>
     <string name="able_bodied_women_text">2.   सक्षम महिलाएं</string>
+    <string name="data_is_not_available_for_sync_please_perform_some_action">सिंक के लिए डेटा उपलब्ध नहीं है. कृपया सिंक से पहले कुछ कार्रवाई करें.</string>
 
 </resources>

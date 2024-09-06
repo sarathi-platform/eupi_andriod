@@ -95,6 +95,7 @@ class SettingBSViewModel @Inject constructor(
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
+    val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
     var applicationId= mutableStateOf(BLANK_STRING)
@@ -190,19 +191,29 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
-        list.add(
-            SettingOptionModel(
-                7,
-                context.getString(R.string.sync_your_data),
-                BLANK_STRING,
-                SettingTagEnum.SYNC_DATA_NOW.name
+
+        if (settingBSUserCase.getUserDetailsUseCase.isSyncEnable()) {
+            list.add(
+                SettingOptionModel(
+                    7,
+                    context.getString(R.string.sync_your_data),
+                    BLANK_STRING,
+                    SettingTagEnum.SYNC_DATA_NOW.name
+                )
             )
-        )
+        }
 
 
         _optionList.value=list
+        fetchEventCount()
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
+        }
+    }
+
+    fun fetchEventCount() {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            syncEventCount.value = settingBSUserCase.getSyncEventsUseCase.getTotalEventCount()
         }
     }
 

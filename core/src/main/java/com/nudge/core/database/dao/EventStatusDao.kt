@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nudge.core.EventsStatusTable
+import com.nudge.core.EVENT_STATUS_TABLE_NAME
 import com.nudge.core.database.entities.EventStatusEntity
 
 @Dao
@@ -15,12 +15,12 @@ interface EventStatusDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(eventStatusEntities: List<EventStatusEntity>)
 
-    @Query("SELECT * FROM $EventsStatusTable")
+    @Query("SELECT * FROM $EVENT_STATUS_TABLE_NAME")
     fun getAllEventStatus():List<EventStatusEntity>
 
-    @Query("SELECT * FROM $EventsStatusTable WHERE mobile_number =:mobileNumber")
+    @Query("SELECT * FROM $EVENT_STATUS_TABLE_NAME WHERE mobileNumber =:mobileNumber")
     fun getAllEventStatusBetweenDates(mobileNumber:String):List<EventStatusEntity>
 
-    @Query("SELECT * FROM $EventsStatusTable WHERE mobile_number =:mobileNumber GROUP BY created_date")
+    @Query("SELECT * FROM $EVENT_STATUS_TABLE_NAME WHERE mobileNumber =:mobileNumber GROUP BY createdDate")
     fun getAllEventStatusForUser(mobileNumber:String):List<EventStatusEntity>
 }

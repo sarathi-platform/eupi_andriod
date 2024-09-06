@@ -521,4 +521,7 @@
     <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="shg_member_text">1. এসএইচজি (SHG) সদস্য</string>
     <string name="able_bodied_women_text">2. কর্মক্ষম নারী</string>
+    <string name="data_is_not_available_for_sync_please_perform_some_action">সিঙ্কের জন্য ডেটা উপলব্ধ নয়৷ অনুগ্রহ করে সিঙ্ক করার আগে কিছু ক্রিয়া সম্পাদন করুন৷</string>
+
+
 </resources>

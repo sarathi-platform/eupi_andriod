@@ -5,23 +5,30 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.EVENT_STATUS_TABLE_NAME
+import com.nudge.core.REQUEST_STATUS_TABLE_NAME
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.toDate
 import java.util.Date
 
-@Entity(tableName = EVENT_STATUS_TABLE_NAME)
-data class EventStatusEntity(
+@Entity(tableName = REQUEST_STATUS_TABLE_NAME)
+data class RequestStatusEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var eventStatusId: Int,
 
-    @ColumnInfo(name = "clientId")
-    val clientId: String,
+    @ColumnInfo("status")
+    val status: String? = BLANK_STRING,
+
+    @ColumnInfo("requestId")
+    val requestId: String? = BLANK_STRING,
 
     @ColumnInfo("createdDate")
     @TypeConverters(DateConverter::class)
     val createdDate: Date = System.currentTimeMillis().toDate(),
+
+    @ColumnInfo("modifiedDate")
+    @TypeConverters(DateConverter::class)
+    val modifiedDate: Date,
 
     @ColumnInfo("createdBy")
     val createdBy: String,
@@ -29,12 +36,7 @@ data class EventStatusEntity(
     @ColumnInfo("mobileNumber")
     val mobileNumber: String,
 
-    @ColumnInfo("status")
-    val status: String,
+    @ColumnInfo("eventCount")
+    val eventCount: Int? = 0,
 
-    @ColumnInfo("requestId")
-    val requestId: String? = BLANK_STRING,
-
-    @ColumnInfo("errorMessage")
-    val errorMessage: String? = BLANK_STRING,
-)
+    )

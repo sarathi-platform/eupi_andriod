@@ -518,6 +518,7 @@
     <string name="section_information_tab_title">Ki bynta kiba don ki jingbatai</string>
     <string name="shg_member_text">1. SHG member</string>
     <string name="able_bodied_women_text">2.  Able-bodied women</string>
+    <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->
 

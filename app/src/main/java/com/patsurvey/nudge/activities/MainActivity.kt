@@ -36,6 +36,7 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -341,22 +342,18 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     fun getSyncEnabled() {
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 3600
+            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.fetchAndActivate()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.d(
-                        "SyncEnabled",
-                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
-                    )
                     NudgeLogger.d(
                         "SyncEnabled",
-                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                        "sync enabled " + remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
                     )
                     mViewModel.saveSyncEnabledFromRemoteConfig(
-                        remoteConfig.get("syncEnabled").asBoolean()
+                        remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
                     )
 
 
