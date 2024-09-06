@@ -449,13 +449,16 @@ class SyncUploadWorker @AssistedInject constructor(
     ) {
         imageDetail.fileName?.let { imageName ->
             if (imageName.isNotEmpty()) {
-                val file =
-                    File("${applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${imageName}")
+                val picturePath =
+                    applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath
                 CoreLogger.d(
                     context = applicationContext,
                     "addImageToMultipart",
-                    "ImagePath: ${file.path}"
+                    "ImagePath: $picturePath/$imageName"
                 )
+                val file =
+                    File("$picturePath/$imageName")
+
                 if (file.exists() && file.isFile) {
                     val imageMultiPart = convertFileIntoMultipart(
                         imageFile = file,
