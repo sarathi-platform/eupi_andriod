@@ -41,4 +41,7 @@ interface ActivityConfigDao {
 
     @Query("Select activityId from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType")
     fun getActivityIdForLivelihood(activityType: String): Int
+
+    @Query("Select count(*) from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType")
+    suspend fun isActivityAvailable(activityType: String): Int
 }

@@ -42,6 +42,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
+import com.sarathi.missionactivitytask.utils.toHashMap
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -174,25 +175,21 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun updateListForAllFilter() {
         filterTaskMap =
-            taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+            taskList.value.entries
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-        _filterList.value = taskList.value.toList()
-            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+        _filterList.value = taskList.value
     }
 
     private fun updateListForSelectedFilter() {
 
-        val sortedList = taskList.value.toList()
-            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+        val sortedList = taskList.value
 
         val tempFilterTaskMap = sortedList
             .filter {
                 it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
                     filterByValueKey.value, ignoreCase = true
                 )
-            } as HashMap<Int, HashMap<String, TaskCardModel>>
+            }.toHashMap()
         filterTaskMap =
             tempFilterTaskMap.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
@@ -202,7 +199,7 @@ open class TaskScreenViewModel @Inject constructor(
             )
         }
         _filterList.value =
-            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+            tempFilterList.toHashMap()
     }
 
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
@@ -279,16 +276,14 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value.toList()
-                .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
+            var _filterListt = _taskList.value
             updateValueInMainThread(
                 _filterList,
-                _filterListt as HashMap<Int, HashMap<String, TaskCardModel>>
+                _filterListt
             )
 
             filterTaskMap =
-                _taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
-                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
             updateListForAllFilter()
 
@@ -327,7 +322,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateProgress() {
+    fun updateProgress() {
         val completedCount = (taskList.value.entries.filter {
             it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name
                     || it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.COMPLETED.name
@@ -436,7 +431,7 @@ open class TaskScreenViewModel @Inject constructor(
         val taskListForAppliedFilter = if (isFilterApplied) {
             val tempFilterList =
                 sortedList.filter { it.value[TaskCardSlots.FILTER_BY.name]?.value == filterByValueKey.value }
-            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+            tempFilterList.toHashMap()
         } else {
             sortedList
         }

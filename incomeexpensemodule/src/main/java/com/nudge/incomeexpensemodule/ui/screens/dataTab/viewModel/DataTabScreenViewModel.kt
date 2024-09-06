@@ -146,7 +146,7 @@ class DataTabScreenViewModel @Inject constructor(
         return when (filterType) {
             LIVELIHOOD_FILTER -> {
                 val livelihoodId = filterValues as Int
-                subjectList.value.filter { it.primaryLivelihoodId == livelihoodId || it.secondaryLivelihoodId == livelihoodId }
+                subjectList.value.filter { it.livelihoodId == livelihoodId }
             }
 
             else -> {
@@ -188,7 +188,8 @@ class DataTabScreenViewModel @Inject constructor(
             updateDataTabScreenUiEntityList()
 
             livelihoodModelList =
-                getLivelihoodListFromDbUseCase.invoke().distinctBy { it.livelihoodId }
+                getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
+                    .distinctBy { it.livelihoodId }
 
             createFilterBottomSheetList(livelihoodModelList)
 

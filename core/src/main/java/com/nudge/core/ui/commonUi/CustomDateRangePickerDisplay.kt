@@ -28,6 +28,7 @@ import com.nudge.core.ui.theme.white
 
 @Composable
 fun CustomDateRangePickerDisplay(
+    modifier: Modifier = Modifier.padding(horizontal = dimen_8_dp),
     value: String = BLANK_STRING,
     label: String,
     onViewClicked: () -> Unit,
@@ -36,7 +37,7 @@ fun CustomDateRangePickerDisplay(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimen_8_dp)
+            .then(modifier)
     ) {
 
         OutlinedTextField(

@@ -74,6 +74,7 @@ fun CommonSettingScreen(
     expanded: Boolean,
     onBackClick:()->Unit,
     activityForm: List<ActivityFormUIModel>,
+    formEName: Map<Pair<Int, Int>, String> = emptyMap(),
     isLoaderVisible:Boolean=false,
     onItemClick:(Int,SettingOptionModel)->Unit,
     isScreenHaveLogoutButton:Boolean=true,
@@ -88,8 +89,17 @@ fun CommonSettingScreen(
         formList.add(stringResource(R.string.digital_form_c_title))
     } else {
         if (activityForm.isNotEmpty()) {
+
             activityForm.forEach {
-                formList.add("${it.missionName} - ${stringResource(R.string.form_e)}")
+
+                formList.add(
+                    "${it.missionName} - ${
+                        formEName[Pair(
+                            first = it.missionId,
+                            second = it.activityId
+                        )]
+                    }"
+                )
             }
         }
     }

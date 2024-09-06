@@ -3,11 +3,9 @@ package com.sarathi.missionactivitytask.ui.grantTask.screen
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -43,7 +41,7 @@ fun GrantTaskScreen(
             )
         },
         isSecondaryButtonEnable = viewModel.isGenerateFormButtonEnable.value,
-        secondaryButtonText = stringResource(id = R.string.generate_form_e),
+        secondaryButtonText = viewModel.formEGenerateButtonText.value,
         isSecondaryButtonVisible = viewModel.isGenerateFormButtonVisible.value,
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,

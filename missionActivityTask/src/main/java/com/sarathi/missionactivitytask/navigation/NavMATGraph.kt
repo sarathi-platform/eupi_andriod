@@ -697,6 +697,9 @@ fun NavGraphBuilder.MatNavigation(
             navArgument(ARG_ACTIVITY_ID) {
                 type = NavType.IntType
             },
+            navArgument(ARG_MISSION_ID) {
+                type = NavType.IntType
+            },
             navArgument(ARG_TASK_ID_LIST) {
                 type = NavType.StringType
                 defaultValue = BLANK_STRING
@@ -707,6 +710,7 @@ fun NavGraphBuilder.MatNavigation(
                 viewModel = hiltViewModel(),
                 navController = navController,
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
                 taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
             )
         }
@@ -986,10 +990,15 @@ fun navigateToActivityScreen(
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted")
 }
 
-fun navigateToAddImageScreen(navController: NavController, activityId: Int, taskIdList: String) {
+fun navigateToAddImageScreen(
+    navController: NavController,
+    activityId: Int,
+    taskIdList: String,
+    missionId: Int
+) {
     var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
 
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$taskIdListWithNullable")
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
 }
 
 fun navigateToGrantTaskScreen(
