@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.activities.select
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -63,8 +62,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     var grantType: String = BLANK_STRING
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     val questionList = arrayListOf<QuestionUiModel>()
-    private val _questionUiModel = mutableStateOf<HashMap<Int, QuestionUiModel>>(hashMapOf())
-    val questionUiModel: State<HashMap<Int, QuestionUiModel>> get() = _questionUiModel
+
 
     val expandedIds = mutableStateListOf<Int>()
     override fun <T> onEvent(event: T) {
@@ -82,6 +80,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            expandedIds.clear()
             taskUiList.value.forEach { task ->
                 val list = intiQuestions(
                     taskId = task.taskId,
@@ -95,6 +94,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                     it.subjectId = task.subjectId
                     _questionUiModel.value[task.taskId ?: -1] = it
                 }
+            }
+            if (!isActivityCompleted.value) {
+
+                expandedIds.addAll(taskUiList.value.map { it.taskId })
             }
             withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))

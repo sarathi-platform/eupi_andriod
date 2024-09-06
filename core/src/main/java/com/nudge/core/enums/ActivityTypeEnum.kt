@@ -12,9 +12,22 @@ enum class ActivityTypeEnum {
                 4 -> SELECT
                 5 -> LIVELIHOOD
                 6 -> LIVELIHOOD_PoP
-                7 ->TRAINING
+                7 -> TRAINING
                 else -> SURVEY
             }
+        }
+
+        fun showSurveyQuestionOnTaskScreen(activityType: String?): Boolean {
+
+            if (activityType == null)
+                return false
+
+            return activityType.equals(SELECT.name, true) || activityType.equals(
+                TRAINING.name,
+                true
+            )
+
+
         }
 
     }

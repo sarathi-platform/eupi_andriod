@@ -3,7 +3,6 @@ package com.sarathi.missionactivitytask.ui.activities.select
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -120,16 +118,6 @@ fun ActivitySelectTaskScreen(
 }
 
 fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
-    item {
-        viewModel.filterList.value.keys.let {
-            CustomTextView(
-                title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
-            )
-            if (!viewModel.isActivityCompleted.value) {
-                viewModel.expandedIds.addAll(it)
-            }
-        }
-    }
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
     ) { _, task ->
@@ -150,16 +138,7 @@ fun LazyListScope.selectActivityTaskScreenContentForGroup(
     groupKey: String,
     viewModel: ActivitySelectTaskViewModel
 ) {
-    item {
-        viewModel.filterList.value.keys.let {
-            CustomTextView(
-                title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
-            )
-            if (!viewModel.isActivityCompleted.value) {
-                viewModel.expandedIds.addAll(it)
-            }
-        }
-    }
+
     itemsIndexed(
         items = viewModel.filterTaskMap[groupKey].value()
     ) { _, task ->
@@ -493,18 +472,17 @@ private fun RadioTypeOptionsUI(
     context: Context,
     isNotAvailableButtonEnable: Boolean
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(dimen_100_dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
     ) {
-        item {
-            questionUiModel?.options?.sortedBy { it.order }?.let {
-                when (questionUiModel.type) {
-                    QuestionType.RadioButton.name,
-                    QuestionType.Toggle.name -> {
-                        val selectedValue =
-                            it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
+        questionUiModel?.options?.sortedBy { it.order }?.let {
+            when (questionUiModel.type) {
+                QuestionType.RadioButton.name,
+                QuestionType.Toggle.name -> {
+                    val selectedValue =
+                        it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
                         RadioOptionTypeComponent(
                             optionItemEntityState = it,
                             isTaskMarkedNotAvailable = taskMarkedNotAvailable,
@@ -546,8 +524,6 @@ private fun RadioTypeOptionsUI(
                 }
 
             }
-
-        }
     }
     CustomVerticalSpacer()
     Divider(

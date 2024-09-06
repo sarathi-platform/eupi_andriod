@@ -44,6 +44,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_SG_FILTER_LABEL
 import com.nudge.core.NO_SG_FILTER_VALUE
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
@@ -78,6 +79,7 @@ import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummarySc
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToSectionScreen
+import com.sarathi.missionactivitytask.ui.activities.select.CustomTextView
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
@@ -293,17 +295,36 @@ fun TaskScreen(
                         )
                         Spacer(modifier = Modifier.height(dimen_10_dp))
                         LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-                            if (viewModel.isProgressEnable.value) {
-                                stickyHeader {
-                                    Box(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(white)) {
+
+                            stickyHeader {
+                                if (viewModel.isProgressEnable.value) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(white)
+                                    ) {
                                         CustomLinearProgressIndicator(
                                             modifier = Modifier
                                                 .padding(dimen_10_dp)
                                                 .padding(horizontal = dimen_6_dp),
                                             progressState = viewModel.progressState
                                         )
+                                    }
+                                }
+
+                                if (ActivityTypeEnum.showSurveyQuestionOnTaskScreen(viewModel.activityType)) {
+                                    if (viewModel.filterList.value.isNotEmpty() && viewModel.questionUiModel.value.isNotEmpty()) {
+                                        viewModel.filterList.value.keys.let {
+                                            val questionTitle =
+                                                viewModel.questionUiModel.value[it.first()]?.display.value()
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(white)
+                                            ) {
+                                                CustomTextView(title = questionTitle)
+                                            }
+                                        }
                                     }
                                 }
                             }
