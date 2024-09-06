@@ -5,7 +5,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.nudge.core.RequestStatusTable
 import com.nudge.core.SYNC_MANAGER_DB_VERSION
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
@@ -23,6 +22,11 @@ import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.database.entities.RequestStatusEntity
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
+import com.nudge.syncmanager.database.SyncMigrationQueries.ADD_EVENT_ID_IN_EVENT_TABLE
+import com.nudge.syncmanager.database.SyncMigrationQueries.ADD_REQUEST_ID_IN_EVENT_TABLE
+import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_EVENT_STATUS_TABLE
+import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_IMAGE_STATUS_TABLE
+import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_REQUEST_STATUS_TABLE
 import java.sql.SQLException
 
 @Database(
@@ -51,13 +55,6 @@ abstract class SyncManagerDatabase : RoomDatabase() {
     abstract fun requestStatusDao(): RequestStatusDao
 
     companion object {
-        private const val ADD_REQUEST_ID_IN_EVENT_STATUS_TABLE =
-            "ALTER TABLE 'events_status_table' ADD COLUMN 'request_id' TEXT"
-        private const val ADD_REQUEST_ID_IMAGE_STATUS_TABLE =
-            "ALTER TABLE 'image_status_table' ADD COLUMN 'request_id' TEXT"
-
-        private val CREATE_REQUEST_STATUS_TABLE =
-            "CREATE TABLE IF NOT EXISTS $RequestStatusTable (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `status` TEXT NOT NULL, `request_id` TEXT NOT NULL,`modified_date` INTEGER NOT NULL,`created_date` INTEGER NOT NULL,`createdBy` TEXT NOT NULL,`mobile_number` TEXT NOT NULL,`event_count` INTEGER DEFAULT 0 NOT NULL)"
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -65,8 +62,10 @@ abstract class SyncManagerDatabase : RoomDatabase() {
                 migration(
                     db,
                     listOf(
-                        ADD_REQUEST_ID_IN_EVENT_STATUS_TABLE,
-                        ADD_REQUEST_ID_IMAGE_STATUS_TABLE,
+                        ADD_REQUEST_ID_IN_EVENT_TABLE,
+                        ADD_EVENT_ID_IN_EVENT_TABLE,
+                        CREATE_EVENT_STATUS_TABLE,
+                        CREATE_IMAGE_STATUS_TABLE,
                         CREATE_REQUEST_STATUS_TABLE
                     )
                 )

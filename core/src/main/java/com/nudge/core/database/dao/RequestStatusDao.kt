@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.RequestStatusTable
+import com.nudge.core.REQUEST_STATUS_TABLE_NAME
 import com.nudge.core.database.entities.RequestStatusEntity
 import java.util.Date
 
@@ -18,10 +18,10 @@ interface RequestStatusDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(requestStatusList: List<RequestStatusEntity>)
 
-    @Query("SELECT * from $RequestStatusTable")
+    @Query("SELECT * from $REQUEST_STATUS_TABLE_NAME")
     fun getAllRequestEvent(): List<RequestStatusEntity>
 
-    @Query("UPDATE $RequestStatusTable SET event_count =:eventCount,status=:status,modified_date =:modifiedDate WHERE request_id =:requestId AND mobile_number =:mobileNumber")
+    @Query("UPDATE $REQUEST_STATUS_TABLE_NAME SET eventCount =:eventCount,status=:status,modifiedDate =:modifiedDate WHERE requestId =:requestId AND mobileNumber =:mobileNumber")
     fun updateEventRequestIdStatus(
         eventCount: Int,
         requestId: String,
@@ -30,10 +30,10 @@ interface RequestStatusDao {
         mobileNumber: String
     )
 
-    @Query("SELECT COUNT(*) FROM $RequestStatusTable WHERE request_id =:requestId AND mobile_number =:mobileNumber")
+    @Query("SELECT COUNT(*) FROM $REQUEST_STATUS_TABLE_NAME WHERE requestId =:requestId AND mobileNumber =:mobileNumber")
     fun fetchRequestIdCount(requestId: String, mobileNumber: String): Int
 
-    @Query("SELECT * from $RequestStatusTable WHERE mobile_number =:mobileNumber AND status in (:status)")
+    @Query("SELECT * from $REQUEST_STATUS_TABLE_NAME WHERE mobileNumber =:mobileNumber AND status in (:status)")
     fun getAllRequestEventForConsumerStatus(
         mobileNumber: String,
         status: List<String>
@@ -48,7 +48,7 @@ interface RequestStatusDao {
                     eventCount = requestStatusEntity.eventCount ?: 0,
                     status = requestStatusEntity.status ?: BLANK_STRING,
                     requestId = requestStatusEntity.requestId,
-                    modifiedDate = requestStatusEntity.modified_date,
+                    modifiedDate = requestStatusEntity.modifiedDate,
                     mobileNumber = requestStatusEntity.mobileNumber
                 )
             } else insert(requestStatusEntity)

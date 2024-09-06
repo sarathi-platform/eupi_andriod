@@ -43,7 +43,7 @@ interface EventsDao {
     @Query("DELETE FROM events_table")
     fun deleteAllEvents()
 
-    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount,request_id =:requestId WHERE id = :clientId")
+    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount,requestId =:requestId WHERE id = :clientId")
     fun updateEventStatus(
         clientId: String,
         newStatus: String,
@@ -219,15 +219,15 @@ interface EventsDao {
     @Query("SELECT * FROM $EventsTable WHERE status IN (:status) and mobile_number =:mobileNumber")
     fun fetchAllFailedEventList(mobileNumber: String, status: List<String>): List<Events>
 
-    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.file_name as fileName,image_status_table.file_path as filePath from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.image_event_id where  events_table.mobile_number == image_status_table.mobile_number AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
+    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.fileName as fileName,image_status_table.filePath as filePath from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.imageEventId where  events_table.mobile_number == image_status_table.mobileNumber AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
     fun fetchAllImageEventsWithImageDetails(
         mobileNumber: String,
         eventIds: List<String>
     ): List<ImageEventDetailsModel>
 
-    @Query("SELECT COUNT(*) from $EventsTable where request_id =:requestId and mobile_number=:mobileNumber")
+    @Query("SELECT COUNT(*) from $EventsTable where requestId =:requestId and mobile_number=:mobileNumber")
     fun fetchEventCountDetailForRequestId(requestId: String, mobileNumber: String): Int
 
-    @Query("SELECT status,request_id AS requestId,COUNT(*) AS count from $EventsTable WHERE request_id =:requestId AND mobile_number =:mobileNumber  group by request_id, status")
+    @Query("SELECT status,requestId AS requestId,COUNT(*) AS count from $EventsTable WHERE requestId =:requestId AND mobile_number =:mobileNumber  group by requestId, status")
     fun fetchEventStatusCount(requestId: String, mobileNumber: String): List<RequestIdCountModel>
 }
