@@ -135,4 +135,8 @@ class ActivityScreenViewModel @Inject constructor(
             onSuccess(it)
         }
     }
+    override fun refreshData() {
+        loadMissionRelatedData(isRefresh = true)
+
+    }
 }

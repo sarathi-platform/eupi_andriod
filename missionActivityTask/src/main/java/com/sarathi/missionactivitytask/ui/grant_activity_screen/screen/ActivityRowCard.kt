@@ -46,6 +46,7 @@ fun ActivityRowCard(
                 )
             }
         }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
