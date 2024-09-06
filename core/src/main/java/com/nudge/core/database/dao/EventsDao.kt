@@ -13,6 +13,7 @@ import com.nudge.core.EventsTable
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.datamodel.RequestIdCountModel
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
 import com.nudge.core.utils.SyncType
@@ -41,8 +42,16 @@ interface EventsDao {
 
     @Query("DELETE FROM events_table")
     fun deleteAllEvents()
-    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount WHERE id = :clientId")
-    fun updateEventStatus(clientId: String, newStatus: String,modifiedDate:Date,errorMessage:String,retryCount:Int)
+
+    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount,requestId =:requestId WHERE id = :clientId")
+    fun updateEventStatus(
+        clientId: String,
+        newStatus: String,
+        modifiedDate: Date,
+        errorMessage: String,
+        retryCount: Int,
+        requestId: String
+    )
 
     @SuppressLint("SuspiciousIndentation")
     @Transaction
@@ -54,7 +63,8 @@ interface EventsDao {
                     newStatus = EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus,
                     modifiedDate = modifiedDate,
                     errorMessage = BLANK_STRING,
-                    retryCount = 0
+                    retryCount = 0,
+                    requestId = it.requestId
                 )
             }
     }
@@ -74,7 +84,8 @@ interface EventsDao {
                     newStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                     modifiedDate = modifiedDate,
                     errorMessage = it.eventResult.message ?: SOMETHING_WENT_WRONG,
-                    retryCount=retryCount
+                    retryCount = retryCount,
+                    requestId = it.requestId
                 )
             }
 
@@ -89,13 +100,17 @@ interface EventsDao {
                 newStatus = it.status,
                 modifiedDate = modifiedDate,
                 errorMessage = it.errorMessage,
-                retryCount = 0
+                retryCount = 0,
+                requestId = it.requestId
             )
         }
     }
 
     @Query("SELECT * FROM $EventsTable WHERE mobile_number= :mobileNumber")
     fun getTotalSyncEvent(mobileNumber:String):LiveData<List<Events>>
+
+    @Query("SELECT COUNT(*) FROM $EventsTable WHERE mobile_number= :mobileNumber")
+    fun getTotalSyncEventCount(mobileNumber: String): Int
 
     @Query("SELECT * FROM $EventsTable WHERE status= :status AND mobile_number= :mobileNumber")
     fun getSuccessEventCount(status:String,mobileNumber:String):List<Events>
@@ -204,9 +219,15 @@ interface EventsDao {
     @Query("SELECT * FROM $EventsTable WHERE status IN (:status) and mobile_number =:mobileNumber")
     fun fetchAllFailedEventList(mobileNumber: String, status: List<String>): List<Events>
 
-    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.file_name as fileName,image_status_table.file_path as filePath from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.image_event_id where  events_table.mobile_number == image_status_table.mobile_number AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
+    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.fileName as fileName,image_status_table.filePath as filePath from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.imageEventId where  events_table.mobile_number == image_status_table.mobileNumber AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
     fun fetchAllImageEventsWithImageDetails(
         mobileNumber: String,
         eventIds: List<String>
     ): List<ImageEventDetailsModel>
+
+    @Query("SELECT COUNT(*) from $EventsTable where requestId =:requestId and mobile_number=:mobileNumber")
+    fun fetchEventCountDetailForRequestId(requestId: String, mobileNumber: String): Int
+
+    @Query("SELECT status,requestId AS requestId,COUNT(*) AS count from $EventsTable WHERE requestId =:requestId AND mobile_number =:mobileNumber  group by requestId, status")
+    fun fetchEventStatusCount(requestId: String, mobileNumber: String): List<RequestIdCountModel>
 }

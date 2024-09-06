@@ -11,8 +11,8 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.syncmanager.network.SyncApiService
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
@@ -86,7 +86,8 @@ object UseCaseModule {
     @Singleton
     fun providesSettingScreenUseCase(
         repository: SettingBSRepository,
-        getSummaryFileRepository: GetSummaryFileRepository
+        getSummaryFileRepository: GetSummaryFileRepository,
+        syncHomeRepository: SyncHomeRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
             getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
@@ -97,7 +98,8 @@ object UseCaseModule {
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository),
             getCasteUseCase = GetCasteUseCase(repository),
-            clearSelectionDBExportUseCase = ClearSelectionDBExportUseCase(repository)
+            clearSelectionDBExportUseCase = ClearSelectionDBExportUseCase(repository),
+            getSyncEventsUseCase = GetSyncEventsUseCase(syncHomeRepository)
 
         )
     }

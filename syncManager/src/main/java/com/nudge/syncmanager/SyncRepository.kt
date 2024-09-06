@@ -3,18 +3,22 @@ package com.nudge.syncmanager
 
 import android.content.Context
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CONSUMER
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
-import com.nudge.core.database.entities.ImageStatusEntity
+import com.nudge.core.database.entities.RequestStatusEntity
 import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.datamodel.RequestIdCountModel
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
@@ -33,7 +37,8 @@ class SyncApiRepository @Inject constructor(
     private val eventDao: EventsDao,
     private val eventStatusDao: EventStatusDao,
     private val prefRepo: CorePrefRepo,
-    private val imageStatusDao: ImageStatusDao
+    private val imageStatusDao: ImageStatusDao,
+    private val requestStatusDao: RequestStatusDao
 ) {
     suspend fun syncProducerEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
         val eventRequest: List<EventRequest> = events.map {
@@ -49,6 +54,7 @@ class SyncApiRepository @Inject constructor(
         )
     }
 
+    fun loggedInUserType() = prefRepo.getUserType()
 
 
     suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest)
@@ -113,9 +119,11 @@ class SyncApiRepository @Inject constructor(
                         status = it.status,
                         mobileNumber = it.mobileNumber,
                         createdBy = prefRepo.getUserId(),
-                        eventStatusId = 0
+                        eventStatusId = 0,
+                        requestId = it.requestId
                     )
                 )
+
             }
         } catch (ex: Exception) {
             CoreLogger.d(
@@ -148,7 +156,8 @@ class SyncApiRepository @Inject constructor(
                         status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                         mobileNumber = prefRepo.getMobileNo(),
                         createdBy = prefRepo.getUserId(),
-                        eventStatusId = 0
+                        eventStatusId = 0,
+                        requestId = it.requestId
                     )
                 )
             }
@@ -186,6 +195,8 @@ class SyncApiRepository @Inject constructor(
                 eventList = eventList,
                 mobileNumber = prefRepo.getMobileNo()
             )
+            findRequestEvents(eventList, CONSUMER)
+
         } catch (e: Exception) {
             CoreLogger.d(
                 context = context,
@@ -197,16 +208,11 @@ class SyncApiRepository @Inject constructor(
 
     fun getLoggedInMobileNumber(): String = prefRepo.getMobileNo()
 
-    suspend fun fetchImageStatusFromEventId(eventId: String): ImageStatusEntity {
-        return imageStatusDao.fetchImageStatusFromEventId(
-            mobileNumber = getLoggedInMobileNumber(),
-            eventId = eventId
-        )
-    }
 
-    suspend fun updateImageEventStatus(
+    suspend fun updateImageDetailsEventStatus(
         eventId: String,
         status: String,
+        requestId: String,
         errorMessage: String? = BLANK_STRING
     ) {
         imageStatusDao.updateImageEventStatus(
@@ -222,7 +228,8 @@ class SyncApiRepository @Inject constructor(
             clientId = eventId,
             errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
-            newStatus = status
+            newStatus = status,
+            requestId = requestId
         )
 
         eventStatusDao.insert(
@@ -240,8 +247,83 @@ class SyncApiRepository @Inject constructor(
         eventDao.findEventAndUpdateRetryCount(eventId = eventId)
     }
 
-    fun loggedInUserType() = prefRepo.getUserType()
+    suspend fun findEventCountForRequestId(requestId: String): Int {
+        return eventDao.fetchEventCountDetailForRequestId(requestId, prefRepo.getMobileNo())
+    }
 
+    suspend fun addOrUpdateRequestStatus(requestId: String, eventCount: Int, status: String) {
+        requestStatusDao.addOrUpdateRequestId(
+            requestStatusEntity = RequestStatusEntity(
+                requestId = requestId,
+                eventCount = eventCount,
+                mobileNumber = prefRepo.getMobileNo(),
+                status = status,
+                eventStatusId = 0,
+                createdBy = prefRepo.getUserId(),
+                modifiedDate = System.currentTimeMillis().toDate()
+            )
+        )
+    }
+
+    suspend fun fetchEventStatusCount(requestId: String): List<RequestIdCountModel> {
+        return eventDao.fetchEventStatusCount(requestId, prefRepo.getMobileNo())
+    }
+
+    fun fetchAllRequestEventForConsumerStatus(): List<RequestStatusEntity> {
+        return requestStatusDao.getAllRequestEventForConsumerStatus(
+            prefRepo.getMobileNo(),
+            listOf(
+                EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus,
+                EventSyncStatus.CONSUMER_FAILED.eventSyncStatus
+            )
+        )
+    }
+
+    suspend fun findRequestEvents(eventList: List<SyncEventResponse>, tag: String) {
+        val requestIdList = eventList.distinctBy { it.requestId }.map { it.requestId }
+        if (requestIdList.isNotEmpty()) {
+            requestIdList.forEach { requestId ->
+                val reqEventList =
+                    requestId?.let { it1 ->
+                        fetchEventStatusCount(it1)
+                    }
+                val eventCount =
+                    requestId?.let { it1 ->
+                        findEventCountForRequestId(it1)
+                    }
+
+                reqEventList?.let { statusCountList ->
+                    var status = BLANK_STRING
+                    if (statusCountList.any { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }) {
+                        status = EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
+                    }
+
+                    if (statusCountList.any { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }) {
+                        status = EventSyncStatus.CONSUMER_FAILED.eventSyncStatus
+                    }
+
+                    if (statusCountList.any { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }) {
+                        status = EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus
+                    }
+                    CoreLogger.d(
+                        CoreAppDetails.getApplicationContext().applicationContext,
+                        tag,
+                        "findRequestEvents: $requestId :: $status :: $eventCount"
+                    )
+
+                    addOrUpdateRequestStatus(
+                        requestId = requestId,
+                        eventCount = eventCount ?: 0,
+                        status = status
+                    )
+                }
+
+            }
+
+        }
+
+
+    }
 }
 
 

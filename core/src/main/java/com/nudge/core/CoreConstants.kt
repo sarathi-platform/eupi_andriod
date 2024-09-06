@@ -14,14 +14,15 @@ const val NO_TOLA_TITLE = "NO TOLA"
 
 
 const val EventsTable = "events_table"
-const val EventsStatusTable = "events_status_table"
+const val EVENT_STATUS_TABLE_NAME = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
-const val ImageStatusTable = "image_status_table"
+const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
+const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
-const val SYNC_MANAGER_DB_VERSION = 1
+const val SYNC_MANAGER_DB_VERSION = 2
 
 //FirebaseDb Properties
 const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
@@ -112,3 +113,6 @@ const val LAST_SYNC_TIME = "last_sync_time"
 const val FAILED_EVENTS_FILE = "Failed_Events_File"
 const val SYNC_SELECTION_DRIVE = "selection"
 const val SYNC_POST_SELECTION_DRIVE = "postSelection"
+const val REMOTE_CONFIG_SYNC_ENABLE = "syncEnabled"
+const val PRODUCER = "Producer"
+const val CONSUMER = "consumer"

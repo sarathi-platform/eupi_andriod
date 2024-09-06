@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.sync.home.presentation
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -187,7 +188,15 @@ fun SyncHomeContent(
                 .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
                 .fillMaxSize()
         ) {
-            LastSyncTime(viewModel)
+            LastSyncTime(viewModel) {
+                CoreLogger.d(
+                    context,
+                    "SyncHomeScreen",
+                    "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
+                )
+                if (viewModel.isSyncStarted.value)
+                    viewModel.cancelSyncUploadWorker()
+            }
             SyncDataCard(
                 viewModel = viewModel,
                 context = context,
@@ -264,12 +273,15 @@ fun BottomContent(
 }
 
 @Composable
-fun LastSyncTime(viewModel: SyncHomeViewModel) {
+fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
     if (viewModel.lastSyncTime.longValue != 0L) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimen_10_dp),
+                .padding(dimen_10_dp)
+                .clickable {
+                    onCancelWorker()
+                },
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
