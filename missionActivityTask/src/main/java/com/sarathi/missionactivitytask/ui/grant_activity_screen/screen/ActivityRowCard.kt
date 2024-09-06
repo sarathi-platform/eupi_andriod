@@ -18,6 +18,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
+import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodTaskScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSurveyTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 import com.sarathi.missionactivitytask.utils.getFilePathUri
 import java.util.Locale
@@ -66,17 +68,42 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     imageUri = getFilePathUri(activity.icon ?: BLANK_STRING)
                 ) {
-                    if (activity.activityType.lowercase() == ActivityTypeEnum.GRANT.name.lowercase(
+                    when (activity.activityType.lowercase()) {
+                        ActivityTypeEnum.GRANT.name.lowercase(
                             Locale.ENGLISH
-                        )
-                    ) {
-                        navigateToGrantTaskScreen(
-                            navController,
-                            missionId = activity.missionId,
-                            activityId = activity.activityId,
-                            activityName = activity.description,
-                            programId = programId
-                        )
+                        ) -> {
+                            navigateToGrantTaskScreen(
+                                navController,
+                                missionId = activity.missionId,
+                                activityId = activity.activityId,
+                                activityName = activity.description,
+                                programId = programId
+
+                            )
+                        }
+
+                        ActivityTypeEnum.LIVELIHOOD.name.lowercase(
+                            Locale.ENGLISH
+                        ) -> {
+
+                            navigateToLivelihoodTaskScreen(
+                                navController,
+                                missionId = activity.missionId,
+                                activityId = activity.activityId,
+                                activityName = activity.description,
+                            )
+                        }
+
+                        ActivityTypeEnum.SURVEY.name.lowercase(
+                            Locale.ENGLISH
+                        ) -> {
+                            navigateToSurveyTaskScreen(
+                                navController,
+                                missionId = activity.missionId,
+                                activityId = activity.activityId,
+                                activityName = activity.description
+                            )
+                        }
                     }
                 }
             }

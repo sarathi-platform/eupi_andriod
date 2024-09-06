@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.components
 
+import ComponentName
 import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -53,6 +54,7 @@ import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.dividerColor
@@ -65,7 +67,9 @@ import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
+import getColorForComponent
 
 
 @Composable
@@ -139,7 +143,10 @@ fun StepsBoxGrantComponent(
                         start = if (isCompleted) 0.dp else dimen_4_dp
                     )
                     .background(
-                        color = iconBackgroundgrayColor,
+                        color = getColorForComponent(
+                            SurveyStatusEnum.INPROGRESS.name,
+                            ComponentName.SECTION_BOX_ICON_CONTAINER_COLOR
+                        ),
                         shape = CircleShape
                     ) // Set the circular background
                     .clip(CircleShape) // Clip the content to a circular shape
@@ -151,7 +158,23 @@ fun StepsBoxGrantComponent(
                         modifier = constraintModifier,
                     )
                 } else {
-                    Spacer(modifier = constraintModifier)
+                    Box(
+                        modifier = Modifier
+                            .constrainAs(iconContainer) {
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            }
+                            .size(dimen_50_dp)
+                            .clip(CircleShape)
+                            .background(
+                                color = getColorForComponent(
+                                    SurveyStatusEnum.INPROGRESS.name,
+                                    ComponentName.SECTION_BOX_ICON_CONTAINER_COLOR
+                                ),
+                                shape = CircleShape
+                            ),
+                    )
                 }
 
                 Column(

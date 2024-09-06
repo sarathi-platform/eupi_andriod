@@ -42,7 +42,7 @@ interface IFormRepository {
         generatedDate: String
     )
 
-    fun getFormEFileName(): String
+    fun getFormEFileName(pdfName: String): String
 
     suspend fun saveAllFormDetails(formDetails: List<FormEntity>)
     suspend fun getActivityConfigUiModel(missionId: Int): List<ActivityConfigEntity>?

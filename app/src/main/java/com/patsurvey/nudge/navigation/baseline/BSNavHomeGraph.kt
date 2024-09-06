@@ -38,6 +38,7 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.utils.NavigationParams
 
 
 fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
@@ -213,6 +214,9 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             ) {
                 type = NavType.IntType
             },
+            navArgument(name = NavigationParams.ARG_SECTION_ID.value) {
+                type = NavType.IntType
+            },
             navArgument(
                 name = ARG_DIDI_ID
             ) {
@@ -229,6 +233,7 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 navController = navController,
                 surveyId = it
                     .arguments?.getInt(ARG_SURVEY_ID) ?: -1,
+                sectionId = it.arguments?.getInt(NavigationParams.ARG_SECTION_ID.value) ?: 0,
                 surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
                 fromScreen = it.arguments?.getString(
                     ARG_FROM_SCREEN

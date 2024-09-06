@@ -2,6 +2,11 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,12 +16,17 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchMissionDataUseCase: FetchMissionDataUseCase,
     val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSurveyDataFromNetworkUseCase: FetchSurveyDataFromNetworkUseCase,
+    val fetchDidiDetailsFromNetworkUseCase: FetchDidiDetailsFromNetworkUseCase,
     val contentDownloaderUseCase: ContentDownloaderUseCase,
     val fetchLanguageUseCase: FetchLanguageUseCase,
     val fetchUserDetailUseCase: FetchUserDetailUseCase,
     val fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
     val formUseCase: FormUseCase,
     val moneyJournalUseCase: FetchMoneyJournalUseCase,
+    val assetJournalUseCase: FetchAssetJournalUseCase,
+    val livelihoodUseCase: LivelihoodUseCase,
+    val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
+    val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -31,6 +41,7 @@ class FetchAllDataUseCase @Inject constructor(
             fetchMissionDataUseCase.getAllMissionList()
 
             fetchContentDataFromNetworkUseCase.invoke()
+
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)
             CoroutineScope(Dispatchers.IO).launch {
@@ -63,6 +74,21 @@ class FetchAllDataUseCase @Inject constructor(
                     moneyJournalUseCase.invoke()
                 }
             }
+            if (isMissionDataFetched && fetchMissionDataUseCase.isActivityTypeAvailable(
+                    LivelihoodActivityType
+                ) != 0
+            ) {
+                livelihoodUseCase.invoke()
+            }
+            if (isMissionDataFetched && fetchMissionDataUseCase.isActivityTypeAvailable(
+                    LivelihoodActivityType
+                ) != 0
+            ) {
+                fetchLivelihoodSaveEventUseCase.invoke()
+                fetchLivelihoodOptionNetworkUseCase.invoke()
+                assetJournalUseCase.invoke()
+            }
+        }
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
             }
@@ -82,4 +108,9 @@ class FetchAllDataUseCase @Inject constructor(
     }
 
 
+
+    //TODO Temp code remove after data is fetched from API
+    fun getStateId() = coreSharedPrefs.getStateId()
 }
+
+const val LivelihoodActivityType = "Livelihood"

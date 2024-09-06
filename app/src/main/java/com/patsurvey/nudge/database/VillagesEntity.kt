@@ -67,6 +67,11 @@ data class VillageEntity(
     @SerializedName("isDataLoadTriedOnce")
     @Expose
     @ColumnInfo(name = "isDataLoadTriedOnce")
-    val isDataLoadTriedOnce: Int = 0
+    val isDataLoadTriedOnce: Int = 0,
+
+    @SerializedName("isActive")
+    @Expose
+    @ColumnInfo(name = "isActive")
+    val isActive: Int = 1
 
 )

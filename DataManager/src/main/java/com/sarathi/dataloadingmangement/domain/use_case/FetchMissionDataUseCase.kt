@@ -44,9 +44,7 @@ class FetchMissionDataUseCase @Inject constructor(
         }
     }
 
-    suspend fun getAllMission(): List<MissionUiModel> {
-        return repository.getAllMission()
-    }
+
     suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
         return repository.isMissionLoaded(missionId, programId)
     }
@@ -86,5 +84,12 @@ class FetchMissionDataUseCase @Inject constructor(
         }
         return false
     }
+
+    suspend fun getAllMission(): List<MissionUiModel> {
+        return repository.getAllMission()
+    }
+
+    suspend fun isActivityTypeAvailable(activityType: String): Int =
+        repository.isActivityAvailable(activityType)
 
 }

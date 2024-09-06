@@ -21,6 +21,17 @@ interface FormUiConfigDao {
         formType: String = FORM_E
     ): List<FormUiConfigEntity>
 
+    @Query("select value from form_ui_config_table where userId=:uniqueUserIdentifier and activityId=:activityId and missionId=:missionId and componentType=:formType and `key`=:key and language=:languageCode")
+    fun getFormConfigForKey(
+        uniqueUserIdentifier: String,
+        activityId: Int,
+        missionId: Int,
+        key: String,
+        languageCode: String,
+        formType: String = FORM_E
+    ): String?
+
+
     @Query("Delete from  form_ui_config_table where  userId=:uniqueUserIdentifier and activityId=:activityId and missionId=:missionId and componentType=:formType")
     fun deleteActivityFormUiConfig(
         uniqueUserIdentifier: String,

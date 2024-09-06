@@ -20,12 +20,12 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
         try {
             activityConfigDao.getSurveyIds(missionId).forEach { surveyId ->
                 callSurveyApi(
-                    SurveyRequest(
-                        referenceId = getReferenceId(),
-                        referenceType = STATE,
-                        surveyId = surveyId
+                        SurveyRequest(
+                            referenceId = getReferenceId(),
+                            referenceType = STATE,
+                            surveyId = surveyId
+                        )
                     )
-                )
             }
             return false
         } catch (apiException: ApiException) {

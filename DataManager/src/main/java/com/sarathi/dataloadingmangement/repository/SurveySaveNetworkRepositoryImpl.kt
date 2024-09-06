@@ -166,7 +166,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         ).activityId
         return activityConfigDao.getActivityConfigWithSection(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            activityId = activityId
+            activityId = activityId ?: 0
         ).activityConfigId
     }
 

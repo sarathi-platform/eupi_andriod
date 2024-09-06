@@ -41,4 +41,6 @@ interface IMissionRepository {
 
     suspend fun isMissionLoaded(missionId: Int, programId: Int): Int
     suspend fun setMissionLoaded(missionId: Int, programId: Int)
+    suspend fun isActivityAvailable(activityType: String): Int
+
 }

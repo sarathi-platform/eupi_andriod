@@ -470,5 +470,6 @@
     <string name="only_one_entry_can_be_added">কেৱল এটা প্ৰবিষ্টি যোগ কৰিব পাৰি</string>
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="form_e">Form C</string>
 
 </resources>

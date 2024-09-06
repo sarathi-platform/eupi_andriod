@@ -104,8 +104,8 @@ class FormRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getFormEFileName(): String {
-        return "${coreSharedPrefs.getMobileNo()}_FORM_E_${
+    override fun getFormEFileName(pdfName: String): String {
+        return "${coreSharedPrefs.getMobileNo()}_${pdfName}_${
             System.currentTimeMillis().toDateInMMDDYYFormat()
         }"
     }

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="didi_sub_tab_title">
+        <item quantity="one">Didi</item>
+        <item quantity="other">Didi</item>
+    </plurals>
+
+    <plurals name="small_group_sub_tab_title">
+        <item quantity="one">फिसा हान्जानि</item>
+        <item quantity="other">फिसा हान्जानि</item>
+    </plurals>
+
+    <plurals name="delete_attendance_confirmation_msg">
+        <item quantity="one">नोंथाङा रोखा नामा दि नोंथाङा फिसा हानजानि नुजाथिनायखौ खोमोरनो लुबैदों?</item>
+        <item quantity="other">नोंथाङा रोखा नामा दि नोंथाङा फिसा हानजानि नुजाथिनायखौ खोमोरनो लुबैदों?</item>
+    </plurals>
+
+    <plurals name="confirmation_alert_dialog_title">
+        <item quantity="one">"नों थार नामा? "</item>
+        <item quantity="other">"नों थार नामा? "</item>
+    </plurals>
+
+    <plurals name="no">
+        <item quantity="one">गैया</item>
+        <item quantity="other">गैया</item>
+    </plurals>
+
+    <plurals name="yes">
+        <item quantity="one">नंगौ</item>
+        <item quantity="other">नंगौ</item>
+    </plurals>
+
+    <plurals name="take_attendance_button_text">
+        <item quantity="one">नुजाथिनायखौ ला।</item>
+        <item quantity="other">नुजाथिनायखौ ला।</item>
+    </plurals>
+
+    <plurals name="date_range_picker_label_text">
+        <item quantity="one">निफ्राय - निसिम</item>
+        <item quantity="other">निफ्राय - निसिम</item>
+    </plurals>
+
+    <plurals name="attendance_history_header_text">
+        <item quantity="one">"हाजिरानि  जारिमिन: "</item>
+        <item quantity="other">"हाजिरानि  जारिमिन: "</item>
+    </plurals>
+
+    <plurals name="edit_button_text">
+        <item quantity="one">सुजु</item>
+        <item quantity="other">सुजु</item>
+    </plurals>
+
+<!--    <plurals name="total_didis_label_text">-->
+<!--        <item quantity="one">गासै आब'मोन - %1$s</item>-->
+<!--        <item quantity="other">गासै आब'मोन - %1$s</item>-->
+<!--    </plurals>-->
+
+    <plurals name="attendance_percentage_text">
+        <item quantity="one">जारिमिन - %1$s</item>
+        <item quantity="other">जारिमिन - %1$s</item>
+    </plurals>
+
+    <plurals name="total_count_text">
+        <item quantity="one">गासै - %1$s/%2$s</item>
+        <item quantity="other">गासै - %1$s/%2$s</item>
+    </plurals>
+
+    <plurals name="data_selector">
+        <item quantity="one">>Date Selector</item>
+        <item quantity="other">>Date Selector</item>
+    </plurals>
+
+    <plurals name="all">
+        <item quantity="one">गासैबो</item>
+        <item quantity="other">गासैबो</item>
+    </plurals>
+
+    <plurals name="delete_button_text">
+        <item quantity="one">खोमोर।</item>
+        <item quantity="other">खोमोर।</item>
+    </plurals>
+
+    <plurals name="sg_ok">
+        <item quantity="one">"जागोन "</item>
+        <item quantity="other">"जागोन "</item>
+    </plurals>
+
+    <string name="data_change_not_allow">"Date changes are not allowed for attendance edits!"</string>
+
+    <plurals name="submit">
+        <item quantity="one">गथाय</item>
+        <item quantity="other">गथाय</item>
+    </plurals>
+
+    <plurals name="do_you_want_mark_all_absent">
+        <item quantity="one">Do you want to mark all absent</item>
+        <item quantity="other">Do you want to mark all absent</item>
+    </plurals>
+
+    <plurals name="attendace_alredy_marked_for_the_date">
+        <item quantity="one">Attendance already marked for the date:</item>
+        <item quantity="other">Attendance already marked for the date:</item>
+    </plurals>
+
+    <plurals name="search_didi">
+        <item quantity="one">आब\'खौ नागिर</item>
+        <item quantity="other">Search Didi</item>
+    </plurals>
+</resources>

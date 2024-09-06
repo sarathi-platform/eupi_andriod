@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.CoreObserverManager
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -38,6 +39,7 @@ class ActivityScreenViewModel @Inject constructor(
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    var showDialog = mutableStateOf<Boolean>(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -107,7 +109,12 @@ class ActivityScreenViewModel @Inject constructor(
     fun getContentValue(actvityUiList: List<ActivityUiModel>) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             actvityUiList.forEach {
-                it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
+                it.icon = it.icon?.let { it1 ->
+                    fetchContentUseCase.getContentValue(
+                        it1,
+                        DEFAULT_LANGUAGE_CODE
+                    )
+                }
             }
         }
     }
