@@ -106,16 +106,19 @@ fun ActivityRowCard(
                             )
                         }
 
-                        ActivityTypeEnum.SELECT.name.lowercase(
-                            Locale.ENGLISH
-                        ) -> {
-                            navigateToActivitySelectTaskScreen(
-                                navController,
-                                missionId = activity.missionId,
-                                activityId = activity.activityId,
-                                activityName = activity.description
-                            )
-                        }
+                    ActivityTypeEnum.SELECT.name.lowercase(
+                        Locale.ENGLISH
+                    ) ,
+                    ActivityTypeEnum.TRAINING.name.lowercase(
+                        Locale.ENGLISH
+                    )-> {
+                    navigateToActivitySelectTaskScreen(
+                        navController,
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        activityName = activity.description
+                    )
+                }
                     }
                 }
             }
