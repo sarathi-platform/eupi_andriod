@@ -19,25 +19,24 @@ data class RequestStatusEntity(
     @ColumnInfo("status")
     val status: String? = BLANK_STRING,
 
-    @ColumnInfo("request_id")
+    @ColumnInfo("requestId")
     val requestId: String? = BLANK_STRING,
 
-    @ColumnInfo("created_date")
+    @ColumnInfo("createdDate")
     @TypeConverters(DateConverter::class)
     val createdDate: Date = System.currentTimeMillis().toDate(),
 
-    @ColumnInfo("modified_date")
+    @ColumnInfo("modifiedDate")
     @TypeConverters(DateConverter::class)
-    val modified_date: Date,
+    val modifiedDate: Date,
 
     @ColumnInfo("createdBy")
     val createdBy: String,
 
-    @ColumnInfo("mobile_number")
+    @ColumnInfo("mobileNumber")
     val mobileNumber: String,
 
-    @ColumnInfo("event_count")
+    @ColumnInfo("eventCount")
     val eventCount: Int? = 0,
-
 
     )

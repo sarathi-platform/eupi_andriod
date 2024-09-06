@@ -260,7 +260,7 @@ class SyncApiRepository @Inject constructor(
                 status = status,
                 eventStatusId = 0,
                 createdBy = prefRepo.getUserId(),
-                modified_date = System.currentTimeMillis().toDate()
+                modifiedDate = System.currentTimeMillis().toDate()
             )
         )
     }
