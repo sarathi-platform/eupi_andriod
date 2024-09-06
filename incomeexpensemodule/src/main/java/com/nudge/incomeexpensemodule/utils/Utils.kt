@@ -12,7 +12,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivel
 
 fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
     return if (item.assetJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OutFlow.name.toLowerCase()) == true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
     ) {
         "- ${item.assetCount}"
     } else {
@@ -22,7 +22,7 @@ fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
 
 fun getAmountColorForEvent(item: SubjectLivelihoodEventSummaryUiModel): TextStyle {
     return if (item.moneyJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OutFlow.name.toLowerCase()) == true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
     ) {
         newMediumTextStyle.copy(color = redOffline)
     } else
@@ -32,7 +32,7 @@ fun getAmountColorForEvent(item: SubjectLivelihoodEventSummaryUiModel): TextStyl
 
 fun getAmountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
     return if (item.moneyJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OutFlow.name.toLowerCase()) == true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
     ) {
         "- ₹ ${item.transactionAmount}"
     } else {

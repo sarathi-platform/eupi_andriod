@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.theme.greenOnline
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import java.io.File
 
 fun statusColor(status: String): Color = when (status) {
@@ -56,4 +57,15 @@ fun getFilePathUri(filePath: String): Uri? {
     }
     val isFilePathExists = isFilePathExists(filePath)
     return if (isFilePathExists) Uri.fromFile(getFilePath(filePath)) else null
+}
+
+
+fun Map<Int, HashMap<String, TaskCardModel>>.toHashMap(): HashMap<Int, HashMap<String, TaskCardModel>> {
+    val hashMap = hashMapOf<Int, HashMap<String, TaskCardModel>>()
+    this.forEach {
+
+        hashMap[it.key] = it.value
+
+    }
+    return hashMap
 }

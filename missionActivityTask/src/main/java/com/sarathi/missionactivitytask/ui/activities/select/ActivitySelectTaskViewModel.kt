@@ -178,6 +178,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 status = status
             )
             checkButtonValidation()
+            updateProgress()
         }
     }
 

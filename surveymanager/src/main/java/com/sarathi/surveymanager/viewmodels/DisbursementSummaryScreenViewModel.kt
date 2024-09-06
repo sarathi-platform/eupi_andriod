@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -22,6 +23,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyUIModel
+import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyCardTag
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
@@ -48,6 +50,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val activityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
+    private val formUiConfigUseCase: GetFormUiConfigUseCase
 
     ) : BaseViewModel() {
     private val _taskList =
@@ -64,6 +67,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
     var isActivityCompleted = mutableStateOf(false)
+    var formGeneratedMessage = mutableStateOf(BLANK_STRING)
     var isAddDisbursementButtonEnable = mutableStateOf(true)
     var isManualTaskCompletion = mutableStateOf(true)
     private var sanctionedAmount: Int = 0
@@ -96,6 +100,11 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             setGrantComponentDTO()
             taskEntity = getTaskUseCase.getTask(taskId)
+            formGeneratedMessage.value = formUiConfigUseCase.getFormConfigValue(
+                key = GrantTaskFormSlots.TASK_STATUS_GENERATED_FORM.name,
+                activityId = taskEntity!!.activityId,
+                missionId = taskEntity!!.missionId,
+            )
             _taskList.value =
                 saveSurveyAnswerUseCase.getAllSaveAnswer(
                     activityConfigId = activityConfigId,

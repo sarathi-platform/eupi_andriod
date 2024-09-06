@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -53,6 +53,7 @@ import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
@@ -349,7 +350,10 @@ fun CardHeader(
                 top = dimen_10_dp,
                 bottom = dimen_5_dp,
                 end = dimen_16_dp
-            ),
+            )
+            .clickable {
+                title?.let { onExpendClick(expanded, it) }
+            },
         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -492,15 +496,15 @@ private fun RadioTypeOptionsUI(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(100.dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
-        ) {
+            .heightIn(dimen_100_dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
+    ) {
         item {
             questionUiModel?.options?.sortedBy { it.order }?.let {
                 when (questionUiModel.type) {
-                    QuestionType.RadioButton.name -> {
+                    QuestionType.RadioButton.name,
+                    QuestionType.Toggle.name -> {
                         val selectedValue =
                             it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
-
                         RadioOptionTypeComponent(
                             optionItemEntityState = it,
                             isTaskMarkedNotAvailable = taskMarkedNotAvailable,

@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
@@ -19,6 +20,16 @@ class FormConfigRepositoryImpl @Inject constructor(
             activityId = activityId,
             missionId = missionId
         )
+    }
+
+    override suspend fun getFormUiValue(activityId: Int, missionId: Int, key: String): String {
+        return formUiConfigDao.getFormConfigForKey(
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId,
+            missionId = missionId,
+            key = key,
+            languageCode = coreSharedPrefs.getAppLanguage()
+        ) ?: BLANK_STRING
     }
 
 

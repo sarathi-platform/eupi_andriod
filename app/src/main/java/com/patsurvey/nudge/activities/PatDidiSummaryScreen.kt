@@ -111,6 +111,7 @@ fun PatDidiSummaryScreen(
     isOnline: Boolean = true,
     patDidiSummaryViewModel: PatDidiSummaryViewModel,
     didiId: Int,
+    isComingFromPatSummaryScreen: Boolean = false,
     onNavigation: () -> Unit
 ) {
     val context = LocalContext.current
@@ -126,6 +127,7 @@ fun PatDidiSummaryScreen(
         patDidiSummaryViewModel.getDidiDetails(didiId)
         delay(100)
         shgFlag.value = patDidiSummaryViewModel.didiEntity.value.shgFlag
+        ableBodiedFlag.value = patDidiSummaryViewModel.didiEntity.value.ableBodiedFlag
     }
 
     if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
@@ -1049,10 +1051,14 @@ fun PatDidiSummaryScreen(
                         PageFrom.DIDI_LIST_PAGE.ordinal
                     )
                     val questionIndex = 0
-                    if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.isUserBPC()) {
-                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/$questionIndex")
+                    if (isComingFromPatSummaryScreen) {
+                        navController.popBackStack()
                     } else {
-                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/$questionIndex")
+                        if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.isUserBPC()) {
+                            navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/$questionIndex")
+                        } else {
+                            navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/$questionIndex")
+                        }
                     }
                 },
                 negativeButtonOnClick = {}
