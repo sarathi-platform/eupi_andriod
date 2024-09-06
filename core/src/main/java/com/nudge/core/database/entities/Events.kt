@@ -55,7 +55,7 @@ data class Events (
     @ColumnInfo("payloadLocalId")
     val payloadLocalId: String?,
 
-    @ColumnInfo("request_id")
+    @ColumnInfo("requestId")
     val requestId:String?= BLANK_STRING,
 
     @ColumnInfo("eventId")

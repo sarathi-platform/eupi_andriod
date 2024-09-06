@@ -5,12 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.RequestStatusTable
+import com.nudge.core.REQUEST_STATUS_TABLE_NAME
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.toDate
 import java.util.Date
 
-@Entity(tableName = RequestStatusTable)
+@Entity(tableName = REQUEST_STATUS_TABLE_NAME)
 data class RequestStatusEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
