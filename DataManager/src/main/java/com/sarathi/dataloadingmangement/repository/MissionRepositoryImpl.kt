@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -187,7 +188,14 @@ class MissionRepositoryImpl @Inject constructor(
 
             }
         } catch (exception: Exception) {
-            Log.e("Exception", exception.localizedMessage)
+            CoreAppDetails.getContext()
+                ?.let {
+                    CoreLogger.e(
+                        context = it,
+                        "Exception",
+                        exception.localizedMessage ?: BLANK_STRING
+                    )
+                }
         }
     }
 
