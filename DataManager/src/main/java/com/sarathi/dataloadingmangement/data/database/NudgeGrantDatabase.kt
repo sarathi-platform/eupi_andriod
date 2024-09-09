@@ -104,7 +104,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLiveliho
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 3
+const val NUDGE_GRANT_DATABASE_VERSION = 4
 
 @Database(
     entities = [
