@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,9 +46,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
@@ -70,6 +74,8 @@ fun GridTypeComponent(
     isRequiredField: Boolean = true,
     questionIndex: Int,
     maxCustomHeight: Dp,
+    showCardView: Boolean = true,
+    isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
@@ -101,7 +107,7 @@ fun GridTypeComponent(
 
         Card(
             elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
+                defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
             ),
             shape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier
@@ -159,11 +165,11 @@ fun GridTypeComponent(
                                         optionUiModelList
                                             ?: emptyList()
                                     ) { _index, optionItem ->
-
                                         GridOptionCard(
                                             optionItem = optionItem,
                                             isEnabled = areOptionsEnabled,
-                                            isOptionSelected = optionItem.isSelected.value()
+                                            isOptionSelected = optionItem.isSelected.value(),
+                                            isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
                                         ) { selectedOptionId, isSelected ->
 
                                             onAnswerSelection(_index, isSelected)
@@ -221,12 +227,13 @@ fun GridTypeComponent(
 fun GridOptionCard(
     modifier: Modifier = Modifier,
     optionItem: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>,
     isEnabled: Boolean = true,
     isOptionSelected: Boolean = false,
     onOptionSelected: (Int, isSelected: Boolean) -> Unit
 ) {
 
-    val isSelected = remember {
+    val isSelected = remember(optionItem.description) {
         mutableStateOf(isOptionSelected)
     }
 
@@ -235,7 +242,12 @@ fun GridOptionCard(
             .fillMaxWidth()
             .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
             .clip(RoundedCornerShape(6.dp))
-            .background(if (isSelected.value) blueDark else languageItemActiveBg)
+            .background(
+                selectBackgroundColor(
+                    isSelected.value,
+                    isTaskMarkedNotAvailable
+                )
+            )
             .clickable {
                 if (isEnabled) {
                     isSelected.value = !isSelected.value
@@ -259,8 +271,10 @@ fun GridOptionCard(
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     ),
-                    color = if (isSelected.value) white else textColorDark.copy(
-                        alpha = if (isEnabled) 1f else 0.5f
+                    color = selectTextColor(
+                        selectedValueState = isSelected.value,
+                        isTaskMarkedNotAvailable = isTaskMarkedNotAvailable,
+                        isEnabled = isEnabled
                     )
                 )
             }
@@ -272,6 +286,43 @@ fun GridOptionCard(
         )
     }
 
+}
+
+@Composable
+fun selectBackgroundColor(
+    selectedValueState: Boolean,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+): Color {
+    return if (isTaskMarkedNotAvailable.value)
+        GreyLight
+    else {
+        if (selectedValueState) {
+            blueDark
+        } else {
+            languageItemActiveBg
+        }
+    }
+}
+
+@Composable
+fun selectTextColor(
+    selectedValueState: Boolean,
+    isTaskMarkedNotAvailable: MutableState<Boolean>,
+    isEnabled: Boolean
+): Color {
+    return if (isTaskMarkedNotAvailable.value)
+        textColorDark.copy(
+            alpha = if (isEnabled) 1f else 0.5f
+        )
+    else {
+        if (selectedValueState) {
+            white
+        } else {
+            textColorDark.copy(
+                alpha = if (isEnabled) 1f else 0.5f
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)

@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -58,8 +59,6 @@ open class ActivitySelectTaskViewModel @Inject constructor(
 ) {
 
     var referenceId: String = BLANK_STRING
-    var grantID: Int = 0
-    var grantType: String = BLANK_STRING
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     val questionList = arrayListOf<QuestionUiModel>()
 
@@ -97,7 +96,12 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             }
             if (!isActivityCompleted.value) {
 
-                expandedIds.addAll(taskUiList.value.map { it.taskId })
+                taskUiList.value.map { it.taskId }.distinct().forEach {
+                    if (!expandedIds.contains(it)) {
+                        expandedIds.add(it)
+                    }
+                }
+
             }
             withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -139,8 +143,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 subjectType = subjectType,
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
-                grantId = grantID,
-                grantType = ActivityTypeEnum.getActivityTypeFromId(grantID).name,
+                grantId = activityConfigUiModelWithoutSurvey?.activityTypeId.value(),
+                grantType = activityConfigUiModelWithoutSurvey?.activityType.value(),
                 taskId = taskId,
                 uriList = ArrayList(),
                 activityReferenceId = activityConfigUiModelWithoutSurvey?.referenceId,
@@ -158,8 +162,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             subjectId = taskEntity.subjectId ?: DEFAULT_ID,
             taskId = taskEntity.taskId,
             referenceId = referenceId,
-            grantId = grantID,
-            grantType = grantType
+            grantId = activityConfigUiModelWithoutSurvey?.activityTypeId.value(),
+            grantType = activityConfigUiModelWithoutSurvey?.activityType.value()
         )
     }
 

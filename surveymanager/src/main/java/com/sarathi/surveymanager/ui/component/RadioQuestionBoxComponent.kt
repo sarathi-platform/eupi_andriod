@@ -66,7 +66,7 @@ fun RadioQuestionBoxComponent(
 ) {
 
     val scope = rememberCoroutineScope()
-    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
+    var selectedIndex by remember(questionIndex) { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
     SideEffect {

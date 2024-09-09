@@ -60,7 +60,6 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -207,6 +206,19 @@ fun ExpandableTaskCardRow(
                     label = BLANK_STRING,
                     icon = null
                 )
+
+                questionUIModel?.let { question ->
+                    question.options?.forEach {
+                        it.isSelected = false
+                        it.selectedValue = BLANK_STRING
+                    }
+                    viewModel.saveSingleAnswerIntoDb(
+                        currentQuestionUiModel = questionUIModel,
+                        subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
+                        taskId = task.key
+                    )
+                }
+
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
@@ -443,8 +455,8 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
                 .padding(
                     start = dimen_0_dp,
                     end = dimen_16_dp,
-                    bottom = dimen_8_dp,
-                    top = dimen_8_dp
+                    bottom = dimen_10_dp,
+                    top = dimen_10_dp
                 ),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
@@ -509,7 +521,8 @@ private fun RadioTypeOptionsUI(
                             areOptionsEnabled = !isActivityCompleted,
                             maxCustomHeight = customGridHeight(it.size),
                             isQuestionDisplay = false,
-
+                            showCardView = false,
+                            isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                             onAnswerSelection = { selectedOptionIndex, isSelected ->
                                 if (!isActivityCompleted) {
                                     questionUiModel.options?.get(selectedOptionIndex)?.isSelected =

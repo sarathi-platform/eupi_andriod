@@ -50,9 +50,13 @@ fun RadioOptionTypeComponent(
     }
     val localDensity = LocalDensity.current
 
-    val selectedValueState = remember(selectedValue, optionItemEntityState) {
-        mutableStateOf(selectedValue)
-    }
+    val selectedValueState =
+        remember(selectedValue, optionItemEntityState, isTaskMarkedNotAvailable) {
+            if (isTaskMarkedNotAvailable.value)
+                mutableStateOf(BLANK_STRING)
+            else
+                mutableStateOf(selectedValue)
+        }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -82,10 +86,11 @@ fun RadioOptionTypeComponent(
                 optionItemEntityState.forEachIndexed { index, optionValueText ->
                     OptionCard(
                         modifier = Modifier.weight(1f),
-                        textColor = if (selectedValueState.value.equals(
-                                optionValueText.description, ignoreCase = true
-                            )
-                        ) white else textColorDark,
+                        textColor = selectTextColor(
+                            selectedValueState,
+                            optionValueText,
+                            isTaskMarkedNotAvailable
+                        ),
                         backgroundColor = selectBackgroundColor(
                             selectedValueState,
                             optionValueText,
@@ -113,19 +118,52 @@ fun RadioOptionTypeComponent(
 }
 
 @Composable
-private fun selectBackgroundColor(
+fun selectBackgroundColor(
     selectedValueState: MutableState<String>,
     optionValueText: OptionsUiModel,
     isTaskMarkedNotAvailable: MutableState<Boolean>
-) = if (selectedValueState.value == BLANK_STRING
-    && optionValueText.selectedValue.toString() == BLANK_STRING
-) {
-    if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
-} else if (selectedValueState.value.equals(
-        optionValueText.description.toString(), ignoreCase = true
-    )
-) blueDark else {
-    if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
+): Color {
+    return if (isTaskMarkedNotAvailable.value)
+        GreyLight
+    else {
+        if (selectedValueState.value == BLANK_STRING
+            && optionValueText.selectedValue.toString() == BLANK_STRING
+        ) {
+            Color.White
+        } else if (selectedValueState.value.equals(
+                optionValueText.description.toString(), ignoreCase = true
+            )
+        ) {
+            blueDark
+        } else {
+            Color.White
+        }
+    }
+}
+
+@Composable
+fun selectTextColor(
+    selectedValueState: MutableState<String>,
+    optionValueText: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+): Color {
+
+    return if (isTaskMarkedNotAvailable.value)
+        textColorDark
+    else {
+        if (selectedValueState.value == BLANK_STRING
+            && optionValueText.selectedValue.toString() == BLANK_STRING
+        ) {
+            textColorDark
+        } else if (selectedValueState.value.equals(
+                optionValueText.description.toString(), ignoreCase = true
+            )
+        ) {
+            white
+        } else {
+            textColorDark
+        }
+    }
 }
 
 @Composable
