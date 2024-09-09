@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.sync.home.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
@@ -21,16 +27,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
@@ -43,10 +49,15 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.FORM_C_TOPIC
+import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
@@ -64,6 +75,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -137,10 +149,12 @@ fun ObserveEventCounts(
         val eventListLive = viewModel.syncEventDetailUseCase.getSyncEventsUseCase.getTotalEvents()
         eventListLive.observe(lifeCycleOwner) { eventList ->
             val (totalDataCount, successDataCount) = eventList.filterAndCountEvents {
-                !it.name.toLowerCase(Locale.current).contains(IMAGE_STRING)
+                !it.name.lowercase(Locale.ENGLISH)
+                    .contains(IMAGE_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC
             }
             val (totalImageCount, successImageCount) = eventList.filterAndCountEvents {
-                it.name.toLowerCase(Locale.current).contains(IMAGE_STRING)
+                it.name.lowercase(Locale.ENGLISH)
+                    .contains(IMAGE_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC
             }
             viewModel.totalImageEventCount.intValue = totalImageCount
             viewModel.imageEventProgress.floatValue =
@@ -161,6 +175,7 @@ fun ObserveEventCounts(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SyncHomeContent(
     navController: NavController,
@@ -170,6 +185,21 @@ fun SyncHomeContent(
     scope: CoroutineScope
 ) {
     val context = LocalContext.current
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.loaderState.value.isLoaderVisible,
+        {
+            if (isOnline(context)) {
+                viewModel.loaderState.value.isLoaderVisible = true
+                viewModel.refreshConsumerStatus()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+        })
     ToolbarWithMenuComponent(
         title = stringResource(id = R.string.sync_all_data),
         modifier = Modifier.fillMaxSize(),
@@ -182,33 +212,57 @@ fun SyncHomeContent(
                 isNetworkAvailable = isNetworkAvailable
             )
         }) {
-        Column(
+        Box(
             modifier = Modifier
-                .background(Color.White)
-                .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
                 .fillMaxSize()
-        ) {
-            LastSyncTime(viewModel) {
-                CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
-                )
-                if (viewModel.isSyncStarted.value)
-                    viewModel.cancelSyncUploadWorker()
+                .pullRefresh(pullRefreshState)
+        )
+        {
+            PullRefreshIndicator(
+                refreshing = viewModel.loaderState.value.isLoaderVisible,
+                state = pullRefreshState,
+                modifier = Modifier
+                    .padding(top = dimen_50_dp)
+                    .align(Alignment.TopCenter)
+                    .zIndex(1f),
+                contentColor = blueDark,
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
+                    .fillMaxSize()
+            ) {
+                item {
+                    LastSyncTime(viewModel) {
+                        CoreLogger.d(
+                            context,
+                            "SyncHomeScreen",
+                            "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
+                        )
+                        if (viewModel.isSyncStarted.value)
+                            viewModel.cancelSyncUploadWorker()
+                    }
+                }
+                item {
+                    SyncDataCard(
+                        viewModel = viewModel,
+                        context = context,
+                        isNetworkAvailable = isNetworkAvailable
+                    )
+                }
+                item {
+                    SyncImageCard(
+                        viewModel = viewModel,
+                        context = context,
+                        isNetworkAvailable = isNetworkAvailable,
+                        totalImageEventCount = viewModel.totalImageEventCount
+                    )
+                }
+                item {
+                    HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
+                }
             }
-            SyncDataCard(
-                viewModel = viewModel,
-                context = context,
-                isNetworkAvailable = isNetworkAvailable
-            )
-            SyncImageCard(
-                viewModel = viewModel,
-                context = context,
-                isNetworkAvailable = isNetworkAvailable,
-                totalImageEventCount = viewModel.totalImageEventCount
-            )
-            HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
         }
     }
 }

@@ -9,9 +9,20 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposito
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.nudge.syncmanager.domain.repository.SyncApiRepository
+import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
+import com.nudge.syncmanager.domain.repository.SyncRepository
+import com.nudge.syncmanager.domain.repository.SyncRepositoryImpl
+import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
+import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
+import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
+import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
@@ -165,13 +176,16 @@ object UseCaseModule {
     @Singleton
     fun provideSyncHomeUseCase(
         repository: SyncHomeRepository,
-        eventsWriterRepository: EventsWriterRepository
+        eventsWriterRepository: EventsWriterRepository,
+        syncRepository: SyncRepository,
+        syncAPiRepository: SyncApiRepository
     ): SyncEventDetailUseCase {
         return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
             getSyncEventsUseCase = GetSyncEventsUseCase(repository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
-            fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository)
+            fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository),
+            syncAPIUseCase = SyncAPIUseCase(syncRepository, syncAPiRepository)
         )
     }
 
@@ -196,6 +210,56 @@ object UseCaseModule {
     ):SyncHistoryUseCase{
         return SyncHistoryUseCase(
            getSyncHistoryUseCase = GetSyncHistoryUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncRepository(
+        corePrefRepo: CorePrefRepo,
+        requestStatusDao: RequestStatusDao,
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao,
+        apiService: SyncApiService,
+        eventsDao: EventsDao
+    ): SyncRepository {
+        return SyncRepositoryImpl(
+            corePrefRepo = corePrefRepo,
+            requestStatusDao = requestStatusDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao,
+            apiService = apiService,
+            eventDao = eventsDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncApiRepository(
+        apiService: SyncApiService,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+    ): SyncApiRepository {
+        return SyncApiRepositoryImpl(
+            apiService = apiService,
+            imageStatusDao = imageStatusDao,
+            eventStatusDao = eventStatusDao,
+            corePrefRepo = corePrefRepo
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncManagerUseCase(
+        repository: SyncRepository,
+        syncAPiRepository: SyncApiRepository
+    ): SyncManagerUseCase {
+        return SyncManagerUseCase(
+            addUpdateEventUseCase = AddUpdateEventUseCase(repository),
+            syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
+            getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
+            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository)
         )
     }
 }

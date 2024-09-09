@@ -1,9 +1,8 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.domain.repository
 
-
-import android.content.Context
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CONSUMER
+import com.nudge.core.CRP_USER_TYPE
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.SOMETHING_WENT_WRONG
@@ -17,52 +16,53 @@ import com.nudge.core.database.entities.RequestStatusEntity
 import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.datamodel.RequestIdCountModel
 import com.nudge.core.json
-import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.model.request.EventConsumerRequest
-import com.nudge.core.model.request.EventRequest
-import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
-import com.nudge.core.model.response.SyncImageStatusResponse
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_EMAIL
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_NAME
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_NAME
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.network.SyncApiService
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import javax.inject.Inject
 
-class SyncApiRepository @Inject constructor(
+class SyncRepositoryImpl(
     val apiService: SyncApiService,
-    private val eventDao: EventsDao,
-    private val eventStatusDao: EventStatusDao,
-    private val prefRepo: CorePrefRepo,
-    private val imageStatusDao: ImageStatusDao,
-    private val requestStatusDao: RequestStatusDao
-) {
-    suspend fun syncProducerEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
-        val eventRequest: List<EventRequest> = events.map {
-            it.toEventRequest()
-        }
-        return apiService.syncEvent(eventRequest)
+    val eventDao: EventsDao,
+    val eventStatusDao: EventStatusDao,
+    val corePrefRepo: CorePrefRepo,
+    val imageStatusDao: ImageStatusDao,
+    val requestStatusDao: RequestStatusDao
+) : SyncRepository {
+
+    override fun getUserMobileNumber(): String {
+        return corePrefRepo.getMobileNo()
     }
 
-    suspend fun fetchAllImageEventDetails(eventIds: List<String>): List<ImageEventDetailsModel> {
+    override fun getUserID(): String {
+        return corePrefRepo.getUserId()
+    }
+
+    override fun getUserEmail(): String {
+        return corePrefRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun getUserName(): String {
+        return corePrefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun getLoggedInUserType(): String {
+        return corePrefRepo.getPref(PREF_KEY_TYPE_NAME, CRP_USER_TYPE) ?: CRP_USER_TYPE
+    }
+
+    override suspend fun fetchAllImageEventDetails(eventIds: List<String>): List<ImageEventDetailsModel> {
         return eventDao.fetchAllImageEventsWithImageDetails(
-            mobileNumber = prefRepo.getMobileNo(),
+            mobileNumber = corePrefRepo.getMobileNo(),
             eventIds = eventIds
         )
     }
 
-    fun loggedInUserType() = prefRepo.getUserType()
-
-
-    suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest)
-            : ApiResponseModel<List<SyncEventResponse>> {
-        return apiService.syncConsumerStatusApi(eventConsumerRequest)
-    }
-
-    suspend fun getPendingEventFromDb(
+    override suspend fun getPendingEventFromDb(
         batchLimit: Int,
         retryCount: Int,
         syncType: Int
@@ -75,41 +75,28 @@ class SyncApiRepository @Inject constructor(
             ),
             batchLimit = batchLimit,
             retryCount = retryCount,
-            mobileNumber = prefRepo.getMobileNo(),
+            mobileNumber = corePrefRepo.getMobileNo(),
             syncType = syncType
         )
     }
 
-    suspend fun syncImageToServer(
-        image: MultipartBody.Part,
-        imagePayload: RequestBody
-    ): ApiResponseModel<List<SyncImageStatusResponse>> {
-        return apiService.syncImage(imageFile = image, imagePayload = imagePayload)
-    }
-
-
-    suspend fun syncImageWithEventToServer(
-        imageList: List<MultipartBody.Part>,
-        imagePayload: RequestBody
-    ): ApiResponseModel<List<SyncEventResponse>> {
-        return apiService.syncImageWithEvent(imageFileList = imageList, imagePayload = imagePayload)
-    }
-
-    suspend fun getPendingEventCount(syncType: Int): Int {
+    override suspend fun getPendingEventCount(syncType: Int): Int {
         return eventDao.getSyncPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
                 EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
                 EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
             ),
-            mobileNumber = prefRepo.getMobileNo(),
+            mobileNumber = corePrefRepo.getMobileNo(),
             syncType = syncType
         )
     }
 
-    suspend fun updateSuccessEventStatus(context: Context, eventList: List<SyncEventResponse>) {
+    override suspend fun updateSuccessEventStatus(
+        eventList: List<SyncEventResponse>
+    ) {
         try {
-            prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
+            corePrefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             eventDao.updateSuccessEventStatus(eventList)
             eventList.forEach {
                 eventStatusDao.insert(
@@ -118,7 +105,7 @@ class SyncApiRepository @Inject constructor(
                         errorMessage = BLANK_STRING,
                         status = it.status,
                         mobileNumber = it.mobileNumber,
-                        createdBy = prefRepo.getUserId(),
+                        createdBy = corePrefRepo.getUserId(),
                         eventStatusId = 0,
                         requestId = it.requestId
                     )
@@ -127,25 +114,26 @@ class SyncApiRepository @Inject constructor(
             }
         } catch (ex: Exception) {
             CoreLogger.d(
-                context = context,
-                "SyncApiRepository",
+                context = CoreAppDetails.getApplicationContext().applicationContext,
+                "SyncRepositoryImpl",
                 "updateSuccessEventStatus: Exception: ${ex.message}"
             )
         }
-
     }
 
-    suspend fun updateFailedEventStatus(context: Context, eventList: List<SyncEventResponse>) {
+    override suspend fun updateFailedEventStatus(
+        eventList: List<SyncEventResponse>
+    ) {
         try {
             CoreLogger.d(
-                context,
+                CoreAppDetails.getApplicationContext().applicationContext,
                 "updateFailedEventStatus",
                 "Failed Event Details1: ${eventList.json()}"
             )
             eventDao.updateFailedEventStatus(eventList)
             eventList.forEach {
                 CoreLogger.d(
-                    context,
+                    CoreAppDetails.getApplicationContext().applicationContext,
                     "updateFailedEventStatus",
                     "Failed Event Details: ${it.json()}"
                 )
@@ -154,8 +142,8 @@ class SyncApiRepository @Inject constructor(
                         clientId = it.clientId,
                         errorMessage = it.errorMessage.ifEmpty { SOMETHING_WENT_WRONG },
                         status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-                        mobileNumber = prefRepo.getMobileNo(),
-                        createdBy = prefRepo.getUserId(),
+                        mobileNumber = corePrefRepo.getMobileNo(),
+                        createdBy = corePrefRepo.getUserId(),
                         eventStatusId = 0,
                         requestId = it.requestId
                     )
@@ -163,21 +151,23 @@ class SyncApiRepository @Inject constructor(
             }
         } catch (e: Exception) {
             CoreLogger.d(
-                context = context,
-                "SyncApiRepository",
+                context = CoreAppDetails.getApplicationContext().applicationContext,
+                "SyncRepositoryImpl",
                 "updateFailedEventStatus: Exception: ${e.message}"
             )
         }
     }
 
-    suspend fun updateEventConsumerStatus(context: Context, eventList: List<SyncEventResponse>) {
+    override suspend fun updateEventConsumerStatus(
+        eventList: List<SyncEventResponse>
+    ) {
         try {
             CoreLogger.d(
-                context = context,
-                "SyncApiRepository",
+                context = CoreAppDetails.getApplicationContext().applicationContext,
+                "SyncRepositoryImpl",
                 "updateEventConsumerStatus: ${eventList.json()}"
             )
-            prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
+            corePrefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             eventDao.updateConsumerStatus(eventList)
             eventList.forEach {
                 eventStatusDao.insert(
@@ -185,85 +175,97 @@ class SyncApiRepository @Inject constructor(
                         clientId = it.clientId,
                         errorMessage = it.errorMessage,
                         status = it.status,
-                        mobileNumber = prefRepo.getMobileNo(),
-                        createdBy = prefRepo.getUserId(),
+                        mobileNumber = corePrefRepo.getMobileNo(),
+                        createdBy = corePrefRepo.getUserId(),
                         eventStatusId = 0
                     )
                 )
             }
             imageStatusDao.updateImageConsumerStatus(
                 eventList = eventList,
-                mobileNumber = prefRepo.getMobileNo()
+                mobileNumber = corePrefRepo.getMobileNo()
             )
             findRequestEvents(eventList, CONSUMER)
 
         } catch (e: Exception) {
             CoreLogger.d(
-                context = context,
-                "SyncApiRepository",
+                context = CoreAppDetails.getApplicationContext().applicationContext,
+                "SyncRepositoryImpl",
                 "updateFailedEventStatus: Exception: ${e.message}"
             )
         }
     }
 
-    fun getLoggedInMobileNumber(): String = prefRepo.getMobileNo()
-
-
-    suspend fun updateImageDetailsEventStatus(
+    override suspend fun updateImageDetailsEventStatus(
         eventId: String,
         status: String,
         requestId: String,
-        errorMessage: String? = BLANK_STRING
+        errorMessage: String?
     ) {
+
         imageStatusDao.updateImageEventStatus(
             status = status,
             eventId = eventId,
             errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
-            mobileNumber = getLoggedInMobileNumber()
+            mobileNumber = corePrefRepo.getMobileNo()
         )
 
+        eventDao.updateEventStatus(
+            retryCount = 1,
+            clientId = eventId,
+            errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
+            modifiedDate = System.currentTimeMillis().toDate(),
+            newStatus = status,
+            requestId = requestId
+        )
 
         eventStatusDao.insert(
             EventStatusEntity(
                 clientId = eventId,
                 errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
                 status = status,
-                mobileNumber = prefRepo.getMobileNo(),
-                createdBy = prefRepo.getUserId(),
+                mobileNumber = corePrefRepo.getMobileNo(),
+                createdBy = corePrefRepo.getUserId(),
                 eventStatusId = 0
             )
         )
+
     }
-    suspend fun findEventAndUpdateRetryCount(eventId: String) {
+
+    override suspend fun findEventAndUpdateRetryCount(eventId: String) {
         eventDao.findEventAndUpdateRetryCount(eventId = eventId)
     }
 
-    suspend fun findEventCountForRequestId(requestId: String): Int {
-        return eventDao.fetchEventCountDetailForRequestId(requestId, prefRepo.getMobileNo())
+    override suspend fun findEventCountForRequestId(requestId: String): Int {
+        return eventDao.fetchEventCountDetailForRequestId(requestId, corePrefRepo.getMobileNo())
     }
 
-    suspend fun addOrUpdateRequestStatus(requestId: String, eventCount: Int, status: String) {
+    override suspend fun addOrUpdateRequestStatus(
+        requestId: String,
+        eventCount: Int,
+        status: String
+    ) {
         requestStatusDao.addOrUpdateRequestId(
             requestStatusEntity = RequestStatusEntity(
                 requestId = requestId,
                 eventCount = eventCount,
-                mobileNumber = prefRepo.getMobileNo(),
+                mobileNumber = corePrefRepo.getMobileNo(),
                 status = status,
                 eventStatusId = 0,
-                createdBy = prefRepo.getUserId(),
+                createdBy = corePrefRepo.getUserId(),
                 modifiedDate = System.currentTimeMillis().toDate()
             )
         )
     }
 
-    suspend fun fetchEventStatusCount(requestId: String): List<RequestIdCountModel> {
-        return eventDao.fetchEventStatusCount(requestId, prefRepo.getMobileNo())
+    override suspend fun fetchEventStatusCount(requestId: String): List<RequestIdCountModel> {
+        return eventDao.fetchEventStatusCount(requestId, corePrefRepo.getMobileNo())
     }
 
-    fun fetchAllRequestEventForConsumerStatus(): List<RequestStatusEntity> {
+    override suspend fun fetchAllRequestEventForConsumerStatus(): List<RequestStatusEntity> {
         return requestStatusDao.getAllRequestEventForConsumerStatus(
-            prefRepo.getMobileNo(),
+            corePrefRepo.getMobileNo(),
             listOf(
                 EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus,
                 EventSyncStatus.CONSUMER_FAILED.eventSyncStatus
@@ -271,7 +273,7 @@ class SyncApiRepository @Inject constructor(
         )
     }
 
-    suspend fun findRequestEvents(eventList: List<SyncEventResponse>, tag: String) {
+    override suspend fun findRequestEvents(eventList: List<SyncEventResponse>, tag: String) {
         val requestIdList = eventList.distinctBy { it.requestId }.map { it.requestId }
         if (requestIdList.isNotEmpty()) {
             requestIdList.forEach { requestId ->
@@ -314,10 +316,8 @@ class SyncApiRepository @Inject constructor(
 
         }
 
-
     }
+
+
+
 }
-
-
-
-

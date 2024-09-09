@@ -62,6 +62,14 @@ class MainActivityViewModel @Inject constructor(
         prefRepo.saveIsSyncEnabled(isEnabled)
     }
 
+    fun saveSyncBatchSizeFromRemoteConfig(batchSize: Long) {
+        prefRepo.saveSyncBatchSize(batchSize)
+    }
+
+    fun saveSyncRetryCountFromRemoteConfig(retryCount: Long) {
+        prefRepo.saveSyncRetryCount(retryCount)
+    }
+
     fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             updateBaselineStatusOnInitUseCase.invoke() {

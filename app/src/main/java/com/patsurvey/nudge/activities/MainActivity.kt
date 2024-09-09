@@ -36,7 +36,9 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.REMOTE_CONFIG_SYNC_BATCH_SIZE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
+import com.nudge.core.REMOTE_CONFIG_SYNC_RETRY_COUNT
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -348,13 +350,19 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         remoteConfig.fetchAndActivate()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    val isSyncEnable = remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
+                    val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
+                    val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
                     NudgeLogger.d(
                         "SyncEnabled",
-                        "sync enabled " + remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
+                        "sync enabled : $isSyncEnable :: Sync batch Size : " +
+                                "$syncBatchSize :: Sync Retry Count: $syncRetryCount "
                     )
                     mViewModel.saveSyncEnabledFromRemoteConfig(
-                        remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
+                        isSyncEnable
                     )
+                    mViewModel.saveSyncBatchSizeFromRemoteConfig(syncBatchSize)
+                    mViewModel.saveSyncRetryCountFromRemoteConfig(syncRetryCount)
 
 
                 }

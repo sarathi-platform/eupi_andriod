@@ -39,4 +39,5 @@ data class RequestStatusEntity(
     @ColumnInfo("eventCount")
     val eventCount: Int? = 0,
 
+
     )
