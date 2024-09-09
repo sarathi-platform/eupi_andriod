@@ -880,9 +880,19 @@ fun String?.value(): String {
 
 fun Int?.value() = this ?: -1
 
+fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
+
+fun Int?.value(defaultValue: Int) = this ?: defaultValue
+
 fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
+
+fun Double?.value() = this ?: 0.0
+
+fun <T> List<T>?.value(): List<T> {
+    return this ?: emptyList()
+}
 
 fun String.getImagePathFromString(): String {
     return try {
@@ -901,6 +911,15 @@ fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
     val currentTime = System.currentTimeMillis()
     return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+}
+
+fun getDurationDifferenceInDays(sourceDuration: Long): String {
+    if (sourceDuration == -1L)
+        return BLANK_STRING
+
+    return TimeUnit.MILLISECONDS.toDays(Math.abs(getCurrentTimeInMillis() - sourceDuration))
+        .toString();
+
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -1079,12 +1098,13 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
 }
 
 const val YYYY_MM_DD = "yyyy-MM-dd"
+const val dd_MM_yyyy = "dd/MM/yyyy"
 
 fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
     if (this == null)
         return BLANK_STRING
 
-    val formatter = SimpleDateFormat(pattern)
+    val formatter = SimpleDateFormat(pattern, Locale.ENGLISH)
     return formatter.format(Date(this))
 }
 

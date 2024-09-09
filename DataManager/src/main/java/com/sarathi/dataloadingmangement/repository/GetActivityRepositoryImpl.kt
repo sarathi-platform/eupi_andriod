@@ -59,4 +59,12 @@ class GetActivityRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun getTypeForActivity(missionId: Int, activityId: Int): String? {
+        return activityDao.getTypeForActivity(
+            missionId,
+            activityId,
+            coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
 }

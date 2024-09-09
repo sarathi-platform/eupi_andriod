@@ -57,5 +57,8 @@ interface CorePrefRepo {
 
     fun getUserNameInInt(): Int
     fun setName(name: String)
+    fun isDataTabDataLoaded(): Boolean
+
+    fun setDataTabDataLoaded(isDataLoaded: Boolean)
 
 }
