@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
@@ -174,6 +175,13 @@ interface ActivityDao {
     suspend fun getActiveActivities(userId: String, missionId: Int): List<ActivityEntity>
 
     @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId=:missionId and activityId=:activityId and isActive=1")
-    suspend fun getActiveActivitiesStatus(userId: String, missionId: Int, activityId: Int): ActivityEntity?
+    suspend fun getActiveActivitiesStatus(
+        userId: String,
+        missionId: Int,
+        activityId: Int
+    ): ActivityEntity?
+
+    @Query("SELECT activityConfig.activityType from $ACTIVITY_TABLE_NAME as activityTable join $ACTIVITY_CONFIG_TABLE_NAME as activityConfig on activityConfig.activityId = activityTable.activityId where activityTable.missionId = :missionId and activityTable.activityId = :activityId and activityTable.userId = :userId")
+    suspend fun getTypeForActivity(missionId: Int, activityId: Int, userId: String): String?
 
 }

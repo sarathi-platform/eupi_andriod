@@ -25,6 +25,9 @@ interface UiConfigDao {
     @Query("Select * from activity_config_table where activityId=:activityId")
     fun getActivityConfig(activityId: Int): ActivityConfigEntity?
 
+    @Query("Select * from activity_config_table where activityId=:activityId and missionId = :missionId and userId = :userId")
+    fun getActivityConfig(activityId: Int, missionId: Int, userId: String): ActivityConfigEntity?
+
     @Query("Delete from  ui_config_table where  missionId=:missionId and activityId=:activityId and userId=:uniqueUserIdentifier")
     fun deleteActivityUiConfig(
         missionId: Int,

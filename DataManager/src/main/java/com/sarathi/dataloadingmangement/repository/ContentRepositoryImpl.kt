@@ -5,6 +5,7 @@ import com.nudge.core.checkStringNullOrEmpty
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.removeExtension
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.DELEGATE_DOT
@@ -13,6 +14,7 @@ import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
@@ -27,7 +29,8 @@ class ContentRepositoryImpl @Inject constructor(
     val uiConfigDao: UiConfigDao,
     val coreSharedPrefs: CoreSharedPrefs,
     val surveyAnswersDao: SurveyAnswersDao,
-    val activityConfigDao: ActivityConfigDao
+    val activityConfigDao: ActivityConfigDao,
+    val livelihoodDao: LivelihoodDao
 ) : IContentRepository {
     override suspend fun fetchContentsFromServer(contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>> {
         return apiInterface.fetchContentData(contentMangerRequest)
@@ -87,8 +90,22 @@ class ContentRepositoryImpl @Inject constructor(
                     )
                 }
             }
-
         }
+        livelihoodDao.getLivelihoodForUser(coreSharedPrefs.getUniqueUserIdentifier())
+            .forEach { livelihoodData ->
+                livelihoodData.image?.let { imagae ->
+                    contentRequests.add(
+                        ContentRequest(
+                            languageCode = DEFAULT_LANGUAGE_CODE,
+                            contentKey = getFileNameFromURL(imagae.removeExtension()).split(
+                                DELEGATE_DOT
+                            )
+                                .firstOrNull()
+                                ?: BLANK_STRING
+                        )
+                    )
+                }
+            }
         return contentRequests
     }
 

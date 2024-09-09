@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -57,7 +56,8 @@ fun DisbursementCard(
     isActivityCompleted: Boolean = false,
     onEditSurvey: () -> Unit,
     onDeleteSurvey: () -> Unit,
-    isFormgenerated: Boolean
+    isFormgenerated: Boolean,
+    formGeneratedMessage: String? = BLANK_STRING
 
 ) {
 
@@ -175,7 +175,7 @@ fun DisbursementCard(
                             .align(Alignment.CenterVertically),
                     )
                     Text(
-                        LocalContext.current.getString(R.string.form_e_generated),
+                        formGeneratedMessage ?: BLANK_STRING,
                         color = greenOnline,
                         style = newMediumTextStyle
                     )

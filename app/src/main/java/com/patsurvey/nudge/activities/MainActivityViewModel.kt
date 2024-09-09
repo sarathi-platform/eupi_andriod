@@ -62,6 +62,10 @@ class MainActivityViewModel @Inject constructor(
         prefRepo.saveIsSyncEnabled(isEnabled)
     }
 
+    fun saveDataTabVisibility(isEnabled: Boolean) {
+        prefRepo.saveDataTabVisibility(isEnabled)
+    }
+
     fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             updateBaselineStatusOnInitUseCase.invoke() {

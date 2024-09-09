@@ -7,9 +7,9 @@ data class ActivityConfig(
     @SerializedName("languages")
     val activityTitle: List<ActivityTitle>,
     @SerializedName("activityType")
-    val activityType: String,
+    val activityType: String?,
     @SerializedName("activityTypeId")
-    val activityTypeId: Int,
+    val activityTypeId: Int?,
     @SerializedName("conditions")
     val conditions: List<Any>,
     @SerializedName("content")
@@ -27,9 +27,9 @@ data class ActivityConfig(
     @SerializedName("validations")
     val validations: List<Any>,
     @SerializedName("grantConfig")
-    val grantConfig: List<GrantConfigResponse>?,
+    val grantConfig: List<GrantConfigResponse>? = emptyList(),
     @SerializedName("formConfig")
-    val formConfig: List<FormConfigResponse?>,
+    val formConfig: List<FormConfigResponse?> = emptyList(),
     @SerializedName("taskCompletion")
     val taskCompletion: String?,
     @SerializedName("icon")

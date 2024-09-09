@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SARATHI</string>
+
+    <string name="not_able_to_load">डेटा लोड करने में सक्षम नहीं कृपया पुनः प्रयास करें ..</string>
+    <string name="retry">पुनर्प्रयास</string>
+
+    <string name="select">चुनना</string>
+    <string name="edit_disable_message">गतिविधि पूर्ण होने के बाद संपादन की अनुमति नहीं है</string>
+
+    <string name="add_image">+ छवि जोड़ें</string>
+
+    <string name="amount_limit">राशि सीमा %1$d है</string>
+
+    <string name="ok">ठीक है</string>
+
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
+    <string name="search">"खोजे  "</string>
+
+
+    <string name="select_date_label">Select Date</string>
+    <string name="start_date_label">Start date</string>
+    <string name="end_date_label">End date</string>
+</resources>

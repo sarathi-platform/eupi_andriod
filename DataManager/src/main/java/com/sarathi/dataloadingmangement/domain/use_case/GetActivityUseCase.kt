@@ -39,5 +39,9 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
         return activityRepositoryImpl.getActiveForm(formType = formType)
     }
 
+    suspend fun getTypeForActivity(missionId: Int, activityId: Int): String? {
+        return activityRepositoryImpl.getTypeForActivity(missionId, activityId)
+    }
+
 
 }

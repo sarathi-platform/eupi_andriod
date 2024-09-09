@@ -39,4 +39,9 @@ interface ActivityConfigDao {
     @Query("Delete from activity_config_table where userId=:userId")
     fun deleteActivityConfigForUser(userId: String)
 
+    @Query("Select activityId from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType and userId = :userId")
+    fun getActivityIdForLivelihood(activityType: String, userId: String): Int
+
+    @Query("Select count(*) from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType and userId = :userId")
+    suspend fun isActivityAvailable(activityType: String, userId: String): Int
 }
