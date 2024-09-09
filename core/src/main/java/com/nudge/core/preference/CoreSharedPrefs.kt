@@ -149,22 +149,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return getPref(PREF_KEY_DATA_LOADED + getMobileNo(), false)
     }
 
-    override fun isMissionDataLoaded(missionId: Int, programId: Int): Boolean {
-
-        return getPref(
-            PREF_KEY_DATA_LOADED + getMobileNo() + "_" + programId + "_" + missionId,
-            false
-        )
-    }
-
-    override fun setMissionDataLoaded(isDataLoaded: Boolean, missionId: Int, programId: Int) {
-        savePref(
-            PREF_KEY_DATA_LOADED + getMobileNo() + "_" + programId + "_" + missionId,
-            isDataLoaded
-        )
-
-    }
-
     override fun isDidiTabDataLoaded(): Boolean {
         return getPref(PREF_KEY_DIDI_TAB_DATA_LOADED + getMobileNo(), false)
     }

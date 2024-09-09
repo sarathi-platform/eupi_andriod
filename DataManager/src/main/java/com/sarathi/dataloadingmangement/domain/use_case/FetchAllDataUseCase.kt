@@ -76,11 +76,6 @@ class FetchAllDataUseCase @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
             }
-            coreSharedPrefs.setMissionDataLoaded(
-                isDataLoaded = true,
-                missionId = missionId,
-                programId = programId
-            )
             fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
             onComplete(true, BLANK_STRING)
 
