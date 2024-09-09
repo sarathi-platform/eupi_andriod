@@ -62,9 +62,7 @@ class FetchAllDataUseCase @Inject constructor(
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
                 formUseCase.invoke(missionId)
-                if (missionId == 2 || missionId == 3) {
-                    moneyJournalUseCase.invoke()
-                }
+                moneyJournalUseCase.invoke()
             }
             if (fetchMissionDataUseCase.isActivityTypeAvailable(
                     LivelihoodActivityType
