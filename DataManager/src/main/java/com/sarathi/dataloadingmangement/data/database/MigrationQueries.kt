@@ -5,6 +5,7 @@ import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
 import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
@@ -119,5 +120,9 @@ object MigrationQueries {
             " taskId INTEGER NOT NULL,\n" +
             "sectionStatus TEXT\n" +
             ")"
+
+    val ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE =
+        "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN 'isDataLoaded' INTEGER DEFAULT 1 NOT NULL"
+
 }
 
