@@ -70,4 +70,5 @@ class OtpVerificationRepository @Inject constructor(
     fun savePageFrom() {
         prefRepo.savePageOpenFromOTPScreen(true)
     }
+
 }

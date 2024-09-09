@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.nudge.core.ImageStatusTable
+import com.nudge.core.IMAGE_STATUS_TABLE_NAME
 import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
@@ -20,13 +20,13 @@ interface ImageStatusDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(imageEventList: List<ImageStatusEntity>)
 
-    @Query("SELECT * from $ImageStatusTable")
+    @Query("SELECT * from $IMAGE_STATUS_TABLE_NAME")
     fun getAllImageEvent(): List<ImageStatusEntity>
 
-    @Query("SELECT * FROM $ImageStatusTable WHERE image_event_id =:eventId AND mobile_number =:mobileNumber")
+    @Query("SELECT * FROM $IMAGE_STATUS_TABLE_NAME WHERE imageEventId =:eventId AND mobileNumber =:mobileNumber")
     fun fetchImageStatusFromEventId(eventId: String, mobileNumber: String): ImageStatusEntity
 
-    @Query("SELECT COUNT(*) FROM $ImageStatusTable WHERE image_event_id =:eventId AND mobile_number =:mobileNumber")
+    @Query("SELECT COUNT(*) FROM $IMAGE_STATUS_TABLE_NAME WHERE imageEventId =:eventId AND mobileNumber =:mobileNumber")
     fun fetchImageStatusCount(eventId: String, mobileNumber: String): Int
 
     @Query("UPDATE $ImageStatusTable SET status=:status, error_message =:errorMessage, modified_date =:modifiedDate,retry_count =:retryCount WHERE id=:eventId AND mobile_number =:mobileNumber")

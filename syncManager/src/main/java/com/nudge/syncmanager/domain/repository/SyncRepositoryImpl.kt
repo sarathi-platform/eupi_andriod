@@ -257,7 +257,7 @@ class SyncRepositoryImpl(
                 status = status,
                 eventStatusId = 0,
                 createdBy = corePrefRepo.getUserId(),
-                modified_date = System.currentTimeMillis().toDate()
+                modifiedDate = System.currentTimeMillis().toDate()
             )
         )
     }

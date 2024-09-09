@@ -14,11 +14,11 @@ const val NO_TOLA_TITLE = "NO TOLA"
 
 
 const val EventsTable = "events_table"
-const val EventsStatusTable = "events_status_table"
+const val EVENT_STATUS_TABLE_NAME = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
-const val ImageStatusTable = "image_status_table"
-const val RequestStatusTable = "request_status_table"
+const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
+const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -30,7 +30,7 @@ const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
-const val NUDGE_DATABASE_VERSION = 2
+const val NUDGE_DATABASE_VERSION = 3
 const val NUDGE_GRANT_DATABASE = "NudgeGrantDatabase"
 
 const val SELECTION_MISSION = "Selection"
@@ -97,6 +97,7 @@ const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
 const val ATTENDANCE_DELETED = "Deleted"
 const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
+const val MMM_DD_YYYY_FORMAT = "MMM dd, yyyy"
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 

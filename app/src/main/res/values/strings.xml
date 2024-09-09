@@ -233,6 +233,7 @@
     <string name="rejected">Rejected</string>
 
     <string name="shg_question_text">Is Didi part of SHG?</string>
+    <string name="shg_member_text">1. SHG member</string>
     <string name="confirm_text">Confirm</string>
     <string name="finish">Finish</string>
 
@@ -497,6 +498,7 @@
     <string name="total_pat_attempted_string">Total PAT Attempted</string>
     <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
     <string name="able_bodied_women_flag_text">Are there able-bodied \nwomen in the family?</string>
+    <string name="able_bodied_women_text">2. Able-bodied women</string>
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="score_comparison_section_1_text">Section 1</string>
 
@@ -555,6 +557,7 @@
 
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="mission">Missions</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
     <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
