@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="didi_sub_tab_title">
+        <item quantity="one">Didi</item>
+        <item quantity="other">Didi</item>
+    </plurals>
+    <plurals name="small_group_sub_tab_title">
+        <item quantity="one">সৰু গোটসমূহ</item>
+        <item quantity="other">সৰু গোটসমূহ</item>
+    </plurals>
+    <plurals name="delete_attendance_confirmation_msg">
+        <item quantity="one">আপুনি সৰু গোটৰ উপস্থিতি মচি পেলাব বিচাৰে বুলি নিশ্চিতনে?</item>
+        <item quantity="other">আপুনি সৰু গোটৰ উপস্থিতি মচি পেলাব বিচাৰে বুলি নিশ্চিতনে?</item>
+    </plurals>
+    <plurals name="confirmation_alert_dialog_title">
+        <item quantity="one">আপুনি নিশ্চিত নে?</item>
+        <item quantity="other">আপুনি নিশ্চিত নে?</item>
+    </plurals>
+    <plurals name="no">
+        <item quantity="one">নাই</item>
+        <item quantity="other">নাই</item>
+    </plurals>
+    <plurals name="yes">
+        <item quantity="one">হয়</item>
+        <item quantity="other">হয়</item>
+    </plurals>
+
+    <plurals name="take_attendance_button_text">
+        <item quantity="one">উপস্থিতি লওক</item>
+        <item quantity="other">উপস্থিতি লওক</item>
+    </plurals>
+
+    <plurals name="date_range_picker_label_text">
+        <item quantity="one">পৰা - লৈ</item>
+        <item quantity="other">পৰা - লৈ</item>
+    </plurals>
+    <plurals name="attendance_history_header_text">
+        <item quantity="one">"উপস্থিতিৰ ইতিহাস: "</item>
+        <item quantity="other">"উপস্থিতিৰ ইতিহাস: "</item>
+    </plurals>
+
+    <plurals name="edit_button_text">
+        <item quantity="one">সম্পাদনা কৰক</item>
+        <item quantity="other">সম্পাদনা কৰক</item>
+    </plurals>
+    <plurals name="total_didis_label_text">
+        <item quantity="one">মুঠ বাইদেউ - %1$s</item>
+        <item quantity="other">মুঠ বাইদেউ - %1$s</item>
+    </plurals>
+    <plurals name="attendance_percentage_text">
+        <item quantity="one">উপস্থিতি - %1$s</item>
+        <item quantity="other">উপস্থিত - %1$s</item>
+    </plurals>
+    <plurals name="total_count_text">
+        <item quantity="one">মুঠ- %1$s/%2$s</item>
+        <item quantity="other">মুঠ- %1$s/%2$s</item>
+    </plurals>
+    <plurals name="data_selector">
+        <item quantity="one">Date Selector</item>
+        <item quantity="other">>Date Selector</item>
+    </plurals>
+    <plurals name="all">
+        <item quantity="one">সকলো</item>
+        <item quantity="other">সকলো</item>
+    </plurals>
+    <plurals name="delete_button_text">
+        <item quantity="one">মচি পেলাওক</item>
+        <item quantity="other">মচি পেলাওক</item>
+    </plurals>
+    <plurals name="sg_ok">
+        <item quantity="one">"হ'ব "</item>
+        <item quantity="other">"হ'ব "</item>
+    </plurals>
+    <string name="data_change_not_allow">"Date changes are not allowed for attendance edits!"</string>
+    <plurals name="submit">
+        <item quantity="one">দাখিল কৰক</item>
+        <item quantity="other">দাখিল কৰক</item>
+    </plurals>
+    <plurals name="do_you_want_mark_all_absent">
+        <item quantity="one">Do you want to mark all absent</item>
+        <item quantity="other">Do you want to mark all absent</item>
+    </plurals>
+    <plurals name="attendace_alredy_marked_for_the_date">
+        <item quantity="one">Attendance already marked for the date:</item>
+        <item quantity="other">Attendance already marked for the date:</item>
+    </plurals>
+    <plurals name="search_didi">
+        <item quantity="one">বাইদেউঅনুসন্ধান কৰক</item>
+        <item quantity="other">Search Didi</item>
+    </plurals>
+</resources>

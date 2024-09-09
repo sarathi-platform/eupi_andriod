@@ -23,11 +23,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_75_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -39,6 +41,7 @@ import com.sarathi.surveymanager.R
 fun ToolBarWithMenuComponent(
     title: String,
     modifier: Modifier,
+    paddingTop: Dp = dimen_75_dp,
     isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
     navController: NavController? = rememberNavController(),
@@ -109,7 +112,7 @@ fun ToolBarWithMenuComponent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 75.dp)
+                .padding(top = paddingTop)
         ) {
             if (isSearch) {
                 SearchWithFilterViewComponent(placeholderString = "Search",

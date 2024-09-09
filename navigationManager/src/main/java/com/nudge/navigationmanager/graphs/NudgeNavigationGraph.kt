@@ -74,6 +74,7 @@ object NudgeNavigationGraph {
         "mission_summary_graph/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}"
     val MAT_GRAPH = "mat_graph"
     val SMALL_GROUP_GRAPH = "small_group_graph"
+    val INCOME_EXPENSE_GRAPH = "income_expense_graph"
 
 }
 
@@ -198,6 +199,8 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$SURVEYEE_LIST_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
 
     object DIDI_TAB_SCREEN : HomeScreens("didi_tab_screen")
+
+    object DATA_TAB_SCREEN : HomeScreens("data_tab_screen")
 }
 
 sealed class SettingScreens(val route: String) {

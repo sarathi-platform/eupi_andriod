@@ -58,7 +58,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             listOf()
         )
         questionUiModels.forEach { questionUiModel ->
-            val saveAnswerEventDto = repository.writeSaveAnswerEvent(
+            saveSurveyAnswerEvent(
                 questionUiModel,
                 subjectId,
                 subjectType,
@@ -66,33 +66,57 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 taskLocalId,
                 grantId,
                 grantType,
-                taskId
+                taskId,
+                uriList
             )
-            if (questionUiModel.type == QuestionType.MultiImage.name) {
-                questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {
+        }
+    }
 
-                    if (!TextUtils.isEmpty(it)) {
-                        CoreAppDetails.getApplicationDetails()?.activity?.applicationContext?.let { it1 ->
-                            getImageUri(
-                                context = it1,
-                                fileName = getFileNameFromURL(it)
-                            )?.let { it1 ->
-                                uriList.add(
-                                    it1
-                                )
-                            }
+    suspend fun saveSurveyAnswerEvent(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        subjectType: String,
+        referenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String,
+        taskId: Int,
+        uriList: ArrayList<Uri>
+    ) {
+        val saveAnswerEventDto = repository.writeSaveAnswerEvent(
+            questionUiModel,
+            subjectId,
+            subjectType,
+            referenceId,
+            taskLocalId,
+            grantId,
+            grantType,
+            taskId
+        )
+        if (questionUiModel.type == QuestionType.MultiImage.name) {
+            questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {
+
+                if (!TextUtils.isEmpty(it)) {
+                    CoreAppDetails.getApplicationDetails()?.activity?.applicationContext?.let { it1 ->
+                        getImageUri(
+                            context = it1,
+                            fileName = getFileNameFromURL(it)
+                        )?.let { it1 ->
+                            uriList.add(
+                                it1
+                            )
                         }
                     }
                 }
             }
-
-            writeEventInFile(
-                saveAnswerEventDto,
-                EventName.GRANT_SAVE_RESPONSE_EVENT,
-                questionUiModel.surveyName,
-                uriList
-            )
         }
+
+        writeEventInFile(
+            saveAnswerEventDto,
+            EventName.GRANT_SAVE_RESPONSE_EVENT,
+            questionUiModel.surveyName,
+            uriList
+        )
     }
 
     private suspend fun <T> writeEventInFile(

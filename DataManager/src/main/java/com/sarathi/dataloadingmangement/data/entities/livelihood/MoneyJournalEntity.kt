@@ -41,13 +41,14 @@ data class MoneyJournalEntity(
             grantType: String,
             subjectType: String,
             subjectId: Int,
-            transactionFlow: String
+            transactionFlow: String,
+            dateFormat: String = DD_MMM_YYYY_FORMAT
         ): MoneyJournalEntity {
             return MoneyJournalEntity(
                 id = 0,
                 userId = userId,
                 transactionAmount = amount.toDouble(),
-                transactionDate = date.toInMillisec(DD_MMM_YYYY_FORMAT),
+                transactionDate = date.toInMillisec(dateFormat),
                 transactionId = referenceId,
                 referenceId = grantId,
                 referenceType = grantType,
