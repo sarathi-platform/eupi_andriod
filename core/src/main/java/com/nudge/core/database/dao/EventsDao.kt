@@ -43,7 +43,7 @@ interface EventsDao {
     @Query("DELETE FROM events_table")
     fun deleteAllEvents()
 
-    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount,request_id =:requestId WHERE id = :clientId")
+    @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount,requestId =:requestId WHERE id = :clientId")
     fun updateEventStatus(
         clientId: String,
         newStatus: String,
