@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sarathi</string>
+    <string name="app_name">SARATHI</string>
     <string name="close">বন্ধ কৰক</string>
     <string name="online_text">অনলাইন</string>
     <string name="offline_text">অফলাইন</string>
@@ -15,15 +15,15 @@
     <string name="not_available">"উপলব্ধ নহয় "</string>
     <string name="share">"ভাগ বতৰা কৰক "</string>
     <string name="download">"ডাউনলোড "</string>
-    <string name="generate_form_e">Form E সৃষ্টি কৰক</string>
+    <string name="generate_form_e">Form C সৃষ্টি কৰক</string>
     <string name="go_back">"উভতি যাওক "</string>
-    <string name="submit_form_e">ফর্ম E জমা দিয়ক</string>
-    <string name="attach_physical_form_e_signed_sealed">"ফিজিকেল ফর্ম E সংযুক্ত কৰক।(স্বাক্ষৰিত আৰু চীল কৰা) "</string>
+    <string name="submit_form_e">ফর্ম C জমা দিয়ক</string>
+    <string name="attach_physical_form_e_signed_sealed">"ফিজিকেল ফর্ম C সংযুক্ত কৰক।(স্বাক্ষৰিত আৰু চীল কৰা) "</string>
     <string name="activity_completed_unable_to_edit">"কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ বাবে আপুনি মুছিব নোৱাৰে "</string>
     <string name="refresh_failed_please_try_again">"ৰেফ্ৰস বিফল হৈছে, অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক! "</string>
     <string name="csg_disbursed">চিএচজি বিতৰণ কৰা হৈছে</string>
     <string name="activity_completion_message">আপুনি  সফলতাৰে %1$s কাৰ্যকলাপ সম্পূৰ্ণ কৰিছে।</string>
-    <string name="form_e_generated_successfully_for_didis">"%1$ৰ বাইদেউৰ সফলতাৰে Form E প্ৰস্তুত হৈছে "</string>
+    <string name="form_e_generated_successfully_for_didis">"%1$s ৰ বাইদেউৰ সফলতাৰে Form C প্ৰস্তুত হৈছে "</string>
     <string name="select">নিৰ্বাচন কৰক</string>
     <string name="edit_disable_message">"কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত মুছিব অনুমতি নাই "</string>
     <string name="submit">"জমা  কৰক "</string>
@@ -41,12 +41,12 @@
     <string name="amount_limit">পৰিমাণৰ সীমা হৈছে  %1$d</string>
     <string name="amount_limit_message">"পৰিমাণ অনুমোদিত পৰিমাণতকৈ অধিক : %1$d "</string>
     <string name="summary">সাৰাংশ</string>
-    <string name="form_e_generated">Form E উৎপন্ন হৈছে</string>
+    <string name="form_e_generated">Form C উৎপন্ন হৈছে</string>
     <string name="done">সম্পন্ন হ’ল</string>
     <string name="more">"+%1$s অধিক "</string>
     <string name="ok">"হ'ব "</string>
     <string name="disbursement_summary">বিতৰণ সাৰাংশ</string>
-    <string name="attach_physical_form_e">ফিজিকেল ফর্ম E সংযুক্ত কৰক।</string>
+    <string name="attach_physical_form_e">ফিজিকেল ফর্ম C সংযুক্ত কৰক।</string>
     <string name="didis">বাইদেউসকল</string>
     <string name="file_not_exists">"ফাইলৰ অস্তিত্ব নাই "</string>
     <string name="activities_completed">"কাৰ্যকলাপ সম্পূৰ্ণ হৈছে "</string>
@@ -54,10 +54,49 @@
     <string name="sanctioned_amount_has_been_fully_disbursed">"অনুমোদিত পৰিমাণ সম্পূৰ্ণৰূপে বিতৰণ কৰা হৈছে "</string>
     <string name="complete">"সম্পূৰ্ণ "</string>
     <string name="references">প্ৰসংগসমূহ  (%1$s)</string>
-    <string name="are_you_sure">"আপুনি নিশ্চিত নে?  "</string>
     <string name="do_you_want_to_exit_the_app">"আপুনি এপ্পটোৰ পৰা প্ৰস্থান কৰিব বিচাৰে নেকি? "</string>
     <string name="exit">"প্ৰস্থান "</string>
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
+    <string name="search_for_mission">মিছনৰ দ্বাৰা সন্ধান কৰক</string>
+    <string name="search_by_didis">"বাইদেউৰ দ্বাৰা সন্ধান কৰক "</string>
+    <string name="event">কাৰ্য্য:</string>
+    <string name="asset">সম্পদ:</string>
+    <string name="add_event">কাৰ্য্য যোগ কৰক</string>
+    <string name="primary_and_secondary_value_not_same">"প্ৰথম আৰু দ্বিতীয় জীৱিকা একে হ'ব নোৱাৰে"</string>
+    <string name="select_first_livelihood_for_didi">বাইদেউৰ বাবে প্ৰথম জীৱিকা বাছনি কৰক</string>
+    <string name="select_second_livelihood_for_didi">বাইদেউৰ বাবে দ্বিতীয় জীৱিকা বাছনি কৰক</string>
+    <string name="proceed_txt">" আগবাঢ়ক"</string>
+    <string name="cancel_txt">বাতিল কৰক</string>
+    <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
+    <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
+    <string name="livelihood">"জীৱিকা "</string>
+    <string name="date_range_picker_label_text">"পৰা - লৈ "</string>
+    <string name="total_asset">"মুঠ সম্পত্তি "</string>
+    <string name="events">"কাৰ্য্য "</string>
+    <string name="type_of_asset">"সম্পদৰ প্ৰকাৰ "</string>
+    <string name="products">"সামগ্ৰীসমূহ "</string>
+    <string name="view_edit_history">"সম্পাদনাৰ ইতিহাস চাওক "</string>
+    <string name="show_less">"কম দেখুৱাওক "</string>
+    <string name="show_more">"অধিক দেখুৱাওক "</string>
+    <string name="all_events">কাৰ্য্য যোগ কৰক:</string>
+    <string name="last_events">"অন্তিম %1$s টা ঘটনা: "</string>
+    <string name="increse_in_number">"সংখ্যা বৃদ্ধি "</string>
+    <string name="asset_type">সম্পদৰ প্ৰকাৰ:</string>
+    <string name="event_date">কাৰ্য্যৰ তাৰিখ:</string>
+    <string name="edit_history">"ইতিহাস সম্পাদনা কৰক "</string>
+    <string name="increase_in_number">"সংখ্যা বৃদ্ধি "</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">"\"আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ'ব। "</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই অভিযানটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি এই অভিযানত পৰিৱৰ্তন কৰিব নোৱাৰিব।</string>
+
+    <string name="no_small_group_assgned_label">কোনো সৰু গোট আৱণ্টন কৰা হোৱা নাই</string>
+    <string name="filter_item_count_label"><b>%2$s</b> বাবে <b>%1$s</b> বাইদেউ প্ৰদৰ্শন কৰা</string>
+    <string name="all_filter_text">সকলো</string>
+
+    <string name="present">উপস্থিত</string>
+    <string name="absent">অনুপস্থিত</string>
+    <string name="search_didi">বাইদেউঅনুসন্ধান কৰক</string>
+    <string name="search_by_small_groups">সৰু গোটৰ দ্বাৰা সন্ধান কৰক</string>
+    <string name="total_didis">মুঠ বাইদেউ - %1$s</string>
 
 </resources>

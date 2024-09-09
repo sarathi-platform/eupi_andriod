@@ -29,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -117,8 +119,8 @@ fun SmallGroupAttendanceScreen(
     if (smallGroupAttendanceScreenViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title = "Are you sure!",
-            message = "Do you want to mark all absent",
+            title = pluralStringResource(id = R.plurals.confirmation_alert_dialog_title,1),
+            message = pluralStringResource(id = R.plurals.do_you_want_mark_all_absent,1),
             positiveButtonTitle = stringResource(id = R.string.yes),
             negativeButtonTitle = stringResource(id = R.string.no),
             onPositiveButtonClick = {
@@ -173,7 +175,7 @@ fun SmallGroupAttendanceScreen(
                         .padding(dimen_10_dp)
                 ) {
                     ButtonPositiveWithLoaderComponent(
-                        buttonTitle = "Submit",
+                        buttonTitle = stringResource(id = R.string.submit),
                         isActive = true,
                         showLoader = smallGroupAttendanceScreenViewModel.loaderState.value.isLoaderVisible
                     ) {
@@ -254,7 +256,7 @@ fun SmallGroupAttendanceScreen(
                 )
 
                 SearchWithFilterViewComponent(
-                    placeholderString = "Search Didi",
+                    placeholderString = pluralStringResource(id = R.plurals.search_didi,1),
                     showFilter = false,
                     onFilterSelected = {
                         /**
@@ -328,9 +330,10 @@ fun SmallGroupAttendanceScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = "All",
+                                text = pluralStringResource(id = R.plurals.all, 1),
                                 style = defaultTextStyle,
-                                color = progressIndicatorColor
+                                color = progressIndicatorColor,
+                                overflow = TextOverflow.Ellipsis
                             )
 
                             Switch(

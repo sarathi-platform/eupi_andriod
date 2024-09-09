@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.showCustomToast
@@ -95,10 +97,10 @@ fun SmallGroupAttendanceEditScreen(
     if (smallGroupAttendanceEditScreenViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title = "Are you sure!",
-            message = "Do you want to mark all absent",
-            positiveButtonTitle = "Yes",
-            negativeButtonTitle = "No",
+            title = pluralStringResource(id =R.plurals.confirmation_alert_dialog_title,1),
+            message = pluralStringResource(R.plurals.delete_attendance_confirmation_msg,1),
+            positiveButtonTitle = stringResource(R.string.yes),
+            negativeButtonTitle = stringResource(R.string.no),
             onPositiveButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent)
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -131,7 +133,7 @@ fun SmallGroupAttendanceEditScreen(
                         .padding(dimen_10_dp)
                 ) {
                     ButtonPositiveComponent(
-                        buttonTitle = "Submit",
+                        buttonTitle = stringResource(R.string.submit),
                         isActive = true
                     ) {
                         if (smallGroupAttendanceEditScreenViewModel.selectedItems.value.filter { it.value }
@@ -179,7 +181,7 @@ fun SmallGroupAttendanceEditScreen(
                                         datePickerState.selectedDateMillis!!
                                     showDatePickerDialog.value = false
                                 },
-                                content = { Text("Ok") }
+                                content = { Text(pluralStringResource(R.plurals.sg_ok,1)) }
                             )
                         }) {
                         DatePicker(
@@ -207,7 +209,7 @@ fun SmallGroupAttendanceEditScreen(
                             .clickable {
                                 showCustomToast(
                                     context,
-                                    "Date changes are not allowed for attendance edits!"
+                                    context.resources.getResourceName(R.string.data_change_not_allow)
                                 )
 //                                showDatePickerDialog.value = true
                             }
@@ -219,7 +221,7 @@ fun SmallGroupAttendanceEditScreen(
                                 .padding(dimen_10_dp),
                             iconProperties = IconProperties(
                                 painterResource(id = R.drawable.calendar),
-                                contentDescription = "Date Selector",
+                                contentDescription = pluralStringResource(R.plurals.data_selector,1),
                             ),
                             textProperties = TextProperties(
                                 text = smallGroupAttendanceEditScreenViewModel.selectedDate.value.getDate(),
@@ -250,7 +252,7 @@ fun SmallGroupAttendanceEditScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = "All",
+                                text = pluralStringResource(R.plurals.all,1),
                                 style = defaultTextStyle,
                                 color = progressIndicatorColor
                             )

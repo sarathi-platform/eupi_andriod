@@ -84,6 +84,7 @@ fun AddImageComponent(
     isEditable: Boolean = true,
     filePaths: List<String> = listOf(),
     fileNamePrefix: String,
+    subtitle: String? = null,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -122,7 +123,7 @@ fun AddImageComponent(
             QuestionComponent(
                 title = title,
                 isRequiredField = isMandatory,
-                subTitle = "Signed & Sealed Physical Format D"
+                subTitle = subtitle ?: "Signed & Sealed Physical Format D"
             )
         }
 

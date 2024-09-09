@@ -10,7 +10,13 @@ sealed class InitDataEvent {
         val activityId: Int,
         val isFormSettingScreen: Boolean
     ) : InitDataEvent()
+
     data class InitGrantTaskScreenState(val missionId: Int, val activityId: Int) : InitDataEvent()
     data class InitTaskScreenState(val taskList: List<TaskUiModel>?) : InitDataEvent()
+
+    data class InitLivelihoodPlanningScreenState(val missionId: Int, val activityId: Int) :
+        InitDataEvent()
+
+    data class InitSurveyTaskScreenState(val missionId: Int, val activityId: Int) : InitDataEvent()
 
 }

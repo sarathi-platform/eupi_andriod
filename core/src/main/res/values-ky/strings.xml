@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SARATHI</string>
+
+    <string name="not_able_to_load">"Data Load khlai maya, Tai waisa khlai phidi. "</string>
+    <string name="retry">"Khlai naiphidi "</string>
+
+    <string name="select">"Chongdi "</string>
+    <string name="edit_disable_message">"Tangmung khlai mani yagulo tei kokmithing maya "</string>
+
+    <string name="ok">Ok</string>
+
+    <string name="are_you_sure">"Kubui da? "</string>
+    <string name="do_you_want_to_exit_the_app">"Nwng app kholop na da muchungkha? "</string>
+    <string name="exit">"Ongkhorlam "</string>
+    <string name="cancel">"Mwthakma "</string>
+    <string name="search">"Naitukdi "</string>
+
+
+    <string name="select_date_label">Sal Chongdi</string>
+    <string name="start_date_label">Chengmani Sal</string>
+    <string name="end_date_label">Pai mani Sal</string>
+</resources>
