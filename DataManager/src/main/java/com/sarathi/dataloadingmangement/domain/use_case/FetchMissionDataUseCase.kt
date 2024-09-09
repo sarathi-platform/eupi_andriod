@@ -31,6 +31,7 @@ class FetchMissionDataUseCase @Inject constructor(
                     }
                 }
 
+
                 return true
 
             } else {
@@ -89,7 +90,7 @@ class FetchMissionDataUseCase @Inject constructor(
         return repository.getAllMission()
     }
 
-    suspend fun isActivityTypeAvailable(activityType: String): Int =
-        repository.isActivityAvailable(activityType)
+    suspend fun getActivityTypesForMission(missionId: Int): List<String> =
+        repository.getActivityTypesForMission(missionId = missionId)
 
 }

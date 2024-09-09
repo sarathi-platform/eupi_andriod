@@ -21,8 +21,8 @@ interface ActivityConfigDao {
         userId: String,
     ): ActivityConfigUiModel
 
-    @Query("Select  DISTINCT surveyId from $ACTIVITY_CONFIG_TABLE_NAME where missionId=:missionId")
-    fun getSurveyIds(missionId: Int): List<Int>
+    @Query("Select  DISTINCT surveyId from $ACTIVITY_CONFIG_TABLE_NAME where missionId=:missionId and userId=:userId")
+    fun getSurveyIds(missionId: Int, userId: String): List<Int>
 
     @Query("Select  * from $ACTIVITY_CONFIG_TABLE_NAME where userId=:userId and missionId=:missionId")
     fun getActivityConfigUiModel(userId: String, missionId: Int): List<ActivityConfigEntity>?
@@ -39,9 +39,9 @@ interface ActivityConfigDao {
     @Query("Delete from activity_config_table where userId=:userId")
     fun deleteActivityConfigForUser(userId: String)
 
-    @Query("Select activityId from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType")
-    fun getActivityIdForLivelihood(activityType: String): Int
+    @Query("Select activityId from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType and userId=:userId")
+    fun getActivityIdForLivelihood(activityType: String, userId: String): Int
 
-    @Query("Select count(*) from $ACTIVITY_CONFIG_TABLE_NAME where activityType=:activityType")
-    suspend fun isActivityAvailable(activityType: String): Int
+    @Query("Select distinct lower(activityType) from $ACTIVITY_CONFIG_TABLE_NAME where missionId=:missionId and userId=:userId")
+    suspend fun getActivityType(missionId: Int, userId: String): List<String>
 }

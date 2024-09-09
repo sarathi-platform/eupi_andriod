@@ -39,7 +39,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSurveyIds(missionId: Int): List<Int> {
-        return activityConfigDao.getSurveyIds(missionId)
+        return activityConfigDao.getSurveyIds(missionId, coreSharedPrefs.getUniqueUserIdentifier())
     }
 
     override fun saveSurveyAnswerToDb(surveyApiResponse: List<QuestionAnswerResponseModel>) {

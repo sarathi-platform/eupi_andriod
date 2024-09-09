@@ -1,11 +1,13 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
@@ -59,15 +61,17 @@ class FetchAllDataUseCase @Inject constructor(
 
             fetchMissionDataUseCase.invoke(missionId, programId)
             fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+            val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
-                formUseCase.invoke(missionId)
-                moneyJournalUseCase.invoke()
+
+                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
+                    formUseCase.invoke(missionId)
+                    moneyJournalUseCase.invoke()
+                }
             }
-            if (fetchMissionDataUseCase.isActivityTypeAvailable(
-                    LivelihoodActivityType
-                ) != 0
-            ) {
+            if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name)) {
+
                 livelihoodUseCase.invoke()
             }
 
@@ -88,4 +92,3 @@ class FetchAllDataUseCase @Inject constructor(
     fun getStateId() = coreSharedPrefs.getStateId()
 }
 
-const val LivelihoodActivityType = "Livelihood"
