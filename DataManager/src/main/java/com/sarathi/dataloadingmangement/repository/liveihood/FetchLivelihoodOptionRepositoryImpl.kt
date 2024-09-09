@@ -29,7 +29,10 @@ class FetchLivelihoodOptionRepositoryImpl @Inject constructor(
         return activityConfigDao.getActivityConfigUiModel(userId = coreSharedPrefs.getUniqueUserIdentifier())
     }
     override suspend fun getActivityIdForLivelihood(): Int {
-        return activityConfigDao.getActivityIdForLivelihood(activityType = LivelihoodLanguageReferenceType.Livelihood.name)
+        return activityConfigDao.getActivityIdForLivelihood(
+            activityType = LivelihoodLanguageReferenceType.Livelihood.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
     }
 
 
