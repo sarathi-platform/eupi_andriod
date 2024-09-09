@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJou
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -24,6 +25,8 @@ class DataTabUseCase @Inject constructor(
     val assetJournalUseCase: FetchAssetJournalUseCase,
     val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
+    val livelihoodUseCase: LivelihoodUseCase,
+
 
     ) {
 
@@ -41,6 +44,9 @@ class DataTabUseCase @Inject constructor(
                     fetchLivelihoodOptionNetworkUseCase.invoke()
                     assetJournalUseCase.invoke()
                 }
+                livelihoodUseCase.invoke()
+
+
                 withContext(CoreDispatchers.mainDispatcher) {
                     onComplete(true, BLANK_STRING)
                 }

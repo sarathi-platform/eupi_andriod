@@ -9,6 +9,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJou
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +31,7 @@ class LivelihoodModule {
         assetJournalUseCase: FetchAssetJournalUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
+        livelihoodUseCase: LivelihoodUseCase
     ): DataTabUseCase {
         return DataTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
@@ -39,7 +41,8 @@ class LivelihoodModule {
             fetchSubjectLivelihoodEventHistoryUseCase = fetchSubjectLivelihoodEventHistoryUseCase,
             fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase,
             assetJournalUseCase = assetJournalUseCase,
-            fetchLivelihoodOptionNetworkUseCase = fetchLivelihoodOptionNetworkUseCase
+            fetchLivelihoodOptionNetworkUseCase = fetchLivelihoodOptionNetworkUseCase,
+            livelihoodUseCase = livelihoodUseCase
         )
     }
 
