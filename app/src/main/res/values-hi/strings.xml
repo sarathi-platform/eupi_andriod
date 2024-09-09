@@ -99,6 +99,7 @@
     <string name="cancel_tola_text">रद्द करें</string>
     <string name="get_location_text">लोकेशन प्राप्त करे</string>
     <string name="location_unavailable">लोकेशन उपलब्ध नहीं है</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">क्या आप जारी रखना चाहते हैं? इस भाग के पूरा हो जाने पर आप इसमें परिवर्तन नहीं कर सकेंगे।</string>
     <string name="seletc_village_screen_text">गाँव व ग्राम संगठन का चयन करें</string>
     <string name="complete_didi_addition">दीदी को जोड़ने का काम पूरा करे</string>
     <string name="user_id_text">पहचान संख्या:</string>
@@ -521,6 +522,8 @@
         <item quantity="one">CLF: </item>
         <item quantity="other">VO: </item>
     </plurals>
+    <string name="shg_member_text">1. SHG सदस्य</string>
+    <string name="able_bodied_women_text">2.   सक्षम महिलाएं</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">सिंक के लिए डेटा उपलब्ध नहीं है. कृपया सिंक से पहले कुछ कार्रवाई करें.</string>
 
 </resources>

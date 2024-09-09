@@ -5,13 +5,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ImageStatusTable
+import com.nudge.core.IMAGE_STATUS_TABLE_NAME
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.toDate
 import java.util.Date
 import java.util.UUID
 
-@Entity(tableName = ImageStatusTable)
+@Entity(tableName = IMAGE_STATUS_TABLE_NAME)
 data class ImageStatusEntity(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
@@ -23,40 +23,39 @@ data class ImageStatusEntity(
     @ColumnInfo("type")
     val type: String,
 
-    @ColumnInfo("created_date")
+    @ColumnInfo("createDate")
     @TypeConverters(DateConverter::class)
     val createdDate: Date = System.currentTimeMillis().toDate(),
 
-    @ColumnInfo("modified_date")
+    @ColumnInfo("modifiedDate")
     @TypeConverters(DateConverter::class)
     val modifiedDate: Date,
 
     @ColumnInfo("createdBy")
     val createdBy: String,
 
-    @ColumnInfo("mobile_number")
+    @ColumnInfo("mobileNumber")
     val mobileNumber: String,
 
-    @ColumnInfo("file_name")
+    @ColumnInfo("fileName")
     val fileName: String,
 
-
-    @ColumnInfo("file_path")
+    @ColumnInfo("filePath")
     val filePath: String,
 
     @ColumnInfo("status")
     val status: String,
 
-    @ColumnInfo("retry_count")
+    @ColumnInfo("retryCount")
     val retryCount: Int = 0,
 
-    @ColumnInfo("error_message")
+    @ColumnInfo("errorMessage")
     val errorMessage: String? = BLANK_STRING,
 
-    @ColumnInfo("image_event_id")
+    @ColumnInfo("imageEventId")
     val imageEventId: String? = BLANK_STRING,
 
-    @ColumnInfo("request_id")
+    @ColumnInfo("requestId")
     val requestId: String? = BLANK_STRING,
 
 )

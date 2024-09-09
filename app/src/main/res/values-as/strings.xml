@@ -65,6 +65,7 @@
     <string name="mark_as_completed">সম্পূৰ্ণ চিহ্ন</string>
     <string name="village_text">গাওঁ</string>
     <string name="select_date">তাৰিখ নিৰ্ব্বাচন কৰক</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এইশাখাটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ\'ব।</string>
     <string name="vo_name">VOৰ নাম</string>
     <string name="total">মুঠ</string>
     <string name="participation_date_wealth_ranking">তাৰিখ</string>
@@ -519,6 +520,8 @@
     </plurals>
 
     <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="shg_member_text">1. সহায়ক গোটৰ সদস্য</string>
+    <string name="able_bodied_women_text">2. সক্ষম মহিলা</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Sync ৰ বাবে তথ্য উপলব্ধ নহয়। অনুগ্ৰহ কৰি ছিঙ্কৰ আগতে কিছু কাৰ্য্য কৰক।</string>
 
 

@@ -5,36 +5,36 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.EventsStatusTable
+import com.nudge.core.EVENT_STATUS_TABLE_NAME
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.toDate
 import java.util.Date
 
-@Entity(tableName = EventsStatusTable)
+@Entity(tableName = EVENT_STATUS_TABLE_NAME)
 data class EventStatusEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var eventStatusId: Int,
 
-    @ColumnInfo(name = "client_id")
+    @ColumnInfo(name = "clientId")
     val clientId: String,
 
-    @ColumnInfo("created_date")
+    @ColumnInfo("createdDate")
     @TypeConverters(DateConverter::class)
     val createdDate: Date = System.currentTimeMillis().toDate(),
 
     @ColumnInfo("createdBy")
     val createdBy: String,
 
-    @ColumnInfo("mobile_number")
+    @ColumnInfo("mobileNumber")
     val mobileNumber: String,
 
     @ColumnInfo("status")
     val status: String,
 
-    @ColumnInfo("request_id")
+    @ColumnInfo("requestId")
     val requestId: String? = BLANK_STRING,
 
-    @ColumnInfo("error_message")
+    @ColumnInfo("errorMessage")
     val errorMessage: String? = BLANK_STRING,
 )
