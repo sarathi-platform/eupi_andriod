@@ -11,7 +11,7 @@ import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 @Dao
 interface VillageListDao {
 
-    @Query("SELECT * FROM $VILLAGE_TABLE_NAME where languageId=:languageId and isActive=1")
+    @Query("SELECT * FROM $VILLAGE_TABLE_NAME where languageId=:languageId and isActive=1 order by name")
     fun getAllVillages(languageId:Int): List<VillageEntity>
 
     @Query("SELECT * FROM $VILLAGE_TABLE_NAME where isActive=1")

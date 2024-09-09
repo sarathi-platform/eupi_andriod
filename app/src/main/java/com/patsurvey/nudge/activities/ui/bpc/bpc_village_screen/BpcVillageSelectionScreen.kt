@@ -337,7 +337,7 @@ fun BpcVillageSelectionScreen(
                                 )
                             }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
-                            itemsIndexed(villages) { index, village ->
+                            itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                                 BpcVillageAndVoBoxForBottomSheet(
                                     context = context,
                                     villageEntity = village,

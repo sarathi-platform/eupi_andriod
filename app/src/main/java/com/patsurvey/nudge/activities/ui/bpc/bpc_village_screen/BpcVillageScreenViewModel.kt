@@ -89,7 +89,7 @@ class BpcVillageScreenViewModel @Inject constructor(
             villageSelectionRepository.fetchCastList(isRefresh = false)
             villageSelectionRepository.fetchPatQuestionsFromNetwork(prefRepo.getPageOpenFromOTPScreen())
             _villagList.value = it.villageList
-            _filterVillageList.value = villageList.value.distinctBy { it.id }.sortedBy { it.name }
+            _filterVillageList.value = villageList.value
             showLoader.value = false
         }
     }
