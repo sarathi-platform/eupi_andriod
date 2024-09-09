@@ -9,19 +9,18 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepository
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroupListFromDbRepository
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroupListFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchDidiDetailsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchAttendanceHistoryForDateFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchAttendanceHistoryForDateFromDbRepositoryImpl
@@ -57,27 +56,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class SmallGroupModule {
-
-    @Provides
-    @Singleton
-    fun provideFetchDidiDetailsFromDbRepository(
-        corePrefRepo: CoreSharedPrefs,
-        subjectEntityDao: SubjectEntityDao,
-        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
-    ): FetchDidiDetailsFromDbRepository {
-        return FetchDidiDetailsFromDbRepositoryImpl(
-            corePrefRepo, subjectEntityDao,
-            smallGroupDidiMappingDao
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideFetchDidiDetailsFromDbUseCase(
-        fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository
-    ): FetchDidiDetailsFromDbUseCase {
-        return FetchDidiDetailsFromDbUseCase(fetchDidiDetailsFromDbRepository)
-    }
 
     @Provides
     @Singleton

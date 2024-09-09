@@ -12,8 +12,7 @@ import javax.inject.Inject
 class GetActivityUiConfigRepositoryImpl @Inject constructor(
     private val activityConfigDao: UiConfigDao,
     private val coreSharedPrefs: CoreSharedPrefs
-) :
-    BaseRepository(),
+) : BaseRepository(),
     IUiConfigRepository {
     override suspend fun getActivityUiConfig(
         missionId: Int,
@@ -29,6 +28,10 @@ class GetActivityUiConfigRepositoryImpl @Inject constructor(
 
     override suspend fun getActivityConfig(activityId: Int): ActivityConfigEntity? {
         return activityConfigDao.getActivityConfig(activityId = activityId)
+    }
+
+    override suspend fun getActivityConfig(activityId: Int, missionId: Int): ActivityConfigEntity? {
+        return null //
     }
 
 

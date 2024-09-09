@@ -10,4 +10,12 @@ class GetFormUiConfigUseCase @Inject constructor(private val formConfigRepositor
     suspend fun getFormUiConfig(activityId: Int, missionId: Int): List<FormUiConfigEntity> =
         formConfigRepositoryImpl.getFormUiConfig(activityId = activityId, missionId = missionId)
 
+
+    suspend fun getFormConfigValue(key: String, activityId: Int, missionId: Int): String {
+        return formConfigRepositoryImpl.getFormUiValue(
+            activityId = activityId,
+            missionId = missionId,
+            key = key
+        )
+    }
 }

@@ -17,7 +17,7 @@ data class Sections(
 
     @SerializedName("imageIcon")
     @Expose
-    val sectionIcon: String = BLANK_STRING,
+    val sectionIcon: String? = BLANK_STRING,
 //    val sectionIcon: Int = 0,
 
     @SerializedName("contents")

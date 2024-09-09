@@ -57,7 +57,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
     val filterList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _filterList
     var activityConfigUiModel: ActivityConfigUiModel? = null
-
+    var attachPhysicalFormButtonText = mutableStateOf(BLANK_STRING)
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDisbursmentFormSummaryScreenState -> {
@@ -86,6 +86,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         isFormGenerated: Boolean
     ) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            attachPhysicalFormButtonText.value = getFormUiConfigUseCase.getFormConfigValue(
+                activityId = activityId,
+                missionId = missionId,
+                key = GrantTaskFormSlots.TASK_ATTACH_PHYSICAL_BUTTON_FORM.name
+            )
             getSurveyDetail(activityId = activityId)
             _formList.value =
                 getFormData(
@@ -213,15 +218,24 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         return formUseCase.getFilePathUri(filePath)
     }
 
-    fun generateFormE(isDownload: Boolean, callBack: (filepath: String) -> Unit) {
+    fun generateFormE(
+        isDownload: Boolean,
+        missionId: Int,
+        activityId: Int,
+        callBack: (String) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
+            val pdfName = getFormUiConfigUseCase.getFormConfigValue(
+                activityId = activityId,
+                missionId = missionId,
+                key = GrantTaskFormSlots.TASK_PDF_FORM_NAME.name
+            )
             val pdfModels = ArrayList<PdfModel>()
             formList.value.forEach {
                 pdfModels.add(
                     PdfModel(
                         pdfLeftTitle = "VO Name: ${it.key.second}",
-                        pdfCenterTitle = "FORMAT E",
+                        pdfCenterTitle = pdfName,
                         pdfDescription = "Format to be used by the Village Organization/Nodal SHG for writing the meeting minute register\u2028during distribution of Immediate Assistance Grant amount to the poorest families",
                         pdfRightTitle = "Date: ${it.key.first}",
                         tableHeaders = getTableHeader(),
@@ -234,7 +248,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
             }
 
 
-            val filePath = PdfGenerator.generatePdf(pdfModels, formUseCase.getFormEFileName())
+            val filePath =
+                PdfGenerator.generatePdf(pdfModels, formUseCase.getFormEFileName(pdfName))
             val fileUri = uriFromFile(
                 CoreAppDetails.getApplicationDetails()?.activity?.applicationContext,
                 File(filePath),
