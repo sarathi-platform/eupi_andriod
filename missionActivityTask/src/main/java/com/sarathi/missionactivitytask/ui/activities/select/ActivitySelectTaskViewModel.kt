@@ -140,7 +140,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
                 grantId = grantID,
-                grantType = ActivityTypeEnum.SELECT.name,
+                grantType = ActivityTypeEnum.getActivityTypeFromId(grantID).name,
                 taskId = taskId,
                 uriList = ArrayList(),
                 activityReferenceId = activityConfigUiModelWithoutSurvey?.referenceId,

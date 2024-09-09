@@ -220,7 +220,7 @@ fun ExpandableTaskCardRow(
             if (questionUIModel != null) {
                 viewModel.saveSingleAnswerIntoDb(
                     currentQuestionUiModel = questionUIModel,
-                    subjectType = BLANK_STRING,
+                    subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
                     taskId = task.key
                 )
                 viewModel.updateTasStatus(
