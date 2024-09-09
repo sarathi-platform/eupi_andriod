@@ -98,5 +98,7 @@ interface PrefRepo {
    fun saveDataTabVisibility(isEnabled: Boolean)
 
    fun isDataTabVisible(): Boolean
+   fun isDataTabDataLoaded(): Boolean
+   fun isDidiTabDataLoaded(): Boolean
 
 }

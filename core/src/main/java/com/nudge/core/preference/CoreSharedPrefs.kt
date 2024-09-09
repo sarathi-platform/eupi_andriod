@@ -259,11 +259,12 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun isDataTabDataLoaded(): Boolean {
-        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED, false)
+        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED + getMobileNo(), false)
     }
 
     override fun setDataTabDataLoaded(isDataLoaded: Boolean) {
-        savePref(PREF_KEY_DATA_TAB_DATA_LOADED, isDataLoaded)
+        savePref(PREF_KEY_DATA_TAB_DATA_LOADED + getMobileNo(), isDataLoaded)
     }
+
 
 }
