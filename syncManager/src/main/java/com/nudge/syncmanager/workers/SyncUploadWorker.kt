@@ -18,8 +18,6 @@ import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
-import com.nudge.core.UPCM_USER
-import com.nudge.core.SYNC_DATE_TIME_FORMAT
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
@@ -67,8 +65,8 @@ class SyncUploadWorker @AssistedInject constructor(
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             DeviceBandwidthSampler.getInstance().startSampling()
-            batchLimit = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncBatchSize()
-            retryCount = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncRetryCount()
+            batchLimit = syncManagerUseCase.syncAPIUseCase.getSyncBatchSize()
+            retryCount = syncManagerUseCase.syncAPIUseCase.getSyncRetryCount()
             CoreLogger.d(
                 applicationContext,
                 TAG,

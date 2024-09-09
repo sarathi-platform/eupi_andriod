@@ -26,8 +26,4 @@ class GetUserDetailsSyncRepoUseCase(
     fun getLoggedInUserType(): String {
         return repository.getLoggedInUserType()
     }
-
-    fun getSyncBatchSize() = repository.getSyncBatchSize()
-    fun getSyncRetryCount() = repository.getSyncRetryCount()
-
 }
