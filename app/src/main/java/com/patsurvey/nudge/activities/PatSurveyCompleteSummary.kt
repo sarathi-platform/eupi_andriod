@@ -420,7 +420,9 @@ fun PatSurveyCompleteSummary(
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){
-                                if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
+                                if ((patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
+                                    || patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal
+                                ) {
                                     patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(
                                         PageFrom.SUMMARY_PAGE.ordinal
                                     )
