@@ -28,7 +28,8 @@ data class SubjectLivelihoodEventMappingEntity(
     companion object {
         fun getSubjectLivelihoodEventMappingEntity(
             uniqueUserIdentifier: String,
-            eventData: LivelihoodEventScreenData
+            eventData: LivelihoodEventScreenData,
+            currentDateTime: Long
         ): SubjectLivelihoodEventMappingEntity {
             return SubjectLivelihoodEventMappingEntity(
                 userId = uniqueUserIdentifier,
@@ -42,7 +43,7 @@ data class SubjectLivelihoodEventMappingEntity(
                 surveyResponse = eventData.json(),
                 status = 1,
                 modifiedDate = getCurrentTimeInMillis(),
-                createdDate = getCurrentTimeInMillis(),
+                createdDate = currentDateTime,
             )
         }
 

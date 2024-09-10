@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
@@ -220,7 +221,7 @@ class AddEventViewModel @Inject constructor(
 
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
-
+            val currentDateTime = getCurrentTimeInMillis()
             val mTransactionId =
                 if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
                     .toString()
@@ -246,11 +247,13 @@ class AddEventViewModel @Inject constructor(
             )
             saveLivelihoodEventUseCase.addOrEditEvent(
                 particular = getParticulars(),
+                currentDateTime = currentDateTime,
                 eventData = livelihoodScreenData
             )
             writeLivelihoodEventUseCase.writeLivelihoodEvent(
                 particular = getParticulars(),
-                eventData = livelihoodScreenData
+                eventData = livelihoodScreenData,
+                currentDateTime = currentDateTime
             )
 
         }

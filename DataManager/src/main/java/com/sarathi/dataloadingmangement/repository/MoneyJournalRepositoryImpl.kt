@@ -131,11 +131,13 @@ class MoneyJournalRepositoryImpl @Inject constructor(
 
     override suspend fun getMoneyJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
     ): SaveMoneyJournalEventDto {
         return SaveMoneyJournalEventDto(
             amount = eventData.amount,
-            createdDate = System.currentTimeMillis(),
+            createdDate = currentDateTime,
             particulars = particular,
             referenceType = "LivelihoodEvent",
             transactionType = "LivelihoodEvent",
@@ -146,7 +148,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             subjectType = "Didi",
             transactionDate = eventData.date,
             referenceId = eventData.livelihoodId,
-            status = 1
+            status = 1,
+            modifiedDate = modifiedDateTime
         )
     }
 

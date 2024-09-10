@@ -13,9 +13,16 @@ class SaveLivelihoodEventUseCase @Inject constructor(
     private val subjectLivelihoodEventMappingRepository: ISubjectLivelihoodEventMapping
 ) {
 
-    suspend fun addOrEditEvent(eventData: LivelihoodEventScreenData, particular: String) {
+    suspend fun addOrEditEvent(
+        eventData: LivelihoodEventScreenData,
+        particular: String,
+        currentDateTime: Long
+    ) {
 
-        subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(eventData)
+        subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
+            eventData,
+            currentDateTime = currentDateTime
+        )
 
         assetJournalRepository.softDeleteAssetJournalEvent(
             eventData.transactionId,

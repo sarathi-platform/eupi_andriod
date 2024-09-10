@@ -48,10 +48,15 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun addOrUpdateLivelihoodEvent(eventData: LivelihoodEventScreenData) {
+    override suspend fun addOrUpdateLivelihoodEvent(
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long
+    ) {
         val subjectLivelihoodEventMappingEntity =
             SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
-                coreSharedPrefs.getUniqueUserIdentifier(), eventData
+                coreSharedPrefs.getUniqueUserIdentifier(),
+                eventData,
+                currentDateTime = currentDateTime
             )
         if (subjectLivelihoodEventMappingDao.isLivelihoodEventMappingExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -83,7 +88,11 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getLivelihoodEventDto(eventData: LivelihoodEventScreenData): SaveLivelihoodEventDto {
+    override suspend fun getLivelihoodEventDto(
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
+    ): SaveLivelihoodEventDto {
         return SaveLivelihoodEventDto(
             subjectId = eventData.subjectId,
             eventId = eventData.eventId,
@@ -97,7 +106,9 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             date = eventData.date,
             livelihoodValue = eventData.livelihoodValue,
             assetTypeValue = eventData.assetTypeValue,
-            productValue = eventData.productValue
+            productValue = eventData.productValue,
+            createdDate = currentDateTime,
+            modifiedDate = modifiedDateTime
         )
     }
 

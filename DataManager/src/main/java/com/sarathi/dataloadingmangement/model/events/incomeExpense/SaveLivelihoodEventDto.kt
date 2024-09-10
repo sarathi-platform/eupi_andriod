@@ -29,5 +29,10 @@ data class SaveLivelihoodEventDto(
     val assetTypeValue: String,
     @SerializedName("transactionId")
     val transactionId: String,
+    @SerializedName("createdDate")
+    val createdDate: Long,
+    @SerializedName("modifiedDate")
+    val modifiedDate: Long,
+
 
     )

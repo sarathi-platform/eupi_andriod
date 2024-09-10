@@ -28,5 +28,7 @@ data class SaveAssetJournalEventDto(
     @SerializedName("transactionType")
     val transactionType: String,
     @SerializedName("assetId")
-    val assetId: Int
+    val assetId: Int,
+    @SerializedName("modifiedDate")
+    val modifiedDate: Long,
 )

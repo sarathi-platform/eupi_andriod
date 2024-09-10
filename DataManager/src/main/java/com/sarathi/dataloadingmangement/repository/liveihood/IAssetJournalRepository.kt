@@ -10,7 +10,9 @@ interface IAssetJournalRepository {
     suspend fun getAssetForTransaction(transactionId: String, subjectId: Int): AssetJournalEntity?
     suspend fun getSaveAssetJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTIme: Long
     ): SaveAssetJournalEventDto
 
 }

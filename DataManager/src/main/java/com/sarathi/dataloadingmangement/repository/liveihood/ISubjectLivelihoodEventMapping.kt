@@ -19,11 +19,18 @@ interface ISubjectLivelihoodEventMapping {
         transactionId: String,
     ): SubjectLivelihoodEventMappingEntity?
 
-    suspend fun addOrUpdateLivelihoodEvent(eventData: LivelihoodEventScreenData)
+    suspend fun addOrUpdateLivelihoodEvent(
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long
+    )
 
     suspend fun softDeleteLivelihoodEvent(transactionId: String, subjectId: Int)
 
-    suspend fun getLivelihoodEventDto(eventData: LivelihoodEventScreenData): SaveLivelihoodEventDto
+    suspend fun getLivelihoodEventDto(
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
+    ): SaveLivelihoodEventDto
     suspend fun getUserId(): Int
 
     suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(

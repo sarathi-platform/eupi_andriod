@@ -26,5 +26,7 @@ data class SaveMoneyJournalEventDto(
     @SerializedName("transactionFlow")
     val transactionFlow: String,
     @SerializedName("transactionType")
-    val transactionType: String
+    val transactionType: String,
+    @SerializedName("modifiedDate")
+    val modifiedDate: Long,
 )

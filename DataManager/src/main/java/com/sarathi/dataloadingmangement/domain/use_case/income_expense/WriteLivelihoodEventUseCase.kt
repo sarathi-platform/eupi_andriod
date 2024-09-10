@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.getCurrentTimeInMillis
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.DeleteLivelihoodEvent
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
@@ -17,22 +18,39 @@ class WriteLivelihoodEventUseCase @Inject constructor(
     private val eventWriterRepository: IEventWriterRepository
 ) {
 
-    suspend fun writeLivelihoodEvent(eventData: LivelihoodEventScreenData, particular: String) {
+    suspend fun writeLivelihoodEvent(
+        eventData: LivelihoodEventScreenData,
+        particular: String,
+        currentDateTime: Long
+    ) {
 
         val livelihoodPayload =
-            subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(eventData)
+            subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
+                eventData,
+                currentDateTime = currentDateTime,
+                modifiedDateTime = getCurrentTimeInMillis()
+            )
         writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
 
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
 
-            val assetJournalPayload =
-                assetJournalRepository.getSaveAssetJournalEventDto(particular, eventData)
+            val assetJournalPayload = assetJournalRepository.getSaveAssetJournalEventDto(
+                particular,
+                eventData,
+                currentDateTime = currentDateTime,
+                modifiedDateTIme = getCurrentTimeInMillis()
+            )
             writeEvent(assetJournalPayload, EventName.ASSET_JOURNAL_EVENT)
 
         }
         eventData.selectedEvent.moneyJournalEntryFlowType?.let {
             val moneyJournalPayload =
-                moneyJournalRepo.getMoneyJournalEventDto(particular, eventData)
+                moneyJournalRepo.getMoneyJournalEventDto(
+                    particular,
+                    eventData,
+                    currentDateTime = currentDateTime,
+                    modifiedDateTime = getCurrentTimeInMillis()
+                )
             writeEvent(moneyJournalPayload, EventName.MONEY_JOURNAL_RESPONSE_EVENT)
 
         }

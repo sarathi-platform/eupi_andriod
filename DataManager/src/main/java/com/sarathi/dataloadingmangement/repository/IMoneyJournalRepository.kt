@@ -28,6 +28,8 @@ interface IMoneyJournalRepository {
 
     suspend fun getMoneyJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
     ): SaveMoneyJournalEventDto
 }

@@ -66,11 +66,13 @@ class AssetJournalRepositoryImpl @Inject constructor(
 
     override suspend fun getSaveAssetJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTIme: Long
     ): SaveAssetJournalEventDto {
         return SaveAssetJournalEventDto(
             assetCount = eventData.assetCount,
-            createdDate = System.currentTimeMillis(),
+            createdDate = currentDateTime,
             particulars = particular,
             referenceId = eventData.livelihoodId,
             subjectId = eventData.subjectId,
@@ -82,9 +84,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
             transactionDate = eventData.date,
             transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
                 ?: BLANK_STRING,
-            assetId = eventData.assetType
-
-
+            assetId = eventData.assetType,
+            modifiedDate = modifiedDateTIme
         )
     }
 }
