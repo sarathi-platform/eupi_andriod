@@ -230,6 +230,11 @@ fun ExpandableTaskCardRow(
         viewModel = viewModel,
         onAnswerSelection = { _, _ ->
             if (questionUIModel != null) {
+                task.value[TaskCardSlots.TASK_STATUS.name] = TaskCardModel(
+                    value = SurveyStatusEnum.COMPLETED.name,
+                    label = BLANK_STRING,
+                    icon = null
+                )
                 viewModel.saveSingleAnswerIntoDb(
                     currentQuestionUiModel = questionUIModel,
                     subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
