@@ -70,7 +70,7 @@ class FetchAllDataUseCase @Inject constructor(
                     moneyJournalUseCase.invoke()
                 }
             }
-            if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name)) {
+            if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
                 livelihoodUseCase.invoke()
             }
