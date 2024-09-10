@@ -4,6 +4,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
@@ -26,8 +27,7 @@ class DataTabUseCase @Inject constructor(
     val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
-
-
+    private val moneyJournalUseCase: FetchMoneyJournalUseCase
     ) {
 
     suspend operator fun invoke(
@@ -43,6 +43,7 @@ class DataTabUseCase @Inject constructor(
                     fetchLivelihoodSaveEventUseCase.invoke()
                     fetchLivelihoodOptionNetworkUseCase.invoke()
                     assetJournalUseCase.invoke()
+                    moneyJournalUseCase.invoke()
                 }
                 livelihoodUseCase.invoke()
 
