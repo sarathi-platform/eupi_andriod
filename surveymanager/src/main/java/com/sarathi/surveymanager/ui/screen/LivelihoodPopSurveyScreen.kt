@@ -50,10 +50,14 @@ fun LivelihoodPopSurveyScreen(
         totalSubmittedAmount = totalSubmittedAmount,
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
-            viewModel.saveSingleAnswerIntoDb(questionUiModel)
+            /**
+             * Not Required here as it is handled in the LivelihoodPopSurveyQuestionContent itself
+             * */
         },
         onSubmitButtonClick = {
             viewModel.updateTaskStatus(taskId, true)
+            navController.popBackStack()
+            navController.popBackStack()
         },
         surveyQuestionContent = { maxHeight ->
 
@@ -63,6 +67,7 @@ fun LivelihoodPopSurveyScreen(
                 totalSubmittedAmount = totalSubmittedAmount,
                 onAnswerSelect = { questionUiModel ->
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                    viewModel.updateTaskStatus(taskId)
                 },
                 activityType = activityType,
                 maxHeight = maxHeight
@@ -71,6 +76,7 @@ fun LivelihoodPopSurveyScreen(
         }
     )
 }
+
 
 fun LazyListScope.LivelihoodPopSurveyQuestionContent(
     viewModel: BaseSurveyScreenViewModel,

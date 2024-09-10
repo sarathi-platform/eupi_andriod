@@ -1,6 +1,9 @@
 package com.sarathi.surveymanager.ui.screen
 
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -12,7 +15,11 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,4 +50,26 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     getActivityUiConfigUseCase,
     getSectionListUseCase
 ) {
+
+    override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            saveQuestionAnswerIntoDb(question)
+
+            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
+                questionUiModel = question,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = subjectType,
+                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                referenceId = referenceId,
+                grantId = grantID,
+                grantType = granType,
+                taskId = taskId,
+                uriList = ArrayList(),
+                activityId = activityConfig?.activityId.value(),
+                activityReferenceId = activityConfig?.referenceId,
+                activityReferenceType = activityConfig?.referenceType
+            )
+        }
+    }
+
 }
