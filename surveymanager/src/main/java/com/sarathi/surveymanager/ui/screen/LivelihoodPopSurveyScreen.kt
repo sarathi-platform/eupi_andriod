@@ -96,7 +96,6 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
     activityType: String,
     maxHeight: Dp
 ) {
-    println("inside LivelihoodPopSurveyQuestionContent")
 
     itemsIndexed(viewModel.questionUiModel.value) { index, question ->
 

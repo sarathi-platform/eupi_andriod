@@ -202,53 +202,13 @@ fun SectionScreen(
 
                     }
 
-                    else -> { /*
-                        Not required for now.
-                    */
+                    else -> {
+                        /**
+                         * Not required for now.
+                         * */
                     }
                 }
-                /*if (activityType.toLowerCase() == ActivityTypeEnum.GRANT.name.toLowerCase()) {
-                    val sectionId: Int? =
-                        sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
-                    sectionId?.let {
-                        onNavigateToGrantSurveySummaryScreen(
-                            navController,
-                            surveyId,
-                            sectionId,
-                            taskId,
-                            subjectType,
-                            subjectName,
-                            activityConfigId,
-                            sanctionedAmount
-                        )
-                    }
-                } else if (activityType.equals(
-                        ActivityTypeEnum.BASIC.name,
-                        ignoreCase = true
-                    ) || activityType.equals(
-                        ActivityTypeEnum.LIVELIHOOD_PoP.name,
-                        ignoreCase = true
-                    )
-                ) {
-                    val sectionId: Int? =
-                        sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
-                    sectionId?.let {
-                        onNavigateToQuestionScreen(
-                            surveyId,
-                            sectionId,
-                            taskId,
-                            subjectName,
-                            subjectType,
-                            activityConfigId,
-                            missionId,
-                            activityId,
-                            activityType
-                        )
-                    }
-                }*/
             }
-
-
 
             sectionScreenViewModel.checkButtonValidation()
             sectionScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))

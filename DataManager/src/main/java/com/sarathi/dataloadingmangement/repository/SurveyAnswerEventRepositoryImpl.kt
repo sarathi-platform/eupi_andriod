@@ -153,8 +153,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
         val options = getOption(questionUiModel, "")
 
-//        if (options.isNotEmpty()) {
-
             saveAnswerEventQuestionItemDto1 = SaveAnswerEventQuestionItemDto(
                 questionId = questionUiModel.questionId,
                 questionType = questionUiModel.type,
@@ -165,7 +163,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 formId = questionUiModel.formId
             )
 
-//        }
         return saveAnswerEventQuestionItemDto1
     }
 
