@@ -167,11 +167,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         savePref(PREF_KEY_USER_NAME, userName)
     }
 
-    fun setName(name: String) {
-        savePref(PREF_KEY_NAME, name)
-    }
-
-
     fun getUserName(): String {
         return getPref(PREF_KEY_USER_NAME, BLANK_STRING)
     }
