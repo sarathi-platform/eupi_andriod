@@ -4,6 +4,7 @@ import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
@@ -109,6 +110,7 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 grantType = surveyAnswer.grantType,
                 taskLocalId = taskEntity.localTaskId,
                 subjectType = subjectType,
+                activityId = activityConfig?.activityId.value(),
                 activityReferenceId = activityConfig?.referenceId,
                 activityReferenceType = activityConfig?.referenceType
             )

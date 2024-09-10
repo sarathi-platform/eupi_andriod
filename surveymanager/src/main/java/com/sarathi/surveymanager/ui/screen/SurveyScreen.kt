@@ -43,6 +43,7 @@ fun SurveyScreen(
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
+            viewModel.updateTaskStatus(taskId)
             viewModel.updateSectionStatus(
                 missionId,
                 surveyId,
@@ -56,18 +57,17 @@ fun SurveyScreen(
         },
         onSubmitButtonClick = {
             if (viewModel.isNoSection.value) {
-                viewModel.updateTaskStatus(taskId)
-            } else {
-                viewModel.updateSectionStatus(
-                    missionId,
-                    surveyId,
-                    sectionId,
-                    taskId,
-                    SurveyStatusEnum.COMPLETED.name
-                ) {
-                    navController.popBackStack()
-                    navController.popBackStack()
-                }
+                viewModel.updateTaskStatus(taskId, true)
+            }
+            viewModel.updateSectionStatus(
+                missionId,
+                surveyId,
+                sectionId,
+                taskId,
+                SurveyStatusEnum.COMPLETED.name
+            ) {
+                navController.popBackStack()
+                navController.popBackStack()
             }
         }
     )

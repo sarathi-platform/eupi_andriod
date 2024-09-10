@@ -59,6 +59,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
 ) {
 
     var referenceId: String = BLANK_STRING
+    var grantID: Int = 0
+    var grantType: String = BLANK_STRING
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     val questionList = arrayListOf<QuestionUiModel>()
 
@@ -143,10 +145,11 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 subjectType = subjectType,
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
-                grantId = activityConfigUiModelWithoutSurvey?.activityTypeId.value(),
-                grantType = activityConfigUiModelWithoutSurvey?.activityType.value(),
+                grantId = grantID,
+                grantType = ActivityTypeEnum.SELECT.name,
                 taskId = taskId,
                 uriList = ArrayList(),
+                activityId = activityConfigUiModelWithoutSurvey?.activityId.value(),
                 activityReferenceId = activityConfigUiModelWithoutSurvey?.referenceId,
                 activityReferenceType = activityConfigUiModelWithoutSurvey?.referenceType
             )
@@ -162,8 +165,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             subjectId = taskEntity.subjectId ?: DEFAULT_ID,
             taskId = taskEntity.taskId,
             referenceId = referenceId,
-            grantId = activityConfigUiModelWithoutSurvey?.activityTypeId.value(),
-            grantType = activityConfigUiModelWithoutSurvey?.activityType.value()
+            grantId = grantID,
+            grantType = grantType
         )
     }
 

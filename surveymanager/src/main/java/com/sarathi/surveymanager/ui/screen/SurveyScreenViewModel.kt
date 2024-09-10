@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
@@ -72,6 +73,7 @@ class SurveyScreenViewModel @Inject constructor(
                 grantType = granType,
                 taskId = taskId,
                 uriList = ArrayList(),
+                activityId = activityConfig?.activityId.value(),
                 activityReferenceId = activityConfig?.referenceId,
                 activityReferenceType = activityConfig?.referenceType
             )

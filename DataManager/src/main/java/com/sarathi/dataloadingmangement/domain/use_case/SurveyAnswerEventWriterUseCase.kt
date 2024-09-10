@@ -29,6 +29,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         grantId: Int,
         grantType: String,
         taskId: Int,
+        activityId: Int,
         activityReferenceId: Int?,
         activityReferenceType: String?
     ) {
@@ -60,17 +61,18 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         )
         questionUiModels.forEach { questionUiModel ->
             saveSurveyAnswerEvent(
-                questionUiModel,
-                subjectId,
-                subjectType,
-                referenceId,
-                taskLocalId,
-                grantId,
-                grantType,
-                taskId,
-                uriList,
-                activityReferenceId,
-                activityReferenceType
+                questionUiModel = questionUiModel,
+                subjectId = subjectId,
+                subjectType = subjectType,
+                referenceId = referenceId,
+                taskLocalId = taskLocalId,
+                grantId = grantId,
+                grantType = grantType,
+                taskId = taskId,
+                uriList = uriList,
+                activityId = activityId,
+                activityReferenceId = activityReferenceId,
+                activityReferenceType = activityReferenceType
             )
         }
     }
@@ -85,20 +87,22 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         grantType: String,
         taskId: Int,
         uriList: ArrayList<Uri>,
+        activityId: Int,
         activityReferenceId: Int?,
         activityReferenceType: String?
     ) {
         val saveAnswerEventDto = repository.writeSaveAnswerEvent(
-            questionUiModel,
-            subjectId,
-            subjectType,
-            referenceId,
-            taskLocalId,
-            grantId,
-            grantType,
-            taskId,
-            activityReferenceId,
-            activityReferenceType
+            questionUiModel = questionUiModel,
+            subjectId = subjectId,
+            subjectType = subjectType,
+            refrenceId = referenceId,
+            taskLocalId = taskLocalId,
+            grantId = grantId,
+            grantType = grantType,
+            taskId = taskId,
+            activityId = activityId,
+            activityReferenceId = activityReferenceId,
+            activityReferenceType = activityReferenceType
         )
         if (questionUiModel.type == QuestionType.MultiImage.name) {
             questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {

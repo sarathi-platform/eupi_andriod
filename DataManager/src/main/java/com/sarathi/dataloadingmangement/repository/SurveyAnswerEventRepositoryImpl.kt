@@ -3,11 +3,13 @@ package com.sarathi.dataloadingmangement.repository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
+import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventOptionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
+import com.sarathi.dataloadingmangement.model.events.TrainingTypeActivitySaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import javax.inject.Inject
@@ -58,26 +60,45 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         grantId: Int,
         grantType: String,
         taskId: Int,
+        activityId: Int,
         activityReferenceId: Int?,
         activityReferenceType: String?
-    ): SaveAnswerEventDto {
-        return SaveAnswerEventDto(
-            surveyId = questionUiModel.surveyId,
-            dateCreated = System.currentTimeMillis(),
-            languageId = questionUiModel.languageId,
-            subjectId = subjectId,
-            subjectType = subjectType,
-            sectionId = questionUiModel.sectionId,
-            question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
-            referenceId = refrenceId,
-            localTaskId = taskLocalId ?: BLANK_STRING,
-            grantId = grantId,
-            grantType = grantType,
-            taskId = taskId,
-            activityReferenceId = activityReferenceId,
-            activityReferenceType = activityReferenceType
-        )
-
+    ): BaseSaveAnswerEventDto {
+        return if (activityReferenceId != null && activityReferenceType != null) {
+            TrainingTypeActivitySaveAnswerEventDto(
+                surveyId = questionUiModel.surveyId,
+                dateCreated = System.currentTimeMillis(),
+                languageId = questionUiModel.languageId,
+                subjectId = subjectId,
+                subjectType = subjectType,
+                sectionId = questionUiModel.sectionId,
+                question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+                referenceId = refrenceId,
+                localTaskId = taskLocalId ?: BLANK_STRING,
+                grantId = grantId,
+                grantType = grantType,
+                taskId = taskId,
+                activityId = activityId,
+                activityReferenceId = activityReferenceId,
+                activityReferenceType = activityReferenceType
+            )
+        } else {
+            SaveAnswerEventDto(
+                surveyId = questionUiModel.surveyId,
+                dateCreated = System.currentTimeMillis(),
+                languageId = questionUiModel.languageId,
+                subjectId = subjectId,
+                subjectType = subjectType,
+                sectionId = questionUiModel.sectionId,
+                question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+                referenceId = refrenceId,
+                localTaskId = taskLocalId ?: BLANK_STRING,
+                grantId = grantId,
+                grantType = grantType,
+                taskId = taskId,
+                activityId = activityId
+            )
+        }
     }
 
     override suspend fun writeDeleteSaveAnswerEvent(

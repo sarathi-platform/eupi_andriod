@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -178,6 +179,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 grantId = grantID,
                 grantType = granType,
                 taskId = taskId,
+                activityId = activityConfig?.activityId.value(),
                 activityReferenceId = activityConfig?.referenceId,
                 activityReferenceType = activityConfig?.referenceType
             )
@@ -272,11 +274,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     }
 
-    open fun updateTaskStatus(taskId: Int) {
+    open fun updateTaskStatus(taskId: Int, isTaskCompleted: Boolean = false) {
         ioViewModelScope {
             val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
             surveyEntity?.let { survey ->
-                taskStatusUseCase.markTaskCompleted(taskId)
+                if (isTaskCompleted) {
+                    taskEntity = taskEntity?.copy(status = SurveyStatusEnum.COMPLETED.name)
+                    taskStatusUseCase.markTaskCompleted(taskId)
+                } else {
+                    taskEntity = taskEntity?.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                    taskStatusUseCase.markTaskInProgress(taskId)
+                }
                 taskEntity?.let { task ->
                     matStatusEventWriterUseCase.updateTaskStatus(
                         task,

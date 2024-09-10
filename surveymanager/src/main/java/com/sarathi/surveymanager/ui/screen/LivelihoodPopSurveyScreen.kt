@@ -69,7 +69,7 @@ fun LivelihoodPopSurveyScreen(
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
         },
         onSubmitButtonClick = {
-            viewModel.updateTaskStatus(taskId)
+            viewModel.updateTaskStatus(taskId, true)
         },
         surveyQuestionContent = { maxHeight ->
 

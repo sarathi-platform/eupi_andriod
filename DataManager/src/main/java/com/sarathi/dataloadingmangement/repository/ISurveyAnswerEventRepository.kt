@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
-import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
@@ -27,9 +27,10 @@ interface ISurveyAnswerEventRepository {
         grantId: Int,
         grantType: String,
         taskId: Int,
+        activityId: Int,
         activityReferenceId: Int?,
         activityReferenceType: String?
-    ): SaveAnswerEventDto
+    ): BaseSaveAnswerEventDto
 
     suspend fun writeDeleteSaveAnswerEvent(
         surveyID: Int,
