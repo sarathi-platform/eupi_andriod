@@ -308,6 +308,11 @@ class DataSummaryScreenViewModel @Inject constructor(
                     _subjectLivelihoodEventSummaryUiModelList.addAll(
                         fetchSubjectLivelihoodEventMappingUseCase.invoke(subjectId)
                     )
+                    _subjectLivelihoodEventSummaryUiModelList.addAll(
+                        fetchSubjectLivelihoodEventMappingUseCase.getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(
+                            subjectId
+                        )
+                    )
 
                     _livelihoodModel.clear()
                     _livelihoodModel.addAll(
