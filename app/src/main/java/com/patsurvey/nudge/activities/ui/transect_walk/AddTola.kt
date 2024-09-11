@@ -346,7 +346,7 @@ fun AddTolaBox(
                         .height(45.dp)
                         .weight(1f)
                 ) {
-                    onSaveClicked(mTolaName, location)
+                    onSaveClicked(mTolaName.trim(), location)
                 }
 
 
@@ -697,7 +697,7 @@ fun TolaBox(
                                     .weight(1f)
                             ) {
                                 if (mTolaName.isNotEmpty()) {
-                                    saveButtonClicked(mTolaName, location)
+                                    saveButtonClicked(mTolaName.trim(), location)
                                     showEditView = false
                                     showInlineLocationError.value = false
                                 } else {
