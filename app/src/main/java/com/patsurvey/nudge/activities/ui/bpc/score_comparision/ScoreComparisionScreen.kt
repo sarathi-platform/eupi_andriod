@@ -91,6 +91,7 @@ import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.showDidiImageDialog
@@ -510,13 +511,31 @@ fun ScoreComparisonDidiCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.crp_score_text), itemType = CRP_USER_TYPE, modifier = Modifier.weight(1f))
+                ScoreItem(
+                    didiEntity = didiEntity,
+                    itemName = stringResource(R.string.crp_score_text),
+                    itemType = CRP_USER_TYPE,
+                    modifier = Modifier.weight(1f)
+                )
                 Spacer(modifier = Modifier.width(4.dp))
-                if (didiEntity.section1Status == PatSurveyStatus.COMPLETED.ordinal && didiEntity.section2Status == PatSurveyStatus.COMPLETED.ordinal)
-                    ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE, modifier = Modifier.weight(1f))
-                else
-                    ScoreItemExclusion(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_result_text),
-                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1.25f))
+                if (didiEntity.section1Status == PatSurveyStatus.COMPLETED.ordinal
+                    && didiEntity.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                    && didiEntity.patExclusionStatus == ExclusionType.NO_EXCLUSION.ordinal
+                ) {
+                    ScoreItem(
+                        didiEntity = didiEntity,
+                        itemName = stringResource(R.string.bpc_score_text),
+                        itemType = BPC_USER_TYPE,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    ScoreItemExclusion(
+                        didiEntity = didiEntity,
+                        itemName = stringResource(R.string.bpc_result_text),
+                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "",
+                        modifier = Modifier.weight(1.25f)
+                    )
+                }
 
             }
 
