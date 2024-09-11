@@ -891,7 +891,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
         when (type) {
             QuestionType.RadioButton -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, optionDesc = it.display ?: BLANK_STRING, tag = it.optionTag, selectedValue = it.selectedValue)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
@@ -944,7 +944,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
             QuestionType.Grid -> {
 
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, optionDesc = it.display ?: BLANK_STRING, tag = it.optionTag, selectedValue = it.selectedValue)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
 
             }
