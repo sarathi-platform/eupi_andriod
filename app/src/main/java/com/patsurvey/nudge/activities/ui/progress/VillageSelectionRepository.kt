@@ -138,7 +138,6 @@ import com.patsurvey.nudge.utils.getFormPathKey
 import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.getVideoPath
-import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
@@ -3284,12 +3283,13 @@ class VillageSelectionRepository @Inject constructor(
                                             modifiedDate = didi.modifiedDate,
                                             beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                             shgFlag = SHGFlag.fromSting(
-                                                intToString(didi.shgFlag) ?: SHGFlag.NOT_MARKED.name).value,
+                                                didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                            ).value,
                                             transactionId = "",
                                             localCreatedDate = didi.localCreatedDate,
                                             localModifiedDate = didi.localModifiedDate,
                                             score = didi.bpcScore ?: 0.0,
-                                            comment =  didi.bpcComment ?: BLANK_STRING,
+                                            comment = didi.bpcComment ?: BLANK_STRING,
                                             crpScore = didi.crpScore,
                                             crpComment = didi.crpComment,
                                             bpcScore = didi.bpcScore ?: 0.0,
@@ -3299,7 +3299,10 @@ class VillageSelectionRepository @Inject constructor(
                                             rankingEdit = didi.rankingEdit,
                                             patEdit = didi.patEdit,
                                             voEndorsementEdit = didi.voEndorsementEdit,
-                                            ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                            ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                                didi.ableBodiedFlag
+                                                    ?: AbleBodiedFlag.NOT_MARKED.name
+                                            ).value
                                         )
                                     )
                                     if(!didi.crpUploadedImage.isNullOrEmpty()){
