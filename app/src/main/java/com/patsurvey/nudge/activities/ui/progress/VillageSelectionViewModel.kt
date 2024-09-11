@@ -220,7 +220,11 @@ class VillageSelectionViewModel @Inject constructor(
                 fetchQuestions(isFromOTPScreen)
                 fetchCastList(isFromOTPScreen)
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
-                    if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
+                    if ((System.currentTimeMillis() - prefRepo.getPref(
+                            LAST_UPDATE_TIME,
+                            0L
+                        )) > TimeUnit.DAYS.toMillis(5000)
+                    ) {
                         fetchUserWiseData()
                     } else {
                         showLoader.value = false
