@@ -542,9 +542,7 @@ fun ScoreComparisonDidiCard(
             Row(
                 Modifier
                     .background(
-                        if ((didiEntity.crpScore
-                                ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
-                                ?: 0.0) >= passingScore.toDouble()
+                        if (isSocreMatched(didiEntity, passingScore)
                         ) greenOnline else unmatchedOrangeColor,
                         shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                     )
@@ -554,10 +552,8 @@ fun ScoreComparisonDidiCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    painter = if ((didiEntity.crpScore
-                            ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
-                            ?: 0.0) >= passingScore.toDouble()
-                    ) painterResource(id = R.drawable.icon_feather_check_circle_white)
+                    painter = if (isSocreMatched(didiEntity, passingScore))
+                        painterResource(id = R.drawable.icon_feather_check_circle_white)
                     else painterResource(
                         id = R.drawable.ic_cross_circle_white
                     ),
@@ -565,10 +561,10 @@ fun ScoreComparisonDidiCard(
                     tint = white
                 )
                 Text(
-                    text = if ((didiEntity.crpScore
-                            ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
-                            ?: 0.0) >= passingScore.toDouble()
-                    ) stringResource(R.string.matched_text) else stringResource(R.string.unmatched_text),
+                    text = if (isSocreMatched(didiEntity, passingScore))
+                        stringResource(R.string.matched_text)
+                    else
+                        stringResource(R.string.unmatched_text),
                     color = white,
                     style = smallerTextStyle,
                     modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -578,6 +574,14 @@ fun ScoreComparisonDidiCard(
         }
     }
 }
+
+@Composable
+private fun isSocreMatched(
+    didiEntity: DidiEntity,
+    passingScore: Int
+) = ((didiEntity.crpScore
+    ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
+    ?: 0.0) >= passingScore.toDouble()) && didiEntity.patExclusionStatus == ExclusionType.NO_EXCLUSION.ordinal
 
 @Composable
 fun ExpandableSummaryBox(
