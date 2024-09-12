@@ -65,7 +65,6 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -220,54 +219,54 @@ fun SurveySummary(
                         stepId = stepId
                     )
 
-                    if ((context as MainActivity).isOnline.value ?: false) {
-                        surveySummaryViewModel.savePATSummeryToServer(object :
-                            NetworkCallbackListener {
-                            override fun onSuccess() {
-
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-
-                        })
-
-                        surveySummaryViewModel.updateBpcPatStatusToNetwork(object :
-                            NetworkCallbackListener {
-                            override fun onSuccess() {
-
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-
-                        })
-                        surveySummaryViewModel.callWorkFlowAPIForBpc(
-                            surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id,
-                            stepId,
-                            object :
-                                NetworkCallbackListener {
-                                override fun onSuccess() {
-                                }
-
-                                override fun onFailed() {
-                                    showCustomToast(context, SYNC_FAILED)
-                                }
-                            })
-                        surveySummaryViewModel.sendBpcMatchScore(object :
-                            NetworkCallbackListener {
-                            override fun onSuccess() {
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-                        })
-                    } else {
-                        surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
-                    }
+//                    if ((context as MainActivity).isOnline.value ?: false) {
+//                        surveySummaryViewModel.savePATSummeryToServer(object :
+//                            NetworkCallbackListener {
+//                            override fun onSuccess() {
+//
+//                            }
+//
+//                            override fun onFailed() {
+//                                showCustomToast(context, SYNC_FAILED)
+//                            }
+//
+//                        })
+//
+//                        surveySummaryViewModel.updateBpcPatStatusToNetwork(object :
+//                            NetworkCallbackListener {
+//                            override fun onSuccess() {
+//
+//                            }
+//
+//                            override fun onFailed() {
+//                                showCustomToast(context, SYNC_FAILED)
+//                            }
+//
+//                        })
+//                        surveySummaryViewModel.callWorkFlowAPIForBpc(
+//                            surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id,
+//                            stepId,
+//                            object :
+//                                NetworkCallbackListener {
+//                                override fun onSuccess() {
+//                                }
+//
+//                                override fun onFailed() {
+//                                    showCustomToast(context, SYNC_FAILED)
+//                                }
+//                            })
+//                        surveySummaryViewModel.sendBpcMatchScore(object :
+//                            NetworkCallbackListener {
+//                            override fun onSuccess() {
+//                            }
+//
+//                            override fun onFailed() {
+//                                showCustomToast(context, SYNC_FAILED)
+//                            }
+//                        })
+//                    } else {
+//                        surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
+//                    }
                     surveySummaryViewModel.writeBpcMatchScoreEvent()
 
                     navController.navigate(
