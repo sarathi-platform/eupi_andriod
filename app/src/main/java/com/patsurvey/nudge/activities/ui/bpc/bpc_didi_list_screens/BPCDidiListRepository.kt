@@ -15,6 +15,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
@@ -22,6 +23,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.getPatScoreSaveEvent
+import com.patsurvey.nudge.utils.getPatSummarySaveEventPayload
 import javax.inject.Inject
 
 class BPCDidiListRepository @Inject constructor(
@@ -30,7 +32,8 @@ class BPCDidiListRepository @Inject constructor(
     val stepsListDao: StepsListDao,
     val questionListDao: QuestionListDao,
     val villageListDao: VillageListDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao
 ):BaseRepository() {
 
     fun getAllTolasForVillage(): List<TolaEntity>{
@@ -110,7 +113,32 @@ class BPCDidiListRepository @Inject constructor(
             return super.createEvent(eventItem, eventName, eventType)
 
         when (eventName) {
+            EventName.SAVE_PAT_ANSWERS -> {
+                val requestPayload = getPatSummarySaveEventPayload(
+                    didiEntity = (eventItem as DidiEntity),
+                    answerDao = answerDao,
+                    numericAnswerDao = numericAnswerDao,
+                    questionListDao = questionListDao,
+                    prefRepo = prefRepo
+                )
 
+                var savePatSummeryEvent = getPatSaveAnswersEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patSummarySaveRequest = requestPayload,
+                    prefRepo = prefRepo
+                )
+
+                val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
+                val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                savePatSummeryEvent = savePatSummeryEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return savePatSummeryEvent
+            }
             EventName.NOT_AVAILBLE_PAT_SCORE -> {
                 val requestPayload = getPatScoreSaveEvent(
                     didiEntity = (eventItem as DidiEntity),
