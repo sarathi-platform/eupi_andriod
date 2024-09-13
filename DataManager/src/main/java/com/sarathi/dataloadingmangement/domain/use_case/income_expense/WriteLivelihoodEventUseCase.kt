@@ -74,7 +74,8 @@ class WriteLivelihoodEventUseCase @Inject constructor(
             eventItem,
             eventName,
             EventType.STATEFUL,
-            surveyName = "Livelihood"
+            surveyName = "Livelihood",
+            isFromRegenerate = false
         )?.let {
 
             eventWriterRepository.saveEventToMultipleSources(

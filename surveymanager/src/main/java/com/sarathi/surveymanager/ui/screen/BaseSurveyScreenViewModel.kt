@@ -142,7 +142,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                         subjectType = subjectType,
                         missionId = taskEntity?.missionId ?: DEFAULT_ID,
                         activityId = taskEntity?.activityId ?: DEFAULT_ID,
-                        taskId = taskEntity?.taskId ?: DEFAULT_ID
+                        taskId = taskEntity?.taskId ?: DEFAULT_ID,
+                        isFromRegenerate = false
 
                     )
                 }
@@ -156,7 +157,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 grantId = grantID,
                 grantType = granType,
-                taskId = taskId
+                taskId = taskId,
+                isFromRegenerate = false
             )
 
         }

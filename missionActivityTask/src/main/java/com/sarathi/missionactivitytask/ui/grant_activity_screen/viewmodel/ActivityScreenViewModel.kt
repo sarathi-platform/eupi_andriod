@@ -80,7 +80,11 @@ class ActivityScreenViewModel @Inject constructor(
     fun markMissionCompleteStatus() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             taskStatusUseCase.markMissionCompleted(missionId = missionId)
-            eventWriterUseCase.updateMissionStatus(missionId = missionId, surveyName = "CSG")
+            eventWriterUseCase.updateMissionStatus(
+                missionId = missionId,
+                surveyName = "CSG",
+                isFromRegenerate = false
+            )
 
         }
     }
@@ -105,13 +109,15 @@ class ActivityScreenViewModel @Inject constructor(
         updateActivityStatusList.forEach {
             matStatusEventWriterUseCase.updateActivityStatus(
                 surveyName = BLANK_STRING,
-                activityEntity = it
+                activityEntity = it,
+                isFromRegenerate = false
             )
         }
         updateMissionStatusList.forEach {
             matStatusEventWriterUseCase.updateMissionStatus(
                 surveyName = BLANK_STRING,
-                missionEntity = it
+                missionEntity = it,
+                isFromRegenerate = false
             )
         }
     }

@@ -21,7 +21,8 @@ class DocumentEventWriterUseCase @Inject constructor(
         generatedDate: String,
         documentType: String,
         documentName: String,
-        activityId: Int
+        activityId: Int,
+        isFromRegenerate: Boolean = false
     ) {
 
         val saveAnswerEventDto = repository.getSaveDocumentEventDto(
@@ -34,7 +35,8 @@ class DocumentEventWriterUseCase @Inject constructor(
             saveAnswerEventDto,
             EventName.UPLOAD_DOCUMENT_EVENT,
             EventType.STATEFUL,
-            surveyName = ""
+            surveyName = "",
+            isFromRegenerate = isFromRegenerate
         )?.let { event ->
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

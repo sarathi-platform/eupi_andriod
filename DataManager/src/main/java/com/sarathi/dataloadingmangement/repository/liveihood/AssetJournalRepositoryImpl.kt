@@ -88,4 +88,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
             modifiedDate = modifiedDateTIme
         )
     }
+
+    override suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity> {
+        return assetJournalDao.getAssetJournalForUser(coreSharedPrefs.getUniqueUserIdentifier())
+    }
 }

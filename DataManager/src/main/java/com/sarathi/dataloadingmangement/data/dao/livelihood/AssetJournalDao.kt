@@ -90,4 +90,9 @@ interface AssetJournalDao {
         durationEnd: Long
     ): AssetCountUiModel?
 
+    @Query("Select * from asset_journal_table where userId=:userId")
+    suspend fun getAssetJournalForUser(
+        userId: String
+    ): List<AssetJournalEntity>
+
 }

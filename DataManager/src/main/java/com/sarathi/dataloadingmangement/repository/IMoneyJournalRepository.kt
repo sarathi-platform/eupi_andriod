@@ -32,4 +32,7 @@ interface IMoneyJournalRepository {
         currentDateTime: Long,
         modifiedDateTime: Long
     ): SaveMoneyJournalEventDto
+
+    suspend fun getMoneyJournalEventForUser(): List<MoneyJournalEntity>
+
 }

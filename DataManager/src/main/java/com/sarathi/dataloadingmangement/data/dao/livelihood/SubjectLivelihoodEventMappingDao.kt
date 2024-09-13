@@ -91,4 +91,10 @@ interface SubjectLivelihoodEventMappingDao {
         transactionId: String,
         userId: String
     ): List<SubjectLivelihoodEventMappingEntity>?
+
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME where  userId = :userId")
+    suspend fun getSubjectLivelihoodEventMappingForUser(
+        userId: String
+    ): List<SubjectLivelihoodEventMappingEntity>
+
 }

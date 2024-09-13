@@ -88,4 +88,10 @@ interface MoneyJournalDao {
         durationStart: Long,
         durationEnd: Long
     ): IncomeExpenseUiModel?
+
+    @Query("Select * from money_journal_table where userId=:userId")
+    suspend fun getMoneyJournalTransactionForUser(
+        userId: String,
+    ): List<MoneyJournalEntity>
+
 }

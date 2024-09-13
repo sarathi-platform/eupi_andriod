@@ -473,7 +473,8 @@ open class TaskScreenViewModel @Inject constructor(
             )
             eventWriterUseCase.updateActivityStatus(
                 missionId = missionId,
-                activityId = activityId, surveyName = "CSG"
+                activityId = activityId, surveyName = "CSG",
+                isFromRegenerate = false
             )
         }
     }

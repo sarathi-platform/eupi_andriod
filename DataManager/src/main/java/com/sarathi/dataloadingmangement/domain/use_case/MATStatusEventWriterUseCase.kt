@@ -13,14 +13,19 @@ class MATStatusEventWriterUseCase(
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
     suspend fun updateTaskStatus(
-        taskEntity: ActivityTaskEntity, surveyName: String, subjectType: String
+        taskEntity: ActivityTaskEntity, surveyName: String, subjectType: String,
+        isFromRegenerate: Boolean = false
     ) {
 
         val saveAnswerEventDto = repository.writeTaskStatusEvent(
             taskEntity = taskEntity, subjectType = subjectType
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.TASKS_STATUS_EVENT, EventType.STATEFUL, surveyName
+            saveAnswerEventDto,
+            EventName.TASKS_STATUS_EVENT,
+            EventType.STATEFUL,
+            surveyName,
+            isFromRegenerate
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -32,6 +37,8 @@ class MATStatusEventWriterUseCase(
     suspend fun updateActivityStatus(
         activityEntity: ActivityEntity,
         surveyName: String,
+        isFromRegenerate: Boolean
+
     ) {
 
         val saveAnswerEventDto = repository.writeActivityStatusEvent(
@@ -41,7 +48,8 @@ class MATStatusEventWriterUseCase(
             saveAnswerEventDto,
             EventName.ACTIVITIES_STATUS_EVENT,
             EventType.STATEFUL,
-            surveyName
+            surveyName,
+            isFromRegenerate
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -57,31 +65,43 @@ class MATStatusEventWriterUseCase(
         activityId: Int,
         taskId: Int,
         surveyName: String,
-        subjectType: String
+        subjectType: String,
+        isFromRegenerate: Boolean = false
     ) {
-        updateMissionStatus(repository.getMissionEntity(missionId), surveyName)
+        updateMissionStatus(repository.getMissionEntity(missionId), surveyName, isFromRegenerate)
         repository.getActivityEntity(missionId = missionId, activityId = activityId)
-            ?.let { updateActivityStatus(it, surveyName) }
+            ?.let { updateActivityStatus(it, surveyName, isFromRegenerate) }
         updateTaskStatus(
             getTaskEntity(taskId),
             surveyName = surveyName,
-            subjectType = subjectType
+            subjectType = subjectType,
+            isFromRegenerate
         )
     }
 
-    suspend fun updateMissionStatus(missionId: Int, surveyName: String) {
-        updateMissionStatus(repository.getMissionEntity(missionId), surveyName)
+    suspend fun updateMissionStatus(missionId: Int, surveyName: String, isFromRegenerate: Boolean) {
+        updateMissionStatus(
+            repository.getMissionEntity(missionId),
+            surveyName,
+            isFromRegenerate = isFromRegenerate
+        )
     }
 
-    suspend fun updateActivityStatus(missionId: Int, activityId: Int, surveyName: String) {
+    suspend fun updateActivityStatus(
+        missionId: Int,
+        activityId: Int,
+        surveyName: String,
+        isFromRegenerate: Boolean
+    ) {
         repository.getActivityEntity(missionId = missionId, activityId = activityId)
-            ?.let { updateActivityStatus(it, surveyName) }
+            ?.let { updateActivityStatus(it, surveyName, isFromRegenerate) }
     }
 
 
     suspend fun updateMissionStatus(
         missionEntity: MissionEntity,
-        surveyName: String
+        surveyName: String,
+        isFromRegenerate: Boolean
     ) {
 
         val saveAnswerEventDto = repository.writeMissionStatusEvent(missionEntity)
@@ -89,7 +109,8 @@ class MATStatusEventWriterUseCase(
             saveAnswerEventDto,
             EventName.MISSIONS_STATUS_EVENT,
             EventType.STATEFUL,
-            surveyName = surveyName
+            surveyName = surveyName,
+            isFromRegenerate = isFromRegenerate
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

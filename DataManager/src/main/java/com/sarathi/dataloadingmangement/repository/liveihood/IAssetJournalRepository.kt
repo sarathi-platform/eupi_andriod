@@ -15,4 +15,5 @@ interface IAssetJournalRepository {
         modifiedDateTIme: Long
     ): SaveAssetJournalEventDto
 
+    suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity>
 }
