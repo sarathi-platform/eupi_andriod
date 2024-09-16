@@ -19,6 +19,7 @@ object MissionActivityConstants {
     const val MAT_SECTION_SCREEN_ROUTE_NAME = "mat_section_screen"
     const val ACTIVITY_SELECT_SCREEN_ROUTE_NAME = "activity_select_screen"
     const val ACTIVITY_BASIC_SCREEN_ROUTE_NAME = "activity_basic_screen"
+    const val LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME = "livelihood_pop_survey_screen"
 
     const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
     const val ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME = "activity_completion_screen"

@@ -5,13 +5,17 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -41,7 +45,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    private val getSectionListUseCase: GetSectionListUseCase,
 ) : BaseViewModel() {
     var surveyId: Int = 0
     var sectionId: Int = 0
@@ -60,6 +66,11 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     val isActivityNotCompleted = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
+
+    var activityConfig: ActivityConfigEntity? = null
+
+    var isNoSection = mutableStateOf(false)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -94,6 +105,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     grantId = grantID
                 )
             }
+
+            taskEntity?.let { task ->
+                activityConfig =
+                    getActivityUiConfigUseCase.getActivityConfig(task.activityId, task.missionId)
+            }
+
+            val sectionList = getSectionListUseCase.invoke(surveyId = surveyId)
+
+            isNoSection.value = sectionList.size == 1
+
+
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -156,7 +178,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 grantId = grantID,
                 grantType = granType,
-                taskId = taskId
+                taskId = taskId,
+                activityId = activityConfig?.activityId.value(),
+                activityReferenceId = activityConfig?.referenceId,
+                activityReferenceType = activityConfig?.referenceType
             )
 
         }
@@ -247,5 +272,27 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     open fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
 
+    }
+
+    open fun updateTaskStatus(taskId: Int, isTaskCompleted: Boolean = false) {
+        ioViewModelScope {
+            val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
+            surveyEntity?.let { survey ->
+                if (isTaskCompleted) {
+                    taskEntity = taskEntity?.copy(status = SurveyStatusEnum.COMPLETED.name)
+                    taskStatusUseCase.markTaskCompleted(taskId)
+                } else {
+                    taskEntity = taskEntity?.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                    taskStatusUseCase.markTaskInProgress(taskId)
+                }
+                taskEntity?.let { task ->
+                    matStatusEventWriterUseCase.updateTaskStatus(
+                        task,
+                        survey.surveyName,
+                        subjectType
+                    )
+                }
+            }
+        }
     }
 }

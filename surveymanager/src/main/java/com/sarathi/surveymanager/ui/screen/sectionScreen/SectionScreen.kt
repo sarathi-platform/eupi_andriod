@@ -43,7 +43,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -101,7 +101,7 @@ fun SectionScreen(
         contentType: String,
         contentTitle: String
     ) -> Unit,
-    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String) -> Unit
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String, surveyFlow: SurveyFlow) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -141,43 +141,74 @@ fun SectionScreen(
         )
         sectionScreenViewModel.onEvent(InitDataEvent.InitDataStateWithCallBack {
 
-            // Navigate to Grant Survey Summary Screen if it is grant type activity
             if (sectionScreenViewModel.sectionList.value.size == 1) {
-                if (activityType.toLowerCase() == ActivityTypeEnum.GRANT.name.toLowerCase()) {
-                    val sectionId: Int? =
-                        sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
-                    sectionId?.let {
-                        onNavigateToGrantSurveySummaryScreen(
-                            navController,
-                            surveyId,
-                            sectionId,
-                            taskId,
-                            subjectType,
-                            subjectName,
-                            activityConfigId,
-                            sanctionedAmount
-                        )
+                val surveyFlow =
+                    SurveyFlow.getSurveyFlowFromSectionScreenForActivityType(activityType)
+                when (surveyFlow) {
+                    SurveyFlow.GrantSurveySummaryScreen -> {
+                        val sectionId: Int? =
+                            sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                        sectionId?.let {
+                            onNavigateToGrantSurveySummaryScreen(
+                                navController,
+                                surveyId,
+                                sectionId,
+                                taskId,
+                                subjectType,
+                                subjectName,
+                                activityConfigId,
+                                sanctionedAmount
+                            )
+                        }
                     }
-                } else if (activityType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
-                    val sectionId: Int? =
-                        sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
-                    sectionId?.let {
-                        onNavigateToQuestionScreen(
-                            surveyId,
-                            sectionId,
-                            taskId,
-                            subjectName,
-                            subjectType,
-                            activityConfigId,
-                            missionId,
-                            activityId,
-                            activityType
-                        )
+
+                    SurveyFlow.SurveyScreen -> {
+                        val sectionId: Int? =
+                            sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+                        sectionId?.let {
+                            onNavigateToQuestionScreen(
+                                surveyId,
+                                sectionId,
+                                taskId,
+                                subjectName,
+                                subjectType,
+                                activityConfigId,
+                                missionId,
+                                activityId,
+                                activityType,
+                                surveyFlow
+                            )
+                        }
+                    }
+
+                    SurveyFlow.LivelihoodPopSurveyScreen -> {
+                        val sectionId =
+                            sectionScreenViewModel.sectionList.value.firstOrNull()?.sectionId
+
+                        sectionId?.let {
+                            onNavigateToQuestionScreen(
+                                surveyId,
+                                sectionId,
+                                taskId,
+                                subjectName,
+                                subjectType,
+                                activityConfigId,
+                                missionId,
+                                activityId,
+                                activityType,
+                                surveyFlow
+                            )
+                        }
+
+                    }
+
+                    else -> {
+                        /**
+                         * Not required for now.
+                         * */
                     }
                 }
             }
-
-
 
             sectionScreenViewModel.checkButtonValidation()
             sectionScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -312,7 +343,8 @@ fun SectionScreen(
                                                 activityConfigId,
                                                 missionId,
                                                 activityId,
-                                                activityType
+                                                activityType,
+                                                SurveyFlow.SurveyScreen
                                             )
                                         }
                                     )

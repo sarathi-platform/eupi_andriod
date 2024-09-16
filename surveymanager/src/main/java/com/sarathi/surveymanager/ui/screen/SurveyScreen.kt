@@ -56,6 +56,9 @@ fun SurveyScreen(
             )
         },
         onSubmitButtonClick = {
+            if (viewModel.isNoSection.value) {
+                viewModel.updateTaskStatus(taskId, true)
+            }
             viewModel.updateSectionStatus(
                 missionId,
                 surveyId,

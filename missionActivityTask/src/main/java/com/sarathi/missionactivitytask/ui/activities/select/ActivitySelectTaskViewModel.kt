@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.activities.select
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -8,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -63,8 +63,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     var grantType: String = BLANK_STRING
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     val questionList = arrayListOf<QuestionUiModel>()
-    private val _questionUiModel = mutableStateOf<HashMap<Int, QuestionUiModel>>(hashMapOf())
-    val questionUiModel: State<HashMap<Int, QuestionUiModel>> get() = _questionUiModel
+
 
     val expandedIds = mutableStateListOf<Int>()
     override fun <T> onEvent(event: T) {
@@ -82,6 +81,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            expandedIds.clear()
             taskUiList.value.forEach { task ->
                 val list = intiQuestions(
                     taskId = task.taskId,
@@ -95,6 +95,15 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                     it.subjectId = task.subjectId
                     _questionUiModel.value[task.taskId ?: -1] = it
                 }
+            }
+            if (!isActivityCompleted.value) {
+
+                taskUiList.value.map { it.taskId }.distinct().forEach {
+                    if (!expandedIds.contains(it)) {
+                        expandedIds.add(it)
+                    }
+                }
+
             }
             withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -139,7 +148,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 grantId = grantID,
                 grantType = ActivityTypeEnum.SELECT.name,
                 taskId = taskId,
-                uriList = ArrayList()
+                uriList = ArrayList(),
+                activityId = activityConfigUiModelWithoutSurvey?.activityId.value(),
+                activityReferenceId = activityConfigUiModelWithoutSurvey?.referenceId,
+                activityReferenceType = activityConfigUiModelWithoutSurvey?.referenceType
             )
         }
     }

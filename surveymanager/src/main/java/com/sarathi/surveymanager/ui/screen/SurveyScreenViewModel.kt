@@ -2,10 +2,12 @@ package com.sarathi.surveymanager.ui.screen
 
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -39,7 +41,8 @@ class SurveyScreenViewModel @Inject constructor(
     private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
-    private val getSectionListUseCase: GetSectionListUseCase
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -50,21 +53,16 @@ class SurveyScreenViewModel @Inject constructor(
     getActivityUseCase,
     fromEUseCase,
     formEventWriterUseCase,
-    coreSharedPrefs
+    coreSharedPrefs,
+    getActivityUiConfigUseCase,
+    getSectionListUseCase
 ) {
 
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             saveQuestionAnswerIntoDb(currentQuestionUiModel)
-            saveTransactionMoneyJournalUseCase.saveMoneyJournalForGrant(
-                referenceId = referenceId,
-                grantId = grantID,
-                grantType = granType,
-                questionUiModels = questionUiModel.value,
-                subjectId = taskEntity?.subjectId ?: -1,
-                subjectType = subjectType
-            )
+
             surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
                 questionUiModel = currentQuestionUiModel,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
@@ -74,25 +72,11 @@ class SurveyScreenViewModel @Inject constructor(
                 grantId = grantID,
                 grantType = granType,
                 taskId = taskId,
-                uriList = ArrayList()
+                uriList = ArrayList(),
+                activityId = activityConfig?.activityId.value(),
+                activityReferenceId = activityConfig?.referenceId,
+                activityReferenceType = activityConfig?.referenceType
             )
-        }
-    }
-
-
-    fun updateTaskStatus(taskId: Int) {
-        ioViewModelScope {
-            val surveyEntity = getSectionListUseCase.getSurveyEntity(super.surveyId)
-            surveyEntity?.let { survey ->
-                taskStatusUseCase.markTaskCompleted(taskId)
-                super.taskEntity?.let { t ->
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        t,
-                        survey.surveyName,
-                        subjectType
-                    )
-                }
-            }
         }
     }
 

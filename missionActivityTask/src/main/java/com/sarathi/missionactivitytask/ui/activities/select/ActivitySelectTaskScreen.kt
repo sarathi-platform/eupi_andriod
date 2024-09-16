@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,7 +60,6 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -119,16 +117,6 @@ fun ActivitySelectTaskScreen(
 }
 
 fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
-    item {
-        viewModel.filterList.value.keys.let {
-            CustomTextView(
-                title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
-            )
-            if (!viewModel.isActivityCompleted.value) {
-                viewModel.expandedIds.addAll(it)
-            }
-        }
-    }
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
     ) { _, task ->
@@ -149,16 +137,7 @@ fun LazyListScope.selectActivityTaskScreenContentForGroup(
     groupKey: String,
     viewModel: ActivitySelectTaskViewModel
 ) {
-    item {
-        viewModel.filterList.value.keys.let {
-            CustomTextView(
-                title = viewModel.questionUiModel.value[it.first()]?.display ?: BLANK_STRING
-            )
-            if (!viewModel.isActivityCompleted.value) {
-                viewModel.expandedIds.addAll(it)
-            }
-        }
-    }
+
     itemsIndexed(
         items = viewModel.filterTaskMap[groupKey].value()
     ) { _, task ->
@@ -227,6 +206,19 @@ fun ExpandableTaskCardRow(
                     label = BLANK_STRING,
                     icon = null
                 )
+
+                questionUIModel?.let { question ->
+                    question.options?.forEach {
+                        it.isSelected = false
+                        it.selectedValue = BLANK_STRING
+                    }
+                    viewModel.saveSingleAnswerIntoDb(
+                        currentQuestionUiModel = questionUIModel,
+                        subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
+                        taskId = task.key
+                    )
+                }
+
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
@@ -238,9 +230,14 @@ fun ExpandableTaskCardRow(
         viewModel = viewModel,
         onAnswerSelection = { _, _ ->
             if (questionUIModel != null) {
+                task.value[TaskCardSlots.TASK_STATUS.name] = TaskCardModel(
+                    value = SurveyStatusEnum.COMPLETED.name,
+                    label = BLANK_STRING,
+                    icon = null
+                )
                 viewModel.saveSingleAnswerIntoDb(
                     currentQuestionUiModel = questionUIModel,
-                    subjectType = BLANK_STRING,
+                    subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
                     taskId = task.key
                 )
                 viewModel.updateTasStatus(
@@ -463,8 +460,8 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
                 .padding(
                     start = dimen_0_dp,
                     end = dimen_16_dp,
-                    bottom = dimen_8_dp,
-                    top = dimen_8_dp
+                    bottom = dimen_10_dp,
+                    top = dimen_10_dp
                 ),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
@@ -492,18 +489,17 @@ private fun RadioTypeOptionsUI(
     context: Context,
     isNotAvailableButtonEnable: Boolean
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(dimen_100_dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
     ) {
-        item {
-            questionUiModel?.options?.sortedBy { it.order }?.let {
-                when (questionUiModel.type) {
-                    QuestionType.RadioButton.name,
-                    QuestionType.Toggle.name -> {
-                        val selectedValue =
-                            it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
+        questionUiModel?.options?.sortedBy { it.order }?.let {
+            when (questionUiModel.type) {
+                QuestionType.RadioButton.name,
+                QuestionType.Toggle.name -> {
+                    val selectedValue =
+                        it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
                         RadioOptionTypeComponent(
                             optionItemEntityState = it,
                             isTaskMarkedNotAvailable = taskMarkedNotAvailable,
@@ -530,7 +526,8 @@ private fun RadioTypeOptionsUI(
                             areOptionsEnabled = !isActivityCompleted,
                             maxCustomHeight = customGridHeight(it.size),
                             isQuestionDisplay = false,
-
+                            showCardView = false,
+                            isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                             onAnswerSelection = { selectedOptionIndex, isSelected ->
                                 if (!isActivityCompleted) {
                                     questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
@@ -545,8 +542,6 @@ private fun RadioTypeOptionsUI(
                 }
 
             }
-
-        }
     }
     CustomVerticalSpacer()
     Divider(

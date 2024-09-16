@@ -29,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -75,6 +76,10 @@ open class TaskScreenViewModel @Inject constructor(
     private val _filterList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
+
+    internal val _questionUiModel = mutableStateOf<HashMap<Int, QuestionUiModel>>(hashMapOf())
+    val questionUiModel: State<HashMap<Int, QuestionUiModel>> get() = _questionUiModel
+
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
 
     /**

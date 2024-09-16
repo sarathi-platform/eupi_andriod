@@ -45,6 +45,7 @@ import com.nudge.core.FilterCore
 import com.nudge.core.NO_SG_FILTER_LABEL
 import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
@@ -78,6 +79,7 @@ import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummarySc
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToSectionScreen
+import com.sarathi.missionactivitytask.ui.activities.select.CustomTextView
 import com.sarathi.missionactivitytask.ui.basic_content.component.TaskCard
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
@@ -86,7 +88,6 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
-
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
@@ -294,17 +295,36 @@ fun TaskScreen(
                         )
                         Spacer(modifier = Modifier.height(dimen_10_dp))
                         LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-                            if (viewModel.isProgressEnable.value) {
-                                stickyHeader {
-                                    Box(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(white)) {
+
+                            stickyHeader {
+                                if (viewModel.isProgressEnable.value) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(white)
+                                    ) {
                                         CustomLinearProgressIndicator(
                                             modifier = Modifier
                                                 .padding(dimen_10_dp)
                                                 .padding(horizontal = dimen_6_dp),
                                             progressState = viewModel.progressState
                                         )
+                                    }
+                                }
+
+                                if (ActivityTypeEnum.showSurveyQuestionOnTaskScreen(viewModel.activityType)) {
+                                    if (viewModel.filterList.value.isNotEmpty() && viewModel.questionUiModel.value.isNotEmpty()) {
+                                        viewModel.filterList.value.keys.let {
+                                            val questionTitle =
+                                                viewModel.questionUiModel.value[it.first()]?.display.value()
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(white)
+                                            ) {
+                                                CustomTextView(title = questionTitle)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -471,7 +491,71 @@ fun TaskRowView(
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
-                when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
+
+                when (SurveyFlow.getSurveyFlowFromTaskScreenForActivityType(it.activityTypeId)) {
+
+                    SurveyFlow.GrantSurveySummaryScreen -> {
+                        viewModel.activityConfigUiModel?.let {
+                            if (subjectName.isNotBlank()) {
+                                navigateToGrantSurveySummaryScreen(
+                                    navController,
+                                    taskId = task.key,
+                                    surveyId = it.surveyId,
+                                    sectionId = it.sectionId,
+                                    subjectType = it.subject,
+                                    subjectName = subjectName,
+                                    activityConfigId = it.activityConfigId,
+                                    sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+                                        ?: DEFAULT_ID,
+                                )
+                            }
+                        }
+                    }
+
+                    SurveyFlow.LivelihoodPlanningScreen -> {
+                        navigateToLivelihoodDropDownScreen(
+                            navController,
+                            taskId = task.key,
+                            activityId = viewModel.activityId,
+                            missionId = viewModel.missionId,
+                            subjectName = subjectName
+                        )
+                    }
+
+                    else -> {
+                        viewModel.activityConfigUiModel?.let {
+                            if (subjectName.isNotBlank()) {
+                                val sanctionedAmount = try {
+                                    task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
+                                        ?: DEFAULT_ID
+                                } catch (ex: Exception) {
+                                    CoreLogger.e(
+                                        tag = TAG,
+                                        msg = "TaskRowView: exception -> ${ex.message}",
+                                        ex = ex,
+                                        stackTrace = true
+                                    )
+                                    DEFAULT_ID
+                                }
+                                navigateToSectionScreen(
+                                    navController,
+                                    missionId = viewModel.missionId,
+                                    activityId = viewModel.activityId,
+                                    taskId = task.key,
+                                    surveyId = it.surveyId,
+                                    subjectType = it.subject,
+                                    subjectName = subjectName,
+                                    activityType = viewModel.activityType,
+                                    activityConfigId = it.activityConfigId,
+                                    sanctionedAmount = sanctionedAmount,
+                                )
+                            }
+                        }
+                    }
+
+                }
+
+                /*when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
                     ActivityTypeEnum.GRANT -> {
                         viewModel.activityConfigUiModel?.let {
                             if (subjectName.isNotBlank()) {
@@ -530,7 +614,7 @@ fun TaskRowView(
                             }
                         }
                     }
-                }
+                }*/
             }
         },
         onNotAvailable = {

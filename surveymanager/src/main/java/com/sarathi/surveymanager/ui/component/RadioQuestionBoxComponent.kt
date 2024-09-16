@@ -45,6 +45,7 @@ import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ fun RadioQuestionBoxComponent(
 ) {
 
     val scope = rememberCoroutineScope()
-    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
+    var selectedIndex by remember(questionIndex) { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
     SideEffect {
@@ -179,6 +180,34 @@ fun RadioQuestionBoxComponent(
             }
         }
     }
+}
+
+@Composable
+fun ToggleQuestionBoxComponent(
+    modifier: Modifier = Modifier,
+    questionIndex: Int,
+    questionDisplay: String,
+    isRequiredField: Boolean = true,
+    optionUiModelList: List<OptionsUiModel>,
+    selectedOptionIndex: Int = -1,
+    showCardView: Boolean = false,
+    maxCustomHeight: Dp,
+    isEditAllowed: Boolean = true,
+    onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
+) {
+    RadioQuestionBoxComponent(
+        modifier = modifier,
+        questionIndex = questionIndex,
+        questionDisplay = questionDisplay,
+        isRequiredField = isRequiredField,
+        maxCustomHeight = maxCustomHeight,
+        selectedOptionIndex = selectedOptionIndex,
+        isQuestionTypeToggle = true,
+        showCardView = showCardView,
+        optionUiModelList = optionUiModelList,
+        isEditAllowed = isEditAllowed,
+        onAnswerSelection = onAnswerSelection
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true)

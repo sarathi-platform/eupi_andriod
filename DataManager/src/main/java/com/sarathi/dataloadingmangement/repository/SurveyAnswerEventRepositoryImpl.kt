@@ -3,11 +3,13 @@ package com.sarathi.dataloadingmangement.repository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
+import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventOptionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
+import com.sarathi.dataloadingmangement.model.events.TrainingTypeActivitySaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import javax.inject.Inject
@@ -49,6 +51,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
 
     }
 
+    //TODO @Anupam add activityType as param.
     override suspend fun writeSaveAnswerEvent(
         questionUiModel: QuestionUiModel,
         subjectId: Int,
@@ -57,25 +60,46 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
-    ): SaveAnswerEventDto {
-        return SaveAnswerEventDto(
-            surveyId = questionUiModel.surveyId,
-            dateCreated = System.currentTimeMillis(),
-            languageId = questionUiModel.languageId,
-            subjectId = subjectId,
-            subjectType = subjectType,
-            sectionId = questionUiModel.sectionId,
-            question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
-            referenceId = refrenceId,
-            localTaskId = taskLocalId ?: BLANK_STRING,
-            grantId = grantId,
-            grantType = grantType,
-            taskId = taskId
-
-
-        )
-
+        taskId: Int,
+        activityId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
+    ): BaseSaveAnswerEventDto {
+        return if (activityReferenceId != null && activityReferenceType != null) {
+            TrainingTypeActivitySaveAnswerEventDto(
+                surveyId = questionUiModel.surveyId,
+                dateCreated = System.currentTimeMillis(),
+                languageId = questionUiModel.languageId,
+                subjectId = subjectId,
+                subjectType = subjectType,
+                sectionId = questionUiModel.sectionId,
+                question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+                referenceId = refrenceId,
+                localTaskId = taskLocalId ?: BLANK_STRING,
+                grantId = grantId,
+                grantType = grantType,
+                taskId = taskId,
+                activityId = activityId,
+                activityReferenceId = activityReferenceId,
+                activityReferenceType = activityReferenceType
+            )
+        } else {
+            SaveAnswerEventDto(
+                surveyId = questionUiModel.surveyId,
+                dateCreated = System.currentTimeMillis(),
+                languageId = questionUiModel.languageId,
+                subjectId = subjectId,
+                subjectType = subjectType,
+                sectionId = questionUiModel.sectionId,
+                question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+                referenceId = refrenceId,
+                localTaskId = taskLocalId ?: BLANK_STRING,
+                grantId = grantId,
+                grantType = grantType,
+                taskId = taskId,
+                activityId = activityId
+            )
+        }
     }
 
     override suspend fun writeDeleteSaveAnswerEvent(
@@ -130,8 +154,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
         val options = getOption(questionUiModel, "")
 
-        if (options.isNotEmpty()) {
-
             saveAnswerEventQuestionItemDto1 = SaveAnswerEventQuestionItemDto(
                 questionId = questionUiModel.questionId,
                 questionType = questionUiModel.type,
@@ -142,7 +164,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 formId = questionUiModel.formId
             )
 
-        }
         return saveAnswerEventQuestionItemDto1
     }
 

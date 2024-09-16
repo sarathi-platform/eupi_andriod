@@ -4,6 +4,7 @@ import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
@@ -17,7 +18,8 @@ class RegenerateGrantEventUsecase @Inject constructor(
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val documentEventWriterUseCase: DocumentEventWriterUseCase,
     private val attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 ) {
 
 
@@ -95,6 +97,10 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 activityId = taskEntity.activityId,
                 missionId = taskEntity.missionId
             )
+            val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
+                taskEntity.activityId,
+                taskEntity.missionId
+            )
             surveyAnswerEventWriterUseCase.invoke(
                 questionUiModels = questionUiModel,
                 taskId = surveyAnswer.taskId,
@@ -103,7 +109,10 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 grantId = surveyAnswer.grantId,
                 grantType = surveyAnswer.grantType,
                 taskLocalId = taskEntity.localTaskId,
-                subjectType = subjectType
+                subjectType = subjectType,
+                activityId = activityConfig?.activityId.value(),
+                activityReferenceId = activityConfig?.referenceId,
+                activityReferenceType = activityConfig?.referenceType
             )
 
         }

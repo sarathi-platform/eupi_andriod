@@ -16,11 +16,11 @@ class MATStatusEventWriterUseCase(
         taskEntity: ActivityTaskEntity, surveyName: String, subjectType: String
     ) {
 
-        val saveAnswerEventDto = repository.writeTaskStatusEvent(
+        val updateTaskStatusEventDto = repository.writeTaskStatusEvent(
             taskEntity = taskEntity, subjectType = subjectType
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.TASKS_STATUS_EVENT, EventType.STATEFUL, surveyName
+            updateTaskStatusEventDto, EventName.TASKS_STATUS_EVENT, EventType.STATEFUL, surveyName
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
