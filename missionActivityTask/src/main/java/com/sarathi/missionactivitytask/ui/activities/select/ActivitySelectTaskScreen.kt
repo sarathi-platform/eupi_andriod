@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,6 +62,8 @@ import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.languageItemInActiveBorderBg
+import com.nudge.core.ui.theme.lightGrayColor
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -119,10 +122,11 @@ fun ActivitySelectTaskScreen(
 fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
-    ) { _, task ->
+    ) { index, task ->
         ExpandableTaskCardRow(
             viewModel = viewModel,
             task = task,
+            index = index,
             questionUIModel = viewModel.questionUiModel.value[task.key],
         )
         CustomVerticalSpacer()
@@ -140,10 +144,12 @@ fun LazyListScope.selectActivityTaskScreenContentForGroup(
 
     itemsIndexed(
         items = viewModel.filterTaskMap[groupKey].value()
-    ) { _, task ->
+    ) { index, task ->
         ExpandableTaskCardRow(
             viewModel = viewModel,
             task = task,
+            index = index,
+            groupKey = groupKey,
             questionUIModel = viewModel.questionUiModel.value[task.key],
         )
         CustomVerticalSpacer()
@@ -177,6 +183,8 @@ fun CustomTextView(title: String) {
 fun ExpandableTaskCardRow(
     viewModel: ActivitySelectTaskViewModel,
     questionUIModel: QuestionUiModel?,
+    index: Int,
+    groupKey: String? = null,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
 ) {
     ExpandableTaskCard(
@@ -190,11 +198,7 @@ fun ExpandableTaskCardRow(
         questionUiModel = questionUIModel,
         expanded = viewModel.expandedIds.contains(task.key),
         onExpendClick = { _, _ ->
-            if (viewModel.expandedIds.contains(task.key)) {
-                viewModel.expandedIds.remove(task.key)
-            } else {
-                viewModel.expandedIds.add(task.key)
-            }
+            viewModel.onExpandClicked(task)
         },
         isNotAvailableButtonEnable = task.value[TaskCardSlots.TASK_NOT_AVAILABLE_ENABLE.name]?.value.equals(
             "true"
@@ -223,6 +227,9 @@ fun ExpandableTaskCardRow(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
+
+                viewModel.expandNextItem(index, groupKey)
+
                 viewModel.isActivityCompleted()
             }
         },
@@ -244,7 +251,7 @@ fun ExpandableTaskCardRow(
                     taskId = task.key,
                     status = SurveyStatusEnum.COMPLETED.name
                 )
-
+                viewModel.expandNextItem(index, groupKey)
             }
         }
 
@@ -293,7 +300,11 @@ fun ExpandableTaskCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimen_16_dp)
-            .border(width = dimen_1_dp, color = greenOnline, shape = RoundedCornerShape(dimen_6_dp))
+            .border(
+                width = dimen_1_dp,
+                color = if (taskStatus.value == StatusEnum.COMPLETED.name) greenOnline else lightGrayColor,
+                shape = RoundedCornerShape(dimen_6_dp)
+            )
             .background(Color.Transparent)
     ) {
         Column(
@@ -413,7 +424,6 @@ fun CardContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimen_16_dp)
     ) {
         if (expanded) {
             RadioTypeOptionsUI(
@@ -462,7 +472,8 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
                     end = dimen_16_dp,
                     bottom = dimen_10_dp,
                     top = dimen_10_dp
-                ),
+                )
+                .padding(horizontal = dimen_16_dp),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
             SubContainerView(
@@ -572,23 +583,31 @@ private fun NotAvailableUI(
     context: Context
 ) {
     if (isNotAvailableButtonEnable) {
-        OptionCard(
+        Box(
             modifier = Modifier
-                .fillMaxWidth(),
-            backgroundColor = if (!taskMarkedNotAvailable.value
-            ) Color.Transparent else blueDark, textColor = if (taskMarkedNotAvailable.value
-            ) white else blueDark,
-            optionText = stringResource(id = R.string.not_available)
+                .fillMaxWidth()
+                .padding(horizontal = dimen_16_dp)
         ) {
-            if (!isActivityCompleted) {
-                taskMarkedNotAvailable.value = true
-                taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
-                onNotAvailableClick()
-            } else {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.activity_completed_unable_to_edit)
-                )
+            OptionCard(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                backgroundColor = if (!taskMarkedNotAvailable.value
+                ) Color.Transparent else blueDark, textColor = if (taskMarkedNotAvailable.value
+                ) white else blueDark,
+                borderColor = if (!taskMarkedNotAvailable.value
+                ) languageItemInActiveBorderBg else blueDark,
+                optionText = stringResource(id = R.string.not_available)
+            ) {
+                if (!isActivityCompleted) {
+                    taskMarkedNotAvailable.value = true
+                    taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
+                    onNotAvailableClick()
+                } else {
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.activity_completed_unable_to_edit)
+                    )
+                }
             }
         }
     }

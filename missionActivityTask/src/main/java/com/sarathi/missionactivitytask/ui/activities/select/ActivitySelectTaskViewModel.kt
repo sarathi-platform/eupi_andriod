@@ -20,10 +20,13 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
+import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -76,6 +79,63 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
+    fun onExpandClicked(
+        task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
+    ) {
+        if (expandedIds.contains(task.key)) {
+            expandedIds.remove(task.key)
+        } else {
+            expandedIds.add(task.key)
+        }
+    }
+
+    fun expandNextItem(currentIndex: Int, groupKey: String? = null) {
+        val nextIndex = currentIndex + 1
+        var taskIdList =
+            if (groupKey != null)
+                filterTaskMap[groupKey].value()
+            else
+                filterList.value.entries.toList().distinct()
+
+        expandedIds.clear()
+
+        if (nextIndex < taskIdList.size) {
+            expandedIds.add(taskIdList[nextIndex].key)
+            return
+        }
+
+        if (nextIndex == taskIdList.size && groupKey != null) {
+
+            val groupKeySet = filterTaskMap.keys
+            val currentGroupIndex = groupKeySet.indexOf(groupKey)
+            val nextGroupIndex = currentGroupIndex + 1
+
+            if (nextGroupIndex < groupKeySet.size) {
+                val nextGroupKey = groupKeySet.toList().get(nextGroupIndex)
+                expandNextItem(-1, nextGroupKey)
+            }
+        }
+
+    }
+
+    private fun getFirstGroupWithNotStatedTask(): String? {
+        if (filterTaskMap.isEmpty())
+            return null
+
+        val groupKeySet = filterTaskMap.keys
+        var groupKey = groupKeySet.first()
+        groupKeySet.forEach { key ->
+            val groupContainsNotStatedTask = filterTaskMap[key]?.value()?.any { task ->
+                task.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name
+            }
+            if (groupContainsNotStatedTask == true) {
+                groupKey = key
+                return groupKey
+            }
+        }
+        return groupKey
+    }
+
     private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -96,18 +156,25 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                     _questionUiModel.value[task.taskId ?: -1] = it
                 }
             }
-            if (!isActivityCompleted.value) {
 
-                taskUiList.value.map { it.taskId }.distinct().forEach {
-                    if (!expandedIds.contains(it)) {
-                        expandedIds.add(it)
-                    }
-                }
-
-            }
             withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+        }
+    }
+
+    private fun expandFirstNotStartedItem() {
+        if (!isActivityCompleted.value) {
+
+            val firstGroupWithNotStatedTask = if (isGroupingApplied.value) {
+                getFirstGroupWithNotStatedTask()
+            } else
+                null
+
+            val firstNotStartedTaskIndex = filterList.value.entries.toList()
+                .indexOfFirst { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
+            expandNextItem(firstNotStartedTaskIndex - 1, firstGroupWithNotStatedTask)
+
         }
     }
 

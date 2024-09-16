@@ -25,14 +25,16 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.languageItemInActiveBorderBg
 import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.lightGrayColor
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -59,7 +61,9 @@ fun RadioOptionTypeComponent(
         }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimen_16_dp)
 
     ) {
 
@@ -96,6 +100,11 @@ fun RadioOptionTypeComponent(
                             optionValueText,
                             isTaskMarkedNotAvailable
                         ),
+                        borderColor = getBorderColor(
+                            selectedValueState = selectedValueState,
+                            optionValueText = optionValueText,
+                            isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
+                        ),
                         optionText = optionValueText.description.toString()
                     ) {
                         if (!isActivityCompleted) {
@@ -124,7 +133,7 @@ fun selectBackgroundColor(
     isTaskMarkedNotAvailable: MutableState<Boolean>
 ): Color {
     return if (isTaskMarkedNotAvailable.value)
-        GreyLight
+        lightGrayColor
     else {
         if (selectedValueState.value == BLANK_STRING
             && optionValueText.selectedValue.toString() == BLANK_STRING
@@ -142,6 +151,30 @@ fun selectBackgroundColor(
 }
 
 @Composable
+fun getBorderColor(
+    selectedValueState: MutableState<String>,
+    optionValueText: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+): Color {
+    return if (isTaskMarkedNotAvailable.value)
+        languageItemInActiveBorderBg
+    else {
+        if (selectedValueState.value == BLANK_STRING
+            && optionValueText.selectedValue.toString() == BLANK_STRING
+        ) {
+            lightGray2
+        } else if (selectedValueState.value.equals(
+                optionValueText.description.toString(), ignoreCase = true
+            )
+        ) {
+            blueDark
+        } else {
+            languageItemInActiveBorderBg
+        }
+    }
+}
+
+@Composable
 fun selectTextColor(
     selectedValueState: MutableState<String>,
     optionValueText: OptionsUiModel,
@@ -149,7 +182,7 @@ fun selectTextColor(
 ): Color {
 
     return if (isTaskMarkedNotAvailable.value)
-        textColorDark
+        lightGrayColor
     else {
         if (selectedValueState.value == BLANK_STRING
             && optionValueText.selectedValue.toString() == BLANK_STRING
@@ -172,6 +205,7 @@ fun OptionCard(
     textColor: Color,
     optionText: String,
     backgroundColor: Color,
+    borderColor: Color,
     onClick: () -> Unit
 ) {
     TextButton(
@@ -183,7 +217,9 @@ fun OptionCard(
                     dimen_6_dp
                 )
             )
-            .border(dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_6_dp))
+            .border(
+                dimen_1_dp, color = borderColor, RoundedCornerShape(dimen_6_dp)
+            )
             .then(modifier)
 
     ) {
