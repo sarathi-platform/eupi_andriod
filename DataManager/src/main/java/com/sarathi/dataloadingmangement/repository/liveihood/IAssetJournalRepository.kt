@@ -5,7 +5,11 @@ import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJour
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 
 interface IAssetJournalRepository {
-    suspend fun saveOrEditAssetJournal(particular: String, eventData: LivelihoodEventScreenData)
+    suspend fun saveOrEditAssetJournal(
+        particular: String,
+        eventData: LivelihoodEventScreenData,
+        createdDate: Long
+    )
     suspend fun softDeleteAssetJournalEvent(transactionId: String, subjectId: Int)
     suspend fun getAssetForTransaction(transactionId: String, subjectId: Int): AssetJournalEntity?
     suspend fun getSaveAssetJournalEventDto(

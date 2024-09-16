@@ -15,7 +15,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
     IAssetJournalRepository {
     override suspend fun saveOrEditAssetJournal(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        createdDate: Long
     ) {
         val assetJournal = AssetJournalEntity.getAssetJournalEntity(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -29,7 +30,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
                 ?: BLANK_STRING,
             referenceType = "LivelihoodEvent",
             referenceId = eventData.livelihoodId,
-            assetId = eventData.assetType
+            assetId = eventData.assetType,
+            createdDate = createdDate
         )
 
         assetJournalDao.insetAssetJournalEntry(assetJournal)

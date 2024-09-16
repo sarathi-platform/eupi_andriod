@@ -35,13 +35,16 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
             assetJournalRepository.saveOrEditAssetJournal(
                 particular = particular,
-                eventData = eventData
+                eventData = eventData,
+                createdDate = currentDateTime
+
             )
         }
         eventData.selectedEvent.moneyJournalEntryFlowType?.let {
             moneyJournalRepo.saveAndUpdateMoneyJournalTransaction(
                 particular = particular,
-                eventData = eventData
+                eventData = eventData,
+                createdData = currentDateTime
             )
         }
 
