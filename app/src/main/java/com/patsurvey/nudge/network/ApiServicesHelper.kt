@@ -58,7 +58,7 @@ object ApiServicesHelper {
     const val SUBPATH_CALLBACK_STATUS = "/read-api/callback/status"
 
     const val SUBPATH_GET_BPC_SUMMARY = "/read-api/bpc/view-summary"
-    const val SUBPATH_GET_BPC_DIDI_LIST = "/write-api/bpc/beneficiary-list"
+    const val SUBPATH_GET_BPC_DIDI_LIST = "/read-api/bpc/beneficiary-list"
     const val SUBPATH_UPDATE_SELECTED_DIDI_LIST = "/write-api/bpc/update-beneficiary-selection"
     const val SUBPATH_BPC_SAVE_MATCH_PERCENTAGE = "/write-api/bpc/save-summary"
 

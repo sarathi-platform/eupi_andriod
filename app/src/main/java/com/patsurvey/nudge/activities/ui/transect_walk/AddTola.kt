@@ -113,10 +113,14 @@ fun AddTolaBox(
     var mTolaName by remember {
         mutableStateOf(tolaName)
     }
-    var locationAdded by remember {
+    var locationAdded by remember(tolaName, isLocationAvailable) {
         mutableStateOf(isLocationAvailable)
     }
-    var location: LocationCoordinates? by remember { mutableStateOf(LocationCoordinates()) }
+    var location: LocationCoordinates? by remember(tolaName, isLocationAvailable) {
+        mutableStateOf(
+            LocationCoordinates()
+        )
+    }
 
     val shouldRequestPermission = remember {
         mutableStateOf(false)
@@ -342,7 +346,7 @@ fun AddTolaBox(
                         .height(45.dp)
                         .weight(1f)
                 ) {
-                    onSaveClicked(mTolaName, location)
+                    onSaveClicked(mTolaName.trim(), location)
                 }
 
 
@@ -354,14 +358,14 @@ fun AddTolaBox(
 @Composable
 fun TolaBox(
     modifier: Modifier = Modifier,
-    tolaName: String = "khabd",
+    tolaName: String = "",
     tolaLocation: LocationCoordinates?,
     isLocationAvailable: Boolean = false,
     isTransectWalkCompleted: Boolean = false,
     deleteButtonClicked: () -> Unit,
     listState: LazyListState,
-    coroutineScope : CoroutineScope,
-    index : Int,
+    coroutineScope: CoroutineScope,
+    index: Int,
     saveButtonClicked: (newName: String, newLocation: LocationCoordinates?) -> Unit
 ) {
     var showEditView by remember { mutableStateOf(false) }
@@ -374,10 +378,10 @@ fun TolaBox(
     var mTolaName by remember {
         mutableStateOf(tolaName)
     }
-    var locationAdded by remember {
+    var locationAdded by remember(tolaName, tolaLocation, isLocationAvailable) {
         mutableStateOf(isLocationAvailable)
     }
-    var location: LocationCoordinates? by remember {
+    var location: LocationCoordinates? by remember(tolaName, tolaLocation, isLocationAvailable) {
         mutableStateOf(
             tolaLocation ?: LocationCoordinates()
         )
@@ -693,7 +697,7 @@ fun TolaBox(
                                     .weight(1f)
                             ) {
                                 if (mTolaName.isNotEmpty()) {
-                                    saveButtonClicked(mTolaName, location)
+                                    saveButtonClicked(mTolaName.trim(), location)
                                     showEditView = false
                                     showInlineLocationError.value = false
                                 } else {
