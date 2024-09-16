@@ -21,6 +21,7 @@ import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
 import com.nudge.core.toDate
+import com.nudge.core.value
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -28,6 +29,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.RankingEditEvent
@@ -485,35 +487,64 @@ abstract class BaseRepository{
         )
     }
 
+
+    suspend fun getTolaDeviceIdMap(villageId: Int, tolaDao: TolaDao): Map<Int, String> {
+        val tolaList = tolaDao.getAllTolasForVillage(villageId)
+        val tolaDeviceIdMap = mutableMapOf<Int, String>()
+        tolaList.forEach {
+
+            tolaDeviceIdMap.put(it.id, it.localUniqueId.value())
+
+        }
+        return tolaDeviceIdMap
+    }
+
     fun createRankingFlagEditEvent(
         eventItem: StepListEntity,
+        didiList: List<DidiEntity>,
+        tolaDeviceIdMap: Map<Int, String>,
         villageId: Int,
         stepType: String,
         mobileNumber: String,
         userID: String
-    ): Events {
-        val payload =
-            RankingEditEvent(villageId = villageId, type = stepType, status = false).json()
+    ): List<Events> {
 
+        val rankingEditEventList = ArrayList<Events>()
 
-        return Events(
-            name = EventName.RANKING_FLAG_EDIT.name,
-            type = EventName.RANKING_FLAG_EDIT.topicName,
-            createdBy = userID,
-            mobile_number = mobileNumber,
-            request_payload = payload,
-            status = EventSyncStatus.OPEN.name,
-            modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
-            payloadLocalId = "",
-            metadata = MetadataDto(
-                mission = SELECTION_MISSION,
-                depends_on = listOf(),
-                request_payload_size = payload.getSizeInLong(),
-                parentEntity = getParentEntityMapForEvent(eventItem, EventName.RANKING_FLAG_EDIT)
-            ).json()
-        )
+        didiList.forEach { didi ->
+            val payload =
+                RankingEditEvent.getRankingEditEvent(
+                    villageId = villageId,
+                    stepType = stepType,
+                    didiEntity = didi,
+                    tolaDeviceId = tolaDeviceIdMap[didi.cohortId].value()
+                ).json()
+            rankingEditEventList.add(
+                Events(
+                    name = EventName.RANKING_FLAG_EDIT.name,
+                    type = EventName.RANKING_FLAG_EDIT.topicName,
+                    createdBy = userID,
+                    mobile_number = mobileNumber,
+                    request_payload = payload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    consumer_status = BLANK_STRING,
+                    payloadLocalId = "",
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = payload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(
+                            eventItem,
+                            EventName.RANKING_FLAG_EDIT
+                        )
+                    ).json()
+                )
+            )
+        }
+
+        return rankingEditEventList
 
     }
 

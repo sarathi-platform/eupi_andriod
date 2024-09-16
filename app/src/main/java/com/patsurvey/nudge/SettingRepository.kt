@@ -218,19 +218,35 @@ class SettingRepository @Inject constructor(
     }
 
     private suspend fun generateRankingEditEvent(villageId: Int) {
-        stepsListDao.getAllStepsForVillage(villageId).forEach {
-            val event = createRankingFlagEditEvent(
-                it,
-                it.villageId,
-                stepType = StepType.getStepTypeFromId(it.id).name,
-                prefRepo.getMobileNumber() ?: BLANK_STRING,
-                prefRepo.getUserId()
-            )
 
-            saveEventToMultipleSources(event, listOf())
+
+        stepsListDao.getAllStepsForVillage(villageId).forEach {
+            if (rankingEditStepsId.contains(it.id)) {
+
+                val didiEntity = didiDao.getAllDidisForVillage(villageId)
+
+                val tolaDeviceIdMap = getTolaDeviceIdMap(villageId = villageId, tolaDao = tolaDao)
+
+                val eventList = createRankingFlagEditEvent(
+                    eventItem = it,
+                    villageId = villageId,
+                    stepType = StepType.getStepTypeFromId(it.id).name,
+                    didiList = didiEntity,
+                    tolaDeviceIdMap = tolaDeviceIdMap,
+                    mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    userID = prefRepo.getUserId()
+                )
+
+                eventList.forEach { event ->
+                    saveEventToMultipleSources(event, listOf())
+                }
+
+            }
 
         }
     }
+
+    private val rankingEditStepsId = listOf<Int>(43, 44, 46)
 
     private suspend fun generateWorkFlowStatusEvent(villageId: Int) {
         stepsListDao.getAllStepsForVillage(villageId).forEach {
