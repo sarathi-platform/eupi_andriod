@@ -154,7 +154,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMoneyJournalEventForUser(): List<MoneyJournalEntity> {
-        return moneyJournalDao.getMoneyJournalTransactionForUser(coreSharedPrefs.getUniqueUserIdentifier())
+        return moneyJournalDao.getMoneyJournalTransactionForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
 
     }
 
