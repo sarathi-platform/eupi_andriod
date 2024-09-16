@@ -49,6 +49,7 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.getPatScoreSaveEvent
@@ -223,7 +224,25 @@ class SettingRepository @Inject constructor(
         stepsListDao.getAllStepsForVillage(villageId).forEach {
             if (rankingEditStepsId.contains(it.id)) {
 
-                val didiEntity = didiDao.getAllDidisForVillage(villageId)
+
+                val didiEntity = when (StepType.getStepTypeFromId(it.id).name) {
+                    StepType.WEALTH_RANKING.name -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                    }
+
+                    StepType.PAT_SURVEY.name -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                            .filter { it.wealth_ranking == WealthRank.POOR.rank }
+                    }
+
+                    StepType.VO_ENDROSEMENT.name -> {
+                        didiDao.getAllDidisForVillage(villageId).filter { it.forVoEndorsement == 1 }
+                    }
+
+                    else -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                    }
+                }
 
                 val tolaDeviceIdMap = getTolaDeviceIdMap(villageId = villageId, tolaDao = tolaDao)
 

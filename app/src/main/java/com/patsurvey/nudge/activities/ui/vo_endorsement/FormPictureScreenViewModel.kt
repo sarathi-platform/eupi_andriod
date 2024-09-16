@@ -825,7 +825,7 @@ class FormPictureScreenViewModel @Inject constructor(
                     stepId = stepId
                 )
 
-            val didiList = repository.getAllDidisForVillage()
+            val didiList = repository.getAllDidisForVillage().filter { it.forVoEndorsement == 1 }
 
             val tolaDeviceIdMap: Map<Int, String> = repository.getTolaDeviceIdMap(
                 villageId = villageId,

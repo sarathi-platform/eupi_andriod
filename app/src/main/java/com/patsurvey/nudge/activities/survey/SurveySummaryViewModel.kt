@@ -1070,6 +1070,7 @@ class SurveySummaryViewModel @Inject constructor(
                 )
 
             val didiList = repository.getAllDidisForVillage(villageId)
+                .filter { it.wealth_ranking == WealthRank.POOR.rank }
 
             val tolaDeviceIdMap: Map<Int, String> =
                 repository.getTolaDeviceIdMap(villageId = villageId, tolaDao = repository.tolaDao)
