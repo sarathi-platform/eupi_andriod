@@ -96,7 +96,7 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Paras / Tolas Added</string>
-    <string name="tola_conirmation_text_plural">Total %1$s new Paras / Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_plural">Total %1$s new Para / Tolas have \nbeen added successfully</string>
     <string name="tola_conirmation_text_singular">Total %1$s new Para / Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
@@ -105,8 +105,8 @@
     <string name="review_wealth_ranking">Review Wealth Ranking</string>
 
     <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
-    <string name="didi_conirmation_text_plural">%1$s new Didis have \nbeen added successfully</string>
-    <string name="didi_conirmation_text_singular">%1$s new Didi has \nbeen added successfully</string>
+    <string name="didi_conirmation_text_plural">%1$s Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_singular">%1$s Didi has \nbeen added successfully</string>
 
     <string name="transect_walk_sub_text_plural">%1$s Paras / Tolas Done</string>
 
