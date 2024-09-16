@@ -41,6 +41,7 @@ class UserDetailRepository @Inject constructor(
         )
 
         userDetailsResponse.username?.let { sharedPrefs.setUserName(it) }
+        userDetailsResponse.name?.let { sharedPrefs.setName(it) }
         userDetailsResponse.email?.let { sharedPrefs.setUserEmail(it) }
         userDetailsResponse.roleName?.let { sharedPrefs.setUserRole(it) }
         userDetailsResponse.typeName?.let { sharedPrefs.setUserType(it) }

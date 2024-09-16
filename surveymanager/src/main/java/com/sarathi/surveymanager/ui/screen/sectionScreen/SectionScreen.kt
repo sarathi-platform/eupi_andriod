@@ -44,6 +44,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.nudge.core.enums.SurveyFlow
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.customVerticalSpacer

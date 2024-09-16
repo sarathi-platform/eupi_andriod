@@ -221,7 +221,11 @@ fun PatSurveyCompleteSummary(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                            if (isArrowFlagVisible(
+                                                    patSectionSummaryViewModel,
+                                                    didi
+                                                )
+                                            ) {
                                                 if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
                                                     navController.navigate("bcp_didi_pat_summary/${didiId}/${true}")
                                                 } else {
@@ -245,7 +249,7 @@ fun PatSurveyCompleteSummary(
                                             if (shgFlagValue == 1) greenOnline else redNoAnswer
                                         )
                                     )
-                                    if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                    if (isArrowFlagVisible(patSectionSummaryViewModel, didi)) {
                                         Icon(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "Forward Arrow",
@@ -270,7 +274,11 @@ fun PatSurveyCompleteSummary(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                            if (isArrowFlagVisible(
+                                                    patSectionSummaryViewModel,
+                                                    didi
+                                                )
+                                            ) {
                                                 if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
                                                     navController.navigate("bcp_didi_pat_summary/${didiId}/${true}")
                                                 } else {
@@ -295,7 +303,7 @@ fun PatSurveyCompleteSummary(
                                             if (ableBodiedFlagValue == 1) greenOnline else redNoAnswer
                                         )
                                     )
-                                    if (isArrowVisible(patSectionSummaryViewModel, didi)) {
+                                    if (isArrowFlagVisible(patSectionSummaryViewModel, didi)) {
                                         Icon(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "Forward Arrow",
@@ -420,7 +428,9 @@ fun PatSurveyCompleteSummary(
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){
-                                if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
+                                if ((patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
+                                    || patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal
+                                ) {
                                     patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(
                                         PageFrom.SUMMARY_PAGE.ordinal
                                     )

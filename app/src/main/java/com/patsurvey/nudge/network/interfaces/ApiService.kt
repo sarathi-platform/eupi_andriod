@@ -26,6 +26,7 @@ import com.patsurvey.nudge.model.response.BeneficiaryApiResponse
 import com.patsurvey.nudge.model.response.BpcSummaryResponse
 import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
+import com.patsurvey.nudge.model.response.DidiDetailList
 import com.patsurvey.nudge.model.response.DidiWealthRankingResponse
 import com.patsurvey.nudge.model.response.OtpVerificationModel
 import com.patsurvey.nudge.model.response.PATSummaryResponseItem
@@ -162,9 +163,13 @@ interface ApiService {
     @GET("/read-api/bpc/view-summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
-    @GET("/write-api/bpc/beneficiary-list")
+//    @GET("/write-api/bpc/beneficiary-list")
+//    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+//    suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
+    @GET("/read-api/bpc/beneficiary-list")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<DidiEntity>>
+    suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<DidiDetailList>>
 
 
     @POST("/write-api/bpc/update-beneficiary-selection")

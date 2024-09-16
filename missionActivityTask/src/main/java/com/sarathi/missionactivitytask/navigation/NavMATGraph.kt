@@ -14,6 +14,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.LIVELIHOOD
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.value
+import com.nudge.core.LIVELIHOOD
+import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.media.PdfViewer
@@ -61,12 +63,16 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELI
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.activities.select.ActivitySelectTaskScreen
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.add_image_screen.screen.SubmitPhysicalFormScreen
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
@@ -80,6 +86,7 @@ import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
 import com.sarathi.surveymanager.ui.screen.LivelihoodPopSurveyScreen
+import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.sarathi.surveymanager.ui.screen.livelihood.LivelihoodDropDownScreen
 import com.sarathi.surveymanager.ui.screen.sectionScreen.SectionScreen
@@ -234,24 +241,23 @@ fun NavGraphBuilder.MatNavigation(
             )
         }
 
-        composable(
-            route = MATHomeScreens.MediaPlayerScreen.route, arguments = listOf(
-                navArgument(
-                    name = ARG_CONTENT_KEY
-                ) {
-                    type = NavType.StringType
-                },
-                navArgument(
-                    name = ARG_CONTENT_TYPE
-                ) {
-                    type = NavType.StringType
-                },
-                navArgument(
-                    name = ARG_CONTENT_TITLE
-                ) {
-                    type = NavType.StringType
-                }
-            )
+        composable(route = MATHomeScreens.MediaPlayerScreen.route, arguments = listOf(
+            navArgument(
+                name = ARG_CONTENT_KEY
+            ) {
+                type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_CONTENT_TYPE
+            ) {
+                type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_CONTENT_TITLE
+            ) {
+                type = NavType.StringType
+            }
+        )
         ) {
             MediaScreen(
                 navController = navController,
@@ -1018,6 +1024,7 @@ fun navigateToGrantSurveyScreen(
 ) {
     navController.navigate("$GRANT_SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$referenceId/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
 }
+
 fun navigateToGrantSurveySummaryScreen(
     navController: NavController,
     surveyId: Int,

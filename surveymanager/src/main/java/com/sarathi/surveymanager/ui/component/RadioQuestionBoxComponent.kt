@@ -77,6 +77,7 @@ fun RadioQuestionBoxComponent(
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
     val context = LocalContext.current
+
     BoxWithConstraints(
         modifier = modifier
             .scrollable(

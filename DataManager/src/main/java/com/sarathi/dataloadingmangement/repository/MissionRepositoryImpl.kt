@@ -482,7 +482,10 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isActivityAvailable(activityType: String): Int {
-        return activityConfigDao.isActivityAvailable(activityType)
+        return activityConfigDao.isActivityAvailable(
+            activityType,
+            userId = sharedPrefs.getUniqueUserIdentifier()
+        )
     }
 
 }
