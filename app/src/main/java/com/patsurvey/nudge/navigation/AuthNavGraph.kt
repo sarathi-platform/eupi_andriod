@@ -16,6 +16,7 @@ import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
@@ -113,8 +114,12 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
         }
 
-        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route) {
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
+            ActivityReopeningScreen(navController = navController)
         }
 
     }

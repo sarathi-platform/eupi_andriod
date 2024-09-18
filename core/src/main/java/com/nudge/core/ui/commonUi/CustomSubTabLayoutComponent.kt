@@ -41,7 +41,8 @@ import com.nudge.core.ui.theme.white
 fun CustomSubTabLayout(
     parentTabIndex: Int,
     tabs: List<SubTabs>,
-    countMap: Map<SubTabs, Int> = mapOf()
+    countMap: Map<SubTabs, Int> = mapOf(),
+    enableClickOnTab: (() -> Boolean) = { true }
 ) {
 
     val state = rememberLazyListState()
@@ -56,8 +57,10 @@ fun CustomSubTabLayout(
             TabItem(
                 isSelected = TabsCore.getSubTabForTabIndex(parentTabIndex) == index,
                 onClick = {
-                    TabsCore.setSubTabIndex(parentTabIndex, index)
+                    if (enableClickOnTab.invoke()) {
+                        TabsCore.setSubTabIndex(parentTabIndex, index)
 //                    TabsCore.getSubTabIndex().value = tab.id
+                    }
                 },
                 text = getTabTitle(countMap, tab)
             )
@@ -179,6 +182,8 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.LastMonthTab -> "Last month"
         SubTabs.Last3MonthsTab -> "Last 3 months"
         SubTabs.CustomDateRange -> "Custom Date"
+        SubTabs.Step1 -> "Step 1"
+        SubTabs.Step2 -> "Step 2"
         else -> {
             BLANK_STRING
         }
