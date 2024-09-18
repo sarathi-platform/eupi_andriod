@@ -21,13 +21,13 @@ class WriteLivelihoodEventUseCase @Inject constructor(
     suspend fun writeLivelihoodEvent(
         eventData: LivelihoodEventScreenData,
         particular: String,
-        currentDateTime: Long
+        createdDateTime: Long
     ) {
 
         val livelihoodPayload =
             subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
                 eventData,
-                currentDateTime = currentDateTime,
+                currentDateTime = createdDateTime,
                 modifiedDateTime = getCurrentTimeInMillis()
             )
         writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
@@ -37,7 +37,7 @@ class WriteLivelihoodEventUseCase @Inject constructor(
             val assetJournalPayload = assetJournalRepository.getSaveAssetJournalEventDto(
                 particular,
                 eventData,
-                currentDateTime = currentDateTime,
+                currentDateTime = createdDateTime,
                 modifiedDateTIme = getCurrentTimeInMillis()
             )
             writeEvent(assetJournalPayload, EventName.ASSET_JOURNAL_EVENT)
@@ -48,7 +48,7 @@ class WriteLivelihoodEventUseCase @Inject constructor(
                 moneyJournalRepo.getMoneyJournalEventDto(
                     particular,
                     eventData,
-                    currentDateTime = currentDateTime,
+                    currentDateTime = createdDateTime,
                     modifiedDateTime = getCurrentTimeInMillis()
                 )
             writeEvent(moneyJournalPayload, EventName.MONEY_JOURNAL_RESPONSE_EVENT)

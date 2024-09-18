@@ -221,7 +221,7 @@ class AddEventViewModel @Inject constructor(
 
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
-            val currentDateTime = getCurrentTimeInMillis()
+            val createdDateTime = getCurrentTimeInMillis()
             val mTransactionId =
                 if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
                     .toString()
@@ -247,13 +247,13 @@ class AddEventViewModel @Inject constructor(
             )
             saveLivelihoodEventUseCase.addOrEditEvent(
                 particular = getParticulars(),
-                currentDateTime = currentDateTime,
+                createdDate = createdDateTime,
                 eventData = livelihoodScreenData
             )
             writeLivelihoodEventUseCase.writeLivelihoodEvent(
                 particular = getParticulars(),
                 eventData = livelihoodScreenData,
-                currentDateTime = currentDateTime
+                createdDateTime = createdDateTime
             )
 
         }
