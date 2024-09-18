@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.json
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
@@ -29,7 +28,9 @@ data class SubjectLivelihoodEventMappingEntity(
         fun getSubjectLivelihoodEventMappingEntity(
             uniqueUserIdentifier: String,
             eventData: LivelihoodEventScreenData,
-            currentDateTime: Long
+            createdDate: Long,
+            modifiedDate: Long
+
         ): SubjectLivelihoodEventMappingEntity {
             return SubjectLivelihoodEventMappingEntity(
                 userId = uniqueUserIdentifier,
@@ -42,8 +43,8 @@ data class SubjectLivelihoodEventMappingEntity(
                 livelihoodEventType = eventData.selectedEvent.name,
                 surveyResponse = eventData.json(),
                 status = 1,
-                modifiedDate = getCurrentTimeInMillis(),
-                createdDate = currentDateTime,
+                modifiedDate = modifiedDate,
+                createdDate = createdDate,
             )
         }
 

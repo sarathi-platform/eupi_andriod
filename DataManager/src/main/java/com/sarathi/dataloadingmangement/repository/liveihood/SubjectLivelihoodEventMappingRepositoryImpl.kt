@@ -56,7 +56,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
                 coreSharedPrefs.getUniqueUserIdentifier(),
                 eventData,
-                currentDateTime = currentDateTime
+                createdDate = currentDateTime,
+                modifiedDate = System.currentTimeMillis()
             )
         if (subjectLivelihoodEventMappingDao.isLivelihoodEventMappingExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),

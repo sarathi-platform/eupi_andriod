@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
-import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -43,7 +42,9 @@ class GetLivelihoodSaveEventRepositoryImpl @Inject constructor(
                         selectedEvent = getLivelihoodEventFromName(it.eventType ?: BLANK_STRING),
                         livelihoodValue = it.livelihoodValue ?: BLANK_STRING
                     ),
-                    currentDateTime = getCurrentTimeInMillis()
+                    createdDate = it.createdDate,
+                    modifiedDate = it.modifiedDate
+
                 )
             )
         }
