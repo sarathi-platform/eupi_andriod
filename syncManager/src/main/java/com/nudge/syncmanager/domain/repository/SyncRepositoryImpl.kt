@@ -207,7 +207,7 @@ class SyncRepositoryImpl(
         if (status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
             || status == EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
         ) {
-            retryCount = fetchRetryCountForEvent(eventId) + 1
+            retryCount = eventDao.fetchRetryCountForEvent(eventId) + 1
         }
         imageStatusDao.updateImageEventStatus(
             status = status,
