@@ -14,6 +14,8 @@ import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.nudge.syncmanager.domain.repository.SyncApiRepository
+import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import com.nudge.syncmanager.domain.repository.SyncRepositoryImpl
 import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
@@ -175,14 +177,15 @@ object UseCaseModule {
     fun provideSyncHomeUseCase(
         repository: SyncHomeRepository,
         eventsWriterRepository: EventsWriterRepository,
-        syncRepository: SyncRepository
+        syncRepository: SyncRepository,
+        syncAPiRepository: SyncApiRepository
     ): SyncEventDetailUseCase {
         return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
             getSyncEventsUseCase = GetSyncEventsUseCase(repository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
             fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository),
-            syncAPIUseCase = SyncAPIUseCase(syncRepository)
+            syncAPIUseCase = SyncAPIUseCase(syncRepository, syncAPiRepository)
         )
     }
 
@@ -232,12 +235,29 @@ object UseCaseModule {
 
     @Provides
     @Singleton
+    fun provideSyncApiRepository(
+        apiService: SyncApiService,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+    ): SyncApiRepository {
+        return SyncApiRepositoryImpl(
+            apiService = apiService,
+            imageStatusDao = imageStatusDao,
+            eventStatusDao = eventStatusDao,
+            corePrefRepo = corePrefRepo
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideSyncManagerUseCase(
-        repository: SyncRepository
+        repository: SyncRepository,
+        syncAPiRepository: SyncApiRepository
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
             addUpdateEventUseCase = AddUpdateEventUseCase(repository),
-            syncAPIUseCase = SyncAPIUseCase(repository),
+            syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
             getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
             fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository)
         )

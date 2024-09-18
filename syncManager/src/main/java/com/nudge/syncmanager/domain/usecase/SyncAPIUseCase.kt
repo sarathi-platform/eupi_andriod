@@ -10,26 +10,28 @@ import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
+import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import com.nudge.syncmanager.utils.SUCCESS
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 class SyncAPIUseCase(
-    private val repository: SyncRepository
+    private val repository: SyncRepository,
+    private val syncAPiRepository: SyncApiRepository
 ) {
     suspend fun syncProducerEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
         val eventRequest: List<EventRequest> = events.map {
             it.toEventRequest()
         }
-        return repository.syncProducerEventToServer(eventRequest)
+        return syncAPiRepository.syncProducerEventToServer(eventRequest)
     }
 
     suspend fun syncImageWithEventToServer(
         imageList: List<MultipartBody.Part>,
         imagePayload: RequestBody
     ): ApiResponseModel<List<SyncEventResponse>> {
-        return repository.syncImageWithEventToServer(
+        return syncAPiRepository.syncImageWithEventToServer(
             imageList = imageList,
             imagePayload = imagePayload
         )
@@ -49,7 +51,7 @@ class SyncAPIUseCase(
             "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
         )
 
-        val consumerAPIResponse = repository.fetchConsumerEventStatus(eventConsumerRequest)
+        val consumerAPIResponse = syncAPiRepository.fetchConsumerEventStatus(eventConsumerRequest)
         CoreLogger.d(
             context = CoreAppDetails.getApplicationContext().applicationContext,
             "SyncAPIUseCase",
@@ -65,5 +67,6 @@ class SyncAPIUseCase(
 
     }
 
-
+    fun getSyncBatchSize() = syncAPiRepository.getSyncBatchSize()
+    fun getSyncRetryCount() = syncAPiRepository.getSyncRetryCount()
 }

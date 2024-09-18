@@ -19,8 +19,6 @@ import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
-import com.nudge.core.UPCM_USER
-import com.nudge.core.SYNC_DATE_TIME_FORMAT
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
@@ -68,8 +66,8 @@ class SyncUploadWorker @AssistedInject constructor(
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             DeviceBandwidthSampler.getInstance().startSampling()
-            batchLimit = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncBatchSize()
-            retryCount = syncManagerUseCase.getUserDetailsSyncUseCase.getSyncRetryCount()
+            batchLimit = syncManagerUseCase.syncAPIUseCase.getSyncBatchSize()
+            retryCount = syncManagerUseCase.syncAPIUseCase.getSyncRetryCount()
             CoreLogger.d(
                 applicationContext,
                 TAG,
@@ -96,10 +94,10 @@ class SyncUploadWorker @AssistedInject constructor(
             while (totalPendingEventCount > 0) {
                 mPendingEventList =
                     syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
-                        batchLimit = batchLimit,
-                        retryCount = retryCount,
-                        syncType = selectedSyncType
-                    )
+                    batchLimit = batchLimit,
+                    retryCount = retryCount,
+                    syncType = selectedSyncType
+                )
 
                 if (mPendingEventList.isEmpty()) {
                     return Result.success(
@@ -116,11 +114,6 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
                 val dataEventList =
                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
-                CoreLogger.d(
-                    applicationContext,
-                    TAG,
-                    "doWork: dataEventList List: ${dataEventList.json()}"
-                )
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
                     val apiResponse =
                         syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
@@ -199,8 +192,8 @@ class SyncUploadWorker @AssistedInject constructor(
                     processEventList(eventList)
                     totalPendingEventCount1 =
                         syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(
-                            syncType = selectedSyncType
-                        )
+                        syncType = selectedSyncType
+                    )
                     CoreLogger.d(
                         applicationContext,
                         TAG,

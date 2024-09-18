@@ -34,8 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -77,6 +75,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -150,11 +149,11 @@ fun ObserveEventCounts(
         val eventListLive = viewModel.syncEventDetailUseCase.getSyncEventsUseCase.getTotalEvents()
         eventListLive.observe(lifeCycleOwner) { eventList ->
             val (totalDataCount, successDataCount) = eventList.filterAndCountEvents {
-                !it.name.toLowerCase(Locale.current)
+                !it.name.lowercase(Locale.ENGLISH)
                     .contains(IMAGE_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC
             }
             val (totalImageCount, successImageCount) = eventList.filterAndCountEvents {
-                it.name.toLowerCase(Locale.current)
+                it.name.lowercase(Locale.ENGLISH)
                     .contains(IMAGE_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC
             }
             viewModel.totalImageEventCount.intValue = totalImageCount
