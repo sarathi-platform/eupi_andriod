@@ -79,6 +79,33 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
+    private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            taskUiList.value =
+                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            expandedIds.clear()
+            taskUiList.value.forEach { task ->
+                val list = intiQuestions(
+                    taskId = task.taskId,
+                    surveyId = activityConfigUiModel?.surveyId ?: 0,
+                    activityConfigId = activityConfigUiModel?.activityConfigId ?: 0,
+                    sectionId = activityConfigUiModel?.sectionId ?: 0,
+                    grantID = 0,
+                    referenceId = BLANK_STRING
+                ).firstOrNull()
+                list?.let {
+                    it.subjectId = task.subjectId
+                    _questionUiModel.value[task.taskId ?: -1] = it
+                }
+            }
+            
+            withContext(CoreDispatchers.mainDispatcher) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
+    }
+
     fun onExpandClicked(
         task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
     ) {
@@ -100,7 +127,11 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         expandedIds.clear()
 
         if (nextIndex < taskIdList.size) {
-            expandedIds.add(taskIdList[nextIndex].key)
+            if (taskIdList[nextIndex].value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name) {
+                expandedIds.add(taskIdList[nextIndex].key)
+            } else {
+                expandNextItem(nextIndex, groupKey)
+            }
             return
         }
 
@@ -136,34 +167,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         return groupKey
     }
 
-    private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
-
-        CoroutineScope(Dispatchers.IO).launch {
-            taskUiList.value =
-                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
-            expandedIds.clear()
-            taskUiList.value.forEach { task ->
-                val list = intiQuestions(
-                    taskId = task.taskId,
-                    surveyId = activityConfigUiModel?.surveyId ?: 0,
-                    activityConfigId = activityConfigUiModel?.activityConfigId ?: 0,
-                    sectionId = activityConfigUiModel?.sectionId ?: 0,
-                    grantID = 0,
-                    referenceId = BLANK_STRING
-                ).firstOrNull()
-                list?.let {
-                    it.subjectId = task.subjectId
-                    _questionUiModel.value[task.taskId ?: -1] = it
-                }
-            }
-
-            withContext(CoreDispatchers.mainDispatcher) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
-        }
-    }
-
-    private fun expandFirstNotStartedItem() {
+    override fun expandFirstNotStartedItem() {
         if (!isActivityCompleted.value) {
 
             val firstGroupWithNotStatedTask = if (isGroupingApplied.value) {

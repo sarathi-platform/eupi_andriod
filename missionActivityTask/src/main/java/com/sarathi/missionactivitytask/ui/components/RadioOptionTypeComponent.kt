@@ -35,6 +35,7 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.lightGrayColor
+import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -182,7 +183,7 @@ fun selectTextColor(
 ): Color {
 
     return if (isTaskMarkedNotAvailable.value)
-        lightGrayColor
+        placeholderGrey
     else {
         if (selectedValueState.value == BLANK_STRING
             && optionValueText.selectedValue.toString() == BLANK_STRING

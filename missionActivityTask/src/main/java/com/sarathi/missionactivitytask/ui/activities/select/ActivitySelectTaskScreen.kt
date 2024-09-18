@@ -93,9 +93,7 @@ fun ActivitySelectTaskScreen(
     activityId: Int,
     onSettingClick: () -> Unit
 ) {
-    LaunchedEffect(key1 = viewModel.taskUiList.value) {
-        viewModel.onEvent(InitDataEvent.InitActivitySelectTaskScreenState(missionId, activityId))
-    }
+
     TaskScreen(
         missionId = missionId,
         activityId = activityId,
@@ -117,6 +115,10 @@ fun ActivitySelectTaskScreen(
             selectActivityTaskScreenContentForGroup(groupKey, viewModel)
         }
     )
+
+    LaunchedEffect(key1 = viewModel.taskUiList.value) {
+        viewModel.onEvent(InitDataEvent.InitActivitySelectTaskScreenState(missionId, activityId))
+    }
 }
 
 fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
