@@ -64,7 +64,6 @@ class SyncUploadWorker @AssistedInject constructor(
 
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
-            DeviceBandwidthSampler.getInstance().startSampling()
             batchLimit = syncManagerUseCase.syncAPIUseCase.getSyncBatchSize()
             retryCount = syncManagerUseCase.syncAPIUseCase.getSyncRetryCount()
             CoreLogger.d(
@@ -111,6 +110,7 @@ class SyncUploadWorker @AssistedInject constructor(
                     TAG,
                     "doWork: pendingEvents List: ${mPendingEventList.json()}"
                 )
+                DeviceBandwidthSampler.getInstance().startSampling()
                 val dataEventList =
                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
@@ -201,6 +201,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 } else handleEmptyEventListResponse(mPendingEventList)
             } ?: handleNullApiResponse(mPendingEventList)
         } else handleFailedApiResponse(mPendingEventList)
+        DeviceBandwidthSampler.getInstance().stopSampling()
         return totalPendingEventCount1
     }
 
