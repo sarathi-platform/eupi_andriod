@@ -1,7 +1,6 @@
 package com.nudge.core.database.dao
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
@@ -80,7 +79,6 @@ interface EventsDao {
 
             failedEventList.forEach {
                 val retryCount=fetchRetryCountForEvent(clientId = it.clientId).plus(1)
-                Log.d("TAG", "updateFailedEventStatus: ${it.clientId} :: $retryCount")
                 updateEventStatus(
                     clientId = it.clientId,
                     newStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,

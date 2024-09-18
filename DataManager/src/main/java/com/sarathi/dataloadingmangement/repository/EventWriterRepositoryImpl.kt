@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.repository
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
@@ -126,7 +125,6 @@ class EventWriterRepositoryImpl @Inject constructor(
                 parentEntity = emptyMap()
             ).json()
         )
-        Log.d("TAG", "createAndSaveEvent1: ${event.json()}")
         return event
     }
 

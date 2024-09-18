@@ -34,7 +34,11 @@ class SyncRepositoryImpl(
     val imageStatusDao: ImageStatusDao,
     val requestStatusDao: RequestStatusDao
 ) : SyncRepository {
-
+    val pendingEventStatusList = listOf(
+        EventSyncStatus.OPEN.eventSyncStatus,
+        EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
+        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+    )
     override fun getUserMobileNumber(): String {
         return corePrefRepo.getMobileNo()
     }
@@ -68,11 +72,7 @@ class SyncRepositoryImpl(
         syncType: Int
     ): List<Events> {
         return eventDao.getAllPendingEventList(
-            listOf(
-                EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
-            ),
+            pendingEventStatusList,
             batchLimit = batchLimit,
             retryCount = retryCount,
             mobileNumber = corePrefRepo.getMobileNo(),
@@ -82,11 +82,7 @@ class SyncRepositoryImpl(
 
     override suspend fun getPendingEventCount(syncType: Int): Int {
         return eventDao.getSyncPendingEventCount(
-            listOf(
-                EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
-            ),
+            pendingEventStatusList,
             mobileNumber = corePrefRepo.getMobileNo(),
             syncType = syncType
         )
