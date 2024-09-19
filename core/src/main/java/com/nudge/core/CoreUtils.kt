@@ -32,6 +32,7 @@ import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -40,6 +41,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -1213,4 +1217,23 @@ fun getFileMimeType(file: File): String? {
         type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     }
     return type
+}
+
+fun convertFileIntoMultipart(
+    imageFile: File,
+    imageEventDetail: ImageEventDetailsModel
+): MultipartBody.Part? {
+    try {
+        val imageRequest = imageFile
+            .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+        val multipartRequest = MultipartBody.Part.createFormData(
+            MULTIPART_IMAGE_PARAM_NAME,
+            imageEventDetail.fileName,
+            imageRequest
+        )
+        return multipartRequest
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        return null
+    }
 }

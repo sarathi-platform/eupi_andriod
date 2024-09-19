@@ -15,13 +15,13 @@ import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.MULTIPART_FORM_DATA
-import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
+import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
 import com.nudge.core.datamodel.ImageEventDetailsModel
@@ -44,7 +44,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
@@ -302,25 +301,6 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-    private fun convertFileIntoMultipart(
-        imageFile: File,
-        imageEventDetail: ImageEventDetailsModel
-    ): MultipartBody.Part? {
-        try {
-            val imageRequest = imageFile
-                .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
-            val multipartRequest = MultipartBody.Part.createFormData(
-                MULTIPART_IMAGE_PARAM_NAME,
-                imageEventDetail.fileName,
-                imageRequest
-            )
-            return multipartRequest
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            return null
-        }
-    }
-
     private suspend fun syncImageToServerAPI(
         imageMultipartList: List<MultipartBody.Part>,
         imageStatusEventList: List<ImageEventDetailsModel>,
@@ -471,12 +451,12 @@ class SyncUploadWorker @AssistedInject constructor(
             } else {
                 handleFailedImageStatus(
                     imageEventDetail = imageDetail,
-                    errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_EXCEPTION.message
+                    errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
                 )
             }
         } ?: handleFailedImageStatus(
             imageEventDetail = imageDetail,
-            errorMessage = SyncException.IMAGE_NAME_IS_NULL_EXCEPTION.message
+            errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
         )
     }
 
