@@ -1,7 +1,6 @@
 package com.nudge.syncmanager.workers
 
 import android.content.Context
-import android.os.Environment
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -31,6 +30,7 @@ import com.nudge.core.enums.EventName
 import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
 import com.nudge.core.getFileMimeType
+import com.nudge.core.getImagePathFromPicture
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.EventResult
@@ -424,8 +424,7 @@ class SyncUploadWorker @AssistedInject constructor(
     ) {
         imageDetail.fileName?.let { imageName ->
             if (imageName.isNotEmpty()) {
-                val picturePath =
-                    applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath
+                val picturePath = getImagePathFromPicture()
                 CoreLogger.d(
                     context = applicationContext,
                     "addImageToMultipart",

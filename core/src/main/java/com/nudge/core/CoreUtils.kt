@@ -1237,3 +1237,8 @@ fun convertFileIntoMultipart(
         return null
     }
 }
+
+fun getImagePathFromPicture() = CoreAppDetails.getApplicationContext().applicationContext
+    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath ?: BLANK_STRING
+
+
