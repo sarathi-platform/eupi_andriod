@@ -394,7 +394,13 @@ class SyncUploadWorker @AssistedInject constructor(
                 val imageMultiPartList = ArrayList<MultipartBody.Part>()
                 imageEventList.forEach { imageDetail ->
                     try {
-                        addImageToMultipart(imageDetail, imageMultiPartList)
+
+                        val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
+                        syncManagerUseCase.syncAPIUseCase.uploadImageOnBlob(
+                            filePath = picturePath,
+                            fileName = imageDetail.fileName ?: BLANK_STRING
+                        )
+//                        addImageToMultipart(imageDetail, imageMultiPartList)
                     } catch (e: Exception) {
                         handleFailedImageStatus(
                             imageEventDetail = imageDetail,
