@@ -143,6 +143,6 @@ class SettingBSRepositoryImpl(
     }
 
     override fun isSyncEnable(): Boolean {
-        return prefRepo.getISSyncEnabled()
+        return prefRepo.iSSyncOptionEnabled()
     }
 }

@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_BATCH_SIZE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_ENABLED
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_RETRY_COUNT
@@ -285,5 +286,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun saveSyncRetryCount(retryCount: Long) {
         prefs.edit().putLong(PREF_KEY_SYNC_RETRY_COUNT, retryCount).apply()
+    }
+
+    override fun saveIsSyncOptionEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, isEnabled).apply()
+    }
+
+    override fun iSSyncOptionEnabled(): Boolean {
+        return prefs.getBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, false)
     }
 }
