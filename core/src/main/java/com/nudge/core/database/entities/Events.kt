@@ -15,13 +15,13 @@ import java.util.UUID
 data class Events (
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
-    val id: String = UUID.randomUUID().toString(), // TODO add mobile number and timestamp
+    var id: String = UUID.randomUUID().toString(), // TODO add mobile number and timestamp
 
     @ColumnInfo("name")
-    val name: String,
+    var name: String,
 
     @ColumnInfo("type")
-    val type: String,
+    var type: String,
 
     @ColumnInfo("created_date")
     @TypeConverters(DateConverter::class)

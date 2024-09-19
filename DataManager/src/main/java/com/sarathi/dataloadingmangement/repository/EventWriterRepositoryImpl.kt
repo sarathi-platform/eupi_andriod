@@ -125,7 +125,6 @@ class EventWriterRepositoryImpl @Inject constructor(
                 parentEntity = emptyMap()
             ).json()
         )
-
         return event
     }
 
@@ -175,7 +174,7 @@ class EventWriterRepositoryImpl @Inject constructor(
                 event = event,
                 dependencyEntity = listOf(),
                 listOf(
-                    EventWriterName.IMAGE_EVENT_WRITER,
+                    EventWriterName.IMAGE_EVENT_WRITER, EventWriterName.DB_EVENT_WRITER
                 ), uri
             )
         } catch (exception: Exception) {

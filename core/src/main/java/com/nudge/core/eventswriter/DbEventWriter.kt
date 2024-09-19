@@ -2,7 +2,6 @@ package com.nudge.core.eventswriter
 
 import android.content.Context
 import android.net.Uri
-import androidx.core.net.toFile
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.FORM_C_TOPIC
@@ -18,7 +17,9 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventWriterName
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.toDate
+import com.nudge.core.utils.FileUtils
 
 class DbEventWrite() : IEventWriter {
     override suspend fun addEvent(
@@ -36,13 +37,17 @@ class DbEventWrite() : IEventWriter {
         if (event.name.contains(IMAGE_EVENT_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC) {
             uri?.let {
                 if (it != Uri.EMPTY) {
+                    val fileName = FileUtils.getFileName(
+                        CoreAppDetails.getApplicationContext().applicationContext,
+                        it
+                    ) ?: BLANK_STRING
                     imageStatusDao.insert(
                         ImageStatusEntity(
                             errorMessage = BLANK_STRING,
                             retryCount = 0,
                             mobileNumber = event.mobile_number,
                             createdBy = event.createdBy,
-                            fileName = it.toFile().name,
+                            fileName = fileName,
                             filePath = it.path ?: BLANK_STRING,
                             name = EventName.BLOB_UPLOAD_TOPIC.topicName,
                             type = EventName.BLOB_UPLOAD_TOPIC.topicName,

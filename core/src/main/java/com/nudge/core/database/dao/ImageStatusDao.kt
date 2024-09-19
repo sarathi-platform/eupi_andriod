@@ -29,13 +29,14 @@ interface ImageStatusDao {
     @Query("SELECT COUNT(*) FROM $IMAGE_STATUS_TABLE_NAME WHERE imageEventId =:eventId AND mobileNumber =:mobileNumber")
     fun fetchImageStatusCount(eventId: String, mobileNumber: String): Int
 
-    @Query("UPDATE $IMAGE_STATUS_TABLE_NAME SET status=:status, errorMessage =:errorMessage, modifiedDate =:modifiedDate WHERE id=:eventId AND mobileNumber =:mobileNumber")
+    @Query("UPDATE $IMAGE_STATUS_TABLE_NAME SET status=:status, errorMessage =:errorMessage, modifiedDate =:modifiedDate,retryCount =:retryCount WHERE id=:eventId AND mobileNumber =:mobileNumber")
     fun updateImageEventStatus(
         status: String,
         eventId: String,
         errorMessage: String,
         modifiedDate: Date,
-        mobileNumber: String
+        mobileNumber: String,
+        retryCount: Int
     )
 
     @Transaction
@@ -51,6 +52,7 @@ interface ImageStatusDao {
                     modifiedDate = modifiedDate,
                     errorMessage = it.errorMessage,
                     mobileNumber = mobileNumber,
+                    retryCount = 0
                 )
             }
         }

@@ -35,7 +35,8 @@ class SyncHomeRepositoryImpl(
             status = listOf(
                 EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                 EventSyncStatus.CONSUMER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.CONSUMER_FAILED.eventSyncStatus
+                EventSyncStatus.CONSUMER_FAILED.eventSyncStatus,
+                EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
             )
         )
     }
