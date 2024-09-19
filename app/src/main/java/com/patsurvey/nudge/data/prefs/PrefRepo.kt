@@ -97,5 +97,7 @@ interface PrefRepo {
 
    fun saveSyncBatchSize(batchSize: Long)
    fun saveSyncRetryCount(retryCount: Long)
+   fun setSyncOptionEnabled(isEnabled: Boolean)
+   fun iSSyncOptionEnabled(): Boolean
 
 }
