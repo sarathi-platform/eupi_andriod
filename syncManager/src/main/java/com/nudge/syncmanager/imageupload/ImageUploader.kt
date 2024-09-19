@@ -1,5 +1,9 @@
 package com.nudge.syncmanager.imageupload
 
 interface ImageUploader {
-    suspend fun  uploadImage(filePath:String,fileName:String):String
+    suspend fun uploadImage(
+        filePath: String,
+        fileName: String,
+        onUploadImageResponse: (String, Boolean) -> Unit
+    )
 }
