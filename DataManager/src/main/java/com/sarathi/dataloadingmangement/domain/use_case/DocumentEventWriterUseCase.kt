@@ -10,6 +10,7 @@ import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
+import java.util.UUID
 import javax.inject.Inject
 
 class DocumentEventWriterUseCase @Inject constructor(
@@ -54,8 +55,14 @@ class DocumentEventWriterUseCase @Inject constructor(
                         activity = CoreAppDetails.getContext()!!,
                         name = getFileNameFromURL(uri.path ?: BLANK_STRING)
                     )
+                    val imageEvent = event.also { eventDetail ->
+                        eventDetail.id = UUID.randomUUID().toString()
+                        eventDetail.name = EventName.UPLOAD_IMAGE_EVENT.topicName
+                        event.type = EventName.UPLOAD_IMAGE_EVENT.topicName
+                    }
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(
-                        event = event, uri
+                        imageEvent,
+                        uri = uri
                     )
                 }
             }

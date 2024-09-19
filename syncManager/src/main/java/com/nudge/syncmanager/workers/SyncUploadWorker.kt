@@ -14,13 +14,13 @@ import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.MULTIPART_FORM_DATA
-import com.nudge.core.MULTIPART_IMAGE_PARAM_NAME
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
+import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
 import com.nudge.core.datamodel.ImageEventDetailsModel
@@ -30,6 +30,7 @@ import com.nudge.core.enums.EventName
 import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
 import com.nudge.core.getFileMimeType
+import com.nudge.core.getImagePathFromPicture
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.EventResult
@@ -43,7 +44,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
@@ -302,25 +302,6 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-    private fun convertFileIntoMultipart(
-        imageFile: File,
-        imageEventDetail: ImageEventDetailsModel
-    ): MultipartBody.Part? {
-        try {
-            val imageRequest = imageFile
-                .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
-            val multipartRequest = MultipartBody.Part.createFormData(
-                MULTIPART_IMAGE_PARAM_NAME,
-                imageEventDetail.fileName,
-                imageRequest
-            )
-            return multipartRequest
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            return null
-        }
-    }
-
     private suspend fun syncImageToServerAPI(
         imageMultipartList: List<MultipartBody.Part>,
         imageStatusEventList: List<ImageEventDetailsModel>,
@@ -395,7 +376,7 @@ class SyncUploadWorker @AssistedInject constructor(
         syncManagerUseCase.addUpdateEventUseCase.updateImageDetailsEventStatus(
             eventId = imageEventDetail.id,
             errorMessage = errorMessage,
-            status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+            status = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus,
             requestId = imageEventDetail.requestId ?: BLANK_STRING
         )
     }
@@ -414,27 +395,8 @@ class SyncUploadWorker @AssistedInject constructor(
                 val imageMultiPartList = ArrayList<MultipartBody.Part>()
                 imageEventList.forEach { imageDetail ->
                     try {
-                        imageDetail.filePath?.let { path ->
-                            val imageFile = File(path)
-                            if (imageFile.exists() && imageFile.isFile) {
-                                val imageMultiPart = convertFileIntoMultipart(
-                                    imageFile = imageFile,
-                                    imageEventDetail = imageDetail
-                                )
-                                imageMultiPart?.let {
-                                    imageMultiPartList.add(it)
-                                }
-
-                            } else
-                                handleFailedImageStatus(
-                                    imageEventDetail = imageDetail,
-                                    errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
-                                )
-                        }
-
-
+                        addImageToMultipart(imageDetail, imageMultiPartList)
                     } catch (e: Exception) {
-                        e.printStackTrace()
                         handleFailedImageStatus(
                             imageEventDetail = imageDetail,
                             errorMessage = e.message
@@ -455,6 +417,47 @@ class SyncUploadWorker @AssistedInject constructor(
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+    }
+
+    private suspend fun SyncUploadWorker.addImageToMultipart(
+        imageDetail: ImageEventDetailsModel,
+        imageMultiPartList: ArrayList<MultipartBody.Part>
+    ) {
+        imageDetail.fileName?.let { imageName ->
+            if (imageName.isNotEmpty()) {
+                val picturePath = getImagePathFromPicture()
+                CoreLogger.d(
+                    context = applicationContext,
+                    "addImageToMultipart",
+                    "ImagePath: $picturePath/$imageName"
+                )
+                val file =
+                    File("$picturePath/$imageName")
+
+                if (file.exists() && file.isFile) {
+                    val imageMultiPart = convertFileIntoMultipart(
+                        imageFile = file,
+                        imageEventDetail = imageDetail
+                    )
+                    imageMultiPart?.let {
+                        imageMultiPartList.add(it)
+                    }
+                } else {
+                    handleFailedImageStatus(
+                        imageEventDetail = imageDetail,
+                        errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
+                    )
+                }
+            } else {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
+                )
+            }
+        } ?: handleFailedImageStatus(
+            imageEventDetail = imageDetail,
+            errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
+        )
     }
 
 

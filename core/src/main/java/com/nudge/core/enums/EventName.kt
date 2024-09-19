@@ -47,7 +47,8 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC"),
     DELETE_SUBJECT_ATTENDANCE_EVENT(35, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC"),
     FORM_RESPONSE_EVENT(36, topicName = "SAVE_RESPONSE_EVENT"),
-    BLOB_UPLOAD_TOPIC(37, topicName = "BLOB_UPLOAD_TOPIC");
+    BLOB_UPLOAD_TOPIC(37, topicName = "BLOB_UPLOAD_TOPIC"),
+    UPLOAD_IMAGE_EVENT(38, topicName = "UPLOAD_IMAGE_EVENT");
 
 }
 

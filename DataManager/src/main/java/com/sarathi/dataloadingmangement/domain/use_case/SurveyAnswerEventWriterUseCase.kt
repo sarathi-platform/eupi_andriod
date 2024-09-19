@@ -14,6 +14,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import java.util.UUID
 import javax.inject.Inject
 
 class SurveyAnswerEventWriterUseCase @Inject constructor(
@@ -124,10 +125,16 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                         activity = CoreAppDetails.getContext()!!,
                         name = getFileNameFromURL(uri.path ?: BLANK_STRING)
                     )
+                    val imageEvent = it.also { event ->
+                        event.id = UUID.randomUUID().toString()
+                        event.name = EventName.UPLOAD_IMAGE_EVENT.topicName
+                        event.type = EventName.UPLOAD_IMAGE_EVENT.topicName
+                    }
                     eventWriterRepositoryImpl.saveImageEventToMultipleSources(
-                        it,
+                        imageEvent,
                         uri = uri
                     )
+
                 }
 
 

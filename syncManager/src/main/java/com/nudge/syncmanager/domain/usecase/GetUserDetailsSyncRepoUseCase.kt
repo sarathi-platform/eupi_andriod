@@ -26,4 +26,5 @@ class GetUserDetailsSyncRepoUseCase(
     fun getLoggedInUserType(): String {
         return repository.getLoggedInUserType()
     }
+
 }

@@ -34,7 +34,11 @@ class SyncRepositoryImpl(
     val imageStatusDao: ImageStatusDao,
     val requestStatusDao: RequestStatusDao
 ) : SyncRepository {
-
+    val pendingEventStatusList = listOf(
+        EventSyncStatus.OPEN.eventSyncStatus,
+        EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
+        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+    )
     override fun getUserMobileNumber(): String {
         return corePrefRepo.getMobileNo()
     }
@@ -68,11 +72,7 @@ class SyncRepositoryImpl(
         syncType: Int
     ): List<Events> {
         return eventDao.getAllPendingEventList(
-            listOf(
-                EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
-            ),
+            pendingEventStatusList,
             batchLimit = batchLimit,
             retryCount = retryCount,
             mobileNumber = corePrefRepo.getMobileNo(),
@@ -82,11 +82,7 @@ class SyncRepositoryImpl(
 
     override suspend fun getPendingEventCount(syncType: Int): Int {
         return eventDao.getSyncPendingEventCount(
-            listOf(
-                EventSyncStatus.OPEN.eventSyncStatus,
-                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
-            ),
+            pendingEventStatusList,
             mobileNumber = corePrefRepo.getMobileNo(),
             syncType = syncType
         )
@@ -203,16 +199,23 @@ class SyncRepositoryImpl(
         errorMessage: String?
     ) {
 
+        var retryCount = 0
+        if (status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+            || status == EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
+        ) {
+            retryCount = eventDao.fetchRetryCountForEvent(eventId) + 1
+        }
         imageStatusDao.updateImageEventStatus(
             status = status,
             eventId = eventId,
             errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
-            mobileNumber = corePrefRepo.getMobileNo()
+            mobileNumber = corePrefRepo.getMobileNo(),
+            retryCount = retryCount
         )
 
         eventDao.updateEventStatus(
-            retryCount = 1,
+            retryCount = retryCount,
             clientId = eventId,
             errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
             modifiedDate = System.currentTimeMillis().toDate(),
