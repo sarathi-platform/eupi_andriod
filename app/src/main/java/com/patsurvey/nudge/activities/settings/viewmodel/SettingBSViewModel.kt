@@ -73,7 +73,9 @@ import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.sarathi.dataloadingmangement.FORM_E
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
+import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -92,7 +94,8 @@ class SettingBSViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
-    val prefRepo: PrefRepo
+    val prefRepo: PrefRepo,
+    val formUiConfigUseCase: GetFormUiConfigUseCase
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
@@ -112,6 +115,7 @@ class SettingBSViewModel @Inject constructor(
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
     var syncWorkerInfoState: WorkInfo.State? = null
 
+    val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
     val loaderState: State<LoaderState> get() = _loaderState
@@ -622,6 +626,14 @@ class SettingBSViewModel @Inject constructor(
     fun getActivityFormGenerateList(onGetData: () -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = FORM_E)
+            activityFormGenerateList.value.forEach {
+                activityFormGenerateNameMap[Pair(it.missionId, it.activityId)] =
+                    formUiConfigUseCase.getFormConfigValue(
+                        key = GrantTaskFormSlots.TASK_PDF_FORM_NAME.name,
+                        missionId = it.missionId,
+                        activityId = it.activityId
+                    )
+            }
             onGetData()
         }
     }

@@ -70,8 +70,8 @@ class SaveTransactionMoneyJournalUseCase(private val repository: IMoneyJournalRe
 
     }
 
-    suspend fun deleteTransactionFromMoneyJournal(transactionID: String) {
-        repository.deleteMoneyJournalTransaction(transactionID)
+    suspend fun deleteTransactionFromMoneyJournal(transactionID: String, subjectId: Int) {
+        repository.deleteMoneyJournalTransaction(transactionID, subjectId)
     }
 }
 

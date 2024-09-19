@@ -11,8 +11,7 @@ class FetchDidiListForSmallGroupFromDbUseCase @Inject constructor(
     suspend operator fun invoke(smallGroupId: Int): List<SubjectEntity> {
 
         return fetchDidiListForSmallGroupFromDbRepository.getDidiDetailsForSmallGroup(smallGroupId)
-
-//        return fetchDidiDetailsFromDbRepository.getSubjectListForSmallGroup("Ultra Poor change maker (UPCM)_6789543210", smallGroupId)
+            .sortedBy { it.subjectName }
 
     }
 

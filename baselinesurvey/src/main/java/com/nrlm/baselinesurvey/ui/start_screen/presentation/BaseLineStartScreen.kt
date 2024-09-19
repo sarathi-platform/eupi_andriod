@@ -279,160 +279,7 @@ fun BaseLineStartScreen(
                         }
                     }
                 )
-                if (baseLineStartViewModel.shouldShowPhoto.value) {
-                    AsyncImage(
-                        model = baseLineStartViewModel.photoUri.value,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .height((screenHeight / 2).dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(
-                                languageItemActiveBg,
-                                shape = RoundedCornerShape(6.dp)
-                            ),
-                        contentScale = ContentScale.FillBounds
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .height((screenHeight / 2).dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(
-                                languageItemActiveBg,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .clickable {
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                    when {
-                                        ContextCompat.checkSelfPermission(
-                                            localContext as Activity,
-                                            Manifest.permission.CAMERA
-                                        ) == PackageManager.PERMISSION_GRANTED
-                                                && ContextCompat.checkSelfPermission(
-                                            localContext as Activity,
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                        ) == PackageManager.PERMISSION_GRANTED
-                                                && ContextCompat.checkSelfPermission(
-                                            localContext as Activity,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE
-                                        ) == PackageManager.PERMISSION_GRANTED -> {
-                                            BaselineLogger.d(
-                                                "BaseLineStartScreen",
-                                                "Permission previously granted 1"
-                                            )
-
-                                            findFileAndLaunchCamera(
-                                                context = localContext,
-                                                viewModel = baseLineStartViewModel,
-                                                didi = didi.value,
-                                                cameraLauncher = cameraLauncher
-                                            )
-                                        }
-
-                                        ActivityCompat.shouldShowRequestPermissionRationale(
-                                            localContext as Activity,
-                                            Manifest.permission.CAMERA
-                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                            localContext as Activity,
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                            localContext as Activity,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE
-                                        ) -> {
-                                            BaselineLogger.d(
-                                                "PatImagePreviewScreen",
-                                                "Show camera permissions dialog"
-                                            )
-                                            ActivityCompat.requestPermissions(
-                                                localContext as Activity,
-                                                arrayOf(
-                                                    Manifest.permission.CAMERA,
-                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                                ),
-                                                1
-                                            )
-                                        }
-
-                                        else -> {
-                                            BaselineLogger.d(
-                                                "requestCameraPermission: ",
-                                                "permission not granted"
-                                            )
-                                            shouldRequestPermission.value = true
-                                        }
-                                    }
-                                } else {
-                                    when {
-                                        ContextCompat.checkSelfPermission(
-                                            localContext as Activity,
-                                            Manifest.permission.CAMERA
-                                        ) == PackageManager.PERMISSION_GRANTED -> {
-                                            BaselineLogger.d(
-                                                "BaseLineStartScreen",
-                                                "Permission previously granted 2"
-                                            )
-
-                                            findFileAndLaunchCamera(
-                                                context = localContext,
-                                                viewModel = baseLineStartViewModel,
-                                                didi = didi.value,
-                                                cameraLauncher = cameraLauncher
-                                            )
-                                        }
-
-                                        ActivityCompat.shouldShowRequestPermissionRationale(
-                                            localContext as Activity,
-                                            Manifest.permission.CAMERA
-                                        ) -> {
-                                            BaselineLogger.d(
-                                                "BaseLineStartScreen",
-                                                "Show camera permissions dialog"
-                                            )
-                                            ActivityCompat.requestPermissions(
-                                                localContext as Activity,
-                                                arrayOf(
-                                                    Manifest.permission.CAMERA,
-                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                                ),
-                                                1
-                                            )
-                                        }
-
-                                        else -> {
-                                            BaselineLogger.d(
-                                                "requestCameraPermission: ",
-                                                "permission not granted"
-                                            )
-                                            shouldRequestPermission.value = true
-                                        }
-                                    }
-                                }
-                            }
-                    ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.photo_camera_icon),
-                                contentDescription = null,
-                                tint = textColorDark50
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = stringResource(R.string.no_photo_available_text),
-                                style = smallTextStyle,
-                                color = textColorDark50
-                            )
-                        }
-                    }
-                }
                 Spacer(modifier = Modifier.height(10.dp))
-
                 if (baseLineStartViewModel.shouldShowPhoto.value) {
                     ButtonOutline(
                         modifier = Modifier
@@ -666,6 +513,160 @@ fun BaseLineStartScreen(
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                     }
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                if (baseLineStartViewModel.shouldShowPhoto.value) {
+                    AsyncImage(
+                        model = baseLineStartViewModel.photoUri.value,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height((screenHeight / 2).dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(
+                                languageItemActiveBg,
+                                shape = RoundedCornerShape(6.dp)
+                            ),
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .height((screenHeight / 2).dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(
+                                languageItemActiveBg,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .clickable {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            BaselineLogger.d(
+                                                "BaseLineStartScreen",
+                                                "Permission previously granted 1"
+                                            )
+
+                                            findFileAndLaunchCamera(
+                                                context = localContext,
+                                                viewModel = baseLineStartViewModel,
+                                                didi = didi.value,
+                                                cameraLauncher = cameraLauncher
+                                            )
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) -> {
+                                            BaselineLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            BaselineLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                } else {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            BaselineLogger.d(
+                                                "BaseLineStartScreen",
+                                                "Permission previously granted 2"
+                                            )
+
+                                            findFileAndLaunchCamera(
+                                                context = localContext,
+                                                viewModel = baseLineStartViewModel,
+                                                didi = didi.value,
+                                                cameraLauncher = cameraLauncher
+                                            )
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) -> {
+                                            BaselineLogger.d(
+                                                "BaseLineStartScreen",
+                                                "Show camera permissions dialog"
+                                            )
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            BaselineLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                }
+                            }
+                    ) {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.photo_camera_icon),
+                                contentDescription = null,
+                                tint = textColorDark50
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(R.string.no_photo_available_text),
+                                style = smallTextStyle,
+                                color = textColorDark50
+                            )
+                        }
+                    }
+                }
+
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()

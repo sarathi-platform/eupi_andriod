@@ -27,6 +27,7 @@ enum class QuestionType {
     FormWithNone,
     AutoCalculation;
 
+
     companion object {
         fun getQuestionTypeFromName(name: String): QuestionType? {
             return when (name) {

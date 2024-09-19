@@ -7,6 +7,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.value
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -108,7 +109,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun getUserType(): String {
-        return prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        return prefs.getString(PREF_USER_TYPE, BLANK_STRING).value() ?: BLANK_STRING
     }
 
     override fun setUserType(userTypes: String) {
@@ -180,6 +181,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return getPref(PREF_KEY_USER_NAME, BLANK_STRING).toInt()
     }
 
+    override fun setName(name: String) {
+        savePref(PREF_KEY_NAME, name)
+    }
+
     fun setUserEmail(email: String) {
         savePref(PREF_KEY_EMAIL, email)
     }
@@ -242,6 +247,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun getPref(key: String, defaultValue: Float): Float {
         return prefs.getFloat(key, defaultValue)
+    }
+
+    override fun isDataTabDataLoaded(): Boolean {
+        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED, false)
+    }
+
+    override fun setDataTabDataLoaded(isDataLoaded: Boolean) {
+        savePref(PREF_KEY_DATA_TAB_DATA_LOADED, isDataLoaded)
     }
 
     override fun getSyncBatchSize(): Int {
