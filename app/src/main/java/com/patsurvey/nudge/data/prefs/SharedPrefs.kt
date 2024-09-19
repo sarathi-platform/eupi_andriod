@@ -288,7 +288,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         prefs.edit().putLong(PREF_KEY_SYNC_RETRY_COUNT, retryCount).apply()
     }
 
-    override fun saveIsSyncOptionEnabled(isEnabled: Boolean) {
+    override fun setSyncOptionEnabled(isEnabled: Boolean) {
         prefs.edit().putBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, isEnabled).apply()
     }
 
