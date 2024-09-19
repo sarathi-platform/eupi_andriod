@@ -392,7 +392,6 @@ class SyncUploadWorker @AssistedInject constructor(
                     TAG,
                     "findImageEventAndImageList: ${imageEventList.json()} "
                 )
-                val imageMultiPartList = ArrayList<MultipartBody.Part>()
                 imageEventList.forEach { imageDetail ->
                     try {
 
@@ -410,14 +409,14 @@ class SyncUploadWorker @AssistedInject constructor(
                         )
                     }
 
-                    if (imageMultiPartList.isNotEmpty()) {
-                        syncImageToServerAPI(
-                            imageMultipartList = imageMultiPartList,
-                            imageStatusEventList = imageEventList
-                        ) {
-                            onAPIResponse(it)
-                        }
-                    }
+//                    if (imageMultiPartList.isNotEmpty()) {
+//                        syncImageToServerAPI(
+//                            imageMultipartList = imageMultiPartList,
+//                            imageStatusEventList = imageEventList
+//                        ) {
+//                            onAPIResponse(it)
+//                        }
+//                    }
                 }
             }
         } catch (ex: Exception) {

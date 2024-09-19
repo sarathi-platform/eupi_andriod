@@ -324,7 +324,12 @@ class SyncRepositoryImpl(
     }
 
     override suspend fun uploadImageOnBlob(filePath: String, fileName: String) {
-        imageUploader.uploadImage(filePath = filePath, fileName = fileName)
+        imageUploader.uploadImage(
+            filePath = filePath,
+            fileName = fileName,
+            onUploadImageResponse = { message, isExceptionOccur ->
+
+            })
     }
 
 
