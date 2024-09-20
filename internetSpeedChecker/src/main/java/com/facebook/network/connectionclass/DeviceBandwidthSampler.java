@@ -129,7 +129,7 @@ public class DeviceBandwidthSampler {
       /**
        * Time between polls in ms.
        */
-      static final long SAMPLE_TIME = 10;
+      static final long SAMPLE_TIME = 1000;
 
       static private final int MSG_START = 1;
 
