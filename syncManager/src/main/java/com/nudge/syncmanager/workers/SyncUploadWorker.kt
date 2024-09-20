@@ -58,8 +58,6 @@ class SyncUploadWorker @AssistedInject constructor(
     private var retryCount = RETRY_DEFAULT_COUNT
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
-
-
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
 
         return try {
@@ -88,6 +86,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: totalPendingEventCount: $totalPendingEventCount"
             )
+            DeviceBandwidthSampler.getInstance().startSampling()
 
             while (totalPendingEventCount > 0) {
                 mPendingEventList =
@@ -110,7 +109,6 @@ class SyncUploadWorker @AssistedInject constructor(
                     TAG,
                     "doWork: pendingEvents List: ${mPendingEventList.json()}"
                 )
-                DeviceBandwidthSampler.getInstance().startSampling()
                 val dataEventList =
                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
@@ -151,13 +149,16 @@ class SyncUploadWorker @AssistedInject constructor(
                     }
                 }
 
-                batchLimit = getBatchSize(connectionQuality)
+
+
+                DeviceBandwidthSampler.getInstance().stopSampling()
+                batchLimit =
+                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality)
                 CoreLogger.d(
                     applicationContext,
                     TAG,
                     "doWork: Next batchLimit: $batchLimit"
                 )
-
             }
 
             syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus()
