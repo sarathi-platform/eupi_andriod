@@ -3,6 +3,11 @@ package com.sarathi.dataloadingmangement.repository.smallGroup
 import com.nudge.core.ATTENDANCE_ABSENT
 import com.nudge.core.ATTENDANCE_PRESENT
 import com.nudge.core.ATTENDANCE_TAG_ID
+import com.nudge.core.DEFAULT_ERROR_CODE
+import com.nudge.core.DEFAULT_SUCCESS_CODE
+import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.AttributesType
 import com.nudge.core.enums.SubjectType
 import com.nudge.core.enums.ValueTypes
@@ -20,6 +25,9 @@ import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEnt
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_DIDI_LIST
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_SMALL_GROUP_MAPPING
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail
@@ -53,6 +61,12 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                 }
             }
         } catch (ex: Exception) {
+            updateApiStatus(
+                apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
+                status = ApiStatus.FAILED.ordinal,
+                errorMessage = ex.message ?: com.nudge.core.BLANK_STRING,
+                errorCode = DEFAULT_ERROR_CODE
+            )
             CoreLogger.e(
                 context = CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,
                 tag = TAG,
@@ -244,6 +258,18 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
             return formatter.format(Date(this))
         } ?: return BLANK_STRING
 
+    }
+    override fun updateApiStatus(
+        apiEndPoint: String,
+        status: Int,
+        errorMessage: String,
+        errorCode: Int
+    ) {
+        apiStatusDao.updateApiStatus(apiEndPoint, status = status, errorMessage, errorCode)
+    }
+
+    override suspend fun isFetchSmallGroupAttendanceHistoryFromNetworkAPIStatus(): ApiStatusEntity? {
+        return apiStatusDao.getAPIStatus(apiEndpoint = SUBPATH_GET_DIDI_LIST)
     }
 
 }

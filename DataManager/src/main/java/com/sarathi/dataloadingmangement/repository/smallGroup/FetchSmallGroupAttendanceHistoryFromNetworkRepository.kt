@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.smallGroup
 
+import com.nudge.core.database.entities.ApiStatusEntity
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail
 
