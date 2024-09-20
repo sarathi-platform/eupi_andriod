@@ -22,5 +22,12 @@ interface FetchSmallGroupAttendanceHistoryFromNetworkRepository {
     )
 
     suspend fun checkIfHistoryAvailable(subjectId: Int, date: Long): Int
+    fun updateApiStatus(
+        apiEndPoint: String,
+        status: Int,
+        errorMessage: String,
+        errorCode: Int
+    )
 
+    suspend fun isFetchSmallGroupAttendanceHistoryFromNetworkAPIStatus(): ApiStatusEntity?
 }

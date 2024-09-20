@@ -10,6 +10,7 @@ import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
@@ -36,6 +37,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
             val response =
                 dataLoadingApiService.getSmallGroupBeneficiaryMapping(smallGroupApiRequest)
 
+            insertApiStatus(apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING)
             if (response.status.equals(SUCCESS_CODE)) {
 
                 response.data?.let { sgMapping ->

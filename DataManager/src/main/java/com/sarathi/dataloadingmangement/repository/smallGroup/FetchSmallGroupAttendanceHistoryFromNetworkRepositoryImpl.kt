@@ -40,7 +40,9 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     private val dataLoadingApiService: DataLoadingApiService,
     private val subjectEntityDao: SubjectEntityDao,
     private val subjectAttributeDao: SubjectAttributeDao,
-    private val attributeValueReferenceDao: AttributeValueReferenceDao
+    private val attributeValueReferenceDao: AttributeValueReferenceDao,
+    private val apiStatusDao: ApiStatusDao
+
 ) : FetchSmallGroupAttendanceHistoryFromNetworkRepository {
 
     private val TAG =
@@ -54,11 +56,24 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
             val response = dataLoadingApiService.getAttendanceHistoryFromNetwork(request)
             if (response.status.equals(SUCCESS_CODE)) {
                 response.data?.let { attendanceHistoryResponseList ->
+                    updateApiStatus(
+                        apiEndPoint = SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK,
+                        status = ApiStatus.SUCCESS.ordinal,
+                        errorMessage = com.nudge.core.BLANK_STRING,
+                        errorCode = DEFAULT_SUCCESS_CODE
+                    )
                     attendanceHistoryResponseList.forEach { attendanceHistoryResponse ->
                         saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse)
                     }
 
                 }
+            } else {
+                updateApiStatus(
+                    apiEndPoint = SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK,
+                    status = ApiStatus.FAILED.ordinal,
+                    errorMessage = response.message,
+                    errorCode = DEFAULT_ERROR_CODE
+                )
             }
         } catch (ex: Exception) {
             updateApiStatus(

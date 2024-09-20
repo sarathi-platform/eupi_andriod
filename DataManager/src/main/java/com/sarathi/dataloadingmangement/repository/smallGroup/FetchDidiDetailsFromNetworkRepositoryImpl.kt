@@ -19,7 +19,8 @@ import javax.inject.Inject
 class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
     private val corePrefRepo: CoreSharedPrefs,
     private val dataLoadingApiService: DataLoadingApiService,
-    private val subjectEntityDao: SubjectEntityDao
+    private val subjectEntityDao: SubjectEntityDao,
+    private val apiStatusDao: ApiStatusDao
 ) : FetchDidiDetailsFromNetworkRepository {
 
     private val TAG = FetchDidiDetailsFromNetworkRepositoryImpl::class.java.simpleName
@@ -32,13 +33,31 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
             if (response.status.equals(SUCCESS)) {
 
                 response.data?.let {
-
+                    updateApiStatus(
+                        apiEndPoint = SUBPATH_GET_DIDI_LIST,
+                        status = ApiStatus.SUCCESS.ordinal,
+                        errorMessage = BLANK_STRING,
+                        errorCode = DEFAULT_SUCCESS_CODE
+                    )
                     saveDidiDetailsToDb(it)
 
                 } ?: throw NullPointerException("Data is null")
 
+            } else {
+                updateApiStatus(
+                    apiEndPoint = SUBPATH_GET_DIDI_LIST,
+                    status = ApiStatus.FAILED.ordinal,
+                    errorMessage = response.message,
+                    errorCode = DEFAULT_ERROR_CODE
+                )
             }
         } catch (ex: Exception) {
+            updateApiStatus(
+                apiEndPoint = SUBPATH_GET_DIDI_LIST,
+                status = ApiStatus.FAILED.ordinal,
+                errorMessage = ex.message ?: BLANK_STRING,
+                errorCode = DEFAULT_ERROR_CODE
+            )
             Log.e(TAG, "fetchDidiDetailsFromNetwork -> exception: ${ex.message}", ex)
         }
 
