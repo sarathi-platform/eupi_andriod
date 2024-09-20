@@ -11,7 +11,7 @@ import javax.inject.Inject
 class BlobImageUploader @Inject constructor() : ImageUploader {
 
     val containerName = "uat/eupi-documents"
-
+    val TAG = "BLOB Image Upload"
     override suspend fun uploadImage(
         filePath: String,
         fileName: String,
@@ -49,14 +49,14 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         blob.uploadFromFile(photoPath)
         CoreLogger.d(
             CoreAppDetails.getApplicationContext().applicationContext,
-            "BLOB Image Upload",
+            TAG,
             "Image uploaded successfully ${blob.storageUri.primaryUri.path}"
         )
             onUploadImageResponse(blob.storageUri.primaryUri.path, false)
         } catch (se: StorageException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
-                "BLOB Image Upload",
+                TAG,
                 "StorageException: ${se.message}",
                 ex = se
             )
@@ -64,7 +64,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         } catch (ioe: IOException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
-                "BLOB Image Upload",
+                TAG,
                 "IOException: ${ioe.message}",
                 ex = ioe
             )

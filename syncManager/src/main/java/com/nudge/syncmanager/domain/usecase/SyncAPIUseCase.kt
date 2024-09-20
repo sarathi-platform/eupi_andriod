@@ -69,11 +69,4 @@ class SyncAPIUseCase(
 
     fun getSyncBatchSize() = syncAPiRepository.getSyncBatchSize()
     fun getSyncRetryCount() = syncAPiRepository.getSyncRetryCount()
-    fun uploadImageOnBlob(filePath: String, fileName: String) {
-        CoreLogger.d(
-            context = CoreAppDetails.getApplicationContext().applicationContext,
-            "SyncAPIUseCase",
-            "uploadImageOnBlob : FilePath: $filePath :: FileName: $fileName"
-        )
-    }
 }
