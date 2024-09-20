@@ -89,6 +89,7 @@ fun SettingBSScreen(
             },
             expanded = expanded.value,
             activityForm = viewModel.activityFormGenerateList.value,
+            formEName = viewModel.activityFormGenerateNameMap,
             onItemClick = { _, option ->
                 when (option.tag) {
                     SettingTagEnum.LANGUAGE.name -> {

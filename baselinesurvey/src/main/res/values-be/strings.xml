@@ -423,7 +423,7 @@
 
     <string name="warning">Warning!</string>
     <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
-    <string name="proceed">Proceed</string>
+    <string name="proceed">दावगा</string>
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"जागायजेन "</string>
@@ -466,4 +466,5 @@
     <string name="only_one_entry_can_be_added">मोनसेल\' एन्ट्रि दाजाबदेरनो हागोन।</string>
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="form_e">र्फम C</string>
 </resources>

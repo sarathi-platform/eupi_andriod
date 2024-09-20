@@ -68,7 +68,7 @@ class SurveyRepositoryImpl @Inject constructor(
                 questionId = it.questionId ?: DEFAULT_ID,
                 surveyId = it.surveyId,
                 sectionId = it.sectionId,
-                display = it.description ?: BLANK_STRING,
+                display = it.paraphrase ?: BLANK_STRING,
                 languageId = it.languageCode ?: BLANK_STRING,
                 questionSummary = it.originalValue,
                 questionDisplay = it.description ?: BLANK_STRING,

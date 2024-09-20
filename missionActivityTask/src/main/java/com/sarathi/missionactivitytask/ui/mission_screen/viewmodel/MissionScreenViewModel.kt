@@ -46,7 +46,7 @@ class MissionScreenViewModel @Inject constructor(
             }
 
             is SearchEvent.PerformSearch -> {
-                performSearchQuery(event.searchTerm, event.isSearchApplied)
+                performSearchQuery(event.searchTerm, event.isGroupingApplied)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -127,4 +127,7 @@ class MissionScreenViewModel @Inject constructor(
             )
         }
     }
+
+    //TODO Temp code remove after data is fetched from API
+    fun getStateId() = fetchAllDataUseCase.getStateId()
 }

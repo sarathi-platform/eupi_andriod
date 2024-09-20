@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.base.BaseViewModel
@@ -162,7 +163,11 @@ class BpcDidiListViewModel @Inject constructor(
             pendingDidiCount.value =
                 repository.getAllPendingPATDidisCount()
             val updatedDidiEntity = repository.getDidiFromDB(didiId)
-
+            repository.saveEvent(
+                eventItem = updatedDidiEntity,
+                eventName = EventName.SAVE_PAT_ANSWERS,
+                eventType = EventType.STATEFUL
+            )
             repository.saveEvent(
                 eventItem = updatedDidiEntity,
                 eventName = getPatScoreEventName(

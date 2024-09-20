@@ -45,6 +45,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
 
+        const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"
+
     }
 
     val prefs: SharedPreferences by lazy {
@@ -295,4 +297,11 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun iSSyncOptionEnabled(): Boolean {
         return prefs.getBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, false)
     }
+
+    override fun saveDataTabVisibility(isEnabled: Boolean) {
+        savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
+    }
+
+    override fun isDataTabVisible(): Boolean = getPref(PREF_DATA_TAB_VISIBILITY, false)
+
 }

@@ -28,5 +28,12 @@ class GetActivityUiConfigRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun getActivityConfig(activityId: Int, missionId: Int): ActivityConfigEntity? {
+        return activityConfigDao.getActivityConfig(
+            activityId = activityId,
+            missionId = missionId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
 
 }

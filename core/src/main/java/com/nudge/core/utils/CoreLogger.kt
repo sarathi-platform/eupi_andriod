@@ -55,7 +55,7 @@ object CoreLogger {
         tag: String,
         msg: String,
         ex: Throwable?,
-        stackTrace: Boolean = DEBUG,
+        stackTrace: Boolean = true,
         lineCount: Int = 60
     ) {
         CoroutineScope(Dispatchers.IO).launch {

@@ -71,7 +71,6 @@ import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
-import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.stringToDouble
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -548,7 +547,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                                 modifiedDate = didi.modifiedDate,
                                                 beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                 shgFlag = SHGFlag.fromSting(
-                                                    intToString(didi.shgFlag)
+                                                    didi.shgFlag
                                                         ?: SHGFlag.NOT_MARKED.name
                                                 ).value,
                                                 transactionId = "",
@@ -567,7 +566,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                                 patEdit = didi.patEdit,
                                                 voEndorsementEdit = didi.voEndorsementEdit,
                                                 ableBodiedFlag = AbleBodiedFlag.fromSting(
-                                                    intToString(didi.ableBodiedFlag)
+                                                    didi.ableBodiedFlag
                                                         ?: AbleBodiedFlag.NOT_MARKED.name
                                                 ).value
                                             )

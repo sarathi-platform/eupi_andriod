@@ -3,13 +3,13 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
-import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -35,6 +35,7 @@ class ActivityScreenViewModel @Inject constructor(
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    var showDialog = mutableStateOf<Boolean>(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -87,13 +88,19 @@ class ActivityScreenViewModel @Inject constructor(
     fun getContentValue(actvityUiList: List<ActivityUiModel>) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             actvityUiList.forEach {
-                it.icon = it.icon?.let { it1 -> fetchContentUseCase.getContentValue(it1) }
+                it.icon = it.icon?.let { it1 ->
+                    fetchContentUseCase.getContentValue(
+                        it1,
+                        DEFAULT_LANGUAGE_CODE
+                    )
+                }
             }
         }
     }
 
-    private suspend fun updateActivityStatus(){
-        val updateActivityStatusList = updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
+    private suspend fun updateActivityStatus() {
+        val updateActivityStatusList =
+            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
         val updateMissionStatusList = updateMissionActivityTaskStatusUseCase.reCheckMissionStatus()
         updateActivityStatusList.forEach {
             matStatusEventWriterUseCase.updateActivityStatus(

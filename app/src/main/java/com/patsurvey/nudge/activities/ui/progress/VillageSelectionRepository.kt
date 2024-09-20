@@ -13,8 +13,13 @@ import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
+import com.patsurvey.nudge.RetryHelper.retryApiList
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
+import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.analytics.EventParams
+import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
@@ -133,7 +138,6 @@ import com.patsurvey.nudge.utils.getFormPathKey
 import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.getVideoPath
-import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
@@ -3279,12 +3283,13 @@ class VillageSelectionRepository @Inject constructor(
                                             modifiedDate = didi.modifiedDate,
                                             beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                             shgFlag = SHGFlag.fromSting(
-                                                intToString(didi.shgFlag) ?: SHGFlag.NOT_MARKED.name).value,
+                                                didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                            ).value,
                                             transactionId = "",
                                             localCreatedDate = didi.localCreatedDate,
                                             localModifiedDate = didi.localModifiedDate,
                                             score = didi.bpcScore ?: 0.0,
-                                            comment =  didi.bpcComment ?: BLANK_STRING,
+                                            comment = didi.bpcComment ?: BLANK_STRING,
                                             crpScore = didi.crpScore,
                                             crpComment = didi.crpComment,
                                             bpcScore = didi.bpcScore ?: 0.0,
@@ -3294,7 +3299,10 @@ class VillageSelectionRepository @Inject constructor(
                                             rankingEdit = didi.rankingEdit,
                                             patEdit = didi.patEdit,
                                             voEndorsementEdit = didi.voEndorsementEdit,
-                                            ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                            ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                                didi.ableBodiedFlag
+                                                    ?: AbleBodiedFlag.NOT_MARKED.name
+                                            ).value
                                         )
                                     )
                                     if(!didi.crpUploadedImage.isNullOrEmpty()){
@@ -4085,5 +4093,56 @@ class VillageSelectionRepository @Inject constructor(
     fun fetchPatQuestionsFromNetwork(isRefresh: Boolean) {
         fetchQuestions(prefRepo, isRefresh)
     }
+
+    public fun fetchCastList(isRefresh: Boolean) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val languageList = languageListDao.getAllLanguages()
+            languageList.forEach { language ->
+                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
+                if (localCasteList.isEmpty() || isRefresh) {
+                    try {
+                        val casteResponse = apiService.getCasteList(language.id)
+                        if (casteResponse.status.equals(SUCCESS, true)) {
+                            casteResponse.data?.let { casteList ->
+                                if (isRefresh) {
+                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
+                                }
+                                casteList.forEach { casteEntity ->
+                                    casteEntity.languageId = language.id
+                                }
+                                casteListDao.insertAll(casteList)
+                                AnalyticsHelper.logEvent(
+                                    Events.CASTE_LIST_WRITE,
+                                    mapOf(
+                                        EventParams.LANGUAGE_ID to language.id,
+                                        EventParams.CASTE_LIST to "$casteList",
+                                        EventParams.FROM_SCREEN to "VillageSelectionScreen"
+                                    )
+                                )
+                            }
+                        } else {
+                            val ex = ApiResponseFailException(casteResponse.message)
+                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
+                                retryApiList.add(ApiType.CAST_LIST_API)
+                                crpPatQuestionApiLanguageId.add(language.id)
+                            }
+                            onCatchError(ex, ApiType.CAST_LIST_API)
+                        }
+                    } catch (ex: Exception) {
+                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
+                            retryApiList.add(ApiType.CAST_LIST_API)
+                            crpPatQuestionApiLanguageId.add(language.id)
+                        }
+                        onCatchError(ex, ApiType.CAST_LIST_API)
+                    } finally {
+                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
+                            ApiType.CAST_LIST_API
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 
 }
