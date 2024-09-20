@@ -16,6 +16,7 @@ data class LivelihoodEventEntity(
     var name: String,
     var status: Int,
     var type: String?,
+    
 
     ) {
     companion object {

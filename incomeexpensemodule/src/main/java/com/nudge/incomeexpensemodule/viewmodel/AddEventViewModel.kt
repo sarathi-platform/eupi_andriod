@@ -113,18 +113,15 @@ class AddEventViewModel @Inject constructor(
             }
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
-            if (livelihoodForDidi != null) {
-                val livelihoodDropDown = getLivelihoodListFromDbUseCase.invoke(
-                    listOf(
-                        livelihoodForDidi.first()?.livelihoodId.value(),
-                        livelihoodForDidi.last()?.livelihoodId.value()
-                    )
+            val livelihoodDropDown = getLivelihoodListFromDbUseCase.invoke(
+                listOf(
+                    livelihoodForDidi.first().livelihoodId.value(),
+                    livelihoodForDidi.last().livelihoodId.value()
                 )
-                _livelihoodDropdownValue.clear()
-                _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
+            )
+            _livelihoodDropdownValue.clear()
+            _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
 
-
-            }
 
             validateForm()
         }
@@ -260,9 +257,8 @@ class AddEventViewModel @Inject constructor(
     }
 
     private fun getParticulars(): String {
-        var particulars = ""
 
-        particulars =
+        var particulars =
             "Livelihood=${livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName}|"
         particulars +=
             "Event=${_livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName}|"

@@ -241,6 +241,7 @@ fun AddEventScreen(
                             viewModel.validateForm()
                         }
                     )
+
                 }
 
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
