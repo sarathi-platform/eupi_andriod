@@ -12,5 +12,6 @@ enum class QuestionType {
     RadioButton,
     Grid,
     Toggle,
-    DropDown
+    DropDown,
+    TextField
 }

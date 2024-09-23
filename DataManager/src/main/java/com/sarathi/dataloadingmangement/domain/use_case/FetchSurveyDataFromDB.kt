@@ -24,4 +24,24 @@ class FetchSurveyDataFromDB @Inject constructor(
             grantId = grantId
         )
     }
+
+    suspend fun invokeFormQuestions(
+        surveyId: Int,
+        subjectId: Int,
+        sectionId: Int,
+        referenceId: String,
+        activityConfigId: Int,
+        grantId: Int,
+        formId: Int
+    ): List<QuestionUiModel> {
+        return repository.getFormQuestion(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            subjectId = subjectId,
+            referenceId = referenceId,
+            activityConfigId = activityConfigId,
+            grantId = grantId,
+            formId = formId
+        )
+    }
 }

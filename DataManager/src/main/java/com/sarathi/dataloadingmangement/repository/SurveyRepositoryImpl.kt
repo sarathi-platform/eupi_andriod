@@ -88,6 +88,25 @@ class SurveyRepositoryImpl @Inject constructor(
         return questionUiList
     }
 
+    override suspend fun getFormQuestion(
+        surveyId: Int,
+        subjectId: Int,
+        sectionId: Int,
+        referenceId: String,
+        activityConfigId: Int,
+        grantId: Int,
+        formId: Int
+    ): List<QuestionUiModel> {
+        return getQuestion(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            subjectId = subjectId,
+            referenceId = referenceId,
+            activityConfigId = activityConfigId,
+            grantId = grantId
+        ).filter { it.formId == formId }
+    }
+
     private suspend fun getOptionItemsForQuestion(
         question: QuestionUiEntity,
         optionItems: List<OptionsUiModel>,

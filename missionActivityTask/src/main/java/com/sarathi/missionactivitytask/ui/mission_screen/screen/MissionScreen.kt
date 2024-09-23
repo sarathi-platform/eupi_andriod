@@ -168,10 +168,11 @@ fun MissionScreen(
                                 primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
                                     onNavigationToActivity(
-                                        mission.description.contains(
+                                        false
+                                        /*mission.description.contains(
                                             "Baseline",
                                             true
-                                        ), //TODO Temp code to be removed after data is fetched from server.
+                                        )*/, //TODO Temp code to be removed after data is fetched from server.
                                         mission
                                     ) //TODO handle navigation to activity based on mission.
                                     /*navigateToActivityScreen(
