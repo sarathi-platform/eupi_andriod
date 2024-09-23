@@ -23,5 +23,6 @@ data class ImageEventDetailsModel(
     val eventId: String? = BLANK_STRING,
     val imageStatusId: String? = BLANK_STRING,
     val fileName: String? = BLANK_STRING,
-    val filePath: String? = BLANK_STRING
+    val filePath: String? = BLANK_STRING,
+    val isBlobUploaded: Boolean = false
 )

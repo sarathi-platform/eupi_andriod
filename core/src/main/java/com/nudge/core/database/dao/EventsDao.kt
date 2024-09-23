@@ -219,7 +219,7 @@ interface EventsDao {
     @Query("SELECT * FROM $EventsTable WHERE status IN (:status) and mobile_number =:mobileNumber")
     fun fetchAllFailedEventList(mobileNumber: String, status: List<String>): List<Events>
 
-    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.fileName as fileName,image_status_table.filePath as filePath from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.imageEventId where  events_table.mobile_number == image_status_table.mobileNumber AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
+    @Query("Select events_table.*,image_status_table.id as imageStatusId, image_status_table.fileName as fileName,image_status_table.filePath as filePath,image_status_table.isBlobUploaded as isBlobUploaded from events_table LEFT JOIN image_status_table on events_table.id == image_status_table.imageEventId where  events_table.mobile_number == image_status_table.mobileNumber AND events_table.mobile_number =:mobileNumber AND events_table.id in (:eventIds) ORDER BY events_table.created_date")
     fun fetchAllImageEventsWithImageDetails(
         mobileNumber: String,
         eventIds: List<String>
