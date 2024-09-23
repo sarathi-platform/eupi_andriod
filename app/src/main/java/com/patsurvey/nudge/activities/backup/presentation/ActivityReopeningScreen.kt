@@ -259,7 +259,7 @@ private fun Step2TabContent(viewModel: ActivityReopeningScreenViewModel) {
                             viewModel.missionList.value.find { it.missionId == viewModel.selectedMissionId.value }?.description.value()
                         append(stringResource(R.string.select_activity_for))
                         if (!TextUtils.isEmpty(missionName))
-                            append(missionName)
+                            append(" $missionName")
                     }
 
                     withStyle(defaultTextSpanStyle.copy(color = redOffline)) {
