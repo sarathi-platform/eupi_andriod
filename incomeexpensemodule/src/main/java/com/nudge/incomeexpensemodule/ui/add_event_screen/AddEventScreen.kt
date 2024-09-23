@@ -154,7 +154,7 @@ fun AddEventScreen(
                         onDateSelected = { date ->
                             viewModel.selectedDate.value = date.value().getDate()
                             viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm()
+                            viewModel.validateForm(subjectId)
                         }
                     )
                 }
@@ -168,8 +168,8 @@ fun AddEventScreen(
                         selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
 
                         onAnswerSelection = { selectedValue ->
-                            viewModel.onLivelihoodSelect(selectedValue.id)
-                            viewModel.validateForm()
+                            viewModel.onLivelihoodSelect(selectedValue.id, subjectId)
+                            viewModel.validateForm(subjectId)
 
                         }
                     )
@@ -237,8 +237,8 @@ fun AddEventScreen(
                         selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
                         sources = viewModel.livelihoodEventDropdownValue,
                         onAnswerSelection = { selectedValue ->
-                            viewModel.onEventSelected(selectedValue)
-                            viewModel.validateForm()
+                            viewModel.onEventSelected(selectedValue, subjectId)
+                            viewModel.validateForm(subjectId)
                         }
                     )
 
@@ -254,7 +254,7 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
-                                viewModel.validateForm()
+                                viewModel.validateForm(subjectId)
                             }
                         )
                     }
@@ -271,7 +271,7 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
-                                viewModel.validateForm()
+                                viewModel.validateForm(subjectId)
 
                             }
                         )
@@ -287,7 +287,7 @@ fun AddEventScreen(
                             currentValue = viewModel.assetCount.value,
                             onAnswerSelection = { inputValue ->
                                 viewModel.assetCount.value = inputValue
-                                viewModel.validateForm()
+                                viewModel.validateForm(subjectId)
                             }
                         )
                     }
@@ -305,7 +305,7 @@ fun AddEventScreen(
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
-                            viewModel.validateForm()
+                            viewModel.validateForm(subjectId)
 
                         }
                     }

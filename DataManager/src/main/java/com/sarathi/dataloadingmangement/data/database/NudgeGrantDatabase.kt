@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.data.converters.StringConverter
 import com.sarathi.dataloadingmangement.data.converters.TagConverter
+import com.sarathi.dataloadingmangement.data.converters.ValidationConverter
 import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -160,7 +161,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
     ContentMapConverter::class,
     ValuesDtoConverter::class,
     DateConverter::class,
-    TagConverter::class
+    TagConverter::class,
+    ValidationConverter::class
 
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {

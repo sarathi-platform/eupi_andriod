@@ -94,4 +94,22 @@ class AssetJournalRepositoryImpl @Inject constructor(
     override suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity> {
         return assetJournalDao.getAssetJournalForUser(coreSharedPrefs.getUniqueUserIdentifier())
     }
+
+    override suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int): Int {
+        return assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        ) ?: 0
+    }
+
+    override suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int, assetId: Int): Int {
+        return assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            assetId = assetId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        ) ?: 0
+    }
+
 }

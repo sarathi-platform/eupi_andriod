@@ -20,4 +20,6 @@ interface IAssetJournalRepository {
     ): SaveAssetJournalEventDto
 
     suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity>
+    suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int): Int
+    suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int, assetId: Int): Int
 }

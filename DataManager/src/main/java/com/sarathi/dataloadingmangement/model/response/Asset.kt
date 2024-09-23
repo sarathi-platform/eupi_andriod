@@ -9,5 +9,6 @@ data class Asset(
     @SerializedName("image") var image: String? = null,
     @SerializedName("type") var type: String? = null,
     @SerializedName("value") var value: Double? = null,
+    @SerializedName("validation") var validation: Validation? = null,
     @SerializedName("languages") var languages: ArrayList<LanguageReference> = arrayListOf()
 )

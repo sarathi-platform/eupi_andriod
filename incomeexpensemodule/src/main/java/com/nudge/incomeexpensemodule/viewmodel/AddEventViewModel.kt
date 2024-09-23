@@ -14,6 +14,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAsse
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.LivelihoodEventValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
@@ -23,6 +24,7 @@ import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapp
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.ProductAssetUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -39,7 +41,8 @@ class AddEventViewModel @Inject constructor(
     private val fetchProductUseCase: FetchProductUseCase,
     private val saveLivelihoodEventUseCase: SaveLivelihoodEventUseCase,
     private val fetchSavedEventUseCase: FetchSavedEventUseCase,
-    private val writeLivelihoodEventUseCase: WriteLivelihoodEventUseCase
+    private val writeLivelihoodEventUseCase: WriteLivelihoodEventUseCase,
+    private val validationUseCase: LivelihoodEventValidationUseCase
 ) : BaseViewModel() {
 
     val showDeleteDialog = mutableStateOf(false)
@@ -57,6 +60,7 @@ class AddEventViewModel @Inject constructor(
     val livelihoodProductDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodProductDropdownValue
 
     private var eventList: List<LivelihoodEventUiModel> = ArrayList<LivelihoodEventUiModel>()
+    private var assetTypeList: List<ProductAssetUiModel> = ArrayList<ProductAssetUiModel>()
     var questionVisibilityMap = mutableStateMapOf<LivelihoodEventDataCaptureTypeEnum, Boolean>()
 
     var eventType: String = ""
@@ -123,11 +127,11 @@ class AddEventViewModel @Inject constructor(
             _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
 
 
-            validateForm()
+            validateForm(subjectId)
         }
     }
 
-    fun onLivelihoodSelect(livelihoodId: Int) {
+    fun onLivelihoodSelect(livelihoodId: Int, subjectId: Int) {
         resetForm()
         ioViewModelScope {
             selectedLivelihoodId.value = livelihoodId
@@ -136,16 +140,24 @@ class AddEventViewModel @Inject constructor(
             _livelihoodProductDropdownValue.clear()
             fetEventValues()
             fetchAssestProductValues()
-            validateForm()
+            validateForm(subjectId)
         }
     }
 
     private suspend fun fetchAssestProductValues() {
+        assetTypeList = fetchAssetUseCase.invoke(
+            selectedLivelihoodId.value,
+            selectedAssetTypeId.value
+        )
         _livelihoodAssetDropdownValue.addAll(
-            fetchAssetUseCase.invoke(
-                selectedLivelihoodId.value,
-                selectedAssetTypeId.value
-            )
+            assetTypeList.map {
+                ValuesDto(
+                    it.id,
+                    it.name,
+                    it.id == selectedAssetTypeId.value,
+                    originalName = it.originalName
+                )
+            }
         )
         _livelihoodProductDropdownValue.addAll(
             fetchProductUseCase.invoke(
@@ -187,7 +199,7 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
-    fun onEventSelected(selectedValue: ValuesDto) {
+    fun onEventSelected(selectedValue: ValuesDto, subjectId: Int) {
         resetForm()
         eventType = eventList.find { it.id == selectedValue.id }?.eventType ?: BLANK_STRING
 
@@ -208,7 +220,7 @@ class AddEventViewModel @Inject constructor(
                 questionVisibilityMap[it] = false
             }
         }
-        validateForm()
+        validateForm(subjectId)
         ioViewModelScope {
             fetchAssestProductValues()
         }
@@ -272,9 +284,10 @@ class AddEventViewModel @Inject constructor(
         return particulars
     }
 
-    fun validateForm() {
+    fun validateForm(subjectId: Int) {
 
         isSubmitButtonEnable.value = checkValidData()
+        validationExpressionEvalutor(subjectId)
 
 
     }
@@ -329,7 +342,39 @@ class AddEventViewModel @Inject constructor(
     }
 
 
+    fun validationExpressionEvalutor(subjectId: Int) {
+        ioViewModelScope {
+            val validationExpression =
+                eventList.find { it.id == selectedEventId.value }?.validations?.expression
+
+            validationUseCase.invoke(
+                validationExpression,
+                selectedLivelihoodId.value,
+                selectedEventId.value,
+                subjectId,
+                selectedAssetTypeId.value
+            )
+
+        }
+    }
+
+    fun validateAssetTypeExpression(subjectId: Int) {
+        ioViewModelScope {
+            val validationExpression =
+                assetTypeList.find { it.id == selectedAssetTypeId.value }?.validation?.expression
+            validationUseCase.invoke(
+                validationExpression,
+                selectedLivelihoodId.value,
+                selectedEventId.value,
+                subjectId,
+                selectedAssetTypeId.value
+            )
+
+        }
+    }
+
 }
+
 
 
 

@@ -95,4 +95,35 @@ interface AssetJournalDao {
         userId: String
     ): List<AssetJournalEntity>
 
+    @Query(
+        "select sum(assetCount)  \n" +
+                " from asset_journal_table\n" +
+                " where userId = :userId \n" +
+                " and subjectId = :subjectId \n" +
+                " and referenceId = :livelihoodId\n" +
+                " and status=1 " +
+                " group by assetId, referenceId"
+    )
+    suspend fun getAssetCountForLivelihood(
+        subjectId: Int,
+        livelihoodId: Int,
+        userId: String,
+    ): Int?
+
+    @Query(
+        "select sum(assetCount)  \n" +
+                " from asset_journal_table\n" +
+                " where userId = :userId \n" +
+                " and subjectId = :subjectId \n" +
+                " and referenceId = :livelihoodId\n" +
+                "and assetId=:assetId " +
+                " and status=1 " +
+                " group by assetId, referenceId"
+    )
+    suspend fun getAssetCountForLivelihood(
+        subjectId: Int,
+        livelihoodId: Int,
+        assetId: Int,
+        userId: String,
+    ): Int?
 }
