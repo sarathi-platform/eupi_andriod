@@ -182,8 +182,8 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.LastMonthTab -> "Last month"
         SubTabs.Last3MonthsTab -> "Last 3 months"
         SubTabs.CustomDateRange -> "Custom Date"
-        SubTabs.Step1 -> "Step 1"
-        SubTabs.Step2 -> "Step 2"
+        SubTabs.Step1 -> stringResource(R.string.reopen_activity_step_1)
+        SubTabs.Step2 -> stringResource(R.string.reopen_activity_step_2)
         else -> {
             BLANK_STRING
         }

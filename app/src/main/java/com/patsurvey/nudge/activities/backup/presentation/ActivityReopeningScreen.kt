@@ -81,7 +81,7 @@ fun ActivityReopeningScreen(
 
 
     ToolBarWithMenuComponent(
-        title = "Mark Activity Inprogress",
+        title = stringResource(R.string.mark_activity_in_progress),
         modifier = modifier,
         onBackIconClick = { navController.navigateUp() },
         showSettingsButton = false,
@@ -179,7 +179,7 @@ private fun Step1TabContent(viewModel: ActivityReopeningScreenViewModel) {
             Text(text = buildAnnotatedString {
 
                 withStyle(defaultTextSpanStyle.copy(color = blueDark)) {
-                    append("Select Mission")
+                    append(stringResource(R.string.select_mission))
                 }
 
                 withStyle(defaultTextSpanStyle.copy(color = redOffline)) {
@@ -257,9 +257,9 @@ private fun Step2TabContent(viewModel: ActivityReopeningScreenViewModel) {
                     withStyle(defaultTextSpanStyle.copy(color = blueDark)) {
                         val missionName =
                             viewModel.missionList.value.find { it.missionId == viewModel.selectedMissionId.value }?.description.value()
-                        append("Select Activity")
+                        append(stringResource(R.string.select_activity_for))
                         if (!TextUtils.isEmpty(missionName))
-                            append(" for $missionName")
+                            append(missionName)
                     }
 
                     withStyle(defaultTextSpanStyle.copy(color = redOffline)) {
@@ -280,7 +280,7 @@ private fun Step2TabContent(viewModel: ActivityReopeningScreenViewModel) {
                 Step2Card(
                     item = ActivityUiModel.getDummyActivityUiModel(
                         viewModel.selectedMissionId.value,
-                        "Select All"
+                        stringResource(R.string.select_all)
                     ),
                     viewModel = viewModel,
                     isSelectAllEnabled = viewModel.isSelectAllEnabled.value
@@ -317,7 +317,11 @@ private fun Step2Card(
             .fillMaxWidth()
             .border(
                 dimen_1_dp,
-                color = getActivityCardBorderColor(item, viewModel),
+                color = getActivityCardBorderColor(
+                    item,
+                    viewModel,
+                    item.description.equals(stringResource(R.string.select_all), true)
+                ),
                 shape = RoundedCornerShape(
                     roundedCornerRadiusDefault
                 )
@@ -364,9 +368,10 @@ fun getMissionCardBorderColor(
 
 fun getActivityCardBorderColor(
     item: ActivityUiModel,
-    viewModel: ActivityReopeningScreenViewModel
+    viewModel: ActivityReopeningScreenViewModel,
+    isSelectAll: Boolean
 ): Color {
-    return if (item.description.equals("Select All", true)) {
+    return if (isSelectAll) {
         if (viewModel.isSelectAllEnabled.value) blueDark else greyBorderColor
     } else {
         if (viewModel.selectedActivityIdList.contains(item.activityId)) blueDark else greyBorderColor
