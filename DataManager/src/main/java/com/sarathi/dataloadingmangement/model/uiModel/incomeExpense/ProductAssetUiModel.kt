@@ -9,5 +9,5 @@ data class ProductAssetUiModel(
     val originalName: String,
     val id: Int,
     @TypeConverters(ValidationConverter::class)
-    val validation: Validation
+    val validation: Validation?
 )
