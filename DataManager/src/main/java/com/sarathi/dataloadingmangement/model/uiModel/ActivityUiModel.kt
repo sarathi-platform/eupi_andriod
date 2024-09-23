@@ -16,7 +16,7 @@ data class ActivityUiModel(
 
     companion object {
 
-        fun getDummyActivityUiModel(missionId: Int, description: String): ActivityUiModel {
+        fun getSelectAllActivityUiModel(missionId: Int, description: String): ActivityUiModel {
             return ActivityUiModel(
                 missionId = missionId,
                 activityId = -1,

@@ -278,7 +278,7 @@ private fun Step2TabContent(viewModel: ActivityReopeningScreenViewModel) {
         if (viewModel.activityList.value.isNotEmpty()) {
             item {
                 Step2Card(
-                    item = ActivityUiModel.getDummyActivityUiModel(
+                    item = ActivityUiModel.getSelectAllActivityUiModel(
                         viewModel.selectedMissionId.value,
                         stringResource(R.string.select_all)
                     ),
