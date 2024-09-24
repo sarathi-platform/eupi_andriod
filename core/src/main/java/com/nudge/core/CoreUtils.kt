@@ -1260,4 +1260,14 @@ fun convertFileIntoMultipart(
 fun getImagePathFromPicture() = CoreAppDetails.getApplicationContext().applicationContext
     .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath ?: BLANK_STRING
 
+fun isDataEvent(event: Events): Boolean {
+    return !event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) && event.name != FORM_C_TOPIC && event.name != FORM_D_TOPIC
+}
+
+fun isImageEvent(event: Events): Boolean {
+    return event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC
+}
+
 
