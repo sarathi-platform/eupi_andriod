@@ -9,7 +9,6 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.entities.Events
 import com.nudge.core.isDataEvent
 import com.nudge.core.isImageEvent
-import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.domain.use_case.SyncHistoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -24,11 +23,10 @@ class SyncHistoryViewModel @Inject constructor(
         val eventList: State<List<Events>> get() = _eventList
         val _countDataList = mutableStateOf<List<Pair<String, Int>>>(emptyList())
         val countDataList: State<List<Pair<String, Int>>> get() = _countDataList
-
-        val _countImageList = mutableStateOf<List<Pair<String, Int>>>(emptyList())
-        val countImageList: State<List<Pair<String, Int>>> get() = _countImageList
         val eventStatusImageUIList = arrayListOf<Pair<String, Int>>()
         val eventStatusDataUIList = arrayListOf<Pair<String, Int>>()
+        val totalDataEventCount = mutableStateOf(0)
+        val totalImageEventCount = mutableStateOf(0)
 
         fun getAllEventStatusForUser(context: Context) {
                 CoroutineScope(CoreDispatchers.ioDispatcher).launch {
@@ -37,17 +35,18 @@ class SyncHistoryViewModel @Inject constructor(
 
                         val allDataEvents = eventList.value.filter { isDataEvent(it) }
                         val allImageEvents = eventList.value.filter { isImageEvent(it) }
-
+                        totalDataEventCount.value = allDataEvents.size
+                        totalImageEventCount.value = allImageEvents.size
                         eventStatusDataUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
+                                        EventSyncStatus.OPEN.eventSyncStatus,
                                         allDataEvents.filter { it.status == EventSyncStatus.OPEN.eventSyncStatus }.size
                                 )
                         )
 
                         eventStatusDataUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
+                                        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                                         allDataEvents.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }.size
                                 )
                         )
@@ -55,61 +54,68 @@ class SyncHistoryViewModel @Inject constructor(
 
                         eventStatusDataUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
+                                        EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus,
                                         allDataEvents.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }.size
                                 )
                         )
 
                         eventStatusDataUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
+                                        EventSyncStatus.CONSUMER_FAILED.eventSyncStatus,
                                         allDataEvents.filter { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }.size
                                 )
                         )
 
                         eventStatusDataUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
+                                        EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus,
                                         allDataEvents.filter { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }.size
                                 )
                         )
 
-                        eventStatusDataUIList.add(
+                        eventStatusImageUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
-                                        allDataEvents.filter { it.status == EventSyncStatus.OPEN.eventSyncStatus }.size
+                                        EventSyncStatus.OPEN.eventSyncStatus,
+                                        allImageEvents.filter { it.status == EventSyncStatus.OPEN.eventSyncStatus }.size
                                 )
                         )
 
-                        eventStatusDataUIList.add(
+                        eventStatusImageUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
-                                        allDataEvents.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }.size
+                                        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                                        allImageEvents.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }.size
                                 )
                         )
 
 
-                        eventStatusDataUIList.add(
+                        eventStatusImageUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
-                                        allDataEvents.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }.size
+                                        EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus,
+                                        allImageEvents.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }.size
                                 )
                         )
 
-                        eventStatusDataUIList.add(
+                        eventStatusImageUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
-                                        allDataEvents.filter { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }.size
+                                        EventSyncStatus.CONSUMER_FAILED.eventSyncStatus,
+                                        allImageEvents.filter { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }.size
                                 )
                         )
 
-                        eventStatusDataUIList.add(
+                        eventStatusImageUIList.add(
                                 Pair(
-                                        context.getString(R.string.producer_success_event_count),
-                                        allDataEvents.filter { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }.size
+                                        EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus,
+                                        allImageEvents.filter { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }.size
+                                )
+                        )
+                        eventStatusImageUIList.add(
+                                Pair(
+                                        EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus,
+                                        allImageEvents.filter { it.status == EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus }.size
                                 )
                         )
 
+                        _countDataList.value = eventStatusDataUIList
                 }
         }
 }

@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -37,7 +35,6 @@ import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewMode
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SyncHistoryScreen(
     navController: NavController,
@@ -51,7 +48,7 @@ fun SyncHistoryScreen(
         viewModel.getAllEventStatusForUser(context)
     }
     ToolbarWithMenuComponent(
-        title = stringResource(id = if (syncType == SYNC_DATA) R.string.sync_data_history else R.string.sync_image_history),
+        title = stringResource(id = R.string.sync_data_history),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = false,
         onBackIconClick = { navController.popBackStack() },
@@ -75,14 +72,19 @@ private fun CreateEventUIList(
     viewModel: SyncHistoryViewModel,
     screenHeight: Dp
 ) {
-//    Log.d("TAG", "CreateEventUIList: ${viewModel.countList.value.json()} ")
-//    if (viewModel.countList.value.isNotEmpty()) {
-////        EventTypeHistoryCard(
-////            eventDateTime = "16 Jan 2021, 08:12:00",
-////            eventStatusList = viewModel.countList.value,
-////            onCardClick = {}
-////        )
-//    } else {
+    if (viewModel.countDataList.value.isNotEmpty()) {
+        EventTypeHistoryCard(
+            cardTitle = stringResource(R.string.sync_data),
+            totalEvents = viewModel.totalDataEventCount.value,
+            eventStatusList = viewModel.eventStatusDataUIList
+        ) { }
+
+        EventTypeHistoryCard(
+            cardTitle = stringResource(R.string.sync_images),
+            totalEvents = viewModel.totalImageEventCount.value,
+            eventStatusList = viewModel.eventStatusImageUIList
+        ) { }
+    } else {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -111,8 +113,8 @@ private fun CreateEventUIList(
                 )
             }
         }
+    }
 
-//    }
 }
 
 @Preview(showBackground = true)
