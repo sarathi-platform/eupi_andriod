@@ -63,6 +63,8 @@ class SyncHomeViewModel @Inject constructor(
     var syncWorkerInfoState: WorkInfo.State? = null
     val imageEventProgress = mutableFloatStateOf(0f)
     val dataEventProgress = mutableFloatStateOf(0f)
+    val dataProducerEventProgress = mutableFloatStateOf(0f)
+    val imageProducerEventProgress = mutableFloatStateOf(0f)
     val totalImageEventCount = mutableIntStateOf(0)
     val isDataPBVisible = mutableStateOf(false)
     val isImagePBVisible = mutableStateOf(false)
