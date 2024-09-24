@@ -338,6 +338,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         order = this.order ?: -1,
         summary = this.questionSummary,
         values = emptyList(),
+        optionTag = this.attributeTag ?: 0,
         contentEntities = this.contentList ?: listOf(),
         conditional = this.conditional
     )
@@ -368,6 +369,10 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
     val optionsItemEntityList = mutableListOf<OptionItemEntity>()
 
     this.options?.forEach { optionsItem ->
+        var tag = this.attributeTag ?: 0
+        if (tag == 0) {
+            tag = optionsItem?.tag ?: 0
+        }
         val optionItemEntity = OptionItemEntity(
             id = 0,
             optionId = optionsItem?.optionId,
@@ -385,7 +390,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             order = this.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
-            optionTag = this.attributeTag ?: 0,
+            optionTag = tag,
             contentEntities = optionsItem?.contentList ?: listOf(),
             conditions = optionsItem?.conditions
         )
@@ -886,7 +891,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
         when (type) {
             QuestionType.RadioButton -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, optionDesc = it.display ?: BLANK_STRING, tag = it.optionTag, selectedValue = it.selectedValue)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
@@ -939,7 +944,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
             QuestionType.Grid -> {
 
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, optionDesc = it.display ?: BLANK_STRING, tag = it.optionTag, selectedValue = it.selectedValue)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
 
             }

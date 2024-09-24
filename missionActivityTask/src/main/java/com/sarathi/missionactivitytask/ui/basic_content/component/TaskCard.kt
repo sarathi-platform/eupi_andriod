@@ -77,6 +77,7 @@ fun TaskCard(
     subtitle4: TaskCardModel?,
     subtitle5: TaskCardModel?,
     subtitle6: TaskCardModel?,
+    subtitle7: TaskCardModel?,
     primaryButtonText: TaskCardModel?,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     secondaryButtonText: TaskCardModel?,
@@ -208,6 +209,8 @@ fun TaskCard(
                 SubContainerView(subtitle3)
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
                 SubContainerView(subtitle5, isNumberFormattingRequired = true)
+                SubContainerView(subtitle7, isNumberFormattingRequired = false)
+
             }
 
             if (taskStatus?.value == StatusEnum.NOT_STARTED.name) {
@@ -308,7 +311,7 @@ fun TaskCard(
     }
 
 @Composable
-private fun SubContainerView(
+fun SubContainerView(
     taskCard: TaskCardModel?,
     isNumberFormattingRequired: Boolean = false
 ) {
@@ -352,7 +355,7 @@ fun ImageViewer(uri: Uri) {
 }
 
 @Composable
-private fun PrimarySecondaryButtonView(
+fun PrimarySecondaryButtonView(
     modifier: Modifier = Modifier,
     secondaryButtonText: String,
     taskMarkedNotAvailable: MutableState<Boolean>,

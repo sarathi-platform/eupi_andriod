@@ -117,6 +117,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.MAX_IMAGE_FOR_FORM_C_OR_D
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
@@ -388,7 +389,7 @@ fun FormPictureScreen(
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
                                                         NudgeLogger.d("FormPictureScreen", "Permission previously granted")
 
-                                                        if (formPictureScreenViewModel.formCPageList.value.size < 5) {
+                                                        if (formPictureScreenViewModel.formCPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                                 Pair(FORM_C, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
@@ -404,7 +405,7 @@ fun FormPictureScreen(
                                                         } else {
                                                             showToast(
                                                                 localContext,
-                                                                "Max 5 Pages can be captured"
+                                                                "Max $MAX_IMAGE_FOR_FORM_C_OR_D Pages can be captured"
                                                             )
                                                         }
 
@@ -445,7 +446,7 @@ fun FormPictureScreen(
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
                                                         NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
 
-                                                        if (formPictureScreenViewModel.formCPageList.value.size < 5) {
+                                                        if (formPictureScreenViewModel.formCPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                             formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_C, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
                                                                 FORM_C,
@@ -460,7 +461,7 @@ fun FormPictureScreen(
                                                         } else {
                                                             showToast(
                                                                 localContext,
-                                                                "Max 5 Pages can be captured"
+                                                                "Max $MAX_IMAGE_FOR_FORM_C_OR_D Pages can be captured"
                                                             )
                                                         }
                                                     }
@@ -629,7 +630,7 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.formCPageList.value = mutableListOf()
                                             formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
                                             formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
-                                            for (i in 1..5) {
+                                            for (i in 1..MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                 formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
                                             }
                                         }
@@ -697,7 +698,7 @@ fun FormPictureScreen(
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
                                                         NudgeLogger.d("FormPictureScreen", "Permission previously granted")
 
-                                                        if (formPictureScreenViewModel.formDPageList.value.size < 5) {
+                                                        if (formPictureScreenViewModel.formDPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                                 Pair(FORM_D, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
@@ -713,7 +714,7 @@ fun FormPictureScreen(
                                                         } else {
                                                             showToast(
                                                                 localContext,
-                                                                "Max 5 Pages can be captured"
+                                                                "Max $MAX_IMAGE_FOR_FORM_C_OR_D Pages can be captured"
                                                             )
                                                         }
                                                     }
@@ -753,7 +754,7 @@ fun FormPictureScreen(
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
                                                         NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
 
-                                                        if (formPictureScreenViewModel.formDPageList.value.size < 5) {
+                                                        if (formPictureScreenViewModel.formDPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                             formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_D, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
                                                                 FORM_D,
@@ -817,7 +818,7 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.formDPageList.value = mutableListOf()
                                             formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
                                             formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
-                                            for (i in 1..5) {
+                                            for (i in 1..MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                 formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
                                             }
                                         }
@@ -1353,9 +1354,12 @@ fun ExpandableFormPictureCard(
                     }
                 }
             }
-            if (pageList.size >= 4) {
+            if (pageList.size >= MAX_IMAGE_FOR_FORM_C_OR_D - 1) {
                 Text(
-                    text = stringResource(id = R.string.if_more_than_5_pages_please_uload_last_page),
+                    text = stringResource(
+                        id = R.string.if_more_than_5_pages_please_uload_last_page,
+                        MAX_IMAGE_FOR_FORM_C_OR_D
+                    ),
                     style = smallTextStyle,
                     color = textColorDark80,
                     modifier = Modifier.padding(horizontal = 26.dp)

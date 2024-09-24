@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -1302,9 +1303,22 @@ fun IncrementDecrementView(modifier: Modifier,
             }
         )
     }
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(5.dp)) {
+
+    LaunchedEffect(key1 = Unit) {
+        if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && questionFlag.equals(
+                QUESTION_FLAG_RATIO,
+                true
+            ) && (currentValue <= 1)
+        ) {
+            onValueChange(ONE)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+    ) {
         Row(
             modifier = Modifier
                 .padding(vertical = 6.dp),

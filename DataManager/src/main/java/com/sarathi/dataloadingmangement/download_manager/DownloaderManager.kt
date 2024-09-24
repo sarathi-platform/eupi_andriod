@@ -10,6 +10,7 @@ import android.webkit.MimeTypeMap
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import com.nudge.core.utils.CoreLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,12 +19,16 @@ import java.io.File
 import javax.inject.Inject
 
 class DownloaderManager @Inject constructor(@ApplicationContext private val context: Context) {
+
+    private val TAG = DownloadManager::class.java.simpleName
+
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
     val currentDownloadingId = mutableStateOf(-1)
     val _downloadStatus = MutableStateFlow<Map<Int, DownloadStatus>>(mapOf())
     val initialPosition = mutableStateMapOf<Int, Float>()
 
     fun downloadFile(url: String, title: String): Long {
+        CoreLogger.d(tag = TAG, msg = "downloadFile -> url: $url , title: $title")
         val request = DownloadManager.Request(url.toUri())
             .setTitle(title)
             .setDescription("Downloading")
@@ -126,6 +131,7 @@ class DownloaderManager @Inject constructor(@ApplicationContext private val cont
 
     fun downloadItem(url: String) {
         if (!isFilePathExists(url)) {
+            CoreLogger.d(tag = TAG, msg = "downloadItem -> isFilePathExists = false")
             downloadFile(
                 url,
                 "Downloading files..."

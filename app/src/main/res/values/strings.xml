@@ -96,7 +96,7 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Paras / Tolas Added</string>
-    <string name="tola_conirmation_text_plural">Total %1$s new Paras / Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_plural">Total %1$s new Para / Tolas have \nbeen added successfully</string>
     <string name="tola_conirmation_text_singular">Total %1$s new Para / Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
@@ -105,8 +105,8 @@
     <string name="review_wealth_ranking">Review Wealth Ranking</string>
 
     <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
-    <string name="didi_conirmation_text_plural">%1$s new Didis have \nbeen added successfully</string>
-    <string name="didi_conirmation_text_singular">%1$s new Didi has \nbeen added successfully</string>
+    <string name="didi_conirmation_text_plural">%1$s Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_singular">%1$s Didi has \nbeen added successfully</string>
 
     <string name="transect_walk_sub_text_plural">%1$s Paras / Tolas Done</string>
 
@@ -233,6 +233,7 @@
     <string name="rejected">Rejected</string>
 
     <string name="shg_question_text">Is Didi part of SHG?</string>
+    <string name="shg_member_text">1. SHG member</string>
     <string name="confirm_text">Confirm</string>
     <string name="finish">Finish</string>
 
@@ -429,7 +430,7 @@
     <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
     <string name="delete_and_retake">Delete &amp; Retake</string>
-    <string name="if_more_than_5_pages_please_uload_last_page">If more than 5 pages, please upload the last page.</string>
+    <string name="if_more_than_5_pages_please_uload_last_page">If more than %1$d pages, please upload the last page.</string>
     <plurals name="vo_endorsement_completed">
         <item quantity="one">CLF Endorsement \nCompleted</item>
         <item quantity="other">VO Endorsement \nCompleted</item>
@@ -497,6 +498,7 @@
     <string name="total_pat_attempted_string">Total PAT Attempted</string>
     <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
     <string name="able_bodied_women_flag_text">Are there able-bodied \nwomen in the family?</string>
+    <string name="able_bodied_women_text">2. Able-bodied women</string>
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="score_comparison_section_1_text">Section 1</string>
 
@@ -539,4 +541,5 @@
 
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="mission">Missions</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
 </resources>

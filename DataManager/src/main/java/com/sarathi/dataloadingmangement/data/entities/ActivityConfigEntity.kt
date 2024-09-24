@@ -29,7 +29,7 @@ data class ActivityConfigEntity(
     var missionId: Int,
     var icon: String,
 
-) {
+    ) {
     companion object {
         fun getActivityConfigEntity(
             activityId: Int,
@@ -40,8 +40,8 @@ data class ActivityConfigEntity(
             return ActivityConfigEntity(
                 id = 0,
                 userId = uniqueUserIdentifier,
-                activityType = activityConfig.activityType,
-                activityTypeId = activityConfig.activityTypeId,
+                activityType = activityConfig.activityType ?: BLANK_STRING,
+                activityTypeId = activityConfig.activityTypeId ?: -1,
                 surveyId = activityConfig.surveyId,
                 doer = activityConfig.doer,
                 reviewer = activityConfig.reviewer,
