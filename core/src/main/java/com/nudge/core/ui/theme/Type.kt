@@ -6,6 +6,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 import com.nudge.core.R
 
@@ -164,4 +165,10 @@ val h6 = TextStyle(
 
 val h6Bold = h6.copy(
     fontWeight = FontWeight.SemiBold
+)
+val smallTextStyleWithUnderline = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp,
+    textDecoration = TextDecoration.Underline
 )

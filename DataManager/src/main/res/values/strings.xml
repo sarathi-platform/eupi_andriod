@@ -104,5 +104,11 @@
     <string name="event_date">Event Date:</string>
     <string name="edit_history">Edit history</string>
     <string name="increase_in_number">Increase in Number</string>
+    <string name="data_send_to_server">Data sent to Server</string>
+    <string name="images_send_to_server">Images sent to Server</string>
+    <string name="data_processes_by_server">Data processed by Server</string>
+    <string name="images_processes_by_server">Images processed by Server</string>
+    <string name="sync_view_progress" translatable="false">View Progress</string>
+    <string name="synced" translatable="false">Synced</string>
 
 </resources>
