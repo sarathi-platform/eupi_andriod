@@ -8,5 +8,6 @@ interface IUserDetailRepository {
     suspend fun fetchUseDetailFromNetwork(userViewApiRequest: String): ApiResponseModel<UserDetailsResponse>
     suspend fun fetchLanguage(): List<LanguageEntity>
     fun saveUserDetails(userDetailsResponse: UserDetailsResponse)
+    fun getUSerMobileNo(): String
 
 }

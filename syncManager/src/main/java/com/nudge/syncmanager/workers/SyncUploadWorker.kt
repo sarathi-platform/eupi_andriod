@@ -9,6 +9,7 @@ import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.Core
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
@@ -47,6 +48,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
+
 @HiltWorker
 class SyncUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
@@ -59,7 +61,6 @@ class SyncUploadWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
-
         return try {
             val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             batchLimit = syncManagerUseCase.syncAPIUseCase.getSyncBatchSize()
@@ -86,6 +87,10 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: totalPendingEventCount: $totalPendingEventCount"
             )
+
+            var map = HashMap<String, String>()
+            map["SyncEventCount"] = totalPendingEventCount.toString()
+            Core.trackEvent(map, "Sync")
             DeviceBandwidthSampler.getInstance().startSampling()
 
             while (totalPendingEventCount > 0) {

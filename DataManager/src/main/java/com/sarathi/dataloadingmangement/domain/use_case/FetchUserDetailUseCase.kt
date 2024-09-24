@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.Core
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.ApiException
@@ -17,6 +19,11 @@ class FetchUserDetailUseCase @Inject constructor(
                 repository.fetchUseDetailFromNetwork(userViewApiRequest = userViewApiRequest)
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { userApiResponse ->
+                    Core.setUserForMixPanel(
+                        name = userApiResponse.name ?: BLANK_STRING,
+                        userType = userApiResponse.typeName ?: BLANK_STRING,
+                        mobileNo = repository.getUSerMobileNo()
+                    )
                     repository.saveUserDetails(userApiResponse)
                 }
                 return true

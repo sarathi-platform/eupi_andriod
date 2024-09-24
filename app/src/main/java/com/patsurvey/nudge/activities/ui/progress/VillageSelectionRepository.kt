@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.Core
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.json
@@ -4078,6 +4079,11 @@ class VillageSelectionRepository @Inject constructor(
         } else {
             prefRepo.setIsUserBPC(false)
         }
+        Core.setUserForMixPanel(
+            prefRepo.getMobileNumber(),
+            name = userDetailsModel.name,
+            userType = userDetailsModel.typeName
+        )
 
     }
 
