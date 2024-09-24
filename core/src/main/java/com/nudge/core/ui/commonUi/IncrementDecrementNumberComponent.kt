@@ -56,6 +56,7 @@ fun IncrementDecrementNumberComponent(
     isMinusClickble: Boolean = true,
     isPlusClickble: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
+    isValidCount: (selectedValue: String) -> Boolean = { true },
     isMandatory: Boolean = false,
 ) {
     val currentCount: MutableState<String> = remember(currentValue) {
@@ -157,8 +158,7 @@ fun IncrementDecrementNumberComponent(
                         onValueChange = {
                             if (isEditAllowed) {
                                 if (onlyNumberField(it)) {
-                                    var isValidCount = true
-                                    if (isValidCount) {
+                                    if (isValidCount.invoke(it)) {
                                         val currentIt = if (it.isEmpty()) 0 else it.toInt()
                                         if (currentIt <= MAXIMUM_RANGE) {
                                             currentCount.value = it.ifEmpty { "" }

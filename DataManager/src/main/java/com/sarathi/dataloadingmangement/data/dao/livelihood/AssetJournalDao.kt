@@ -101,13 +101,15 @@ interface AssetJournalDao {
                 " where userId = :userId \n" +
                 " and subjectId = :subjectId \n" +
                 " and referenceId = :livelihoodId\n" +
-                " and status=1 " +
+                " and status=1 \n " +
+                "and transactionFlow = :transactionFlow" +
                 " group by assetId, referenceId"
     )
     suspend fun getAssetCountForLivelihood(
         subjectId: Int,
         livelihoodId: Int,
         userId: String,
+        transactionFlow: String
     ): Int?
 
     @Query(
@@ -118,6 +120,7 @@ interface AssetJournalDao {
                 " and referenceId = :livelihoodId\n" +
                 "and assetId=:assetId " +
                 " and status=1 " +
+                "and transactionFlow = :transactionFlow" +
                 " group by assetId, referenceId"
     )
     suspend fun getAssetCountForLivelihood(
@@ -125,5 +128,6 @@ interface AssetJournalDao {
         livelihoodId: Int,
         assetId: Int,
         userId: String,
+        transactionFlow: String
     ): Int?
 }

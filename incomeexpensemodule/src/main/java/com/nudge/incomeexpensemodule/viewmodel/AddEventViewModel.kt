@@ -9,6 +9,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.replaceLastWord
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
@@ -292,9 +293,14 @@ class AddEventViewModel @Inject constructor(
     }
 
     fun validateForm(subjectId: Int, validationExpressionEvalutorResult: (Boolean) -> Unit) {
-        isSubmitButtonEnable.value = checkValidData()
+        // isSubmitButtonEnable.value = checkValidData()
         validationExpressionEvalutor(subjectId) { evalutorResult ->
             validationExpressionEvalutorResult(evalutorResult)
+            if (evalutorResult) {
+                isSubmitButtonEnable.value = checkValidData()
+            } else {
+                isSubmitButtonEnable.value = false
+            }
         }
     }
 
@@ -302,9 +308,14 @@ class AddEventViewModel @Inject constructor(
         subjectId: Int,
         validationAssetExpressionEvalutorResult: (Boolean) -> Unit
     ) {
-        isSubmitButtonEnable.value = checkValidData()
+        // isSubmitButtonEnable.value = checkValidData()
         validateAssetTypeExpression(subjectId) { evalutorResult ->
             validationAssetExpressionEvalutorResult(evalutorResult)
+            if (evalutorResult) {
+                isSubmitButtonEnable.value = checkValidData()
+            } else {
+                isSubmitButtonEnable.value = false
+            }
         }
     }
 
@@ -379,7 +390,7 @@ class AddEventViewModel @Inject constructor(
 
     fun validationAssetCountAndMessage(
         subjectId: Int,
-        validationEvalutorAssetCountAndMessage: (Int, String) -> Unit
+        validationEvalutorAssetCountAndMessage: (Boolean, Int, String) -> Unit
     ) {
         ioViewModelScope {
             val validationExpression =
@@ -388,6 +399,13 @@ class AddEventViewModel @Inject constructor(
                 eventList.find { it.id == selectedEventId.value }?.validations?.message
 
             validationEvalutorAssetCountAndMessage(
+                validationUseCase.invoke(
+                    validationExpression,
+                    selectedLivelihoodId.value,
+                    selectedEventId.value,
+                    subjectId,
+                    selectedAssetTypeId.value
+                ),
                 validationUseCase.getAssetCount(
                     validationExpression,
                     selectedLivelihoodId.value,
@@ -395,15 +413,16 @@ class AddEventViewModel @Inject constructor(
                     subjectId,
                     selectedAssetTypeId.value
                 ),
-                "$validationMsg ${
-                    validationUseCase.getAssetCount(
+                replaceLastWord(
+                    sentence = validationMsg ?: BLANK_STRING,
+                    newWord = validationUseCase.getAssetCount(
                         validationExpression,
                         selectedLivelihoodId.value,
                         selectedEventId.value,
                         subjectId,
                         selectedAssetTypeId.value
-                    )
-                }"
+                    ).toString()
+                )
             )
 
         }

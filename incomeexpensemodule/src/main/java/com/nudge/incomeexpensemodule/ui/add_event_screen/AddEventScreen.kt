@@ -244,7 +244,16 @@ fun AddEventScreen(
 
 
                 item {
-                    val isEventAlertMsgVisible = remember { mutableStateOf(false) }
+                    var isEventAlertMsgVisible = remember {
+                        mutableStateOf(
+                            Pair<Boolean, String?>(
+                                false,
+                                BLANK_STRING
+                            )
+                        )
+                    }
+
+                    // val isEventAlertMsgVisible = remember { mutableStateOf(false) }
                     Column {
                         TypeDropDownComponent(
                             isEditAllowed = !showDeleteButton,
@@ -255,17 +264,24 @@ fun AddEventScreen(
                             onAnswerSelection = { selectedValue ->
                                 viewModel.onEventSelected(selectedValue, subjectId)
                                 viewModel.validateForm(subjectId = subjectId) { validationExpressionEvalutorResult ->
-                                    isEventAlertMsgVisible.value =
-                                        validationExpressionEvalutorResult
+                                    if (!validationExpressionEvalutorResult) {
+                                        viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
+                                            isEventAlertMsgVisible.value = Pair(true, msg)
+                                        }
+                                    } else {
+                                        isEventAlertMsgVisible.value = Pair(false, BLANK_STRING)
+                                    }
 
                                 }
                             })
-                        if (isEventAlertMsgVisible.value) {
-                            Text(
-                                modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                text = "Adult Female count is 0",
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
-                            )
+                        if (isEventAlertMsgVisible.value.first) {
+                            isEventAlertMsgVisible.value.second?.let {
+                                Text(
+                                    modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                    text = it,
+                                    style = quesOptionTextStyle.copy(color = eventTextColor)
+                                )
+                            }
                         }
                     }
 
@@ -321,17 +337,33 @@ fun AddEventScreen(
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
                             title = stringResource(R.string.increase_in_number),
-                            isEditAllowed = true,
+                            isEditAllowed = viewModel.selectedAssetTypeId.value != -1,
                             isPlusClickble = isPlusBtnClickAllowed.value,
                             currentValue = viewModel.assetCount.value,
-                            onAnswerSelection = { inputValue ->
-                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { assetCount, msg ->
-                                    if (inputValue.toInt() <= assetCount) {
-                                        isPlusBtnClickAllowed.value = true
-                                        viewModel.assetCount.value = inputValue
+                            isValidCount = { selectedValue ->
+                                var result = true
+                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
+                                    result = if (!isValidation || assetCount > 0) {
+                                        selectedValue.toInt() < assetCount
                                     } else {
-                                        isPlusBtnClickAllowed.value = false
+                                        true
                                     }
+                                }
+                                result
+                            },
+                            onAnswerSelection = { inputValue ->
+                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
+                                    if (!isValidation || assetCount > 0) {
+                                        if (inputValue.toInt() < assetCount) {
+                                            isPlusBtnClickAllowed.value = true
+                                            viewModel.assetCount.value = inputValue
+                                        } else {
+                                            isPlusBtnClickAllowed.value = false
+                                        }
+                                    } else {
+                                        viewModel.assetCount.value = inputValue
+                                    }
+
 
                                 }
                                 viewModel.validateForm(

@@ -4,6 +4,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJournalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import javax.inject.Inject
@@ -96,20 +97,38 @@ class AssetJournalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int): Int {
-        return assetJournalDao.getAssetCountForLivelihood(
+        val inflowValue = assetJournalDao.getAssetCountForLivelihood(
             livelihoodId = livelihoodId,
             subjectId = subjectId,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         ) ?: 0
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        ) ?: 0
+
+        return inflowValue - outFlowValue
     }
 
     override suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int, assetId: Int): Int {
-        return assetJournalDao.getAssetCountForLivelihood(
+        val inflowValue = assetJournalDao.getAssetCountForLivelihood(
             livelihoodId = livelihoodId,
             subjectId = subjectId,
             assetId = assetId,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         ) ?: 0
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            assetId = assetId,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        ) ?: 0
+        return inflowValue - outFlowValue
     }
 
 }
