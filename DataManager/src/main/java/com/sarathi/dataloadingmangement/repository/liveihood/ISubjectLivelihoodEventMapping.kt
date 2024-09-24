@@ -37,4 +37,5 @@ interface ISubjectLivelihoodEventMapping {
         transactionId: String
     ): List<SubjectLivelihoodEventMappingEntity>?
 
+    suspend fun getLivelihoodEventForUser(): List<SubjectLivelihoodEventMappingEntity>
 }

@@ -285,7 +285,7 @@ class DataSummaryScreenViewModel @Inject constructor(
                 fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
                     subjectId = subjectId
                 )?.let {
-                    if (it.isNotEmpty()) {
+                    if (it.isEmpty()) {
                         areEventsNotAvailableForSubject.value = false
                     }
                 }
@@ -307,6 +307,11 @@ class DataSummaryScreenViewModel @Inject constructor(
                     _subjectLivelihoodEventSummaryUiModelList.clear()
                     _subjectLivelihoodEventSummaryUiModelList.addAll(
                         fetchSubjectLivelihoodEventMappingUseCase.invoke(subjectId)
+                    )
+                    _subjectLivelihoodEventSummaryUiModelList.addAll(
+                        fetchSubjectLivelihoodEventMappingUseCase.getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(
+                            subjectId
+                        )
                     )
 
                     _livelihoodModel.clear()

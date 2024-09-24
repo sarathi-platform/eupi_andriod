@@ -35,7 +35,7 @@ fun StrikethroughText(
     text: String,
     textStyle: TextStyle = defaultTextStyle,
     strikethroughColor: Color = GreyLight,
-    isStrikethrough: Boolean = true
+    isStrikethrough: Boolean = false
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 

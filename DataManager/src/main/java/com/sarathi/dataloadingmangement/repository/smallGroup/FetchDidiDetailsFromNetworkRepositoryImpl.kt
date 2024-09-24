@@ -3,7 +3,6 @@ package com.sarathi.dataloadingmangement.repository.smallGroup
 import android.util.Log
 import com.nudge.core.SUCCESS
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
@@ -40,20 +39,21 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     override suspend fun saveDidiDetailsToDb(beneficiaryApiResponse: BeneficiaryApiResponse) {
         val uniqueUserId = corePrefRepo.getUniqueUserIdentifier()
-//            "Ultra Poor change maker (UPCM)_6789543210"
 
+        subjectEntityDao.deleteSubjectsForUsers(uniqueUserId)
+
+        val subjectList = ArrayList<SubjectEntity>()
         beneficiaryApiResponse.didiList.forEach {
-            val isSubjectPresentInDb =
-                subjectEntityDao.isSubjectPresentInDb(uniqueUserId, it.didiId.value())
-            if (isSubjectPresentInDb == 0)
-                subjectEntityDao.addSubject(
-                    SubjectEntity.getSubjectEntityFromResponse(
-                        it,
-                        uniqueUserId
-                    )
+            subjectList.add(
+                SubjectEntity.getSubjectEntityFromResponse(
+                    it,
+                    uniqueUserId
                 )
-
+            )
         }
+
+        subjectEntityDao.addAllSubjects(subjectList)
+
     }
 
 

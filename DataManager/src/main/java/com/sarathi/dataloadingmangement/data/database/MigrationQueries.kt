@@ -119,5 +119,8 @@ object MigrationQueries {
             " taskId INTEGER NOT NULL,\n" +
             "sectionStatus TEXT\n" +
             ")"
+
+    val ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME =
+        "ALTER TABLE $LIVELIHOOD_LANGUAGE_TABLE_NAME RENAME COLUMN livelihoodId TO referenceId\n"
 }
 

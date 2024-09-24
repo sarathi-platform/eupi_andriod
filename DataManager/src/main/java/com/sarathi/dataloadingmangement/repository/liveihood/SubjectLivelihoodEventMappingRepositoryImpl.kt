@@ -56,7 +56,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
                 coreSharedPrefs.getUniqueUserIdentifier(),
                 eventData,
-                currentDateTime = currentDateTime
+                createdDate = currentDateTime,
+                modifiedDate = System.currentTimeMillis()
             )
         if (subjectLivelihoodEventMappingDao.isLivelihoodEventMappingExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -108,7 +109,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             assetTypeValue = eventData.assetTypeValue,
             productValue = eventData.productValue,
             createdDate = currentDateTime,
-            modifiedDate = modifiedDateTime
+            modifiedDate = modifiedDateTime,
+            status = 1
         )
     }
 
@@ -119,6 +121,12 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
     override suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(transactionId: String): List<SubjectLivelihoodEventMappingEntity>? {
         return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
             userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = transactionId
+        )
+    }
+
+    override suspend fun getLivelihoodEventForUser(): List<SubjectLivelihoodEventMappingEntity> {
+        return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingForUser(
+            coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 

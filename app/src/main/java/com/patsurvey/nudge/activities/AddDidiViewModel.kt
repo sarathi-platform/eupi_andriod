@@ -534,8 +534,8 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             val ifDidiExist = addDidiRepository.getDidiExist(
-                didiName.value, houseNumber.value,
-                dadaName.value, selectedTola.value.first, villageId
+                didiName.value.trim(), houseNumber.value.trim(),
+                dadaName.value.trim(), selectedTola.value.first, villageId
             )
             val selectedTolaFromDb = addDidiRepository.fetchSingleTola(selectedTola.value.first)
             if (ifDidiExist == 0) {
@@ -609,8 +609,8 @@ class AddDidiViewModel @Inject constructor(
             filterDidiList
 
             val ifDidiExist = addDidiRepository.getDidiExist(
-                didiName.value, houseNumber.value,
-                dadaName.value, selectedTola.value.first, villageId
+                didiName.value.trim(), houseNumber.value.trim(),
+                dadaName.value.trim(), selectedTola.value.first, villageId
             )
             if (ifDidiExist == 0) {
                 val updatedDidi = DidiEntity(

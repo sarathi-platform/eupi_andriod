@@ -76,6 +76,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProd
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
@@ -192,7 +193,8 @@ class DataLoadingModule {
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .addMigrations(
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -838,6 +840,7 @@ class DataLoadingModule {
         formEventWriterUseCase: FormEventWriterUseCase,
         documentEventWriterUseCase: DocumentEventWriterUseCase,
         attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
+        regenerateLivelihoodEventUseCase: RegenerateLivelihoodEventUseCase,
         coreSharedPrefs: CoreSharedPrefs
 
     ): RegenerateGrantEventUsecase {
@@ -849,7 +852,9 @@ class DataLoadingModule {
             formEventWriterUseCase = formEventWriterUseCase,
             documentEventWriterUseCase = documentEventWriterUseCase,
             attendanceEventWriterUseCase = attendanceEventWriterUseCase,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            regenerateLivelihoodEventUseCase = regenerateLivelihoodEventUseCase
+
         )
     }
 
@@ -1394,6 +1399,22 @@ class DataLoadingModule {
     ): FetchSubjectLivelihoodEventHistoryRepository {
         return FetchSubjectLivelihoodEventHistoryRepositoryImpl(
             coreSharedPrefs, subjectLivelihoodEventMappingDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegenerateLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): RegenerateLivelihoodEventUseCase {
+        return RegenerateLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
+            eventWriterRepository = eventWriterRepositoryImpl
         )
     }
 }

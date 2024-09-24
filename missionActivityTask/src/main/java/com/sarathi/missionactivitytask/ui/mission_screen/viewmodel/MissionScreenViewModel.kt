@@ -123,7 +123,8 @@ class MissionScreenViewModel @Inject constructor(
         updateMissionStatusList.forEach {
             matStatusEventWriterUseCase.updateMissionStatus(
                 surveyName = BLANK_STRING,
-                missionEntity = it
+                missionEntity = it,
+                isFromRegenerate = false
             )
         }
     }

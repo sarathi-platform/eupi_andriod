@@ -17,7 +17,8 @@ interface IMoneyJournalRepository {
     )
     suspend fun saveAndUpdateMoneyJournalTransaction(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        createdData: Long
     )
 
     suspend fun deleteMoneyJournalTransaction(transactionId: String, subjectId: Int)
@@ -32,4 +33,7 @@ interface IMoneyJournalRepository {
         currentDateTime: Long,
         modifiedDateTime: Long
     ): SaveMoneyJournalEventDto
+
+    suspend fun getMoneyJournalEventForUser(): List<MoneyJournalEntity>
+
 }
