@@ -405,7 +405,11 @@ class SyncUploadWorker @AssistedInject constructor(
                                 imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
                                 isBlobUploaded = isExceptionOccur,
                                 blobUrl = if (isExceptionOccur) BLANK_STRING else message,
-                                errorMessage = if (isExceptionOccur) message else BLANK_STRING
+                                errorMessage = if (isExceptionOccur) message else BLANK_STRING,
+                                eventId = imageDetail.eventId ?: BLANK_STRING,
+                                requestId = BLANK_STRING,
+                                status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
+                                else EventSyncStatus.OPEN.eventSyncStatus
                             )
                         }
                     } catch (e: Exception) {

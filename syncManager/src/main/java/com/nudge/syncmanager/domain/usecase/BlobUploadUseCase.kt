@@ -26,7 +26,10 @@ class BlobUploadUseCase(
         blobUrl: String,
         isBlobUploaded: Boolean,
         imageStatusId: String,
-        errorMessage: String
+        errorMessage: String,
+        status: String,
+        eventId: String,
+        requestId: String
     ) {
         CoreLogger.d(
             context = CoreAppDetails.getApplicationContext().applicationContext,
@@ -37,7 +40,10 @@ class BlobUploadUseCase(
             isBlobUploaded = isBlobUploaded,
             imageStatusId = imageStatusId,
             blobUrl = blobUrl,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            status = status,
+            eventId = eventId,
+            requestId = requestId
         )
     }
 }
