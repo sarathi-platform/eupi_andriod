@@ -1402,4 +1402,14 @@ class DataLoadingModule {
             coreSharedPrefs, subjectLivelihoodEventMappingDao
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsManager() {
+        val mixpanel = MixpanelAPI.getInstance(this, "YOUR_MIXPANEL_TOKEN")
+        val mixpanelProvider = MixpanelAnalyticsProvider(mixpanel)
+        analyticsManager.setAnalyticsProvider(mixpanelProvider)
+
+    }
+
 }
