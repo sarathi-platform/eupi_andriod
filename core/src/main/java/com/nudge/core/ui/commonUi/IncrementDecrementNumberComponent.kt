@@ -53,6 +53,8 @@ fun IncrementDecrementNumberComponent(
     title: String = BLANK_STRING,
     currentValue: String? = "0",
     isEditAllowed: Boolean = true,
+    isMinusClickble: Boolean = true,
+    isPlusClickble: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
     isMandatory: Boolean = false,
 ) {
@@ -116,7 +118,7 @@ fun IncrementDecrementNumberComponent(
                                     )
                                 )
                                 .clickable {
-                                    if (isEditAllowed) {
+                                    if (isEditAllowed && isMinusClickble) {
                                         currentCount.value = incDecValue(0, currentCount.value)
                                         onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                                     } else {
@@ -226,7 +228,7 @@ fun IncrementDecrementNumberComponent(
                             )
                         )
                         .clickable {
-                            if (isEditAllowed) {
+                            if (isEditAllowed && isPlusClickble) {
                                 currentCount.value = incDecValue(1, currentCount.value)
                                 onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                             } else {

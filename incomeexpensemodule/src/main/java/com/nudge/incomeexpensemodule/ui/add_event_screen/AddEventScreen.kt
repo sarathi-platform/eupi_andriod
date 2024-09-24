@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,8 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,7 +39,10 @@ import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
 import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_72_dp
+import com.nudge.core.ui.theme.eventTextColor
+import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -154,7 +160,11 @@ fun AddEventScreen(
                         onDateSelected = { date ->
                             viewModel.selectedDate.value = date.value().getDate()
                             viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm(subjectId)
+                            viewModel.validateForm(
+                                subjectId,
+                                validationExpressionEvalutorResult = { evalutorResult ->
+
+                                })
                         }
                     )
                 }
@@ -169,7 +179,11 @@ fun AddEventScreen(
 
                         onAnswerSelection = { selectedValue ->
                             viewModel.onLivelihoodSelect(selectedValue.id, subjectId)
-                            viewModel.validateForm(subjectId)
+                            viewModel.validateForm(
+                                subjectId,
+                                validationExpressionEvalutorResult = { evalutorResult ->
+
+                                })
 
                         }
                     )
@@ -230,17 +244,31 @@ fun AddEventScreen(
 
 
                 item {
-                    TypeDropDownComponent(
-                        isEditAllowed = !showDeleteButton,
-                        title = stringResource(R.string.events),
-                        isMandatory = true,
-                        selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
-                        sources = viewModel.livelihoodEventDropdownValue,
-                        onAnswerSelection = { selectedValue ->
-                            viewModel.onEventSelected(selectedValue, subjectId)
-                            viewModel.validateForm(subjectId)
+                    val isEventAlertMsgVisible = remember { mutableStateOf(false) }
+                    Column {
+                        TypeDropDownComponent(
+                            isEditAllowed = !showDeleteButton,
+                            title = stringResource(R.string.events),
+                            isMandatory = true,
+                            selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
+                            sources = viewModel.livelihoodEventDropdownValue,
+                            onAnswerSelection = { selectedValue ->
+                                viewModel.onEventSelected(selectedValue, subjectId)
+                                viewModel.validateForm(subjectId = subjectId) { validationExpressionEvalutorResult ->
+                                    isEventAlertMsgVisible.value =
+                                        validationExpressionEvalutorResult
+
+                                }
+                            })
+                        if (isEventAlertMsgVisible.value) {
+                            Text(
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                text = "Adult Female count is 0",
+                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                            )
                         }
-                    )
+                    }
+
 
                 }
 
@@ -254,7 +282,11 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
-                                viewModel.validateForm(subjectId)
+                                viewModel.validateAssetForm(
+                                    subjectId,
+                                    validationAssetExpressionEvalutorResult = { evalutorResult ->
+
+                                    })
                             }
                         )
                     }
@@ -271,7 +303,11 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
-                                viewModel.validateForm(subjectId)
+                                viewModel.validateForm(
+                                    subjectId,
+                                    validationExpressionEvalutorResult = { evalutorResult ->
+
+                                    })
 
                             }
                         )
@@ -280,14 +316,29 @@ fun AddEventScreen(
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
                     item {
+                        val isEditAllowed = remember { mutableStateOf(true) }
+                        val isPlusBtnClickAllowed = remember { mutableStateOf(true) }
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
                             title = stringResource(R.string.increase_in_number),
                             isEditAllowed = true,
+                            isPlusClickble = isPlusBtnClickAllowed.value,
                             currentValue = viewModel.assetCount.value,
                             onAnswerSelection = { inputValue ->
-                                viewModel.assetCount.value = inputValue
-                                viewModel.validateForm(subjectId)
+                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { assetCount, msg ->
+                                    if (inputValue.toInt() <= assetCount) {
+                                        isPlusBtnClickAllowed.value = true
+                                        viewModel.assetCount.value = inputValue
+                                    } else {
+                                        isPlusBtnClickAllowed.value = false
+                                    }
+
+                                }
+                                viewModel.validateForm(
+                                    subjectId,
+                                    validationExpressionEvalutorResult = { evalutorResult ->
+
+                                    })
                             }
                         )
                     }
@@ -305,7 +356,11 @@ fun AddEventScreen(
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
-                            viewModel.validateForm(subjectId)
+                            viewModel.validateForm(
+                                subjectId,
+                                validationExpressionEvalutorResult = { evalutorResult ->
+
+                                })
 
                         }
                     }
