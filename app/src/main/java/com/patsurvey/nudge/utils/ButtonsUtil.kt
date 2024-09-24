@@ -339,6 +339,64 @@ fun ButtonPositive(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(if (isActive) blueDark else languageItemActiveBg)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+
+            ) {
+                if (isActive) onClick()
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buttonTitle,
+                color = if (isActive) white else greyBorder,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Positive Button",
+                    tint = if (isActive) iconTintColor else greyBorder,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, left = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ButtonPositiveWithDebounce(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    isArrowRequired: Boolean = true,
+    isActive: Boolean = true,
+    textColor: Color = Color.White,
+    iconTintColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(if (isActive) blueDark else languageItemActiveBg)
             .debounceClickable {
                 if (isActive) onClick()
             }
@@ -375,6 +433,7 @@ fun ButtonPositive(
         }
     }
 }
+
 
 @Composable
 fun ButtonArrowNegative(
