@@ -4,6 +4,6 @@ interface ImageUploader {
     suspend fun uploadImage(
         filePath: String,
         fileName: String,
-        onUploadImageResponse: (String, Boolean) -> Unit
+        onUploadImageResponse: suspend (String, Boolean) -> Unit
     )
 }

@@ -15,7 +15,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
     override suspend fun uploadImage(
         filePath: String,
         fileName: String,
-        onUploadImageResponse: (String, Boolean) -> Unit
+        onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         return uploadImageInBlobStorage(
             filePath,
@@ -25,16 +25,16 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
             })
     }
 
-    private fun uploadImageInBlobStorage(
+    private suspend fun uploadImageInBlobStorage(
         photoPath: String,
         fileName: String,
-        onUploadImageResponse: (String, Boolean) -> Unit
+        onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         try {
 
 
         val storageConnectionString =
-            "DefaultEndpointsProtocol=https;AccountName=nonprodnudgestorage;AccountKey=fa9RdKxroa4DtvAnosimlz4nmeVLSrEEZGq4Kav7YIUT4RunMF692CguZwC2V2dEP67t+xM4EVeM+AStWlCLEA==;EndpointSuffix=core.windows.net"
+            "DefaultEndpointsProtocol=https;AccountName=nonprodnudge;AccountKey=3TD4BEkgfrFQT0tZJbWVMHKPRBG8Ab1IVvzOQfdayJURDPbpQqghCg1kDY0k1MY/ax8Ouaul4yay+AStA7o/Yg==;EndpointSuffix=core.windows.net"
         val account = CloudStorageAccount
             .parse(storageConnectionString)
 

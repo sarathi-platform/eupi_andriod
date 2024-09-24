@@ -1,6 +1,7 @@
 package com.nudge.core.datamodel
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class SyncImageMetadataRequest(
     @field:SerializedName("depends_on")
@@ -16,5 +17,8 @@ data class Data(
     val filePath: String? = null,
 
     @field:SerializedName("content_type")
-    val contentType: String? = null
+    val contentType: String? = null,
+
+    @field:SerializedName("blobUrl")
+    val blobUrl: String? = BLANK_STRING
 )
