@@ -12,7 +12,10 @@ interface SyncBlobRepository {
         blobUrl: String,
         isBlobUploaded: Boolean,
         imageStatusId: String,
-        errorMessage: String
+        errorMessage: String,
+        status: String,
+        eventId: String,
+        requestId: String
     )
 
 }
