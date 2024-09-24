@@ -37,7 +37,6 @@ import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.grayColor
-import com.nudge.core.ui.theme.green
 import com.nudge.core.ui.theme.smallTextStyleWithUnderline
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -153,7 +152,7 @@ fun EventTypeCard(
                         start.linkTo(parent.start)
                     },
                 backgroundColor = syncProgressBg,
-                color = green,
+                color = greenDark,
             )
 
             Text(
@@ -225,7 +224,7 @@ fun EventTypeCard(
                 producerProgress?.let { producerPer ->
                     if (producerPer > 0) {
                         Text(
-                            text = stringResource(R.string.sync_view_process),
+                            text = stringResource(R.string.sync_view_progress),
                             style = smallTextStyleWithUnderline,
                             color = blueDark,
                             textAlign = TextAlign.Start,
