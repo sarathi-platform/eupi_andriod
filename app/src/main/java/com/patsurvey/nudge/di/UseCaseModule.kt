@@ -22,6 +22,7 @@ import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
 import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
 import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
 import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
+import com.nudge.syncmanager.domain.usecase.SyncAnalyticsEventUseCase
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
@@ -259,7 +260,10 @@ object UseCaseModule {
             addUpdateEventUseCase = AddUpdateEventUseCase(repository),
             syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
             getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
-            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository)
+            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
+            syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase()
         )
     }
+
+
 }

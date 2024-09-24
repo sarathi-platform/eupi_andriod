@@ -9,7 +9,6 @@ import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.Core
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
@@ -21,6 +20,7 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
+import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
@@ -53,7 +53,8 @@ import java.io.File
 class SyncUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
-    private val syncManagerUseCase: SyncManagerUseCase
+    private val syncManagerUseCase: SyncManagerUseCase,
+    private val analyticsManager: AnalyticsManager
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG = SyncUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
@@ -90,7 +91,6 @@ class SyncUploadWorker @AssistedInject constructor(
 
             var map = HashMap<String, String>()
             map["SyncEventCount"] = totalPendingEventCount.toString()
-            Core.trackEvent(map, "Sync")
             DeviceBandwidthSampler.getInstance().startSampling()
 
             while (totalPendingEventCount > 0) {
