@@ -98,4 +98,8 @@
     <string name="search_didi">आब\'खौ नागिर</string>
     <string name="search_by_small_groups">फिसा हानजाजों नागिर</string>
     <string name="total_didis">गासै आब\'मोन - %1$s</string>
+    <string name="data_send_to_server">Data sent to Server</string>
+    <string name="images_send_to_server">Images sent to Server</string>
+    <string name="data_processes_by_server">Data processed by Server</string>
+    <string name="images_processes_by_server">Images processed by Server</string>
 </resources>

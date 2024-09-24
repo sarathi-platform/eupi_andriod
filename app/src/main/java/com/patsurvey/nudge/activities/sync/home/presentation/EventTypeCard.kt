@@ -225,7 +225,7 @@ fun EventTypeCard(
                 producerProgress?.let { producerPer ->
                     if (producerPer > 0) {
                         Text(
-                            text = "View Process",
+                            text = stringResource(R.string.sync_view_process),
                             style = smallTextStyleWithUnderline,
                             color = blueDark,
                             textAlign = TextAlign.Start,
@@ -241,7 +241,7 @@ fun EventTypeCard(
                 progress?.let { per ->
                     if (per >= 1) {
                         Text(
-                            text = "Synced",
+                            text = stringResource(R.string.synced),
                             style = smallTextStyle,
                             color = greenDark,
                             textAlign = TextAlign.End,
