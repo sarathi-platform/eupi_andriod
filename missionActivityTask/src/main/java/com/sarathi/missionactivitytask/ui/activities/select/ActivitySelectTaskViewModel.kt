@@ -31,6 +31,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -82,6 +83,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO).launch {
+            delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             expandedIds.clear()
@@ -93,13 +95,13 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                     sectionId = activityConfigUiModel?.sectionId ?: 0,
                     grantID = 0,
                     referenceId = BLANK_STRING
-                ).firstOrNull()
-                list?.let {
+                )
+                list.firstOrNull()?.let {
                     it.subjectId = task.subjectId
                     _questionUiModel.value[task.taskId ?: -1] = it
                 }
             }
-            
+
             withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

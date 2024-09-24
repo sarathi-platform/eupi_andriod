@@ -428,7 +428,7 @@ fun CardContent(
             .fillMaxWidth()
     ) {
         if (expanded) {
-            RadioTypeOptionsUI(
+            OptionsUI(
                 questionUiModel = questionUiModel,
                 taskMarkedNotAvailable = taskMarkedNotAvailable,
                 onAnswerSelection = onAnswerSelection,
@@ -490,9 +490,8 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
 }
 
 
-
 @Composable
-private fun RadioTypeOptionsUI(
+private fun OptionsUI(
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
     onAnswerSelection: (optionValue: String, optionId: Int) -> Unit,
@@ -508,50 +507,50 @@ private fun RadioTypeOptionsUI(
             .heightIn(dimen_100_dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
     ) {
         questionUiModel?.options?.sortedBy { it.order }?.let {
-            when (questionUiModel.type) {
-                QuestionType.RadioButton.name,
-                QuestionType.Toggle.name -> {
+            when (questionUiModel.type.toLowerCase()) {
+                QuestionType.RadioButton.name.toLowerCase(),
+                QuestionType.Toggle.name.toLowerCase() -> {
                     val selectedValue =
                         it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
-                        RadioOptionTypeComponent(
-                            optionItemEntityState = it,
-                            isTaskMarkedNotAvailable = taskMarkedNotAvailable,
-                            selectedValue = selectedValue,
-                            isActivityCompleted = isActivityCompleted
-                        ) { selectedIndex, optionValue, optionId ->
-                            questionUiModel.options?.let { options ->
-                                options.forEach {
-                                    it.isSelected = false
-                                    it.selectedValue = BLANK_STRING
-                                }
-                                options[selectedIndex].isSelected = true
-                                options[selectedIndex].selectedValue = optionValue
+                    RadioOptionTypeComponent(
+                        optionItemEntityState = it,
+                        isTaskMarkedNotAvailable = taskMarkedNotAvailable,
+                        selectedValue = selectedValue,
+                        isActivityCompleted = isActivityCompleted
+                    ) { selectedIndex, optionValue, optionId ->
+                        questionUiModel.options?.let { options ->
+                            options.forEach {
+                                it.isSelected = false
+                                it.selectedValue = BLANK_STRING
                             }
-                            onAnswerSelection(optionValue, optionId)
+                            options[selectedIndex].isSelected = true
+                            options[selectedIndex].selectedValue = optionValue
                         }
+                        onAnswerSelection(optionValue, optionId)
                     }
+                }
 
-                    QuestionType.MultiSelect.name -> {
-                        GridTypeComponent(
-                            questionDisplay = questionUiModel.questionDisplay,
-                            optionUiModelList = it,
-                            questionIndex = 0,
-                            areOptionsEnabled = !isActivityCompleted,
-                            maxCustomHeight = customGridHeight(it.size),
-                            isQuestionDisplay = false,
-                            showCardView = false,
-                            isTaskMarkedNotAvailable = taskMarkedNotAvailable,
-                            onAnswerSelection = { selectedOptionIndex, isSelected ->
-                                if (!isActivityCompleted) {
-                                    questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
-                                        isSelected
-                                    taskMarkedNotAvailable.value = false
-                                    onAnswerSelection(BLANK_STRING, selectedOptionIndex)
-                                }
+                QuestionType.MultiSelect.name.toLowerCase() -> {
+                    GridTypeComponent(
+                        questionDisplay = questionUiModel.questionDisplay,
+                        optionUiModelList = it,
+                        questionIndex = 0,
+                        areOptionsEnabled = !isActivityCompleted,
+                        maxCustomHeight = customGridHeight(it.size),
+                        isQuestionDisplay = false,
+                        showCardView = false,
+                        isTaskMarkedNotAvailable = taskMarkedNotAvailable,
+                        onAnswerSelection = { selectedOptionIndex, isSelected ->
+                            if (!isActivityCompleted) {
+                                questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
+                                    isSelected
+                                taskMarkedNotAvailable.value = false
+                                onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                            }
 
-                            }, questionDetailExpanded = {}
-                        )
-                    }
+                        }, questionDetailExpanded = {}
+                    )
+                }
                 }
 
             }
