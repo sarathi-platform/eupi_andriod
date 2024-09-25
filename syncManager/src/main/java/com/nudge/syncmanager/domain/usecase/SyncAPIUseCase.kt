@@ -8,7 +8,6 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
-import com.nudge.core.model.request.toImageEventRequest
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
@@ -26,14 +25,6 @@ class SyncAPIUseCase(
             it.toEventRequest()
         }
         return syncAPiRepository.syncProducerEventToServer(eventRequest)
-    }
-
-    suspend fun syncImageProducerEventToServer(
-        events: Events,
-        blobUrl: String
-    ): ApiResponseModel<List<SyncEventResponse>> {
-        val imageEventRequest = events.toImageEventRequest(blobUrl = blobUrl)
-        return syncAPiRepository.syncProducerEventToServer(listOf(imageEventRequest))
     }
 
     suspend fun syncImageWithEventToServer(
