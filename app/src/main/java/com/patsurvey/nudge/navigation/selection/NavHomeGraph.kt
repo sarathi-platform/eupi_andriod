@@ -14,6 +14,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.core.SYNC_DATA
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.MissionUiModel
 import com.nudge.incomeexpensemodule.navigation.IncomeExpenseNavigation
@@ -23,8 +24,8 @@ import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.navigationmanager.utils.NavigationParams
 import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -88,7 +89,6 @@ import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.SYNC_DATA
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.sarathi.missionactivitytask.navigation.MatNavigation
 import com.sarathi.smallgroupmodule.navigation.SmallGroupNavigation

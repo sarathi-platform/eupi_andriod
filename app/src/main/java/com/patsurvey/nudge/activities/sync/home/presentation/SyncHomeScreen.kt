@@ -48,11 +48,15 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
+import com.nudge.core.DATA_PRODUCER_STRING
+import com.nudge.core.DATA_STRING
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.FORM_C_TOPIC
-import com.nudge.core.FORM_D_TOPIC
+import com.nudge.core.IMAGE_PRODUCER_STRING
+import com.nudge.core.IMAGE_STRING
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.isDataEvent
+import com.nudge.core.isImageEvent
 import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
@@ -69,16 +73,11 @@ import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.utils.DATA_PRODUCER_STRING
-import com.patsurvey.nudge.utils.DATA_STRING
-import com.patsurvey.nudge.utils.IMAGE_PRODUCER_STRING
-import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -153,21 +152,17 @@ fun ObserveEventCounts(
         eventListLive.observe(lifeCycleOwner) { eventList ->
 
             val (totalDataCount, successDataCount) = eventList.filterAndCountEvents {
-                !it.name.lowercase(Locale.ENGLISH)
-                    .contains(IMAGE_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC
+                isDataEvent(it)
             }
             val (totalImageCount, successImageCount) = eventList.filterAndCountEvents {
-                it.name.lowercase(Locale.ENGLISH)
-                    .contains(IMAGE_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC
+                isImageEvent(it)
             }
             val (totalProducerDataCount, producerSuccessDataCount) = eventList.filterAndCountProducerEvents {
-                !it.name.lowercase(Locale.ENGLISH)
-                    .contains(IMAGE_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC
+                isDataEvent(it)
             }
 
             val (totalProducerImageCount, producerSuccessImageCount) = eventList.filterAndCountProducerEvents {
-                it.name.lowercase(Locale.ENGLISH)
-                    .contains(IMAGE_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC
+                isImageEvent(it)
             }
             viewModel.totalImageEventCount.intValue = totalImageCount
             //Producer Event Progress

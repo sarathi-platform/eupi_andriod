@@ -230,4 +230,7 @@ interface EventsDao {
 
     @Query("SELECT status,requestId AS requestId,COUNT(*) AS count from $EventsTable WHERE requestId =:requestId AND mobile_number =:mobileNumber  group by requestId, status")
     fun fetchEventStatusCount(requestId: String, mobileNumber: String): List<RequestIdCountModel>
+
+    @Query("SELECT * FROM $EventsTable WHERE mobile_number =:mobileNumber")
+    fun getAllEventsForUser(mobileNumber: String): List<Events>
 }
