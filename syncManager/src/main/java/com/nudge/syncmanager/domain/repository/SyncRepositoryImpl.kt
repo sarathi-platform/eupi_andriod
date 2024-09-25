@@ -321,6 +321,12 @@ class SyncRepositoryImpl(
 
     }
 
+    override suspend fun resetRetryCountForProducerFailed() {
+        eventDao.resetRetryCountForProducerFailed(
+            EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+            mobileNo = corePrefRepo.getMobileNo()
+        )
+    }
 
 
 }

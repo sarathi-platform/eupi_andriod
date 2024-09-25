@@ -55,6 +55,7 @@ import com.nudge.core.IMAGE_PRODUCER_STRING
 import com.nudge.core.IMAGE_STRING
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
 import com.nudge.core.isDataEvent
 import com.nudge.core.isImageEvent
 import com.nudge.core.isOnline
@@ -73,6 +74,7 @@ import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -175,12 +177,15 @@ fun ObserveEventCounts(
                 totalProducerImageCount, producerSuccessImageCount,
                 IMAGE_PRODUCER_STRING
             )
+
             //Consumer Event Progress
             viewModel.imageEventProgress.floatValue =
                 viewModel.calculateBarProgress(totalImageCount, successImageCount, IMAGE_STRING)
             viewModel.dataEventProgress.floatValue =
                 viewModel.calculateBarProgress(totalDataCount, successDataCount, DATA_STRING)
-
+            viewModel.isSyncImageActive.value =
+                !eventList.filter { it.status != EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }
+                    .any { it.name == EventName.ADD_DIDI.name || it.name == EventName.UPDATE_DIDI.name || it.name == EventName.DELETE_DIDI.name }
             CoreLogger.d(
                 CoreAppDetails.getApplicationContext().applicationContext,
                 "SyncHomeScreen",
@@ -219,6 +224,19 @@ fun SyncHomeContent(
             }
 
         })
+    if (viewModel.isSyncDataFirstDialog.value) {
+        showCustomDialog(
+            title = stringResource(R.string.alert_dialog_title_text),
+            message = stringResource(R.string.sync_data_first_message),
+            positiveButtonTitle = stringResource(id = R.string.ok_text),
+            onPositiveButtonClick = {
+                viewModel.isSyncDataFirstDialog.value = false
+            },
+            onNegativeButtonClick = {
+                viewModel.isSyncDataFirstDialog.value = false
+            }
+        )
+    }
     ToolbarWithMenuComponent(
         title = stringResource(id = R.string.sync_all_data),
         modifier = Modifier.fillMaxSize(),
@@ -394,6 +412,8 @@ fun List<Events>.filterAndCountProducerEvents(predicate: (Events) -> Boolean): P
     return totalCount to successCount
 }
 
+
+
 fun HandleWorkerState(
     uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context,
     scope: CoroutineScope
@@ -522,13 +542,19 @@ private fun SyncImageCard(
             isProgressBarVisible = viewModel.isImagePBVisible.value,
             isImageSyncCard = true,
             onSyncButtonClick = {
-                viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
-                CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
-                )
-                startSyncProcess(context, viewModel, isNetworkAvailable.value)
+                if (viewModel.isSyncImageActive.value) {
+
+                    viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
+                    CoreLogger.d(
+                        context,
+                        "SyncHomeScreen",
+                        "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
+                    )
+                    startSyncProcess(context, viewModel, isNetworkAvailable.value)
+                } else {
+                    viewModel.isSyncDataFirstDialog.value = true
+                    showCustomToast(context, context.getString(R.string.sync_data_first_message))
+                }
             },
             syncButtonTitle = stringResource(id = R.string.sync_only_images),
             isStatusVisible = viewModel.isImageStatusVisible.value,

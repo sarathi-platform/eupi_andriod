@@ -34,6 +34,7 @@ import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
 import com.nudge.core.getFileMimeType
 import com.nudge.core.getImagePathFromPicture
+import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.EventResult
@@ -56,7 +57,6 @@ class SyncUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
     private val syncManagerUseCase: SyncManagerUseCase,
-    private val analyticsManager: AnalyticsManager
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG = SyncUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
@@ -75,7 +75,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 "doWork Started: batchLimit: $batchLimit  retryCount: $retryCount"
             )
             if (runAttemptCount > 0) {
-                batchLimit = getBatchSize(connectionQuality)
+                batchLimit = getBatchSize(connectionQuality).batchSize
             }
 
             CoreLogger.d(
@@ -91,17 +91,14 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: totalPendingEventCount: $totalPendingEventCount"
             )
-
-
             syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncStartedAnalyticEvent(
                 selectedSyncType,
                 CommonEventParams(batchLimit, retryCount, connectionQuality.name),
                 totalPendingEventCount
             )
-
-            var map = HashMap<String, String>()
-            map["SyncEventCount"] = totalPendingEventCount.toString()
             DeviceBandwidthSampler.getInstance().startSampling()
+// Reset retry count to 0 if producer failed
+            syncManagerUseCase.addUpdateEventUseCase.resetFailedEventStatusForProducerFailed()
 
             while (totalPendingEventCount > 0) {
                 mPendingEventList =
@@ -129,7 +126,24 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
                 val dataEventList =
                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
+
+
+
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
+//                    val eventListAfterPayloadCheck =
+//                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
+//                    val apiResponse =
+//                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+//                            eventListAfterPayloadCheck
+//                        )
+//                    totalPendingEventCount =
+//                        handleAPIResponse(
+//                            apiResponse,
+//                            totalPendingEventCount,
+//                            selectedSyncType,
+//                            eventListAfterPayloadCheck
+//                        )
+
                     val apiResponse =
                         syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
                     totalPendingEventCount =
@@ -171,7 +185,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
                 DeviceBandwidthSampler.getInstance().stopSampling()
                 batchLimit =
-                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality)
+                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
                 CoreLogger.d(
                     applicationContext,
                     TAG,
@@ -197,6 +211,20 @@ class SyncUploadWorker @AssistedInject constructor(
         } finally {
             DeviceBandwidthSampler.getInstance().stopSampling()
         }
+    }
+
+    private fun getEventListAccordingToPayloadSize(
+        dataEventList: List<Events>,
+        connectionQuality: ConnectionQuality
+    ): List<Events> {
+        var eventPayloadSize = dataEventList.json().getSizeInLong() / 1000
+        var eventListAccordingToPayload: List<Events> = dataEventList
+        while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSize && eventListAccordingToPayload.size > 1) {
+            eventListAccordingToPayload =
+                eventListAccordingToPayload.subList(0, (eventListAccordingToPayload.size / 2))
+            eventPayloadSize = eventListAccordingToPayload.json().getSizeInLong() / 1000
+        }
+        return eventListAccordingToPayload
     }
 
 
