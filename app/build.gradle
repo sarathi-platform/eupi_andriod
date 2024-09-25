@@ -307,5 +307,4 @@ dependencies {
     implementation "androidx.compose.material:material:1.6.8"
     implementation("androidx.compose.material3:material3:1.1.2")
 
-
 }

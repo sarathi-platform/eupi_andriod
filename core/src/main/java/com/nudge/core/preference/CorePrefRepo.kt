@@ -63,4 +63,12 @@ interface CorePrefRepo {
     fun getSyncBatchSize(): Int
     fun getSyncRetryCount(): Int
 
+    fun saveBuildEnvironment(buildEnv: String)
+
+    fun getBuildEnvironment(): String
+
+    fun getMixPanelToken(): String
+
+    fun saveMixPanelToken(token: String)
+
 }

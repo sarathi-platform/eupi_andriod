@@ -4,5 +4,6 @@ data class SyncManagerUseCase(
     val addUpdateEventUseCase: AddUpdateEventUseCase,
     val getUserDetailsSyncUseCase: GetUserDetailsSyncRepoUseCase,
     val fetchEventsFromDBUseCase: FetchEventsFromDBUseCase,
-    val syncAPIUseCase: SyncAPIUseCase
+    val syncAPIUseCase: SyncAPIUseCase,
+    val syncAnalyticsEventUseCase: SyncAnalyticsEventUseCase
 )

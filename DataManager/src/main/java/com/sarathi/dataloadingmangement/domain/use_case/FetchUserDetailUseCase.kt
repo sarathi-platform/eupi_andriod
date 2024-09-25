@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.analytics.AnalyticsManager
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.ApiException
@@ -8,6 +10,7 @@ import javax.inject.Inject
 
 class FetchUserDetailUseCase @Inject constructor(
     private val repository: IUserDetailRepository,
+    private val analyticsManager: AnalyticsManager
 ) {
     suspend fun invoke(): Boolean {
         try {
@@ -17,6 +20,12 @@ class FetchUserDetailUseCase @Inject constructor(
                 repository.fetchUseDetailFromNetwork(userViewApiRequest = userViewApiRequest)
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { userApiResponse ->
+                    analyticsManager.setUserDetail(
+                        name = userApiResponse.name ?: BLANK_STRING,
+                        userType = userApiResponse.typeName ?: BLANK_STRING,
+                        distinctId = repository.getUSerMobileNo(),
+                        buildEnvironment = repository.getBuildEnv()
+                    )
                     repository.saveUserDetails(userApiResponse)
                 }
                 return true
