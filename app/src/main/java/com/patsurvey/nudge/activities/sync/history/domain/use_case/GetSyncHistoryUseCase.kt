@@ -12,5 +12,5 @@ class GetSyncHistoryUseCase @Inject constructor(
     suspend fun getAllEventsBetweenDates(startDate: String, endDate: String) =
         repository.getAllEventsBetweenDates(startDate = startDate, endDate = endDate)
 
-    suspend fun getAllEventStatusForUser() = repository.getAllEventStatusForUser()
+    suspend fun getAllEventsForUser() = repository.getAllEventsForUser()
 }
