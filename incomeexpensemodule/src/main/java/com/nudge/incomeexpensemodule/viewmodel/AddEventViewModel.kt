@@ -426,9 +426,7 @@ class AddEventViewModel @Inject constructor(
             )
 
         }
-    }
-
-
+        }
     fun validateAssetTypeExpression(
         subjectId: Int,
         validationAssetExpressionEvalutorResult: (Boolean) -> Unit

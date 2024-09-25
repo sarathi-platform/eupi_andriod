@@ -56,7 +56,7 @@ fun IncrementDecrementNumberComponent(
     isMinusClickble: Boolean = true,
     isPlusClickble: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
-    isValidCount: (selectedValue: String) -> Boolean = { true },
+    maxValue: Int = MAXIMUM_RANGE,
     isMandatory: Boolean = false,
 ) {
     val currentCount: MutableState<String> = remember(currentValue) {
@@ -119,9 +119,12 @@ fun IncrementDecrementNumberComponent(
                                     )
                                 )
                                 .clickable {
-                                    if (isEditAllowed && isMinusClickble) {
-                                        currentCount.value = incDecValue(0, currentCount.value)
-                                        onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                    if (isEditAllowed) {
+                                        val incrementValue = incDecValue(0, currentCount.value)
+                                        if (maxValue.toString() >= incrementValue) {
+                                            currentCount.value = incrementValue
+                                            onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                        }
                                     } else {
                                         showCustomToast(
                                             context,
@@ -158,13 +161,11 @@ fun IncrementDecrementNumberComponent(
                         onValueChange = {
                             if (isEditAllowed) {
                                 if (onlyNumberField(it)) {
-                                    if (isValidCount.invoke(it)) {
                                         val currentIt = if (it.isEmpty()) 0 else it.toInt()
-                                        if (currentIt <= MAXIMUM_RANGE) {
+                                    if (currentIt >= maxValue) {
                                             currentCount.value = it.ifEmpty { "" }
                                             onAnswerSelection(it)
                                         }
-                                    }
                                 }
                             } else {
                                 showCustomToast(
@@ -229,8 +230,13 @@ fun IncrementDecrementNumberComponent(
                         )
                         .clickable {
                             if (isEditAllowed && isPlusClickble) {
-                                currentCount.value = incDecValue(1, currentCount.value)
-                                onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                val incrementValue = incDecValue(1, currentCount.value)
+                                if (maxValue.toString() >= incrementValue) {
+                                    currentCount.value = incrementValue
+                                    onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                }
+                                //  currentCount.value = incDecValue(1, currentCount.value)
+                                //  onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                             } else {
                                 showCustomToast(
                                     context,

@@ -29,6 +29,7 @@ import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
+import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
@@ -69,6 +70,7 @@ fun AddEventScreen(
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
+
     }
 
     val dropDownWithSearchState = remember(viewModel.livelihoodEventDropdownValue) {
@@ -332,40 +334,38 @@ fun AddEventScreen(
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
                     item {
+                        val maxValue = remember { mutableStateOf(MAXIMUM_RANGE) }
                         val isEditAllowed = remember { mutableStateOf(true) }
                         val isPlusBtnClickAllowed = remember { mutableStateOf(true) }
+                        if (viewModel.selectedEventId.value != -1) {
+                            viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
+                                if (!isValidation || assetCount > 0) {
+                                    maxValue.value = assetCount
+                                }
+                            }
+                        }
+
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
                             title = stringResource(R.string.increase_in_number),
                             isEditAllowed = viewModel.selectedAssetTypeId.value != -1,
                             isPlusClickble = isPlusBtnClickAllowed.value,
                             currentValue = viewModel.assetCount.value,
-                            isValidCount = { selectedValue ->
-                                var result = true
-                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
-                                    result = if (!isValidation || assetCount > 0) {
-                                        selectedValue.toInt() < assetCount
-                                    } else {
-                                        true
-                                    }
-                                }
-                                result
-                            },
+                            maxValue = maxValue.value,
                             onAnswerSelection = { inputValue ->
-                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
-                                    if (!isValidation || assetCount > 0) {
-                                        if (inputValue.toInt() < assetCount) {
-                                            isPlusBtnClickAllowed.value = true
-                                            viewModel.assetCount.value = inputValue
-                                        } else {
-                                            isPlusBtnClickAllowed.value = false
-                                        }
-                                    } else {
-                                        viewModel.assetCount.value = inputValue
-                                    }
-
-
-                                }
+                                viewModel.assetCount.value = inputValue
+//                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
+//                                    if (!isValidation || assetCount > 0) {
+//                                        if (!TextUtils.isEmpty(inputValue) && inputValue.toInt() <= assetCount) {
+//                                            isPlusBtnClickAllowed.value = true
+//                                            viewModel.assetCount.value = inputValue
+//                                        } else {
+//                                            isPlusBtnClickAllowed.value = false
+//                                        }
+//                                    } else {
+//                                        viewModel.assetCount.value = inputValue
+//                                    }
+//                                }
                                 viewModel.validateForm(
                                     subjectId,
                                     validationExpressionEvalutorResult = { evalutorResult ->
