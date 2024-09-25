@@ -24,3 +24,9 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     STACK_TRACE("stack_trace"),
 
 }
+
+data class CommonEventParams(
+    val batchLimit: Int,
+    val retryCount: Int,
+    val connectionQuality: String
+)

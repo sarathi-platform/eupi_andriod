@@ -150,5 +150,6 @@ const val IMAGE_PRODUCER_STRING = "image_producer"
 const val SYNC_IMAGE = "IMAGE"
 const val SYNC_DATA = "DATA"
 
+const val DEFAULT_BUILD_ENVIRONMENT = "UAT"
 const val PREF_BUILD_ENVIRONMENT = "pref_build_environment"
 const val PREF_MIX_PANEL_TOKEN = "pref_mix_panel_token"

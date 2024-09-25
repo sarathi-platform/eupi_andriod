@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
+import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
@@ -254,14 +255,17 @@ object UseCaseModule {
     @Singleton
     fun provideSyncManagerUseCase(
         repository: SyncRepository,
-        syncAPiRepository: SyncApiRepository
+        syncAPiRepository: SyncApiRepository,
+        analyticsManager: AnalyticsManager
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
             addUpdateEventUseCase = AddUpdateEventUseCase(repository),
             syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
             getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
             fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
-            syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase()
+            syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
+                analyticsManager = analyticsManager
+            )
         )
     }
 

@@ -3,6 +3,7 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
@@ -270,7 +271,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun getBuildEnvironment(): String {
-        return getPref(PREF_BUILD_ENVIRONMENT, "uat")
+        return getPref(PREF_BUILD_ENVIRONMENT, DEFAULT_BUILD_ENVIRONMENT)
     }
 
     override fun saveBuildEnvironment(buildEnv: String) {

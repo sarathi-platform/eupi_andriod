@@ -22,8 +22,7 @@ import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
 import com.nudge.core.analytics.AnalyticsManager
-import com.nudge.core.analytics.mixpanel.AnalyticsEvents
-import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
@@ -41,7 +40,6 @@ import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
-import com.nudge.core.value
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
@@ -95,17 +93,12 @@ class SyncUploadWorker @AssistedInject constructor(
             )
 
 
-            analyticsManager.trackEvent(
-                AnalyticsEvents.SYNC_STARTED.eventName, mapOf(
-                    AnalyticsEventsParam.SYNC_TYPE.eventParam to SyncType.getSyncTypeFromInt(
-                        selectedSyncType
-                    ),
-                    AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to batchLimit,
-                    AnalyticsEventsParam.RETRY_COUNT.eventParam to retryCount,
-                    AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality.name,
-                    AnalyticsEventsParam.TOTAL_PENDING_EVENT_COUNT.eventParam to totalPendingEventCount
-                )
+            syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncStartedAnalyticEvent(
+                selectedSyncType,
+                CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                totalPendingEventCount
             )
+
             var map = HashMap<String, String>()
             map["SyncEventCount"] = totalPendingEventCount.toString()
             DeviceBandwidthSampler.getInstance().startSampling()
@@ -119,7 +112,9 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
 
                 if (mPendingEventList.isEmpty()) {
-                    analyticsManager.sendSyncSuccessEvent(selectedSyncType)
+                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(
+                        selectedSyncType
+                    )
                     return Result.success(
                         workDataOf(
                             WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed"
@@ -190,7 +185,8 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: success totalPendingEventCount: $totalPendingEventCount"
             )
-            analyticsManager.sendSyncSuccessEvent(selectedSyncType)
+            syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(selectedSyncType)
+
             Result.success(
                 workDataOf(
                     WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
@@ -202,6 +198,7 @@ class SyncUploadWorker @AssistedInject constructor(
             DeviceBandwidthSampler.getInstance().stopSampling()
         }
     }
+
 
     private suspend fun SyncUploadWorker.handleAPIResponse(
         apiResponse: ApiResponseModel<List<SyncEventResponse>>,
@@ -284,19 +281,12 @@ class SyncUploadWorker @AssistedInject constructor(
         failureMessage: String = BLANK_STRING,
         selectedSyncType: Int
     ) {
-        val syncType = SyncType.getSyncTypeFromInt(selectedSyncType)
-        analyticsManager.trackEvent(
-            AnalyticsEvents.SYNC_API_FAILURE.eventName,
-            mapOf(
-                AnalyticsEventsParam.SYNC_TYPE.eventParam to syncType,
-                AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to batchLimit,
-                AnalyticsEventsParam.RETRY_COUNT.eventParam to retryCount,
-                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality.name,
-                AnalyticsEventsParam.API_FAILURE_TYPE.eventParam to failureType,
-                AnalyticsEventsParam.API_FAILURE_ERROR_MESSAGE.eventParam to failureMessage,
-                AnalyticsEventsParam.FAILED_EVENT_ID_LIST.name to pendingEventList.map { it.id }
-                    .toString()
-            )
+        syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncApiFailureEvent(
+            selectedSyncType,
+            failureType,
+            failureMessage,
+            commonEventParams = CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+            pendingEventList
         )
 
         when (failureType) {
@@ -305,6 +295,7 @@ class SyncUploadWorker @AssistedInject constructor(
             FAILED_RESPONSE_FAILURE -> handleFailedApiResponse(pendingEventList)
         }
     }
+
 
     private suspend fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
@@ -342,21 +333,10 @@ class SyncUploadWorker @AssistedInject constructor(
         selectedSyncType: Int
     ): Result {
 
-        val stackTrace = CoreLogger.getStackTraceForLogs(ex = ex)
-        val syncType = SyncType.getSyncTypeFromInt(selectedSyncType)
-
-        analyticsManager.trackEvent(
-            AnalyticsEvents.SYNC_FAILED_DUE_TO_EXCEPTION.eventName,
-            mapOf(
-                AnalyticsEventsParam.SYNC_TYPE.eventParam to syncType,
-                AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to batchLimit,
-                AnalyticsEventsParam.RETRY_COUNT.eventParam to retryCount,
-                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality.name,
-                AnalyticsEventsParam.EXCEPTION_MESSAGE.name to ex.message.value(),
-                AnalyticsEventsParam.STACK_TRACE.name to stackTrace,
-                AnalyticsEventsParam.FAILED_EVENT_ID_LIST.name to mPendingEventList.map { it.id }
-                    .toString()
-            )
+        syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncFailureDueToExceptionAnalyticsEvent(
+            ex, selectedSyncType, CommonEventParams(
+                batchLimit, retryCount, connectionQuality.name
+            ), mPendingEventList
         )
 
         CoreLogger.e(
@@ -390,6 +370,7 @@ class SyncUploadWorker @AssistedInject constructor(
             )
         }
     }
+
 
     private suspend fun syncImageToServerAPI(
         imageMultipartList: List<MultipartBody.Part>,

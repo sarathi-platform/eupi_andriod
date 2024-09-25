@@ -1,10 +1,7 @@
 package com.nudge.core.analytics
 
-import com.nudge.core.analytics.mixpanel.AnalyticsEvents
-import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.json
 import com.nudge.core.utils.CoreLogger
-import com.nudge.core.utils.SyncType
 
 
 class AnalyticsManager(private var analyticsProvider: IAnalyticsProvider) {
@@ -32,16 +29,5 @@ class AnalyticsManager(private var analyticsProvider: IAnalyticsProvider) {
             msg = "setUserDetail: -> distinctId: $distinctId, name: $name, userType: $userType, buildEnvironment: $buildEnvironment"
         )
         analyticsProvider.setUserDetail(distinctId, name, userType, buildEnvironment)
-    }
-
-    fun sendSyncSuccessEvent(selectedSyncType: Int) {
-        analyticsProvider.trackEvent(
-            AnalyticsEvents.SYNC_SUCCESS.eventName,
-            mapOf(
-                AnalyticsEventsParam.SYNC_TYPE.eventParam to SyncType.getSyncTypeFromInt(
-                    selectedSyncType
-                )
-            )
-        )
     }
 }
