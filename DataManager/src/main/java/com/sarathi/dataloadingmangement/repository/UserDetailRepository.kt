@@ -55,4 +55,6 @@ class UserDetailRepository @Inject constructor(
     override fun getUSerMobileNo(): String {
         return sharedPrefs.getMobileNo()
     }
+
+    override fun getBuildEnv() = sharedPrefs.getBuildEnvironment()
 }

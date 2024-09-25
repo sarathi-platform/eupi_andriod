@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.PREF_BUILD_ENVIRONMENT
+import com.nudge.core.PREF_MIX_PANEL_TOKEN
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.value
@@ -266,5 +268,22 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getSyncRetryCount(): Int {
         return prefs.getLong(PREF_KEY_SYNC_RETRY_COUNT, 0L).toInt()
     }
+
+    override fun getBuildEnvironment(): String {
+        return getPref(PREF_BUILD_ENVIRONMENT, "uat")
+    }
+
+    override fun saveBuildEnvironment(buildEnv: String) {
+        savePref(PREF_BUILD_ENVIRONMENT, buildEnv)
+    }
+
+    override fun getMixPanelToken(): String {
+        return getPref(PREF_MIX_PANEL_TOKEN, BLANK_STRING)
+    }
+
+    override fun saveMixPanelToken(token: String) {
+        savePref(PREF_MIX_PANEL_TOKEN, token)
+    }
+
 
 }

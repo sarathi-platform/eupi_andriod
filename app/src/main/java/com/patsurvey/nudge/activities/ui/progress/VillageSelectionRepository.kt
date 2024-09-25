@@ -4083,7 +4083,8 @@ class VillageSelectionRepository @Inject constructor(
         analyticsManager.setUserDetail(
             distinctId = prefRepo.getMobileNumber(),
             name = userDetailsModel.name,
-            userType = userDetailsModel.typeName
+            userType = userDetailsModel.typeName,
+            buildEnvironment = prefRepo.getBuildEnvironment()
         )
 
     }

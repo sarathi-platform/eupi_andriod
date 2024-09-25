@@ -23,7 +23,8 @@ class FetchUserDetailUseCase @Inject constructor(
                     analyticsManager.setUserDetail(
                         name = userApiResponse.name ?: BLANK_STRING,
                         userType = userApiResponse.typeName ?: BLANK_STRING,
-                        distinctId = repository.getUSerMobileNo()
+                        distinctId = repository.getUSerMobileNo(),
+                        buildEnvironment = repository.getBuildEnv()
                     )
                     repository.saveUserDetails(userApiResponse)
                 }

@@ -1409,8 +1409,11 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
-    fun provideAnalyticsManager(@ApplicationContext context: Context): AnalyticsManager {
-        return AnalyticsManager(MixPanelAnalyticsProvider(context))
+    fun provideAnalyticsManager(
+        @ApplicationContext context: Context,
+        coreSharedPrefs: CoreSharedPrefs
+    ): AnalyticsManager {
+        return AnalyticsManager(MixPanelAnalyticsProvider(context, coreSharedPrefs))
 
     }
 

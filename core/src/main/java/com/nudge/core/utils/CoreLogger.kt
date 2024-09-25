@@ -43,7 +43,7 @@ object CoreLogger {
         }
     }
 
-    fun e(context: Context, tag: String, msg: String) {
+    fun e(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.SEVERE.intValue(), tag, msg)
             if (DEBUG) Log.e(tag, msg)

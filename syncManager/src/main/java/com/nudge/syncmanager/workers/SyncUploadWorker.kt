@@ -96,13 +96,13 @@ class SyncUploadWorker @AssistedInject constructor(
 
 
             analyticsManager.trackEvent(
-                AnalyticsEvents.SYNC_STARTED.name, mapOf(
+                AnalyticsEvents.SYNC_STARTED.eventName, mapOf(
                     AnalyticsEventsParam.SYNC_TYPE.eventParam to SyncType.getSyncTypeFromInt(
                         selectedSyncType
                     ),
                     AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to batchLimit,
                     AnalyticsEventsParam.RETRY_COUNT.eventParam to retryCount,
-                    AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality,
+                    AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality.name,
                     AnalyticsEventsParam.TOTAL_PENDING_EVENT_COUNT.eventParam to totalPendingEventCount
                 )
             )
@@ -291,7 +291,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 AnalyticsEventsParam.SYNC_TYPE.eventParam to syncType,
                 AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to batchLimit,
                 AnalyticsEventsParam.RETRY_COUNT.eventParam to retryCount,
-                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality,
+                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality.name,
                 AnalyticsEventsParam.API_FAILURE_TYPE.eventParam to failureType,
                 AnalyticsEventsParam.API_FAILURE_ERROR_MESSAGE.eventParam to failureMessage,
                 AnalyticsEventsParam.FAILED_EVENT_ID_LIST.name to pendingEventList.map { it.id }
@@ -351,7 +351,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 AnalyticsEventsParam.SYNC_TYPE.eventParam to syncType,
                 AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to batchLimit,
                 AnalyticsEventsParam.RETRY_COUNT.eventParam to retryCount,
-                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality,
+                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to connectionQuality.name,
                 AnalyticsEventsParam.EXCEPTION_MESSAGE.name to ex.message.value(),
                 AnalyticsEventsParam.STACK_TRACE.name to stackTrace,
                 AnalyticsEventsParam.FAILED_EVENT_ID_LIST.name to mPendingEventList.map { it.id }

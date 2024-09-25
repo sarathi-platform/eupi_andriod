@@ -10,4 +10,6 @@ interface IUserDetailRepository {
     fun saveUserDetails(userDetailsResponse: UserDetailsResponse)
     fun getUSerMobileNo(): String
 
+    fun getBuildEnv(): String
+
 }
