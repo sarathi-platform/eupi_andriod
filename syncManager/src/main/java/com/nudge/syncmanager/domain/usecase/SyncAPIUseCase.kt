@@ -39,7 +39,7 @@ class SyncAPIUseCase(
 
     suspend fun fetchConsumerEventStatus() {
         val requestIdList = repository.fetchAllRequestEventForConsumerStatus().map { it.requestId }
-        val chunkedRequestIDs = requestIdList.chunked(10)
+        val chunkedRequestIDs = requestIdList.chunked(5)
         chunkedRequestIDs.forEach {
             try {
 
