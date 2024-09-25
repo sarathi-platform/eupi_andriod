@@ -98,4 +98,5 @@
     <string name="search_didi">দিদি সার্চ করুন</string>
     <string name="search_by_small_groups">ছোট গ্রুপ দ্বারা সার্চ করুন</string>
     <string name="total_didis">মোট দিদি - %1$s</string>
+    <string name="no_didi_s_assigned_to_you">"আপনাকে কোনো দিদির সাথে যুক্ত করা হয়নি "</string>
 </resources>
