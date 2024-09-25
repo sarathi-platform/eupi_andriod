@@ -36,6 +36,7 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.REMOTE_CONFIG_MIX_PANEL_TOKEN
 import com.nudge.core.REMOTE_CONFIG_SYNC_BATCH_SIZE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
@@ -356,6 +357,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                         remoteConfig[REMOTE_CONFIG_SYNC_OPTION_ENABLE].asBoolean()
                     val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
                     val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
+
+                    val mixPanelToken = remoteConfig[REMOTE_CONFIG_MIX_PANEL_TOKEN].asString()
+
                     NudgeLogger.d(
                         "SyncEnabled",
                         "sync enabled : $isSyncEnable :: Sync batch Size : " +
@@ -368,6 +372,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                     mViewModel.saveSyncBatchSizeFromRemoteConfig(syncBatchSize)
                     mViewModel.saveSyncRetryCountFromRemoteConfig(syncRetryCount)
                     mViewModel.saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable)
+                    mViewModel.saveMixPanelToken(mixPanelToken)
 
                 }
             }

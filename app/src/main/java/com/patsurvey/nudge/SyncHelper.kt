@@ -8,7 +8,6 @@ import androidx.compose.runtime.MutableState
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.json
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
@@ -234,6 +233,7 @@ class SyncHelper (
     fun checkTolaDeleteStatus(networkCallbackListener : NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaList = tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"")
+
             if(tolaList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 tolaList.forEach { tola ->
