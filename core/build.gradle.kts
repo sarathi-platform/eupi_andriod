@@ -102,5 +102,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
+    implementation("com.mixpanel.android:mixpanel-android:7.+")
 
 }

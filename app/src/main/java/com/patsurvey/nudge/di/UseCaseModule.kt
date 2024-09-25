@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
+import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
@@ -22,6 +23,7 @@ import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
 import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
 import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
 import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
+import com.nudge.syncmanager.domain.usecase.SyncAnalyticsEventUseCase
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
@@ -253,13 +255,19 @@ object UseCaseModule {
     @Singleton
     fun provideSyncManagerUseCase(
         repository: SyncRepository,
-        syncAPiRepository: SyncApiRepository
+        syncAPiRepository: SyncApiRepository,
+        analyticsManager: AnalyticsManager
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
             addUpdateEventUseCase = AddUpdateEventUseCase(repository),
             syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
             getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
-            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository)
+            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
+            syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
+                analyticsManager = analyticsManager
+            )
         )
     }
+
+
 }

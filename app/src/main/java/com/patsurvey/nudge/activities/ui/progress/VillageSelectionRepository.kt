@@ -10,6 +10,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -173,7 +174,8 @@ class VillageSelectionRepository @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
-    val androidDownloader: AndroidDownloader
+    val androidDownloader: AndroidDownloader,
+    val analyticsManager: AnalyticsManager
 ): BaseRepository() {
 
     private var isPendingForBpc = 0
@@ -4078,6 +4080,12 @@ class VillageSelectionRepository @Inject constructor(
         } else {
             prefRepo.setIsUserBPC(false)
         }
+        analyticsManager.setUserDetail(
+            distinctId = prefRepo.getMobileNumber(),
+            name = userDetailsModel.name,
+            userType = userDetailsModel.typeName,
+            buildEnvironment = prefRepo.getBuildEnvironment()
+        )
 
     }
 

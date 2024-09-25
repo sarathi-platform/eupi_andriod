@@ -21,6 +21,8 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
+import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
@@ -49,21 +51,22 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
+
 @HiltWorker
 class SyncUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
-    private val syncManagerUseCase: SyncManagerUseCase
+    private val syncManagerUseCase: SyncManagerUseCase,
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG = SyncUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
     private var retryCount = RETRY_DEFAULT_COUNT
+    private var connectionQuality = ConnectionQuality.UNKNOWN
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
-
         return try {
-            val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
+            connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             batchLimit = syncManagerUseCase.syncAPIUseCase.getSyncBatchSize()
             retryCount = syncManagerUseCase.syncAPIUseCase.getSyncRetryCount()
             CoreLogger.d(
@@ -88,6 +91,11 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: totalPendingEventCount: $totalPendingEventCount"
             )
+            syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncStartedAnalyticEvent(
+                selectedSyncType,
+                CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                totalPendingEventCount
+            )
             DeviceBandwidthSampler.getInstance().startSampling()
 // Reset retry count to 0 if producer failed
             syncManagerUseCase.addUpdateEventUseCase.resetFailedEventStatusForProducerFailed()
@@ -95,12 +103,15 @@ class SyncUploadWorker @AssistedInject constructor(
             while (totalPendingEventCount > 0) {
                 mPendingEventList =
                     syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
-                    batchLimit = batchLimit,
-                    retryCount = retryCount,
-                    syncType = selectedSyncType
+                        batchLimit = batchLimit,
+                        retryCount = retryCount,
+                        syncType = selectedSyncType
                 )
 
                 if (mPendingEventList.isEmpty()) {
+                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(
+                        selectedSyncType
+                    )
                     return Result.success(
                         workDataOf(
                             WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed"
@@ -134,9 +145,7 @@ class SyncUploadWorker @AssistedInject constructor(
 //                        )
 
                     val apiResponse =
-                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                            dataEventList
-                        )
+                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
                     totalPendingEventCount =
                         handleAPIResponse(
                             apiResponse,
@@ -190,13 +199,15 @@ class SyncUploadWorker @AssistedInject constructor(
                 TAG,
                 "doWork: success totalPendingEventCount: $totalPendingEventCount"
             )
+            syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(selectedSyncType)
+
             Result.success(
                 workDataOf(
                     WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
                 )
             )
         } catch (ex: Exception) {
-            handleException(ex, mPendingEventList)
+            handleException(ex, mPendingEventList, selectedSyncType)
         } finally {
             DeviceBandwidthSampler.getInstance().stopSampling()
         }
@@ -216,6 +227,7 @@ class SyncUploadWorker @AssistedInject constructor(
         return eventListAccordingToPayload
     }
 
+
     private suspend fun SyncUploadWorker.handleAPIResponse(
         apiResponse: ApiResponseModel<List<SyncEventResponse>>,
         totalPendingEventCount: Int,
@@ -229,16 +241,30 @@ class SyncUploadWorker @AssistedInject constructor(
                     processEventList(eventList)
                     totalPendingEventCount1 =
                         syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(
-                        syncType = selectedSyncType
-                    )
+                            syncType = selectedSyncType
+                        )
                     CoreLogger.d(
                         applicationContext,
                         TAG,
                         "doWork: After totalPendingEventCount: $totalPendingEventCount1"
                     )
-                } else handleEmptyEventListResponse(mPendingEventList)
-            } ?: handleNullApiResponse(mPendingEventList)
-        } else handleFailedApiResponse(mPendingEventList)
+                } else handleAPIResponseFailure(
+                    mPendingEventList,
+                    EMPTY_EVENT_LIST_FAILURE,
+                    selectedSyncType = selectedSyncType
+                )
+            } ?: handleAPIResponseFailure(
+                mPendingEventList,
+                NULL_RESPONSE_FAILURE,
+                apiResponse.message,
+                selectedSyncType = selectedSyncType
+            )
+        } else handleAPIResponseFailure(
+            mPendingEventList,
+            FAILED_RESPONSE_FAILURE,
+            apiResponse.message,
+            selectedSyncType
+        )
         DeviceBandwidthSampler.getInstance().stopSampling()
         return totalPendingEventCount1
     }
@@ -277,6 +303,28 @@ class SyncUploadWorker @AssistedInject constructor(
 
     }
 
+    private suspend fun handleAPIResponseFailure(
+        pendingEventList: List<Events>,
+        failureType: String,
+        failureMessage: String = BLANK_STRING,
+        selectedSyncType: Int
+    ) {
+        syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncApiFailureEvent(
+            selectedSyncType,
+            failureType,
+            failureMessage,
+            commonEventParams = CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+            pendingEventList
+        )
+
+        when (failureType) {
+            EMPTY_EVENT_LIST_FAILURE -> handleEmptyEventListResponse(pendingEventList)
+            NULL_RESPONSE_FAILURE -> handleNullApiResponse(pendingEventList)
+            FAILED_RESPONSE_FAILURE -> handleFailedApiResponse(pendingEventList)
+        }
+    }
+
+
     private suspend fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
         CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
         syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
@@ -307,7 +355,18 @@ class SyncUploadWorker @AssistedInject constructor(
         )
     }
 
-    private suspend fun handleException(ex: Exception, mPendingEventList: List<Events>): Result {
+    private suspend fun handleException(
+        ex: Exception,
+        mPendingEventList: List<Events>,
+        selectedSyncType: Int
+    ): Result {
+
+        syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncFailureDueToExceptionAnalyticsEvent(
+            ex, selectedSyncType, CommonEventParams(
+                batchLimit, retryCount, connectionQuality.name
+            ), mPendingEventList
+        )
+
         CoreLogger.e(
             applicationContext,
             TAG,
@@ -339,6 +398,7 @@ class SyncUploadWorker @AssistedInject constructor(
             )
         }
     }
+
 
     private suspend fun syncImageToServerAPI(
         imageMultipartList: List<MultipartBody.Part>,
@@ -526,4 +586,8 @@ fun createEventResponseList(
     }
     return failedEventList
 }
+
+private const val EMPTY_EVENT_LIST_FAILURE = "EMPTY_LIST_FAILURE"
+private const val NULL_RESPONSE_FAILURE = "NULL_RESPONSE_FAILURE"
+private const val FAILED_RESPONSE_FAILURE = "FAILED_RESPONSE_FAILURE"
 
