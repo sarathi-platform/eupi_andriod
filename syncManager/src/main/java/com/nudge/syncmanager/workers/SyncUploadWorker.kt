@@ -142,7 +142,7 @@ class SyncUploadWorker @AssistedInject constructor(
                             apiResponse,
                             totalPendingEventCount,
                             selectedSyncType,
-                            dataEventList
+                            mPendingEventList
                         )
                 }
 
