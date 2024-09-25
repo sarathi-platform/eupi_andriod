@@ -48,32 +48,45 @@ class SyncAPIUseCase(
 
     suspend fun fetchConsumerEventStatus() {
         val requestIdList = repository.fetchAllRequestEventForConsumerStatus().map { it.requestId }
-        val eventConsumerRequest = EventConsumerRequest(
-            requestId = requestIdList,
-            mobile = BLANK_STRING,
-            endDate = BLANK_STRING,
-            startDate = BLANK_STRING
-        )
-        CoreLogger.d(
-            context = CoreAppDetails.getApplicationContext().applicationContext,
-            "SyncAPIUseCase",
-            "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
-        )
+        val chunkedRequestIDs = requestIdList.chunked(10)
+        chunkedRequestIDs.forEach {
+            try {
 
-        val consumerAPIResponse = syncAPiRepository.fetchConsumerEventStatus(eventConsumerRequest)
-        CoreLogger.d(
-            context = CoreAppDetails.getApplicationContext().applicationContext,
-            "SyncAPIUseCase",
-            "fetchConsumerStatus Consumer Response: ${consumerAPIResponse.json()}"
-        )
-        if (consumerAPIResponse.status == SUCCESS) {
-            consumerAPIResponse.data?.let {
-                if (it.isNotEmpty()) {
-                    repository.updateEventConsumerStatus(eventList = it)
+
+                val eventConsumerRequest = EventConsumerRequest(
+                    requestId = it,
+                    mobile = BLANK_STRING,
+                    endDate = BLANK_STRING,
+                    startDate = BLANK_STRING
+                )
+                CoreLogger.d(
+                    context = CoreAppDetails.getApplicationContext().applicationContext,
+                    "SyncAPIUseCase",
+                    "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
+                )
+
+                val consumerAPIResponse =
+                    syncAPiRepository.fetchConsumerEventStatus(eventConsumerRequest)
+                CoreLogger.d(
+                    context = CoreAppDetails.getApplicationContext().applicationContext,
+                    "SyncAPIUseCase",
+                    "fetchConsumerStatus Consumer Response: ${consumerAPIResponse.json()}"
+                )
+                if (consumerAPIResponse.status == SUCCESS) {
+                    consumerAPIResponse.data?.let {
+                        if (it.isNotEmpty()) {
+                            repository.updateEventConsumerStatus(eventList = it)
+                        }
+                    }
                 }
+            } catch (exception: Exception) {
+                CoreLogger.d(
+                    context = CoreAppDetails.getApplicationContext().applicationContext,
+                    "SyncAPIUseCase",
+                    "fetchConsumerStatus Consumer Exception: ${exception}"
+                )
             }
-        }
-
+    }
     }
 
     fun getSyncBatchSize() = syncAPiRepository.getSyncBatchSize()

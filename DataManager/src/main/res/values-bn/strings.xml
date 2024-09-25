@@ -98,4 +98,8 @@
     <string name="search_didi">দিদি সার্চ করুন</string>
     <string name="search_by_small_groups">ছোট গ্রুপ দ্বারা সার্চ করুন</string>
     <string name="total_didis">মোট দিদি - %1$s</string>
+    <string name="data_send_to_server">সার্ভারে ডেটা পাঠানো হয়েছে</string>
+    <string name="images_send_to_server">ছবি সার্ভারে পাঠানো হয়েছে</string>
+    <string name="data_processes_by_server">সার্ভার দ্বারা প্রক্রিয়াকৃত ডেটা</string>
+    <string name="images_processes_by_server">সার্ভার দ্বারা প্রক্রিয়াকৃত ছবি</string>
 </resources>

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -163,7 +162,7 @@ fun rememberDatePickerProperties(
         )
     },
     showModeToggle: Boolean = false,
-    colors: DatePickerColors = DatePickerDefaults.colors()
+    colors: CustomDatePickerColors = CustomDatePickerDefaults.colors()
 ): DatePickerProperties {
 
     return DatePickerProperties(
@@ -188,7 +187,7 @@ data class DatePickerProperties(
     val title: (@Composable () -> Unit)?,
     val headline: (@Composable () -> Unit)?,
     val showModeToggle: Boolean,
-    val colors: DatePickerColors
+    val colors: CustomDatePickerColors
 )
 
 

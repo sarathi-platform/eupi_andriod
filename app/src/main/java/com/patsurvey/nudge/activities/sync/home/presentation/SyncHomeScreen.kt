@@ -48,11 +48,15 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
+import com.nudge.core.DATA_PRODUCER_STRING
+import com.nudge.core.DATA_STRING
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.FORM_C_TOPIC
-import com.nudge.core.FORM_D_TOPIC
+import com.nudge.core.IMAGE_PRODUCER_STRING
+import com.nudge.core.IMAGE_STRING
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.isDataEvent
+import com.nudge.core.isImageEvent
 import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
@@ -61,6 +65,7 @@ import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
@@ -68,14 +73,11 @@ import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.utils.DATA_STRING
-import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -148,15 +150,32 @@ fun ObserveEventCounts(
     DisposableEffect(key1 = lifeCycleOwner) {
         val eventListLive = viewModel.syncEventDetailUseCase.getSyncEventsUseCase.getTotalEvents()
         eventListLive.observe(lifeCycleOwner) { eventList ->
+
             val (totalDataCount, successDataCount) = eventList.filterAndCountEvents {
-                !it.name.lowercase(Locale.ENGLISH)
-                    .contains(IMAGE_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC
+                isDataEvent(it)
             }
             val (totalImageCount, successImageCount) = eventList.filterAndCountEvents {
-                it.name.lowercase(Locale.ENGLISH)
-                    .contains(IMAGE_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC
+                isImageEvent(it)
+            }
+            val (totalProducerDataCount, producerSuccessDataCount) = eventList.filterAndCountProducerEvents {
+                isDataEvent(it)
+            }
+
+            val (totalProducerImageCount, producerSuccessImageCount) = eventList.filterAndCountProducerEvents {
+                isImageEvent(it)
             }
             viewModel.totalImageEventCount.intValue = totalImageCount
+            //Producer Event Progress
+            viewModel.dataProducerEventProgress.floatValue = viewModel.calculateBarProgress(
+                totalProducerDataCount,
+                producerSuccessDataCount,
+                DATA_PRODUCER_STRING
+            )
+            viewModel.imageProducerEventProgress.floatValue = viewModel.calculateBarProgress(
+                totalProducerImageCount, producerSuccessImageCount,
+                IMAGE_PRODUCER_STRING
+            )
+            //Consumer Event Progress
             viewModel.imageEventProgress.floatValue =
                 viewModel.calculateBarProgress(totalImageCount, successImageCount, IMAGE_STRING)
             viewModel.dataEventProgress.floatValue =
@@ -249,7 +268,9 @@ fun SyncHomeContent(
                         viewModel = viewModel,
                         context = context,
                         isNetworkAvailable = isNetworkAvailable
-                    )
+                    ) {
+                        navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
+                    }
                 }
                 item {
                     SyncImageCard(
@@ -257,7 +278,9 @@ fun SyncHomeContent(
                         context = context,
                         isNetworkAvailable = isNetworkAvailable,
                         totalImageEventCount = viewModel.totalImageEventCount
-                    )
+                    ) {
+                        navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
+                    }
                 }
                 item {
                     HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
@@ -360,6 +383,17 @@ fun List<Events>.filterAndCountEvents(predicate: (Events) -> Boolean): Pair<Int,
     return totalCount to successCount
 }
 
+fun List<Events>.filterAndCountProducerEvents(predicate: (Events) -> Boolean): Pair<Int, Int> {
+    val totalCount = filter(predicate).size
+    val successCount =
+        filter {
+            predicate(it) && it.status != EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+                    && it.status != EventSyncStatus.OPEN.eventSyncStatus
+                    && it.status != EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
+        }.size
+    return totalCount to successCount
+}
+
 fun HandleWorkerState(
     uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context,
     scope: CoroutineScope
@@ -443,13 +477,16 @@ fun HandleWorkerState(
 private fun SyncDataCard(
     viewModel: SyncHomeViewModel,
     context: Context,
-    isNetworkAvailable: MutableState<Boolean>
+    isNetworkAvailable: MutableState<Boolean>,
+    onViewProcessClick: () -> Unit
 ) {
     EventTypeCard(
         title = stringResource(id = R.string.sync_data),
         progress = viewModel.dataEventProgress.floatValue,
+        producerProgress = viewModel.dataProducerEventProgress.floatValue,
         isProgressBarVisible = viewModel.isDataPBVisible.value,
         syncButtonTitle = stringResource(id = R.string.sync_only_data),
+        isImageSyncCard = false,
         onSyncButtonClick = {
             viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
             CoreLogger.d(
@@ -462,6 +499,9 @@ private fun SyncDataCard(
         isStatusVisible = viewModel.isDataStatusVisible.value,
         onCardClick = {
 
+        },
+        onViewProcessClick = {
+            onViewProcessClick()
         }
     )
 }
@@ -471,13 +511,16 @@ private fun SyncImageCard(
     totalImageEventCount: MutableState<Int>,
     viewModel: SyncHomeViewModel,
     context: Context,
-    isNetworkAvailable: MutableState<Boolean>
+    isNetworkAvailable: MutableState<Boolean>,
+    onViewProcessClick: () -> Unit
 ) {
     if (totalImageEventCount.value > 0) {
         EventTypeCard(
             title = stringResource(id = R.string.sync_images),
             progress = viewModel.imageEventProgress.floatValue,
+            producerProgress = viewModel.imageProducerEventProgress.floatValue,
             isProgressBarVisible = viewModel.isImagePBVisible.value,
+            isImageSyncCard = true,
             onSyncButtonClick = {
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
                 CoreLogger.d(
@@ -490,6 +533,9 @@ private fun SyncImageCard(
             syncButtonTitle = stringResource(id = R.string.sync_only_images),
             isStatusVisible = viewModel.isImageStatusVisible.value,
             onCardClick = {
+            },
+            onViewProcessClick = {
+                onViewProcessClick()
             }
         )
     }
