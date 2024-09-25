@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,6 @@ import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
-import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
@@ -70,8 +70,9 @@ fun AddEventScreen(
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
-
     }
+    val context = LocalContext.current
+
 
     val dropDownWithSearchState = remember(viewModel.livelihoodEventDropdownValue) {
         rememberSearchBarWithDropDownState<ValuesDto>(
@@ -111,7 +112,9 @@ fun AddEventScreen(
                     if (showDeleteButton) {
                         ButtonNegative(
                             modifier = Modifier.weight(0.5f),
-                            buttonTitle = "Delete",
+                            buttonTitle = context.getString(
+                                R.string.delete,
+                            ),
                             textColor = red,
                             isArrowRequired = false,
                             isActive = true,
@@ -125,10 +128,10 @@ fun AddEventScreen(
 
                     ButtonPositive(
                         modifier = Modifier.weight(0.5f),
-                        buttonTitle = "Save",
+                        buttonTitle = context.getString(
+                            R.string.save_text,
+                        ),
                         isActive = viewModel.isSubmitButtonEnable.value,
-
-
                         isArrowRequired = false,
                         onClick = {
                             viewModel.onSubmitButtonClick(subjectId, transactionId)
@@ -162,11 +165,7 @@ fun AddEventScreen(
                         onDateSelected = { date ->
                             viewModel.selectedDate.value = date.value().getDate()
                             viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm(
-                                subjectId,
-                                validationExpressionEvalutorResult = { evalutorResult ->
-
-                                })
+                            viewModel.validateForm(subjectId = subjectId) {}
                         }
                     )
                 }
@@ -181,12 +180,7 @@ fun AddEventScreen(
 
                         onAnswerSelection = { selectedValue ->
                             viewModel.onLivelihoodSelect(selectedValue.id, subjectId)
-                            viewModel.validateForm(
-                                subjectId,
-                                validationExpressionEvalutorResult = { evalutorResult ->
-
-                                })
-
+                            viewModel.validateForm(subjectId = subjectId) {}
                         }
                     )
 
@@ -246,7 +240,7 @@ fun AddEventScreen(
 
 
                 item {
-                    var isEventAlertMsgVisible = remember {
+                    val isEventAlertMsgVisible = remember {
                         mutableStateOf(
                             Pair<Boolean, String?>(
                                 false,
@@ -265,22 +259,23 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodEventDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.onEventSelected(selectedValue, subjectId)
-                                viewModel.validateForm(subjectId = subjectId) { validationExpressionEvalutorResult ->
-                                    if (!validationExpressionEvalutorResult) {
+                                viewModel.validateForm(subjectId = subjectId) { isValid ->
+                                    if (isValid) {
+                                        // If valid, hide the alert message
+                                        isEventAlertMsgVisible.value = Pair(false, BLANK_STRING)
+                                    } else {
+                                        // If not valid, trigger asset count and validation message
                                         viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
                                             isEventAlertMsgVisible.value = Pair(true, msg)
                                         }
-                                    } else {
-                                        isEventAlertMsgVisible.value = Pair(false, BLANK_STRING)
                                     }
-
                                 }
                             })
                         if (isEventAlertMsgVisible.value.first) {
-                            isEventAlertMsgVisible.value.second?.let {
+                            isEventAlertMsgVisible.value.second?.let { message ->
                                 Text(
+                                    text = message,
                                     modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                    text = it,
                                     style = quesOptionTextStyle.copy(color = eventTextColor)
                                 )
                             }
@@ -300,11 +295,7 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
-                                viewModel.validateAssetForm(
-                                    subjectId,
-                                    validationAssetExpressionEvalutorResult = { evalutorResult ->
-
-                                    })
+                                viewModel.validateForm(subjectId = subjectId) {}
                             }
                         )
                     }
@@ -321,12 +312,7 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
-                                viewModel.validateForm(
-                                    subjectId,
-                                    validationExpressionEvalutorResult = { evalutorResult ->
-
-                                    })
-
+                                viewModel.validateForm(subjectId = subjectId) {}
                             }
                         )
                     }
@@ -334,43 +320,15 @@ fun AddEventScreen(
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
                     item {
-                        val maxValue = remember { mutableStateOf(MAXIMUM_RANGE) }
-                        val isEditAllowed = remember { mutableStateOf(true) }
-                        val isPlusBtnClickAllowed = remember { mutableStateOf(true) }
-                        if (viewModel.selectedEventId.value != -1) {
-                            viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
-                                if (!isValidation || assetCount > 0) {
-                                    maxValue.value = assetCount
-                                }
-                            }
-                        }
-
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
                             title = stringResource(R.string.increase_in_number),
                             isEditAllowed = viewModel.selectedAssetTypeId.value != -1,
-                            isPlusClickble = isPlusBtnClickAllowed.value,
                             currentValue = viewModel.assetCount.value,
-                            maxValue = maxValue.value,
+                            maxValue = viewModel.maxAssetValue.value,
                             onAnswerSelection = { inputValue ->
                                 viewModel.assetCount.value = inputValue
-//                                viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
-//                                    if (!isValidation || assetCount > 0) {
-//                                        if (!TextUtils.isEmpty(inputValue) && inputValue.toInt() <= assetCount) {
-//                                            isPlusBtnClickAllowed.value = true
-//                                            viewModel.assetCount.value = inputValue
-//                                        } else {
-//                                            isPlusBtnClickAllowed.value = false
-//                                        }
-//                                    } else {
-//                                        viewModel.assetCount.value = inputValue
-//                                    }
-//                                }
-                                viewModel.validateForm(
-                                    subjectId,
-                                    validationExpressionEvalutorResult = { evalutorResult ->
-
-                                    })
+                                viewModel.validateForm(subjectId = subjectId) {}
                             }
                         )
                     }
@@ -388,12 +346,7 @@ fun AddEventScreen(
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
-                            viewModel.validateForm(
-                                subjectId,
-                                validationExpressionEvalutorResult = { evalutorResult ->
-
-                                })
-
+                            viewModel.validateForm(subjectId = subjectId) {}
                         }
                     }
 

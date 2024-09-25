@@ -104,5 +104,8 @@
     <string name="event_date">Event Date:</string>
     <string name="edit_history">Edit history</string>
     <string name="increase_in_number">Increase in Number</string>
+    <string name="save_text">Save</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">Cancel</string>
 
 </resources>

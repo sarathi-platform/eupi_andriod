@@ -53,8 +53,6 @@ fun IncrementDecrementNumberComponent(
     title: String = BLANK_STRING,
     currentValue: String? = "0",
     isEditAllowed: Boolean = true,
-    isMinusClickble: Boolean = true,
-    isPlusClickble: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
     maxValue: Int = MAXIMUM_RANGE,
     isMandatory: Boolean = false,
@@ -162,7 +160,7 @@ fun IncrementDecrementNumberComponent(
                             if (isEditAllowed) {
                                 if (onlyNumberField(it)) {
                                         val currentIt = if (it.isEmpty()) 0 else it.toInt()
-                                    if (currentIt >= maxValue) {
+                                    if (currentIt <= maxValue) {
                                             currentCount.value = it.ifEmpty { "" }
                                             onAnswerSelection(it)
                                         }
@@ -229,14 +227,12 @@ fun IncrementDecrementNumberComponent(
                             )
                         )
                         .clickable {
-                            if (isEditAllowed && isPlusClickble) {
+                            if (isEditAllowed) {
                                 val incrementValue = incDecValue(1, currentCount.value)
                                 if (maxValue.toString() >= incrementValue) {
                                     currentCount.value = incrementValue
                                     onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                                 }
-                                //  currentCount.value = incDecValue(1, currentCount.value)
-                                //  onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                             } else {
                                 showCustomToast(
                                     context,

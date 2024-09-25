@@ -12,12 +12,11 @@ class LivelihoodEventValidationUseCase @Inject constructor(
     suspend fun getAssetCount(
         validationExpression: String?,
         livelihoodId: Int,
-        eventId: Int,
         subjectId: Int,
         selectedAssetType: Int
     ): Int {
         if (!TextUtils.isEmpty(validationExpression)) {
-            var map = HashMap<String, String>()
+            val map = HashMap<String, String>()
             ValidationExpressionEnum.values().forEach {
                 if (validationExpression?.contains(it.name) == true) {
                     map[it.name] = ""
@@ -49,7 +48,6 @@ class LivelihoodEventValidationUseCase @Inject constructor(
     suspend fun invoke(
         validationExpression: String?,
         livelihoodId: Int,
-        eventId: Int,
         subjectId: Int,
         selectedAssetType: Int
     ): Boolean {
