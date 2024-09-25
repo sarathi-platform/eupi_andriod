@@ -43,6 +43,7 @@ import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 
 
@@ -104,7 +105,9 @@ fun EditHistoryRow(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
                             data2 = getAssetTypeValue(savedEvent = nextSavedEvent),
                         ),
-                        data3 = formatToIndianRupee("${currentSavedEvent?.amount}"),
+                        data3 = if (getLivelihoodEventFromName(currentHistoryData.livelihoodEventType).moneyJournalEntryFlowType != null) formatToIndianRupee(
+                            "${currentSavedEvent?.amount}"
+                        ) else BLANK_STRING,
                         data3TextColor = dataChangeTextColor(
                             data1 = getEventAmount(currentSavedEvent),
                             data2 = getEventAmount(nextSavedEvent),
