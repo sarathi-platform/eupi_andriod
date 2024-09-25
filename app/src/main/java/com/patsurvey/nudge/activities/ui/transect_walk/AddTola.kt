@@ -722,7 +722,7 @@ fun TolaBox(
                                                 )
                                             }
                                         }
-//
+
                                    getLocation(
                                         context = context,
                                         gpsConsumer,
