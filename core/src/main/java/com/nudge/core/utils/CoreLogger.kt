@@ -59,18 +59,27 @@ object CoreLogger {
         lineCount: Int = 60
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            var trace = ""
-            if (stackTrace) {
-                trace = " STACKTRACE\n"
-                var line = 0
-                ex?.stackTrace?.forEach {
-                    line = line.inc()
-                    if (line >= lineCount) return@forEach
-                    trace += "${it.className}(${it.fileName}:${it.lineNumber})}\n"
-                }
-            }
+            var trace = getStackTraceForLogs(stackTrace, ex, lineCount)
             e(context, tag, "$msg${execeptionStr(ex)}$trace")
         }
+    }
+
+    fun getStackTraceForLogs(
+        stackTrace: Boolean = true,
+        ex: Throwable?,
+        lineCount: Int = 30
+    ): String {
+        var trace = ""
+        if (stackTrace) {
+            trace = " STACKTRACE\n"
+            var line = 0
+            ex?.stackTrace?.forEach {
+                line = line.inc()
+                if (line >= lineCount) return@forEach
+                trace += "${it.className}(${it.fileName}:${it.lineNumber})}\n"
+            }
+        }
+        return trace
     }
 
     fun execeptionStr(ex: Throwable?): String {
