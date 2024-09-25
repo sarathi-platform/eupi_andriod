@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
+import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
@@ -31,6 +32,7 @@ import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
 import com.nudge.core.getFileMimeType
 import com.nudge.core.getImagePathFromPicture
+import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.EventResult
@@ -70,7 +72,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 "doWork Started: batchLimit: $batchLimit  retryCount: $retryCount"
             )
             if (runAttemptCount > 0) {
-                batchLimit = getBatchSize(connectionQuality)
+                batchLimit = getBatchSize(connectionQuality).batchSize
             }
 
             CoreLogger.d(
@@ -111,15 +113,22 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
                 val dataEventList =
                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
+
+
+
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
+                    val eventListAfterPayloadCheck =
+                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
                     val apiResponse =
-                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
+                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                            eventListAfterPayloadCheck
+                        )
                     totalPendingEventCount =
                         handleAPIResponse(
                             apiResponse,
                             totalPendingEventCount,
                             selectedSyncType,
-                            mPendingEventList
+                            eventListAfterPayloadCheck
                         )
                 }
 
@@ -153,7 +162,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
                 DeviceBandwidthSampler.getInstance().stopSampling()
                 batchLimit =
-                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality)
+                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
                 CoreLogger.d(
                     applicationContext,
                     TAG,
@@ -177,6 +186,20 @@ class SyncUploadWorker @AssistedInject constructor(
         } finally {
             DeviceBandwidthSampler.getInstance().stopSampling()
         }
+    }
+
+    private fun getEventListAccordingToPayloadSize(
+        dataEventList: List<Events>,
+        connectionQuality: ConnectionQuality
+    ): List<Events> {
+        val eventPayloadSize = dataEventList.json().getSizeInLong() / 1000
+        var eventListAccordingToPayload: List<Events> = dataEventList
+        while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSize && eventListAccordingToPayload.size > 1) {
+            eventListAccordingToPayload =
+                eventListAccordingToPayload.subList(0, (eventListAccordingToPayload.size / 2))
+
+        }
+        return eventListAccordingToPayload
     }
 
     private suspend fun SyncUploadWorker.handleAPIResponse(

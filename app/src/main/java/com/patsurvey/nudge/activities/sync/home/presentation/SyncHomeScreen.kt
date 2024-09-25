@@ -53,6 +53,7 @@ import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
 import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
@@ -180,12 +181,15 @@ fun ObserveEventCounts(
                 totalProducerImageCount, producerSuccessImageCount,
                 IMAGE_PRODUCER_STRING
             )
+
             //Consumer Event Progress
             viewModel.imageEventProgress.floatValue =
                 viewModel.calculateBarProgress(totalImageCount, successImageCount, IMAGE_STRING)
             viewModel.dataEventProgress.floatValue =
                 viewModel.calculateBarProgress(totalDataCount, successDataCount, DATA_STRING)
-
+            viewModel.isSyncImageActive.value =
+                !eventList.filter { it.status != EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }
+                    .any { it.name == EventName.ADD_DIDI.name || it.name == EventName.UPDATE_DIDI.name || it.name == EventName.DELETE_DIDI.name }
             CoreLogger.d(
                 CoreAppDetails.getApplicationContext().applicationContext,
                 "SyncHomeScreen",
@@ -399,6 +403,13 @@ fun List<Events>.filterAndCountProducerEvents(predicate: (Events) -> Boolean): P
     return totalCount to successCount
 }
 
+fun List<Events>.filterBeneficiaryEvent(predicate: (Events) -> Boolean): Pair<Int, Int> {
+    val totalCount = filter(predicate).size
+    val successCount =
+        filter { predicate(it) && it.name == EventName.ADD_DIDI.name || it.name == EventName.UPDATE_DIDI.name || it.name == EventName.DELETE_DIDI.name }.size
+    return totalCount to successCount
+}
+
 fun HandleWorkerState(
     uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context,
     scope: CoroutineScope
@@ -527,13 +538,18 @@ private fun SyncImageCard(
             isProgressBarVisible = viewModel.isImagePBVisible.value,
             isImageSyncCard = true,
             onSyncButtonClick = {
-                viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
-                CoreLogger.d(
-                    context,
-                    "SyncHomeScreen",
-                    "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
-                )
-                startSyncProcess(context, viewModel, isNetworkAvailable.value)
+                if (viewModel.isSyncImageActive.value) {
+
+                    viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
+                    CoreLogger.d(
+                        context,
+                        "SyncHomeScreen",
+                        "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
+                    )
+                    startSyncProcess(context, viewModel, isNetworkAvailable.value)
+                } else {
+                    showCustomToast(context, context.getString(R.string.sync_data_first_message))
+                }
             },
             syncButtonTitle = stringResource(id = R.string.sync_only_images),
             isStatusVisible = viewModel.isImageStatusVisible.value,

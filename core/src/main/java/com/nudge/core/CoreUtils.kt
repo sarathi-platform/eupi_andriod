@@ -33,6 +33,7 @@ import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.enums.SyncBatchEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -127,13 +128,13 @@ fun List<Events>.getEventDependencyEntityListFromEvents(dependentEvents: Events)
     return eventDependencyList
 }
 
-fun getBatchSize(connectionQuality: ConnectionQuality): Int {
+fun getBatchSize(connectionQuality: ConnectionQuality): SyncBatchEnum {
     return when (connectionQuality) {
-        ConnectionQuality.EXCELLENT -> return 20
-        ConnectionQuality.GOOD -> return 15
-        ConnectionQuality.MODERATE -> return 10
-        ConnectionQuality.POOR -> 5
-        ConnectionQuality.UNKNOWN -> 3
+        ConnectionQuality.EXCELLENT -> SyncBatchEnum.EXCELLENT
+        ConnectionQuality.GOOD -> SyncBatchEnum.GOOD
+        ConnectionQuality.MODERATE -> SyncBatchEnum.MODERATE
+        ConnectionQuality.POOR -> SyncBatchEnum.POOR
+        ConnectionQuality.UNKNOWN -> SyncBatchEnum.UNKNOWN
     }
 }
 

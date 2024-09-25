@@ -82,4 +82,8 @@ class SyncAPIUseCase(
 
     fun getSyncBatchSize() = syncAPiRepository.getSyncBatchSize()
     fun getSyncRetryCount() = syncAPiRepository.getSyncRetryCount()
+
+    fun getMaxSyncPayloadSize() {
+
+    }
 }
