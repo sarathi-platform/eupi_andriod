@@ -63,7 +63,6 @@ class SyncBlobRepositoryImpl(
         imageStatusDao.updateBlobUrl(
             blobUrl = blobUrl,
             imageStatusId = imageStatusId,
-            isBlobUploaded = isBlobUploaded,
             mobileNumber = corePrefRepo.getMobileNo(),
             errorMessage = errorMessage
         )

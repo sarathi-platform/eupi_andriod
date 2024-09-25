@@ -58,9 +58,6 @@ data class ImageStatusEntity(
     @ColumnInfo("requestId")
     val requestId: String? = BLANK_STRING,
 
-    @ColumnInfo("isBlobUploaded")
-    val isBlobUploaded: Boolean? = false,
-
     @ColumnInfo("blobUrl")
     val blobUrl: String? = BLANK_STRING,
 

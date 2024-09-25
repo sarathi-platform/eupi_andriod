@@ -25,7 +25,11 @@ data class MetadataDto(
 
     @Expose
     @SerializedName("parentEntity")
-    val parentEntity: Map<String, String> = emptyMap()
+    val parentEntity: Map<String, String> = emptyMap(),
+
+    @Expose
+    @SerializedName("isImageEvent")
+    val isImageEvent: Boolean? = false
 
 )
 
