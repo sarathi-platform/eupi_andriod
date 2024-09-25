@@ -500,5 +500,6 @@
     <string name="change_language">भाषा बदलें</string>
     <string name="shg_member_text">1. सेल्फ हेल्प ग्रुपनि सोद्रोमा</string>
     <string name="able_bodied_women_text">2. गोहो गोनां आयजो</string>
+    <string name="location_not_enable">Location not enabled.</string>
 
 </resources>
