@@ -29,8 +29,8 @@ data class SubjectLivelihoodEventMappingEntity(
             uniqueUserIdentifier: String,
             eventData: LivelihoodEventScreenData,
             createdDate: Long,
-            modifiedDate: Long
-
+            modifiedDate: Long,
+            status: Int
         ): SubjectLivelihoodEventMappingEntity {
             return SubjectLivelihoodEventMappingEntity(
                 userId = uniqueUserIdentifier,
@@ -42,7 +42,7 @@ data class SubjectLivelihoodEventMappingEntity(
                 livelihoodEventId = eventData.eventId,
                 livelihoodEventType = eventData.selectedEvent.name,
                 surveyResponse = eventData.json(),
-                status = 1,
+                status = status,
                 modifiedDate = modifiedDate,
                 createdDate = createdDate,
             )
