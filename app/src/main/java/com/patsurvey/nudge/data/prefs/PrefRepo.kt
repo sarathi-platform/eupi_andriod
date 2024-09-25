@@ -104,4 +104,8 @@ interface PrefRepo {
 
    fun isDataTabVisible(): Boolean
 
+   fun saveBuildEnvironment(buildEnv: String)
+
+   fun getBuildEnvironment(): String
+
 }

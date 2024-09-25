@@ -3,6 +3,8 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -609,7 +611,9 @@ class DataLoadingModule {
         livelihoodUseCase: LivelihoodUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         assetJournalUseCase: FetchAssetJournalUseCase,
-        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
+        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
+        analyticsManager: AnalyticsManager
+
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -626,7 +630,7 @@ class DataLoadingModule {
             ),
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
             fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
-            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
+            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository, analyticsManager),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
@@ -1402,4 +1406,15 @@ class DataLoadingModule {
             coreSharedPrefs, subjectLivelihoodEventMappingDao
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsManager(
+        @ApplicationContext context: Context,
+        coreSharedPrefs: CoreSharedPrefs
+    ): AnalyticsManager {
+        return AnalyticsManager(MixPanelAnalyticsProvider(context, coreSharedPrefs))
+
+    }
+
 }

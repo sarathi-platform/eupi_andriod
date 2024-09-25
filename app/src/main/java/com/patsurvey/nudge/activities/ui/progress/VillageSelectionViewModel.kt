@@ -13,6 +13,7 @@ import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -1600,6 +1601,12 @@ class VillageSelectionViewModel @Inject constructor(
                                     it.villageList?.firstOrNull()?.stateId ?: 4
                                 )
 
+                                villageSelectionRepository.analyticsManager.setUserDetail(
+                                    distinctId = prefRepo.getMobileNumber(),
+                                    name = it.name.value(),
+                                    userType = it.typeName.value(),
+                                    buildEnvironment = prefRepo.getBuildEnvironment()
+                                )
 
                                 coreSharedPrefs.setBackupFileName(
                                     getDefaultBackUpFileName(
