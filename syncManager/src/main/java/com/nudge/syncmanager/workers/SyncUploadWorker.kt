@@ -89,6 +89,8 @@ class SyncUploadWorker @AssistedInject constructor(
                 "doWork: totalPendingEventCount: $totalPendingEventCount"
             )
             DeviceBandwidthSampler.getInstance().startSampling()
+// Reset retry count to 0 if producer failed
+            syncManagerUseCase.addUpdateEventUseCase.resetFailedEventStatusForProducerFailed()
 
             while (totalPendingEventCount > 0) {
                 mPendingEventList =
@@ -117,18 +119,30 @@ class SyncUploadWorker @AssistedInject constructor(
 
 
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
-                    val eventListAfterPayloadCheck =
-                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
+//                    val eventListAfterPayloadCheck =
+//                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
+//                    val apiResponse =
+//                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+//                            eventListAfterPayloadCheck
+//                        )
+//                    totalPendingEventCount =
+//                        handleAPIResponse(
+//                            apiResponse,
+//                            totalPendingEventCount,
+//                            selectedSyncType,
+//                            eventListAfterPayloadCheck
+//                        )
+
                     val apiResponse =
                         syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                            eventListAfterPayloadCheck
+                            dataEventList
                         )
                     totalPendingEventCount =
                         handleAPIResponse(
                             apiResponse,
                             totalPendingEventCount,
                             selectedSyncType,
-                            eventListAfterPayloadCheck
+                            dataEventList
                         )
                 }
 

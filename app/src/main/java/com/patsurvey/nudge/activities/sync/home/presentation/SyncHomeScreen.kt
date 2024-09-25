@@ -51,13 +51,13 @@ import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.DATA_PRODUCER_STRING
 import com.nudge.core.DATA_STRING
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.FORM_C_TOPIC
-import com.nudge.core.FORM_D_TOPIC
+import com.nudge.core.IMAGE_PRODUCER_STRING
+import com.nudge.core.IMAGE_STRING
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
 import com.nudge.core.isDataEvent
 import com.nudge.core.isImageEvent
-import com.nudge.core.enums.EventName
 import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
@@ -74,6 +74,7 @@ import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -223,6 +224,19 @@ fun SyncHomeContent(
             }
 
         })
+    if (viewModel.isSyncDataFirstDialog.value) {
+        showCustomDialog(
+            title = stringResource(R.string.alert_dialog_title_text),
+            message = stringResource(R.string.sync_data_first_message),
+            positiveButtonTitle = stringResource(id = R.string.ok_text),
+            onPositiveButtonClick = {
+                viewModel.isSyncDataFirstDialog.value = false
+            },
+            onNegativeButtonClick = {
+                viewModel.isSyncDataFirstDialog.value = false
+            }
+        )
+    }
     ToolbarWithMenuComponent(
         title = stringResource(id = R.string.sync_all_data),
         modifier = Modifier.fillMaxSize(),
@@ -538,6 +552,7 @@ private fun SyncImageCard(
                     )
                     startSyncProcess(context, viewModel, isNetworkAvailable.value)
                 } else {
+                    viewModel.isSyncDataFirstDialog.value = true
                     showCustomToast(context, context.getString(R.string.sync_data_first_message))
                 }
             },

@@ -233,4 +233,7 @@ interface EventsDao {
 
     @Query("SELECT * FROM $EventsTable WHERE mobile_number =:mobileNumber")
     fun getAllEventsForUser(mobileNumber: String): List<Events>
+
+    @Query("UPDATE $EventsTable SET retry_count =0 WHERE status =:eventStatus and retry_count=2")
+    fun resetRetryCountForProducerFailed(eventStatus: String)
 }

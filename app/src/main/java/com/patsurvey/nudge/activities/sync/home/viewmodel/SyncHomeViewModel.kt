@@ -79,6 +79,7 @@ class SyncHomeViewModel @Inject constructor(
     private val _loaderState = mutableStateOf(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
     val isSyncImageActive = mutableStateOf(false)
+    val isSyncDataFirstDialog = mutableStateOf(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
