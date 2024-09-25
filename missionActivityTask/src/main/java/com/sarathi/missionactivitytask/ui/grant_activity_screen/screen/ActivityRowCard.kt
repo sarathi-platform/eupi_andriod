@@ -12,7 +12,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_72_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
@@ -123,7 +123,7 @@ fun ActivityRowCard(
                 }
             }
             item {
-                CustomVerticalSpacer(size = dimen_20_dp)
+                CustomVerticalSpacer(size = dimen_72_dp)
             }
         }
     }
