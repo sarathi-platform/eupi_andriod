@@ -206,12 +206,12 @@ class SyncUploadWorker @AssistedInject constructor(
         dataEventList: List<Events>,
         connectionQuality: ConnectionQuality
     ): List<Events> {
-        val eventPayloadSize = dataEventList.json().getSizeInLong() / 1000
+        var eventPayloadSize = dataEventList.json().getSizeInLong() / 1000
         var eventListAccordingToPayload: List<Events> = dataEventList
         while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSize && eventListAccordingToPayload.size > 1) {
             eventListAccordingToPayload =
                 eventListAccordingToPayload.subList(0, (eventListAccordingToPayload.size / 2))
-
+            eventPayloadSize = eventListAccordingToPayload.json().getSizeInLong() / 1000
         }
         return eventListAccordingToPayload
     }
