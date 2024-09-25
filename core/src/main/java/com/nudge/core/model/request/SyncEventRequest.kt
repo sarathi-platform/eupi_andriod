@@ -1,7 +1,6 @@
 package com.nudge.core.model.request
 
 import com.google.gson.annotations.SerializedName
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.entities.Events
 
 
@@ -14,8 +13,7 @@ data class EventRequest(
     @SerializedName("payload") val payload: String?,
     @SerializedName("metadata") val metadata: String?,
     @SerializedName("created_date") val createdDate: String?,
-    @SerializedName("modified_date") val modifiedDate: String?,
-    @SerializedName("blobUrl") val blobUrl: String?
+    @SerializedName("modified_date") val modifiedDate: String?
 )
 
 fun Events.toEventRequest() =
@@ -28,20 +26,5 @@ fun Events.toEventRequest() =
         this.request_payload,
         this.metadata,
         this.created_date.toString(),
-        this.modified_date.toString(),
-        blobUrl = BLANK_STRING
-    )
-
-fun Events.toImageEventRequest(blobUrl: String) =
-    EventRequest(
-        this.id,
-        this.name,
-        this.type,
-        this.createdBy,
-        this.mobile_number,
-        this.request_payload,
-        this.metadata,
-        this.created_date.toString(),
-        this.modified_date.toString(),
-        blobUrl = blobUrl
+        this.modified_date.toString()
     )

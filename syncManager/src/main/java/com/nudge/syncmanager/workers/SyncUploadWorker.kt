@@ -370,7 +370,8 @@ class SyncUploadWorker @AssistedInject constructor(
                                 data = Data(
                                     filePath = picturePath,
                                     contentType = getFileMimeType(file),
-                                    isImageEvent = true,
+                                    isOnlyData = true,
+                                    blobUrl = uploadedBlobUrl,
                                     driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
                                         SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                                 ),
@@ -381,9 +382,8 @@ class SyncUploadWorker @AssistedInject constructor(
                         )
 
                         val apiResponse =
-                            syncManagerUseCase.syncAPIUseCase.syncImageProducerEventToServer(
-                                events = imageEvent,
-                                blobUrl = uploadedBlobUrl
+                            syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                                events = listOf(imageEvent),
                             )
                         onAPIResponse(apiResponse)
                     } else {

@@ -50,9 +50,9 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         CoreLogger.d(
             CoreAppDetails.getApplicationContext().applicationContext,
             TAG,
-            "Image uploaded successfully ${blob.storageUri.primaryUri.path}"
+            "Image uploaded successfully ${blob.storageUri.primaryUri.toString()}"
         )
-            onUploadImageResponse(blob.storageUri.primaryUri.path, false)
+            onUploadImageResponse(blob.storageUri.primaryUri.toString(), false)
         } catch (se: StorageException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,

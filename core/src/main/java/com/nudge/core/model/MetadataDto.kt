@@ -28,8 +28,8 @@ data class MetadataDto(
     val parentEntity: Map<String, String> = emptyMap(),
 
     @Expose
-    @SerializedName("isImageEvent")
-    val isImageEvent: Boolean? = false
+    @SerializedName("isOnlyData")
+    val isOnlyData: Boolean? = true
 
 )
 
