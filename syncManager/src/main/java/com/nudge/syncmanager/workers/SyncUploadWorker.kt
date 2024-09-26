@@ -14,19 +14,19 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
+import com.nudge.core.MULTIPART_FORM_DATA
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
-import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.CommonEventParams
-import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.Data
 import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.datamodel.SyncImageMetadataRequest
+import com.nudge.core.datamodel.SyncImageUploadPayload
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
@@ -45,6 +45,9 @@ import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 
@@ -162,7 +165,7 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventIds = imageEventIdsList
                         )
                     if (imageEventList.isNotEmpty()) {
-                        findImageEventAndImage(imageEventList, batchLimit) { response ->
+                        findImageEventAndImage(imageEventList) { response ->
                             totalPendingEventCount =
                                 handleAPIResponse(
                                     response,
@@ -474,87 +477,80 @@ class SyncUploadWorker @AssistedInject constructor(
 
     private suspend fun findImageEventAndImage(
         imageEventList: List<ImageEventDetailsModel>,
-        batchLimit: Int,
         onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
-        try {
-            if (imageEventList.isNotEmpty()) {
-                CoreLogger.d(
-                    applicationContext,
-                    TAG,
-                    "findImageEventAndImageList: ${imageEventList.json()} "
-                )
-                imageEventList.forEach { imageDetail ->
-                    val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
-                    var uploadedBlobUrl = BLANK_STRING
-                    try {
-                        syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
-                            filePath = picturePath,
-                            fileName = imageDetail.fileName ?: BLANK_STRING
-                        ) { message, isExceptionOccur ->
-                            if (!isExceptionOccur) {
-                                uploadedBlobUrl = message
-                            }
-                            syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
-                                imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
-                                isBlobUploaded = isExceptionOccur,
-                                blobUrl = if (isExceptionOccur) BLANK_STRING else message,
-                                errorMessage = if (isExceptionOccur) message else BLANK_STRING,
-                                eventId = imageDetail.eventId ?: BLANK_STRING,
-                                requestId = BLANK_STRING,
-                                status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
-                                else EventSyncStatus.OPEN.eventSyncStatus
-                            )
-                        }
-                    } catch (e: Exception) {
-                        handleFailedImageStatus(
-                            imageEventDetail = imageDetail,
-                            errorMessage = e.message
-                                ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
-                        )
-                    }
-                    val file = File(picturePath)
-                    if (uploadedBlobUrl.isNotEmpty()) {
-                        val imageEvent = Events(
-                            id = imageDetail.id,
-                            name = imageDetail.name,
-                            type = EventName.BLOB_UPLOAD_TOPIC.topicName,
-                            createdBy = imageDetail.createdBy,
-                            modified_date = System.currentTimeMillis().toDate(),
-                            request_payload = imageDetail.request_payload,
-                            status = imageDetail.status,
-                            metadata = SyncImageMetadataRequest(
-                                data = Data(
-                                    filePath = picturePath,
-                                    contentType = getFileMimeType(file),
-                                    isOnlyData = true,
-                                    blobUrl = uploadedBlobUrl,
-                                    driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
-                                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
-                                ),
-                                dependsOn = emptyList()
-                            ).json(),
-                            mobile_number = imageDetail.mobile_number,
-                            payloadLocalId = imageDetail.payloadLocalId
-                        )
 
-                        val apiResponse =
-                            syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                                events = listOf(imageEvent),
-                            )
-                        onAPIResponse(apiResponse)
-                    } else {
-                        handleFailedImageStatus(
-                            imageEventDetail = imageDetail,
-                            errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message
-                        )
-                    }
-                }
-            }
-        } ?: handleFailedImageStatus(
-            imageEventDetail = imageDetail,
-            errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
+        CoreLogger.d(
+            applicationContext,
+            TAG,
+            "findImageEventAndImageList: ${imageEventList.json()} "
         )
+        imageEventList.forEach { imageDetail ->
+            val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
+            var uploadedBlobUrl = BLANK_STRING
+            try {
+                syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
+                    filePath = picturePath,
+                    fileName = imageDetail.fileName ?: BLANK_STRING
+                ) { message, isExceptionOccur ->
+                    if (!isExceptionOccur) {
+                        uploadedBlobUrl = message
+                    }
+                    syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
+                        imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
+                        isBlobUploaded = isExceptionOccur,
+                        blobUrl = if (isExceptionOccur) BLANK_STRING else message,
+                        errorMessage = if (isExceptionOccur) message else BLANK_STRING,
+                        eventId = imageDetail.eventId ?: BLANK_STRING,
+                        requestId = BLANK_STRING,
+                        status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
+                        else EventSyncStatus.OPEN.eventSyncStatus
+                    )
+                }
+            } catch (e: Exception) {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = e.message
+                        ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
+                )
+            }
+            val file = File(picturePath)
+            if (uploadedBlobUrl.isNotEmpty()) {
+                val imageEvent = Events(
+                    id = imageDetail.id,
+                    name = imageDetail.name,
+                    type = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                    createdBy = imageDetail.createdBy,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    request_payload = imageDetail.request_payload,
+                    status = imageDetail.status,
+                    metadata = SyncImageMetadataRequest(
+                        data = Data(
+                            filePath = picturePath,
+                            contentType = getFileMimeType(file),
+                            isOnlyData = true,
+                            blobUrl = uploadedBlobUrl,
+                            driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                                SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
+                        ),
+                        dependsOn = emptyList()
+                    ).json(),
+                    mobile_number = imageDetail.mobile_number,
+                    payloadLocalId = imageDetail.payloadLocalId
+                )
+
+                val apiResponse =
+                    syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                        events = listOf(imageEvent),
+                    )
+                onAPIResponse(apiResponse)
+            } else {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message
+                )
+            }
+        }
     }
 }
 
