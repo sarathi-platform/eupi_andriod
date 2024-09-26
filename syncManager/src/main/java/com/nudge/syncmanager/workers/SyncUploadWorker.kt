@@ -21,7 +21,6 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
-import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
@@ -109,7 +108,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
 
                 if (mPendingEventList.isEmpty()) {
-                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(
+                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncProducerSuccessEvent(
                         selectedSyncType
                     )
                     return Result.success(
@@ -193,12 +192,22 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
             }
 
-            syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus()
+            syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+                    selectedSyncType,
+                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                    success,
+                    message,
+                    requestIds,
+                    ex
+                )
+            }
             CoreLogger.d(
                 applicationContext,
                 TAG,
                 "doWork: success totalPendingEventCount: $totalPendingEventCount"
             )
+
             syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(selectedSyncType)
 
             Result.success(
