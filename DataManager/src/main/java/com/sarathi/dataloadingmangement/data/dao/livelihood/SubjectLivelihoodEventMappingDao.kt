@@ -3,7 +3,6 @@ package com.sarathi.dataloadingmangement.data.dao.livelihood
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.nudge.core.getCurrentTimeInMillis
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
@@ -43,7 +42,7 @@ interface SubjectLivelihoodEventMappingDao {
         userId: String,
         transactionId: String,
         subjectId: Int,
-        modifiedDate: Long = getCurrentTimeInMillis()
+        modifiedDate: Long
     )
 
     @Query(

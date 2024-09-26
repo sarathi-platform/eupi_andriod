@@ -16,12 +16,14 @@ class SaveLivelihoodEventUseCase @Inject constructor(
     suspend fun addOrEditEvent(
         eventData: LivelihoodEventScreenData,
         particular: String,
-        createdDate: Long
+        createdDate: Long,
+        modifiedDate: Long
     ) {
 
         subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
             eventData,
-            currentDateTime = createdDate
+            currentDateTime = createdDate,
+            modifiedDateTime = modifiedDate
         )
 
         assetJournalRepository.softDeleteAssetJournalEvent(
@@ -53,9 +55,14 @@ class SaveLivelihoodEventUseCase @Inject constructor(
     suspend fun deleteLivelihoodEvent(
         transactionId: String,
         subjectId: Int,
-        selectedEvent: LivelihoodEventTypeDataCaptureMapping
+        selectedEvent: LivelihoodEventTypeDataCaptureMapping,
+        modifiedDate: Long
     ) {
-        subjectLivelihoodEventMappingRepository.softDeleteLivelihoodEvent(transactionId, subjectId)
+        subjectLivelihoodEventMappingRepository.softDeleteLivelihoodEvent(
+            transactionId,
+            subjectId,
+            modifiedDateTime = modifiedDate
+        )
         selectedEvent.assetJournalEntryFlowType?.let {
             assetJournalRepository.softDeleteAssetJournalEvent(
                 subjectId = subjectId,

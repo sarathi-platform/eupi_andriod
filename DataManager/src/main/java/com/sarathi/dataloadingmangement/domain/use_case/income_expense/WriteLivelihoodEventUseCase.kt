@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.getCurrentTimeInMillis
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.DeleteLivelihoodEvent
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
@@ -21,14 +20,15 @@ class WriteLivelihoodEventUseCase @Inject constructor(
     suspend fun writeLivelihoodEvent(
         eventData: LivelihoodEventScreenData,
         particular: String,
-        createdDateTime: Long
+        createdDateTime: Long,
+        modifiedDate: Long
     ) {
 
         val livelihoodPayload =
             subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
                 eventData,
                 currentDateTime = createdDateTime,
-                modifiedDateTime = getCurrentTimeInMillis()
+                modifiedDateTime = modifiedDate
             )
         writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
 
@@ -38,7 +38,7 @@ class WriteLivelihoodEventUseCase @Inject constructor(
                 particular,
                 eventData,
                 currentDateTime = createdDateTime,
-                modifiedDateTIme = getCurrentTimeInMillis()
+                modifiedDateTIme = modifiedDate
             )
             writeEvent(assetJournalPayload, EventName.ASSET_JOURNAL_EVENT)
 
@@ -49,7 +49,7 @@ class WriteLivelihoodEventUseCase @Inject constructor(
                     particular,
                     eventData,
                     currentDateTime = createdDateTime,
-                    modifiedDateTime = getCurrentTimeInMillis()
+                    modifiedDateTime = modifiedDate
                 )
             writeEvent(moneyJournalPayload, EventName.MONEY_JOURNAL_RESPONSE_EVENT)
 

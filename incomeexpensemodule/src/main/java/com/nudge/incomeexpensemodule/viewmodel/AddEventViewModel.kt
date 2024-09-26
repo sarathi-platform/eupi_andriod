@@ -222,6 +222,7 @@ class AddEventViewModel @Inject constructor(
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
             val createdDateTime = getCurrentTimeInMillis()
+            val modifiedDate = getCurrentTimeInMillis()
             val mTransactionId =
                 if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
                     .toString()
@@ -248,12 +249,14 @@ class AddEventViewModel @Inject constructor(
             saveLivelihoodEventUseCase.addOrEditEvent(
                 particular = getParticulars(),
                 createdDate = createdDateTime,
-                eventData = livelihoodScreenData
+                eventData = livelihoodScreenData,
+                modifiedDate = modifiedDate
             )
             writeLivelihoodEventUseCase.writeLivelihoodEvent(
                 particular = getParticulars(),
                 eventData = livelihoodScreenData,
-                createdDateTime = createdDateTime
+                createdDateTime = createdDateTime,
+                modifiedDate = modifiedDate
             )
 
         }
@@ -320,15 +323,17 @@ class AddEventViewModel @Inject constructor(
 
     fun onDeleteClick(transactionId: String, subjectId: Int) {
         ioViewModelScope {
+            val currentDateTime = System.currentTimeMillis()
             saveLivelihoodEventUseCase.deleteLivelihoodEvent(
                 transactionId = transactionId,
                 subjectId = subjectId,
-                getLivelihoodEventFromName(eventType)
+                getLivelihoodEventFromName(eventType),
+                modifiedDate = currentDateTime
             )
             writeLivelihoodEventUseCase.writeDeleteLivelihoodEvent(
                 transactionId = transactionId,
                 subjectId = subjectId,
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = currentDateTime
             )
         }
     }
