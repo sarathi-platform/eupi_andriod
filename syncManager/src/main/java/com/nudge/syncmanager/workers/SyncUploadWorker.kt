@@ -108,7 +108,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
 
                 if (mPendingEventList.isEmpty()) {
-                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(
+                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncProducerSuccessEvent(
                         selectedSyncType
                     )
                     return Result.success(
@@ -192,12 +192,22 @@ class SyncUploadWorker @AssistedInject constructor(
                 )
             }
 
-            syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus()
+            syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+                    selectedSyncType,
+                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                    success,
+                    message,
+                    requestIds,
+                    ex
+                )
+            }
             CoreLogger.d(
                 applicationContext,
                 TAG,
                 "doWork: success totalPendingEventCount: $totalPendingEventCount"
             )
+
             syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncSuccessEvent(selectedSyncType)
 
             Result.success(

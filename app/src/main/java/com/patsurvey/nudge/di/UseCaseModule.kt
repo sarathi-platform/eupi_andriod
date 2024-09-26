@@ -180,14 +180,16 @@ object UseCaseModule {
         repository: SyncHomeRepository,
         eventsWriterRepository: EventsWriterRepository,
         syncRepository: SyncRepository,
-        syncAPiRepository: SyncApiRepository
+        syncAPiRepository: SyncApiRepository,
+        syncAnalyticsEventUseCase: SyncAnalyticsEventUseCase
     ): SyncEventDetailUseCase {
         return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
             getSyncEventsUseCase = GetSyncEventsUseCase(repository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
             fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository),
-            syncAPIUseCase = SyncAPIUseCase(syncRepository, syncAPiRepository)
+            syncAPIUseCase = SyncAPIUseCase(syncRepository, syncAPiRepository),
+            syncAnalyticsEventUseCase = syncAnalyticsEventUseCase
         )
     }
 
@@ -267,6 +269,14 @@ object UseCaseModule {
                 analyticsManager = analyticsManager
             )
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncAnalyticsEventUseCase(
+        analyticsManager: AnalyticsManager,
+    ): SyncAnalyticsEventUseCase {
+        return SyncAnalyticsEventUseCase(analyticsManager)
     }
 
 
