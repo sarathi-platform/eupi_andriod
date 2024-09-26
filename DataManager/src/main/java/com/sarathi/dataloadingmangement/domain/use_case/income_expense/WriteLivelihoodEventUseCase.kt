@@ -57,12 +57,17 @@ class WriteLivelihoodEventUseCase @Inject constructor(
 
     }
 
-    suspend fun writeDeleteLivelihoodEvent(transactionId: String, subjectId: Int) {
+    suspend fun writeDeleteLivelihoodEvent(
+        transactionId: String,
+        subjectId: Int,
+        modifiedDate: Long
+    ) {
         val deleteLivelihoodEventPayload = DeleteLivelihoodEvent(
             doerId = subjectLivelihoodEventMappingRepository.getUserId(),
             transactionId = transactionId,
             subjectId = subjectId,
-            subjectType = "Didi"
+            subjectType = "Didi",
+            modifiedDate = modifiedDate
         )
         writeEvent(deleteLivelihoodEventPayload, EventName.DELETE_RESPONSE_EVENT)
 

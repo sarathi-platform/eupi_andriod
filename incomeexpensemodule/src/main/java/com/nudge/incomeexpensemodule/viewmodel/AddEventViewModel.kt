@@ -327,7 +327,8 @@ class AddEventViewModel @Inject constructor(
             )
             writeLivelihoodEventUseCase.writeDeleteLivelihoodEvent(
                 transactionId = transactionId,
-                subjectId = subjectId
+                subjectId = subjectId,
+                modifiedDate = System.currentTimeMillis()
             )
         }
     }
