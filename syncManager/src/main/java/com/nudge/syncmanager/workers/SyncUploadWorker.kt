@@ -21,7 +21,6 @@ import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.SYNC_POST_SELECTION_DRIVE
 import com.nudge.core.SYNC_SELECTION_DRIVE
 import com.nudge.core.UPCM_USER
-import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
@@ -130,29 +129,29 @@ class SyncUploadWorker @AssistedInject constructor(
 
 
                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
-//                    val eventListAfterPayloadCheck =
-//                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
-//                    val apiResponse =
-//                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-//                            eventListAfterPayloadCheck
-//                        )
-//                    totalPendingEventCount =
-//                        handleAPIResponse(
-//                            apiResponse,
-//                            totalPendingEventCount,
-//                            selectedSyncType,
-//                            eventListAfterPayloadCheck
-//                        )
-
+                    val eventListAfterPayloadCheck =
+                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
                     val apiResponse =
-                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
+                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                            eventListAfterPayloadCheck
+                        )
                     totalPendingEventCount =
                         handleAPIResponse(
                             apiResponse,
                             totalPendingEventCount,
                             selectedSyncType,
-                            mPendingEventList
+                            eventListAfterPayloadCheck
                         )
+
+//                    val apiResponse =
+//                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
+//                    totalPendingEventCount =
+//                        handleAPIResponse(
+//                            apiResponse,
+//                            totalPendingEventCount,
+//                            selectedSyncType,
+//                            mPendingEventList
+//                        )
                 }
 
                 val imageEventIdsList =
@@ -218,11 +217,24 @@ class SyncUploadWorker @AssistedInject constructor(
         connectionQuality: ConnectionQuality
     ): List<Events> {
         var eventPayloadSize = dataEventList.json().getSizeInLong() / 1000
+
+        CoreLogger.d(
+            applicationContext,
+            TAG,
+            "doWork: Event Payload size: ${dataEventList.json().getSizeInLong()}"
+        )
         var eventListAccordingToPayload: List<Events> = dataEventList
         while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSize && eventListAccordingToPayload.size > 1) {
             eventListAccordingToPayload =
                 eventListAccordingToPayload.subList(0, (eventListAccordingToPayload.size / 2))
             eventPayloadSize = eventListAccordingToPayload.json().getSizeInLong() / 1000
+            CoreLogger.d(
+                applicationContext,
+                TAG,
+                "doWork: Event Payload size in loop: ${
+                    eventListAccordingToPayload.json().getSizeInLong()
+                }"
+            )
         }
         return eventListAccordingToPayload
     }

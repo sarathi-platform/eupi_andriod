@@ -168,7 +168,7 @@ interface EventsDao {
     }
 
 
-    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND (type NOT LIKE '%image%' OR name ='FORM_C_TOPIC' OR name ='FORM_D_TOPIC')")
+    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND (type NOT LIKE '%image%' AND name !='FORM_C_TOPIC' AND name !='FORM_D_TOPIC')")
     fun getTotalPendingDataEventCount(status: List<String>, mobileNumber: String): Int
 
     @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND (type LIKE '%image%' OR name ='FORM_C_TOPIC' OR name ='FORM_D_TOPIC')")
