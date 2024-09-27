@@ -112,3 +112,6 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+
+const val DEFAULT_SUCCESS_CODE = 200
+const val DEFAULT_ERROR_CODE = 500
