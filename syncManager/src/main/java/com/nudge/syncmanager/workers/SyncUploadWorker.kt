@@ -168,7 +168,7 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventIds = imageEventIdsList
                         )
                     if (imageEventList.isNotEmpty()) {
-                        findImageEventAndImage(imageEventList) { response ->
+                        findImageEventAndImage(imageEventList, batchLimit) { response ->
                             totalPendingEventCount =
                                 handleAPIResponse(
                                     response,
@@ -503,6 +503,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
     private suspend fun findImageEventAndImage(
         imageEventList: List<ImageEventDetailsModel>,
+        batchLimit: Int,
         onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
         try {
@@ -524,10 +525,13 @@ class SyncUploadWorker @AssistedInject constructor(
                                 imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
                                 isBlobUploaded = isExceptionOccur,
                                 blobUrl = if (isExceptionOccur) BLANK_STRING else message,
-                                errorMessage = if (isExceptionOccur) message else BLANK_STRING
+                                errorMessage = if (isExceptionOccur) message else BLANK_STRING,
+                                eventId = imageDetail.eventId ?: BLANK_STRING,
+                                requestId = BLANK_STRING,
+                                status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
+                                else EventSyncStatus.OPEN.eventSyncStatus
                             )
                         }
-//                        addImageToMultipart(imageDetail, imageMultiPartList)
                     } catch (e: Exception) {
                         handleFailedImageStatus(
                             imageEventDetail = imageDetail,

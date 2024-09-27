@@ -82,9 +82,6 @@ class MainActivityViewModel @Inject constructor(
         prefRepo.setSyncOptionEnabled(isSyncOptionEnable)
     }
 
-    fun saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable: Boolean) {
-        prefRepo.setSyncOptionEnabled(isSyncOptionEnable)
-    }
 
     fun saveDataTabVisibility(isEnabled: Boolean) {
         prefRepo.saveDataTabVisibility(isEnabled)
