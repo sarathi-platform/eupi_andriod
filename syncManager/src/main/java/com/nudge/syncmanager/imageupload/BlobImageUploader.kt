@@ -2,6 +2,8 @@ package com.nudge.syncmanager.imageupload
 
 
 import com.microsoft.azure.storage.CloudStorageAccount
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.CoreLogger
 import javax.inject.Inject
 
 class BlobImageUploader @Inject constructor() : ImageUploader {
@@ -26,7 +28,11 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         val blob = container
             .getBlockBlobReference(fileName)
         blob.uploadFromFile(photoPath)
-//        CoreLogger.d(applicationContext,"Image uploaded successfully ${blob.storageUri.primaryUri.path}")
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext().applicationContext,
+            "BLOB Image Upload",
+            "Image uploaded successfully ${blob.storageUri.primaryUri.path}"
+        )
         return blob.storageUri.primaryUri.path
 
 

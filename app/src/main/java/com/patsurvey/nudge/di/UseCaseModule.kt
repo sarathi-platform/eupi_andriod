@@ -23,6 +23,7 @@ import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
 import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
 import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
+import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
@@ -221,7 +222,8 @@ object UseCaseModule {
         eventStatusDao: EventStatusDao,
         imageStatusDao: ImageStatusDao,
         apiService: SyncApiService,
-        eventsDao: EventsDao
+        eventsDao: EventsDao,
+        blobImageUploader: BlobImageUploader
     ): SyncRepository {
         return SyncRepositoryImpl(
             corePrefRepo = corePrefRepo,
@@ -229,7 +231,8 @@ object UseCaseModule {
             eventStatusDao = eventStatusDao,
             imageStatusDao = imageStatusDao,
             apiService = apiService,
-            eventDao = eventsDao
+            eventDao = eventsDao,
+            imageUploader = blobImageUploader
         )
     }
 

@@ -8,7 +8,6 @@ import com.nudge.syncmanager.firebase.FirebaseRepositoryImpl
 import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.imageupload.ImageUploader
 import com.nudge.syncmanager.network.SyncApiService
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,10 +16,10 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
 
-abstract class SyncManagerModule {
+@InstallIn(SingletonComponent::class)
+@Module
+class SyncManagerModule {
 
 
 
@@ -48,7 +47,10 @@ abstract class SyncManagerModule {
         return WorkManager.getInstance(context)
     }
 
-        @Binds
-    abstract fun provideImageUploader(blobImageUploader: BlobImageUploader):ImageUploader
+    @Provides
+    @Singleton
+    fun provideImageUploader(): ImageUploader {
+        return BlobImageUploader()
+    }
 
 }
