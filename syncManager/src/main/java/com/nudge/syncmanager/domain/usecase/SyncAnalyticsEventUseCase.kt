@@ -114,7 +114,7 @@ class SyncAnalyticsEventUseCase @Inject constructor(
                 selectedSyncType,
                 requestIdCount
             )
-        else if (ex == null) {
+        else if (!success && ex == null) {
             sendSyncConsumerApiFailEvent(
                 selectedSyncType,
                 message,
