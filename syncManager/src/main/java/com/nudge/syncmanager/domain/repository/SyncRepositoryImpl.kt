@@ -330,5 +330,16 @@ class SyncRepositoryImpl(
         )
     }
 
+    override suspend fun getEventListForConsumer(): List<String> {
+        return eventDao.getAllEventsForConsumerStatus(
+            corePrefRepo.getMobileNo(),
+            listOf(
+                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                EventSyncStatus.CONSUMER_FAILED.eventSyncStatus,
+                EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus
+            )
+        )
+    }
+
 
 }
