@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.download_manager.FileType
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
@@ -55,6 +57,7 @@ fun ActivityScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(white)
                     .padding(10.dp)
             ) {
                 ButtonPositive(

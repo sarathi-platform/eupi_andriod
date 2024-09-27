@@ -88,6 +88,11 @@ fun MultiSelectToggleComponent(
                         ) blueDark else {
                             if (isTaskMarkedNotAvailable.value) GreyLight else Color.White
                         },
+                        borderColor = getBorderColor(
+                            selectedValueState = selectedValueState,
+                            optionValueText = optionValueText,
+                            isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
+                        ),
                         optionText = optionValueText.description.toString()
                     ) {
                         if (!isTaskMarkedNotAvailable.value) {

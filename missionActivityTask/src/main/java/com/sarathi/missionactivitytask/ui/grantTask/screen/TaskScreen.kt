@@ -316,7 +316,7 @@ fun TaskScreen(
                                     if (viewModel.filterList.value.isNotEmpty() && viewModel.questionUiModel.value.isNotEmpty()) {
                                         viewModel.filterList.value.keys.let {
                                             val questionTitle =
-                                                viewModel.questionUiModel.value[it.first()]?.display.value()
+                                                viewModel.questionUiModel.value[it.first()]?.questionDisplay.value()
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()

@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -98,7 +98,7 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
                         roundedCornerRadiusDefault
                     )
                 )
-                .padding(vertical = dimen_14_dp)
+                .padding(bottom = dimen_8_dp)
         ) {
             QuestionUiContent(
                 question,

@@ -290,6 +290,9 @@ open class TaskScreenViewModel @Inject constructor(
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
+            if (filterTaskMap.isNotEmpty())
+                expandFirstNotStartedItem()
+
             updateListForAllFilter()
 
             if (isFilterEnabled.value) {
@@ -304,6 +307,11 @@ open class TaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+
+    open fun expandFirstNotStartedItem() {
+
     }
 
     private fun updateFilterForActivity(activityId: Int) {
