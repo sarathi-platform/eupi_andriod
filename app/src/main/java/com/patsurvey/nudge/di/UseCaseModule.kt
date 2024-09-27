@@ -17,9 +17,12 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
+import com.nudge.syncmanager.domain.repository.SyncBlobRepository
+import com.nudge.syncmanager.domain.repository.SyncBlobRepositoryImpl
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import com.nudge.syncmanager.domain.repository.SyncRepositoryImpl
 import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
+import com.nudge.syncmanager.domain.usecase.BlobUploadUseCase
 import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
 import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
 import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
@@ -261,6 +264,7 @@ object UseCaseModule {
     fun provideSyncManagerUseCase(
         repository: SyncRepository,
         syncAPiRepository: SyncApiRepository,
+        syncBlobRepository: SyncBlobRepository,
         analyticsManager: AnalyticsManager
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
@@ -268,6 +272,7 @@ object UseCaseModule {
             syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
             getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
             fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
+            syncBlobUploadUseCase = BlobUploadUseCase(syncBlobRepository),
             syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
                 analyticsManager = analyticsManager
             )
@@ -280,6 +285,22 @@ object UseCaseModule {
         analyticsManager: AnalyticsManager,
     ): SyncAnalyticsEventUseCase {
         return SyncAnalyticsEventUseCase(analyticsManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncBlobRepository(
+        apiService: SyncApiService,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+    ): SyncBlobRepository {
+        return SyncBlobRepositoryImpl(
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao,
+            corePrefRepo = corePrefRepo,
+            apiService = apiService
+        )
     }
 
 

@@ -323,9 +323,6 @@ class SyncRepositoryImpl(
 
     }
 
-    override suspend fun uploadImageOnBlob(filePath: String, fileName: String) {
-        imageUploader.uploadImage(filePath = filePath, fileName = fileName)
-    }
     override suspend fun resetRetryCountForProducerFailed() {
         eventDao.resetRetryCountForProducerFailed(
             EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,

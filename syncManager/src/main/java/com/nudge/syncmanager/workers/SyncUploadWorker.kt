@@ -512,15 +512,21 @@ class SyncUploadWorker @AssistedInject constructor(
                     TAG,
                     "findImageEventAndImageList: ${imageEventList.json()} "
                 )
-                val imageMultiPartList = ArrayList<MultipartBody.Part>()
                 imageEventList.forEach { imageDetail ->
                     try {
 
                         val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
-                        syncManagerUseCase.syncAPIUseCase.uploadImageOnBlob(
+                        syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
                             filePath = picturePath,
                             fileName = imageDetail.fileName ?: BLANK_STRING
-                        )
+                        ) { message, isExceptionOccur ->
+                            syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
+                                imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
+                                isBlobUploaded = isExceptionOccur,
+                                blobUrl = if (isExceptionOccur) BLANK_STRING else message,
+                                errorMessage = if (isExceptionOccur) message else BLANK_STRING
+                            )
+                        }
 //                        addImageToMultipart(imageDetail, imageMultiPartList)
                     } catch (e: Exception) {
                         handleFailedImageStatus(
@@ -530,14 +536,14 @@ class SyncUploadWorker @AssistedInject constructor(
                         )
                     }
 
-                    if (imageMultiPartList.isNotEmpty()) {
-                        syncImageToServerAPI(
-                            imageMultipartList = imageMultiPartList,
-                            imageStatusEventList = imageEventList
-                        ) {
-                            onAPIResponse(it)
-                        }
-                    }
+//                    if (imageMultiPartList.isNotEmpty()) {
+//                        syncImageToServerAPI(
+//                            imageMultipartList = imageMultiPartList,
+//                            imageStatusEventList = imageEventList
+//                        ) {
+//                            onAPIResponse(it)
+//                        }
+//                    }
                 }
             }
         } catch (ex: Exception) {

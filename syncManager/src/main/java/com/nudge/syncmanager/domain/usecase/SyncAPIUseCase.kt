@@ -102,11 +102,5 @@ class SyncAPIUseCase(
     fun getMaxSyncPayloadSize() {
 
     }
-    fun uploadImageOnBlob(filePath: String, fileName: String) {
-        CoreLogger.d(
-            context = CoreAppDetails.getApplicationContext().applicationContext,
-            "SyncAPIUseCase",
-            "uploadImageOnBlob : FilePath: $filePath :: FileName: $fileName"
-        )
-    }
+
 }

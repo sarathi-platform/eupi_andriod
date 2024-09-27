@@ -58,4 +58,13 @@ interface ImageStatusDao {
         }
     }
 
+    @Query("UPDATE $IMAGE_STATUS_TABLE_NAME SET blobUrl =:blobUrl,isBlobUploaded =:isBlobUploaded,errorMessage=:errorMessage where id =:imageStatusId AND mobileNumber =:mobileNumber")
+    fun updateBlobUrl(
+        blobUrl: String,
+        isBlobUploaded: Boolean,
+        imageStatusId: String,
+        mobileNumber: String,
+        errorMessage: String
+    )
+
 }
