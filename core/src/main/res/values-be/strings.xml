@@ -31,4 +31,6 @@
     <string name="select_date_label">खालारखौ सायख\'</string>
     <string name="start_date_label">जागायजेननाय खालार।</string>
     <string name="end_date_label">जोबनाय खालार</string>
+    <string name="reopen_activity_step_1">थाखो 1</string>
+    <string name="reopen_activity_step_2">थाखो 2</string>
 </resources>

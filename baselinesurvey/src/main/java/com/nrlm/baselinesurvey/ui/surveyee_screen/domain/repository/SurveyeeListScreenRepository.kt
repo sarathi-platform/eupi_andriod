@@ -38,6 +38,8 @@ interface SurveyeeListScreenRepository {
 
     fun getBaseLineUserId(): String
 
-    fun getAppLanguage():String
+    fun getAppLanguage(): String
+
+    suspend fun markActivitiesInProgress(missionId: Int, activityIds: List<Int>)
 
 }
