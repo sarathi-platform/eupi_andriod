@@ -143,16 +143,6 @@ class SyncUploadWorker @AssistedInject constructor(
                             selectedSyncType,
                             eventListAfterPayloadCheck
                         )
-
-//                    val apiResponse =
-//                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
-//                    totalPendingEventCount =
-//                        handleAPIResponse(
-//                            apiResponse,
-//                            totalPendingEventCount,
-//                            selectedSyncType,
-//                            mPendingEventList
-//                        )
                 }
 
                 val imageEventIdsList =
@@ -169,15 +159,28 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventIds = imageEventIdsList
                         )
                     if (imageEventList.isNotEmpty()) {
-                        findImageEventAndImage(imageEventList) { response ->
-                            totalPendingEventCount =
-                                handleAPIResponse(
-                                    response,
-                                    totalPendingEventCount,
-                                    selectedSyncType,
-                                    mPendingEventList
-                                )
+                        if (syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()) {
+                            findImageEventAndImage(imageEventList) { response ->
+                                totalPendingEventCount =
+                                    handleAPIResponse(
+                                        response,
+                                        totalPendingEventCount,
+                                        selectedSyncType,
+                                        mPendingEventList
+                                    )
+                            }
+                        } else {
+                            findImageEventAndImageForMultipart(imageEventList) { response ->
+                                totalPendingEventCount =
+                                    handleAPIResponse(
+                                        response,
+                                        totalPendingEventCount,
+                                        selectedSyncType,
+                                        mPendingEventList
+                                    )
+                            }
                         }
+
                     }
                 }
 
@@ -449,8 +452,12 @@ class SyncUploadWorker @AssistedInject constructor(
                                 SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                             metadata = SyncImageMetadataRequest(
                                 data = Data(
-                                    filePath = file.absolutePath,
-                                    contentType = getFileMimeType(file = file)
+                                    filePath = file.path,
+                                    contentType = getFileMimeType(file),
+                                    isOnlyData = false,
+                                    blobUrl = BLANK_STRING,
+                                    driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                                 ),
                                 dependsOn = emptyList()
                             ).json()
@@ -581,6 +588,44 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
 
+    private suspend fun findImageEventAndImageForMultipart(
+        imageEventList: List<ImageEventDetailsModel>,
+        onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
+    ) {
+        try {
+            if (imageEventList.isNotEmpty()) {
+                CoreLogger.d(
+                    applicationContext,
+                    TAG,
+                    "findImageEventAndImageList: ${imageEventList.json()} "
+                )
+                val imageMultiPartList = ArrayList<MultipartBody.Part>()
+                imageEventList.forEach { imageDetail ->
+                    try {
+                        addImageToMultipart(imageDetail, imageMultiPartList)
+                    } catch (e: Exception) {
+                        handleFailedImageStatus(
+                            imageEventDetail = imageDetail,
+                            errorMessage = e.message
+                                ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
+                        )
+                    }
+
+                    if (imageMultiPartList.isNotEmpty()) {
+                        syncImageToServerAPI(
+                            imageMultipartList = imageMultiPartList,
+                            imageStatusEventList = imageEventList
+                        ) {
+                            onAPIResponse(it)
+                        }
+                    }
+                }
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
     private suspend fun SyncUploadWorker.addImageToMultipart(
         imageDetail: ImageEventDetailsModel,
         imageMultiPartList: ArrayList<MultipartBody.Part>
@@ -621,8 +666,6 @@ class SyncUploadWorker @AssistedInject constructor(
             errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
         )
     }
-
-
 }
 
 fun createEventResponseList(

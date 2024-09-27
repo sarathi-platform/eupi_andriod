@@ -91,6 +91,10 @@ class MainActivityViewModel @Inject constructor(
         coreSharedPrefs.saveMixPanelToken(token)
     }
 
+    fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean) {
+        coreSharedPrefs.saveSyncImageBlobUploadEnable(isBlobUploadEnable)
+    }
+
     fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             updateBaselineStatusOnInitUseCase.invoke() {

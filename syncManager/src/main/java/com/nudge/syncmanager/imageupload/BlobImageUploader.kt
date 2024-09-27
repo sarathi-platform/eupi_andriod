@@ -5,12 +5,13 @@ import com.microsoft.azure.storage.CloudStorageAccount
 import com.microsoft.azure.storage.StorageException
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
+import com.nudge.syncmanager.BuildConfig
 import java.io.IOException
 import javax.inject.Inject
 
 class BlobImageUploader @Inject constructor() : ImageUploader {
 
-    val containerName = ""
+    val containerName = "uat/eupi-documents"
     val TAG = "BLOB Image Upload"
 
     override suspend fun uploadImage(
@@ -33,7 +34,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
     ) {
         try {
 
-            val storageConnectionString = ""
+            val storageConnectionString = BuildConfig.BLOB_CONNECTION_STRING
         val account = CloudStorageAccount
             .parse(storageConnectionString)
 

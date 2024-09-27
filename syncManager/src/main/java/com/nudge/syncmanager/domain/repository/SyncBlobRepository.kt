@@ -17,5 +17,7 @@ interface SyncBlobRepository {
         eventId: String,
         requestId: String
     )
+    fun isSyncImageBlobUploadEnable(): Boolean
+
 
 }

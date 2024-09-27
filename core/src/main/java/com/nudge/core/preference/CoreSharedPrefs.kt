@@ -8,6 +8,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
 import com.nudge.core.PREF_MIX_PANEL_TOKEN
+import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.value
@@ -285,6 +286,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun saveMixPanelToken(token: String) {
         savePref(PREF_MIX_PANEL_TOKEN, token)
     }
+    override fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean) {
+        savePref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, isBlobUploadEnable)
+    }
+
+    override fun isSyncImageBlobUploadEnable(): Boolean {
+        return getPref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, false)
+    }
+
 
 
 }

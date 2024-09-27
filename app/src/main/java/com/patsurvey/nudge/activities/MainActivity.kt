@@ -39,6 +39,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.REMOTE_CONFIG_MIX_PANEL_TOKEN
 import com.nudge.core.REMOTE_CONFIG_SYNC_BATCH_SIZE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
+import com.nudge.core.REMOTE_CONFIG_SYNC_IMAGE_UPLOAD_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_RETRY_COUNT
 import com.nudge.core.model.CoreAppDetails
@@ -370,12 +371,14 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                     val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
 
                     val mixPanelToken = remoteConfig[REMOTE_CONFIG_MIX_PANEL_TOKEN].asString()
-
+                    val isImageBlobUploadEnable =
+                        remoteConfig[REMOTE_CONFIG_SYNC_IMAGE_UPLOAD_ENABLE].asBoolean()
                     NudgeLogger.d(
                         "SyncEnabled",
                         "sync enabled : $isSyncEnable :: Sync batch Size : " +
                                 "$syncBatchSize :: Sync Retry Count: $syncRetryCount " +
-                                ":: Setting Sync Option Enable : $isSyncOptionEnable"
+                                ":: Setting Sync Option Enable : $isSyncOptionEnable" +
+                                ":: Setting Image BLOB Upload Enable: $isImageBlobUploadEnable"
                     )
                     mViewModel.saveSyncEnabledFromRemoteConfig(
                         isSyncEnable
@@ -384,6 +387,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                     mViewModel.saveSyncRetryCountFromRemoteConfig(syncRetryCount)
                     mViewModel.saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable)
                     mViewModel.saveMixPanelToken(mixPanelToken)
+                    mViewModel.saveSyncImageBlobUploadEnable(isImageBlobUploadEnable)
 
                 }
             }

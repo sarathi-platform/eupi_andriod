@@ -87,4 +87,7 @@ class SyncBlobRepositoryImpl(
             )
         )
     }
+    override fun isSyncImageBlobUploadEnable(): Boolean {
+        return corePrefRepo.isSyncImageBlobUploadEnable()
+    }
 }

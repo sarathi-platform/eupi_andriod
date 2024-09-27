@@ -46,4 +46,7 @@ class BlobUploadUseCase(
             requestId = requestId
         )
     }
+    fun isSyncImageBlobUploadEnable(): Boolean {
+        return syncBlobRepository.isSyncImageBlobUploadEnable()
+    }
 }
