@@ -1,7 +1,16 @@
-package com.patsurvey.nudge.customviews.htmltext
+package com.nrlm.baselinesurvey.ui.htmltext
 
 import android.text.Spanned
-import android.text.style.*
+import android.text.style.BulletSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.StrikethroughSpan
+import android.text.style.StyleSpan
+import android.text.style.SubscriptSpan
+import android.text.style.SuperscriptSpan
+import android.text.style.TypefaceSpan
+import android.text.style.URLSpan
+import android.text.style.UnderlineSpan
 import android.widget.TextView
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
@@ -9,13 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.core.text.HtmlCompat
-import com.ireward.htmlcompose.spanStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
 private const val URL_TAG = "url_tag"

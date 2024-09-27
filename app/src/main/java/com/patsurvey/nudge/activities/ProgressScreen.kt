@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavHostController
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
@@ -91,6 +91,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.IconButtonForward
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -109,9 +110,9 @@ import kotlinx.coroutines.launch
 fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
-    stepsNavHostController: NavHostController,
     onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
     onNavigateToSetting:()->Unit,
+
     onBackClick:()->Unit
 ) {
     LaunchedEffect(key1 = Unit) {
@@ -175,7 +176,10 @@ fun ProgressScreen(
                         .height(((2 * screenHeight) / 3).dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.seletc_village_screen_text),
+
+
+                        getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
+
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
@@ -186,6 +190,7 @@ fun ProgressScreen(
                         NudgeLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
                         itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                             VillageAndVoBoxForBottomSheet(
+                                stateId = viewModel.getStateId(),
                                 tolaName = village.name,
                                 voName = village.federationName,
                                 index = index,
@@ -359,38 +364,62 @@ fun ProgressScreen(
                                 val subText = when(step.orderNumber) {
                                     1 -> tolaCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.transect_walk_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.transect_walk_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.transect_walk_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.transect_walk_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     2 -> didiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.social_mapping_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.social_mapping_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.social_mapping_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.social_mapping_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     3 -> poorDidiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.wealth_ranking_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.wealth_ranking_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.wealth_ranking_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.wealth_ranking_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.pat_sub_text_plural, it)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural,it)
                                         else
-                                            stringResource(id = R.string.pat_sub_text_singular, it)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular,it)
                                     }
                                     5 -> endorsedDidiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.vo_endorsement_sub_text_plural, it)
+                                            stringResource(
+                                                id = R.string.vo_endorsement_sub_text_plural,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                         else
-                                            stringResource(id = R.string.vo_endorsement_sub_text_singular, it)
+                                            stringResource(
+                                                id = R.string.vo_endorsement_sub_text_singular,
+                                                numberInEnglishFormat(it, null)
+                                            )
                                     }
                                     else -> ""
                                 }
                                 StepsBox(
-                                    boxTitle = findStepNameForSelectedLanguage(context,step.id),
+                                    boxTitle = findStepNameForSelectedLanguage(context,step.id,viewModel.getStateId()),
                                     subTitle = subText,
                                     stepNo = step.orderNumber,
                                     index = index,
@@ -415,19 +444,10 @@ fun ProgressScreen(
                                     }
 
                                     when (index) {
-                                        0 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        1 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        2 -> {}
                                         3 -> {
                                             if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
                                                 viewModel.saveFromPage(ARG_FROM_PAT_SURVEY)
                                         }
-                                        4 -> {}
-                                        5 -> {}
                                     }
                                     if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
                                         onNavigateToStep(villageId,step.id,index,(viewModel.stepList.value[index].isComplete == StepStatus.COMPLETED.ordinal))

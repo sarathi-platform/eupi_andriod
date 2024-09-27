@@ -30,6 +30,7 @@ import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -852,7 +853,7 @@ class TransectWalkViewModel @Inject constructor(
                 localUniqueId = tolaList.value[getIndexOfTola(id)].localUniqueId
             )
 //            transectWalkRepository.tolaInsert(updatedTola)
-            transectWalkRepository.updateTolaName(id, newName)
+            transectWalkRepository.updateTolaNameAndLocation(id, newName,updatedTola)
             val localTola = transectWalkRepository.getTola(id)
             transectWalkRepository.saveEvent(
                 eventItem = localTola,
@@ -1310,6 +1311,8 @@ class TransectWalkViewModel @Inject constructor(
     }
 
 
-
+    fun getStateId(): Int {
+        return transectWalkRepository.prefRepo.getStateId()
+    }
 
 }

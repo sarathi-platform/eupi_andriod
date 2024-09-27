@@ -46,6 +46,7 @@ import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.findImageLocationFromPath
@@ -74,8 +75,19 @@ class SettingRepository @Inject constructor(
 
 
             villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2).forEach {
-                coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
-                coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
+                coreSharedPrefs.setBackupFileName(
+                    getDefaultBackUpFileName(
+                        "regenerate_${it.id}_" + prefRepo.getMobileNumber(),
+                        coreSharedPrefs.getUserType() ?: BLANK_STRING
+                    )
+                )
+                coreSharedPrefs.setImageBackupFileName(
+                    getDefaultImageBackUpFileName(
+                        "regenerate_${it.id}_" + prefRepo.getMobileNumber(),
+                        coreSharedPrefs.getUserType() ?: BLANK_STRING
+                    )
+                )
+
                 if (prefRepo.isUserBPC()) {
                     generatePatEvents(it.id)
                     generateWorkFlowStatusEvent(it.id)
@@ -92,12 +104,23 @@ class SettingRepository @Inject constructor(
                     generateDidiImageEvent(it.id)
                 }
             }
+
         } catch (exception: Exception) {
             NudgeLogger.e("RegenerateEvent", exception.message ?: "")
         } finally {
 
-            coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefRepo.getMobileNumber()))
-            coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefRepo.getMobileNumber()))
+            coreSharedPrefs.setBackupFileName(
+                getDefaultBackUpFileName(
+                    prefRepo.getMobileNumber(),
+                    coreSharedPrefs.getUserType()
+                )
+            )
+            coreSharedPrefs.setImageBackupFileName(
+                getDefaultImageBackUpFileName(
+                    prefRepo.getMobileNumber(),
+                    coreSharedPrefs.getUserType()
+                )
+            )
 
         }
 
@@ -196,11 +219,15 @@ class SettingRepository @Inject constructor(
 
     private suspend fun generateRankingEditEvent(villageId: Int) {
         stepsListDao.getAllStepsForVillage(villageId).forEach {
-            saveEvent(
-                eventItem = it,
-                eventName = EventName.RANKING_FLAG_EDIT,
-                eventType = EventType.STATEFUL
+            val event = createRankingFlagEditEvent(
+                it,
+                it.villageId,
+                stepType = StepType.getStepTypeFromId(it.id).name,
+                prefRepo.getMobileNumber() ?: BLANK_STRING,
+                prefRepo.getUserId()
             )
+
+            saveEventToMultipleSources(event, listOf())
 
         }
     }
@@ -209,14 +236,13 @@ class SettingRepository @Inject constructor(
         stepsListDao.getAllStepsForVillage(villageId).forEach {
             val workFlowEvent = createWorkflowEvent(
                 eventItem = it,
-                eventName = EventName.SAVE_WEALTH_RANKING,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
                 eventType = EventType.STATEFUL,
-                stepStatus = StepStatus.valueOf(it.status),
+                stepStatus = StepStatus.getStepStatusFromOrdinal(it.isComplete),
                 prefRepo = prefRepo
             )
             workFlowEvent?.let {
                 saveEventToMultipleSources(it, listOf())
-
             }
 
         }

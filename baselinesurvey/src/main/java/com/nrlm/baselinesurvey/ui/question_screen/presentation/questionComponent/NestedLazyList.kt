@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,10 +26,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -39,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -55,12 +60,8 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
-import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormQuestionSummaryScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.DidiInfoCard
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
@@ -72,11 +73,13 @@ import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEve
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
+import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.h6Bold
+import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -87,6 +90,10 @@ import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.navigationmanager.graphs.navigateToBaseLineStartScreen
+import com.nudge.navigationmanager.graphs.navigateToFormQuestionSummaryScreen
+import com.nudge.navigationmanager.graphs.navigateToFormTypeQuestionScreen
+import com.nudge.navigationmanager.graphs.navigateToSearchScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -243,13 +250,7 @@ fun NestedLazyList(
                         null,
                         tint = textColorDark,
                         modifier = Modifier.clickable {
-                            if (!sectionDetails.sectionName.equals(NO_SECTION, true))
-                                navController.popBackStack()
-                            else
-                                navController.popBackStack(
-                                    HomeScreens.SURVEYEE_LIST_SCREEN.route,
-                                    false
-                                )
+                            navController.popBackStack()
                         })
 
                     Spacer(modifier = Modifier.size(dimen_8_dp))
@@ -325,7 +326,12 @@ fun NestedLazyList(
             }
             item {
                 ComplexSearchComponent {
-                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
+                    navController.navigateToSearchScreen(
+                        surveyeId = sectionDetails.surveyId,
+                        sectionId = sectionDetails.sectionId,
+                        surveyeeId = surveyeeId,
+                        fromScreen = ARG_FROM_QUESTION_SCREEN
+                    )
                 }
             }
 
@@ -375,6 +381,37 @@ fun NestedLazyList(
                         items = mQuestionEntity.sortedBy { it.questionEntity?.order }
                     ) { index, question ->
                         when (question?.questionEntity?.type) {
+                            QuestionType.AutoCalculation.name -> {
+                                Card(
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = defaultCardElevation
+                                    ),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = white
+                                    ),
+                                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(white)
+                                        .then(modifier)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(dimen_16_dp)
+                                            .background(Color.Transparent)
+                                    ) {
+                                        CalculationResultComponent(
+                                            title = question.questionEntity.questionDisplay,
+                                            showQuestion = question.optionItemEntityState.first(),
+                                            defaultValue = questionScreenViewModel.calculatedResult.value[question.questionId!!]
+                                                ?: BLANK_STRING
+                                        )
+                                    }
+                                }
+
+                            }
+
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
                                     if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
@@ -697,17 +734,16 @@ fun NestedLazyList(
                                                 true
                                             )
                                         ) {
-                                            navigateToBaseLineStartScreen(
+                                            navController.navigateToBaseLineStartScreen(
                                                 surveyeeId = surveyeeId,
                                                 survyId = sectionDetails.surveyId,
-                                                sectionId = sectionDetails.sectionId,
-                                                navController = navController
+                                                sectionId = sectionDetails.sectionId
                                             )
                                         } else {
                                             BaselineCore.setReferenceId(BLANK_STRING)
-                                            navigateToFormTypeQuestionScreen(
-                                                navController,
-                                                question.questionEntity,
+                                            navController.navigateToFormTypeQuestionScreen(
+                                                questionDisplay = question.questionEntity.questionDisplay?: BLANK_STRING,
+                                                questionId = question.questionId?:0,
                                                 surveyId = sectionDetails.surveyId,
                                                 sectionId = sectionDetails.sectionId,
                                                 surveyeeId
@@ -721,8 +757,7 @@ fun NestedLazyList(
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink -> },
                                     onViewSummaryClicked = { questionId ->
-                                        navigateToFormQuestionSummaryScreen(
-                                            navController = navController,
+                                        navController.navigateToFormQuestionSummaryScreen(
                                             surveyId = sectionDetails.surveyId,
                                             sectionId = sectionDetails.sectionId,
                                             questionId = questionId,
@@ -849,12 +884,12 @@ fun NestedLazyList(
 
                                         if (!isNoneMarkedForForm && isFormOpened) {
 //                                            BaselineCore.setReferenceId(questionScreenViewModel.getReferenceIdForFormWithNoneQuestion())
-                                            navigateToFormTypeQuestionScreen(
-                                                navController,
-                                                question.questionEntity,
+                                            navController.navigateToFormTypeQuestionScreen(
+                                                questionId = question.questionId ?:0,
+                                                questionDisplay = question.questionEntity.questionDisplay ?: BLANK_STRING,
                                                 surveyId = sectionDetails.surveyId,
                                                 sectionId = sectionDetails.sectionId,
-                                                surveyeeId
+                                                surveyeeId =  surveyeeId
                                             )
                                         }
                                     },
@@ -867,8 +902,7 @@ fun NestedLazyList(
                                         }
                                     },
                                     onViewSummaryClicked = { questionId ->
-                                        navigateToFormQuestionSummaryScreen(
-                                            navController = navController,
+                                        navController.navigateToFormQuestionSummaryScreen(
                                             surveyId = sectionDetails.surveyId,
                                             sectionId = sectionDetails.sectionId,
                                             questionId = questionId,
@@ -954,6 +988,7 @@ fun NestedLazyList(
                                                     if (selectedValue != BLANK_STRING) optionItem.copy(
                                                         selectedValue = selectedValue
                                                     ) else optionItem.copy(selectedValue = "0")
+
 
                                                 questionScreenViewModel.saveInputNumberOptionResponse(
                                                     questionId = question.questionId!!,
@@ -1196,11 +1231,10 @@ fun NestedLazyList(
                                         didiDetails = questionScreenViewModel.didiDetails.value,
                                         isEditAllowed = questionScreenViewModel.isEditAllowed,
                                         onUpdate = {
-                                            navigateToBaseLineStartScreen(
+                                            navController.navigateToBaseLineStartScreen(
                                                 surveyeeId = surveyeeId,
                                                 survyId = sectionDetails.surveyId,
-                                                sectionId = sectionDetails.sectionId,
-                                                navController = navController
+                                                sectionId = sectionDetails.sectionId
                                             )
                                         }
                                     )

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -43,16 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
+import com.nrlm.baselinesurvey.AUTO_CALCULATE_CONDITION_DELIMITER
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.CONDITIONS_DELIMITER
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.DELIMITER_TIME
 import com.nrlm.baselinesurvey.DELIMITER_YEAR
 import com.nrlm.baselinesurvey.HOURS
@@ -61,7 +57,6 @@ import com.nrlm.baselinesurvey.MONTHS
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.YEAR
 import com.nrlm.baselinesurvey.ZERO_RESULT
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
@@ -91,25 +86,20 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
+import com.nudge.core.Core
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
+import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.nudge.core.enums.EventName
+import com.nudge.core.utils.state.DialogState
+import com.nudge.core.utils.state.rememberDialogState
 import java.io.File
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 
-fun uriFromFile(context: Context, file: File): Uri {
-    try {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
-        } else {
-            Uri.fromFile(file)
-        }
-    } catch (ex: Exception) {
-        return Uri.EMPTY
-        Log.e("uriFromFile", "exception", ex)
-    }
-}
 
 fun getAuthImageFileNameFromURL(url: String): String{
     return url.substring(url.lastIndexOf('=') + 1, url.length)
@@ -177,7 +167,7 @@ fun stringToInt(string: String):Int{
     return intValue
 }
 
-fun setKeyboardToPan(context: MainActivity) {
+fun setKeyboardToPan(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 }
 
@@ -185,7 +175,7 @@ fun getUniqueIdForEntity(): String {
     return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
-fun setKeyboardToReadjust(context: MainActivity) {
+fun setKeyboardToReadjust(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
 
@@ -231,7 +221,7 @@ fun openSettings(context: Context) {
         addCategory(Intent.CATEGORY_DEFAULT)
     }
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    (context as MainActivity).startActivity(appSettingsIntent)
+    Core().getMainActivityContext()?.startActivity(appSettingsIntent)
 }
 
 fun List<SectionEntity>.getSectionIndexById(sectionId: Int): Int {
@@ -348,6 +338,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         order = this.order ?: -1,
         summary = this.questionSummary,
         values = emptyList(),
+        optionTag = this.attributeTag ?: 0,
         contentEntities = this.contentList ?: listOf(),
         conditional = this.conditional
     )
@@ -378,6 +369,10 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
     val optionsItemEntityList = mutableListOf<OptionItemEntity>()
 
     this.options?.forEach { optionsItem ->
+        var tag = this.attributeTag ?: 0
+        if (tag == 0) {
+            tag = optionsItem?.tag ?: 0
+        }
         val optionItemEntity = OptionItemEntity(
             id = 0,
             optionId = optionsItem?.optionId,
@@ -395,7 +390,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             order = this.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
-            optionTag = this.attributeTag ?: 0,
+            optionTag = tag,
             contentEntities = optionsItem?.contentList ?: listOf(),
             conditions = optionsItem?.conditions
         )
@@ -896,7 +891,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
         when (type) {
             QuestionType.RadioButton -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, optionDesc = it.display ?: BLANK_STRING, tag = it.optionTag, selectedValue = it.selectedValue)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
@@ -949,7 +944,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
             QuestionType.Grid -> {
 
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, optionDesc = it.display ?: BLANK_STRING, tag = it.optionTag, selectedValue = it.selectedValue)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
 
             }
@@ -1304,6 +1299,9 @@ fun numberInEnglishFormat(number: String): String {
     if (TextUtils.isEmpty(number))
         return BLANK_STRING
 
+    if (number.all { it == '0' })
+        return number
+
     val formatter = NumberFormat.getInstance(Locale.ENGLISH)
     val mNumber = formatter.parse(number)
 
@@ -1322,6 +1320,7 @@ fun ShowCustomDialog(
     message: String,
     positiveButtonTitle: String? = BLANK_STRING,
     negativeButtonTitle: String? = BLANK_STRING,
+    dialogState: DialogState = rememberDialogState(),
     dismissOnBackPress: Boolean? = true,
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
@@ -1440,15 +1439,48 @@ fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
                     )
                 }
             }else{
-                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             }
             BaselineCore.startExternalApp(chooserIntent)
-        }catch (ex:Exception){
-            BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
+        } catch (ex: Exception) {
+            BaselineLogger.e("ExportImportViewModel", "openShareSheet :${ex.message}", ex)
         }
     }else{
        showCustomToast(BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(R.string.no_data_available_at_the_moment))
 
+    }
+
+}
+
+fun getAutoCalculationConditionConditions(value: String): Pair<Int, String>? {
+    try {
+        val s = value.split(AUTO_CALCULATE_CONDITION_DELIMITER)
+        if (s.isEmpty())
+            return null
+
+        if (s.size > 2)
+            return null
+
+        val questionId = s.first().toInt()
+
+        if (questionId.equals(0))
+            return null
+
+        val comparisonCondition = s.last()
+
+        if (comparisonCondition.trim().isEmpty())
+            return null
+
+        return Pair(questionId, comparisonCondition)
+
+    } catch (ex: Exception) {
+        BaselineLogger.e(
+            "Utils",
+            "getAutoCalculationConditionConditions -> exception: $ex",
+            ex,
+            true
+        )
+        return null
     }
 
 }

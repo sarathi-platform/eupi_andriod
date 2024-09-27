@@ -8,11 +8,17 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
+import com.patsurvey.nudge.RetryHelper.retryApiList
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
+import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.analytics.EventParams
+import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
@@ -66,7 +72,6 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.COMPLETED_STRING
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
@@ -94,6 +99,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
 import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
@@ -132,7 +138,6 @@ import com.patsurvey.nudge.utils.getFormPathKey
 import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.getVideoPath
-import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
@@ -180,7 +185,7 @@ class VillageSelectionRepository @Inject constructor(
             val awaitDeff = CoroutineScope(Dispatchers.IO).async {
                 try {
                     //Fetch PAT Question
-                    fetchQuestions(prefRepo)
+//                    fetchQuestions(prefRepo)
 
                     val villageList =
                         villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
@@ -419,7 +424,7 @@ class VillageSelectionRepository @Inject constructor(
             val awaitDeff = CoroutineScope(Dispatchers.IO).async {
                 try {
                     //Fetch PAT Question
-                    fetchQuestions(prefRepo)
+//                    fetchQuestions(prefRepo)
 
                     val villageList =
                         villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
@@ -2351,7 +2356,7 @@ class VillageSelectionRepository @Inject constructor(
         }
     }
 
-    private fun fetchQuestions(prefRepo: PrefRepo){
+    private fun fetchQuestions(prefRepo: PrefRepo, isRefresh: Boolean) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localLanguageList = languageListDao.getAllLanguages()
             localLanguageList?.let {
@@ -2361,7 +2366,7 @@ class VillageSelectionRepository @Inject constructor(
                         // Fetch QuestionList from Server
                         val localLanguageQuesList =
                             questionDao.getAllQuestionsForLanguage(languageEntity.id)
-                        if (localLanguageQuesList.isEmpty()) {
+                        if (localLanguageQuesList.isEmpty() || isRefresh) {
                             NudgeLogger.d("TAG", "fetchQuestions: QuestionList")
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
@@ -2371,7 +2376,11 @@ class VillageSelectionRepository @Inject constructor(
                                 )
                             )
                             if (quesListResponse.status.equals(SUCCESS, true)) {
+
                                 quesListResponse.data?.let { questionList ->
+                                    if (isRefresh) {
+                                        questionDao.deleteQuestionTableForLanguage(languageId = languageEntity.id)
+                                    }
                                     questionList.listOfQuestionSectionList?.forEach { list ->
                                         list?.questionList?.forEach { question ->
                                             question?.sectionOrderNumber = list.orderNumber
@@ -3274,12 +3283,13 @@ class VillageSelectionRepository @Inject constructor(
                                             modifiedDate = didi.modifiedDate,
                                             beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                             shgFlag = SHGFlag.fromSting(
-                                                intToString(didi.shgFlag) ?: SHGFlag.NOT_MARKED.name).value,
+                                                didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                            ).value,
                                             transactionId = "",
                                             localCreatedDate = didi.localCreatedDate,
                                             localModifiedDate = didi.localModifiedDate,
                                             score = didi.bpcScore ?: 0.0,
-                                            comment =  didi.bpcComment ?: BLANK_STRING,
+                                            comment = didi.bpcComment ?: BLANK_STRING,
                                             crpScore = didi.crpScore,
                                             crpComment = didi.crpComment,
                                             bpcScore = didi.bpcScore ?: 0.0,
@@ -3289,7 +3299,10 @@ class VillageSelectionRepository @Inject constructor(
                                             rankingEdit = didi.rankingEdit,
                                             patEdit = didi.patEdit,
                                             voEndorsementEdit = didi.voEndorsementEdit,
-                                            ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                            ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                                didi.ableBodiedFlag
+                                                    ?: AbleBodiedFlag.NOT_MARKED.name
+                                            ).value
                                         )
                                     )
                                     if(!didi.crpUploadedImage.isNullOrEmpty()){
@@ -3972,11 +3985,7 @@ class VillageSelectionRepository @Inject constructor(
                                 val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
-                                /*if (localVillageList.isNotEmpty()) {
-                                    _villagList.emit(localVillageList)
-                                } else {
-                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
-                                }*/
+                                prefRepo.savePref(PREF_KEY_TYPE_STATE_ID,  it.villageList?.get(0)?.stateId?:4)
                                 userAndVillageDetailsModel = if (localVillageList.isNotEmpty()) {
                                     UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
                                 } else {
@@ -4081,8 +4090,59 @@ class VillageSelectionRepository @Inject constructor(
         prefRepo.saveSettingOpenFrom(fromPage)
     }
 
-    fun fetchPatQuestionsFromNetwork() {
-        fetchQuestions(prefRepo)
+    fun fetchPatQuestionsFromNetwork(isRefresh: Boolean) {
+        fetchQuestions(prefRepo, isRefresh)
     }
+
+    public fun fetchCastList(isRefresh: Boolean) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val languageList = languageListDao.getAllLanguages()
+            languageList.forEach { language ->
+                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
+                if (localCasteList.isEmpty() || isRefresh) {
+                    try {
+                        val casteResponse = apiService.getCasteList(language.id)
+                        if (casteResponse.status.equals(SUCCESS, true)) {
+                            casteResponse.data?.let { casteList ->
+                                if (isRefresh) {
+                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
+                                }
+                                casteList.forEach { casteEntity ->
+                                    casteEntity.languageId = language.id
+                                }
+                                casteListDao.insertAll(casteList)
+                                AnalyticsHelper.logEvent(
+                                    Events.CASTE_LIST_WRITE,
+                                    mapOf(
+                                        EventParams.LANGUAGE_ID to language.id,
+                                        EventParams.CASTE_LIST to "$casteList",
+                                        EventParams.FROM_SCREEN to "VillageSelectionScreen"
+                                    )
+                                )
+                            }
+                        } else {
+                            val ex = ApiResponseFailException(casteResponse.message)
+                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
+                                retryApiList.add(ApiType.CAST_LIST_API)
+                                crpPatQuestionApiLanguageId.add(language.id)
+                            }
+                            onCatchError(ex, ApiType.CAST_LIST_API)
+                        }
+                    } catch (ex: Exception) {
+                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
+                            retryApiList.add(ApiType.CAST_LIST_API)
+                            crpPatQuestionApiLanguageId.add(language.id)
+                        }
+                        onCatchError(ex, ApiType.CAST_LIST_API)
+                    } finally {
+                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
+                            ApiType.CAST_LIST_API
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 
 }

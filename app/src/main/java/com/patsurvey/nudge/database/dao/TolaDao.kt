@@ -37,8 +37,8 @@ interface TolaDao {
     @Query("UPDATE $TOLA_TABLE SET needsToPost = :needsToPost WHERE id =:id")
     fun updateNeedToPost(id:Int, needsToPost: Boolean)
 
-    @Query("UPDATE $TOLA_TABLE SET name = :name WHERE id =:id")
-    fun updateTolaName(id: Int, name: String)
+    @Query("UPDATE $TOLA_TABLE SET name = :name , latitude = :latitude ,longitude = :longitude WHERE id =:id")
+    fun updateTolaNameAndLocation(id: Int, name: String, latitude: String,longitude:String)
     @Query("DELETE from $TOLA_TABLE where villageId = :villageId")
     fun deleteTolaTable(villageId: Int)
 

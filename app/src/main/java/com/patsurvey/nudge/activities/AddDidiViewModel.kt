@@ -111,7 +111,9 @@ class AddDidiViewModel @Inject constructor(
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 
     val villageEntity = mutableStateOf<VillageEntity?>(null)
-
+    fun getStateId():Int{
+        return addDidiRepository.prefRepo.getStateId()
+    }
     init {
         setVillage(addDidiRepository.getSelectedVillage().id)
         villageId = addDidiRepository.getSelectedVillage().id
@@ -532,8 +534,8 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             val ifDidiExist = addDidiRepository.getDidiExist(
-                didiName.value, houseNumber.value,
-                dadaName.value, selectedTola.value.first, villageId
+                didiName.value.trim(), houseNumber.value.trim(),
+                dadaName.value.trim(), selectedTola.value.first, villageId
             )
             val selectedTolaFromDb = addDidiRepository.fetchSingleTola(selectedTola.value.first)
             if (ifDidiExist == 0) {
@@ -607,8 +609,8 @@ class AddDidiViewModel @Inject constructor(
             filterDidiList
 
             val ifDidiExist = addDidiRepository.getDidiExist(
-                didiName.value, houseNumber.value,
-                dadaName.value, selectedTola.value.first, villageId
+                didiName.value.trim(), houseNumber.value.trim(),
+                dadaName.value.trim(), selectedTola.value.first, villageId
             )
             if (ifDidiExist == 0) {
                 val updatedDidi = DidiEntity(
@@ -650,7 +652,13 @@ class AddDidiViewModel @Inject constructor(
                     localUniqueId = _didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).localUniqueId,
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
-                        .indexOf(didiId)).ableBodiedFlag
+                        .indexOf(didiId)).ableBodiedFlag,
+                    rankingEdit = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).rankingEdit,
+                    patEdit = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).patEdit,
+                    voEndorsementEdit = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).voEndorsementEdit,
                 )
                 val selectedTolaEntity =
                     addDidiRepository.fetchSingleTolaFromServerId(selectedTola.value.first)

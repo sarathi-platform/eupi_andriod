@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,13 +15,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.brownDark
 import com.nrlm.baselinesurvey.ui.theme.yellowBg
-import com.nrlm.baselinesurvey.utils.getImagePathFromString
-import java.io.File
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.FileUtils
 
 @Composable
 fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String = BLANK_STRING) {
@@ -36,13 +35,16 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
             .then(modifier)
     ) {
         if (imagePath != BLANK_STRING) {
+
+            val imageUri = CoreAppDetails.getContext()?.applicationContext?.let {
+                FileUtils.findImageFileUsingFilePath(
+                    context = it,
+                    imagePath
+                )
+            }
             Image(
-                painter = rememberImagePainter(
-                    Uri.fromFile(
-                        File(
-                            imagePath.getImagePathFromString()
-                        )
-                    )
+                painter = rememberAsyncImagePainter(
+                    imageUri
                 ),
                 contentDescription = "didi image",
                 contentScale = ContentScale.FillBounds,

@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.language.domain.use_case
 
-import com.nrlm.baselinesurvey.activity.MainActivity
+import android.content.Context
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 
 class SaveSelectedLanguageUseCase(private val repository: LanguageScreenRepository) {
@@ -9,7 +9,7 @@ class SaveSelectedLanguageUseCase(private val repository: LanguageScreenReposito
         repository.saveSelectedLanguageId(languageId)
     }
 
-    fun saveSelectedLanguageCode(mainActivity: MainActivity, languageCode: String) {
+    fun saveSelectedLanguageCode(mainActivity: Context, languageCode: String) {
         repository.saveSelectedLanguageCode(mainActivity, languageCode)
     }
 

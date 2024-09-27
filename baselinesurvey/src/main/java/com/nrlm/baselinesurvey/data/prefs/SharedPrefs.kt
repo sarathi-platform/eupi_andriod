@@ -7,27 +7,29 @@ import com.nrlm.baselinesurvey.ACCESS_TOKEN
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.ARG_PAGE_FROM
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_KEY_PAGE_FROM
 import com.nrlm.baselinesurvey.PREF_KEY_SELECTED_VILLAGE
 import com.nrlm.baselinesurvey.PREF_KEY_SETTING_OPEN_FROM
+import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
-import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.StrictModePermitter.permitDiskReads
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Context) :PrefRepo {
+class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Context) :PrefBSRepo {
     companion object {
-        const val PREFS_NAME = "secured_nudge_baseline_prefs"
+//        const val PREFS_NAME = "secured_nudge_baseline_prefs"
+        const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+
     }
 
     val prefs: SharedPreferences by lazy {
@@ -172,7 +174,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getUniqueUserIdentifier(): String {
-        val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        val userType = prefs.getString(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
         val userMobile = prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
         return "${userType}_${userMobile}"
     }

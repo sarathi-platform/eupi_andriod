@@ -519,6 +519,9 @@ class SurveyeeScreenViewModel @Inject constructor(
     fun getPendingDidiCountLive(activityId: Int): LiveData<Int> {
         return surveyeeScreenUseCase.getPendingTaskCountLiveUseCase.invoke(activityId)
     }
+    fun getAppLanguage():String{
+        return surveyeeScreenUseCase.getSurveyeeListUseCase.getAppLanguage()
+    }
 
 
 }

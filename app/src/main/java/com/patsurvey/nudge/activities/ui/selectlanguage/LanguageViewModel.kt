@@ -2,6 +2,10 @@ package com.patsurvey.nudge.activities.ui.selectlanguage
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
+import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -36,13 +40,7 @@ class LanguageViewModel @Inject constructor(
                 val list = languageRepository.getAllLanguages()
                 if (list.isNullOrEmpty()) {
                     _languageList.value = listOf(
-                        LanguageEntity(
-                            id = 2,
-                            language = "English",
-                            langCode = "en",
-                            orderNumber = 1,
-                            localName = "English"
-                        )
+                        getDefaultLanguage()
                     )
                 } else {
                     _languageList.value = list
@@ -50,13 +48,7 @@ class LanguageViewModel @Inject constructor(
             } catch (ex: Exception) {
                 NudgeLogger.e("LanguageViewModel", "fetchLanguageList: ", ex)
                 _languageList.value = listOf(
-                    LanguageEntity(
-                        id = 2,
-                        language = "English",
-                        langCode = "en",
-                        orderNumber = 1,
-                        localName = "English"
-                    )
+                    getDefaultLanguage()
                 )
             }
 
@@ -79,5 +71,15 @@ class LanguageViewModel @Inject constructor(
                 onVillageSelectionFailed()
             }
         }
+    }
+
+    fun getDefaultLanguage(): LanguageEntity {
+        return LanguageEntity(
+            id = DEFAULT_LANGUAGE_ID,
+            language = DEFAULT_LANGUAGE_NAME,
+            langCode = DEFAULT_LANGUAGE_CODE,
+            orderNumber = 1,
+            localName = DEFAULT_LANGUAGE_LOCAL_NAME
+        )
     }
 }

@@ -79,6 +79,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
@@ -103,8 +105,6 @@ import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.BulletList
@@ -112,6 +112,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -154,8 +155,8 @@ fun ParticipatoryWealthRankingSurvey(
             showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
         } else {
             if (isStepComplete) {
-                navController.navigate(Graph.HOME) {
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                    popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false
                     }
@@ -166,9 +167,9 @@ fun ParticipatoryWealthRankingSurvey(
         }
     }
 
-    if(viewModel.showDidiImageDialog.value){
+    if (viewModel.showDidiImageDialog.value) {
         viewModel.dialogDidiEntity.value?.let {
-            showDidiImageDialog(didi = it){
+            showDidiImageDialog(didi = it) {
                 viewModel.showDidiImageDialog.value = false
             }
         }
@@ -205,28 +206,26 @@ fun ParticipatoryWealthRankingSurvey(
                         )
 
                         viewModel.updateWorkflowStatusInEvent(
-                            StepStatus.COMPLETED,
-                            stepId,
-                            villageId = viewModel.villageId
+                            StepStatus.COMPLETED, stepId, villageId = viewModel.villageId
                         )
                         viewModel.updateWealthRankingFlagForDidis()
                         viewModel.addRankingFlagEditEvent(stepId = stepId)
                         viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            if(viewModel.isTolaSynced.value == 2
-                                && viewModel.isDidiSynced.value == 2) {
+                            if (viewModel.isTolaSynced.value == 2 && viewModel.isDidiSynced.value == 2) {
                                 viewModel.updateWealthRankingToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
-                                        viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                        }
+                                        viewModel.callWorkFlowAPI(viewModel.villageId,
+                                            stepId,
+                                            object : NetworkCallbackListener {
+                                                override fun onSuccess() {
+                                                }
 
-                                        override fun onFailed() {
+                                                override fun onFailed() {
 //                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-                                    })
+                                                }
+                                            })
                                     }
 
                                     override fun onFailed() {
@@ -240,13 +239,15 @@ fun ParticipatoryWealthRankingSurvey(
                             "wr_step_completion_screen/${
                                 context.getString(R.string.wealth_ranking_completed_message)
                                     .replace(
-                                        "{VILLAGE_NAME}",
-                                        viewModel.selectedVillage?.name ?: ""
+                                        "{VILLAGE_NAME}", viewModel.selectedVillage?.name ?: ""
                                     )
                             }"
                         )
                     } else {
-                        showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
+                        showToast(
+                            context,
+                            context.getString(R.string.previous_step_not_complete_messgae_text)
+                        )
                     }
                 }
 
@@ -272,7 +273,8 @@ fun ParticipatoryWealthRankingSurvey(
                 VillageDetailView(
                     villageName = viewModel.selectedVillage?.name ?: "",
                     voName = (viewModel.selectedVillage?.federationName) ?: "",
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = viewModel.getStateId()
                 )
 
                 Box(
@@ -281,8 +283,7 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp, horizontal = 4.dp)
                 ) {
                     Text(
-                        text =
-                        stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
+                        text = stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -321,16 +322,17 @@ fun ParticipatoryWealthRankingSurvey(
                             .align(Alignment.Center)
                             .fillMaxWidth(),
                         style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            fontFamily = NotoSans
+                            fontSize = 14.sp, fontWeight = FontWeight.Normal, fontFamily = NotoSans
                         ),
                         color = textColorDark80,
                         textAlign = TextAlign.Start
                     )
                 }
 
-                AnimatedVisibility(visible = showDidiListForRank.first, modifier = Modifier.padding(horizontal = 4.dp)) {
+                AnimatedVisibility(
+                    visible = showDidiListForRank.first,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                ) {
 
                     Box(
                         modifier = Modifier
@@ -344,26 +346,28 @@ fun ParticipatoryWealthRankingSurvey(
                             modifier = Modifier.padding(bottom = 10.dp),
                             state = listState
                         ) {
-                            val didiListForCategory = didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }
+                            val didiListForCategory =
+                                didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             if (didiListForCategory.isNotEmpty()) {
                                 itemsIndexed(didiListForCategory) { index, didi ->
-                                    DidiItemCardForWealthRanking(didi,
+                                    DidiItemCardForWealthRanking(stateId = viewModel.getStateId(),
+                                        didi,
                                         expandedCardIds.contains(didi.id),
                                         Modifier.padding(horizontal = 0.dp),
                                         onExpendClick = { expand, didiDetailModel ->
                                             viewModel.onCardArrowClicked(didiDetailModel.id)
                                             coroutineScope.launch {
-                                                delay(EXPANSTION_TRANSITION_DURATION.toLong()-100)
-                                                listState.animateScrollToItem(index+1)
+                                                delay(EXPANSTION_TRANSITION_DURATION.toLong() - 100)
+                                                listState.animateScrollToItem(index + 1)
                                             }
                                         },
+
                                         onItemClick = {},
-                                        onCircularImageClick = { didi->
+                                        onCircularImageClick = { didi ->
                                             viewModel.dialogDidiEntity.value = didi
                                             viewModel.showDidiImageDialog.value = true
-                                        }
-                                    )
+                                        })
                                 }
                             } else {
                                 item {
@@ -382,13 +386,20 @@ fun ParticipatoryWealthRankingSurvey(
                                                         fontFamily = NotoSans
                                                     )
                                                 ) {
-                                                    val category = when (showDidiListForRank.second) {
-                                                        WealthRank.POOR -> stringResource(id = R.string.poor_text)
-                                                        WealthRank.MEDIUM -> stringResource(id = R.string.medium_text)
-                                                        WealthRank.RICH -> stringResource(id = R.string.rich_text)
-                                                        else -> {""}
-                                                    }
-                                                    append(stringResource(R.string.wealth_ranking_summary_empty_text).replace("{CATEGORY}", category))
+                                                    val category =
+                                                        when (showDidiListForRank.second) {
+                                                            WealthRank.POOR -> stringResource(id = R.string.poor_text)
+                                                            WealthRank.MEDIUM -> stringResource(id = R.string.medium_text)
+                                                            WealthRank.RICH -> stringResource(id = R.string.rich_text)
+                                                            else -> {
+                                                                ""
+                                                            }
+                                                        }
+                                                    append(
+                                                        stringResource(R.string.wealth_ranking_summary_empty_text).replace(
+                                                            "{CATEGORY}", category
+                                                        )
+                                                    )
                                                 }
                                             },
                                             textAlign = TextAlign.Center,
@@ -432,30 +443,27 @@ fun ParticipatoryWealthRankingSurvey(
         }
 
         if (viewModel.showBottomButton.value || showDidiListForRank.first) {
-            BottomButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
+            BottomButtonBox(modifier = Modifier
+                .constrainAs(bottomActionBox) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                }
+                .onGloballyPositioned { coordinates ->
+                    bottomPadding = with(localDensity) {
+                        coordinates.size.height.toDp()
                     }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
-                        }
-                    },
+                },
                 positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
                     id = R.string.complete_wealth_ranking_btn_text
                 ),
                 isArrowRequired = !showDidiListForRank.first,
                 positiveButtonOnClick = {
-                    if (showDidiListForRank.first)
-                        showDidiListForRank =
-                            Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
+                    if (showDidiListForRank.first) showDidiListForRank =
+                        Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
                     else {
                         showDialog.value = true
                     }
-                }
-            )
+                })
         } else {
             bottomPadding = 0.dp
         }
@@ -464,22 +472,26 @@ fun ParticipatoryWealthRankingSurvey(
 
 @Preview(showBackground = true)
 @Composable
-fun ShowDialogPreview(){
-    ShowDialog("Title","New Message", setShowDialog = {}, list = emptyList(), positiveButtonClicked = {})
+fun ShowDialogPreview() {
+    ShowDialog("Title",
+        "New Message",
+        setShowDialog = {},
+        list = emptyList(),
+        positiveButtonClicked = {})
 }
+
 @Composable
 fun ShowDialog(
     title: String,
     message: String,
-    isBulletShow:Boolean?=false,
-    list: List<String> ?= emptyList(),
+    isBulletShow: Boolean? = false,
+    list: List<String>? = emptyList(),
     setShowDialog: (Boolean) -> Unit,
     positiveButtonClicked: () -> Unit
 ) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
-            shape = RoundedCornerShape(6.dp),
-            color = Color.White
+            shape = RoundedCornerShape(6.dp), color = Color.White
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Column(
@@ -495,7 +507,7 @@ fun ShowDialog(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if(isBulletShow == false){
+                    if (isBulletShow == false) {
                         Text(
                             text = message,
                             textAlign = TextAlign.Start,
@@ -503,7 +515,7 @@ fun ShowDialog(
                             color = textColorDark,
                             modifier = Modifier.fillMaxWidth()
                         )
-                    }else{
+                    } else {
                         if (list != null) {
                             BulletList(items = list)
                         }
@@ -558,22 +570,19 @@ fun WealthRankingBox(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(boxColor, shape = RoundedCornerShape(6.dp))
-            .clip(RoundedCornerShape(6.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = Color.White
-                )
-            ) {
-                onWealthRankingBoxClicked(wealthRank)
-            }
-            .then(modifier)
-    ) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .background(boxColor, shape = RoundedCornerShape(6.dp))
+        .clip(RoundedCornerShape(6.dp))
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(
+                bounded = true, color = Color.White
+            )
+        ) {
+            onWealthRankingBoxClicked(wealthRank)
+        }
+        .then(modifier)) {
         Row(
             modifier = Modifier.align(Alignment.CenterStart),
             verticalAlignment = Alignment.CenterVertically
@@ -589,55 +598,45 @@ fun WealthRankingBox(
                     .absolutePadding(top = 4.dp)
             ) {
                 val (circle_1, circle_2, circle_3) = createRefs()
-                RoundedImage(
-                    image = painterResource(id = R.drawable.didi_icon),
+                RoundedImage(image = painterResource(id = R.drawable.didi_icon),
                     modifier = Modifier
                         .height(23.dp)
                         .constrainAs(circle_1) {
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
-                        }
-                )
+                        })
                 if (count >= 2) {
-                    RoundedImage(
-                        image = painterResource(id = R.drawable.didi_icon),
+                    RoundedImage(image = painterResource(id = R.drawable.didi_icon),
                         modifier = Modifier
                             .height(23.dp)
                             .constrainAs(circle_2) {
                                 top.linkTo(parent.top)
                                 start.linkTo(circle_1.start, 13.dp)
-                            }
-                    )
+                            })
                 }
                 if (count >= 3) {
-                    RoundedImage(
-                        image = painterResource(id = R.drawable.didi_icon),
+                    RoundedImage(image = painterResource(id = R.drawable.didi_icon),
                         modifier = Modifier
                             .height(23.dp)
                             .constrainAs(circle_3) {
                                 top.linkTo(parent.top)
                                 start.linkTo(circle_2.start, 13.dp)
-                            }
-                    )
+                            })
                 }
             }
         }
         Row(
-            modifier = Modifier
-                .align(Alignment.CenterEnd),
+            modifier = Modifier.align(Alignment.CenterEnd),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = boxTitle,
-                style = mediumTextStyle,
-                color = textColorDark
+                text = boxTitle, style = mediumTextStyle, color = textColorDark
             )
             Icon(
                 imageVector = Icons.Default.ArrowForward,
                 contentDescription = null,
                 tint = textColorDark,
-                modifier = Modifier
-                    .padding(start = 20.dp)
+                modifier = Modifier.padding(start = 20.dp)
             )
         }
     }
@@ -654,22 +653,19 @@ fun PATSurveyBox(
     val boxTitle = if (isComplete) stringResource(id = R.string.pat_completed)
     else stringResource(id = R.string.didi_not_available)
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(boxColor, shape = RoundedCornerShape(6.dp))
-            .clip(RoundedCornerShape(6.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = Color.White
-                )
-            ) {
-                onPATSurveyBoxClicked()
-            }
-            .then(modifier)
-    ) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .background(boxColor, shape = RoundedCornerShape(6.dp))
+        .clip(RoundedCornerShape(6.dp))
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(
+                bounded = true, color = Color.White
+            )
+        ) {
+            onPATSurveyBoxClicked()
+        }
+        .then(modifier)) {
         Row(
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -686,9 +682,7 @@ fun PATSurveyBox(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = boxTitle,
-                    style = mediumTextStyle,
-                    color = textColorDark
+                    text = boxTitle, style = mediumTextStyle, color = textColorDark
                 )
             }
         }
@@ -703,8 +697,7 @@ fun PATSurveyBox(
                 imageVector = Icons.Default.ArrowForward,
                 contentDescription = null,
                 tint = textColorDark,
-                modifier = Modifier
-                    .padding(start = 20.dp)
+                modifier = Modifier.padding(start = 20.dp)
             )
         }
 
@@ -725,8 +718,7 @@ fun PATSurveyBoxPreview() {
 
 @Composable
 fun RoundedImage(
-    image: Painter,
-    modifier: Modifier = Modifier
+    image: Painter, modifier: Modifier = Modifier
 ) {
     Image(
         painter = image,
@@ -734,9 +726,7 @@ fun RoundedImage(
         modifier = modifier
             .aspectRatio(1f, matchHeightConstraintsFirst = true)
             .border(
-                width = 2.dp,
-                color = Color.White,
-                shape = CircleShape
+                width = 2.dp, color = Color.White, shape = CircleShape
 
             )
             .clip(CircleShape)
@@ -746,12 +736,13 @@ fun RoundedImage(
 
 @Composable
 fun DidiItemCardForWealthRanking(
+    stateId: Int,
     didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onItemClick: (DidiEntity) -> Unit,
-    onCircularImageClick:(DidiEntity) ->Unit
+    onCircularImageClick: (DidiEntity) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -779,50 +770,40 @@ fun DidiItemCardForWealthRanking(
     }, label = "rotationDegreeTransition") {
         if (it) 180f else 0f
     }
-    Card(
-        elevation = 10.dp,
+    Card(elevation = 10.dp,
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 onExpendClick(expanded, didi)
             }
-            .then(modifier)
-    ) {
+            .then(modifier)) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BoxWithConstraints {
                 val constraintSet = decoupledConstraintsForWealthCard()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
-                        didi = didi,
-                        modifier = Modifier.layoutId("didiImage")
-                    ){
+                        didi = didi, modifier = Modifier.layoutId("didiImage")
+                    ) {
                         onCircularImageClick(didi)
                     }
                     Text(
-                        text = didi.name,
-                        style = TextStyle(
+                        text = didi.name, style = TextStyle(
                             color = animateColor,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
-                        ),
-                        modifier = Modifier.layoutId("didiName")
+                        ), modifier = Modifier.layoutId("didiName")
                     )
                     Text(
-                        text = didi.guardianName,
-                        style = TextStyle(
+                        text = didi.guardianName, style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
-                        ),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("homeImage")
+                        ), textAlign = TextAlign.Start, modifier = Modifier.layoutId("homeImage")
                     )
 
                     Text(
@@ -844,17 +825,16 @@ fun DidiItemCardForWealthRanking(
                             .layoutId("latestStatusCollapsed")
                     )
 
-                    CardArrow(
-                        modifier = Modifier.layoutId("expendArrowImage"),
+                    CardArrow(modifier = Modifier.layoutId("expendArrowImage"),
                         degrees = arrowRotationDegree,
                         iconColor = animateColor,
-                        onClick = { onExpendClick(expanded, didi) }
-                    )
+                        onClick = { onExpendClick(expanded, didi) })
 
                     DidiDetailExpendableContentForWealthRanking(
                         modifier = Modifier.layoutId("didiDetailLayout"),
                         didi,
-                        animateInt == 1
+                        animateInt == 1,
+                        stateId = stateId
                     )
                 }
             }
@@ -863,25 +843,24 @@ fun DidiItemCardForWealthRanking(
 }
 
 @Composable
-fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEntity, expended: Boolean) {
+fun DidiDetailExpendableContentForWealthRanking(
+    modifier: Modifier, didi: DidiEntity, expended: Boolean, stateId: Int
+) {
     val constraintSet = didiDetailConstraintsForWealthCard()
 
     val context = LocalContext.current
 
     val enterTransition = remember {
         expandVertically(
-            expandFrom = Alignment.Top,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
+            expandFrom = Alignment.Top, animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         ) + fadeIn(
-            initialAlpha = 0.3f,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
+            initialAlpha = 0.3f, animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         )
     }
     val exitTransition = remember {
         shrinkVertically(
             // Expand from the top.
-            shrinkTowards = Alignment.Top,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
+            shrinkTowards = Alignment.Top, animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         ) + fadeOut(
             // Fade in with the initial alpha of 0.3f.
             animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
@@ -896,9 +875,7 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
     ) {
         ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
             Divider(
-                color = borderGreyLight,
-                thickness = 1.dp,
-                modifier = Modifier.layoutId("divider")
+                color = borderGreyLight, thickness = 1.dp, modifier = Modifier.layoutId("divider")
             )
 
             Text(
@@ -937,7 +914,7 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
             )
 
             Text(
-                text = didi.castName?: BLANK_STRING,
+                text = didi.castName ?: BLANK_STRING,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("caste")
@@ -965,7 +942,7 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
             )
 
             Text(
-                text = getLatestStatusTextForWealthRankingCard(context, didi),
+                text = getLatestStatusTextForWealthRankingCard(context, didi, stateId),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
@@ -980,44 +957,45 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
     }
 }
 
-fun getLatestStatusTextForWealthRankingCard(context: Context, didi: DidiEntity): String {
+fun getLatestStatusTextForWealthRankingCard(
+    context: Context, didi: DidiEntity, stateId: Int
+): String {
     var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.social_mapping_complete_status_text)
     } else {
         if (!didi.rankingEdit) {
             if (!didi.patEdit) {
-                status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
-                    when (didi.voEndorsementStatus) {
-                        DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                            context.getString(R.string.vo_selected_status_text)
+                status =
+                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
+                        when (didi.voEndorsementStatus) {
+                            DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
+                                getVoNameForState(context, stateId, R.plurals.vo_selected_status_text)
+                            }
+
+                            DidiEndorsementStatus.REJECTED.ordinal -> {
+                                getVoNameForState(context, stateId, R.plurals.vo_rejected_status_text)
+                            }
+
+                            else -> {
+                                context.getString(R.string.pat_selected_status_text)
+                            }
                         }
-                        DidiEndorsementStatus.REJECTED.ordinal -> {
-                            context.getString(R.string.vo_rejected_status_text)
-                        }
-                        else -> {
-                            context.getString(R.string.pat_selected_status_text)
-                        }
-                    }
-                } else if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 0) {
-                    context.getString(R.string.pat_rejected_status_text)
-                } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
-                    context.getString(R.string.pat_not_available_status_text)
-                } else {
-                    context.getString(R.string.wealth_ranking_status_complete_text)
-                        .replace("{RANK}",
-                            com.patsurvey.nudge.activities.getRankInLanguage(
-                                context,
-                                didi.wealth_ranking
+                    } else if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 0) {
+                        context.getString(R.string.pat_rejected_status_text)
+                    } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                        context.getString(R.string.pat_not_available_status_text)
+                    } else {
+                        context.getString(R.string.wealth_ranking_status_complete_text).replace(
+                                "{RANK}", com.patsurvey.nudge.activities.getRankInLanguage(
+                                    context, didi.wealth_ranking
+                                )
                             )
-                        )
-                }
+                    }
             } else {
-                status = context.getString(R.string.wealth_ranking_status_complete_text)
-                    .replace("{RANK}",
-                        com.patsurvey.nudge.activities.getRankInLanguage(
-                            context,
-                            didi.wealth_ranking
+                status = context.getString(R.string.wealth_ranking_status_complete_text).replace(
+                        "{RANK}", com.patsurvey.nudge.activities.getRankInLanguage(
+                            context, didi.wealth_ranking
                         )
                     )
             }

@@ -79,10 +79,9 @@ import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
-import com.patsurvey.nudge.navigation.home.PatScreens
+import com.patsurvey.nudge.navigation.selection.BpcDidiListScreens
+import com.patsurvey.nudge.navigation.selection.PatScreens
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
@@ -339,6 +338,9 @@ fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity
         true
     }else didi.value.patEdit && (viewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)
 }
+fun isArrowFlagVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity>): Boolean {
+    return false
+}
 
 @Composable
 fun PatSummeryScreenDidiDetailBoxForSectionOne(
@@ -515,7 +517,7 @@ fun SectionOneSummeryItem(
                         .height(30.dp)
                 )
         }
-            HtmlText(
+            de.charlex.compose.material.HtmlText(
                 text = "${index+1}. ${quesSummery}.",
                 style = TextStyle(
                     color = textColorDark,
@@ -531,7 +533,7 @@ fun SectionOneSummeryItem(
                     .padding(start = 8.dp)
                     .weight(1f)
             )
-            HtmlText(
+            de.charlex.compose.material.HtmlText(
                 text = "${answerValue}",
                 style = TextStyle(
                     color = if (optionValue == 1) greenOnline else redNoAnswer,

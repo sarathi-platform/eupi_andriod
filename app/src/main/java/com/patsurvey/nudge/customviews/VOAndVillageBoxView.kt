@@ -1,7 +1,11 @@
 package com.patsurvey.nudge.customviews
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -10,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -20,6 +25,8 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 
 @Composable
 fun VOAndVillageBoxView(
@@ -59,10 +66,14 @@ fun VOAndVillageBoxView(
             Row(
                 modifier = Modifier
                     .absolutePadding(left = 4.dp)
-                    .padding(start = startPadding?:16.dp, end = 16.dp, bottom = bottomPadding)
+                    .padding(start = startPadding ?: 16.dp, end = 16.dp, bottom = bottomPadding)
             ) {
                 Text(
-                    text = "VO: ",
+                    text = getVoNameForState(
+                        LocalContext.current,
+                        prefRepo.getStateId(),
+                        R.plurals.vo
+                    ),
                     modifier = Modifier,
                     color = textColorDark,
                     fontSize = 14.sp,

@@ -26,7 +26,6 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -35,7 +34,6 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -120,7 +118,9 @@ class FormPictureScreenViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
-
+    fun getStateId():Int{
+        return repository.prefRepo.getStateId()
+    }
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
         setVillage(repository.prefRepo.getSelectedVillage().id)
@@ -183,10 +183,7 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun saveFormPath(formPath: String, formName: String){
-
-        Log.d("FormPictureScreen_saveFormPath", "prefKey: ${PREF_FORM_PATH}_${formName}, formPath: $formPath ")
-        repository.prefRepo.savePref(getFormPathKey(formName)
-            /*"${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_$formName"*/, formPath)
+        repository.prefRepo.savePref(getFormPathKey(formName), formPath)
     }
 
     fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
@@ -556,9 +553,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
 
     fun getFormPathKey(subPath: String): String {
-        //val subPath formPictureScreenViewModel.pageItemClicked.value
-        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${repository.prefRepo.getSelectedVillage().id}_${subPath}"
+        return "${PREF_FORM_PATH}_${subPath}"
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
@@ -832,7 +827,7 @@ class FormPictureScreenViewModel @Inject constructor(
             val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
                 stepEntity,
                 villageId = repository.prefRepo.getSelectedVillage().id,
-                stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                stepType = StepType.VO_ENDROSEMENT.name,
                 repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
                 repository.prefRepo.getUserId()
             )

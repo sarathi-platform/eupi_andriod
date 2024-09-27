@@ -157,11 +157,11 @@
 
 <div>
     <ul>
-        <li>313 number of properties</li>
-        <li>141 number of functions</li>
-        <li>99 number of classes</li>
-        <li>17 number of packages</li>
-        <li>48 number of kt files</li>
+        <li>567 number of properties</li>
+        <li>239 number of functions</li>
+        <li>135 number of classes</li>
+        <li>19 number of packages</li>
+        <li>63 number of kt files</li>
     </ul>
 </div>
 
@@ -170,25 +170,1968 @@
 
 <div>
     <ul>
-        <li>3,654 lines of code (loc)</li>
-        <li>2,906 source lines of code (sloc)</li>
-        <li>1,904 logical lines of code (lloc)</li>
-        <li>279 comment lines of code (cloc)</li>
-        <li>440 cyclomatic complexity (mcc)</li>
-        <li>490 cognitive complexity</li>
-        <li>0 number of total code smells</li>
-        <li>9% comment source ratio</li>
-        <li>231 mcc per 1,000 lloc</li>
-        <li>0 code smells per 1,000 lloc</li>
+        <li>4,844 lines of code (loc)</li>
+        <li>3,894 source lines of code (sloc)</li>
+        <li>2,608 logical lines of code (lloc)</li>
+        <li>165 comment lines of code (cloc)</li>
+        <li>608 cyclomatic complexity (mcc)</li>
+        <li>559 cognitive complexity</li>
+        <li>153 number of total code smells</li>
+        <li>4% comment source ratio</li>
+        <li>233 mcc per 1,000 lloc</li>
+        <li>58 code smells per 1,000 lloc</li>
     </ul>
 </div>
 
 
 <h2>Findings</h2>
-<div>Total: 0</div>
+<div>Total: 153
+    <h3>complexity: 10</h3>
+    <details id="LongMethod" open="open">
+        <summary class="rule-container"><span class="rule">LongMethod: 2 </span><span
+                class="description">One method should have one responsibility. Long methods tend to handle many things at once. Prefer smaller methods to make them easier to understand.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#longmethod">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:865:5</span><span
+                    class="message">The function saveFileToDownload is too long (60). The maximum length is 60.</span>
+                <pre><code><span class="lineno"> 862 </span>    }
+<span class="lineno"> 863 </span>}
+<span class="lineno"> 864 </span>
+<span class="lineno"> 865 </span>fun <span class="error">saveFileToDownload</span>(sourceUri: Uri, mimeType: String, context: Context) {
+<span class="lineno"> 866 </span>    if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.Q) {
+<span class="lineno"> 867 </span>        val values = ContentValues()
+<span class="lineno"> 868 </span>        values.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:29:17</span><span
+                    class="message">The function generatePdf is too long (68). The maximum length is 60.</span>
+                <pre><code><span class="lineno">  26 </span>    private val marginBottom: UInt = 40u
+<span class="lineno">  27 </span>    private val blackColor = &quot;#000000&quot;
+<span class="lineno">  28 </span>    private val greyColor = &quot;#222E50&quot;
+<span class="lineno">  29 </span>    suspend fun <span class="error">generatePdf</span>(pdfModels: List&lt;PdfModel&gt;, fileName: String): String {
+<span class="lineno">  30 </span>        val mSerialNumberCellWidth = 50
+<span class="lineno">  31 </span>        val mDataCellWidth = 150
+<span class="lineno">  32 </span>        val outputFile = getPdfPath(
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="LongParameterList" open="open">
+        <summary class="rule-container"><span class="rule">LongParameterList: 2 </span><span
+                class="description">The more parameters a function has the more complex it is. Long parameter lists are often used to control complex algorithms and violate the Single Responsibility Principle. Prefer functions with short parameter lists.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#longparameterlist">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:460:18</span><span
+                    class="message">The function exportOldData(appContext: Context, applicationID: String, mobileNo: String, databaseName: String, userName: String, moduleName: String, onExportSuccess: (zipUri: Uri) -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 457 </span>    }
+<span class="lineno"> 458 </span>}
+<span class="lineno"> 459 </span>
+<span class="lineno"> 460 </span>fun exportOldData<span class="error">(</span>
+<span class="lineno"> 461 </span><span class="error">    appContext: Context,</span>
+<span class="lineno"> 462 </span><span class="error">    applicationID: String,</span>
+<span class="lineno"> 463 </span><span class="error">    mobileNo: String,</span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:510:18</span><span
+                    class="message">The function exportLogFile(logFile: File, appContext: Context, applicationID: String, mobileNo: String, userName: String, moduleName: String, onExportSuccess: (zipUri: Uri) -&gt; Unit) has too many parameters. The current threshold is set to 6.</span>
+                <pre><code><span class="lineno"> 507 </span>
+<span class="lineno"> 508 </span>}
+<span class="lineno"> 509 </span>
+<span class="lineno"> 510 </span>fun exportLogFile<span class="error">(</span>
+<span class="lineno"> 511 </span><span class="error">    logFile: File,</span>
+<span class="lineno"> 512 </span><span class="error">    appContext: Context,</span>
+<span class="lineno"> 513 </span><span class="error">    applicationID: String,</span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="NestedBlockDepth" open="open">
+        <summary class="rule-container"><span class="rule">NestedBlockDepth: 4 </span><span
+                class="description">Excessive nesting leads to hidden complexity. Prefer extracting code to make it easier to understand.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#nestedblockdepth">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:388:5</span><span
+                    class="message">Function getAllFilesInDirectory is nested too deeply.</span>
+                <pre><code><span class="lineno"> 385 </span>
+<span class="lineno"> 386 </span>}
+<span class="lineno"> 387 </span>
+<span class="lineno"> 388 </span>fun <span class="error">getAllFilesInDirectory</span>(
+<span class="lineno"> 389 </span>    appContext: Context,
+<span class="lineno"> 390 </span>    directoryPath: String?,
+<span class="lineno"> 391 </span>    applicationID: String
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:621:5</span><span
+                    class="message">Function copyZipFile is nested too deeply.</span>
+                <pre><code><span class="lineno"> 618 </span>}
+<span class="lineno"> 619 </span>
+<span class="lineno"> 620 </span>
+<span class="lineno"> 621 </span>fun <span class="error">copyZipFile</span>(
+<span class="lineno"> 622 </span>    appContext: Context,
+<span class="lineno"> 623 </span>    srcFileUri: Uri,
+<span class="lineno"> 624 </span>    zipFileName: String,
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:822:5</span><span
+                    class="message">Function openShareSheet is nested too deeply.</span>
+                <pre><code><span class="lineno"> 819 </span>    return UUID.randomUUID().toString()
+<span class="lineno"> 820 </span>}
+<span class="lineno"> 821 </span>
+<span class="lineno"> 822 </span>fun <span class="error">openShareSheet</span>(fileUriList: ArrayList&lt;Uri&gt;, title: String, type: String, context: Context) {
+<span class="lineno"> 823 </span>    if (fileUriList.isNotEmpty()) {
+<span class="lineno"> 824 </span>        try {
+<span class="lineno"> 825 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:865:5</span><span
+                    class="message">Function saveFileToDownload is nested too deeply.</span>
+                <pre><code><span class="lineno"> 862 </span>    }
+<span class="lineno"> 863 </span>}
+<span class="lineno"> 864 </span>
+<span class="lineno"> 865 </span>fun <span class="error">saveFileToDownload</span>(sourceUri: Uri, mimeType: String, context: Context) {
+<span class="lineno"> 866 </span>    if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.Q) {
+<span class="lineno"> 867 </span>        val values = ContentValues()
+<span class="lineno"> 868 </span>        values.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="TooManyFunctions" open="open">
+        <summary class="rule-container"><span class="rule">TooManyFunctions: 2 </span><span
+                class="description">Too many functions inside a/an file/class/object/interface always indicate a violation of the single responsibility principle. Maybe the file/class/object/interface wants to manage too many things at once. Extract functionality which clearly belongs together.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/complexity#toomanyfunctions">Documentation</a>
+        <ul>
+            <li><span class="location">core/src/main/java/com/nudge/core/preference/CorePrefRepo.kt:3:11</span><span
+                    class="message">Interface 'CorePrefRepo' with '31' functions detected. Defined threshold inside interfaces is set to '11'</span>
+                <pre><code><span class="lineno">   1 </span>package com.nudge.core.preference
+<span class="lineno">   2 </span>
+<span class="lineno">   3 </span>interface <span class="error">CorePrefRepo</span> {
+<span class="lineno">   4 </span>
+<span class="lineno">   5 </span>    fun getBackupFileName(mobileNo: String): String
+<span class="lineno">   6 </span>    fun setBackupFileName(fileName: String)
+</code></pre>
+            </li>
+            <li><span class="location">core/src/main/java/com/nudge/core/preference/CoreSharedPrefs.kt:15:7</span><span
+                    class="message">Class 'CoreSharedPrefs' with '39' functions detected. Defined threshold inside classes is set to '11'</span>
+                <pre><code><span class="lineno">  12 </span>import javax.inject.Singleton
+<span class="lineno">  13 </span>
+<span class="lineno">  14 </span>@Singleton
+<span class="lineno">  15 </span>class <span class="error">CoreSharedPrefs</span> @Inject constructor(@ApplicationContext private val context: Context) :
+<span class="lineno">  16 </span>    CorePrefRepo {
+<span class="lineno">  17 </span>    companion object {
+<span class="lineno">  18 </span>        const val PREFS_NAME = &quot;secured_nudge_prefs&quot;
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>empty-blocks: 1</h3>
+    <details id="EmptyDefaultConstructor" open="open">
+        <summary class="rule-container"><span class="rule">EmptyDefaultConstructor: 1 </span><span
+                class="description">Empty block of code detected. As they serve no purpose they should be removed.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/empty-blocks#emptydefaultconstructor">Documentation</a>
+        <ul>
+            <li><span class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:132:29</span><span
+                    class="message">An empty default constructor can be removed.</span>
+                <pre><code><span class="lineno"> 129 </span>            .build()
+<span class="lineno"> 130 </span>    }
+<span class="lineno"> 131 </span>
+<span class="lineno"> 132 </span>    class PageNumberModifier<span class="error">()</span> : PageModifier() {
+<span class="lineno"> 133 </span>        override fun render(simplyPdfDocument: SimplyPdfDocument) {
+<span class="lineno"> 134 </span>            simplyPdfDocument.apply {
+<span class="lineno"> 135 </span>                val page = currentPageNumber + 1
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>exceptions: 2</h3>
+    <details id="SwallowedException" open="open">
+        <summary class="rule-container"><span class="rule">SwallowedException: 2 </span><span
+                class="description">The caught exception is swallowed. The original exception could be lost.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/exceptions#swallowedexception">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:849:18</span><span
+                    class="message">The caught exception is swallowed. The original exception could be lost.</span>
+                <pre><code><span class="lineno"> 846 </span>                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+<span class="lineno"> 847 </span>            }
+<span class="lineno"> 848 </span>            startExternalApp(chooserIntent, context)
+<span class="lineno"> 849 </span>        } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 850 </span>            CoreLogger.d(context, &quot;ImportDbFile&quot;, &quot;Import completed&quot;)
+<span class="lineno"> 851 </span>        }
+<span class="lineno"> 852 </span>    }
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:860:14</span><span
+                    class="message">The caught exception is swallowed. The original exception could be lost.</span>
+                <pre><code><span class="lineno"> 857 </span>        CoreLogger.d(context, &quot;ImportDbFile&quot;, &quot;Import completed&quot;)
+<span class="lineno"> 858 </span>        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+<span class="lineno"> 859 </span>        context.startActivity(intent)
+<span class="lineno"> 860 </span>    } catch (<span class="error">ex: Exception</span>) {
+<span class="lineno"> 861 </span>        CoreLogger.d(context, &quot;ImportDbFile&quot;, &quot;Import completed&quot;)
+<span class="lineno"> 862 </span>    }
+<span class="lineno"> 863 </span>}
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <h3>style: 140</h3>
+    <details id="MagicNumber" open="open">
+        <summary class="rule-container"><span class="rule">MagicNumber: 122 </span><span
+                class="description">Report magic numbers. Magic number is a numeric literal that is not defined as a constant and hence it's unclear what the purpose of this number is. It's better to declare such numbers as constants and give them a proper name. By default, -1, 0, 1, and 2 are not considered to be magic numbers.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#magicnumber">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:43:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  40 </span>    UPDATE_ACTIVITY_STATUS_EVENT(23, topicName = &quot;UPDATE_ACTIVITY_STATUS_EVENT&quot;),
+<span class="lineno">  41 </span>    UPDATE_MISSION_STATUS_EVENT(24, topicName = &quot;UPDATE_MISSION_STATUS_EVENT&quot;),
+<span class="lineno">  42 </span>    UPLOAD_IMAGE_RESPONSE_EVENT(25, topicName = &quot;UPLOAD_IMAGE_RESPONSE_EVENT&quot;),
+<span class="lineno">  43 </span>    MONEY_JOURNAL_EVENT(<span class="error">26</span>, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  44 </span>    MISSIONS_STATUS_EVENT(27, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  45 </span>    ACTIVITIES_STATUS_EVENT(28, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  46 </span>    TASKS_STATUS_EVENT(29, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:44:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  41 </span>    UPDATE_MISSION_STATUS_EVENT(24, topicName = &quot;UPDATE_MISSION_STATUS_EVENT&quot;),
+<span class="lineno">  42 </span>    UPLOAD_IMAGE_RESPONSE_EVENT(25, topicName = &quot;UPLOAD_IMAGE_RESPONSE_EVENT&quot;),
+<span class="lineno">  43 </span>    MONEY_JOURNAL_EVENT(26, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  44 </span>    MISSIONS_STATUS_EVENT(<span class="error">27</span>, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  45 </span>    ACTIVITIES_STATUS_EVENT(28, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  46 </span>    TASKS_STATUS_EVENT(29, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(30, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:45:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  42 </span>    UPLOAD_IMAGE_RESPONSE_EVENT(25, topicName = &quot;UPLOAD_IMAGE_RESPONSE_EVENT&quot;),
+<span class="lineno">  43 </span>    MONEY_JOURNAL_EVENT(26, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  44 </span>    MISSIONS_STATUS_EVENT(27, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  45 </span>    ACTIVITIES_STATUS_EVENT(<span class="error">28</span>, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  46 </span>    TASKS_STATUS_EVENT(29, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(30, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(31, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:46:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  43 </span>    MONEY_JOURNAL_EVENT(26, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  44 </span>    MISSIONS_STATUS_EVENT(27, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  45 </span>    ACTIVITIES_STATUS_EVENT(28, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  46 </span>    TASKS_STATUS_EVENT(<span class="error">29</span>, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(30, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(31, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(32, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:47:31</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  44 </span>    MISSIONS_STATUS_EVENT(27, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  45 </span>    ACTIVITIES_STATUS_EVENT(28, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  46 </span>    TASKS_STATUS_EVENT(29, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(<span class="error">30</span>, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(31, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(32, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  50 </span>    UPLOAD_DOCUMENT_EVENT(33, topicName = &quot;DOCUMENT_TOPIC&quot;),
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:48:33</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  45 </span>    ACTIVITIES_STATUS_EVENT(28, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  46 </span>    TASKS_STATUS_EVENT(29, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(30, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(<span class="error">31</span>, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(32, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  50 </span>    UPLOAD_DOCUMENT_EVENT(33, topicName = &quot;DOCUMENT_TOPIC&quot;),
+<span class="lineno">  51 </span>    SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;),
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:49:31</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  46 </span>    TASKS_STATUS_EVENT(29, topicName = &quot;MISSION_ACTIVITY_TASK_STATUS_TOPIC&quot;),
+<span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(30, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(31, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(<span class="error">32</span>, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  50 </span>    UPLOAD_DOCUMENT_EVENT(33, topicName = &quot;DOCUMENT_TOPIC&quot;),
+<span class="lineno">  51 </span>    SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;),
+<span class="lineno">  52 </span>    DELETE_SUBJECT_ATTENDANCE_EVENT(35, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:50:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  47 </span>    GRANT_SAVE_RESPONSE_EVENT(30, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(31, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(32, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  50 </span>    UPLOAD_DOCUMENT_EVENT(<span class="error">33</span>, topicName = &quot;DOCUMENT_TOPIC&quot;),
+<span class="lineno">  51 </span>    SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;),
+<span class="lineno">  52 </span>    DELETE_SUBJECT_ATTENDANCE_EVENT(35, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;)
+<span class="lineno">  53 </span>    ;
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:51:35</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  48 </span>    GRANT_DELETE_RESPONSE_EVENT(31, topicName = &quot;SAVE_RESPONSE_EVENT&quot;),
+<span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(32, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  50 </span>    UPLOAD_DOCUMENT_EVENT(33, topicName = &quot;DOCUMENT_TOPIC&quot;),
+<span class="lineno">  51 </span>    SAVE_SUBJECT_ATTENDANCE_EVENT(<span class="error">34</span>, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;),
+<span class="lineno">  52 </span>    DELETE_SUBJECT_ATTENDANCE_EVENT(35, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;)
+<span class="lineno">  53 </span>    ;
+<span class="lineno">  54 </span>}
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/enums/EventName.kt:52:37</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  49 </span>    UPDATE_FORM_DETAILS_EVENT(32, topicName = &quot;GRANT_ACTIVITY_TOPIC&quot;),
+<span class="lineno">  50 </span>    UPLOAD_DOCUMENT_EVENT(33, topicName = &quot;DOCUMENT_TOPIC&quot;),
+<span class="lineno">  51 </span>    SAVE_SUBJECT_ATTENDANCE_EVENT(34, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;),
+<span class="lineno">  52 </span>    DELETE_SUBJECT_ATTENDANCE_EVENT(<span class="error">35</span>, topicName = &quot;SMALL_GROUP_ATTENDANCE_TOPIC&quot;)
+<span class="lineno">  53 </span>    ;
+<span class="lineno">  54 </span>}
+<span class="lineno">  55 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:5:22</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   2 </span>
+<span class="lineno">   3 </span>import androidx.compose.ui.graphics.Color
+<span class="lineno">   4 </span>
+<span class="lineno">   5 </span>val Purple80 = Color(<span class="error">0xFFD0BCFF</span>)
+<span class="lineno">   6 </span>val PurpleGrey80 = Color(0xFFCCC2DC)
+<span class="lineno">   7 </span>val Pink80 = Color(0xFFEFB8C8)
+<span class="lineno">   8 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:6:26</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   3 </span>import androidx.compose.ui.graphics.Color
+<span class="lineno">   4 </span>
+<span class="lineno">   5 </span>val Purple80 = Color(0xFFD0BCFF)
+<span class="lineno">   6 </span>val PurpleGrey80 = Color(<span class="error">0xFFCCC2DC</span>)
+<span class="lineno">   7 </span>val Pink80 = Color(0xFFEFB8C8)
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>val blueDark = Color(0xFF222E50)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:7:20</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   4 </span>
+<span class="lineno">   5 </span>val Purple80 = Color(0xFFD0BCFF)
+<span class="lineno">   6 </span>val PurpleGrey80 = Color(0xFFCCC2DC)
+<span class="lineno">   7 </span>val Pink80 = Color(<span class="error">0xFFEFB8C8</span>)
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>val blueDark = Color(0xFF222E50)
+<span class="lineno">  10 </span>val textColorDark = Color(0xFF271914)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:9:22</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   6 </span>val PurpleGrey80 = Color(0xFFCCC2DC)
+<span class="lineno">   7 </span>val Pink80 = Color(0xFFEFB8C8)
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>val blueDark = Color(<span class="error">0xFF222E50</span>)
+<span class="lineno">  10 </span>val textColorDark = Color(0xFF271914)
+<span class="lineno">  11 </span>val textColorDark80 = Color(0xCC271914)
+<span class="lineno">  12 </span>val textColorBlueLight = Color(0x80271914)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:10:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   7 </span>val Pink80 = Color(0xFFEFB8C8)
+<span class="lineno">   8 </span>
+<span class="lineno">   9 </span>val blueDark = Color(0xFF222E50)
+<span class="lineno">  10 </span>val textColorDark = Color(<span class="error">0xFF271914</span>)
+<span class="lineno">  11 </span>val textColorDark80 = Color(0xCC271914)
+<span class="lineno">  12 </span>val textColorBlueLight = Color(0x80271914)
+<span class="lineno">  13 </span>val languageItemActiveBg = Color(0xFFF7F7F7)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:11:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   8 </span>
+<span class="lineno">   9 </span>val blueDark = Color(0xFF222E50)
+<span class="lineno">  10 </span>val textColorDark = Color(0xFF271914)
+<span class="lineno">  11 </span>val textColorDark80 = Color(<span class="error">0xCC271914</span>)
+<span class="lineno">  12 </span>val textColorBlueLight = Color(0x80271914)
+<span class="lineno">  13 </span>val languageItemActiveBg = Color(0xFFF7F7F7)
+<span class="lineno">  14 </span>val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:12:32</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">   9 </span>val blueDark = Color(0xFF222E50)
+<span class="lineno">  10 </span>val textColorDark = Color(0xFF271914)
+<span class="lineno">  11 </span>val textColorDark80 = Color(0xCC271914)
+<span class="lineno">  12 </span>val textColorBlueLight = Color(<span
+                            class="error">0x80271914</span>)
+<span class="lineno">  13 </span>val languageItemActiveBg = Color(0xFFF7F7F7)
+<span class="lineno">  14 </span>val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
+<span class="lineno">  15 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:13:34</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  10 </span>val textColorDark = Color(0xFF271914)
+<span class="lineno">  11 </span>val textColorDark80 = Color(0xCC271914)
+<span class="lineno">  12 </span>val textColorBlueLight = Color(0x80271914)
+<span class="lineno">  13 </span>val languageItemActiveBg = Color(<span
+                            class="error">0xFFF7F7F7</span>)
+<span class="lineno">  14 </span>val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
+<span class="lineno">  15 </span>
+<span class="lineno">  16 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:14:42</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  11 </span>val textColorDark80 = Color(0xCC271914)
+<span class="lineno">  12 </span>val textColorBlueLight = Color(0x80271914)
+<span class="lineno">  13 </span>val languageItemActiveBg = Color(0xFFF7F7F7)
+<span class="lineno">  14 </span>val languageItemInActiveBorderBg = Color(<span class="error">0xFFB4B4B4</span>)
+<span class="lineno">  15 </span>
+<span class="lineno">  16 </span>
+<span class="lineno">  17 </span>val greenLight = Color(0xFFF4FFFC)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:17:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  14 </span>val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
+<span class="lineno">  15 </span>
+<span class="lineno">  16 </span>
+<span class="lineno">  17 </span>val greenLight = Color(<span class="error">0xFFF4FFFC</span>)
+<span class="lineno">  18 </span>val green = Color(0xFF46989A)
+<span class="lineno">  19 </span>val greenDark = Color(0xFF0B9A52)
+<span class="lineno">  20 </span>val GreyLight = Color(0xFFB5B6BA)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:18:19</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  15 </span>
+<span class="lineno">  16 </span>
+<span class="lineno">  17 </span>val greenLight = Color(0xFFF4FFFC)
+<span class="lineno">  18 </span>val green = Color(<span class="error">0xFF46989A</span>)
+<span class="lineno">  19 </span>val greenDark = Color(0xFF0B9A52)
+<span class="lineno">  20 </span>val GreyLight = Color(0xFFB5B6BA)
+<span class="lineno">  21 </span>val GreyDark = Color(0xFF60626C)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:19:23</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  16 </span>
+<span class="lineno">  17 </span>val greenLight = Color(0xFFF4FFFC)
+<span class="lineno">  18 </span>val green = Color(0xFF46989A)
+<span class="lineno">  19 </span>val greenDark = Color(<span class="error">0xFF0B9A52</span>)
+<span class="lineno">  20 </span>val GreyLight = Color(0xFFB5B6BA)
+<span class="lineno">  21 </span>val GreyDark = Color(0xFF60626C)
+<span class="lineno">  22 </span>val greyButtonColor = Color(0xFFF2F4F8)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:20:23</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  17 </span>val greenLight = Color(0xFFF4FFFC)
+<span class="lineno">  18 </span>val green = Color(0xFF46989A)
+<span class="lineno">  19 </span>val greenDark = Color(0xFF0B9A52)
+<span class="lineno">  20 </span>val GreyLight = Color(<span class="error">0xFFB5B6BA</span>)
+<span class="lineno">  21 </span>val GreyDark = Color(0xFF60626C)
+<span class="lineno">  22 </span>val greyButtonColor = Color(0xFFF2F4F8)
+<span class="lineno">  23 </span>val otpBorderColor = Color(0xFFBFBFBF)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:21:22</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  18 </span>val green = Color(0xFF46989A)
+<span class="lineno">  19 </span>val greenDark = Color(0xFF0B9A52)
+<span class="lineno">  20 </span>val GreyLight = Color(0xFFB5B6BA)
+<span class="lineno">  21 </span>val GreyDark = Color(<span class="error">0xFF60626C</span>)
+<span class="lineno">  22 </span>val greyButtonColor = Color(0xFFF2F4F8)
+<span class="lineno">  23 </span>val otpBorderColor = Color(0xFFBFBFBF)
+<span class="lineno">  24 </span>val greenOnline = Color(0xFF439A86)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:22:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  19 </span>val greenDark = Color(0xFF0B9A52)
+<span class="lineno">  20 </span>val GreyLight = Color(0xFFB5B6BA)
+<span class="lineno">  21 </span>val GreyDark = Color(0xFF60626C)
+<span class="lineno">  22 </span>val greyButtonColor = Color(<span class="error">0xFFF2F4F8</span>)
+<span class="lineno">  23 </span>val otpBorderColor = Color(0xFFBFBFBF)
+<span class="lineno">  24 </span>val greenOnline = Color(0xFF439A86)
+<span class="lineno">  25 </span>val redOffline = Color(0xFFD32505)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:23:28</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  20 </span>val GreyLight = Color(0xFFB5B6BA)
+<span class="lineno">  21 </span>val GreyDark = Color(0xFF60626C)
+<span class="lineno">  22 </span>val greyButtonColor = Color(0xFFF2F4F8)
+<span class="lineno">  23 </span>val otpBorderColor = Color(<span class="error">0xFFBFBFBF</span>)
+<span class="lineno">  24 </span>val greenOnline = Color(0xFF439A86)
+<span class="lineno">  25 </span>val redOffline = Color(0xFFD32505)
+<span class="lineno">  26 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:24:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  21 </span>val GreyDark = Color(0xFF60626C)
+<span class="lineno">  22 </span>val greyButtonColor = Color(0xFFF2F4F8)
+<span class="lineno">  23 </span>val otpBorderColor = Color(0xFFBFBFBF)
+<span class="lineno">  24 </span>val greenOnline = Color(<span class="error">0xFF439A86</span>)
+<span class="lineno">  25 </span>val redOffline = Color(0xFFD32505)
+<span class="lineno">  26 </span>
+<span class="lineno">  27 </span>val greenActiveIcon = Color(0xFF02B5C6)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:25:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  22 </span>val greyButtonColor = Color(0xFFF2F4F8)
+<span class="lineno">  23 </span>val otpBorderColor = Color(0xFFBFBFBF)
+<span class="lineno">  24 </span>val greenOnline = Color(0xFF439A86)
+<span class="lineno">  25 </span>val redOffline = Color(<span class="error">0xFFD32505</span>)
+<span class="lineno">  26 </span>
+<span class="lineno">  27 </span>val greenActiveIcon = Color(0xFF02B5C6)
+<span class="lineno">  28 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:27:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  24 </span>val greenOnline = Color(0xFF439A86)
+<span class="lineno">  25 </span>val redOffline = Color(0xFFD32505)
+<span class="lineno">  26 </span>
+<span class="lineno">  27 </span>val greenActiveIcon = Color(<span class="error">0xFF02B5C6</span>)
+<span class="lineno">  28 </span>
+<span class="lineno">  29 </span>val dropDownBg = Color(0xCCF7F7F7)
+<span class="lineno">  30 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:29:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  26 </span>
+<span class="lineno">  27 </span>val greenActiveIcon = Color(0xFF02B5C6)
+<span class="lineno">  28 </span>
+<span class="lineno">  29 </span>val dropDownBg = Color(<span class="error">0xCCF7F7F7</span>)
+<span class="lineno">  30 </span>
+<span class="lineno">  31 </span>//val brownLight = Color(0xFFDDD4D1)
+<span class="lineno">  32 </span>val red = Color(0xFFFF0808)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:32:17</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  29 </span>val dropDownBg = Color(0xCCF7F7F7)
+<span class="lineno">  30 </span>
+<span class="lineno">  31 </span>//val brownLight = Color(0xFFDDD4D1)
+<span class="lineno">  32 </span>val red = Color(<span class="error">0xFFFF0808</span>)
+<span class="lineno">  33 </span>val placeholderGrey = Color(0xFFACACAC)
+<span class="lineno">  34 </span>val borderGrey = Color(0xFFE2E2E2)
+<span class="lineno">  35 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:33:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  30 </span>
+<span class="lineno">  31 </span>//val brownLight = Color(0xFFDDD4D1)
+<span class="lineno">  32 </span>val red = Color(0xFFFF0808)
+<span class="lineno">  33 </span>val placeholderGrey = Color(<span class="error">0xFFACACAC</span>)
+<span class="lineno">  34 </span>val borderGrey = Color(0xFFE2E2E2)
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val borderGreyLight = Color(0xFFEBEBEB)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:34:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  31 </span>//val brownLight = Color(0xFFDDD4D1)
+<span class="lineno">  32 </span>val red = Color(0xFFFF0808)
+<span class="lineno">  33 </span>val placeholderGrey = Color(0xFFACACAC)
+<span class="lineno">  34 </span>val borderGrey = Color(<span class="error">0xFFE2E2E2</span>)
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val borderGreyLight = Color(0xFFEBEBEB)
+<span class="lineno">  37 </span>val bgGreyLight = Color(0xFFFAFAFA)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:36:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  33 </span>val placeholderGrey = Color(0xFFACACAC)
+<span class="lineno">  34 </span>val borderGrey = Color(0xFFE2E2E2)
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val borderGreyLight = Color(<span class="error">0xFFEBEBEB</span>)
+<span class="lineno">  37 </span>val bgGreyLight = Color(0xFFFAFAFA)
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val redDark = Color(0xFFD12222)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:37:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  34 </span>val borderGrey = Color(0xFFE2E2E2)
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val borderGreyLight = Color(0xFFEBEBEB)
+<span class="lineno">  37 </span>val bgGreyLight = Color(<span class="error">0xFFFAFAFA</span>)
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val redDark = Color(0xFFD12222)
+<span class="lineno">  40 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:39:21</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  36 </span>val borderGreyLight = Color(0xFFEBEBEB)
+<span class="lineno">  37 </span>val bgGreyLight = Color(0xFFFAFAFA)
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val redDark = Color(<span class="error">0xFFD12222</span>)
+<span class="lineno">  40 </span>
+<span class="lineno">  41 </span>val brownLight = Color(0xFFF4E9E2)
+<span class="lineno">  42 </span>val yellowLight = Color(0xFFFDEACB)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:41:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val redDark = Color(0xFFD12222)
+<span class="lineno">  40 </span>
+<span class="lineno">  41 </span>val brownLight = Color(<span class="error">0xFFF4E9E2</span>)
+<span class="lineno">  42 </span>val yellowLight = Color(0xFFFDEACB)
+<span class="lineno">  43 </span>val blueLighter = Color(0xFFF0F7FC)
+<span class="lineno">  44 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:42:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  39 </span>val redDark = Color(0xFFD12222)
+<span class="lineno">  40 </span>
+<span class="lineno">  41 </span>val brownLight = Color(0xFFF4E9E2)
+<span class="lineno">  42 </span>val yellowLight = Color(<span class="error">0xFFFDEACB</span>)
+<span class="lineno">  43 </span>val blueLighter = Color(0xFFF0F7FC)
+<span class="lineno">  44 </span>
+<span class="lineno">  45 </span>val yellowBg = Color(0xFFFCF6F0)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:43:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  40 </span>
+<span class="lineno">  41 </span>val brownLight = Color(0xFFF4E9E2)
+<span class="lineno">  42 </span>val yellowLight = Color(0xFFFDEACB)
+<span class="lineno">  43 </span>val blueLighter = Color(<span class="error">0xFFF0F7FC</span>)
+<span class="lineno">  44 </span>
+<span class="lineno">  45 </span>val yellowBg = Color(0xFFFCF6F0)
+<span class="lineno">  46 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:45:22</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  42 </span>val yellowLight = Color(0xFFFDEACB)
+<span class="lineno">  43 </span>val blueLighter = Color(0xFFF0F7FC)
+<span class="lineno">  44 </span>
+<span class="lineno">  45 </span>val yellowBg = Color(<span class="error">0xFFFCF6F0</span>)
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>val black1 = Color(0xCC271914)
+<span class="lineno">  48 </span>val black2 = Color(0xFF271424)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:47:20</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  44 </span>
+<span class="lineno">  45 </span>val yellowBg = Color(0xFFFCF6F0)
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>val black1 = Color(<span class="error">0xCC271914</span>)
+<span class="lineno">  48 </span>val black2 = Color(0xFF271424)
+<span class="lineno">  49 </span>val black20 = Color(0x33000000)
+<span class="lineno">  50 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:48:20</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  45 </span>val yellowBg = Color(0xFFFCF6F0)
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>val black1 = Color(0xCC271914)
+<span class="lineno">  48 </span>val black2 = Color(<span class="error">0xFF271424</span>)
+<span class="lineno">  49 </span>val black20 = Color(0x33000000)
+<span class="lineno">  50 </span>
+<span class="lineno">  51 </span>val white = Color(0xFFFFFFFF)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:49:21</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  46 </span>
+<span class="lineno">  47 </span>val black1 = Color(0xCC271914)
+<span class="lineno">  48 </span>val black2 = Color(0xFF271424)
+<span class="lineno">  49 </span>val black20 = Color(<span class="error">0x33000000</span>)
+<span class="lineno">  50 </span>
+<span class="lineno">  51 </span>val white = Color(0xFFFFFFFF)
+<span class="lineno">  52 </span>val searchFieldBg = Color(0xFFFFFAFE)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:51:19</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  48 </span>val black2 = Color(0xFF271424)
+<span class="lineno">  49 </span>val black20 = Color(0x33000000)
+<span class="lineno">  50 </span>
+<span class="lineno">  51 </span>val white = Color(<span class="error">0xFFFFFFFF</span>)
+<span class="lineno">  52 </span>val searchFieldBg = Color(0xFFFFFAFE)
+<span class="lineno">  53 </span>
+<span class="lineno">  54 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:52:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  49 </span>val black20 = Color(0x33000000)
+<span class="lineno">  50 </span>
+<span class="lineno">  51 </span>val white = Color(0xFFFFFFFF)
+<span class="lineno">  52 </span>val searchFieldBg = Color(<span class="error">0xFFFFFAFE</span>)
+<span class="lineno">  53 </span>
+<span class="lineno">  54 </span>
+<span class="lineno">  55 </span>val black100Percent = Color(0xFF271914)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:55:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  52 </span>val searchFieldBg = Color(0xFFFFFAFE)
+<span class="lineno">  53 </span>
+<span class="lineno">  54 </span>
+<span class="lineno">  55 </span>val black100Percent = Color(<span class="error">0xFF271914</span>)
+<span class="lineno">  56 </span>val lightGrayColor = Color(0xFFEAEAEA)
+<span class="lineno">  57 </span>val lightGray2 = Color(0xFFB1B1B1)
+<span class="lineno">  58 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:56:28</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  53 </span>
+<span class="lineno">  54 </span>
+<span class="lineno">  55 </span>val black100Percent = Color(0xFF271914)
+<span class="lineno">  56 </span>val lightGrayColor = Color(<span class="error">0xFFEAEAEA</span>)
+<span class="lineno">  57 </span>val lightGray2 = Color(0xFFB1B1B1)
+<span class="lineno">  58 </span>
+<span class="lineno">  59 </span>val greyRadioButton = Color(0xFFDEDEDE)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:57:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  54 </span>
+<span class="lineno">  55 </span>val black100Percent = Color(0xFF271914)
+<span class="lineno">  56 </span>val lightGrayColor = Color(0xFFEAEAEA)
+<span class="lineno">  57 </span>val lightGray2 = Color(<span class="error">0xFFB1B1B1</span>)
+<span class="lineno">  58 </span>
+<span class="lineno">  59 </span>val greyRadioButton = Color(0xFFDEDEDE)
+<span class="lineno">  60 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:59:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  56 </span>val lightGrayColor = Color(0xFFEAEAEA)
+<span class="lineno">  57 </span>val lightGray2 = Color(0xFFB1B1B1)
+<span class="lineno">  58 </span>
+<span class="lineno">  59 </span>val greyRadioButton = Color(<span class="error">0xFFDEDEDE</span>)
+<span class="lineno">  60 </span>
+<span class="lineno">  61 </span>val stepBoxActiveColor = Color(0xFFFFF4E3)
+<span class="lineno">  62 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:61:32</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  58 </span>
+<span class="lineno">  59 </span>val greyRadioButton = Color(0xFFDEDEDE)
+<span class="lineno">  60 </span>
+<span class="lineno">  61 </span>val stepBoxActiveColor = Color(<span
+                            class="error">0xFFFFF4E3</span>)
+<span class="lineno">  62 </span>
+<span class="lineno">  63 </span>val stepIconDisableColor = Color(0xFF938c89)
+<span class="lineno">  64 </span>val stepIconEnableColor = Color(0xFF52453d)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:63:34</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  60 </span>
+<span class="lineno">  61 </span>val stepBoxActiveColor = Color(0xFFFFF4E3)
+<span class="lineno">  62 </span>
+<span class="lineno">  63 </span>val stepIconDisableColor = Color(<span
+                            class="error">0xFF938c89</span>)
+<span class="lineno">  64 </span>val stepIconEnableColor = Color(0xFF52453d)
+<span class="lineno">  65 </span>val stepIconCompleted = Color(0xFF439A86)
+<span class="lineno">  66 </span>val grayProgressBackground = Color(0xFFD1D5DE)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:64:33</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  61 </span>val stepBoxActiveColor = Color(0xFFFFF4E3)
+<span class="lineno">  62 </span>
+<span class="lineno">  63 </span>val stepIconDisableColor = Color(0xFF938c89)
+<span class="lineno">  64 </span>val stepIconEnableColor = Color(<span
+                            class="error">0xFF52453d</span>)
+<span class="lineno">  65 </span>val stepIconCompleted = Color(0xFF439A86)
+<span class="lineno">  66 </span>val grayProgressBackground = Color(0xFFD1D5DE)
+<span class="lineno">  67 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:65:31</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  62 </span>
+<span class="lineno">  63 </span>val stepIconDisableColor = Color(0xFF938c89)
+<span class="lineno">  64 </span>val stepIconEnableColor = Color(0xFF52453d)
+<span class="lineno">  65 </span>val stepIconCompleted = Color(<span class="error">0xFF439A86</span>)
+<span class="lineno">  66 </span>val grayProgressBackground = Color(0xFFD1D5DE)
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>val rankItemBorder = Color(0xFF888888)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:66:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  63 </span>val stepIconDisableColor = Color(0xFF938c89)
+<span class="lineno">  64 </span>val stepIconEnableColor = Color(0xFF52453d)
+<span class="lineno">  65 </span>val stepIconCompleted = Color(0xFF439A86)
+<span class="lineno">  66 </span>val grayProgressBackground = Color(<span
+                            class="error">0xFFD1D5DE</span>)
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>val rankItemBorder = Color(0xFF888888)
+<span class="lineno">  69 </span>val mediumRankColor = Color(0xFFE08B00)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:68:28</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  65 </span>val stepIconCompleted = Color(0xFF439A86)
+<span class="lineno">  66 </span>val grayProgressBackground = Color(0xFFD1D5DE)
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>val rankItemBorder = Color(<span class="error">0xFF888888</span>)
+<span class="lineno">  69 </span>val mediumRankColor = Color(0xFFE08B00)
+<span class="lineno">  70 </span>val poorRankColor = Color(0xFF439A86)
+<span class="lineno">  71 </span>val richRankColor = Color(0xFFD12222)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:69:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  66 </span>val grayProgressBackground = Color(0xFFD1D5DE)
+<span class="lineno">  67 </span>
+<span class="lineno">  68 </span>val rankItemBorder = Color(0xFF888888)
+<span class="lineno">  69 </span>val mediumRankColor = Color(<span class="error">0xFFE08B00</span>)
+<span class="lineno">  70 </span>val poorRankColor = Color(0xFF439A86)
+<span class="lineno">  71 </span>val richRankColor = Color(0xFFD12222)
+<span class="lineno">  72 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:70:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  67 </span>
+<span class="lineno">  68 </span>val rankItemBorder = Color(0xFF888888)
+<span class="lineno">  69 </span>val mediumRankColor = Color(0xFFE08B00)
+<span class="lineno">  70 </span>val poorRankColor = Color(<span class="error">0xFF439A86</span>)
+<span class="lineno">  71 </span>val richRankColor = Color(0xFFD12222)
+<span class="lineno">  72 </span>
+<span class="lineno">  73 </span>val borderGreyShare = Color(0xFFE8E8E8)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:71:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  68 </span>val rankItemBorder = Color(0xFF888888)
+<span class="lineno">  69 </span>val mediumRankColor = Color(0xFFE08B00)
+<span class="lineno">  70 </span>val poorRankColor = Color(0xFF439A86)
+<span class="lineno">  71 </span>val richRankColor = Color(<span class="error">0xFFD12222</span>)
+<span class="lineno">  72 </span>
+<span class="lineno">  73 </span>val borderGreyShare = Color(0xFFE8E8E8)
+<span class="lineno">  74 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:73:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  70 </span>val poorRankColor = Color(0xFF439A86)
+<span class="lineno">  71 </span>val richRankColor = Color(0xFFD12222)
+<span class="lineno">  72 </span>
+<span class="lineno">  73 </span>val borderGreyShare = Color(<span class="error">0xFFE8E8E8</span>)
+<span class="lineno">  74 </span>
+<span class="lineno">  75 </span>val redNoAnswer = Color(0xFFD32517)
+<span class="lineno">  76 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:75:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  72 </span>
+<span class="lineno">  73 </span>val borderGreyShare = Color(0xFFE8E8E8)
+<span class="lineno">  74 </span>
+<span class="lineno">  75 </span>val redNoAnswer = Color(<span class="error">0xFFD32517</span>)
+<span class="lineno">  76 </span>
+<span class="lineno">  77 </span>val brownDark = Color(0xFF693D30)
+<span class="lineno">  78 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:77:23</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  74 </span>
+<span class="lineno">  75 </span>val redNoAnswer = Color(0xFFD32517)
+<span class="lineno">  76 </span>
+<span class="lineno">  77 </span>val brownDark = Color(<span class="error">0xFF693D30</span>)
+<span class="lineno">  78 </span>
+<span class="lineno">  79 </span>val redLight = Color(0xFFF8D5D5)
+<span class="lineno">  80 </span>val rejectColor = Color(0xFFFFEDED)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:79:22</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  76 </span>
+<span class="lineno">  77 </span>val brownDark = Color(0xFF693D30)
+<span class="lineno">  78 </span>
+<span class="lineno">  79 </span>val redLight = Color(<span class="error">0xFFF8D5D5</span>)
+<span class="lineno">  80 </span>val rejectColor = Color(0xFFFFEDED)
+<span class="lineno">  81 </span>val acceptEndorsementColor = Color(0xFF87D3C1)
+<span class="lineno">  82 </span>val rejectEndorsementColor = Color(0xFFF8D5D5)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:80:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  77 </span>val brownDark = Color(0xFF693D30)
+<span class="lineno">  78 </span>
+<span class="lineno">  79 </span>val redLight = Color(0xFFF8D5D5)
+<span class="lineno">  80 </span>val rejectColor = Color(<span class="error">0xFFFFEDED</span>)
+<span class="lineno">  81 </span>val acceptEndorsementColor = Color(0xFF87D3C1)
+<span class="lineno">  82 </span>val rejectEndorsementColor = Color(0xFFF8D5D5)
+<span class="lineno">  83 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:81:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  78 </span>
+<span class="lineno">  79 </span>val redLight = Color(0xFFF8D5D5)
+<span class="lineno">  80 </span>val rejectColor = Color(0xFFFFEDED)
+<span class="lineno">  81 </span>val acceptEndorsementColor = Color(<span
+                            class="error">0xFF87D3C1</span>)
+<span class="lineno">  82 </span>val rejectEndorsementColor = Color(0xFFF8D5D5)
+<span class="lineno">  83 </span>
+<span class="lineno">  84 </span>val acceptEndorsementTextColor = Color(0xFF439A86)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:82:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  79 </span>val redLight = Color(0xFFF8D5D5)
+<span class="lineno">  80 </span>val rejectColor = Color(0xFFFFEDED)
+<span class="lineno">  81 </span>val acceptEndorsementColor = Color(0xFF87D3C1)
+<span class="lineno">  82 </span>val rejectEndorsementColor = Color(<span
+                            class="error">0xFFF8D5D5</span>)
+<span class="lineno">  83 </span>
+<span class="lineno">  84 </span>val acceptEndorsementTextColor = Color(0xFF439A86)
+<span class="lineno">  85 </span>val rejectEndorsementTextColor = Color(0xFFE31F06)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:84:40</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  81 </span>val acceptEndorsementColor = Color(0xFF87D3C1)
+<span class="lineno">  82 </span>val rejectEndorsementColor = Color(0xFFF8D5D5)
+<span class="lineno">  83 </span>
+<span class="lineno">  84 </span>val acceptEndorsementTextColor = Color(<span class="error">0xFF439A86</span>)
+<span class="lineno">  85 </span>val rejectEndorsementTextColor = Color(0xFFE31F06)
+<span class="lineno">  86 </span>
+<span class="lineno">  87 </span>val pdfViewerBg = Color(0xFFf1f3f4)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:85:40</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  82 </span>val rejectEndorsementColor = Color(0xFFF8D5D5)
+<span class="lineno">  83 </span>
+<span class="lineno">  84 </span>val acceptEndorsementTextColor = Color(0xFF439A86)
+<span class="lineno">  85 </span>val rejectEndorsementTextColor = Color(<span class="error">0xFFE31F06</span>)
+<span class="lineno">  86 </span>
+<span class="lineno">  87 </span>val pdfViewerBg = Color(0xFFf1f3f4)
+<span class="lineno">  88 </span>val inprogressYellow = Color(0xFFFFF5D2)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:87:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  84 </span>val acceptEndorsementTextColor = Color(0xFF439A86)
+<span class="lineno">  85 </span>val rejectEndorsementTextColor = Color(0xFFE31F06)
+<span class="lineno">  86 </span>
+<span class="lineno">  87 </span>val pdfViewerBg = Color(<span class="error">0xFFf1f3f4</span>)
+<span class="lineno">  88 </span>val inprogressYellow = Color(0xFFFFF5D2)
+<span class="lineno">  89 </span>val redBgLight = Color(0xFFFDEBEB)
+<span class="lineno">  90 </span>val redMessageColor = Color(0xFFE30707)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:88:30</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  85 </span>val rejectEndorsementTextColor = Color(0xFFE31F06)
+<span class="lineno">  86 </span>
+<span class="lineno">  87 </span>val pdfViewerBg = Color(0xFFf1f3f4)
+<span class="lineno">  88 </span>val inprogressYellow = Color(<span class="error">0xFFFFF5D2</span>)
+<span class="lineno">  89 </span>val redBgLight = Color(0xFFFDEBEB)
+<span class="lineno">  90 </span>val redMessageColor = Color(0xFFE30707)
+<span class="lineno">  91 </span>val redIconColor = Color(0xFFe3051a)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:89:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  86 </span>
+<span class="lineno">  87 </span>val pdfViewerBg = Color(0xFFf1f3f4)
+<span class="lineno">  88 </span>val inprogressYellow = Color(0xFFFFF5D2)
+<span class="lineno">  89 </span>val redBgLight = Color(<span class="error">0xFFFDEBEB</span>)
+<span class="lineno">  90 </span>val redMessageColor = Color(0xFFE30707)
+<span class="lineno">  91 </span>val redIconColor = Color(0xFFe3051a)
+<span class="lineno">  92 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:90:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  87 </span>val pdfViewerBg = Color(0xFFf1f3f4)
+<span class="lineno">  88 </span>val inprogressYellow = Color(0xFFFFF5D2)
+<span class="lineno">  89 </span>val redBgLight = Color(0xFFFDEBEB)
+<span class="lineno">  90 </span>val redMessageColor = Color(<span class="error">0xFFE30707</span>)
+<span class="lineno">  91 </span>val redIconColor = Color(0xFFe3051a)
+<span class="lineno">  92 </span>
+<span class="lineno">  93 </span>val checkBoxUncheckedColor = Color(0xFFC6C6C6)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:91:26</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  88 </span>val inprogressYellow = Color(0xFFFFF5D2)
+<span class="lineno">  89 </span>val redBgLight = Color(0xFFFDEBEB)
+<span class="lineno">  90 </span>val redMessageColor = Color(0xFFE30707)
+<span class="lineno">  91 </span>val redIconColor = Color(<span class="error">0xFFe3051a</span>)
+<span class="lineno">  92 </span>
+<span class="lineno">  93 </span>val checkBoxUncheckedColor = Color(0xFFC6C6C6)
+<span class="lineno">  94 </span>val comparisonCardDividerColor = Color(0xFFD8C7BE)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:93:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  90 </span>val redMessageColor = Color(0xFFE30707)
+<span class="lineno">  91 </span>val redIconColor = Color(0xFFe3051a)
+<span class="lineno">  92 </span>
+<span class="lineno">  93 </span>val checkBoxUncheckedColor = Color(<span
+                            class="error">0xFFC6C6C6</span>)
+<span class="lineno">  94 </span>val comparisonCardDividerColor = Color(0xFFD8C7BE)
+<span class="lineno">  95 </span>val unmatchedOrangeColor = Color(0xFFDD6541)
+<span class="lineno">  96 </span>val brownLightBorderColor = Color(0xFFE0D9D7)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:94:40</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  91 </span>val redIconColor = Color(0xFFe3051a)
+<span class="lineno">  92 </span>
+<span class="lineno">  93 </span>val checkBoxUncheckedColor = Color(0xFFC6C6C6)
+<span class="lineno">  94 </span>val comparisonCardDividerColor = Color(<span class="error">0xFFD8C7BE</span>)
+<span class="lineno">  95 </span>val unmatchedOrangeColor = Color(0xFFDD6541)
+<span class="lineno">  96 </span>val brownLightBorderColor = Color(0xFFE0D9D7)
+<span class="lineno">  97 </span>val greyLightBgColor = Color(0xffFFFCFC)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:95:34</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  92 </span>
+<span class="lineno">  93 </span>val checkBoxUncheckedColor = Color(0xFFC6C6C6)
+<span class="lineno">  94 </span>val comparisonCardDividerColor = Color(0xFFD8C7BE)
+<span class="lineno">  95 </span>val unmatchedOrangeColor = Color(<span
+                            class="error">0xFFDD6541</span>)
+<span class="lineno">  96 </span>val brownLightBorderColor = Color(0xFFE0D9D7)
+<span class="lineno">  97 </span>val greyLightBgColor = Color(0xffFFFCFC)
+<span class="lineno">  98 </span>val greenBgLight = Color(0xFFFCFFFD)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:96:35</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  93 </span>val checkBoxUncheckedColor = Color(0xFFC6C6C6)
+<span class="lineno">  94 </span>val comparisonCardDividerColor = Color(0xFFD8C7BE)
+<span class="lineno">  95 </span>val unmatchedOrangeColor = Color(0xFFDD6541)
+<span class="lineno">  96 </span>val brownLightBorderColor = Color(<span
+                            class="error">0xFFE0D9D7</span>)
+<span class="lineno">  97 </span>val greyLightBgColor = Color(0xffFFFCFC)
+<span class="lineno">  98 </span>val greenBgLight = Color(0xFFFCFFFD)
+<span class="lineno">  99 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:97:30</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  94 </span>val comparisonCardDividerColor = Color(0xFFD8C7BE)
+<span class="lineno">  95 </span>val unmatchedOrangeColor = Color(0xFFDD6541)
+<span class="lineno">  96 </span>val brownLightBorderColor = Color(0xFFE0D9D7)
+<span class="lineno">  97 </span>val greyLightBgColor = Color(<span class="error">0xffFFFCFC</span>)
+<span class="lineno">  98 </span>val greenBgLight = Color(0xFFFCFFFD)
+<span class="lineno">  99 </span>
+<span class="lineno"> 100 </span>val decrementCounterColor = Color(0xFFF0665B)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:98:26</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  95 </span>val unmatchedOrangeColor = Color(0xFFDD6541)
+<span class="lineno">  96 </span>val brownLightBorderColor = Color(0xFFE0D9D7)
+<span class="lineno">  97 </span>val greyLightBgColor = Color(0xffFFFCFC)
+<span class="lineno">  98 </span>val greenBgLight = Color(<span class="error">0xFFFCFFFD</span>)
+<span class="lineno">  99 </span>
+<span class="lineno"> 100 </span>val decrementCounterColor = Color(0xFFF0665B)
+<span class="lineno"> 101 </span>val locationIconActiveColor = Color(0xFFDE0101)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:100:35</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  97 </span>val greyLightBgColor = Color(0xffFFFCFC)
+<span class="lineno">  98 </span>val greenBgLight = Color(0xFFFCFFFD)
+<span class="lineno">  99 </span>
+<span class="lineno"> 100 </span>val decrementCounterColor = Color(<span
+                            class="error">0xFFF0665B</span>)
+<span class="lineno"> 101 </span>val locationIconActiveColor = Color(0xFFDE0101)
+<span class="lineno"> 102 </span>val greyBorderColor = Color(0xFFD5D5D5)
+<span class="lineno"> 103 </span>val lightGrayTranslucent = Color(0xB2B1B1B1)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:101:37</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  98 </span>val greenBgLight = Color(0xFFFCFFFD)
+<span class="lineno">  99 </span>
+<span class="lineno"> 100 </span>val decrementCounterColor = Color(0xFFF0665B)
+<span class="lineno"> 101 </span>val locationIconActiveColor = Color(<span
+                            class="error">0xFFDE0101</span>)
+<span class="lineno"> 102 </span>val greyBorderColor = Color(0xFFD5D5D5)
+<span class="lineno"> 103 </span>val lightGrayTranslucent = Color(0xB2B1B1B1)
+<span class="lineno"> 104 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:102:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  99 </span>
+<span class="lineno"> 100 </span>val decrementCounterColor = Color(0xFFF0665B)
+<span class="lineno"> 101 </span>val locationIconActiveColor = Color(0xFFDE0101)
+<span class="lineno"> 102 </span>val greyBorderColor = Color(<span class="error">0xFFD5D5D5</span>)
+<span class="lineno"> 103 </span>val lightGrayTranslucent = Color(0xB2B1B1B1)
+<span class="lineno"> 104 </span>
+<span class="lineno"> 105 </span>val progressIndicatorColor = Color(0xFF222E50)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:103:34</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 100 </span>val decrementCounterColor = Color(0xFFF0665B)
+<span class="lineno"> 101 </span>val locationIconActiveColor = Color(0xFFDE0101)
+<span class="lineno"> 102 </span>val greyBorderColor = Color(0xFFD5D5D5)
+<span class="lineno"> 103 </span>val lightGrayTranslucent = Color(<span
+                            class="error">0xB2B1B1B1</span>)
+<span class="lineno"> 104 </span>
+<span class="lineno"> 105 </span>val progressIndicatorColor = Color(0xFF222E50)
+<span class="lineno"> 106 </span>val trackColor = Color(0xFFD1D5DE)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:105:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 102 </span>val greyBorderColor = Color(0xFFD5D5D5)
+<span class="lineno"> 103 </span>val lightGrayTranslucent = Color(0xB2B1B1B1)
+<span class="lineno"> 104 </span>
+<span class="lineno"> 105 </span>val progressIndicatorColor = Color(<span
+                            class="error">0xFF222E50</span>)
+<span class="lineno"> 106 </span>val trackColor = Color(0xFFD1D5DE)
+<span class="lineno"> 107 </span>val sectionIconInProgressBg = Color(0xFFFFFAF0)
+<span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(0xFFD3FFF5)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:106:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 103 </span>val lightGrayTranslucent = Color(0xB2B1B1B1)
+<span class="lineno"> 104 </span>
+<span class="lineno"> 105 </span>val progressIndicatorColor = Color(0xFF222E50)
+<span class="lineno"> 106 </span>val trackColor = Color(<span class="error">0xFFD1D5DE</span>)
+<span class="lineno"> 107 </span>val sectionIconInProgressBg = Color(0xFFFFFAF0)
+<span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(0xFFD3FFF5)
+<span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(0xFFF7F7F7)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:107:37</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 104 </span>
+<span class="lineno"> 105 </span>val progressIndicatorColor = Color(0xFF222E50)
+<span class="lineno"> 106 </span>val trackColor = Color(0xFFD1D5DE)
+<span class="lineno"> 107 </span>val sectionIconInProgressBg = Color(<span
+                            class="error">0xFFFFFAF0</span>)
+<span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(0xFFD3FFF5)
+<span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(0xFFF7F7F7)
+<span class="lineno"> 110 </span>val descriptionBoxBackgroundLightBlue = Color(0xFFF8FAFF)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:108:36</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 105 </span>val progressIndicatorColor = Color(0xFF222E50)
+<span class="lineno"> 106 </span>val trackColor = Color(0xFFD1D5DE)
+<span class="lineno"> 107 </span>val sectionIconInProgressBg = Color(0xFFFFFAF0)
+<span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(<span
+                            class="error">0xFFD3FFF5</span>)
+<span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(0xFFF7F7F7)
+<span class="lineno"> 110 </span>val descriptionBoxBackgroundLightBlue = Color(0xFFF8FAFF)
+<span class="lineno"> 111 </span>val lightBlue = Color(0xFFF4F7FF)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:109:37</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 106 </span>val trackColor = Color(0xFFD1D5DE)
+<span class="lineno"> 107 </span>val sectionIconInProgressBg = Color(0xFFFFFAF0)
+<span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(0xFFD3FFF5)
+<span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(<span
+                            class="error">0xFFF7F7F7</span>)
+<span class="lineno"> 110 </span>val descriptionBoxBackgroundLightBlue = Color(0xFFF8FAFF)
+<span class="lineno"> 111 </span>val lightBlue = Color(0xFFF4F7FF)
+<span class="lineno"> 112 </span>val unselectedTabColor = Color(0xFF7C7C7C)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:110:47</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 107 </span>val sectionIconInProgressBg = Color(0xFFFFFAF0)
+<span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(0xFFD3FFF5)
+<span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(0xFFF7F7F7)
+<span class="lineno"> 110 </span>val descriptionBoxBackgroundLightBlue = Color(<span class="error">0xFFF8FAFF</span>)
+<span class="lineno"> 111 </span>val lightBlue = Color(0xFFF4F7FF)
+<span class="lineno"> 112 </span>val unselectedTabColor = Color(0xFF7C7C7C)
+<span class="lineno"> 113 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:111:23</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 108 </span>val sectionIconCompletedBg = Color(0xFFD3FFF5)
+<span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(0xFFF7F7F7)
+<span class="lineno"> 110 </span>val descriptionBoxBackgroundLightBlue = Color(0xFFF8FAFF)
+<span class="lineno"> 111 </span>val lightBlue = Color(<span class="error">0xFFF4F7FF</span>)
+<span class="lineno"> 112 </span>val unselectedTabColor = Color(0xFF7C7C7C)
+<span class="lineno"> 113 </span>
+<span class="lineno"> 114 </span>val inactiveLightBlue = Color(0xFFE2E9FF)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:112:32</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 109 </span>val sectionIconNotStartedBg = Color(0xFFF7F7F7)
+<span class="lineno"> 110 </span>val descriptionBoxBackgroundLightBlue = Color(0xFFF8FAFF)
+<span class="lineno"> 111 </span>val lightBlue = Color(0xFFF4F7FF)
+<span class="lineno"> 112 </span>val unselectedTabColor = Color(<span
+                            class="error">0xFF7C7C7C</span>)
+<span class="lineno"> 113 </span>
+<span class="lineno"> 114 </span>val inactiveLightBlue = Color(0xFFE2E9FF)
+<span class="lineno"> 115 </span>val inactiveTextBlue = Color(0xFF576488)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:114:31</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 111 </span>val lightBlue = Color(0xFFF4F7FF)
+<span class="lineno"> 112 </span>val unselectedTabColor = Color(0xFF7C7C7C)
+<span class="lineno"> 113 </span>
+<span class="lineno"> 114 </span>val inactiveLightBlue = Color(<span class="error">0xFFE2E9FF</span>)
+<span class="lineno"> 115 </span>val inactiveTextBlue = Color(0xFF576488)
+<span class="lineno"> 116 </span>val switchColor = Color(0xFFD5D8E2)
+<span class="lineno"> 117 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:115:30</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 112 </span>val unselectedTabColor = Color(0xFF7C7C7C)
+<span class="lineno"> 113 </span>
+<span class="lineno"> 114 </span>val inactiveLightBlue = Color(0xFFE2E9FF)
+<span class="lineno"> 115 </span>val inactiveTextBlue = Color(<span class="error">0xFF576488</span>)
+<span class="lineno"> 116 </span>val switchColor = Color(0xFFD5D8E2)
+<span class="lineno"> 117 </span>
+<span class="lineno"> 118 </span>val bannerBorderGreen = Color(0xFF69BFAC)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:116:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 113 </span>
+<span class="lineno"> 114 </span>val inactiveLightBlue = Color(0xFFE2E9FF)
+<span class="lineno"> 115 </span>val inactiveTextBlue = Color(0xFF576488)
+<span class="lineno"> 116 </span>val switchColor = Color(<span class="error">0xFFD5D8E2</span>)
+<span class="lineno"> 117 </span>
+<span class="lineno"> 118 </span>val bannerBorderGreen = Color(0xFF69BFAC)
+<span class="lineno"> 119 </span>val bannerBgGreen = Color(0xFFDDFFF7)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:118:31</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 115 </span>val inactiveTextBlue = Color(0xFF576488)
+<span class="lineno"> 116 </span>val switchColor = Color(0xFFD5D8E2)
+<span class="lineno"> 117 </span>
+<span class="lineno"> 118 </span>val bannerBorderGreen = Color(<span class="error">0xFF69BFAC</span>)
+<span class="lineno"> 119 </span>val bannerBgGreen = Color(0xFFDDFFF7)
+<span class="lineno"> 120 </span>val bannerTextGreen = Color(0xFF0C7960)
+<span class="lineno"> 121 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:119:27</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 116 </span>val switchColor = Color(0xFFD5D8E2)
+<span class="lineno"> 117 </span>
+<span class="lineno"> 118 </span>val bannerBorderGreen = Color(0xFF69BFAC)
+<span class="lineno"> 119 </span>val bannerBgGreen = Color(<span class="error">0xFFDDFFF7</span>)
+<span class="lineno"> 120 </span>val bannerTextGreen = Color(0xFF0C7960)
+<span class="lineno"> 121 </span>
+<span class="lineno"> 122 </span>val completeTickColor = Color(0xFF439a86)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:120:29</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 117 </span>
+<span class="lineno"> 118 </span>val bannerBorderGreen = Color(0xFF69BFAC)
+<span class="lineno"> 119 </span>val bannerBgGreen = Color(0xFFDDFFF7)
+<span class="lineno"> 120 </span>val bannerTextGreen = Color(<span class="error">0xFF0C7960</span>)
+<span class="lineno"> 121 </span>
+<span class="lineno"> 122 </span>val completeTickColor = Color(0xFF439a86)
+<span class="lineno"> 123 </span>val greyDivider = Color(0xFFDDDDDD)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:122:31</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 119 </span>val bannerBgGreen = Color(0xFFDDFFF7)
+<span class="lineno"> 120 </span>val bannerTextGreen = Color(0xFF0C7960)
+<span class="lineno"> 121 </span>
+<span class="lineno"> 122 </span>val completeTickColor = Color(<span class="error">0xFF439a86</span>)
+<span class="lineno"> 123 </span>val greyDivider = Color(0xFFDDDDDD)
+<span class="lineno"> 124 </span>val greyTransparentColor = Color(0xc6c5b9)
+<span class="lineno"> 125 </span>val greyLightColor = Color(0xFFDCDCDC)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:123:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 120 </span>val bannerTextGreen = Color(0xFF0C7960)
+<span class="lineno"> 121 </span>
+<span class="lineno"> 122 </span>val completeTickColor = Color(0xFF439a86)
+<span class="lineno"> 123 </span>val greyDivider = Color(<span class="error">0xFFDDDDDD</span>)
+<span class="lineno"> 124 </span>val greyTransparentColor = Color(0xc6c5b9)
+<span class="lineno"> 125 </span>val greyLightColor = Color(0xFFDCDCDC)
+<span class="lineno"> 126 </span>val greyColor = Color(0xFFA3A5AB)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:124:34</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 121 </span>
+<span class="lineno"> 122 </span>val completeTickColor = Color(0xFF439a86)
+<span class="lineno"> 123 </span>val greyDivider = Color(0xFFDDDDDD)
+<span class="lineno"> 124 </span>val greyTransparentColor = Color(<span
+                            class="error">0xc6c5b9</span>)
+<span class="lineno"> 125 </span>val greyLightColor = Color(0xFFDCDCDC)
+<span class="lineno"> 126 </span>val greyColor = Color(0xFFA3A5AB)
+<span class="lineno"> 127 </span>val liteRed = Color(0xFFFCF3E2)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:125:28</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 122 </span>val completeTickColor = Color(0xFF439a86)
+<span class="lineno"> 123 </span>val greyDivider = Color(0xFFDDDDDD)
+<span class="lineno"> 124 </span>val greyTransparentColor = Color(0xc6c5b9)
+<span class="lineno"> 125 </span>val greyLightColor = Color(<span class="error">0xFFDCDCDC</span>)
+<span class="lineno"> 126 </span>val greyColor = Color(0xFFA3A5AB)
+<span class="lineno"> 127 </span>val liteRed = Color(0xFFFCF3E2)
+<span class="lineno"> 128 </span>val liteBgColor = Color(0xF7F7F7)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:126:23</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 123 </span>val greyDivider = Color(0xFFDDDDDD)
+<span class="lineno"> 124 </span>val greyTransparentColor = Color(0xc6c5b9)
+<span class="lineno"> 125 </span>val greyLightColor = Color(0xFFDCDCDC)
+<span class="lineno"> 126 </span>val greyColor = Color(<span class="error">0xFFA3A5AB</span>)
+<span class="lineno"> 127 </span>val liteRed = Color(0xFFFCF3E2)
+<span class="lineno"> 128 </span>val liteBgColor = Color(0xF7F7F7)
+<span class="lineno"> 129 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:127:21</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 124 </span>val greyTransparentColor = Color(0xc6c5b9)
+<span class="lineno"> 125 </span>val greyLightColor = Color(0xFFDCDCDC)
+<span class="lineno"> 126 </span>val greyColor = Color(0xFFA3A5AB)
+<span class="lineno"> 127 </span>val liteRed = Color(<span class="error">0xFFFCF3E2</span>)
+<span class="lineno"> 128 </span>val liteBgColor = Color(0xF7F7F7)
+<span class="lineno"> 129 </span>
+<span class="lineno"> 130 </span>val searchSectionTitleColor = Color(0xFF7D7572)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:128:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 125 </span>val greyLightColor = Color(0xFFDCDCDC)
+<span class="lineno"> 126 </span>val greyColor = Color(0xFFA3A5AB)
+<span class="lineno"> 127 </span>val liteRed = Color(0xFFFCF3E2)
+<span class="lineno"> 128 </span>val liteBgColor = Color(<span class="error">0xF7F7F7</span>)
+<span class="lineno"> 129 </span>
+<span class="lineno"> 130 </span>val searchSectionTitleColor = Color(0xFF7D7572)
+<span class="lineno"> 131 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:130:37</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 127 </span>val liteRed = Color(0xFFFCF3E2)
+<span class="lineno"> 128 </span>val liteBgColor = Color(0xF7F7F7)
+<span class="lineno"> 129 </span>
+<span class="lineno"> 130 </span>val searchSectionTitleColor = Color(<span
+                            class="error">0xFF7D7572</span>)
+<span class="lineno"> 131 </span>
+<span class="lineno"> 132 </span>val summaryCardViewBlue = Color(0xFF325DF6)
+<span class="lineno"> 133 </span>val trackLinearColor = Color(0xFFD1D5DE)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:132:33</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 129 </span>
+<span class="lineno"> 130 </span>val searchSectionTitleColor = Color(0xFF7D7572)
+<span class="lineno"> 131 </span>
+<span class="lineno"> 132 </span>val summaryCardViewBlue = Color(<span
+                            class="error">0xFF325DF6</span>)
+<span class="lineno"> 133 </span>val trackLinearColor = Color(0xFFD1D5DE)
+<span class="lineno"> 134 </span>val greyBorder = Color(0xFF707070)
+<span class="lineno"> 135 </span>val blue = Color(0xFF205EFF)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:133:30</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 130 </span>val searchSectionTitleColor = Color(0xFF7D7572)
+<span class="lineno"> 131 </span>
+<span class="lineno"> 132 </span>val summaryCardViewBlue = Color(0xFF325DF6)
+<span class="lineno"> 133 </span>val trackLinearColor = Color(<span class="error">0xFFD1D5DE</span>)
+<span class="lineno"> 134 </span>val greyBorder = Color(0xFF707070)
+<span class="lineno"> 135 </span>val blue = Color(0xFF205EFF)
+<span class="lineno"> 136 </span>val lightBg = Color(0xFFF7F7F7)
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:134:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 131 </span>
+<span class="lineno"> 132 </span>val summaryCardViewBlue = Color(0xFF325DF6)
+<span class="lineno"> 133 </span>val trackLinearColor = Color(0xFFD1D5DE)
+<span class="lineno"> 134 </span>val greyBorder = Color(<span class="error">0xFF707070</span>)
+<span class="lineno"> 135 </span>val blue = Color(0xFF205EFF)
+<span class="lineno"> 136 </span>val lightBg = Color(0xFFF7F7F7)
+<span class="lineno"> 137 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:135:18</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 132 </span>val summaryCardViewBlue = Color(0xFF325DF6)
+<span class="lineno"> 133 </span>val trackLinearColor = Color(0xFFD1D5DE)
+<span class="lineno"> 134 </span>val greyBorder = Color(0xFF707070)
+<span class="lineno"> 135 </span>val blue = Color(<span class="error">0xFF205EFF</span>)
+<span class="lineno"> 136 </span>val lightBg = Color(0xFFF7F7F7)
+<span class="lineno"> 137 </span>
+<span class="lineno"> 138 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Color.kt:136:21</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 133 </span>val trackLinearColor = Color(0xFFD1D5DE)
+<span class="lineno"> 134 </span>val greyBorder = Color(0xFF707070)
+<span class="lineno"> 135 </span>val blue = Color(0xFF205EFF)
+<span class="lineno"> 136 </span>val lightBg = Color(<span class="error">0xFFF7F7F7</span>)
+<span class="lineno"> 137 </span>
+<span class="lineno"> 138 </span>
+<span class="lineno"> 139 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:36:20</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  33 </span>
+<span class="lineno">  34 </span>val dimen_100_dp = 100.dp
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val dimen_450_px = <span class="error">450</span>
+<span class="lineno">  37 </span>val dimen_400_px = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:37:20</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  34 </span>val dimen_100_dp = 100.dp
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val dimen_450_px = 450
+<span class="lineno">  37 </span>val dimen_400_px = <span class="error">400</span>
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:39:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  36 </span>val dimen_450_px = 450
+<span class="lineno">  37 </span>val dimen_400_px = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = <span class="error">0.1f</span>
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:40:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  37 </span>val dimen_400_px = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = <span class="error">0.2f</span>
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:41:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = <span class="error">0.4f</span>
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:42:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = <span class="error">0.5f</span>
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+<span class="lineno">  45 </span>val weight_100_percent = 1f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:43:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = <span class="error">0.6f</span>
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+<span class="lineno">  45 </span>val weight_100_percent = 1f
+<span class="lineno">  46 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:44:25</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = <span class="error">0.8f</span>
+<span class="lineno">  45 </span>val weight_100_percent = 1f
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:30:38</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  27 </span>    private val blackColor = &quot;#000000&quot;
+<span class="lineno">  28 </span>    private val greyColor = &quot;#222E50&quot;
+<span class="lineno">  29 </span>    suspend fun generatePdf(pdfModels: List&lt;PdfModel&gt;, fileName: String): String {
+<span class="lineno">  30 </span>        val mSerialNumberCellWidth = <span class="error">50</span>
+<span class="lineno">  31 </span>        val mDataCellWidth = 150
+<span class="lineno">  32 </span>        val outputFile = getPdfPath(
+<span class="lineno">  33 </span>            CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:31:30</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno">  28 </span>    private val greyColor = &quot;#222E50&quot;
+<span class="lineno">  29 </span>    suspend fun generatePdf(pdfModels: List&lt;PdfModel&gt;, fileName: String): String {
+<span class="lineno">  30 </span>        val mSerialNumberCellWidth = 50
+<span class="lineno">  31 </span>        val mDataCellWidth = <span class="error">150</span>
+<span class="lineno">  32 </span>        val outputFile = getPdfPath(
+<span class="lineno">  33 </span>            CoreAppDetails.getApplicationDetails()?.activity?.applicationContext!!,
+<span class="lineno">  34 </span>            fileName
+</code></pre>
+            </li>
+            <li><span class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:152:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 149 </span>
+<span class="lineno"> 150 </span>    private fun getTextPropertiesForCell(): TextProperties {
+<span class="lineno"> 151 </span>        return TextProperties().apply {
+<span class="lineno"> 152 </span>            textSize = <span class="error">12</span>
+<span class="lineno"> 153 </span>            textColor = blackColor
+<span class="lineno"> 154 </span>            typeface = Typeface.DEFAULT
+<span class="lineno"> 155 </span>            alignment = Layout.Alignment.ALIGN_CENTER
+</code></pre>
+            </li>
+            <li><span class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:161:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 158 </span>
+<span class="lineno"> 159 </span>    private fun getTitleTextProperties(textAlignment: Layout.Alignment): TextProperties {
+<span class="lineno"> 160 </span>        return TextProperties().apply {
+<span class="lineno"> 161 </span>            textSize = <span class="error">13</span>
+<span class="lineno"> 162 </span>            textColor = blackColor
+<span class="lineno"> 163 </span>            typeface = Typeface.DEFAULT_BOLD
+<span class="lineno"> 164 </span>            alignment = textAlignment
+</code></pre>
+            </li>
+            <li><span class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:171:24</span><span
+                    class="message">This expression contains a magic number. Consider defining it to a well named constant.</span>
+                <pre><code><span class="lineno"> 168 </span>
+<span class="lineno"> 169 </span>    private fun getSubTitleTextProperties(): TextProperties {
+<span class="lineno"> 170 </span>        return TextProperties().apply {
+<span class="lineno"> 171 </span>            textSize = <span class="error">14</span>
+<span class="lineno"> 172 </span>            textColor = greyColor
+<span class="lineno"> 173 </span>            typeface = Typeface.DEFAULT
+<span class="lineno"> 174 </span>            alignment = Layout.Alignment.ALIGN_CENTER
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="MaxLineLength" open="open">
+        <summary class="rule-container"><span class="rule">MaxLineLength: 1 </span><span
+                class="description">Line detected, which is longer than the defined maximum line length in the code style.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#maxlinelength">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:480:1</span><span
+                    class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+                <pre><code><span class="lineno"> 477 </span>            dbUri?.let {
+<span class="lineno"> 478 </span>                fileUris.add(Pair(getFileNameFromURL(it.path ?: &quot;&quot;), it))
+<span class="lineno"> 479 </span>            }
+<span class="lineno"> 480 </span><span class="error">            val zipFileName = &quot;${userName}_${mobileNo}_${SARATHI}_Database_${moduleName}_${System.currentTimeMillis()}.zip&quot;</span>
+<span class="lineno"> 481 </span>            val zipFileUri =
+<span class="lineno"> 482 </span>                uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
+<span class="lineno"> 483 </span>
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="MayBeConst" open="open">
+        <summary class="rule-container"><span class="rule">MayBeConst: 13 </span><span
+                class="description">Usage of `vals` that can be `const val` detected.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#maybeconst">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:36:5</span><span
+                    class="message">dimen_450_px can be a `const val`.</span>
+                <pre><code><span class="lineno">  33 </span>
+<span class="lineno">  34 </span>val dimen_100_dp = 100.dp
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val <span class="error">dimen_450_px</span> = 450
+<span class="lineno">  37 </span>val dimen_400_px = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:37:5</span><span
+                    class="message">dimen_400_px can be a `const val`.</span>
+                <pre><code><span class="lineno">  34 </span>val dimen_100_dp = 100.dp
+<span class="lineno">  35 </span>
+<span class="lineno">  36 </span>val dimen_450_px = 450
+<span class="lineno">  37 </span>val <span class="error">dimen_400_px</span> = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:39:5</span><span
+                    class="message">weight_10_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  36 </span>val dimen_450_px = 450
+<span class="lineno">  37 </span>val dimen_400_px = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val <span class="error">weight_10_percent</span> = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:40:5</span><span
+                    class="message">weight_20_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  37 </span>val dimen_400_px = 400
+<span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val <span class="error">weight_20_percent</span> = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:41:5</span><span
+                    class="message">weight_40_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  38 </span>
+<span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val <span class="error">weight_40_percent</span> = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:42:5</span><span
+                    class="message">weight_50_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  39 </span>val weight_10_percent = 0.1f
+<span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val <span class="error">weight_50_percent</span> = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+<span class="lineno">  45 </span>val weight_100_percent = 1f
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:43:5</span><span
+                    class="message">weight_60_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  40 </span>val weight_20_percent = 0.2f
+<span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val <span class="error">weight_60_percent</span> = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+<span class="lineno">  45 </span>val weight_100_percent = 1f
+<span class="lineno">  46 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:44:5</span><span
+                    class="message">weight_80_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  41 </span>val weight_40_percent = 0.4f
+<span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val <span class="error">weight_80_percent</span> = 0.8f
+<span class="lineno">  45 </span>val weight_100_percent = 1f
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Dimens.kt:45:5</span><span
+                    class="message">weight_100_percent can be a `const val`.</span>
+                <pre><code><span class="lineno">  42 </span>val weight_50_percent = 0.5f
+<span class="lineno">  43 </span>val weight_60_percent = 0.6f
+<span class="lineno">  44 </span>val weight_80_percent = 0.8f
+<span class="lineno">  45 </span>val <span class="error">weight_100_percent</span> = 1f
+<span class="lineno">  46 </span>
+<span class="lineno">  47 </span>
+<span class="lineno">  48 </span>
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:25:17</span><span
+                    class="message">margins can be a `const val`.</span>
+                <pre><code><span class="lineno">  22 </span>
+<span class="lineno">  23 </span>object PdfGenerator {
+<span class="lineno">  24 </span>
+<span class="lineno">  25 </span>    private val <span class="error">margins</span>: UInt = 20u
+<span class="lineno">  26 </span>    private val marginBottom: UInt = 40u
+<span class="lineno">  27 </span>    private val blackColor = &quot;#000000&quot;
+<span class="lineno">  28 </span>    private val greyColor = &quot;#222E50&quot;
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:26:17</span><span
+                    class="message">marginBottom can be a `const val`.</span>
+                <pre><code><span class="lineno">  23 </span>object PdfGenerator {
+<span class="lineno">  24 </span>
+<span class="lineno">  25 </span>    private val margins: UInt = 20u
+<span class="lineno">  26 </span>    private val <span class="error">marginBottom</span>: UInt = 40u
+<span class="lineno">  27 </span>    private val blackColor = &quot;#000000&quot;
+<span class="lineno">  28 </span>    private val greyColor = &quot;#222E50&quot;
+<span class="lineno">  29 </span>    suspend fun generatePdf(pdfModels: List&lt;PdfModel&gt;, fileName: String): String {
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:27:17</span><span
+                    class="message">blackColor can be a `const val`.</span>
+                <pre><code><span class="lineno">  24 </span>
+<span class="lineno">  25 </span>    private val margins: UInt = 20u
+<span class="lineno">  26 </span>    private val marginBottom: UInt = 40u
+<span class="lineno">  27 </span>    private val <span class="error">blackColor</span> = &quot;#000000&quot;
+<span class="lineno">  28 </span>    private val greyColor = &quot;#222E50&quot;
+<span class="lineno">  29 </span>    suspend fun generatePdf(pdfModels: List&lt;PdfModel&gt;, fileName: String): String {
+<span class="lineno">  30 </span>        val mSerialNumberCellWidth = 50
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/PdfGenerator.kt:28:17</span><span
+                    class="message">greyColor can be a `const val`.</span>
+                <pre><code><span class="lineno">  25 </span>    private val margins: UInt = 20u
+<span class="lineno">  26 </span>    private val marginBottom: UInt = 40u
+<span class="lineno">  27 </span>    private val blackColor = &quot;#000000&quot;
+<span class="lineno">  28 </span>    private val <span class="error">greyColor</span> = &quot;#222E50&quot;
+<span class="lineno">  29 </span>    suspend fun generatePdf(pdfModels: List&lt;PdfModel&gt;, fileName: String): String {
+<span class="lineno">  30 </span>        val mSerialNumberCellWidth = 50
+<span class="lineno">  31 </span>        val mDataCellWidth = 150
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="ReturnCount" open="open">
+        <summary class="rule-container"><span class="rule">ReturnCount: 2 </span><span
+                class="description">Restrict the number of return statements in methods.</span>
+        </summary>
+        <a href="https://detekt.dev/docs/rules/style#returncount">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/CoreUtils.kt:560:5</span><span
+                    class="message">Function uriFromFile has 3 return statements which exceeds the limit of 2.</span>
+                <pre><code><span class="lineno"> 557 </span>    }
+<span class="lineno"> 558 </span>}
+<span class="lineno"> 559 </span>
+<span class="lineno"> 560 </span>fun <span class="error">uriFromFile</span>(context: Context?, file: File, applicationID: String): Uri {
+<span class="lineno"> 561 </span>    try {
+<span class="lineno"> 562 </span>        return if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.N) {
+<span class="lineno"> 563 </span>            if (context != null) {
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/utils/CoreLogger.kt:410:17</span><span
+                    class="message">Function buildLogFile has 3 return statements which exceeds the limit of 2.</span>
+                <pre><code><span class="lineno"> 407 </span>        }
+<span class="lineno"> 408 </span>    }
+<span class="lineno"> 409 </span>
+<span class="lineno"> 410 </span>    suspend fun <span class="error">buildLogFile</span>(appContext: Context,onFailed:()-&gt;Unit): File? {
+<span class="lineno"> 411 </span>        try {
+<span class="lineno"> 412 </span>
+<span class="lineno"> 413 </span>            val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+</code></pre>
+            </li>
+        </ul>
+    </details>
+    <details id="UnusedPrivateProperty" open="open">
+        <summary class="rule-container"><span class="rule">UnusedPrivateProperty: 2 </span><span
+                class="description">Property is unused and should be removed.</span></summary>
+        <a href="https://detekt.dev/docs/rules/style#unusedprivateproperty">Documentation</a>
+        <ul>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Theme.kt:7:13</span><span
+                    class="message">Private property `DarkColorScheme` is unused.</span>
+                <pre><code><span class="lineno">   4 </span>import androidx.compose.material3.lightColorScheme
+<span class="lineno">   5 </span>import androidx.compose.ui.graphics.Color
+<span class="lineno">   6 </span>
+<span class="lineno">   7 </span>private val <span class="error">DarkColorScheme</span> = darkColorScheme(
+<span class="lineno">   8 </span>    primary = Purple80,
+<span class="lineno">   9 </span>    secondary = PurpleGrey80,
+<span class="lineno">  10 </span>    tertiary = Pink80
+</code></pre>
+            </li>
+            <li><span
+                    class="location">core/src/main/java/com/nudge/core/ui/theme/Theme.kt:13:13</span><span
+                    class="message">Private property `LightColorScheme` is unused.</span>
+                <pre><code><span class="lineno">  10 </span>    tertiary = Pink80
+<span class="lineno">  11 </span>)
+<span class="lineno">  12 </span>
+<span class="lineno">  13 </span>private val <span class="error">LightColorScheme</span> = lightColorScheme(
+<span class="lineno">  14 </span>    primary = blueDark,
+<span class="lineno">  15 </span>    secondary = Color.White,
+<span class="lineno">  16 </span>    tertiary = Color.White
+</code></pre>
+            </li>
+        </ul>
+    </details>
+</div>
 
 
-generated with <a href="https://detekt.dev/">detekt version 1.23.3</a> on 2024-06-13 09:54:09 UTC.
+generated with <a href="https://detekt.dev/">detekt version 1.23.3</a> on 2024-06-21 09:39:49 UTC.
 
 </body>
 </html>

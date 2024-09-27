@@ -26,7 +26,6 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.common_components.AlertDialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.viewmodel.FormResponseSummaryScreenViewModel
@@ -37,6 +36,7 @@ import com.nrlm.baselinesurvey.ui.theme.h6Bold
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.navigationmanager.graphs.navigateToFormTypeQuestionScreen
 
 val DEFAULT_OPEN_DIALOG_VALUE = Pair<Boolean, FormResponseObjectDto?>(false, null)
 
@@ -69,7 +69,7 @@ fun FormQuestionSummaryScreen(
                 contentColor = textColorDark,
                 title = {
                     Text(
-                        text = "Summary",
+                        text = stringResource(R.string.summary_text ),
                         style = h6Bold,
                         color = textColorDark
                     ) //TODO Remove Hard coded strings
@@ -153,9 +153,10 @@ fun FormQuestionSummaryScreen(
                         formResponseSummaryScreenViewModel.questionEntity?.let { it1 ->
                             BaselineCore.setReferenceId(formResponseObjectDto.referenceId)
                             BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(false)
-                            navigateToFormTypeQuestionScreen(
-                                navController = navController,
-                                question = it1,
+
+                            navController.navigateToFormTypeQuestionScreen(
+                                questionId = it1.questionId?:0,
+                                questionDisplay = it1.questionDisplay?: BLANK_STRING,
                                 surveyId = surveyId,
                                 sectionId = sectionId,
                                 surveyeeId = surveyeeId

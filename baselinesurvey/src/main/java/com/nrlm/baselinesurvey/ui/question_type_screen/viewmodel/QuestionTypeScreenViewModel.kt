@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -46,6 +45,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -194,7 +194,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 when (conditionsDto?.resultType) {
                     ResultType.Questions.name -> {
                         conditionsDto?.resultList?.forEach { questionList ->
-                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true
+                                || questionList.type?.equals(
+                                    QuestionType.FormWithNone.name,
+                                    true
+                                ) == true
+                            ) {
                                 val mOptionItemEntityList =
                                     questionList.convertFormTypeQuestionListToOptionItemEntity(
                                         optionItemEntity.sectionId,
@@ -275,6 +280,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }
             }
         }
+
     }
 
     private fun getOptionItemEntityState(

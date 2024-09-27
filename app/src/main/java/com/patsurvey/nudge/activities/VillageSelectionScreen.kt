@@ -59,6 +59,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -77,13 +80,12 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -177,7 +179,7 @@ fun VillageSelectionScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = stringResource(R.string.seletc_village_screen_text),
+                            text = getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -189,7 +191,7 @@ fun VillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                            viewModel.savePageOpenFromOTPScreen()
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -227,7 +229,7 @@ fun VillageSelectionScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = stringResource(R.string.seletc_village_screen_text),
+                            text = getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -323,7 +325,6 @@ fun VillageSelectionScreen(
                     ) {
 
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-//                item { Spacer(modifier = Modifier.height(4.dp)) }
                             item {
                                 SearchWithFilterView(
                                     placeholderString = stringResource(id = R.string.search_village),
@@ -348,7 +349,9 @@ fun VillageSelectionScreen(
                                         ?: false,
                                     stepId = village.stepId,
                                     statusId = village.statusId,
-                                    context = context
+                                    stateId =viewModel.getStateId(),
+                                    context = context,
+
                                 ) {
                                     NudgeLogger.d("VillageAndVoBoxForBottomSheet","id = $it")
                                     viewModel.villageSelected.value = it
@@ -357,7 +360,6 @@ fun VillageSelectionScreen(
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
                         }
-//                    }
                         CustomSnackBarShow(
                             state = snackState,
                             position = CustomSnackBarViewPosition.Bottom
@@ -379,33 +381,21 @@ fun VillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
+                            viewModel.savePageOpenFromOTPScreen()
                             if (viewModel.prefRepo.isUserBPC()) {
                                val stepId= villages[viewModel.villageSelected.value].stepId
                                val statusId= villages[viewModel.villageSelected.value].statusId
                                 when (fetchBorderColorForVillage(stepId, statusId)) {
-                                    0,2 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                                    0,2 -> showCustomToast(
+                                        context, getVoNameForState(context,viewModel.getStateId(),R.plurals.village_is_not_vo_endorsed_right_now))
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
-                                        navController.popBackStack()
-                                        navController.navigate(
-                                            "home_graph/${
-                                                viewModel.prefRepo.getPref(
-                                                    PREF_KEY_TYPE_NAME, ""
-                                                ) ?: ""
-                                            }"
-                                        )
+                                        navController.navigateToProgressScreen()
                                     }
                                 }
                             } else {
                                 viewModel.updateSelectedVillage(villageList = villages)
-                                navController.popBackStack()
-                                navController.navigate(
-                                    "home_graph/${
-                                        viewModel.prefRepo.getPref(
-                                            PREF_KEY_TYPE_NAME, ""
-                                        ) ?: ""
-                                    }"
-                                )
+                                navController.navigateToProgressScreen()
                             }
 
                         }
@@ -422,6 +412,20 @@ fun VillageSelectionScreen(
     }
 }
 
+fun NavController.navigateToProgressScreen(){
+    if (this.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
+        this.navigate(HomeScreens.PROGRESS_SEL_SCREEN.route) {
+            this.popUpTo(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+        }
+    } else if (this.graph.route?.equals(NudgeNavigationGraph.HOME_SUB_GRAPH, true) == true) {
+        this.popBackStack()
+        this.navigate(HomeScreens.PROGRESS_SEL_SCREEN.route)
+    } else {
+        this.popBackStack()
+        this.navigate(NudgeNavigationGraph.HOME)
+    }
+}
+
 @Composable
 fun VillageAndVoBoxForBottomSheet(
     modifier: Modifier = Modifier,
@@ -433,8 +437,10 @@ fun VillageAndVoBoxForBottomSheet(
     isVoEndorsementComplete:Boolean =false,
     selectedIndex: Int,
     statusId:Int=0,
+    stateId:Int,
     stepId:Int=0,
-    onVillageSeleted: (Int) -> Unit
+    onVillageSeleted: (Int) -> Unit,
+
 ) {
     Card(
         modifier = Modifier
@@ -457,7 +463,11 @@ fun VillageAndVoBoxForBottomSheet(
                     when (fetchBorderColorForVillage(stepId, statusId)) {
                         0, 2 -> showCustomToast(
                             context,
-                            context.getString(R.string.village_is_not_vo_endorsed_right_now)
+                            getVoNameForState(
+                                context,
+                                stateId,
+                                R.plurals.village_is_not_vo_endorsed_right_now
+                            )
                         )
 
                         else -> onVillageSeleted(index)
@@ -552,7 +562,7 @@ fun VillageAndVoBoxForBottomSheet(
                         .padding(start = 16.dp, end = 16.dp)
                 ) {
                     Text(
-                        text = "VO: ",
+                        text = getVoNameForState(context,stateId,R.plurals.vo),
                         modifier = Modifier,
                         color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
@@ -589,7 +599,7 @@ fun VillageAndVoBoxForBottomSheet(
                         tint = white
                     )
                     Text(
-                        text = stringResource(R.string.vo_endorsement_completed_village_banner_text),
+                        text = getVoNameForState(context,stateId,R.plurals.vo_endorsement_completed_village_banner_text),
                         color = white,
                         style = smallerTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -627,7 +637,7 @@ fun VillageAndVoBoxForBottomSheet(
                         }
                         if(fetchBorderColorForVillage(stepId, statusId)==2){
                             Text(
-                                text = stringResource(id = R.string.vo_endorsement_not_started),
+                                text = getVoNameForState(context,stateId,R.plurals.vo_endorsement_not_started),
                                 color = textColorDark,
                                 style = smallerTextStyle,
                                 modifier = Modifier
@@ -635,11 +645,18 @@ fun VillageAndVoBoxForBottomSheet(
                             )
                         }else {
                             Text(
-                                text = stringResource(
-                                    if (stepId == 44) R.string.vo_endorsement_completed_village_banner_text else {
-                                        if (statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text else R.string.vo_endorsement_completed_village_banner_text
+                                text = if (stepId ==44)
+                                {
+                                    getVoNameForState(context,stateId,R.string.vo_endorsement_completed_village_banner_text)
+                                }
+                                        else{
+                                    if (statusId == StepStatus.COMPLETED.ordinal) {
+                                        stringResource( R.string.bpc_verification_completed_village_banner_text)
+                                        } else {
+                                            getVoNameForState(context,stateId,R.string.vo_endorsement_completed_village_banner_text)
+
                                     }
-                                ),
+                                },
                                 color = if (fetchBorderColorForVillage(
                                         stepId,
                                         statusId
@@ -657,7 +674,8 @@ fun VillageAndVoBoxForBottomSheet(
                     .height(if (isUserBPC) 5.dp else 10.dp))
                 if(isUserBPC){
                 Text(
-                    text = stringResource(id = R.string.vo_endorsement_not_started),
+
+                    text = getVoNameForState(context,stateId,R.plurals.vo_endorsement_not_started),
                     color = textColorDark,
                     style = smallerTextStyle,
                     modifier = Modifier
@@ -671,7 +689,6 @@ fun VillageAndVoBoxForBottomSheet(
 }
 
 private fun fetchBorderColorForVillage(stepId: Int,statusId: Int) :Int{
-    Log.d("TAG", "fetchBorderColorForVillage: stepId: $stepId :: statusId: ${StepStatus.getStepFromOrdinal(statusId)}")
     return if (stepId == 44 && (statusId == StepStatus.INPROGRESS.ordinal
                 || statusId == StepStatus.COMPLETED.ordinal)) {
         1

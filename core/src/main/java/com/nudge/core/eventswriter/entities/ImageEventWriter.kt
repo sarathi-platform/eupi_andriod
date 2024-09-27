@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.net.toUri
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.database.dao.EventDependencyDao
@@ -45,6 +46,7 @@ class ImageEventWriter : IEventWriter {
         contentImageUri: Uri,
         mobileNo: String,
     ) {
+        Log.d("TAG", "saveImageToMediaStore: ${contentImageUri.path} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val values = ContentValues()
             values.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
@@ -111,6 +113,7 @@ class ImageEventWriter : IEventWriter {
         val contentResolver = context.contentResolver
         var bitmap: Bitmap? = null
         try {
+            Log.d("TAG", "uriToBitmap: ${uri?.path} ")
             val parcelFileDescriptor = contentResolver.openFileDescriptor(uri!!, "r")
             if (parcelFileDescriptor != null) {
                 val fileDescriptor = parcelFileDescriptor.fileDescriptor

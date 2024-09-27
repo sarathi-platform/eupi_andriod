@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,23 +45,33 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.smallTextStyle
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.redDark
+import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
-import com.patsurvey.nudge.navigation.home.PatScreens
+import com.patsurvey.nudge.navigation.selection.BpcDidiListScreens
+import com.patsurvey.nudge.navigation.selection.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
@@ -195,6 +209,114 @@ fun PatSurveyCompleteSummary(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     item {
+                        val shgFlagValue =
+                            SHGFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.shgFlag).value
+                        val ableBodiedFlagValue =
+                            AbleBodiedFlag.fromInt(patSectionSummaryViewModel.didiEntity.value.ableBodiedFlag).value
+
+                        if (shgFlagValue != -1 && ableBodiedFlagValue != -1) {
+                            Column(modifier = Modifier.padding(bottom = dimen_5_dp)) {
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            if (isArrowFlagVisible(
+                                                    patSectionSummaryViewModel,
+                                                    didi
+                                                )
+                                            ) {
+                                                if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
+                                                    navController.navigate("bcp_didi_pat_summary/${didiId}/${true}")
+                                                } else {
+                                                    navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                                }
+                                            }
+                                        },
+                                ) {
+                                    Text(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        text = stringResource(id = R.string.shg_member_text),
+                                        style = smallTextStyle.copy(
+                                            textColorDark
+                                        )
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = dimen_2_dp),
+                                        text = SHGFlag.fromInt(shgFlagValue).toString(),
+                                        style = smallTextStyle.copy(
+                                            if (shgFlagValue == 1) greenOnline else redNoAnswer
+                                        )
+                                    )
+                                    if (isArrowFlagVisible(patSectionSummaryViewModel, didi)) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForward,
+                                            contentDescription = "Forward Arrow",
+                                            tint = textColorDark,
+                                            modifier = Modifier.padding(horizontal = dimen_5_dp)
+                                        )
+                                    }
+
+                                }
+                                Divider(
+                                    color = borderGrey,
+                                    thickness = dimen_1_dp,
+                                    modifier = Modifier
+                                        .padding(
+                                            vertical = dimen_10_dp
+                                        )
+                                        .fillMaxWidth()
+                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            if (isArrowFlagVisible(
+                                                    patSectionSummaryViewModel,
+                                                    didi
+                                                )
+                                            ) {
+                                                if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
+                                                    navController.navigate("bcp_didi_pat_summary/${didiId}/${true}")
+                                                } else {
+                                                    navController.navigate("didi_pat_summary/${didiId}/${true}")
+                                                }
+                                            }
+                                        },
+                                ) {
+                                    Text(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        text = stringResource(id = R.string.able_bodied_women_text),
+                                        style = smallTextStyle.copy(
+                                            textColorDark
+                                        )
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = dimen_2_dp),
+                                        text = AbleBodiedFlag.fromInt(ableBodiedFlagValue)
+                                            .toString(),
+                                        style = smallTextStyle.copy(
+                                            if (ableBodiedFlagValue == 1) greenOnline else redNoAnswer
+                                        )
+                                    )
+                                    if (isArrowFlagVisible(patSectionSummaryViewModel, didi)) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForward,
+                                            contentDescription = "Forward Arrow",
+                                            tint = textColorDark,
+                                            modifier = Modifier.padding(horizontal = dimen_5_dp)
+                                        )
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                    item {
                         Text(
                             text = stringResource(R.string.section_1_text),
                             style = TextStyle(
@@ -306,7 +428,9 @@ fun PatSurveyCompleteSummary(
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){
-                                if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
+                                if ((patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
+                                    || patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal
+                                ) {
                                     patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(
                                         PageFrom.SUMMARY_PAGE.ordinal
                                     )
@@ -338,9 +462,8 @@ fun PatSurveyCompleteSummary(
             negativeButtonRequired = false,
             positiveButtonOnClick = {
 
-                if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN) {
+                if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN && patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
                     patSectionSummaryViewModel.savePATEvent()
-
                 }
 
                 if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -49,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -70,6 +73,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.Tola
@@ -112,6 +116,9 @@ fun TransectWalkScreen(
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
+    val showLoadConfirmationDialog = remember {
+        mutableStateOf(false)
+    }
 
     DisposableEffect(key1 = Unit) {
         LocationUtil.setLocation((context as MainActivity))
@@ -127,6 +134,21 @@ fun TransectWalkScreen(
             navController.popBackStack()
         }
     }
+    if (showLoadConfirmationDialog.value) {
+        ShowCustomDialog(
+            title = BLANK_STRING,
+            message = stringResource(R.string.are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed),
+            positiveButtonTitle = stringResource(id = R.string.ok),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            onPositiveButtonClick = {
+                completeTransetWalk(viewModel, context, villageId, stepId, navController)
+                showLoadConfirmationDialog.value = false
+            }, onNegativeButtonClick = {
+                showLoadConfirmationDialog.value = false
+            }
+        )
+    }
+
 
     ConstraintLayout(
         modifier = Modifier
@@ -159,7 +181,8 @@ fun TransectWalkScreen(
                 VillageDetailView(
                     villageName = viewModel.getSelectedVillage().name ?: BLANK_STRING,
                     voName = viewModel.getSelectedVillage().federationName ?: BLANK_STRING,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = viewModel.getStateId()
                 )
                 val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                 val totalCountWithoutEmptyTola = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
@@ -170,7 +193,7 @@ fun TransectWalkScreen(
                         stringResource(
                             if (totalCountWithoutEmptyTola < 2)
                                 R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
-                            totalCountWithoutEmptyTola
+                            numberInEnglishFormat(totalCountWithoutEmptyTola, null)
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
@@ -242,7 +265,7 @@ fun TransectWalkScreen(
                                                     fontFamily = NotoSans
                                                 )
                                             ) {
-                                                append(" ${tolaList.filter { it.name != EMPTY_TOLA_NAME }.size}")
+                                                append(" ${tolaList.filter { it.name != EMPTY_TOLA_NAME }.size} ")
                                             }
                                             withStyle(
                                                 style = SpanStyle(
@@ -461,45 +484,7 @@ fun TransectWalkScreen(
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     if (completeTolaAdditionClicked) {
-                        viewModel.saveTransectWalkCompletionDate()
-                        //TODO Integrate Api when backend fixes the response.
-                        if ((context as MainActivity).isOnline.value ?: false) {
-                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
-                            viewModel.addTolasToNetwork(object : NetworkCallbackListener {
-                                override fun onSuccess() {
-                                    NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onSuccess")
-                                    viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
-                                        override fun onSuccess() {
-
-                                        }
-                                        override fun onFailed() {
-                                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked callWorkFlowAPI -> onFailed")
-                                        }
-                                    })
-                                }
-                                override fun onFailed() {
-                                    NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onFailed")
-                                }
-
-                            })
-
-//                            viewModel.updateTolaNeedTOPostList(villageId)
-                        }
-                        viewModel.markTransectWalkComplete(villageId, stepId)
-                        viewModel.updateWorkflowStatusInEvent(
-                            stepStatus = StepStatus.COMPLETED,
-                            villageId = villageId,
-                            stepId = stepId
-                        )
-                        navController.navigate(
-                            "step_completion_screen/${
-                                context.getString(R.string.transect_walk_completed_message).replace(
-                                    "{VILLAGE_NAME}",
-                                    viewModel.villageEntity.value?.name ?: ""
-                                )
-                            }"
-                        )
-
+                        showLoadConfirmationDialog.value = true
                     } else {
                         completeTolaAdditionClicked = true
                     }
@@ -512,10 +497,63 @@ fun TransectWalkScreen(
     }
 }
 
+private fun completeTransetWalk(
+    viewModel: TransectWalkViewModel,
+    context: Context,
+    villageId: Int,
+    stepId: Int,
+    navController: NavController
+) {
+    viewModel.saveTransectWalkCompletionDate()
+    //TODO Integrate Api when backend fixes the response.
+    if ((context as MainActivity).isOnline.value ?: false) {
+        NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
+        viewModel.addTolasToNetwork(object : NetworkCallbackListener {
+            override fun onSuccess() {
+                NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onSuccess")
+                viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener {
+                    override fun onSuccess() {
+
+                    }
+
+                    override fun onFailed() {
+                        NudgeLogger.d(
+                            "TransectWalkScreen",
+                            "completeTolaAdditionClicked callWorkFlowAPI -> onFailed"
+                        )
+                    }
+                })
+            }
+
+            override fun onFailed() {
+                NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onFailed")
+            }
+
+        })
+
+//                            viewModel.updateTolaNeedTOPostList(villageId)
+    }
+    viewModel.markTransectWalkComplete(villageId, stepId)
+    viewModel.updateWorkflowStatusInEvent(
+        stepStatus = StepStatus.COMPLETED,
+        villageId = villageId,
+        stepId = stepId
+    )
+    navController.navigate(
+        "step_completion_screen/${
+            context.getString(R.string.transect_walk_completed_message).replace(
+                "{VILLAGE_NAME}",
+                viewModel.villageEntity.value?.name ?: ""
+            )
+        }"
+    )
+}
+
 @Composable
 fun VillageDetailView(
     villageName: String,
     voName: String,
+    stateId: Int,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -539,7 +577,7 @@ fun VillageDetailView(
                 .padding(end = 16.dp)
         ) {
             Text(
-                text = "VO: ",
+                text = getVoNameForState(LocalContext.current, stateId, R.plurals.vo),
                 modifier = Modifier,
                 color = textColorDark,
                 style = smallTextStyle
@@ -554,3 +592,5 @@ fun VillageDetailView(
         }
     }
 }
+
+

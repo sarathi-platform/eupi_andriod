@@ -11,8 +11,8 @@ object RepositoryModule {
     /*@Singleton
     @Provides
     fun provideConfigRepository(
-        apiService: ApiService, languageListDao: LanguageListDao, bpcScorePercentageDao: BpcScorePercentageDao, prefRepo: PrefRepo
+        baseLineApiService: BaseLineApiService, languageListDao: LanguageListDao, bpcScorePercentageDao: BpcScorePercentageDao, prefRepo: PrefRepo
     ): ConfigRepository {
-        return ConfigRepository(apiService, languageListDao,bpcScorePercentageDao,prefRepo)
+        return ConfigRepository(baseLineApiService, languageListDao,bpcScorePercentageDao,prefRepo)
     }*/
 }

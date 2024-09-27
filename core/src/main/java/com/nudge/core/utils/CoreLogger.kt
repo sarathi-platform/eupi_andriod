@@ -8,6 +8,7 @@ import android.text.format.Formatter.formatShortFileSize
 import android.util.Log
 import android.util.Log.e
 import com.nudge.core.BuildConfig.DEBUG
+import com.nudge.core.model.CoreAppDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,14 +29,14 @@ import java.util.logging.Level
 
 object CoreLogger {
 
-    fun d(context: Context, tag: String, msg: String) {
+    fun d(context: Context = CoreAppDetails.getContext()!!, tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.FINE.intValue(), tag, msg)
             Log.d(tag, msg)
         }
     }
 
-    fun i(context: Context, tag: String, msg: String) {
+    fun i(context: Context = CoreAppDetails.getContext()!!, tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.INFO.intValue(), tag, msg)
             if (DEBUG) Log.i(tag, msg)
@@ -50,11 +51,11 @@ object CoreLogger {
     }
 
     fun e(
-        context: Context,
+        context: Context = CoreAppDetails.getContext()!!,
         tag: String,
         msg: String,
         ex: Throwable?,
-        stackTrace: Boolean = DEBUG,
+        stackTrace: Boolean = true,
         lineCount: Int = 60
     ) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -205,43 +206,6 @@ object LogWriter {
         }
     }
 
-//    private fun getPreamble(): ArrayList<String> {
-//        val preamble = ArrayList<String>()
-//
-//        try {
-//            preamble.add(LOG_SEPARATOR_DOUBLE)
-//            preamble.add("Application Version            = $VERSION_NAME")
-//            preamble.add("Build.VERSION.SDK_INT          = " + Build.VERSION.SDK_INT)
-//            preamble.add("Build.VERSION.RELEASE          = " + Build.VERSION.RELEASE)
-//            preamble.add("Build.VERSION.CODENAME         = " + Build.VERSION.CODENAME)
-//            preamble.add("Build.VERSION.INCREMENTAL      = " + Build.VERSION.INCREMENTAL)
-//            preamble.add("Build.BOARD                    = " + Build.BOARD)
-//            preamble.add("Build.BOOTLOADER               = " + Build.BOOTLOADER)
-//            preamble.add("Build.BRAND                    = " + Build.BRAND)
-//            preamble.add("Build.DEVICE                   = " + Build.DEVICE)
-//            preamble.add("Build.DISPLAY                  = " + Build.DISPLAY)
-//            preamble.add("Build.FINGERPRINT              = " + Build.FINGERPRINT)
-//            preamble.add("Build.HARDWARE                 = " + Build.HARDWARE)
-//            preamble.add("Build.HOST                     = " + Build.HOST)
-//            preamble.add("Build.ID                       = " + Build.ID)
-//            preamble.add("Build.MANUFACTURER             = " + Build.MANUFACTURER)
-//            preamble.add("Build.MODEL                    = " + Build.MODEL)
-//            preamble.add("Build.PRODUCT                  = " + Build.PRODUCT)
-//            preamble.add("Build.getRadioVersion()        = " + Build.getRadioVersion())
-//            preamble.add("Environment                    = " + BuildConfig.FLAVOR)
-//        } catch (ex: Exception) {
-//
-//        }
-//        return preamble
-//    }
-
-//    private fun emitPreamble() {
-//        val preamble = getPreamble()
-//        for(log in preamble) {
-//            syslogQueue?.add(EchoPacket(Log.INFO, TAG, log))
-//        }
-//    }
-
     private fun log(packet: EchoPacket) {
         synchronized(TAG) {
             try {
@@ -366,77 +330,6 @@ object LogWriter {
         }
         return@withContext false
     }
-
-    /*suspend fun buildSupportLogAndShare() {
-        val context = NudgeCore.getAppContext()
-        try {
-
-            val logDir = NudgeCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            val logFile = File(logDir, getSupportLogFileName())
-            if (logFile.isFile) logFile.delete()
-
-            if (!getSyslogFile(logFile)) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "No logs to send", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-
-            val sub = AnalyticsHelper.mPrefRepo?.getPref(PREF_MOBILE_NUMBER, "")
-            val email = AnalyticsHelper.mPrefRepo?.getPref(PREF_KEY_EMAIL, "")
-            val subject = "Sarathi debug log - Email: $email UserId: $sub"
-            val message = "The following individual logs are contained within the attachment:\n\n"
-            withContext(Dispatchers.Main) {
-                share(
-                    context = context,
-                    logFile,
-                    arrayOf(
-                        "anupam.bhardwaj@tothenew.com",
-                        "anas.mansoori@tothenew.com",
-                        "yukti.arora@tothenew.com",
-                        "ankit.jain3@tothenew.com",
-                        "nitish.bhardwaj@tothenew.com",
-                        "naren.srinivasan@thenudge.org"
-                    ),
-                    subject,
-                    message
-                )?.let {
-                    NudgeCore.startExternalApp(it)
-                }
-            }
-        } catch (ex: Exception) {
-            e(TAG, "buildSupportLogAndShare", ex)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Logs unavailable", Toast.LENGTH_SHORT).show()
-            }
-            return
-        }
-    }*/
-
-    /*fun share(context: Context, file: File, emails: Array<String?>?, subject: String, message: String): Intent? {
-        try {
-            return Intent.createChooser(
-                Intent(Intent.ACTION_SEND)
-                    .setType("vnd.android.cursor.dir/email")
-                    .putExtra(Intent.EXTRA_EMAIL, emails)
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, message)
-                    .putExtra(
-                        Intent.EXTRA_STREAM,
-                        uriFromFile(
-                            context,
-                            file
-                        )
-                    )
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                "Share File"
-            )
-        } catch (ex: Exception) {
-            e(TAG, "share file", ex)
-        }
-        return null
-    }*/
-
     fun getSupportLogFileName(): String {
         return SUPPORT_LOG_FILE_NAME_PREFIX + SimpleDateFormat(
             "yyyy_MM_dd_HH_mm_ss",
@@ -445,22 +338,6 @@ object LogWriter {
             Date()
         ) + SUPPORT_LOG_FILE_NAME_SUFFIX
     }
-
-    /*private suspend fun getLogs(supportLogFileName: String, lastLog: String, logFileNames: ArrayList<String>): File? {
-        val context = NudgeCore.getAppContext()
-        try {
-            val logDir = context.cacheDir
-            val logFile = File(logDir, supportLogFileName)
-            if (logFile.isFile) logFile.delete()
-            if (!getSyslogFile(logFile, lastLog, logFileNames)) {
-                return null
-            }
-            return logFile
-        } catch (ignore: Exception) {
-            Toast.makeText(context, "Logs unavailable", Toast.LENGTH_SHORT).show()
-            return null
-        }
-    }*/
 
     fun cleanup(context: Context, checkForSize: Boolean) {
         try {
@@ -530,4 +407,28 @@ object LogWriter {
             e(TAG, "cleanup $checkForSize", ex)
         }
     }
+
+    suspend fun buildLogFile(appContext: Context,onFailed:()->Unit): File? {
+        try {
+
+            val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            val logFile = File(logDir, getSupportLogFileName())
+            if (logFile.isFile) logFile.delete()
+
+            if (!getSyslogFile(context = appContext, output = logFile)) {
+                withContext(Dispatchers.Main) {
+                    onFailed()
+                }
+                return null
+            }
+            return logFile
+        } catch (ex: Exception) {
+            e(TAG, "buildSupportLogAndShare", ex)
+            withContext(Dispatchers.Main) {
+                onFailed()
+            }
+            return null
+        }
+    }
+
 }

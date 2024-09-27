@@ -1,0 +1,20 @@
+package com.patsurvey.nudge.activities.settings.domain
+
+enum class SettingTagEnum {
+    SYNC_NOW,
+    PROFILE,
+    FORMS,
+    TRAINING_VIDEOS,
+    LANGUAGE,
+    SHARE_LOGS,
+    LOAD_SERVER_DATA,
+    IMPORT_DATA,
+    EXPORT_BACKUP_FILE,
+    EXPORT_DATABASE,
+    EXPORT_IMAGES,
+    BACKUP_RECOVERY,
+    EXPORT_LOG_FILE,
+    REGENERATE_EVENTS,
+    EXPORT_BASELINE_QNA,
+    MARK_ACTIVITY_IN_PROGRESS,
+}

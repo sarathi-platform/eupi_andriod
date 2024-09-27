@@ -2,8 +2,7 @@ package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposit
 
 import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
@@ -16,6 +15,7 @@ import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.getParentEntityMapForEvent
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
@@ -36,7 +36,7 @@ import com.nudge.core.toDate
 import javax.inject.Inject
 
 class EventsWriterRepositoryImpl @Inject constructor(
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val surveyEntityDao: SurveyEntityDao,
     private val missionEntityDao: MissionEntityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
@@ -61,14 +61,14 @@ class EventsWriterRepositoryImpl @Inject constructor(
                 val survey = surveyEntityDao.getSurveyDetailForLanguage(
                     userId = getBaseLineUserId(),
                     requestPayload.surveyId,
-                    prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+                    prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
                 )
 
                 var event = Events(
                     name = eventName.name,
                     type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    createdBy = prefBSRepo.getUserId(),
+                    mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
@@ -102,14 +102,14 @@ class EventsWriterRepositoryImpl @Inject constructor(
                         val survey = surveyEntityDao.getSurveyDetailForLanguage(
                             userId = getBaseLineUserId(),
                             requestPayload.surveyId,
-                            prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+                            prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
                         )
 
                         var event = Events(
                             name = eventName.name,
                             type = eventName.topicName,
-                            createdBy = prefRepo.getUserId(),
-                            mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                            createdBy = prefBSRepo.getUserId(),
+                            mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                             request_payload = requestPayload.json(),
                             status = EventSyncStatus.OPEN.name,
                             modified_date = System.currentTimeMillis().toDate(),
@@ -142,14 +142,14 @@ class EventsWriterRepositoryImpl @Inject constructor(
                         val survey = surveyEntityDao.getSurveyDetailForLanguage(
                             userId = getBaseLineUserId(),
                             requestPayload.surveyId,
-                            prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+                            prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
                         )
 
                         var event = Events(
                             name = eventName.name,
                             type = eventName.topicName,
-                            createdBy = prefRepo.getUserId(),
-                            mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                            createdBy = prefBSRepo.getUserId(),
+                            mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                             request_payload = requestPayload.json(),
                             status = EventSyncStatus.OPEN.name,
                             modified_date = System.currentTimeMillis().toDate(),
@@ -196,8 +196,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                 var event = Events(
                     name = eventName.name,
                     type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    createdBy = prefBSRepo.getUserId(),
+                    mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
@@ -233,8 +233,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                 var event = Events(
                     name = eventName.name,
                     type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    createdBy = prefBSRepo.getUserId(),
+                    mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
@@ -270,8 +270,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                 var event = Events(
                     name = eventName.name,
                     type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    createdBy = prefBSRepo.getUserId(),
+                    mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
@@ -384,7 +384,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
 }

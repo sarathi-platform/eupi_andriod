@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.nudge.core.database.entities.getDependentEventsId
@@ -159,7 +160,6 @@ class PatDidiSummaryViewModel @Inject constructor(
                 metadata = updatedMetaData?.json()
             )
 
-            //TODO Remove delay and fix cropping issue without delay
             delay(500)
             val compressedDidi = compressImage(
                 photoPath,
@@ -168,8 +168,6 @@ class PatDidiSummaryViewModel @Inject constructor(
             )
             patDidiSummaryRepository.uri = File(compressedDidi).toUri()
             patDidiSummaryRepository.writeImageEventIntoLogFile(imageUploadEvent, dependsOn)
-
-
         }
     }
 
@@ -293,6 +291,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     fun getFileName(context: Context, didi: DidiEntity): File {
         val directory = getImagePath(context)
         val filePath = File(directory, "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png")
+        Log.d("TAG", "getFileName: ${filePath}")
         return filePath
     }
 

@@ -77,7 +77,7 @@ class SplashScreenViewModel @Inject constructor(
                         ))
 
                         splashScreenUseCase.saveLanguageConfigUseCase.invoke(langList)
-                        BaselineCore.downloadQuestionImages(configResponseModel.image_profile_link)
+//                        BaselineCore.downloadQuestionImages(configResponseModel.image_profile_link)
                         delay(SPLASH_SCREEN_DURATION)
                         withContext(Dispatchers.Main) {
                             callBack()
@@ -90,9 +90,12 @@ class SplashScreenViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                if (ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) == false) {
+                if (ex.message == null) {
                     splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
-                }
+                } else
+                    if ((ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) ?: true) == false) {
+                        splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                    }
                 onCatchError(ex)
                 withContext(Dispatchers.Main) {
                     callBack()

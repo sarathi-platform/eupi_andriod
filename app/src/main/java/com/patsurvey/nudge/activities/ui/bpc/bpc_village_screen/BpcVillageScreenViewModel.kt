@@ -7,6 +7,7 @@ import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionRepository
 import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
@@ -52,7 +53,8 @@ class BpcVillageScreenViewModel @Inject constructor(
     val lastSelectedTolaDao: LastSelectedTolaDao,
     val villageSelectionRepository: VillageSelectionRepository,
     private val syncManagerDatabase: SyncManagerDatabase,
-): BaseViewModel() {
+    val prefRepo:PrefRepo
+    ): BaseViewModel() {
 
     val showLoader = mutableStateOf(false)
     val villageSelected = mutableStateOf(0)
@@ -63,7 +65,9 @@ class BpcVillageScreenViewModel @Inject constructor(
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
     val showUserChangedDialog = mutableStateOf(false)
-
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
     fun init () {
         showLoader.value = true
         fetchUserAndVillageDetails()
@@ -82,7 +86,8 @@ class BpcVillageScreenViewModel @Inject constructor(
 
     private fun fetchUserAndVillageDetails() {
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = false) {
-            villageSelectionRepository.fetchPatQuestionsFromNetwork()
+            villageSelectionRepository.fetchCastList(isRefresh = false)
+            villageSelectionRepository.fetchPatQuestionsFromNetwork(prefRepo.getPageOpenFromOTPScreen())
             _villagList.value = it.villageList
             _filterVillageList.value = villageList.value
             showLoader.value = false
@@ -144,6 +149,8 @@ class BpcVillageScreenViewModel @Inject constructor(
             if (it.success) {
                 _villagList.value = it.villageList
                 _filterVillageList.value = villageList.value
+                villageSelectionRepository.fetchPatQuestionsFromNetwork(true)
+                villageSelectionRepository.fetchCastList(isRefresh = true)
                 showCustomToast(context, context.getString(R.string.fetched_successfully))
 
             } else {
@@ -200,4 +207,7 @@ class BpcVillageScreenViewModel @Inject constructor(
         prefRepo.saveSettingOpenFrom(0)
     }
 
+    fun savePageOpenFromOTPScreen() {
+        prefRepo.savePageOpenFromOTPScreen(false)
+    }
 }

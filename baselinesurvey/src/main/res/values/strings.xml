@@ -66,6 +66,11 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
+
     <string name="dada_name">Husband / Father\'s Name</string>
     <string name="dada">Husband / Father</string>
     <string name="enter">Enter</string>
@@ -93,7 +98,6 @@
     <string name="location_unavailable">Location not available</string>
 
     <string name="seletc_village_screen_text">Select Village &amp; VO</string>
-
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Paras / Tolas Added</string>
@@ -150,6 +154,7 @@
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
@@ -521,5 +526,6 @@
     <string name="only_one_entry_can_be_added">Only one entry can be added</string>
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="form_e">Form E</string>
 
 </resources>

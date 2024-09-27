@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import android.content.Context
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
@@ -138,7 +139,7 @@ interface EventWriterHelper {
         subjectType: String
     ): Events?
 
-    suspend fun regenerateAllEvent()
+    suspend fun regenerateAllEvent(appContext:Context)
 
     suspend fun recheckMATStatus()
 }

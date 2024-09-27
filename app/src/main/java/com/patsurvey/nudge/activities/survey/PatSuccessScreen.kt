@@ -48,9 +48,14 @@ fun PatSuccessScreen(
         )
     }
 
-    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(top = 14.dp)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .padding(top = 14.dp)) {
 
         VillageDetailView(
+            stateId = viewModel.getStateId(),
             villageName = viewModel.prefRepo.getSelectedVillage().name ?: "",
             voName = (viewModel.prefRepo.getSelectedVillage().federationName)
                 ?: "",

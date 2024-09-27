@@ -6,12 +6,12 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
 import com.nrlm.baselinesurvey.utils.getUniqueIdForEntity
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.toStringList
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 
 @Entity(tableName = TASK_TABLE_NAME)
 data class ActivityTaskEntity(
