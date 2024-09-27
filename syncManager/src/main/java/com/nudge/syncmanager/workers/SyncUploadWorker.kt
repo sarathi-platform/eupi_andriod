@@ -197,14 +197,14 @@ class SyncUploadWorker @AssistedInject constructor(
             }
 
             syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
-                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
-                    selectedSyncType,
-                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
-                    success,
-                    message,
-                    requestIds,
-                    ex
-                )
+//                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+//                    selectedSyncType,
+//                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+//                    success,
+//                    message,
+//                    requestIds,
+//                    ex
+//                )
             }
             CoreLogger.d(
                 applicationContext,
