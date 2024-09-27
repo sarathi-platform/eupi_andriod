@@ -34,7 +34,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
 
 
         val storageConnectionString =
-            "DefaultEndpointsProtocol=https;AccountName=nonprodnudge;AccountKey=3TD4BEkgfrFQT0tZJbWVMHKPRBG8Ab1IVvzOQfdayJURDPbpQqghCg1kDY0k1MY/ax8Ouaul4yay+AStA7o/Yg==;EndpointSuffix=core.windows.net"
+            ""
         val account = CloudStorageAccount
             .parse(storageConnectionString)
 
