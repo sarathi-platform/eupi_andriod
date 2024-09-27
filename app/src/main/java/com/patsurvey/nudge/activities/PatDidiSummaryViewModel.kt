@@ -141,6 +141,7 @@ class PatDidiSummaryViewModel @Inject constructor(
                 tolaServerId = selectedTolaEntity?.serverId,
                 cohortdeviceId = selectedTolaEntity?.localUniqueId
             ).json()
+            patDidiSummaryRepository.uploadImageInBlobStorage(photoPath, getFileNameFromURL(photoPath))
 
             var imageUploadEvent = patDidiSummaryRepository.createImageUploadEvent(
                 payload = payload,

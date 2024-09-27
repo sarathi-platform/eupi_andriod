@@ -5,6 +5,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.getDependsOnEventNameForEvent
 import com.nudge.core.getEventDependencyEntityListFromEvents
+import com.nudge.syncmanager.imageupload.ImageUploader
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -25,7 +26,8 @@ class PatDidiSummaryRepository @Inject constructor(
     val apiService: ApiService,
     val casteListDao: CasteListDao,
     val stepsListDao: StepsListDao,
-    val tolaDao: TolaDao
+    val tolaDao: TolaDao,
+    val imageUploader: ImageUploader
 ) :BaseRepository() {
 
     fun getAppLanguageId(): Int? {
@@ -46,9 +48,26 @@ class PatDidiSummaryRepository @Inject constructor(
     fun updateDidiAbleBodiedFlag(didiId:Int, ableBodiedFlag:Int){
         didiDao.updateDidiAbleBodiedStatus(didiId = didiId, ableBodiedFlag = ableBodiedFlag)
     }
-    suspend fun uploadDidiImage(image: MultipartBody.Part,didiId: RequestBody,location:RequestBody,userType:RequestBody): ApiResponseModel<Object> {
-        return apiService.uploadDidiImage(didiId =  didiId, image = image, location = location, userType = userType)
+    suspend fun uploadDidiImage(
+        image: MultipartBody.Part,
+        didiId: RequestBody,
+        location: RequestBody,
+        userType: RequestBody
+    ): ApiResponseModel<Object> {
+        return apiService.uploadDidiImage(
+            didiId = didiId,
+            image = image,
+            location = location,
+            userType = userType
+        )
     }
+
+    suspend fun uploadImageInBlobStorage(photoPath: String, fileNameFromURL: String) {
+        imageUploader.uploadImage(filePath = photoPath, fileNameFromURL)
+    }
+//    suspend fun uploadDidiImage(image: MultipartBody.Part,didiId: RequestBody,location:RequestBody,userType:RequestBody): ApiResponseModel<Object> {
+//        return apiService.uploadDidiImage(didiId =  didiId, image = image, location = location, userType = userType)
+//    }
 
     suspend fun getTolaFromServerId(id: Int): TolaEntity? {
         return tolaDao.fetchSingleTolaFromServerId(id)
