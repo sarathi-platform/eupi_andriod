@@ -25,6 +25,17 @@ class SyncAnalyticsEventUseCase @Inject constructor(
         )
     }
 
+    fun sendSyncProducerSuccessEvent(selectedSyncType: Int) {
+        analyticsManager.trackEvent(
+            AnalyticsEvents.SYNC_PRODUCER_SUCCESS.eventName,
+            mapOf(
+                AnalyticsEventsParam.SYNC_TYPE.eventParam to SyncType.getSyncTypeFromInt(
+                    selectedSyncType
+                )
+            )
+        )
+    }
+
     fun sendSyncApiFailureEvent(
         selectedSyncType: Int,
         failureType: String,
@@ -86,6 +97,92 @@ class SyncAnalyticsEventUseCase @Inject constructor(
                 AnalyticsEventsParam.STACK_TRACE.name to stackTrace,
                 AnalyticsEventsParam.FAILED_EVENT_ID_LIST.name to mPendingEventList.map { it.id }
                     .toString()
+            )
+        )
+    }
+
+    fun sendConsumerEvents(
+        selectedSyncType: Int,
+        commonEventParams: CommonEventParams,
+        success: Boolean,
+        message: String,
+        requestIdCount: Int,
+        ex: Throwable?
+    ) {
+        if (success)
+            sendSyncConsumerSuccessEvent(
+                selectedSyncType,
+                requestIdCount
+            )
+        else if (!success && ex == null) {
+            sendSyncConsumerApiFailEvent(
+                selectedSyncType,
+                message,
+                commonEventParams,
+                requestIdCount
+            )
+        } else {
+            sendSyncConsumerFailureDueToExceptionAnalyticsEvent(
+                ex,
+                selectedSyncType,
+                commonEventParams,
+                requestIdCount
+            )
+        }
+    }
+
+    fun sendSyncConsumerSuccessEvent(selectedSyncType: Int, successRequestIdsCount: Int) {
+        analyticsManager.trackEvent(
+            AnalyticsEvents.SYNC_CONSUMER_SUCCESS.eventName,
+            mapOf(
+                AnalyticsEventsParam.SYNC_TYPE.eventParam to SyncType.getSyncTypeFromInt(
+                    selectedSyncType
+                ),
+                AnalyticsEventsParam.CONSUMER_SUCCESS_REQUEST_IDS_COUNT.eventParam to successRequestIdsCount
+            )
+        )
+    }
+
+    fun sendSyncConsumerApiFailEvent(
+        selectedSyncType: Int,
+        message: String,
+        commonEventParams: CommonEventParams,
+        successRequestIdsCount: Int
+    ) {
+        analyticsManager.trackEvent(
+            AnalyticsEvents.SYNC_CONSUMER_FAILED.eventName,
+            mapOf(
+                AnalyticsEventsParam.SYNC_TYPE.eventParam to SyncType.getSyncTypeFromInt(
+                    selectedSyncType
+                ),
+                AnalyticsEventsParam.CONSUMER_FAIL_MESSAGE.eventParam to message,
+                AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to commonEventParams.batchLimit,
+                AnalyticsEventsParam.RETRY_COUNT.eventParam to commonEventParams.retryCount,
+                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to commonEventParams.connectionQuality,
+                AnalyticsEventsParam.CONSUMER_FAIL_REQUEST_IDS_COUNT.eventParam to successRequestIdsCount
+            )
+        )
+    }
+
+    fun sendSyncConsumerFailureDueToExceptionAnalyticsEvent(
+        ex: Throwable?,
+        selectedSyncType: Int,
+        commonEventParams: CommonEventParams,
+        failedRequestIdsCount: Int
+    ) {
+        val stackTrace = CoreLogger.getStackTraceForLogs(ex = ex)
+        val syncType = SyncType.getSyncTypeFromInt(selectedSyncType)
+
+        analyticsManager.trackEvent(
+            AnalyticsEvents.SYNC_CONSUMER_FAILED_DUE_TO_EXCEPTION.eventName,
+            mapOf(
+                AnalyticsEventsParam.SYNC_TYPE.eventParam to syncType,
+                AnalyticsEventsParam.SYNC_BATCH_SIZE.eventParam to commonEventParams.batchLimit,
+                AnalyticsEventsParam.RETRY_COUNT.eventParam to commonEventParams.retryCount,
+                AnalyticsEventsParam.CONNECTION_QUALITY.eventParam to commonEventParams.connectionQuality,
+                AnalyticsEventsParam.EXCEPTION_MESSAGE.name to ex?.message.value(),
+                AnalyticsEventsParam.STACK_TRACE.name to stackTrace,
+                AnalyticsEventsParam.CONSUMER_FAIL_REQUEST_IDS_COUNT.name to failedRequestIdsCount
             )
         )
     }
