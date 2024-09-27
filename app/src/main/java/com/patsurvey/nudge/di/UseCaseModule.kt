@@ -294,12 +294,16 @@ object UseCaseModule {
         eventStatusDao: EventStatusDao,
         corePrefRepo: CorePrefRepo,
         imageStatusDao: ImageStatusDao,
+        blobImageUploader: BlobImageUploader,
+        eventsDao: EventsDao
     ): SyncBlobRepository {
         return SyncBlobRepositoryImpl(
             eventStatusDao = eventStatusDao,
             imageStatusDao = imageStatusDao,
             corePrefRepo = corePrefRepo,
-            apiService = apiService
+            apiService = apiService,
+            blobImageUploader = blobImageUploader,
+            eventsDao = eventsDao
         )
     }
 

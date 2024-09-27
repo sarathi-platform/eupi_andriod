@@ -10,6 +10,7 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
+import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 
 class SyncBlobRepositoryImpl(
@@ -17,7 +18,8 @@ class SyncBlobRepositoryImpl(
     val eventStatusDao: EventStatusDao,
     val corePrefRepo: CorePrefRepo,
     val imageStatusDao: ImageStatusDao,
-    val eventsDao: EventsDao
+    val eventsDao: EventsDao,
+    val blobImageUploader: BlobImageUploader
 ) : SyncBlobRepository {
     override suspend fun uploadImageOnBlob(
         filePath: String,
@@ -30,13 +32,17 @@ class SyncBlobRepositoryImpl(
             "uploadImageOnBlob",
             "uploadImageOnBlob: FilePath: $filePath :: FileName: $fileName"
         )
-        onUploadImageResponse("Upload Success", false)
-//        imageUploader.uploadImage(
-//            filePath = filePath,
-//            fileName = fileName,
-//            onUploadImageResponse = { message, isExceptionOccur ->
-//
-//            })
+        blobImageUploader.uploadImage(
+            filePath = filePath,
+            fileName = fileName,
+            onUploadImageResponse = { message, isExceptionOccur ->
+                CoreLogger.d(
+                    CoreAppDetails.getApplicationContext().applicationContext,
+                    "uploadImageOnBlob",
+                    "uploadImageOnBlob: $message :: $isExceptionOccur"
+                )
+                onUploadImageResponse(message, isExceptionOccur)
+            })
     }
 
     override suspend fun updateBlobStatus(
@@ -59,14 +65,16 @@ class SyncBlobRepositoryImpl(
             mobileNumber = corePrefRepo.getMobileNo(),
             errorMessage = errorMessage
         )
-        eventsDao.updateEventStatus(
-            retryCount = retryCount,
-            clientId = eventId,
-            errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
-            modifiedDate = System.currentTimeMillis().toDate(),
-            newStatus = status,
-            requestId = requestId
-        )
+        if (!isBlobUploaded) {
+            eventsDao.updateEventStatus(
+                retryCount = retryCount,
+                clientId = eventId,
+                errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
+                modifiedDate = System.currentTimeMillis().toDate(),
+                newStatus = status,
+                requestId = requestId
+            )
+        }
 
 
         eventStatusDao.insert(

@@ -16,7 +16,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
     override suspend fun uploadImage(
         filePath: String,
         fileName: String,
-        onUploadImageResponse: (String, Boolean) -> Unit
+        onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         return uploadImageInBlobStorage(
             filePath,
@@ -26,10 +26,10 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
             })
     }
 
-    private fun uploadImageInBlobStorage(
+    private suspend fun uploadImageInBlobStorage(
         photoPath: String,
         fileName: String,
-        onUploadImageResponse: (String, Boolean) -> Unit
+        onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         try {
 

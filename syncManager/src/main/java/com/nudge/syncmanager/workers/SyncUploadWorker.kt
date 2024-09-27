@@ -38,6 +38,7 @@ import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
@@ -514,13 +515,17 @@ class SyncUploadWorker @AssistedInject constructor(
                     "findImageEventAndImageList: ${imageEventList.json()} "
                 )
                 imageEventList.forEach { imageDetail ->
+                    val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
+                    var uploadedBlobUrl = BLANK_STRING
                     try {
 
-                        val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
                         syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
                             filePath = picturePath,
                             fileName = imageDetail.fileName ?: BLANK_STRING
                         ) { message, isExceptionOccur ->
+                            if (!isExceptionOccur) {
+                                uploadedBlobUrl = message
+                            }
                             syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
                                 imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
                                 isBlobUploaded = isExceptionOccur,
@@ -540,14 +545,40 @@ class SyncUploadWorker @AssistedInject constructor(
                         )
                     }
 
-//                    if (imageMultiPartList.isNotEmpty()) {
-//                        syncImageToServerAPI(
-//                            imageMultipartList = imageMultiPartList,
-//                            imageStatusEventList = imageEventList
-//                        ) {
-//                            onAPIResponse(it)
-//                        }
-//                    }
+                    val file = File(picturePath)
+                    if (uploadedBlobUrl.isNotEmpty()) {
+                        val imageEventList = listOf(
+                            Events(
+                                id = imageDetail.id,
+                                name = imageDetail.name,
+                                type = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                                createdBy = imageDetail.createdBy,
+                                modified_date = System.currentTimeMillis().toDate(),
+                                request_payload = imageDetail.request_payload,
+                                status = imageDetail.status,
+                                metadata = SyncImageMetadataRequest(
+                                    data = Data(
+                                        filePath = picturePath,
+                                        contentType = getFileMimeType(file),
+                                        blobUrl = uploadedBlobUrl
+                                    ),
+                                    dependsOn = emptyList()
+                                ).json(),
+                                mobile_number = imageDetail.mobile_number,
+                                payloadLocalId = imageDetail.payloadLocalId
+                            )
+                        )
+                        val apiResponse =
+                            syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                                imageEventList
+                            )
+                        onAPIResponse(apiResponse)
+                    } else {
+                        handleFailedImageStatus(
+                            imageEventDetail = imageDetail,
+                            errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message
+                        )
+                    }
                 }
             }
         } catch (ex: Exception) {
