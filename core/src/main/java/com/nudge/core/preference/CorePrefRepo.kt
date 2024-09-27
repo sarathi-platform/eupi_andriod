@@ -56,6 +56,10 @@ interface CorePrefRepo {
     fun getPref(key: String, defaultValue: Float): Float
 
     fun getUserNameInInt(): Int
+    fun setName(name: String)
+    fun isDataTabDataLoaded(): Boolean
+
+    fun setDataTabDataLoaded(isDataLoaded: Boolean)
     fun getSyncBatchSize(): Int
     fun getSyncRetryCount(): Int
 

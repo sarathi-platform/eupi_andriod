@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
+import com.nudge.core.preference.CoreSharedPrefs
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -25,11 +27,13 @@ import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     val prefRepo: PrefRepo,
+    val coreSharedPrefs: CoreSharedPrefs,
     val apiService: ApiService,
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
@@ -48,6 +52,11 @@ class MainActivityViewModel @Inject constructor(
 ): BaseViewModel() {
     val isLoggedIn = mutableStateOf(false)
     val isOnline = connectionMonitor.isConnected.asLiveData()
+
+    init {
+        prefRepo.saveBuildEnvironment(BuildConfig.FLAVOR.uppercase(Locale.ENGLISH))
+    }
+
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
@@ -72,6 +81,14 @@ class MainActivityViewModel @Inject constructor(
 
     fun saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable: Boolean) {
         prefRepo.setSyncOptionEnabled(isSyncOptionEnable)
+    }
+
+    fun saveDataTabVisibility(isEnabled: Boolean) {
+        prefRepo.saveDataTabVisibility(isEnabled)
+    }
+
+    fun saveMixPanelToken(token: String) {
+        coreSharedPrefs.saveMixPanelToken(token)
     }
 
     fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {

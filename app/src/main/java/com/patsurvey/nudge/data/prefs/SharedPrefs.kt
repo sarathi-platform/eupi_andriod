@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
+import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.PREF_BUILD_ENVIRONMENT
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_BATCH_SIZE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_ENABLED
@@ -44,6 +46,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
+
+        const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"
 
     }
 
@@ -295,4 +299,20 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun iSSyncOptionEnabled(): Boolean {
         return prefs.getBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, false)
     }
+
+    override fun saveDataTabVisibility(isEnabled: Boolean) {
+        savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
+    }
+
+    override fun isDataTabVisible(): Boolean = getPref(PREF_DATA_TAB_VISIBILITY, false)
+
+    override fun getBuildEnvironment(): String {
+        return getPref(PREF_BUILD_ENVIRONMENT, DEFAULT_BUILD_ENVIRONMENT)
+            ?: DEFAULT_BUILD_ENVIRONMENT
+    }
+
+    override fun saveBuildEnvironment(buildEnv: String) {
+        savePref(PREF_BUILD_ENVIRONMENT, buildEnv)
+    }
+
 }
