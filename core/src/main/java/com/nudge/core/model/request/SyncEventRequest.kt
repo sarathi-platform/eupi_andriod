@@ -15,10 +15,8 @@ data class EventRequest(
     @SerializedName("metadata") val metadata: String?,
     @SerializedName("created_date") val createdDate: String?,
     @SerializedName("modified_date") val modifiedDate: String?,
-) {
-
-
-}
+    @SerializedName("blobUrl") val blobUrl: String?
+)
 
 fun Events.toEventRequest() =
     EventRequest(
@@ -30,23 +28,23 @@ fun Events.toEventRequest() =
         this.request_payload,
         this.metadata,
         this.created_date.toString(),
-        this.modified_date.toString()
+        this.modified_date.toString(),
+        blobUrl = BLANK_STRING
+    )
+
+fun Events.toImageEventRequest(blobUrl: String) =
+    EventRequest(
+        this.id,
+        this.name,
+        this.type,
+        this.createdBy,
+        this.mobile_number,
+        this.request_payload,
+        this.metadata,
+        this.created_date.toString(),
+        this.modified_date.toString(),
+        blobUrl = blobUrl
     )
 
 
-fun List<Events>.toEventRequestList(): List<EventRequest> {
-    return this.map {
-        EventRequest(
-            it.id,
-            it.name,
-            it.type,
-            it.createdBy,
-            it.mobile_number,
-            it.request_payload,
-            it.metadata,
-            it.created_date.toString(),
-            it.modified_date.toString()
-        )
-    }
-}
 

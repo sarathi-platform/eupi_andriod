@@ -547,30 +547,31 @@ class SyncUploadWorker @AssistedInject constructor(
 
                     val file = File(picturePath)
                     if (uploadedBlobUrl.isNotEmpty()) {
-                        val imageEventList = listOf(
-                            Events(
-                                id = imageDetail.id,
-                                name = imageDetail.name,
-                                type = EventName.BLOB_UPLOAD_TOPIC.topicName,
-                                createdBy = imageDetail.createdBy,
-                                modified_date = System.currentTimeMillis().toDate(),
-                                request_payload = imageDetail.request_payload,
-                                status = imageDetail.status,
-                                metadata = SyncImageMetadataRequest(
-                                    data = Data(
-                                        filePath = picturePath,
-                                        contentType = getFileMimeType(file),
-                                        blobUrl = uploadedBlobUrl
-                                    ),
-                                    dependsOn = emptyList()
-                                ).json(),
-                                mobile_number = imageDetail.mobile_number,
-                                payloadLocalId = imageDetail.payloadLocalId
-                            )
+                        val imageEvent = Events(
+                            id = imageDetail.id,
+                            name = imageDetail.name,
+                            type = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                            createdBy = imageDetail.createdBy,
+                            modified_date = System.currentTimeMillis().toDate(),
+                            request_payload = imageDetail.request_payload,
+                            status = imageDetail.status,
+                            metadata = SyncImageMetadataRequest(
+                                data = Data(
+                                    filePath = picturePath,
+                                    contentType = getFileMimeType(file),
+                                    isImageEvent = true,
+                                    driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
+                                ),
+                                dependsOn = emptyList()
+                            ).json(),
+                            mobile_number = imageDetail.mobile_number,
+                            payloadLocalId = imageDetail.payloadLocalId
                         )
                         val apiResponse =
-                            syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                                imageEventList
+                            syncManagerUseCase.syncAPIUseCase.syncImageProducerEventToServer(
+                                events = imageEvent,
+                                blobUrl = uploadedBlobUrl
                             )
                         onAPIResponse(apiResponse)
                     } else {
