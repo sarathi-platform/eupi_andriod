@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -90,7 +92,6 @@ import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
@@ -586,9 +587,9 @@ private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
         )
         if (isEventDeleted) {
             Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = stringResource(R.string.delete),
-                style = smallTextStyle.copy(redIconColor)
+            Image(
+                painter = painterResource(id = R.drawable.ic_delete_stamp),
+                contentDescription = null,
             )
         }
     }
