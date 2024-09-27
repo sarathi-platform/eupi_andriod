@@ -1,5 +1,7 @@
 package com.nudge.core.ui.commonUi
 
+import android.content.Context
+import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,6 +57,7 @@ fun IncrementDecrementNumberComponent(
     isEditAllowed: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
     maxValue: Int = MAXIMUM_RANGE,
+    editNotAllowedMsg: String = BLANK_STRING,
     isMandatory: Boolean = false,
 ) {
     val currentCount: MutableState<String> = remember(currentValue) {
@@ -124,10 +127,7 @@ fun IncrementDecrementNumberComponent(
                                             onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                                         }
                                     } else {
-                                        showCustomToast(
-                                            context,
-                                            context.getString(R.string.edit_disable_message)
-                                        )
+                                        editNotAllowedToastBar(editNotAllowedMsg, context)
                                     }
                                 }, contentAlignment = Alignment.Center
                         ) {
@@ -166,10 +166,7 @@ fun IncrementDecrementNumberComponent(
                                         }
                                 }
                             } else {
-                                showCustomToast(
-                                    context,
-                                    context.getString(R.string.edit_disable_message)
-                                )
+                                editNotAllowedToastBar(editNotAllowedMsg, context)
                             }
                         },
                         placeholder = {
@@ -234,10 +231,7 @@ fun IncrementDecrementNumberComponent(
                                     onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
                                 }
                             } else {
-                                showCustomToast(
-                                    context,
-                                    context.getString(R.string.edit_disable_message)
-                                )
+                                editNotAllowedToastBar(editNotAllowedMsg, context)
                             }
                         }, contentAlignment = Alignment.Center
                 ) {
@@ -251,6 +245,16 @@ fun IncrementDecrementNumberComponent(
             }
         }
 
+    }
+}
+
+
+private fun editNotAllowedToastBar(editNotAllowedMsg: String, context: Context) {
+    if (!TextUtils.isEmpty(editNotAllowedMsg)) {
+        showCustomToast(
+            context,
+            editNotAllowedMsg
+        )
     }
 }
 

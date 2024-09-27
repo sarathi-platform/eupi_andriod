@@ -324,6 +324,9 @@ fun AddEventScreen(
                             isMandatory = true,
                             title = stringResource(R.string.increase_in_number),
                             isEditAllowed = viewModel.selectedAssetTypeId.value != -1,
+                            editNotAllowedMsg = if (viewModel.selectedAssetTypeId.value != -1) context.getString(
+                                R.string.edit_disable_message
+                            ) else BLANK_STRING,
                             currentValue = viewModel.assetCount.value,
                             maxValue = viewModel.maxAssetValue.value,
                             onAnswerSelection = { inputValue ->

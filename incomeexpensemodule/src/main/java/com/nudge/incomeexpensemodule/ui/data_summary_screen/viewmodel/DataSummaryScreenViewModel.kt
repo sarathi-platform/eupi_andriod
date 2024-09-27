@@ -285,9 +285,7 @@ class DataSummaryScreenViewModel @Inject constructor(
                 fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
                     subjectId = subjectId
                 )?.let {
-                    if (it.isEmpty()) {
-                        areEventsNotAvailableForSubject.value = false
-                    }
+                    areEventsNotAvailableForSubject.value = it.isNotEmpty()
                 }
 
                 val subjectLivelihoodMapping =
