@@ -38,6 +38,7 @@ import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.REMOTE_CONFIG_SYNC_BATCH_SIZE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
+import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_RETRY_COUNT
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
@@ -352,17 +353,21 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 if (task.isSuccessful) {
                     val isSyncEnable = remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
                     val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
+                    val isSyncOptionEnable =
+                        remoteConfig[REMOTE_CONFIG_SYNC_OPTION_ENABLE].asBoolean()
                     val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
                     NudgeLogger.d(
                         "SyncEnabled",
                         "sync enabled : $isSyncEnable :: Sync batch Size : " +
-                                "$syncBatchSize :: Sync Retry Count: $syncRetryCount "
+                                "$syncBatchSize :: Sync Retry Count: $syncRetryCount " +
+                                ":: Setting Sync Option Enable : $isSyncOptionEnable"
                     )
                     mViewModel.saveSyncEnabledFromRemoteConfig(
                         isSyncEnable
                     )
                     mViewModel.saveSyncBatchSizeFromRemoteConfig(syncBatchSize)
                     mViewModel.saveSyncRetryCountFromRemoteConfig(syncRetryCount)
+                    mViewModel.saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable)
 
 
                 }

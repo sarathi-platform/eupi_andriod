@@ -69,6 +69,9 @@ class MainActivityViewModel @Inject constructor(
     fun saveSyncRetryCountFromRemoteConfig(retryCount: Long) {
         prefRepo.saveSyncRetryCount(retryCount)
     }
+    fun saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable: Boolean) {
+        prefRepo.saveIsSyncOptionEnabled(isSyncOptionEnable)
+    }
 
     fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
