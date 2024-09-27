@@ -184,4 +184,19 @@ interface ActivityDao {
     @Query("SELECT activityConfig.activityType from $ACTIVITY_TABLE_NAME as activityTable join $ACTIVITY_CONFIG_TABLE_NAME as activityConfig on activityConfig.activityId = activityTable.activityId where activityTable.missionId = :missionId and activityTable.activityId = :activityId and activityTable.userId = :userId")
     suspend fun getTypeForActivity(missionId: Int, activityId: Int, userId: String): String?
 
+    @Query("Select * from activity_table where userId=:userId and activityId in (:activityIds) and missionId=:missionId")
+    suspend fun getActivityEntityList(
+        userId: String,
+        missionId: Int,
+        activityIds: List<Int>
+    ): List<ActivityEntity>
+
+    @Query("UPDATE $ACTIVITY_TABLE_NAME set status = :status where userId=:userId and missionId = :missionId and activityId in (:activityIds) and isActive=1")
+    fun markActivitiesInProgress(
+        userId: String,
+        missionId: Int,
+        activityIds: List<Int>,
+        status: String = SurveyStatusEnum.INPROGRESS.name
+    )
+
 }
