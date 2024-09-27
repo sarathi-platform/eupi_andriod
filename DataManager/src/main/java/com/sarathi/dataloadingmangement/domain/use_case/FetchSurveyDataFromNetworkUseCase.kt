@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import android.util.Log
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
 import com.sarathi.dataloadingmangement.STATE
@@ -29,8 +30,13 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
             }
             return false
         } catch (apiException: ApiException) {
+            Log.e(
+                "TAG",
+                "invoke: ApiException -> ${apiException.message} \n\n STACKTRACE -> ${apiException.stackTrace}",
+            )
             throw apiException
         } catch (ex: Exception) {
+            Log.e("TAG", "invoke: Exception -> ${ex.message} \n\n STACKTRACE -> ${ex.stackTrace}")
             throw ex
         }
     }

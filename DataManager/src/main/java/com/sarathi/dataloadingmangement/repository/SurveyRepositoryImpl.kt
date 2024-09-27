@@ -79,7 +79,8 @@ class SurveyRepositoryImpl @Inject constructor(
                 isMandatory = it.isMandatory,
                 tagId = it.tag,
                 surveyName = surveyName ?: BLANK_STRING,
-                formId = it.formId ?: DEFAULT_ID
+                formId = it.formId ?: DEFAULT_ID,
+                isConditional = it.isConditional
             )
             questionUiList.add(questionUiModel)
 

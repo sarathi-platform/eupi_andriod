@@ -897,6 +897,15 @@ fun <T> List<T>?.value(): List<T> {
     return this ?: emptyList()
 }
 
+fun <T, R> List<T>.ifNotEmpty(block: (List<T>) -> R): R? {
+
+    if (this.isEmpty())
+        return null
+
+    return block(this)
+
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()

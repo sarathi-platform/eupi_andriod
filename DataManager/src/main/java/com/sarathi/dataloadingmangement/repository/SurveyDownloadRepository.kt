@@ -3,15 +3,20 @@ package com.sarathi.dataloadingmangement.repository
 import android.util.Log
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
+import com.sarathi.dataloadingmangement.data.dao.ConditionsEntityDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
+import com.sarathi.dataloadingmangement.data.entities.ConditionsEntity
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
+import com.sarathi.dataloadingmangement.data.entities.SourceTargetQuestionMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
@@ -33,7 +38,9 @@ class SurveyDownloadRepository @Inject constructor(
     val optionItemDao: OptionItemDao,
     val questionEntityDao: QuestionEntityDao,
     val tagReferenceEntityDao: TagReferenceEntityDao,
-    val surveyLanguageAttributeDao: SurveyLanguageAttributeDao
+    val surveyLanguageAttributeDao: SurveyLanguageAttributeDao,
+    val sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
+    val conditionsEntityDao: ConditionsEntityDao
 ) : ISurveyDownloadRepository {
     override suspend fun fetchSurveyFromNetwork(surveyRequest: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
         return dataLoadingApiService.getSurveyFromNetwork(surveyRequest)
@@ -230,13 +237,39 @@ class SurveyDownloadRepository @Inject constructor(
                 questionEntityDao.insertQuestion(
                     QuestionEntity.getQuestionEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                        isCondition = isSubQuestionList,
+                        isCondition = question.conditional,
                         question = question,
                         parentId = parentId,
                         surveyId = surveyResponseModel.surveyId,
                         sectionId = section.sectionId
                     )
                 )
+
+                question.conditions?.forEach {
+                    val sourceTargetQuestionMappingEntity = SourceTargetQuestionMappingEntity
+                        .getSourceTargetQuestionMappingEntity(
+                            surveyId = surveyResponseModel.surveyId,
+                            sectionId = section.sectionId,
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            targetQuestionId = question.questionId!!,
+                            conditions = it,
+                            conditionOperator = question.conditionsOpererator
+                        )
+                    sourceTargetQuestionMappingEntity?.let { mappingEntity ->
+                        val refId =
+                            sourceTargetQuestionMappingEntityDao.addSourceTargetQuestionMapping(
+                                mappingEntity
+                            )
+                        conditionsEntityDao.addConditionEntity(
+                            ConditionsEntity.getConditionsEntity(
+                                refId,
+                                it.expression.value()
+                            )
+                        )
+                    }
+                }
+
+
 
                 deleteSurveyLanguageAttribute(
                     question.questionId ?: 0, LanguageAttributeReferenceType.QUESTION.name

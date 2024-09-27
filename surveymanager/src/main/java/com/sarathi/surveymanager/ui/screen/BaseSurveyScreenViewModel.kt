@@ -2,7 +2,9 @@ package com.sarathi.surveymanager.ui.screen
 
 import android.text.TextUtils
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
@@ -71,6 +73,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     var isNoSection = mutableStateOf(false)
 
+    val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -104,6 +108,13 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     referenceId = referenceId,
                     grantId = grantID
                 )
+
+                questionUiModel.value.forEach {
+                    questionVisibilityMap.put(it.questionId, !it.isConditional)
+                    if (it.options?.any { optionsUiModel -> optionsUiModel.isSelected.value() } == true) {
+                        questionVisibilityMap.put(it.questionId, true)
+                    }
+                }
             }
 
             taskEntity?.let { task ->

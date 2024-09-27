@@ -119,16 +119,18 @@ fun LazyListScope.SurveyScreenContent(
     viewModel.questionUiModel.value.forEachIndexed { index, question ->
         if (question.formId == 0) {
             item {
-                QuestionUiContent(
-                    question,
-                    sanctionedAmount,
-                    totalSubmittedAmount,
-                    viewModel,
-                    onAnswerSelect,
-                    maxHeight,
-                    grantType,
-                    index
-                )
+                if (viewModel.questionVisibilityMap[question.questionId].value()) {
+                    QuestionUiContent(
+                        question,
+                        sanctionedAmount,
+                        totalSubmittedAmount,
+                        viewModel,
+                        onAnswerSelect,
+                        maxHeight,
+                        grantType,
+                        index
+                    )
+                }
             }
         } else {
             val formIdCount = formIdCountMap.get(question.formId).value(0)

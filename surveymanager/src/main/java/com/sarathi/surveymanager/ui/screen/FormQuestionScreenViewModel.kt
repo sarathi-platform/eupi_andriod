@@ -1,24 +1,27 @@
 package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FormQuestionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val getTaskUseCase: GetTaskUseCase,
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
 ) : BaseViewModel() {
 
     var taskId: Int = 0
@@ -37,6 +40,10 @@ class FormQuestionScreenViewModel @Inject constructor(
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
+    val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
+
+    val conditionsUtils = ConditionsUtils.getInstance()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
@@ -46,7 +53,7 @@ class FormQuestionScreenViewModel @Inject constructor(
     }
 
     private fun loadFormQuestionData() {
-        viewModelScope.launch {
+        ioViewModelScope {
             taskEntity = getTaskUseCase.getTask(taskId)
             _questionUiModel.value = fetchDataUseCase.invokeFormQuestions(
                 surveyId = surveyId,
@@ -57,6 +64,27 @@ class FormQuestionScreenViewModel @Inject constructor(
                 grantId = 0,
                 formId = formId
             )
+
+            questionUiModel.value.forEach {
+                questionVisibilityMap.put(it.questionId, !it.isConditional)
+                if (it.options?.any { optionsUiModel -> optionsUiModel.isSelected == true } == true) {
+                    questionVisibilityMap.put(it.questionId, true)
+                }
+            }
+            val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
+                .invoke(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    questionIdList = questionUiModel.value.map { it.questionId }
+                )
+
+            conditionsUtils.apply {
+                setSourceTargetMap(sourceTargetQuestionMapping)
+                setQuestionConditionMap(sourceTargetQuestionMapping)
+                setConditionsUiModelList(sourceTargetQuestionMapping)
+                setResponseMap(questionUiModel.value)
+            }
+
         }
     }
 

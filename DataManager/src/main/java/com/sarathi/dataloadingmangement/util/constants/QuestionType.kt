@@ -13,5 +13,6 @@ enum class QuestionType {
     Grid,
     Toggle,
     DropDown,
-    TextField
+    TextField,
+    NumericField
 }
