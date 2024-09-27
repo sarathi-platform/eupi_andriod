@@ -168,10 +168,10 @@ interface EventsDao {
     }
 
 
-    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND type NOT LIKE '%image%'")
+    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND (type NOT LIKE '%image%' AND name !='FORM_C_TOPIC' AND name !='FORM_D_TOPIC')")
     fun getTotalPendingDataEventCount(status: List<String>, mobileNumber: String): Int
 
-    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND type LIKE '%image%'")
+    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber AND (type LIKE '%image%' OR name ='FORM_C_TOPIC' OR name ='FORM_D_TOPIC')")
     fun getTotalPendingImageEventCount(status: List<String>, mobileNumber: String): Int
 
     @Transaction
@@ -230,4 +230,10 @@ interface EventsDao {
 
     @Query("SELECT status,requestId AS requestId,COUNT(*) AS count from $EventsTable WHERE requestId =:requestId AND mobile_number =:mobileNumber  group by requestId, status")
     fun fetchEventStatusCount(requestId: String, mobileNumber: String): List<RequestIdCountModel>
+
+    @Query("SELECT * FROM $EventsTable WHERE mobile_number =:mobileNumber")
+    fun getAllEventsForUser(mobileNumber: String): List<Events>
+
+    @Query("UPDATE $EventsTable SET retry_count =0 WHERE status =:eventStatus and mobile_number =:mobileNo")
+    fun resetRetryCountForProducerFailed(eventStatus: String, mobileNo: String)
 }

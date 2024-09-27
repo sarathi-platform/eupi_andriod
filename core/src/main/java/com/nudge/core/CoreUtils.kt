@@ -33,6 +33,7 @@ import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.enums.SyncBatchEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -127,13 +128,13 @@ fun List<Events>.getEventDependencyEntityListFromEvents(dependentEvents: Events)
     return eventDependencyList
 }
 
-fun getBatchSize(connectionQuality: ConnectionQuality): Int {
+fun getBatchSize(connectionQuality: ConnectionQuality): SyncBatchEnum {
     return when (connectionQuality) {
-        ConnectionQuality.EXCELLENT -> return 20
-        ConnectionQuality.GOOD -> return 15
-        ConnectionQuality.MODERATE -> return 10
-        ConnectionQuality.POOR -> 5
-        ConnectionQuality.UNKNOWN -> 3
+        ConnectionQuality.EXCELLENT -> SyncBatchEnum.EXCELLENT
+        ConnectionQuality.GOOD -> SyncBatchEnum.GOOD
+        ConnectionQuality.MODERATE -> SyncBatchEnum.MODERATE
+        ConnectionQuality.POOR -> SyncBatchEnum.POOR
+        ConnectionQuality.UNKNOWN -> SyncBatchEnum.UNKNOWN
     }
 }
 
@@ -885,9 +886,19 @@ fun String?.value(): String {
 
 fun Int?.value() = this ?: -1
 
+fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
+
+fun Int?.value(defaultValue: Int) = this ?: defaultValue
+
 fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
+
+fun Double?.value() = this ?: 0.0
+
+fun <T> List<T>?.value(): List<T> {
+    return this ?: emptyList()
+}
 
 fun String.getImagePathFromString(): String {
     return try {
@@ -906,6 +917,15 @@ fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
     val currentTime = System.currentTimeMillis()
     return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+}
+
+fun getDurationDifferenceInDays(sourceDuration: Long): String {
+    if (sourceDuration == -1L)
+        return BLANK_STRING
+
+    return TimeUnit.MILLISECONDS.toDays(Math.abs(getCurrentTimeInMillis() - sourceDuration))
+        .toString();
+
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -1240,5 +1260,15 @@ fun convertFileIntoMultipart(
 
 fun getImagePathFromPicture() = CoreAppDetails.getApplicationContext().applicationContext
     .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath ?: BLANK_STRING
+
+fun isDataEvent(event: Events): Boolean {
+    return !event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) && event.name != FORM_C_TOPIC && event.name != FORM_D_TOPIC
+}
+
+fun isImageEvent(event: Events): Boolean {
+    return event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC
+}
 
 

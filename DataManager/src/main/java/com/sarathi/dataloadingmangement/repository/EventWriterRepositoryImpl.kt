@@ -23,6 +23,7 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
+import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
@@ -32,6 +33,10 @@ import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.DeleteLivelihoodEvent
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJournalEventDto
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveLivelihoodEventDto
+import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveMoneyJournalEventDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -61,10 +66,12 @@ class EventWriterRepositoryImpl @Inject constructor(
                 requestPayload = (eventItem as SaveAnswerEventDto).json()
 
             }
+
             EventName.MONEY_JOURNAL_EVENT, EventName.FORM_RESPONSE_EVENT -> {
                 requestPayload = (eventItem as SaveAnswerMoneyJorunalEventDto).json()
 
             }
+
             EventName.GRANT_DELETE_RESPONSE_EVENT -> {
                 requestPayload = (eventItem as DeleteAnswerEventDto).json()
 
@@ -82,6 +89,7 @@ class EventWriterRepositoryImpl @Inject constructor(
                 requestPayload = (eventItem as UpdateMissionStatusEventDto).json()
 
             }
+
             EventName.UPDATE_FORM_DETAILS_EVENT -> {
                 requestPayload = (eventItem as SaveFormAnswerEventDto).json()
 
@@ -102,6 +110,26 @@ class EventWriterRepositoryImpl @Inject constructor(
             EventName.DELETE_SUBJECT_ATTENDANCE_EVENT -> {
                 requestPayload = (eventItem as SaveAttendanceEventDto).json()
             }
+            EventName.LIVELIHOOD_OPTIONS_EVENT ->{
+                requestPayload = (eventItem as LivelihoodPlanActivityEventDto).json()
+            }
+
+            EventName.MONEY_JOURNAL_RESPONSE_EVENT -> {
+                requestPayload = (eventItem as SaveMoneyJournalEventDto).json()
+            }
+
+            EventName.ASSET_JOURNAL_EVENT -> {
+                requestPayload = (eventItem as SaveAssetJournalEventDto).json()
+            }
+
+            EventName.LIVELIHOOD_EVENT -> {
+                requestPayload = (eventItem as SaveLivelihoodEventDto).json()
+            }
+
+            EventName.DELETE_RESPONSE_EVENT -> {
+                requestPayload = (eventItem as DeleteLivelihoodEvent).json()
+            }
+
 
             else -> {
                 requestPayload = ""

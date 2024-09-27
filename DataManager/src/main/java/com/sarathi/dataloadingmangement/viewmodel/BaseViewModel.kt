@@ -62,7 +62,7 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    fun ViewModel.launchVieModelScope(
+    fun ViewModel.launchViewModelScope(
         context: CoroutineContext = EmptyCoroutineContext,
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.() -> Unit

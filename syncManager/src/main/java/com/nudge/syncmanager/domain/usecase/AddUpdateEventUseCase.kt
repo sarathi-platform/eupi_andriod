@@ -40,4 +40,9 @@ class AddUpdateEventUseCase(
         )
     }
 
+
+    suspend fun resetFailedEventStatusForProducerFailed() {
+        repository.resetRetryCountForProducerFailed()
+    }
+
 }

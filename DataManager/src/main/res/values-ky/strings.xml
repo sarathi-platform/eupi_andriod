@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sarathi</string>
+    <string name="app_name">SARATHI</string>
     <string name="online_text">Online</string>
     <string name="offline_text">Offline</string>
     <string name="not_able_to_load">"Data Load khlai maya, Tai waisa khlai phidi. "</string>
@@ -59,5 +59,49 @@
     <string name="exit">"Ongkhorlam "</string>
     <string name="cancel">"Mwthakma "</string>
     <string name="search">"Naitukdi "</string>
+    <string name="search_for_mission">Mission bai Naitukti</string>
 
+    <string name="search_by_didis">"Aibi bai naituk di "</string>
+    <string name="event">Wngmung:</string>
+    <string name="asset">Rwbai:</string>
+    <string name="add_event">Tisadi wngmungrok</string>
+    <string name="livelihood">"Tangchamung "</string>
+    <string name="date_range_picker_label_text">"Simi - Bwkhak"</string>
+    <string name="total_asset">"Bebak rwbai "</string>
+    <string name="events">Events</string>
+    <string name="type_of_asset">Type of Asset</string>
+    <string name="products">"Wngmanui "</string>
+    <string name="view_edit_history">"Laihjak kok no mithingma ni nukmung "</string>
+    <string name="show_less">"Kisisa phunukdi "</string>
+    <string name="show_more">"Teibo phunuk di "</string>
+    <string name="all_events">Bebak wngmung:</string>
+    <string name="last_events">"Paithak %1$s wngmung:"</string>
+    <string name="increse_in_number">"Rem bai Bangrima "</string>
+    <string name="asset_type">Prodrepot rwbai:</string>
+    <string name="event_date">Wngmung  ni  wnjora:</string>
+    <string name="edit_history">"Laihjak kok no mithingdi "</string>
+    <string name="increase_in_number">"Rem bai Bangrima "</string>
+
+    <string name="primary_and_secondary_value_not_same">Puila Tangchamung bai nwirem Tangchamung Sol wi manya</string>
+    <string name="select_first_livelihood_for_didi">Aibi ni Puila Tangchamung no chongdi</string>
+    <string name="select_second_livelihood_for_didi">Aibi ni nwirem Tangchamung no chongdi</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="proceed_txt">Proceed</string>
+    <string name="cancel_txt">Cancel</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
+    <string name="not_be_able_to_make_changes_after_completing_this_mission">Are you sure you want to continue? You will not be able to make changes to this mission after it\'s completed.</string>
+
+    <string name="no_small_group_assgned_label">No Small Group Assigned</string>
+    <string name="filter_item_count_label">Showing <b>%1$s</b> didis for <b>%2$s</b> </string>
+    <string name="all_filter_text">Bebak</string>
+
+    <string name="present">Saktongjak</string>
+    <string name="absent">Sokphaiya</string>
+    <string name="search_didi">Naitukdi Aibi no</string>
+    <string name="search_by_small_groups">Chikon Bodolrok bai naituk di</string>
+    <string name="total_didis">Bebak Aibi song - %1$s</string>
+    <string name="data_send_to_server">Data sent to Server</string>
+    <string name="images_send_to_server">Images sent to Server</string>
+    <string name="data_processes_by_server">Data processed by Server</string>
+    <string name="images_processes_by_server">Images processed by Server</string>
 </resources>

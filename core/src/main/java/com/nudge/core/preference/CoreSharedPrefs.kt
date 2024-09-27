@@ -3,10 +3,14 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.PREF_BUILD_ENVIRONMENT
+import com.nudge.core.PREF_MIX_PANEL_TOKEN
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.value
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,12 +40,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_LANGUAGE_ID = "language_id"
 
         const val PREF_CASTE_LIST = "caste_list"
-        const val PREF_KEY_USER_ID = "key_user_name"
+        const val PREF_KEY_USER_ID = "user_id"
         const val PREF_KEY_DATA_LOADED = "is_data_loaded"
         const val PREF_KEY_DIDI_TAB_DATA_LOADED = "is_didi_tab_data_loaded"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_SYNC_BATCH_SIZE = "sync_batch_size"
         const val PREF_KEY_SYNC_RETRY_COUNT = "sync_retry_count"
+        const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
+
 
 
         @Volatile
@@ -108,7 +114,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun getUserType(): String {
-        return prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        return prefs.getString(PREF_USER_TYPE, BLANK_STRING).value() ?: BLANK_STRING
     }
 
     override fun setUserType(userTypes: String) {
@@ -180,6 +186,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return getPref(PREF_KEY_USER_NAME, BLANK_STRING).toInt()
     }
 
+    override fun setName(name: String) {
+        savePref(PREF_KEY_NAME, name)
+    }
+
     fun setUserEmail(email: String) {
         savePref(PREF_KEY_EMAIL, email)
     }
@@ -244,6 +254,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return prefs.getFloat(key, defaultValue)
     }
 
+    override fun isDataTabDataLoaded(): Boolean {
+        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED, false)
+    }
+
+    override fun setDataTabDataLoaded(isDataLoaded: Boolean) {
+        savePref(PREF_KEY_DATA_TAB_DATA_LOADED, isDataLoaded)
+    }
+
     override fun getSyncBatchSize(): Int {
         return prefs.getLong(PREF_KEY_SYNC_BATCH_SIZE, 0L).toInt()
     }
@@ -251,5 +269,22 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getSyncRetryCount(): Int {
         return prefs.getLong(PREF_KEY_SYNC_RETRY_COUNT, 0L).toInt()
     }
+
+    override fun getBuildEnvironment(): String {
+        return getPref(PREF_BUILD_ENVIRONMENT, DEFAULT_BUILD_ENVIRONMENT)
+    }
+
+    override fun saveBuildEnvironment(buildEnv: String) {
+        savePref(PREF_BUILD_ENVIRONMENT, buildEnv)
+    }
+
+    override fun getMixPanelToken(): String {
+        return getPref(PREF_MIX_PANEL_TOKEN, BLANK_STRING)
+    }
+
+    override fun saveMixPanelToken(token: String) {
+        savePref(PREF_MIX_PANEL_TOKEN, token)
+    }
+
 
 }

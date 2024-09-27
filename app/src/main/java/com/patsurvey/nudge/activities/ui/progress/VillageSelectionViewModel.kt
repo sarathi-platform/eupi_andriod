@@ -13,6 +13,7 @@ import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -108,7 +109,6 @@ import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
-import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -221,7 +221,11 @@ class VillageSelectionViewModel @Inject constructor(
                 fetchQuestions(isFromOTPScreen)
                 fetchCastList(isFromOTPScreen)
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
-                    if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
+                    if ((System.currentTimeMillis() - prefRepo.getPref(
+                            LAST_UPDATE_TIME,
+                            0L
+                        )) > TimeUnit.DAYS.toMillis(5000)
+                    ) {
                         fetchUserWiseData()
                     } else {
                         showLoader.value = false
@@ -582,7 +586,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         villageId = village.id,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
-                                                        wealth_ranking = wealthRanking?: BLANK_STRING,
+                                                        wealth_ranking = wealthRanking
+                                                            ?: BLANK_STRING,
                                                         forVoEndorsement = if (patSurveyAcceptedRejected.equals(
                                                                 COMPLETED_STRING, true
                                                             )
@@ -592,22 +597,28 @@ class VillageSelectionViewModel @Inject constructor(
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.fromSting(intToString(didi.shgFlag)?: SHGFlag.NOT_MARKED.name).value,
+                                                        shgFlag = SHGFlag.fromSting(
+                                                            didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                                        ).value,
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
                                                         score = didi.bpcScore ?: 0.0,
-                                                        comment =  didi.bpcComment ?: BLANK_STRING,
+                                                        comment = didi.bpcComment ?: BLANK_STRING,
                                                         crpScore = didi.crpScore,
                                                         crpComment = didi.crpComment,
                                                         bpcScore = didi.bpcScore ?: 0.0,
-                                                        bpcComment = didi.bpcComment ?: BLANK_STRING,
+                                                        bpcComment = didi.bpcComment
+                                                            ?: BLANK_STRING,
                                                         crpUploadedImage = didi.crpUploadedImage,
                                                         needsToPostImage = false,
                                                         rankingEdit = didi.rankingEdit,
                                                         patEdit = didi.patEdit,
                                                         voEndorsementEdit = didi.voEndorsementEdit,
-                                                        ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                                        ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                                            didi.ableBodiedFlag
+                                                                ?: AbleBodiedFlag.NOT_MARKED.name
+                                                        ).value
                                                     )
                                                 )
 //                                                    }
@@ -1590,6 +1601,12 @@ class VillageSelectionViewModel @Inject constructor(
                                     it.villageList?.firstOrNull()?.stateId ?: 4
                                 )
 
+                                villageSelectionRepository.analyticsManager.setUserDetail(
+                                    distinctId = prefRepo.getMobileNumber(),
+                                    name = it.name.value(),
+                                    userType = it.typeName.value(),
+                                    buildEnvironment = prefRepo.getBuildEnvironment()
+                                )
 
                                 coreSharedPrefs.setBackupFileName(
                                     getDefaultBackUpFileName(

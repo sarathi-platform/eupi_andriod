@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.asLiveData
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.facebook.network.connectionclass.ConnectionClassManager
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -26,6 +27,7 @@ import com.nudge.core.SELECTION
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.UPCM_USER
 import com.nudge.core.ZIP_EXTENSION
+import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
@@ -35,6 +37,7 @@ import com.nudge.core.getFirstName
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
@@ -56,6 +59,7 @@ import javax.inject.Inject
 class SyncHomeViewModel @Inject constructor(
     val syncEventDetailUseCase: SyncEventDetailUseCase,
     val prefRepo: PrefRepo,
+    val corePrefRepo: CorePrefRepo,
     val connectionMonitor: ConnectionMonitorV2,
 ) : BaseViewModel()  {
     val isOnline = connectionMonitor.isConnected.asLiveData()
@@ -63,6 +67,8 @@ class SyncHomeViewModel @Inject constructor(
     var syncWorkerInfoState: WorkInfo.State? = null
     val imageEventProgress = mutableFloatStateOf(0f)
     val dataEventProgress = mutableFloatStateOf(0f)
+    val dataProducerEventProgress = mutableFloatStateOf(0f)
+    val imageProducerEventProgress = mutableFloatStateOf(0f)
     val totalImageEventCount = mutableIntStateOf(0)
     val isDataPBVisible = mutableStateOf(false)
     val isImagePBVisible = mutableStateOf(false)
@@ -76,7 +82,8 @@ class SyncHomeViewModel @Inject constructor(
 
     private val _loaderState = mutableStateOf(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
-
+    val isSyncImageActive = mutableStateOf(false)
+    val isSyncDataFirstDialog = mutableStateOf(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -303,7 +310,22 @@ class SyncHomeViewModel @Inject constructor(
                 "SyncHomeViewModel",
                 "PullToRefresh: Get Sync Consumer Status"
             )
-            syncEventDetailUseCase.syncAPIUseCase.fetchConsumerEventStatus()
+            syncEventDetailUseCase.syncAPIUseCase.fetchConsumerEventStatus() { success, message, requestIdCount, ex ->
+                val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
+                val commonEventParams = CommonEventParams(
+                    corePrefRepo.getSyncBatchSize(),
+                    corePrefRepo.getSyncRetryCount(),
+                    connectionQuality.name
+                )
+                syncEventDetailUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+                    selectedSyncType.intValue,
+                    commonEventParams,
+                    success,
+                    message,
+                    requestIdCount,
+                    ex
+                )
+            }
             withContext(CoreDispatchers.mainDispatcher) {
                 loaderState.value.isLoaderVisible = false
             }

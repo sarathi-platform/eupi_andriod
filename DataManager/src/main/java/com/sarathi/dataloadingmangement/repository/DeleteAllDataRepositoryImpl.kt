@@ -84,7 +84,17 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
                 .deleteSmallGroupDidiMappingForUser(userId)
             tagReferenceEntityDao().deleteTagReferenceEntityForUser(userId)
 
+            //Livelihood Table delete..
             moneyJournalDao().deleteMoneyJournal(userId)
+            subjectLivelihoodMappingDao().deleteLivelihoodSubjectsForUsers(userId)
+            assetDao().deleteAssetsForUser(userId)
+            assetJournalDao().deleteAssetJournal(userId)
+            livelihoodDao().deleteLivelihoodForUser(userId)
+            livelihoodEventDao().deleteLivelihoodEventForUser(userId)
+            livelihoodLanguageDao().deleteLivelihoodLanguageForUser(userId)
+            productDao().deleteProductForUser(userId)
+            subjectLivelihoodEventMappingDao().deleteSubjectLivelihoodEventMappingForUser(userId)
+            subjectLivelihoodMappingDao().deleteSubjectLivelihoodMappingForUser(userId)
         }
     }
 }

@@ -91,6 +91,9 @@ public class DeviceBandwidthSampler {
   protected void addSample() {
     long newBytes = TrafficStats.getTotalRxBytes();
     long byteDiff = newBytes - sPreviousBytes;
+//    Log.d("NetworkSpeed","ReceivedBytes:" + newBytes);
+//    Log.d("NetworkSpeed","TransmittedBytes:" + TrafficStats.getTotalTxBytes());
+//    Log.d("NetworkSpeed","bytes diff:" + byteDiff);
     if (sPreviousBytes >= 0) {
       synchronized (this) {
         long curTimeReading = SystemClock.elapsedRealtime();

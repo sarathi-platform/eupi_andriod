@@ -26,7 +26,6 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -35,7 +34,6 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -829,7 +827,7 @@ class FormPictureScreenViewModel @Inject constructor(
             val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
                 stepEntity,
                 villageId = repository.prefRepo.getSelectedVillage().id,
-                stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                stepType = StepType.VO_ENDROSEMENT.name,
                 repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
                 repository.prefRepo.getUserId()
             )

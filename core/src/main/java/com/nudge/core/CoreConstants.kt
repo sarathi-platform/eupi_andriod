@@ -92,12 +92,19 @@ const val DEFAULT_LANGUAGE_ID = 2
 
 const val ATTENDANCE_TAG_ID = 94
 const val DEFAULT_DATE_RANGE_DURATION: Long = 30
+const val WEEK_DURATION_RANGE: Long = 7
 
 const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
 const val ATTENDANCE_DELETED = "Deleted"
 const val DD_MMM_YYYY_FORMAT = "dd MMM, yyyy"
 const val MMM_DD_YYYY_FORMAT = "MMM dd, yyyy"
+
+const val LIVELIHOOD = "Livelihood"
+const val DIDI = "Didi"
+const val DD_mmm_YY_FORMAT = "dd MMM, yy"
+const val DD_mmm_hh_mm_FORMAT = "dd MMM, hh:mm"
+const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 
@@ -107,6 +114,17 @@ val eventWriters = listOf<IEventWriter>(
     LogEventWriter(),
     ImageEventWriter()
 )
+
+var EXPANSTION_TRANSITION_DURATION: Int = 450
+const val TRANSITION = "transition"
+const val ANIMATE_COLOR = "animate color"
+const val ROTATION_DEGREE_TRANSITION = "rotationDegreeTransition"
+
+const val MAXIMUM_RANGE = 999999
+const val MAXIMUM_RANGE_LENGTH = 10
+
+const val NO_SG_FILTER_VALUE = "null"
+const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
 const val BATCH_DEFAULT_LIMIT = 5
 const val RETRY_DEFAULT_COUNT = 3
 const val SYNC_DATE_TIME_FORMAT = "yyyy-MM-dd"
@@ -116,10 +134,22 @@ const val FAILED_EVENTS_FILE = "Failed_Events_File"
 const val SYNC_SELECTION_DRIVE = "selection"
 const val SYNC_POST_SELECTION_DRIVE = "postSelection"
 const val REMOTE_CONFIG_SYNC_ENABLE = "syncEnabled"
+const val REMOTE_CONFIG_SYNC_OPTION_ENABLE = "isSyncDataEnabled"
 const val REMOTE_CONFIG_SYNC_BATCH_SIZE = "sync_batch_size"
 const val REMOTE_CONFIG_SYNC_RETRY_COUNT = "sync_retry_count"
+const val REMOTE_CONFIG_MIX_PANEL_TOKEN = "mix_panel_token"
+
 const val PRODUCER = "Producer"
 const val CONSUMER = "consumer"
 const val FORM_C_TOPIC = "FORM_C_TOPIC"
 const val FORM_D_TOPIC = "FORM_D_TOPIC"
-const val REMOTE_CONFIG_SYNC_OPTION_ENABLE = "isSyncDataEnabled"
+const val IMAGE_STRING = "image"
+const val DATA_STRING = "data"
+const val DATA_PRODUCER_STRING = "data_producer"
+const val IMAGE_PRODUCER_STRING = "image_producer"
+const val SYNC_IMAGE = "IMAGE"
+const val SYNC_DATA = "DATA"
+
+const val DEFAULT_BUILD_ENVIRONMENT = "UAT"
+const val PREF_BUILD_ENVIRONMENT = "pref_build_environment"
+const val PREF_MIX_PANEL_TOKEN = "pref_mix_panel_token"

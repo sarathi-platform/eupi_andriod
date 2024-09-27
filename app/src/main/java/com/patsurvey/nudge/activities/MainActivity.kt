@@ -36,11 +36,13 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.REMOTE_CONFIG_MIX_PANEL_TOKEN
 import com.nudge.core.REMOTE_CONFIG_SYNC_BATCH_SIZE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_RETRY_COUNT
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -103,7 +105,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             )
         )
         CoreObserverManager.addObserver(this)
-        getSyncEnabled()
+        getRemoteConfig()
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
@@ -342,7 +344,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     val currentLanguage: Locale
         get() = localizationDelegate.getLanguage(this)
 
-    fun getSyncEnabled() {
+    fun getRemoteConfig() {
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
@@ -351,11 +353,24 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         remoteConfig.fetchAndActivate()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    val configShowDataTab = remoteConfig["showDataTab"].asBoolean()
+                    CoreLogger.d(
+                        tag = TAG,
+                        msg = "showDataTabKey: showDataTabKey = ${configShowDataTab}"
+                    )
+                    mViewModel.saveDataTabVisibility(configShowDataTab)
+                    Log.d(
+                        "SyncEnabled",
+                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                    )
                     val isSyncEnable = remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
-                    val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
                     val isSyncOptionEnable =
                         remoteConfig[REMOTE_CONFIG_SYNC_OPTION_ENABLE].asBoolean()
+                    val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
                     val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
+
+                    val mixPanelToken = remoteConfig[REMOTE_CONFIG_MIX_PANEL_TOKEN].asString()
+
                     NudgeLogger.d(
                         "SyncEnabled",
                         "sync enabled : $isSyncEnable :: Sync batch Size : " +
@@ -368,7 +383,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                     mViewModel.saveSyncBatchSizeFromRemoteConfig(syncBatchSize)
                     mViewModel.saveSyncRetryCountFromRemoteConfig(syncRetryCount)
                     mViewModel.saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable)
-
+                    mViewModel.saveMixPanelToken(mixPanelToken)
 
                 }
             }

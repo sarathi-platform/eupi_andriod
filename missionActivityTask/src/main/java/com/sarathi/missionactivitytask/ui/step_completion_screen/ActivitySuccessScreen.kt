@@ -39,7 +39,8 @@ fun ActivitySuccessScreen(
     modifier: Modifier = Modifier,
     message: String,
     isFromActivitySuccess: Boolean,
-    onNavigateBack: (isFromActivitySuccess: Boolean) -> Unit
+    activityRoutePath:String,
+    onNavigateBack: (isFromActivitySuccess: Boolean,activityRoutePath:String) -> Unit
 ) {
 
     val animationOver = remember {
@@ -81,7 +82,7 @@ fun ActivitySuccessScreen(
         ) {
             LaunchedEffect(key1 = true) {
                 delay(1500L)
-                onNavigateBack(isFromActivitySuccess)
+                onNavigateBack(isFromActivitySuccess,activityRoutePath)
             }
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
