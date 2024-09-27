@@ -39,5 +39,6 @@ interface SyncRepository {
     suspend fun fetchAllRequestEventForConsumerStatus(): List<RequestStatusEntity>
     suspend fun findRequestEvents(eventList: List<SyncEventResponse>, tag: String)
     suspend fun resetRetryCountForProducerFailed()
+    suspend fun getEventListForConsumer(): List<String>
 
 }

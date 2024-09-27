@@ -40,15 +40,16 @@ class SyncAPIUseCase(
     }
 
     suspend fun fetchConsumerEventStatus(response: (success: Boolean, message: String, requestIdCount: Int, ex: Throwable?) -> Unit) {
-        val requestIdList = repository.fetchAllRequestEventForConsumerStatus().map { it.requestId }
-        val chunkedRequestIDs = requestIdList.chunked(5)
+        val requestIdList = repository.getEventListForConsumer()
+        val chunkedRequestIDs = requestIdList.chunked(40)
         chunkedRequestIDs.forEach {
             try {
                 val eventConsumerRequest = EventConsumerRequest(
-                    requestId = it,
+                    requestId = listOf(),
                     mobile = BLANK_STRING,
                     endDate = BLANK_STRING,
-                    startDate = BLANK_STRING
+                    startDate = BLANK_STRING,
+                    clientIds = it
                 )
                 CoreLogger.d(
                     context = CoreAppDetails.getApplicationContext().applicationContext,
