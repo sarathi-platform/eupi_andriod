@@ -1,7 +1,6 @@
 package com.nudge.core.enums
 
 enum class SyncBatchEnum(val batchSize: Int, val maxPayloadSize: Long) {
-    //speed in kbps
     POOR(batchSize = 5, maxPayloadSize = 30),
     MODERATE(batchSize = 10, maxPayloadSize = 60),
     GOOD(batchSize = 15, maxPayloadSize = 90),
