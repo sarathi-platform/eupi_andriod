@@ -97,7 +97,7 @@ interface EventsDao {
         eventList.forEach {
             updateEventStatus(
                 clientId = it.clientId,
-                newStatus = it.status,
+                newStatus = it.status ?: BLANK_STRING,
                 modifiedDate = modifiedDate,
                 errorMessage = it.errorMessage,
                 retryCount = 0,

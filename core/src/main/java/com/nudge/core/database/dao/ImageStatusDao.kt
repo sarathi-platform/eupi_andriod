@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.IMAGE_STATUS_TABLE_NAME
 import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.model.response.SyncEventResponse
@@ -48,7 +49,7 @@ interface ImageStatusDao {
             if (imageStatusCount > 0) {
                 updateImageEventStatus(
                     eventId = it.clientId,
-                    status = it.status,
+                    status = it.status ?: BLANK_STRING,
                     modifiedDate = modifiedDate,
                     errorMessage = it.errorMessage,
                     mobileNumber = mobileNumber,
