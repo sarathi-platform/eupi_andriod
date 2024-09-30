@@ -76,7 +76,8 @@ class GrantSurveyScreenViewModel @Inject constructor(
                 uriList = ArrayList(),
                 activityId = activityConfig?.activityId.value(),
                 activityReferenceId = activityConfig?.referenceId,
-                activityReferenceType = activityConfig?.referenceType
+                activityReferenceType = activityConfig?.referenceType,
+                isFromRegenerate = false
             )
         }
     }

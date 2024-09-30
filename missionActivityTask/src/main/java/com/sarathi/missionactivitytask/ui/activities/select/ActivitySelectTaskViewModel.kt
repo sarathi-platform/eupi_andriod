@@ -224,7 +224,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 uriList = ArrayList(),
                 activityId = activityConfigUiModelWithoutSurvey?.activityId.value(),
                 activityReferenceId = activityConfigUiModelWithoutSurvey?.referenceId,
-                activityReferenceType = activityConfigUiModelWithoutSurvey?.referenceType
+                activityReferenceType = activityConfigUiModelWithoutSurvey?.referenceType,
+                isFromRegenerate = false
             )
         }
     }

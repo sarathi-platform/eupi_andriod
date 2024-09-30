@@ -91,7 +91,8 @@ fun ActivitySelectTaskScreen(
     missionId: Int,
     activityName: String,
     activityId: Int,
-    onSettingClick: () -> Unit
+    programId:Int,
+        onSettingClick: () -> Unit
 ) {
 
     TaskScreen(
@@ -107,13 +108,15 @@ fun ActivitySelectTaskScreen(
         secondaryButtonText = BLANK_STRING,
         isSecondaryButtonVisible = false,
         taskList = emptyList(),
+        programId = programId,
         navController = navController,
         taskScreenContent = { _, _ ->
             selectActivityTaskScreenContent(viewModel = viewModel)
         },
         taskScreenContentForGroup = { groupKey, _, _ ->
             selectActivityTaskScreenContentForGroup(groupKey, viewModel)
-        }
+        },
+
     )
 
     LaunchedEffect(key1 = viewModel.taskUiList.value) {

@@ -860,7 +860,11 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                },
+                )
         ) {
             ActivitySelectTaskScreen(
                 navController = navController,
@@ -874,7 +878,8 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
-                onSettingClick = onSettingIconClick
+                onSettingClick = onSettingIconClick,
+                programId = it.arguments?.getInt(ARG_PROGRAM_ID).value()
             )
         }
     }
@@ -1184,7 +1189,8 @@ fun navigateToActivitySelectTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
