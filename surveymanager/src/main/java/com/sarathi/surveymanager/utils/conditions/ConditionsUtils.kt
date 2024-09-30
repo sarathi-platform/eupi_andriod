@@ -36,8 +36,8 @@ class ConditionsUtils private constructor() {
         private var INSTANCE: ConditionsUtils? = null
 
         fun getInstance(): ConditionsUtils {
-            if (INSTANCE == null)
-                INSTANCE = ConditionsUtils()
+
+            INSTANCE = ConditionsUtils()
 
             return INSTANCE!!
 

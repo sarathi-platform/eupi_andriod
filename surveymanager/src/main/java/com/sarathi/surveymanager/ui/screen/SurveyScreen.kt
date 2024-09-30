@@ -81,6 +81,9 @@ fun SurveyScreen(
                 sanctionedAmount = sanctionedAmount,
                 totalSubmittedAmount = totalSubmittedAmount,
                 onAnswerSelect = { questionUiModel ->
+                    viewModel.updateQuestionResponseMap(questionUiModel)
+                    viewModel.runConditionCheck(questionUiModel)
+
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
                     viewModel.updateTaskStatus(taskId)
                 },
@@ -119,7 +122,7 @@ fun LazyListScope.SurveyScreenContent(
     viewModel.questionUiModel.value.forEachIndexed { index, question ->
         if (question.formId == 0) {
             item {
-                if (viewModel.questionVisibilityMap[question.questionId].value()) {
+                if (viewModel.visibilityMap[question.questionId].value()) {
                     QuestionUiContent(
                         question,
                         sanctionedAmount,
