@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository.smallGroup
 
+import com.nudge.core.database.entities.ApiStatusEntity
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail
 
@@ -21,5 +22,12 @@ interface FetchSmallGroupAttendanceHistoryFromNetworkRepository {
     )
 
     suspend fun checkIfHistoryAvailable(subjectId: Int, date: Long): Int
+    fun updateApiStatus(
+        apiEndPoint: String,
+        status: Int,
+        errorMessage: String,
+        errorCode: Int
+    )
 
+    suspend fun isFetchSmallGroupAttendanceHistoryFromNetworkAPIStatus(): ApiStatusEntity?
 }

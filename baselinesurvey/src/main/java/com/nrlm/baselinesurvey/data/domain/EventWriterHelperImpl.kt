@@ -934,7 +934,7 @@ class EventWriterHelperImpl @Inject constructor(
             }
     }
 
-    private suspend fun EventWriterHelperImpl.saveActivityStatusEvent(
+    suspend fun saveActivityStatusEvent(
         missionId: Int,
         activityId: Int,
         activityStatus: Int
@@ -942,12 +942,10 @@ class EventWriterHelperImpl @Inject constructor(
         val event = createActivityStatusUpdateEvent(
             missionId = missionId,
             activityId = activityId,
-            status = SectionStatus.valueOf(
-                SectionStatus.getSectionStatusNameFromOrdinal(
-                    activityStatus
-                )
+            status =
+            SectionStatus.getSectionStatusFromOrdinal(
+                activityStatus
             )
-
         )
         repositoryImpl.saveEventToMultipleSources(
             event,
@@ -956,15 +954,13 @@ class EventWriterHelperImpl @Inject constructor(
         )
     }
 
-    private suspend fun EventWriterHelperImpl.saveMissionStatusEvent(
+    suspend fun saveMissionStatusEvent(
         missionId: Int, missionStatus: Int
     ) {
         val event = createMissionStatusUpdateEvent(
             missionId = missionId,
-            SectionStatus.valueOf(
-                SectionStatus.getSectionStatusNameFromOrdinal(
-                    missionStatus
-                )
+            SectionStatus.getSectionStatusFromOrdinal(
+                missionStatus
             )
         )
 

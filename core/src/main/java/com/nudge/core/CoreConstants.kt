@@ -93,6 +93,8 @@ const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
 
+const val BASELINE_MISSION_NAME = "Baseline"
+
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),
@@ -110,3 +112,6 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+
+const val DEFAULT_SUCCESS_CODE = 200
+const val DEFAULT_ERROR_CODE = 500
