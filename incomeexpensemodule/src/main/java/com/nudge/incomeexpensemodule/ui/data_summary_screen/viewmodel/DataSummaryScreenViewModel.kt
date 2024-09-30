@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
+import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
@@ -298,7 +299,7 @@ class DataSummaryScreenViewModel @Inject constructor(
                     val livelihoodIds = listOf(
                         it.first()?.livelihoodId.value(),
                         it.last()?.livelihoodId.value()
-                    )
+                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter not Decided
 
                     val livelihoodEventList = fetchLivelihoodEventUseCase.invoke(livelihoodIds)
 

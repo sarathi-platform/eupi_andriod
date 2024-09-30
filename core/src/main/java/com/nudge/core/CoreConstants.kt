@@ -110,3 +110,4 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+const val NOT_DECIDED_LIVELIHOOD_ID = -1

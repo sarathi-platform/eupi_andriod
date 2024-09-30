@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
@@ -118,11 +119,10 @@ class AddEventViewModel @Inject constructor(
                     listOf(
                         livelihoodForDidi.first()?.livelihoodId.value(),
                         livelihoodForDidi.last()?.livelihoodId.value()
-                    )
+                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter Not decided events
                 )
                 _livelihoodDropdownValue.clear()
                 _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
-
 
             }
 
