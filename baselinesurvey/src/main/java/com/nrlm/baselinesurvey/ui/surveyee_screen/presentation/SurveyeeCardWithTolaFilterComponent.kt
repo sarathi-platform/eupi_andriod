@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.ACTIVITY_HAMLET_SURVEY
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.HUSBAND_STRING
 import com.nrlm.baselinesurvey.R
@@ -172,7 +173,7 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
         surveyeeDetails = didi2,
         subtitle = didi2.didiName,
         address = didi2.houseNo + ",  " + didi2.cohortName,
-        activityName = "Conduct Hamlet Survey",
+        activityName = ACTIVITY_HAMLET_SURVEY,
         surveyState = SurveyState.NOT_STARTED
     )
     val surveyeeStateList1 = listOf<SurveyeeCardState>(surveyeeCardState1, surveyeeCardState1, surveyeeCardState1)

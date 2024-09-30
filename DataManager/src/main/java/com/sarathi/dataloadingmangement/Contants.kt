@@ -1,0 +1,76 @@
+package com.sarathi.dataloadingmangement
+
+const val KEY_HEADER_TYPE = "header_type"
+const val KEY_HEADER_MOBILE = "header_type_mobile"
+const val BLANK_STRING = ""
+const val MISSION_TABLE_NAME = "mission_table"
+const val ACTIVITY_TABLE_NAME = "activity_table"
+const val LIVELIHOOD_TABLE_NAME = "livelihood_table"
+const val PRODUCT_TABLE_NAME = "product_table"
+const val LIVELIHOOD_EVENT_TABLE_NAME = "livelihood_event_table"
+const val ASSETS_TABLE_NAME = "assets_table"
+
+
+const val TAG_REFERENCE_TABLE_NAME = "tag_reference_table"
+const val TASK_TABLE_NAME = "task_table"
+const val CONTENT_TABLE_NAME = "content_table"
+const val NUDGE_GRANT_DATABASE = "NudgeGrantDatabase"
+const val MISSION_LANGUAGE_TABLE_NAME = "mission_language_table"
+const val ACTIVITY_CONFIG_TABLE_NAME = "activity_config_table"
+const val LIVELIHOOD_LANGUAGE_TABLE_NAME = "livelihood_language_reference_table"
+const val FORM_TABLE_NAME = "form_table"
+const val DOCUMENT_TABLE_NAME = "document_table"
+const val SURVEY_LANGUAGE_ATTRIBUTE_TABLE_NAME = "survey_language_attribute_table"
+const val LANGUAGE_TABLE_NAME = "language_table"
+const val CONTENT_CONFIG_TABLE_NAME = "content_config_table"
+const val ANSWER_TABLE = "ques_answer_table"
+const val UI_CONFIG_TABLE_NAME = "ui_config_table"
+const val FORM_UI_CONFIG_TABLE_NAME = "form_ui_config_table"
+const val ACTIVITY_LANGUAGE_ATTRIBUTE_TABLE_NAME = "activity_language_attribute_table"
+const val ACTIVITY_CONFIG_LANGUAGE_ATTRIBUTE_TABLE_NAME = "activity_config_language_attribute_table"
+const val TASK_ATTRIBUTE_TABLE_NAME = "task_attribute_table"
+const val SUBJECT_ATTRIBUTE_TABLE_NAME = "subject_attribute_table"
+const val ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME = "attribute_value_reference_table"
+const val GRANT_CONFIG_TABLE_NAME = "grant_config_table"
+const val SURVEY_TABLE = "survey_table"
+const val SECTION_TABLE = "section_table"
+const val QUESTION_TABLE = "question_table"
+const val OPTION_TABLE = "option_table"
+const val PROGRAMME_TABLE_NAME = "programme_table"
+
+const val MONEY_JOURNAL_TABLE_NAME = "money_journal_table"
+const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
+const val SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME = "subject_livelihood_mapping_table"
+const val SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME = "subject_livelihood_event_mapping_table"
+
+const val SECTION_STATUS_TABLE_NAME = "section_status_table"
+const val SUCCESS_CODE = "200"
+const val STATE = "STATE"
+const val SUCCESS = "SUCCESS"
+const val MODE = "MODE"
+const val NATURE_TAG = 90
+const val MODE_TAG = 89
+const val RECEIVED_AMOUNT_TAG = 86
+const val DISBURSED_AMOUNT_TAG = 98
+const val MULTI_IMAGE_TAG = 91
+const val KIND = "Kind"
+const val INFLOW = "INFLOW"
+const val OUTFLOW = "OUTFLOW"
+
+const val NO_OF_POOR_DIDI_TAG = 85
+const val DATE_TAG = 87
+const val DISBURSEMENT_DATE_TAG = 99
+const val NATURE = "NATURE"
+const val DIDI_IMAGE_ATTRIBUTE = "didiImage"
+const val DELEGATE_COMM = ","
+const val DELEGATE_COMM_WITH_SPACE = ","
+const val DELEGATE_DOT = "."
+
+const val SUBJECT_TABLE = "subject_table"
+const val SMALL_GROUP_DIDI_MAPPING_TABLE = "small_group_didi_mapping_table"
+const val MANUAL_TASK_COMPLETION = "Manual"
+const val SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED = "sanctioned = disbursed + form e"
+const val ZERO = '0'
+const val FORM_E = "form"
+
+const val ALL = "All"

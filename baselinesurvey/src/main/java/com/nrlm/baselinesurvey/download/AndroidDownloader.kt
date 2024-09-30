@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.KEY_HEADER_AUTH
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.download.interfaces.Downloader
 import com.nrlm.baselinesurvey.download.utils.DownloadStatus
 import com.nrlm.baselinesurvey.download.utils.FileType
@@ -72,11 +72,11 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
         return downloadManager.enqueue(request)
     }
 
-    override fun downloadAuthorizedImageFile(imageUrl: String, fileType: FileType, prefRepo: PrefRepo): Long {
+    override fun downloadAuthorizedImageFile(imageUrl: String, fileType: FileType, prefBSRepo: PrefBSRepo): Long {
         val request = DownloadManager.Request(imageUrl.toUri())
             .addRequestHeader(
                 KEY_HEADER_AUTH,
-                "Bearer " + (prefRepo.getAccessToken()!!))
+                "Bearer " + (prefBSRepo.getAccessToken()!!))
             .setTitle("Didi Images")
             .setDescription("Downloading")
             .setMimeType(if (fileType == FileType.VIDEO) "video/mp4" else if (fileType == FileType.IMAGE) "image/jpeg" else "application/pdf")

@@ -6,7 +6,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Icon
@@ -14,7 +17,12 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -74,7 +82,12 @@ fun FormImageViewerScreen(
         }
     }
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f
+    ) {
+        uriList.size
+    }
     val coroutineScope = rememberCoroutineScope()
 
     BackHandler {
@@ -85,7 +98,7 @@ fun FormImageViewerScreen(
 
     if (uriList.isNotEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
-            HorizontalPager(pageCount = uriList.size, state = pagerState) {currentItem ->
+            HorizontalPager(state = pagerState) { currentItem ->
                 Log.d("TAG", "FormImageViewerScreenURI: ${uriList[currentItem]} ")
                 val painter = rememberImagePainter(uriList[currentItem])
                 painter.state.painter?.intrinsicSize?.let { it1 -> zoomState.setContentSize(it1) }

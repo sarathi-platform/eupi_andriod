@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -95,9 +96,11 @@ import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.DottedShape
 import com.patsurvey.nudge.utils.IconButtonForward
 import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
@@ -536,9 +539,8 @@ fun BpcProgressScreen(
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
                                                     text = if ((bpcSummaryData.value.sentVoEndorsementCount ?: 0) > 1)
-                                                        stringResource(R.string.summary_vo_endoresement_text_plural)
-                                                    else
-                                                        stringResource(R.string.summary_vo_endoresement_text_singular),
+                                                        getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_plural)
+                                                    else getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_singular),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 15.sp,
@@ -568,10 +570,17 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((bpcSummaryData.value.voEndorsedCount ?: 0) > 1)
-                                                        stringResource(R.string.didis_endorsed_by_vo_plural)
-                                                    else stringResource(
-                                                        R.string.didi_endorsed_by_vo_singular),
+                                                    text = if ((bpcSummaryData.value.voEndorsedCount ?: 0) > 1) { getVoNameForState(
+                                                            context,
+                                                            bpcProgreesScreenViewModel.getStateId(),
+                                                            R.plurals.didis_endorsed_by_vo_plural
+                                                        )
+                                                    }
+                                                    else getVoNameForState(
+                                                            context,
+                                                            bpcProgreesScreenViewModel.getStateId(),
+                                                            R.plurals.didi_endorsed_by_vo_singular
+                                                        ),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 15.sp,
@@ -656,8 +665,6 @@ fun BpcProgressScreen(
                                                 )
 
                                             }
-
-
 
                                             Text(
                                                 text = stringResource(R.string.current_status_text),
@@ -855,7 +862,7 @@ fun BpcProgressScreen(
                                                 if (isStepCompleted != StepStatus.COMPLETED.ordinal) {
                                                     Spacer(modifier = Modifier.height(10.dp))
                                                     Text(
-                                                        text = stringResource(id = R.string.vo_endorsement_completed),
+                                                        text = getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed),
                                                         fontSize = 12.sp,
                                                         fontFamily = NotoSans,
                                                         fontWeight = FontWeight.Medium,

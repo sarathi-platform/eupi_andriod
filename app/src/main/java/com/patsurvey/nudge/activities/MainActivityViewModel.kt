@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -21,6 +23,8 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,7 +43,8 @@ class MainActivityViewModel @Inject constructor(
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
     val languageListDao: LanguageListDao,
-    val connectionMonitor: ConnectionMonitorV2
+    val connectionMonitor: ConnectionMonitorV2,
+    val updateBaselineStatusOnInitUseCase: UpdateBaselineStatusOnInitUseCase
 ): BaseViewModel() {
     val isLoggedIn = mutableStateOf(false)
     val isOnline = connectionMonitor.isConnected.asLiveData()
@@ -49,11 +54,24 @@ class MainActivityViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
 
     fun saveSyncEnabledFromRemoteConfig(isEnabled: Boolean) {
         prefRepo.saveIsSyncEnabled(isEnabled)
+    }
+
+    fun saveDataTabVisibility(isEnabled: Boolean) {
+        prefRepo.saveDataTabVisibility(isEnabled)
+    }
+
+    fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateBaselineStatusOnInitUseCase.invoke() {
+                onSuccess(it)
+            }
+        }
+
     }
 }

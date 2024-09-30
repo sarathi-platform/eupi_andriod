@@ -39,6 +39,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -48,17 +49,18 @@ fun EditTextWithTitleComponent(
     defaultValue: String = BLANK_STRING,
     showQuestion: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     isOnlyNumber: Boolean = false,
+    additionalValidation: (text: String, question: OptionItemEntityState?) -> Boolean,
     maxLength: Int = 150,
     isContent: Boolean = false,
+    resetResponse: Boolean = false,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt = remember {
+
+    val txt = remember(resetResponse, showQuestion?.optionId) {
         mutableStateOf(defaultValue)
-   }
-//    if (txt.value.isBlank()) {
-//        txt.value = defaultValue
-//    }
+    }
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -101,17 +103,19 @@ fun EditTextWithTitleComponent(
                     .padding(top = 6.dp),
                 value = txt.value,
                 onValueChange = {
-                    if (it.length <= maxLength) {
                         if (isOnlyNumber) {
                             if (onlyNumberField(it)) {
                                 if (it.length <= MAXIMUM_RANGE_LENGTH) {
-                                    txt.value = it
+                                    if (additionalValidation.invoke(it, showQuestion)) {
+                                        txt.value = numberInEnglishFormat(it)
+                                    }
                                 }
                             }
                         } else {
-                            txt.value = it
+                            if (it.length <= maxLength) {
+                                txt.value = it
+                            }
                         }
-                    }
                     onAnswerSelection(txt.value)
                 },
                 keyboardOptions = if (isOnlyNumber) {
@@ -142,11 +146,14 @@ fun EditTextWithTitleComponent(
 
         }
     }
-
 }
 
 @Composable
 @Preview(showBackground = true)
 fun EditTextWithTitleComponentPreview() {
-    EditTextWithTitleComponent(title = "select", defaultValue = "", onInfoButtonClicked = {}) {}
+    EditTextWithTitleComponent(
+        title = "select",
+        defaultValue = "",
+        onInfoButtonClicked = {},
+        additionalValidation = { text, question -> true }) {}
 }

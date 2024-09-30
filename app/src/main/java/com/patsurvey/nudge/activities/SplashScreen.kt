@@ -17,7 +17,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,16 +26,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.ONE_SECOND
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
+import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
@@ -53,50 +55,67 @@ fun SplashScreen(
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
+
+
             NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true")
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
-                viewModel.showLoader.value=true
+                viewModel.showLoader.value = true
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value=false
-                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                    popUpTo(AuthScreen.START_SCREEN.route) {
-                        inclusive = true
-                    }
-                }
+                openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
-                viewModel.showLoader.value=true
+                viewModel.showLoader.value = true
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value=false
+                viewModel.showLoader.value = false
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
-        } else
-        {
-            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false")
+        } else {
+            NudgeLogger.d(
+                "SplashScreen",
+                "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false"
+            )
             delay(ONE_SECOND)
-            viewModel.showLoader.value=true
-            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails before")
+            viewModel.showLoader.value = true
+            NudgeLogger.d(
+                "SplashScreen",
+                "LaunchedEffect(key1 = true) -> fetchLanguageDetails before"
+            )
             viewModel.fetchLanguageDetails() {
-                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it")
-                viewModel.showLoader.value=false
-                if(it.isNotEmpty()){
+                NudgeLogger.d(
+                    "SplashScreen",
+                    "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
+                )
+                viewModel.showLoader.value = false
+                if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
-                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true")
-                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                        popUpTo(AuthScreen.START_SCREEN.route) {
-                            inclusive = true
+                    openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
+                    /*
+                    NudgeLogger.d(
+                        "SplashScreen",
+                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true"
+                    )
+                    if (viewModel.getLoggedInUserType() == UPCM_USER) {
+                        navController.popBackStack()
+                        navController.navigate(
+                            Graph.HOME
+                        )
+                    } else {
+                        navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                            popUpTo(AuthScreen.START_SCREEN.route) {
+                                inclusive = true
+                            }
                         }
-                    }
+                    }*/
                 } else {
                     NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
@@ -198,5 +217,37 @@ fun SplashScreen(
                 }
             }
         }
+    }
+
+}
+
+fun openUserHomeScreen(userType:String,navController: NavController) {
+    try {
+        if (userType.equals(UPCM_USER)
+        ) {
+            if(navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true){
+                navController.navigate(route = HomeScreens.DATA_LOADING_SCREEN.route) {
+                    launchSingleTop = true
+                    popUpTo(AuthScreen.START_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+            }else{
+                navController.popBackStack()
+                navController.navigate(
+                    NudgeNavigationGraph.HOME
+                )
+            }
+
+        } else {
+            navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                launchSingleTop = true
+                popUpTo(AuthScreen.START_SCREEN.route) {
+                    inclusive = true
+                }
+            }
+        }
+    } catch (ex: Exception) {
+        ex.printStackTrace()
     }
 }

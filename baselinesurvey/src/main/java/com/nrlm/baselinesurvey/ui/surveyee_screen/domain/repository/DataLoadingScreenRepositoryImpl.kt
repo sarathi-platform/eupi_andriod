@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ID
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -18,7 +17,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.SUCCESS_CODE
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
@@ -66,20 +65,28 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.CoreDispatchers
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.toDate
+import com.nudge.core.updateCoreEventFileName
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
-    val prefRepo: PrefRepo,
-    val apiService: ApiService,
+    val prefBSRepo: PrefBSRepo,
+    val baseLineApiService: BaseLineApiService,
     val languageListDao: LanguageListDao,
     val surveyeeEntityDao: SurveyeeEntityDao,
     val surveyEntityDao: SurveyEntityDao,
@@ -92,7 +99,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val contentDao: ContentDao,
     val baselineDatabase: NudgeBaselineDatabase,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-    val apiStatusDao: ApiStatusDao
+    val apiStatusDao: ApiStatusDao,
+    val downloaderManager: DownloaderManager
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
 
@@ -100,15 +108,15 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchUseDetialsFromNetwork(userViewApiRequest: String): ApiResponseModel<UserDetailsResponse> {
-        return apiService.userAndVillageListAPI(userViewApiRequest)
+        return baseLineApiService.userAndVillageListAPI(userViewApiRequest)
     }
 
     override suspend fun fetchSurveyeeListFromNetwork(userId: Int): ApiResponseModel<BeneficiaryApiResponse> {
-        return apiService.getDidisFromNetwork(userId)
+        return baseLineApiService.getDidisFromNetwork(userId)
     }
 
     override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel> {
-        return apiService.getSurveyFromNetwork(surveyRequestBodyModel)
+        return baseLineApiService.getSurveyFromNetwork(surveyRequestBodyModel)
     }
 
     override suspend fun saveSurveyToDb(
@@ -410,23 +418,27 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
-        BaselineLogger.d("User Details        ","Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
+        BaselineLogger.d("User Details        ","Mobile Number: ${prefBSRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
-        prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
-        prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
-        prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
-        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
-        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
-        prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
-        prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
-        prefRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        prefBSRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        prefBSRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
+        prefBSRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
+        prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
+        prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
+        prefBSRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
+        prefBSRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
+        prefBSRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        updateCoreEventFileName(
+            context = BaselineCore.getAppContext(),
+            mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+        )
     }
 
     override fun getUserId(): Int {
-        if (TextUtils.isEmpty(prefRepo.getPref(PREF_KEY_USER_NAME, ""))) {
+        if (TextUtils.isEmpty(prefBSRepo.getPref(PREF_KEY_USER_NAME, ""))) {
             return 0
         }
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+        return prefBSRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
     }
 
     override fun deleteSurveyeeList() {
@@ -444,7 +456,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun fetchSavedSurveyFromServer() {
         val savedSurveyAnswersRequest: List<Int> = emptyList()
 //        surveyeeEntityDao
-//        apiService.fetchSavedSurveyAnswersFromServer()
+//        baseLineApiService.fetchSavedSurveyAnswersFromServer()
     }
 
     override suspend fun fetchMissionDataFromServer(
@@ -452,7 +464,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         missionName: String
     ): ApiResponseModel<List<MissionResponseModel>> {
         val missionRequest = MissionRequest(languageCode, missionName)
-        return apiService.getBaseLineMission(missionRequest)
+        return baseLineApiService.getBaseLineMission(missionRequest)
     }
 
     override suspend fun saveMissionToDB(missions: List<MissionResponseModel>) {
@@ -573,15 +585,15 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
-        return apiService.getCasteList(languageId)
+        return baseLineApiService.getCasteList(languageId)
     }
 
     override fun saveCasteList(castes: String) {
-        prefRepo.savePref(PREF_CASTE_LIST, castes)
+        prefBSRepo.savePref(PREF_CASTE_LIST, castes)
     }
 
     override fun getCasteList(): List<CasteModel> {
-        val castes = prefRepo.getPref(PREF_CASTE_LIST, BLANK_STRING)
+        val castes = prefBSRepo.getPref(PREF_CASTE_LIST, BLANK_STRING)
         return if ((castes?.isEmpty() == true) || castes.equals("[]")) emptyList()
         else {
             Gson().fromJson(castes, object : TypeToken<List<CasteModel>>() {}.type)
@@ -589,7 +601,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchContentsFromServer(contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>> {
-        return apiService.getAllContent(contentMangerRequest)
+        return baseLineApiService.getAllContent(contentMangerRequest)
     }
 
     override suspend fun deleteContentFromDB() {
@@ -624,16 +636,16 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSelectedLanguageId(): String {
-        return prefRepo.getAppLanguage() ?: "en"
+        return prefBSRepo.getAppLanguage() ?: "en"
     }
 
     override suspend fun getSurveyAnswers() {
         getSurveyId()?.forEach {
-            val surveyAnswersResponse = apiService.getSurveyAnswers(
+            val surveyAnswersResponse = baseLineApiService.getSurveyAnswers(
                 GetSurveyAnswerRequest(
                     surveyId = it,
-                    mobileNumber = prefRepo.getMobileNumber() ?: "",
-                    userId = prefRepo.getUserId().toInt()
+                    mobileNumber = prefBSRepo.getMobileNumber() ?: "",
+                    userId = prefBSRepo.getUserId().toInt()
                 )
             )
             if (surveyAnswersResponse.status.equals(
@@ -653,127 +665,160 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     private fun saveSurveyAnswerToDb(questionAnswerResponseModels: List<QuestionAnswerResponseModel>?) {
         try {
             questionAnswerResponseModels?.forEach { questionAnswerResponseModel ->
-                val question = questionEntityDao.getQuestionForSurveySectionForLanguage(
-                    userid = getBaseLineUserId(),
-                    questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
-                    sectionId = questionAnswerResponseModel.sectionId.toInt(),
-                    surveyId = questionAnswerResponseModel.surveyId,
-                    languageId = questionAnswerResponseModel.languageId
-                )
-                val optionsList = optionItemDao.getSurveySectionQuestionOptions(
-                    userId = getBaseLineUserId(),
-                    questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
-                    sectionId = questionAnswerResponseModel.sectionId.toInt(),
-                    surveyId = questionAnswerResponseModel.surveyId,
-                    languageId = questionAnswerResponseModel.languageId
-                )
+                if (questionAnswerResponseModel.ansType != "Image") {
+                    val question = questionEntityDao.getQuestionForSurveySectionForLanguage(
+                        userid = getBaseLineUserId(),
+                        questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
+                        sectionId = questionAnswerResponseModel.sectionId.toInt(),
+                        surveyId = questionAnswerResponseModel.surveyId,
+                        languageId = questionAnswerResponseModel.languageId
+                    )
+                    val optionsList = optionItemDao.getSurveySectionQuestionOptions(
+                        userId = getBaseLineUserId(),
+                        questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
+                        sectionId = questionAnswerResponseModel.sectionId.toInt(),
+                        surveyId = questionAnswerResponseModel.surveyId,
+                        languageId = questionAnswerResponseModel.languageId
+                    )
 
-                if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
-                    val formQuestionEntityList =
-                        getFormQuestionEntity(
-                            questionAnswerResponseModel
-                        )
-                    formQuestionEntityList.forEach { formQuestionResponseEntity ->
-                        formQuestionResponseEntity.userId = getBaseLineUserId()
-                        val isQuestionAnswered =
-                            baselineDatabase.formQuestionResponseDao()
-                                .isQuestionOptionAlreadyAnswered(
+                    if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
+                        val formQuestionEntityList =
+                            getFormQuestionEntity(
+                                questionAnswerResponseModel
+                            )
+                        formQuestionEntityList.forEach { formQuestionResponseEntity ->
+                            formQuestionResponseEntity.userId = getBaseLineUserId()
+                            val isQuestionAnswered =
+                                baselineDatabase.formQuestionResponseDao()
+                                    .isQuestionOptionAlreadyAnswered(
+                                        userId = getBaseLineUserId(),
+                                        surveyId = formQuestionResponseEntity.surveyId,
+                                        sectionId = formQuestionResponseEntity.sectionId,
+                                        questionId = formQuestionResponseEntity.questionId,
+                                        didiId = formQuestionResponseEntity.didiId,
+                                        optionId = formQuestionResponseEntity.optionId,
+                                        referenceId = formQuestionResponseEntity.referenceId
+                                    )
+                            if (isQuestionAnswered > 0) {
+                                baselineDatabase.formQuestionResponseDao().updateOptionItemValue(
                                     userId = getBaseLineUserId(),
                                     surveyId = formQuestionResponseEntity.surveyId,
                                     sectionId = formQuestionResponseEntity.sectionId,
                                     questionId = formQuestionResponseEntity.questionId,
-                                    didiId = formQuestionResponseEntity.didiId,
                                     optionId = formQuestionResponseEntity.optionId,
-                                    referenceId = formQuestionResponseEntity.referenceId
+                                    selectedValue = formQuestionResponseEntity.selectedValue,
+                                    referenceId = formQuestionResponseEntity.referenceId,
+                                    didiId = formQuestionResponseEntity.didiId,
+                                    selectedValueIds = formQuestionResponseEntity.selectedValueId
                                 )
-                        if (isQuestionAnswered > 0) {
-                            baselineDatabase.formQuestionResponseDao().updateOptionItemValue(
-                                userId = getBaseLineUserId(),
-                                surveyId = formQuestionResponseEntity.surveyId,
-                                sectionId = formQuestionResponseEntity.sectionId,
-                                questionId = formQuestionResponseEntity.questionId,
-                                optionId = formQuestionResponseEntity.optionId,
-                                selectedValue = formQuestionResponseEntity.selectedValue,
-                                referenceId = formQuestionResponseEntity.referenceId,
-                                didiId = formQuestionResponseEntity.didiId,
-                                selectedValueIds = formQuestionResponseEntity.selectedValueId
-                            )
-                        } else {
-                            baselineDatabase.formQuestionResponseDao()
-                                .addFormResponse(formQuestionResponseEntity)
+                            } else {
+                                baselineDatabase.formQuestionResponseDao()
+                                    .addFormResponse(formQuestionResponseEntity)
+                            }
                         }
-                    }
-                } else if (questionAnswerResponseModel.question?.questionType == QuestionType.InputNumber.name) {
-                    val inputTypeQuestionAnswerEntity =
-                        InputTypeQuestionAnswerEntityMapper.getInputTypeQuestionAnswerEntity(
-                            questionAnswerResponseModel,
-                            question,
-                            optionsList
+                    } else if (questionAnswerResponseModel.question?.questionType == QuestionType.InputNumber.name) {
+                        val inputTypeQuestionAnswerEntity =
+                            InputTypeQuestionAnswerEntityMapper.getInputTypeQuestionAnswerEntity(
+                                questionAnswerResponseModel,
+                                question,
+                                optionsList
+                            )
+                        inputTypeQuestionAnswerEntity.forEach { inputTypeQuestionAnswerEntity ->
+                            inputTypeQuestionAnswerEntity.userId = getBaseLineUserId()
+                            val isQuestionAlreadyAnswered =
+                                baselineDatabase.inputTypeQuestionAnswerDao()
+                                    .isQuestionAlreadyAnswered(
+                                        userId = getBaseLineUserId(),
+                                        inputTypeQuestionAnswerEntity.surveyId,
+                                        inputTypeQuestionAnswerEntity.sectionId,
+                                        inputTypeQuestionAnswerEntity.didiId,
+                                        inputTypeQuestionAnswerEntity.questionId,
+                                        inputTypeQuestionAnswerEntity.optionId
+                                    )
+                            if (isQuestionAlreadyAnswered > 0) {
+                                baselineDatabase.inputTypeQuestionAnswerDao()
+                                    .updateInputTypeAnswersForQuestion(
+                                        userId = getBaseLineUserId(),
+                                        inputTypeQuestionAnswerEntity.surveyId,
+                                        inputTypeQuestionAnswerEntity.sectionId,
+                                        inputTypeQuestionAnswerEntity.didiId,
+                                        inputTypeQuestionAnswerEntity.questionId,
+                                        inputTypeQuestionAnswerEntity.optionId,
+                                        inputTypeQuestionAnswerEntity.inputValue
+                                    )
+                            } else {
+                                baselineDatabase.inputTypeQuestionAnswerDao()
+                                    .saveInputTypeAnswersForQuestion(
+                                        inputTypeQuestionAnswerEntity
+                                    )
+                            }
+                        }
+
+                    } else if (questionAnswerResponseModel.question?.questionType.equals(
+                            QuestionType.DidiDetails.name
                         )
-                    inputTypeQuestionAnswerEntity.forEach { inputTypeQuestionAnswerEntity ->
-                        inputTypeQuestionAnswerEntity.userId = getBaseLineUserId()
-                        val isQuestionAlreadyAnswered =
-                            baselineDatabase.inputTypeQuestionAnswerDao().isQuestionAlreadyAnswered(
-                                userId = getBaseLineUserId(),
-                                inputTypeQuestionAnswerEntity.surveyId,
-                                inputTypeQuestionAnswerEntity.sectionId,
-                                inputTypeQuestionAnswerEntity.didiId,
-                                inputTypeQuestionAnswerEntity.questionId,
-                                inputTypeQuestionAnswerEntity.optionId
+                    ) {
+
+                        val didiIntoEntity = getDidiDidiInfoEntity(questionAnswerResponseModel)
+                        baselineDatabase.didiInfoEntityDao()
+                            .checkAndUpdateDidiInfo(didiIntoEntity, getBaseLineUserId())
+
+                    } else {
+                        val sectionAnswerEntity =
+                            getSectionAnswerEntity(
+                                questionAnswerResponseModel,
+                                question,
+                                optionsList
                             )
-                        if (isQuestionAlreadyAnswered > 0) {
-                            baselineDatabase.inputTypeQuestionAnswerDao()
-                                .updateInputTypeAnswersForQuestion(
-                                    userId = getBaseLineUserId(),
-                                    inputTypeQuestionAnswerEntity.surveyId,
-                                    inputTypeQuestionAnswerEntity.sectionId,
-                                    inputTypeQuestionAnswerEntity.didiId,
-                                    inputTypeQuestionAnswerEntity.questionId,
-                                    inputTypeQuestionAnswerEntity.optionId,
-                                    inputTypeQuestionAnswerEntity.inputValue
-                                )
+                        sectionAnswerEntity.userId = getBaseLineUserId()
+                        val isQuestionAlreadyAnswer = baselineDatabase.sectionAnswerEntityDao()
+                            .isQuestionAlreadyAnswered(
+                                userId = getBaseLineUserId(),
+                                sectionAnswerEntity.didiId,
+                                sectionAnswerEntity.questionId,
+                                sectionAnswerEntity.sectionId,
+                                sectionAnswerEntity.surveyId
+                            )
+                        if (isQuestionAlreadyAnswer > 0) {
+                            baselineDatabase.sectionAnswerEntityDao().updateAnswer(
+                                userId = getBaseLineUserId(),
+                                didiId = sectionAnswerEntity.didiId,
+                                sectionId = sectionAnswerEntity.sectionId,
+                                questionId = sectionAnswerEntity.questionId,
+                                surveyId = sectionAnswerEntity.surveyId,
+                                optionItems = sectionAnswerEntity.optionItems,
+                                questionType = sectionAnswerEntity.questionType,
+                                questionSummary = sectionAnswerEntity.questionType
+                            )
                         } else {
-                            baselineDatabase.inputTypeQuestionAnswerDao()
-                                .saveInputTypeAnswersForQuestion(
-                                    inputTypeQuestionAnswerEntity
-                                )
+                            baselineDatabase.sectionAnswerEntityDao()
+                                .insertAnswer(sectionAnswerEntity)
                         }
                     }
-
-                } else if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.DidiDetails.name)) {
-
-                    val didiIntoEntity = getDidiDidiInfoEntity(questionAnswerResponseModel)
-                    baselineDatabase.didiInfoEntityDao()
-                        .checkAndUpdateDidiInfo(didiIntoEntity, getBaseLineUserId())
 
                 } else {
-                    val sectionAnswerEntity =
-                        getSectionAnswerEntity(questionAnswerResponseModel, question, optionsList)
-                    sectionAnswerEntity.userId = getBaseLineUserId()
-                    val isQuestionAlreadyAnswer = baselineDatabase.sectionAnswerEntityDao()
-                        .isQuestionAlreadyAnswered(
-                            userId = getBaseLineUserId(),
-                            sectionAnswerEntity.didiId,
-                            sectionAnswerEntity.questionId,
-                            sectionAnswerEntity.sectionId,
-                            sectionAnswerEntity.surveyId
-                        )
-                    if (isQuestionAlreadyAnswer > 0) {
-                        baselineDatabase.sectionAnswerEntityDao().updateAnswer(
-                            userId = getBaseLineUserId(),
-                            didiId = sectionAnswerEntity.didiId,
-                            sectionId = sectionAnswerEntity.sectionId,
-                            questionId = sectionAnswerEntity.questionId,
-                            surveyId = sectionAnswerEntity.surveyId,
-                            optionItems = sectionAnswerEntity.optionItems,
-                            questionType = sectionAnswerEntity.questionType,
-                            questionSummary = sectionAnswerEntity.questionType
-                        )
-                    } else {
-                        baselineDatabase.sectionAnswerEntityDao().insertAnswer(sectionAnswerEntity)
+                    val location =
+                        questionAnswerResponseModel.location?.replace("{", "(")?.replace("}", ")")
+                            ?: BLANK_STRING
+                    val filePath = questionAnswerResponseModel.filePath.also {
+                        if (location != BLANK_STRING) {
+                            it + "|" + location
+                        } else {
+                            it
+                        }
+                    }
+                    surveyeeEntityDao.saveLocalImagePath(
+                        didiId = questionAnswerResponseModel.subjectId,
+                        path = filePath ?: BLANK_STRING
+                    )
+
+                    CoroutineScope(CoreDispatchers.ioDispatcher).launch {
+                        val downloadImageUrl = questionAnswerResponseModel.imageUrl ?: BLANK_STRING
+                        if (!downloadImageUrl.isNullOrEmpty()) {
+                            downloaderManager.downloadItem(downloadImageUrl)
+                        }
                     }
                 }
-
             }
         } catch (exception: Exception) {
             BaselineLogger.e("QuestionType", exception.message.toString())
@@ -782,17 +827,17 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getStateId(): Int {
-        return prefRepo.getPref(PREF_STATE_ID, -1)
+        return prefBSRepo.getPref(PREF_STATE_ID, -1)
     }
 
     override suspend fun getSectionStatus() {
         try {
             getSurveyId()?.forEach {
-                val sectionStatusResponse = apiService.getSectionStatus(
+                val sectionStatusResponse = baseLineApiService.getSectionStatus(
                     SectionStatusRequest(
                         sectionId = 2,
                         surveyId = it,
-                        userId = prefRepo.getUserId().toInt()
+                        userId = prefBSRepo.getUserId().toInt()
                     )
                 )
                 if (sectionStatusResponse.status.equals(
@@ -827,7 +872,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getAppLanguageId(): Int {
-        return prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+        return prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
     }
 
     override fun updateApiStatus(
@@ -852,7 +897,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
     override fun isNeedToCallApi(apiEndPoint: String): Boolean {
         return if (apiStatusDao.getFailedAPICount() > 0) {
@@ -861,6 +906,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         } else {
             true
         }
+    }
+
+    override fun saveSettingScreenOpen() {
+        prefBSRepo.savePref(PREF_KEY_IS_SETTING_SCREEN_OPEN,false)
     }
 
 }

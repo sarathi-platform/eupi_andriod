@@ -1,19 +1,14 @@
 package com.nrlm.baselinesurvey.utils
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
 import android.text.format.Formatter.formatShortFileSize
 import android.util.Log
-import android.widget.Toast
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.BuildConfig.DEBUG
 import com.nrlm.baselinesurvey.BuildConfig.VERSION_NAME
-import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
-import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.utils.BaselineLogger.e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,21 +32,21 @@ object BaselineLogger {
 
     fun d(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.FINE.intValue(), tag, msg)
+            BSLogWriter.log(Level.FINE.intValue(), tag, msg)
             Log.d(tag, msg)
         }
     }
 
     fun i(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.INFO.intValue(), tag, msg)
+            BSLogWriter.log(Level.INFO.intValue(), tag, msg)
             if (DEBUG) Log.i(tag, msg)
         }
     }
 
     fun e(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.SEVERE.intValue(), tag, msg)
+            BSLogWriter.log(Level.SEVERE.intValue(), tag, msg)
             if (DEBUG) Log.e(tag, msg)
         }
     }
@@ -78,7 +73,7 @@ object BaselineLogger {
 
     fun cleanup(checkForSize: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.cleanup(checkForSize)
+            BSLogWriter.cleanup(checkForSize)
         }
     }
 
@@ -91,7 +86,7 @@ class EchoPacket(
     val timestamp: Date = Date()
 )
 
-object LogWriter {
+object BSLogWriter {
     private const val TAG = "syslog"
     //private const val TAG_WIDTH_MAX = 75
 
@@ -380,75 +375,6 @@ object LogWriter {
             return null
         }
     }
-    suspend fun buildSupportLogAndShare(userMobileNo:String,userEmail:String) {
-        val context = BaselineCore.getAppContext()
-        try {
-
-            val logDir = BaselineCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            val logFile = File(logDir, getSupportLogFileName())
-            if (logFile.isFile) logFile.delete()
-
-            if (!getSyslogFile(logFile)) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "No logs to send", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-
-
-            val subject = "Sarathi debug log - Email: $userEmail UserId: $userMobileNo"
-            val message = "The following individual logs are contained within the attachment:\n\n"
-            withContext(Dispatchers.Main) {
-                share(
-                    context = context,
-                    logFile,
-                    arrayOf(
-                        "anupam.bhardwaj@tothenew.com",
-                        "anas.mansoori@tothenew.com",
-                        "ravi.chauhan@tothenew.com",
-                        "nitish.bhardwaj@tothenew.com",
-                        "ritik.singh@tothenew.com",
-                        "ankit.jain3@tothenew.com"
-                    ),
-                    subject,
-                    message
-                )?.let {
-                    BaselineCore.startExternalApp(it)
-                }
-            }
-        } catch (ex: Exception) {
-            e(TAG, "buildSupportLogAndShare", ex)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Logs unavailable", Toast.LENGTH_SHORT).show()
-            }
-            return
-        }
-    }
-
-    fun share(context: Context, file: File, emails: Array<String?>?, subject: String, message: String): Intent? {
-        try {
-            return Intent.createChooser(
-                Intent(Intent.ACTION_SEND)
-                    .setType("vnd.android.cursor.dir/email")
-                    .putExtra(Intent.EXTRA_EMAIL, emails)
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, message)
-                    .putExtra(
-                        Intent.EXTRA_STREAM,
-                        uriFromFile(
-                            context,
-                            file
-                        )
-                    )
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                "Share File"
-            )
-        } catch (ex: Exception) {
-            e(TAG, "share file", ex)
-        }
-        return null
-    }
-
     fun getSupportLogFileName(): String {
         return SUPPORT_LOG_FILE_NAME_PREFIX + SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US).format(
             Date()

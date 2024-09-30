@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.progress
 
-
 import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
@@ -8,6 +7,11 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
+import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -58,7 +62,6 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -77,6 +80,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
 import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -96,6 +100,7 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
@@ -103,7 +108,6 @@ import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
-import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -125,6 +129,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VillageSelectionViewModel @Inject constructor(
     val prefRepo: PrefRepo,
+    val coreSharedPrefs: CoreSharedPrefs,
     val apiService: ApiService,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
@@ -156,12 +161,14 @@ class VillageSelectionViewModel @Inject constructor(
     val showUserChangedDialog = mutableStateOf(false)
 
     val multiVillageRequest = mutableStateOf("2")
-    private var checkStatusCount = 0
+    var isFromOTPScreen: Boolean = false
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
 
-
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
     fun compareWithPreviousUser(context: Context) {
         if (TextUtils.isEmpty(prefRepo.getPreviousUserMobile()) || prefRepo.getPreviousUserMobile()
                 .equals(prefRepo.getMobileNumber())
@@ -206,44 +213,54 @@ class VillageSelectionViewModel @Inject constructor(
         prefRepo.saveMobileNumber(mobileNo)
     }
     fun init(context: Context) {
+        isFromOTPScreen = prefRepo.getPageOpenFromOTPScreen()
         showLoader.value = true
         fetchUserDetails { success ->
             if (success) {
-                fetchQuestions()
-                fetchCastList()
+                fetchQuestions(isFromOTPScreen)
+                fetchCastList(isFromOTPScreen)
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
-                    if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
-                        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                            fetchVillageList(context)
-                        } else {
-                            fetchDataForBpc(context)
-                        }
+                    if ((System.currentTimeMillis() - prefRepo.getPref(
+                            LAST_UPDATE_TIME,
+                            0L
+                        )) > TimeUnit.DAYS.toMillis(5000)
+                    ) {
+                        fetchUserWiseData()
                     } else {
                         showLoader.value = false
                     }
                 } else {
-                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                        fetchVillageList(context)
-                    } else {
-                        fetchDataForBpc(context)
-                    }
+                    fetchUserWiseData()
                 }
             }
         }
     }
 
-    private fun fetchQuestions(){
+    fun fetchUserWiseData() {
+        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING).equals(
+                CRP_USER_TYPE,
+                true
+            )
+        ) {
+            fetchVillageList()
+        } else {
+            fetchDataForBpc()
+        }
+    }
+
+    private fun fetchQuestions(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localLanguageList = languageListDao.getAllLanguages()
+            stateId.value = getStateId()
             localLanguageList?.let {
                 localLanguageList.forEach { languageEntity ->
                     try {
                         // Fetch QuestionList from Server
-                        val localLanguageQuesList =
+                        var localLanguageQuesList =
                             questionListDao.getAllQuestionsForLanguage(languageEntity.id)
-                        if (localLanguageQuesList.isEmpty()) {
-                            NudgeLogger.d("TAG", "fetchQuestions: QuestionList")
+
+                        if (localLanguageQuesList.isEmpty() || isRefresh) {
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
                                     languageId = languageEntity.id,
@@ -253,6 +270,9 @@ class VillageSelectionViewModel @Inject constructor(
                             )
                             if (quesListResponse.status.equals(SUCCESS, true)) {
                                 quesListResponse.data?.let { questionList ->
+                                    if (isRefresh) {
+                                        questionListDao.deleteQuestionTableForLanguage(languageId = languageEntity.id)
+                                    }
                                     questionList.listOfQuestionSectionList?.forEach { list ->
                                         list?.questionList?.forEach { question ->
                                             question?.sectionOrderNumber = list.orderNumber
@@ -304,17 +324,15 @@ class VillageSelectionViewModel @Inject constructor(
                             if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
                         )
                     } finally {
-                        /*withContext(Dispatchers.Main) {
-                            delay(250)
-                            showLoader.value = false
-                        }*/
+                        savePageOpenFromOTPScreen()
                     }
                 }
             }
+
         }
     }
 
-    private fun fetchDataForBpc(context: Context) {
+    private fun fetchDataForBpc() {
         showLoader.value = true
         job = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler){
             val awaitDeff= CoroutineScope(Dispatchers.IO).async {
@@ -380,10 +398,6 @@ class VillageSelectionViewModel @Inject constructor(
                                                         ?: System.currentTimeMillis()
                                                 )
                                             }
-//                                            if(steps.id == 44){
-//                                                prefRepo.savePref(
-//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
-//                                            }
                                         }
                                         NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
                                                 "stepsListDao.insertAll(it.stepList) before")
@@ -571,7 +585,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         villageId = village.id,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
-                                                        wealth_ranking = wealthRanking?: BLANK_STRING,
+                                                        wealth_ranking = wealthRanking
+                                                            ?: BLANK_STRING,
                                                         forVoEndorsement = if (patSurveyAcceptedRejected.equals(
                                                                 COMPLETED_STRING, true
                                                             )
@@ -581,22 +596,28 @@ class VillageSelectionViewModel @Inject constructor(
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.fromSting(intToString(didi.shgFlag)?: SHGFlag.NOT_MARKED.name).value,
+                                                        shgFlag = SHGFlag.fromSting(
+                                                            didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                                        ).value,
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
                                                         score = didi.bpcScore ?: 0.0,
-                                                        comment =  didi.bpcComment ?: BLANK_STRING,
+                                                        comment = didi.bpcComment ?: BLANK_STRING,
                                                         crpScore = didi.crpScore,
                                                         crpComment = didi.crpComment,
                                                         bpcScore = didi.bpcScore ?: 0.0,
-                                                        bpcComment = didi.bpcComment ?: BLANK_STRING,
+                                                        bpcComment = didi.bpcComment
+                                                            ?: BLANK_STRING,
                                                         crpUploadedImage = didi.crpUploadedImage,
                                                         needsToPostImage = false,
                                                         rankingEdit = didi.rankingEdit,
                                                         patEdit = didi.patEdit,
                                                         voEndorsementEdit = didi.voEndorsementEdit,
-                                                        ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                                        ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                                            didi.ableBodiedFlag
+                                                                ?: AbleBodiedFlag.NOT_MARKED.name
+                                                        ).value
                                                     )
                                                 )
 //                                                    }
@@ -962,17 +983,20 @@ class VillageSelectionViewModel @Inject constructor(
             showLoader.value = false
         }
     }
-    private fun fetchCastList() {
+    private fun fetchCastList(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val languageList = languageListDao.getAllLanguages()
             languageList.forEach { language ->
-                val localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-                if (localCasteList.isEmpty()) {
+                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
+                if (localCasteList.isEmpty() || isRefresh) {
                     try {
                         val casteResponse = apiService.getCasteList(language.id)
                         if (casteResponse.status.equals(SUCCESS, true)) {
                             casteResponse.data?.let { casteList ->
+                                if (isRefresh) {
+                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
+                                }
                                 casteList.forEach { casteEntity ->
                                     casteEntity.languageId = language.id
                                 }
@@ -1059,12 +1083,12 @@ class VillageSelectionViewModel @Inject constructor(
         return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
     }
 
-    private fun fetchVillageList(context: Context) {
+    private fun fetchVillageList() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?: DEFAULT_LANGUAGE_ID)
                     val localStepsList = stepsListDao.getAllSteps()
                     val villageIdList: ArrayList<Int> = arrayListOf()
                     if (localStepsList.isNotEmpty()) {
@@ -1078,7 +1102,6 @@ class VillageSelectionViewModel @Inject constructor(
                     if (localNumAnswerList.isNotEmpty()) {
                         numericAnswerDao.deleteNumericTable()
                     }
-
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
                         launch {
@@ -1548,6 +1571,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchUserDetails(apiSuccess: (success: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
@@ -1558,6 +1582,7 @@ class VillageSelectionViewModel @Inject constructor(
                    _filterVillageList.value = villageList.value
                     setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
+
                 } else {
                     val response = apiService.userAndVillageListAPI(villageReq)
                     withContext(Dispatchers.IO) {
@@ -1570,9 +1595,38 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
                                 prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
-                                villageListDao.insertAll(it.villageList ?: listOf())
-                                stateId.value= it.villageList?.get(0)?.stateId?:1
-                                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                                prefRepo.savePref(
+                                    PREF_KEY_TYPE_STATE_ID,
+                                    it.villageList?.firstOrNull()?.stateId ?: 4
+                                )
+
+
+                                coreSharedPrefs.setBackupFileName(
+                                    getDefaultBackUpFileName(
+                                        prefRepo.getMobileNumber(),
+                                        it.typeName ?: BLANK_STRING
+                                    )
+                                )
+                                coreSharedPrefs.setImageBackupFileName(
+                                    getDefaultImageBackUpFileName(
+                                        prefRepo.getMobileNumber(),
+                                        it.typeName ?: BLANK_STRING
+                                    )
+                                )
+
+                                villageListDao.insertOnlyNewData(
+                                    it.villageList ?: listOf(),
+                                    userBPC = prefRepo.isUserBPC()
+                                )
+                                stateId.value = it.villageList?.firstOrNull()?.stateId ?: 1
+                                if (it.typeName.equals(UPCM_USER)) {
+                                    prefRepo.savePref(
+                                        PREF_STATE_ID,
+                                        it.referenceId.first().stateId ?: -1
+                                    )
+                                }
+                                val localVillageList =
+                                    villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
                                 if (localVillageList.isNotEmpty()) {
                                     _villagList.emit(localVillageList)
                                 }
@@ -1580,6 +1634,7 @@ class VillageSelectionViewModel @Inject constructor(
                                     _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
                                 }
                                 _filterVillageList.value=villageList.value
+
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
                                 } else {
@@ -1759,7 +1814,8 @@ class VillageSelectionViewModel @Inject constructor(
                 showLoader.value = false
 
             }
-
+                fetchQuestions(true)
+                fetchCastList(true)
             } else {
                 showCustomToast(
                     context,
@@ -1783,6 +1839,8 @@ class VillageSelectionViewModel @Inject constructor(
                     _villagList.value = userAndVillageDetailModel.villageList.distinctBy {
                 it.id
             }
+                    fetchQuestions(true)
+                    fetchCastList(true)
                     refreshStepData(context)
             } else {
                     isNeedToCallVillageApi = true
@@ -1833,6 +1891,9 @@ class VillageSelectionViewModel @Inject constructor(
         prefRepo.saveMobileNumber("")
         prefRepo.saveSettingOpenFrom(0)
 
+    }
+    fun savePageOpenFromOTPScreen() {
+        prefRepo.savePageOpenFromOTPScreen(false)
     }
 
 }

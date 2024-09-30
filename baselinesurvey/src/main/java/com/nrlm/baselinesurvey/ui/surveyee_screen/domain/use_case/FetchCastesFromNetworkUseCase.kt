@@ -21,11 +21,7 @@ class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRep
                 return
             }
             var localLanguageList = repository.fetchLocalLanguageList()
-            val selectedAppLanguageId = repository.getAppLanguageId()
 
-            if (loadAllCastes) {
-                localLanguageList = localLanguageList.filter { it.id == selectedAppLanguageId }
-            }
             val casteList = arrayListOf<CasteModel>()
             if(localLanguageList.isNotEmpty()){
                 repository.insertApiStatus(SUBPATH_GET_CASTE_LIST)

@@ -28,12 +28,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 
 
 @Composable
@@ -72,7 +72,7 @@ fun ToolbarWithMenuComponent(title:String,
                 },
                 actions = {
                     IconButton(onClick = {
-                        navController?.navigate(Graph.SETTING_GRAPH)
+                        navController?.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),

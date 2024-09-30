@@ -37,6 +37,7 @@ import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
@@ -91,6 +92,7 @@ class SurveySummaryViewModel @Inject constructor(
     val inclusiveQuesCount = mutableStateOf(0)
     val isVOEndorsementComplete = mutableStateOf(false)
     val villageEntity = mutableStateOf<VillageEntity?>(null)
+    val isStepCompleted = mutableStateOf(false)
 
     init {
         if (repository.prefRepo.isUserBPC()) {
@@ -99,6 +101,9 @@ class SurveySummaryViewModel @Inject constructor(
             fetchDidisFromDB()
         }
         setVillage(repository.prefRepo.getSelectedVillage().id)
+    }
+    fun getStateId():Int{
+        return repository.prefRepo.getStateId()
     }
 
      fun fetchDidisForBpcFromDB() {
@@ -872,8 +877,12 @@ class SurveySummaryViewModel @Inject constructor(
 
             }else{
                 if(voEndorseDidiCount.value>1)
-                    list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
-                else list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
+                    list.add(getVoNameForState(context,getStateId(),R.plurals.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
+
+//                list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
+                else
+                    list.add(getVoNameForState(context,getStateId(),R.plurals.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
+//                    list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
 
             }
 
@@ -1069,6 +1078,16 @@ class SurveySummaryViewModel @Inject constructor(
 
             repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
         }
+    }
+
+    fun fetchStepStatus(stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+
+            isStepCompleted.value = repository.isStepCompleted(stepId)
+
+
+        }
+
     }
 
 

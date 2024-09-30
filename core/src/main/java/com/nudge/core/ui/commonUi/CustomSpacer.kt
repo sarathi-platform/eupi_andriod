@@ -1,0 +1,58 @@
+package com.nudge.core.ui.commonUi
+
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import com.nudge.core.ui.theme.dimen_10_dp
+
+@Composable
+fun CustomVerticalSpacer(
+    modifier: Modifier = Modifier,
+    size: Dp = dimen_10_dp
+) {
+    Spacer(
+        modifier = Modifier
+            .height(size)
+            .fillMaxWidth()
+            .then(modifier)
+    )
+}
+
+
+fun LazyListScope.customVerticalSpacer(
+    modifier: Modifier = Modifier,
+    size: Dp = dimen_10_dp
+) {
+    item { CustomVerticalSpacer(modifier, size) }
+
+}
+
+@Composable
+fun CustomHorizontalSpacer(
+    modifier: Modifier = Modifier,
+    size: Dp = dimen_10_dp,
+) {
+    Spacer(
+        modifier = Modifier
+            .width(size)
+            .then(modifier)
+    )
+}
+
+@Composable
+fun CustomSpacer(
+    modifier: Modifier = Modifier,
+    size: Dp = dimen_10_dp
+) {
+    Spacer(
+        modifier = Modifier
+            .size(size)
+            .then(modifier)
+    )
+}

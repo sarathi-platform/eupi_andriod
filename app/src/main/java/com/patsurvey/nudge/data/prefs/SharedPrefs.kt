@@ -4,14 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
+import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.utils.DEFAULT_STATE_ID
 import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,9 +30,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_LANGUAGE_ID = "language_id"
         const val PREF_KEY_PAGE_FROM = "page_from"
         const val PREF_KEY_STEP_ID = "step_id"
-        const val PREF_KEY_LAST_TOLA_ID = "last_tola_id"
-        const val PREF_KEY_LAST_TOLA_NAME = "last_tola_name"
-        const val SELECTED_VILLAGE_ID = "selected_village_id"
         const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_LAST_SYNC_TIME = "last_sync_time"
@@ -39,6 +40,10 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+        const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
+
+        const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"
+
     }
 
     val prefs: SharedPreferences by lazy {
@@ -49,9 +54,15 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
             )
         }
     }
+
+    override fun getStateId(): Int {
+        return prefs.getInt(PREF_KEY_TYPE_STATE_ID, DEFAULT_STATE_ID)
+    }
+
     override fun getAppLanguage(): String? {
         return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
     }
+
 
     override fun saveAppLanguage(code: String?) {
         prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()
@@ -250,4 +261,28 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun setPreviousUserMobile(mobileNumber: String) {
         prefs.edit().putString(PREF_KEY_PREVIOUS_USER_MOBILE, mobileNumber).apply()
     }
+
+    override fun setDataSyncStatus(status: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), status).apply()
+    }
+
+    override fun getLoggedInUserType(): String {
+        return prefs.getString(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun savePageOpenFromOTPScreen(status: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_FROM_OTP_SCREEN, status).apply()
+
+    }
+
+    override fun getPageOpenFromOTPScreen(): Boolean {
+        return prefs.getBoolean(PREF_KEY_FROM_OTP_SCREEN, false)
+    }
+
+    override fun saveDataTabVisibility(isEnabled: Boolean) {
+        savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
+    }
+
+    override fun isDataTabVisible(): Boolean = getPref(PREF_DATA_TAB_VISIBILITY, false)
+
 }

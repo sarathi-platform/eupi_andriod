@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
+    <string name="english" translatable="false">English</string>
+    <string name="hindi" translatable="false">हिंदी</string>
+    <string name="bangla">হিন্দি</string>
+    <string name="gujrati" translatable="false">હિન્દી</string>
+    <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+
+    <plurals name="didis_added">
+        <item quantity="one">I kong la dep pynrung</item>
+        <item quantity="other">Ki Kong la dep pynrung</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one">I kong ha ka kyrdan ba duk ba dang sahteng</item>
+        <item quantity="other">Ki Kong ha ka kyrdan ba duk ba dang sahteng</item>
+    </plurals>
+
+
+    <string name="didi_already_exist">A didi with same name, husband name, tola and house number already exists.</string>
+    <string name="search_village">Search Village</string>
+
+    <plurals name="vo_name">
+        <item quantity="one">CLF Name</item>
+        <item quantity="other">VO Name</item>
+    </plurals>
+    <plurals name="seletc_village_screen_text">
+        <item quantity="one">Select Village &amp; CLF</item>
+        <item quantity="other">Select Village &amp; VO</item>
+    </plurals>
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didi sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didis sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_screen_title">
+        <item quantity="one">List of Didis for CLF Endorsement</item>
+        <item quantity="other">List of Didis for VO Endorsement</item>
+    </plurals>
+    <plurals name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">
+        <item quantity="one">You are sending %1$s PAT completed Didis for CLF Endorsement</item>
+        <item quantity="other">You are sending %1$s PAT completed Didis for VO Endorsementt</item>
+    </plurals>
+    <plurals name="send_all_for_vo_endorsement">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed_message">
+        <item quantity="one">CLF Endorsement for {VILLAGE_NAME} \nis completed</item>
+        <item quantity="other">VO Endorsement for {VILLAGE_NAME} \nis completed</item>
+    </plurals>
+    <plurals name="send_for_vo_text">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+    <plurals name="total_no_of_ultra_poor">
+        <item quantity="one">Total no. Ultra-Poor families endorsed by CLF:</item>
+        <item quantity="other">Total no. Ultra-Poor families endorsed by VO:</item>
+    </plurals>
+    <plurals name="final_list_of_user">
+        <item quantity="one">Final list of Ultra Poor families endorsed by CLF (Village Organization)</item>
+        <item quantity="other">Final list of Ultra Poor families endorsed by VO (Village Organization)</item>
+    </plurals>
+    <plurals name="no_didis_availble_for_vo_endorsement">
+        <item quantity="one">No Didis available for CLF Endorsement.</item>
+        <item quantity="other">No Didis available for VO Endorsement.</item>
+    </plurals>
+    <plurals name="vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+    <plurals name="summary_vo_endoresement_text_plural">
+        <item quantity="one">Didis sent for CLF Endorsement</item>
+        <item quantity="other">Didis sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="didis_endorsed_by_vo_plural">
+        <item quantity="one">Didis Endorsed by CLF</item>
+        <item quantity="other">Didis Endorsed by VO</item>
+    </plurals>
+    <plurals name="didi_endorsed_by_vo_singular">
+        <item quantity="one">Didi Endorsed by CLF</item>
+        <item quantity="other">Didi Endorsed by VO</item>
+    </plurals>
+    <plurals name="summary_vo_endoresement_text_singular">
+        <item quantity="one">Didi sent for CLF Endorsement</item>
+        <item quantity="other">Didi sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed_village_banner_text">
+        <item quantity="one">CLF Endorsement completed</item>
+        <item quantity="other">VO Endorsement completed</item>
+    </plurals>
+    <plurals name="step_vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed">
+        <item quantity="one">CLF Endorsement \nCompleted</item>
+        <item quantity="other">VO Endorsement \nCompleted</item>
+    </plurals>
+    <plurals name="vo_selected_status_text">
+        <item quantity="one">CLF Endorsed</item>
+        <item quantity="other">VO Endorsed</item>
+    </plurals>
+    <plurals name="vo_rejected_status_text">
+        <item quantity="one">CLF Rejected</item>
+        <item quantity="other">VO Rejected</item>
+    </plurals>
+    <plurals name="vo_summary_rejected_empty_text">
+        <item quantity="one">No didi rejected by CLF</item>
+        <item quantity="other">No didi rejected by VO</item>
+    </plurals>
+    <plurals name="vo_summary_endorsed_empty_text">
+        <item quantity="one">No didi endorsed by CLF</item>
+        <item quantity="other">No didi endorsed by VO</item>
+    </plurals>
+    <plurals name="village_is_not_vo_endorsed_right_now">
+        <item quantity="one">Village is not CLF Endorsed Right Now!</item>
+        <item quantity="other">Village is not VO Endorsed Right Now!</item>
+    </plurals>
+    <plurals name="vo_endorsement_not_started">
+        <item quantity="one">CLF Endorsement is not started</item>
+        <item quantity="other">VO Endorsement is not started</item>
+    </plurals>
+    <plurals name="vo">
+        <item quantity="one">CLF: </item>
+        <item quantity="other">VO: </item>
+    </plurals>
+
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="bpc_verification_in_progress_village_banner_text">BPC Verification In Progress</string>
+
+    <string name="mark_complete_text">Pyndep ka jingthep ia ka kyrteng dong</string>
+    <string name="go_back_text">Leit biang shadien</string>
+    <string name="progress_item_text">Ka jingiaid shaphrang</string>
+    <string name="didis_item_text_plural">Ki kong</string>
+    <string name="didis_item_text_singular">I kong</string>
+    <string name="didis_list_text">Ka kyrteng jong ki kong</string>
+    <string name="poor_didi_item_text">I kong ba duk</string>
+    <string name="medium_didi_item_text">I kong ba shubiang</string>
+    <string name="rich_didi_item_text">I kong ba riewspah</string>
+    <string name="poor_didi_item_text_plural">Ki kong ba duk</string>
+    <string name="medium_didi_item_text_plural">Ki kong ba shubiang</string>
+    <string name="rich_didi_item_text_plural">Ki kong ba riewspah</string>
+    <string name="more_item_text">Shibun</string>
+    <string name="online_text">Online</string>
+    <string name="offline_text">Offline</string>
+    <string name="choose_language">Jied ia ka ktien</string>
+    <string name="continue_text">Iaid shaphrang</string>
+    <string name="continue_pat_text">Bteng biang ia ka PAT</string>
+    <string name="enter_mobile_number">Thoh ia u Phone Nombor</string>
+    <string name="mobile_text">Ka Phone</string>
+    <string name="enter_mobile_text">Thoh ia u Phone Nombor</string>
+    <string name="verification_text">Pynshisha</string>
+    <string name="get_otp">Shim ia u OTP</string>
+    <string name="otp_will_be_sent_to_this_number">Ia u OTP un phah ha une u nombor phone</string>
+    <string name="transect_wale_title">Ka jingiaid lyngba ia ka shnong</string>
+    <string name="invalid_mobile_number">U phone nombor bym long</string>
+    <string name="submit">Ai</string>
+    <string name="resend_otp">Phah biang ia u OTP</string>
+    <string name="ranking_text">Ka Kyrdan</string>
+    <string name="poor_text">Baduk</string>
+    <string name="medium_text">Ba shu pdeng</string>
+    <string name="rich_text">Bariewspah</string>
+    <string name="search_didis">Wad ia ka kyrteng i Kong</string>
+    <string name="search_video">Wad ia ka video</string>
+    <string name="otp_text">OTP</string>
+    <string name="count_didis_pending_plural">%1s ngut ki kong kiba ba dang sahteng bym pat dep</string>
+    <string name="count_didis_pending_singular">%1s i kong ba dang sahteng bym pat dep</string>
+    <string name="expiry_login_verify_otp">%s s</string>
+    <string name="social_mapping">Jinglum jingtip shaphang ka shnong</string>
+    <string name="showing_added_tolas">La pyni ba %s i/ la dep ban pynrung kyrteng dong</string>
+    <string name="showing">Pyni</string>
+    <string name="added_tolas">Ki dong kiba la thoh</string>
+    <string name="title_activity_social_mapping">Ki kam ha kaba lum jingtip</string>
+    <string name="not_added">Khlem pat pynrung ia ka kyrteng jaka</string>
+    <string name="mark_as_completed">Kdew ba la dep</string>
+    <string name="village_text">Ka shnong</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
+    <string name="vo_name">Ka kyrteng VO</string>
+    <string name="total">Baroh</string>
+    <string name="participation_date_wealth_ranking">Ka Tarik</string>
+    <string name="add_didi">Pynrung kyrteng i kong</string>
+    <string name="update_didi">Pynkylla</string>
+    <string name="house_number">Nombor ka ïing</string>
+    <string name="didi_name">Kyrteng i Kong</string>
+    <string name="dada_name">Kyrteng u Lok / U Kpa</string>
+    <string name="dada">U Lok / U Kpa</string>
+    <string name="enter">Rung</string>
+    <string name="caste">Ka jaidbynriew</string>
+    <string name="tola">Ka dong</string>
+    <string name="select">Jied</string>
+    <string name="pat_survey">Jingpeit bniah lyngba ka PAT</string>
+    <string name="particaptory_wealth_ranking_survey_text">Ka jingpyni kyllum ia baroh ha ka jing iashimbynta ha kaba bynta ia ka kyrdan ka ioh ka kot</string>
+    <string name="particaptory_wealth_ranking_text">Ka jing iashim bynta ha kaba iabynta ia ka kyrdan ka ioh ka kot</string>
+    <string name="complete_wealth_ranking_btn_text">La pyndep ia ka jing bynta ia ka kyrdan ka ioh ka kot</string>
+    <string name="add_tola">Pyndap ia ka Dong</string>
+    <string name="enter_otp_text">Thoh ia u OTP</string>
+    <string name="otp_send_to_mobile_number_message">Ia u OTP la phah ha une %1$  nombor phone</string>
+    <string name="otp_send_to_mobile_number_message_for_relogin">Ia u OTP la phah ha une {MOBILE_NUMBER} nombor phone</string>
+    <string name="otp_resend_to_mobile_number_message">Phah biang ia u OTP ha une %1$s nombor phone</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">Phah biang ia u OTP ha une {MOBILE_NUMBER} nombor phone</string>
+    <string name="delete_tola_text">Pyndam noh ia ka Dong</string>
+    <string name="save_tola_text">Save</string>
+    <string name="tola_name_text">Kyrteng ka Dong</string>
+    <string name="cancel_tola_text">Pyndam noh</string>
+    <string name="get_location_text">Pynioh ia coordinate ka jaka</string>
+    <string name="location_unavailable">Ym lah ban ioh ia ki coordinate ka jaka</string>
+    <string name="seletc_village_screen_text">Jied ia ka shnong bad VO</string>
+    <string name="complete_didi_addition">Pyndep ka jingpynrung kyrteng</string>
+    <string name="user_id_text">ID: </string>
+    <string name="empty_tola_string">Khem pynrung ia ka kyrteng ka dong</string>
+    <string name="tola_conirmation_text_plural">Ka jingthep ia ka kyrteng ba thymmai jong %1$s ki dong ka long kaba jop</string>
+    <string name="tola_conirmation_text_singular">Ka jingthep ia ka kyrteng ba thymmai jong %1$ i dong ka long kaba jop</string>
+    <string name="complete_transect_walk_text">Pyndep ia ka jingiaid lyngba ka shnong</string>
+    <string name="transect_walk_completed_message">La dep ia ka jingiaid lyngba ia ka shnong {VILLAGE_NAME}</string>
+    <string name="wealth_ranking_completed_message">La pyndep ia ka jing iashimbynta ha kaba bynta ia ka kyrdan ka ioh ka kot ha ka shnong {VILLAGE_NAME}</string>
+    <string name="complete_social_walk_text">Pyndep ka Jinglum jingtip shaphang ka shnong</string>
+    <string name="review_wealth_ranking">Peit biang ia ka kyrdan ka ioh ka kot</string>
+    <string name="social_mapping_completed_message">La dep ia Ka jingiaid lyngba ia ka shong {VILLAGE_NAME}</string>
+    <string name="didi_conirmation_text_plural">Ka jing pynrung ia %1$s ngut ki kong ka long kaba jop</string>
+    <string name="didi_conirmation_text_singular">Ka jing pynrung ia %1$s i kong ka long kaba jop</string>
+    <string name="transect_walk_sub_text_plural">La dep %1$s ka dong</string>
+    <string name="social_mapping_sub_text_plural">%1$s ki kong la dep jied</string>
+    <string name="wealth_ranking_sub_text_plural">%1$s ki kong baduk la dep jied</string>
+    <string name="vo_endorsement_sub_text_singular">%1$s I kong baduk na baduk tam la mynjur da ka VO</string>
+    <string name="vo_endorsement_sub_text_plural">%1$s ngut ki kong baduk na baduk tam la mynjur da ka VO</string>
+    <string name="empty_didis_string">Khlem thep ia ka kyrteng i kong</string>
+    <string name="didi_has_been_successfully_added">Ka jingpynrung ia ka kyrteng i kong ka long kaba jop</string>
+    <string name="tola_successfully_added">{TOLA_NAME} Ki dong la pynrung/ pyniasoh</string>
+    <string name="tola_updated">{TOLA_NAME} Ki dong la pynkylla</string>
+    <string name="tola_deleted">{TOLA_NAME} Ki dong ba la pyndam noh</string>
+    <string name="tola_already_exist">Ki dong ba la don lupa</string>
+    <string name="didi_has_been_successfully_updated">Ka jingpynkylla ia ki jingtip ba bniah jong i kong ka long kaba jop</string>
+
+    <string name="location_added_text">Ka jaka bala dep ban pynrung kyrteng</string>
+    <string name="pat_survey_title">Jingpeit bniah lyngba ka PAT</string>
+    <string name="didi">I kong</string>
+    <string name="section_number">Ka Bynta %d</string>
+    <string name="not_avaliable">Ym don</string>
+    <string name="start_pat">Sdang ia ka PAT</string>
+    <string name="done_text">La dep</string>
+    <string name="yes_text">Hooid</string>
+    <string name="share_button_text">Iasam</string>
+    <string name="download_button_text">Download</string>
+    <string name="downloading_button_text">Downloading</string>
+    <string name="option_yes">Hooid</string>
+    <string name="option_no">Em</string>
+    <string name="no_photo_available_text">Khlem iohi ia ka dur</string>
+    <string name="enter_name_text">Thoh ia ka Kyrteng</string>
+    <string name="enter_tola_name_message">Thoh ia ka kyrteng ka dong</string>
+    <string name="pat_survey_section_1">Ka jingwad bniah da ka PAT - Bynta 1</string>
+    <string name="pat_survey_section_2">Ka jingwad bniah da ka PAT - Bynta 2</string>
+    <string name="pat_survey_complete">Jingpeit bniah lyngba ka PAT</string>
+    <string name="result_summary">Ka jingmih kyllum</string>
+    <string name="summary_text">KyllumBa lum lang</string>
+    <string name="complete_section_1_text">La pyndep ia ka bynta ba 1</string>
+    <string name="logout">Logout</string>
+    <string name="this_section_is_in_progress">Kane ka bynta ka dang iaid shaphrang</string>
+    <string name="sync_up">Sync ia ki jinglum jingtip mynta</string>
+    <string name="last_syncup_text">Ka por ba sync khatduh ia ki jingtip: {LAST_SYNC_TIME}</string>
+    <string name="profile">Ka dur</string>
+    <string name="forms">Phorm</string>
+    <string name="training_videos">Ki Videos ai jinghikai</string>
+    <string name="language_text">Ka ktien</string>
+    <string name="productive_asset_owned_by_family">Ka jingingiadei ne jingiahap ha ka jingioh</string>
+    <string name="total_productive_asset_value">₹ %1$s/-</string>
+    <string name="complete_pat_survey">Pyndep ia ka jingwad bniah da ka PAT</string>
+    <string name="complete">Pyndep</string>
+    <string name="complete_section_2">Pyndep ka bynta 2</string>
+    <string name="show">Pyni</string>
+    <string name="pat_survey_completion_text">La pyndep ia ka jingwad bniah da ka PAT</string>
+    <string name="next">Babud</string>
+    <string name="didi_pat_comption_dialog">Phi la ai ia ka PAT na ka bynta jong i {DIDI_NAME}.</string>
+    <string name="confirmation_dialog_titile">Phi la tikna?</string>
+    <string name="section_1_text">Ka Bynta 1:</string>
+    <string name="section_2_text">Ka Bynta 2:</string>
+    <string name="vo_endorsement_screen_title">Ka thup kyrteng ki kong na ka bynta ka jingmynjur  da ka VO</string>
+    <string name="start_endorsement">Ka jingsdang ka jingmynjur</string>
+    <string name="pat_completed">La pyndep ia ka PAT</string>
+    <string name="didi_not_available">Ym don i kong</string>
+    <string name="are_you_sure">Phi la tikna?</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">Phi la phah ia ka kyrdan ka ioh ka kot jong  %1$s i/Ki kong</string>
+    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">Phi la phah ia ka PAT ba la dep jong %1$s i kong na ka bynta ka jingmynjur da ka VO</string>
+    <string name="send_all_for_vo_endorsement">Phah ia baroh na ka bynta ka jingmynjur da ka VO</string>
+    <string name="pat_survey_completed_message">La pyndep ia ka jingwad bniah da ka PAT na ka bynta ka shnong {VILLAGE_NAME}</string>
+    <string name="vo_endorsement_completed_message">La pyndep ia ka  jingmynjur da ka vo na ka bynta ka {VILLAGE_NAME}</string>
+    <string name="form_c_photo_button_text">Shun dur ia ka Phorm C</string>
+    <string name="form_d_photo_button_text">Shun dur ia ka Phorm D</string>
+    <string name="pat_completed_box_title">La pyndep ia ka PAT</string>
+    <string name="didi_not_available_text_singular">Ym don i kong</string>
+    <string name="didi_not_available_text_plural">Ym don ki kong</string>
+    <string name="send_for_vo_text">Phah ia baroh na ka bynta ka jingmynjur da ka VO</string>
+    <string name="didi_pat_complete_text">La pyndep ia ka PAT na ka bynta i kong</string>
+    <string name="didi_endorsed_text_plural">Ki jingmynjur ia ki kong</string>
+    <string name="didi_endorsed_text_singula">Ka jingmynjur ia i kong</string>
+    <string name="didi_rejected_text_plural">La kyntait ia ki kong</string>
+    <string name="didi_rejected_text_singula">La kyntatit ia i kong</string>
+    <string name="didi_not_available_sub_heading_text">Ym don ki kong</string>
+    <string name="accept">Pdiang</string>
+    <string name="reject">Kyntait</string>
+    <string name="endorse">Mynjur</string>
+    <string name="endorsed">La Mynjur</string>
+    <string name="rejected">La Kyntait</string>
+    <string name="shg_question_text">I kong i dei i dkhot ka SHG</string>
+    <string name="confirm_text">Pyntikna</string>
+    <string name="finish">Kaba Kut</string>
+    <string name="no_internet">Ym don network</string>
+    <string name="connected">Lah ioh network</string>
+    <string name="sync_your_data">Sync ia ki jinglum jingtip jongphi</string>
+    <string name="your_data_already_synced">Ki jinglum jingtip ki jongphi ladep ban sync teng ha shwa</string>
+    <string name="data_synced_successfully">Ka jing sync ia ki jinglum jingtip ka long kaba jop</string>
+    <string name="sync">Sync</string>
+    <string name="battery">Battery</string>
+    <string name="mobile_data">Mobile Data</string>
+    <string name="estimated_time_required">Ka por ba donkam ba la mang</string>
+    <string name="size">Ka jingheh</string>
+    <string name="syncing">Syncing</string>
+    <string name="continue_pat">Bteng biang ia ka PAT</string>
+    <string name="pat_completion_dialog_message_plural">Phi la phah ia ka PAT ba la dep jong %1$s ngut ki kong na ka bynta ka jingmynjur da ka VO</string>
+    <string name="pat_completion_dialog_message_singular">Phi la phah ia ka PAT ba la dep jong %1$s i kong na ka bynta ka jingmynjur da ka VO</string>
+    <string name="vo_endorsement_completion_dialog_message_plural">Phi dang leh ia ka jingaiti kaba khatduh na ka bynta {COUNT} ngut ki kong ban ioh ia ka jinmynjur</string>
+    <string name="vo_endorsement_completion_dialog_message_singular">Phi dang leh ia ka jingaiti kaba khatduh na ka bynta {COUNT} i kong ban ioh ia ka jinmynjur</string>
+    <string name="form_picture_screen_title">Shon ia ka dur jong ka Phorm</string>
+    <string name="view">Peit ia ka Phorm</string>
+    <string name="pat_inprogresee_status_text">Dang iaidshaphrang</string>
+    <string name="wealth_ranking_status_not_started_text">Ym pat sdang ka jing bynta ia ka kyrdan ka ioh ka kot</string>
+    <string name="wealth_ranking_status_complete_text">La pyndep ia ka jing bynta kyrdan ha ka ioh ka kot - ki bym duk</string>
+    <string name="pat_in_progress_status_text">Ka dang iaid shaphrang ka jingwad bniah da ka PAT</string>
+    <string name="pat_completed_status_text">La pyndep ia ka jingwad bniah da ka PAT</string>
+    <string name="vo_endorsement_status_text">La pyndep ia ka jing mynjur da ka VO</string>
+    <string name="no_didis_availble_for_vo_endorsement">Ym don i kong ban mynjur da ka VO</string>
+    <string name="step_1">Kyrdan 1</string>
+    <string name="sync_status">Jingpynshisha da i BPC</string>
+    <string name="step_2">Kyrdan 2</string>
+    <string name="step_3">Kyrdan 3</string>
+    <string name="step_4">Kyrdan 4</string>
+    <string name="step_5">Kyrdan 5</string>
+    <string name="vo_endorsement">Ka jingmynjur da ka VO</string>
+    <string name="close">Khang</string>
+    <string name="add_more">Thep shuh</string>
+    <string name="bpc_didi_screen_title">Ka thup kyrteng ki kong ba jied lupa na ka bynta ka jingpynshisha ha ka PAT</string>
+    <string name="bpc_final_pat_submition_message">Phi kwah ban ai ia kane VO na ka bynta ban mynjur da BPM</string>
+    <string name="didi_selected_text_singular">%1$s La jied ia i kong</string>
+    <string name="didi_selected_text_plural">%1$s La jied ia ki kong</string>
+    <string name="didi_replace_button">Buh Bujli</string>
+    <string name="submit_pat_verification">Ai ia ka PAT ban pynshisha</string>
+    <string name="comparison_screen_heading_plural">{COUNT}baroh ki kong ba la pynshisha na ka PAT</string>
+    <string name="comparison_screen_heading_singular">{COUNT}baroh kong ba la pynshisha na ka PAT</string>
+    <string name="crp_score_text">Ka jingkhein ia ki point ba ioh na ki CRP:</string>
+    <string name="bpc_score_text">Ka jingkhein ia ki point ba ioh na ki BPC:</string>
+    <string name="match_percentage_box_text">{PERCENTAGE}% Ki baduk na ki baduk tam ba ia dei thik ha ka jingpynshisha halor ka PAT.</string>
+    <string name="summary_tolas_added_text_plural">Thoh ia ka kyrteng ka Dong</string>
+    <string name="summary_didis_mobilised_text_plural">KI kong ba la lumlang</string>
+    <string name="summary_wealth_ranking_text_plural">Ki kong ba la kdew ba dei ki baduk ha ka PWR</string>
+    <string name="summary_vo_endoresement_text_plural">Ki kong ba la phah na ka bynta ban mynjur da ka VO</string>
+    <string name="unmatched_text">Bym iadei kajuh</string>
+    <string name="matched_text">Iadei kajuh thik</string>
+    <string name="review_and_submit_button_text">Ka jingpeit biang bad Ai</string>
+    <string name="bpc_add_more_didi_screen_title">Ka thup kyrteng jong kiwei kiwei ki kong kiba don na ka bynta ban pynshisha</string>
+    <string name="showing_text">Pyni</string>
+    <string name="result_text_singular">Ka jingmih</string>
+    <string name="result_text_plural">Ki jingmih</string>
+    <string name="didis_endorsed_by_vo_plural">Ki kong ba la mynjur da ka VO</string>
+    <string name="didi_endorsed_by_vo_singular">I kong ba al mynjur da ka VO</string>
+    <string name="summary_vo_endoresement_text_singular">i kong ba la phah  na ka bynta ban mynjur da ka VO</string>
+    <string name="summary_wealth_ranking_text_singular"> i kong ba la kdew kum iba Duk ha ka PWR</string>
+    <string name="summary_didis_mobilised_text_singular">i kong ba la lum</string>
+    <string name="summary_tolas_added_text_singular">Thoh ia ka kyrteng ka Dong</string>
+    <string name="enter_amount">Pyndap ia ka Dor</string>
+    <string name="bpc_result_text">Ka jingmih na i BPC:</string>
+    <string name="permission_dialog_prompt_message">Donkam ia ka jingaibor ban pyndonkam ia ka kor shundur, sngewbha ai bor</string>
+    <string name="permission_required_prompt_title">Donkam ban aibor</string>
+    <string name="ultra_poor_didis_verified_text_plural">%1$s ngut ki kong kiba duk na kiba duk tam la dep pynshisha</string>
+    <string name="ultra_poor_didis_verified_text_singular">%1$s ngut ki kong kiba duk na kiba duk tam la dep pynshisha</string>
+    <string name="no_data_form_a_not_generated_text">Khlem pynmih ia ka Phorm A namar ym don data</string>
+    <string name="no_data_form_b_not_generated_text">Khlem pynmih ia ka Phorm B namar ym don data</string>
+    <string name="no_data_form_c_not_generated_text">Khlem pynmih ia ka Phorm C namar ym don data</string>
+    <string name="no_form_available_yet_text">Khlem pat don phorm.</string>
+    <string name="digital_form_a_title">Digital Phorm A</string>
+    <string name="digital_form_b_title">Digital Phorm B</string>
+    <string name="digital_form_c_title">Digital Phorm C</string>
+    <string name="settings_screen_title">Settings</string>
+    <string name="logout_sync_error_message">Donkam ban Sync shuwa ba phin logout, Sngewbha ban sync ia ki jingshisha ba phi la lum shuwa ba phin logout</string>
+    <string name="logout_no_internet_error_message">Kam don internet, Sngewbha pyniasoh bad ka internet</string>
+    <string name="min_battery_text">(Khyndiat eh kumba 30% donkam)</string>
+    <string name="do_not_close_app_message">Sngewbha wat pat khang ia ka app ne pynlip ia ka phone.Sngewbha wat pat khang ia ka app ne pynlip ia ka phone.</string>
+    <string name="vo_endorsement_completed_village_banner_text">La pyndep ia ka jing mynjur da ka VO</string>
+    <string name="bpc_verification_completed_village_banner_text">La pyndep ia ka jing pynshisha da i BPC</string>
+    <string name="empty_tola_success_message">Kane ka shnong kam don ka dong</string>
+    <string name="total_poor_didis">ka jingdon jong baroh ki kong ki baduk</string>
+    <string name="total_ultra_poor_didis">Ka jinhgdon jong Baroh ki kong ki baduk na kiba duk tam</string>
+    <string name="wealth_ranking_sub_text_singular">%1$s i kong baduk la pynshisha</string>
+    <string name="social_mapping_sub_text_singular">%1$s i kong ba la pynshisha</string>
+    <string name="transect_walk_sub_text_singular">%1$s Ki dong ba lah dep</string>
+    <string name="added_tolas_text_plural">La pynrung ia ki dong</string>
+    <string name="added_tolas_text_singular">La pynrung ia ka dong</string>
+    <string name="take_photo_text">Shon dur</string>
+    <string name="retake_photo_text">Shon biang ia ka dur</string>
+    <string name="previous_step_not_complete_messgae_text">Ka kyrdan ba shwa ym pat pyndep</string>
+    <plurals name="vo_endorsement_inprogress_village_banner_text">
+        <item quantity="one">Ka dang iaid shaphrang ka jing mynjur da ka VO</item>
+        <item quantity="other">Ka dang iaid shaphrang ka jing mynjur da ka VO</item>
+    </plurals>
+    <string name="latest_status_text">Ka jinglong ba khatduh:</string>
+    <string name="ranking_text_rich">Bariewspah</string>
+    <string name="ranking_text_medium">Ba shu pdeng</string>
+    <string name="ranking_text_poor">Baduk</string>
+    <string name="crp_group_name_text">Ka kyrteng ka kynhun CRP</string>
+    <string name="current_status_text">Ka jinglong ba mynta:</string>
+    <string name="pat_completed_for_didi_singular">La pyndep ia ka PAT na ka bynta jong %1$s i kong</string>
+    <string name="pat_completed_for_didi_plural">La pyndep ia ka PAT na ka bynta jong %1$s ngut i kong</string>
+    <string name="pat_marked_not_available_singular">%1$s i kong la kdew bym ioh</string>
+    <string name="pat_marked_not_available_plural">%1$s ngut ki kong la kdew bym ioh</string>
+    <plurals name="pat_didi_sent_to_vo_endorsement_singular">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s La phah ban ioh ia ka jingmynjur ka VO na ka bynta ki kong ki baduk na ki baduk tam.</item>
+    </plurals>
+    <plurals name="pat_didi_sent_to_vo_endorsement_plural">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s La phah ban ioh ia ka jingmynjur ka VO na ka bynta ki kong ki baduk na ki baduk tam.</item>
+    </plurals>
+
+    <string name="pat_didi_sent_to_bpm_approval_singular">%1$s La phah ban ioh ia ka jingmynjur na BPM na ka bynta i kong i baduk na i baduk tam.</string>
+    <string name="pat_didi_sent_to_bpm_approval_plural">%1$s La phah ban ioh ia ka jingmynjur na BPM na ka bynta ki kong ki baduk na ki baduk tam.</string>
+    <string name="link_form_c">Link Phorm C</string>
+    <string name="link_form_d">Link Phorm D</string>
+    <string name="step_transect_walk">Ka jingiaid lyngba ia ka shnong</string>
+    <string name="step_social_mapping">Jinglum jingtip shaphang ka shnong</string>
+    <string name="step_participatory_wealth_ranking">Ka jing iashim bynta ha kaba iabynta ia ka kyrdan ka ioh ka kot</string>
+    <string name="step_pat_survey">Jingpeit bniah lyngba ka PAT</string>
+    <string name="step_vo_endorsement">Ka jingmynjur da ka VO</string>
+    <string name="step_bpc_verification">Jingpynshisha da i BPC</string>
+    <string name="profile_name">Kyrteng</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_phone">Phone Nombor</string>
+    <string name="profile_identity_num">Identity Nombor</string>
+    <string name="user_profile_text">Ka dur uba pyndonkam</string>
+    <string name="edit_didi">Pynkylla</string>
+    <string name="delete_didi">Pyndam noh</string>
+    <string name="you_want_to_delete_video">Phi kwah ban pyndam noh %1$s</string>
+    <string name="share_logs">IaSam ia ka Logs</string>
+    <string name="earning_member_can_not_be_more_than_family_members">Ki dkhot kiba la kamai kim lah ban bun ia ki dkhot ka ing</string>
+    <string name="match_percentage_should_be_more_than_70">Ka jingiabiang % ka dei ban bun ban ia ka 70%</string>
+    <string name="delete_and_retake">Pyndam noh &amp; Shim biang</string>
+    <string name="if_more_than_5_pages_please_uload_last_page">Lada ka don bun ban ia ka 5 sla, sngewbha phah ia ka sla ba khatduh</string>
+    <string name="vo_endorsement_completed">La pyndep ia  ka jing mynjur da ka VO</string>
+    <string name="no_didis_available_to_add_or_replace">Ym don ki kong ban buh ne wengnoh</string>
+    <string name="online_sync_successful">Ka jing sync online ka long kaba jop/biang</string>
+    <string name="sync_failed">Ka jing sync ka bym biang</string>
+    <string name="digital_form_a_downloded">Digital Phorm A la download</string>
+    <string name="digital_form_b_downloded">Digital Phorm B la download</string>
+    <string name="digital_form_c_downloded">Digital Phorm C la download</string>
+    <string name="something_went_wrong_unable_to_download_form">Ka don kaei kaei ka jing bakla, ym lah ban download ia ka phorm</string>
+    <string name="location_permission_dialog_prompt_message">Donkam ia ka jing aibor ban shim ia ki coordinate jaka, Sngewbha ai ia ka jing mynjur</string>
+    <string name="empty_tola_button_text">Iai shaphrang khlem da donkam ban pyndap ia ka kyrteng dong</string>
+    <string name="add_more_list_empty_string">Ym don ki kong ban buh ne wengnoh</string>
+    <string name="pat_selected_status_text">PAT ba Jied</string>
+    <string name="pat_rejected_status_text">PAT ba kyntatit</string>
+    <string name="vo_selected_status_text">Mynjur da ka VO</string>
+    <string name="vo_rejected_status_text">Kyntatit da ka VO</string>
+    <string name="pat_not_available_status_text">Ka PAT kam don</string>
+    <string name="cannot_delete_tola_message_text">Ym lah ban pyndam noh ia kane ka dong don i kong ba la dep ban pyniasoh bad kane ka dong</string>
+    <string name="max_5_pages_can_be_captured">Bun eh 5 sla lah ban shondur</string>
+    <string name="click_to_refresh">Shon ia u budam ban pynthymai pat</string>
+    <string name="heading_value_of_other_productive_assests">Ka dor jong kiwei pat ki jingmih na ka jingdon</string>
+    <string name="heading_earning_ration">Ka jingingiadei ne jingiahap ha ka jingioh</string>
+    <string name="session_expired_dialog_title">Ka por ka la kut!</string>
+    <string name="session_epire_otp_message">Sngewbha ban thoh biang ia u OTP ban phin rung biang.</string>
+    <string name="session_restored_message">Ka por la pynthymmai</string>
+    <string name="location_permission_not_granted_message">Khlem aibor ban shim ia ki coordinate jaka</string>
+    <string name="common_error_message_text">Ym don network</string>
+    <string name="wealth_ranking_summary_empty_text">Ym don i kong ba kdew ba {CATEGORY}</string>
+    <string name="pat_summary_not_available_empty_text">Ym don i kong ba kdew ba ym don</string>
+    <string name="pat_summary_completed_empty_text">Ym don i kong ba ka PAT ka la dep</string>
+    <string name="vo_summary_rejected_empty_text">Ym don iwei i kong ba kyntait ka VO</string>
+    <string name="vo_summary_endorsed_empty_text">Ym don i kong ba mynjur da ka VO</string>
+    <string name="social_mapping_complete_status_text">La dep ka Jinglum jingtip shaphang ka shnong</string>
+    <string name="page_name_text">Ka sla</string>
+    <string name="storage_permission_dialog_prompt_message">Donkam ka jing aibor ban rung sha ka jaka buh (storage), sngewbha mynjur</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">Phi la ai ia ka jing bynta ia ka kyrdan ka ioh ka kot jong %1$s ki kong</string>
+
+    <string name="go_back_to_section_1_summary">Ka jinglum lang ka bynta ba 1</string>
+    <string name="exclusion_error_message">Ka PAT na ka bynta ine i Kong ka la kut hangne</string>
+    <string name="bpc_pat_survey_complete">Ka jinglum jingtip ia ka PAT da i BPC</string>
+    <string name="pat_success_message_plural">Ka jinglum jingtip da ka PAT ia {TOTAL_COUNT} ngut ki kong ba pynrung thymmai la ai</string>
+    <string name="pat_success_message_singular">Ka jinglum jingtip da ka PAT ia {TOTAL_COUNT} i kong ba pynrung thymmai la ai</string>
+    <string name="total_pat_attempted_string">Baroh kiba la pyrshan ban pynrung ha ka PAT</string>
+    <string name="didis_marked_as_not_available_string">I kong ba la kdew ba ym don</string>
+    <string name="able_bodied_women_flag_text">Don na ki riew kynthei ha ka \nlonging ki ba biang ha ka dkhot met?</string>
+    <string name="something_went_wrong">Kaei kaei ka don kaba bakla.</string>
+    <string name="score_comparison_section_1_text">Ka bynta 1</string>
+    <string name="village_is_not_vo_endorsed_right_now">Ka jing bym mynjur da ka VO ia kane ka shnong mynta!</string>
+    <string name="refresh_failed_please_try_again">Ka jing pynthymai kam long, sngewbha pyrshang biang!</string>
+
+    <string name="this_week_tab_title">Mynta ka taiew</string>
+    <string name="all_tab_title">Baroh</string>
+    <string name="search_question_placeholder">Wad ia ki jingkylli</string>
+    <string name="ok_text">OK</string>
+    <string name="home">Ïng</string>
+    <string name="mission">Ka Mission</string>
+    <string name="task">Ki kam</string>
+    <string name="day_tab">Sngi</string>
+    <string name="search">Wad</string>
+    <string name="due_by_x">Ka por kut lane pyndep %s</string>
+    <string name="start_by_x_date">Ka por Sdang %s</string>
+    <string name="export_file">Rah ia ki file</string>
+    <string name="aadhar_card_titile">I kong i don  AADHAR Card ne em?</string>
+    <string name="voter_card_title">I kong i don EPIC Card ne em?</string>
+    <string name="phone_number_title">Pyndap ia u phone number jong kiba ha iing ha sem i kong</string>
+    <string name="add_didi_details_label">Pyndap ki jingbtai bniah jong i kong</string>
+    <string name="save_next_section_button_text">Save &amp; Next Section</string>
+    <string name="questions_data_tab_title">Ki jingkylli kiba don ki jingtip</string>
+    <string name="section_information_tab_title">Ki bynta kiba don ki jingbatai</string>
+    <string name="shg_member_text">1. SHG member</string>
+    <string name="able_bodied_women_text">2.  Able-bodied women</string>
+
+    <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->
+
+    <!--    <string name="do_you_want_to_exit_the_app">क्या आप ऐप से बाहर निकलना चाहते हैं?</string>-->
+    <!--    <string name="exit">बाहर निकलना</string>-->
+    <!--    <string name="cancel">रद्द करना</string>-->
+    <!--    <string name="reference_of_forms">प्रपत्रों का संदर्भ :</string>-->
+    <!--    <string name="link_of_a">Link Phorm A</string>-->
+    <!--    <string name="link_of_b">Link Phorm B</string>-->
+    <!--    <string name="user_bug_report_text">बग रिपोर्ट</string>-->
+    <!--    <string name="export_data_test">डेटा निर्यात करें</string>-->
+    <!--    <string name="network_not_available_message">नेटवर्क उपलब्ध नहीं है, कृपया बाद में पुनः प्रयास करें!</string>-->
+
+    <!--    <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>-->
+    <!--    <string name="warning">"चेतावनी! "</string>-->
+    <!--    <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>-->
+    <!--    <string name="logout_confirmation">क्या आप लॉग आउट करना चाहते हैं?</string>-->
+    <!--    <string name="proceed">आगे बढ़ें</string>-->
+    <!--    <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>-->
+    <!--    <string name="load_server_data">सर्वर डेटा लोड करें</string>-->
+    <!--    <string name="are_you_sure_you_want_to_load_data_from_server">" क्या आप निश्चित रूप से सर्वर से ताज़ा डेटा पुनः लोड करना चाहते हैं जिससे अनसिंक किए गए डेटा की हानि हो सकती है?"</string>-->
+    <!--    <string name="didi_verified_by_bpc">बीपीसी द्वारा सत्यापित दीदियाँ</string>-->
+    <!--    <string name="bpc_verification_in_progress_village_banner_text">बीपीसी सत्यापन प्रगति पर है</string>-->
+    <!--    <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>-->
+    <!--    <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>-->
+    <!--    <string name="change_language">भाषा बदलें</string>-->
+</resources>

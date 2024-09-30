@@ -1,25 +1,21 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android'
     id 'androidx.navigation.safeargs.kotlin'
     id("dagger.hilt.android.plugin")
     id 'kotlin-kapt'
-    id("com.google.gms.google-services")
-    id 'com.google.firebase.crashlytics'
-    id("org.sonarqube")
 }
 
-def version = "2.0.14"
+def version = "2.0.36"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.nrlm.sarathi"
-        minSdk 23
-        targetSdk 33
-        versionCode 18
+        minSdk 24
+        targetSdk 34
+        versionCode 40
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -40,7 +36,7 @@ android {
 
     buildTypes {
         release {
-            shrinkResources true
+            //shrinkResources true
             minifyEnabled true
             debuggable false
             jniDebuggable = false
@@ -58,32 +54,32 @@ android {
     flavorDimensions "default"
     productFlavors{
         uat{
-            applicationIdSuffix = ".uat"
-            manifestPlaceholders = [
-                    appName     : "@string/app_name_uat",
-                    appIcon     : "@mipmap/ic_launcher_uat",
-                    appIconRound: "@mipmap/ic_launcher_uat_round"
-            ]
+            // applicationIdSuffix = ".uat"
+            versionName version
+            manifestPlaceholders.app_name= "Baseline UAT"
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            buildConfigField 'String', 'VERSION_NAME', '"1.1.10"'
+            buildConfigField 'int', 'VERSION_CODE', '1'
+            buildConfigField 'String', 'APPLICATION_ID', '"com.nrlm.baselinesurvey"'
 
         }
         staging{
-            applicationIdSuffix = ".stage"
-            manifestPlaceholders = [
-                    appName     : "@string/app_name_uat",
-                    appIcon     : "@mipmap/ic_launcher_uat",
-                    appIconRound: "@mipmap/ic_launcher_uat_round"
-            ]
+            versionName version
+            //  applicationIdSuffix = ".stage"
+            manifestPlaceholders.app_name= "Baseline STAGE"
+            buildConfigField 'String', 'VERSION_NAME', '"1.1.10"'
+            buildConfigField 'int', 'VERSION_CODE', '1'
+            buildConfigField 'String', 'APPLICATION_ID', '"com.nrlm.baselinesurvey"'
+
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
-
         }
-
         production{
-            manifestPlaceholders = [
-                    appName     : "@string/app_name",
-                    appIcon     : "@mipmap/ic_launcher",
-                    appIconRound: "@mipmap/ic_launcher_round"
-            ]//            versionName prodVersion
+            // manifestPlaceholders.app_name= "Baseline"
+//            versionName prodVersion
+            buildConfigField 'String', 'VERSION_NAME', '"1.1.10"'
+            buildConfigField 'int', 'VERSION_CODE', '1'
+            buildConfigField 'String', 'APPLICATION_ID', '"com.nrlm.baselinesurvey"'
+
             buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }
@@ -111,9 +107,9 @@ android {
 kapt {
     correctErrorTypes = true
 }
-android.applicationVariants.all {
-    def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
-    it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+
+configurations {
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
 }
 
 dependencies {
@@ -130,6 +126,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
     implementation project(":core")
+    implementation project(':DataManager')
 
 //    implementation project(path: ':baselinesurvey')
     testImplementation 'junit:junit:4.13.2'
@@ -195,12 +192,9 @@ dependencies {
 
     implementation(project(":syncManager"))
     implementation(project(":CommunicationModule"))
+    implementation(project(":navigationManager"))
     implementation "com.airbnb.android:lottie-compose:6.1.0"
     implementation 'nl.dionsegijn:konfetti-compose:2.0.2'
-
-    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
 
 
 }

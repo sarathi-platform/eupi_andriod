@@ -3,20 +3,12 @@ package com.patsurvey.nudge.activities.survey
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
@@ -24,6 +16,7 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.TOTAL_FAMILY_MEMBERS_OPTION_VALUE
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.roundOffDecimal
 import com.patsurvey.nudge.utils.updateStepStatus
@@ -310,7 +303,15 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
     fun calculateCountWeight(optionsItem: OptionsItem): Double {
-        return (optionsItem.count?:0)/*.times(optionsItem.weight?:0)*/.toDouble()
+        var countWeight = 0.0
+        countWeight =
+            if (optionsItem.optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && optionsItem.count == 0
+            ) {
+                1.0
+            } else {
+                (optionsItem.count ?: 0).toDouble()
+            }
+        return countWeight
     }
 
     fun updateAnswerOptions(questionIndex: Int, didiId: Int) {
@@ -318,67 +319,86 @@ class QuestionScreenViewModel @Inject constructor(
             val localAnswerList =
                 repository.getSectionAnswersForDidi(actionType = sectionType.value, didiId = didiId)
             _answerList.emit(localAnswerList?: emptyList())
-            withContext(Dispatchers.IO) {
-                if (questionList.value.size > questionIndex) {
-                    val alreadyAnsweredModel = questionList.value[questionIndex].questionId?.let {
-                        repository.isAlreadyAnswered(
-                            didiId = didiId,
-                            questionId = it,
-                            sectionType = sectionType.value
-                        )
-
-                    }
-                }
-            }
         }
 
     }
     fun findListTypeSelectedAnswer(quesIndex: Int, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
+                try {
+                 if(questionList.value.isNotEmpty()) {
+                     Log.e(
+                         "TAG",
+                         "QuestionScreenIssue findListTypeSelectedAnswer: ${questionList.value}",
+                     )
+                     val answerCount = repository.isQuestionAnswered(
+                         didiId = didiId,
+                         questionId = questionList.value[quesIndex].questionId ?: 0
+                     )
+                     isClickEnable.value = answerCount > 0
 
-                val answerCount= repository.isQuestionAnswered(didiId = didiId, questionId = questionList.value[quesIndex].questionId?:0)
-                isClickEnable.value = answerCount>0
+                     val optionId = repository.fetchOptionIdFromDB(
+                         didiId = didiId,
+                         questionId = questionList.value[quesIndex].questionId ?: 0,
+                         actionType = sectionType.value
+                     )
 
-                val optionId = repository.fetchOptionIdFromDB(
-                    didiId=didiId,
-                    questionId = questionList.value[quesIndex].questionId ?: 0,
-                    actionType=sectionType.value
-                )
+                     if (optionId > 0) {
+                         val index =
+                             questionList.value[quesIndex].options.sortedBy { it.optionValue }
+                                 .map { it.optionId }.indexOf(optionId)
+                         listTypeAnswerIndex.value = index
+                         _selIndValue.value = index
+                         totalAmount.value = 0.0
+                         enteredAmount.value = BLANK_STRING
+                     } else if (optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)) {
+                         nextCTAVisibility.value =
+                             (quesIndex < questionList.value.size - 1 && quesIndex < answerList.value.size)
+                         val totalDBAmount = repository.fetchTotalAmount(
+                             questionList.value[quesIndex].questionId ?: 0, didiId
+                         )
+                         if (questionList.value[quesIndex].questionFlag.equals(
+                                 QUESTION_FLAG_WEIGHT,
+                                 true
+                             )
+                         ) {
+                             totalAmount.value = totalDBAmount.toDouble()
+                         } else {
+                             val optionList =
+                                 questionList.value[quesIndex].options.sortedBy { it.optionValue }
+                                     .filter { it.optionType == BLANK_STRING }
+                             optionList?.let { option ->
+                                 val option1Count =
+                                     option.filter { it.optionValue == 1 }[0].count?.toDouble()
+                                         ?: 0.0
+                                 val option2Count =
+                                     option.filter { it.optionValue == 2 }[0].count?.toDouble()
+                                         ?: 0.0
+                                 if (option1Count > 0 && option2Count > 0) {
+                                     totalAmount.value =
+                                         roundOffDecimal(option2Count / option1Count) ?: 0.00
+                                 } else totalAmount.value = 0.00
+                             }
+                         }
+                         listTypeAnswerIndex.value = -1
+                         _selIndValue.value = -1
+                         enteredAmount.value =
+                             "0" /*if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()*/
+                     } else {
+                         listTypeAnswerIndex.value = -1
+                         _selIndValue.value = -1
+                         totalAmount.value = 0.0
+                         enteredAmount.value = BLANK_STRING
+                     }
 
-                if(optionId>0){
-                    val index = questionList.value[quesIndex].options.sortedBy { it.optionValue }.map { it.optionId }.indexOf(optionId)
-                    listTypeAnswerIndex.value = index
-                    _selIndValue.value = index
-                    totalAmount.value =0.0
-                    enteredAmount.value= BLANK_STRING
-                } else if(optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)){
-                    nextCTAVisibility.value=(quesIndex < questionList.value.size - 1 && quesIndex< answerList.value.size)
-                    val totalDBAmount= repository.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
-                   if( questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
-                       totalAmount.value =  totalDBAmount.toDouble()
-                   }else{
-                       val optionList = questionList.value[quesIndex].options.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }
-                       optionList?.let {option->
-                           val option1Count = option.filter { it.optionValue==1 }[0].count?.toDouble() ?: 0.0
-                           val option2Count = option.filter { it.optionValue==2 }[0].count?.toDouble() ?: 0.0
-                           if(option1Count > 0 && option2Count > 0){
-                               totalAmount.value = roundOffDecimal(option2Count/option1Count)?:0.00
-                           }else  totalAmount.value=0.00
-                       }
-                   }
-                    listTypeAnswerIndex.value = -1
-                    _selIndValue.value = -1
-                    enteredAmount.value="0" /*if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()*/
-                } else{
-                    listTypeAnswerIndex.value = -1
-                    _selIndValue.value = -1
-                    totalAmount.value = 0.0
-                    enteredAmount.value= BLANK_STRING
+                 }
+                } catch (ex: Exception) {
+
+                    Log.e("TAG", "QuestionScreenIssue findListTypeSelectedAnswer: ${ex.message}")
+                    ex.printStackTrace()
                 }
 
             }
-
         }
 
     }

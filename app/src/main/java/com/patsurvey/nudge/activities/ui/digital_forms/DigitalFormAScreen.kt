@@ -50,6 +50,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -57,12 +59,10 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
@@ -92,8 +92,8 @@ fun DigitalFormAScreen(
         if (fromScreen == ARG_FROM_SETTING)
             navController.popBackStack()
         else {
-            navController.navigate(Graph.HOME) {
-                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                     inclusive = true
                     saveState = false
                 }
@@ -260,7 +260,11 @@ fun DigitalFormAScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(id = R.string.vo_name) + ":",
+                                text = getVoNameForState(
+                                    context,
+                                    viewModel.getStateId(),
+                                    R.plurals.vo_name
+                                ) + ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -389,17 +393,9 @@ fun DigitalFormAScreen(
                         .fillMaxWidth()
                         .weight(1f),
                 ) {
-                    val pdfFile = File(
-                        "${
-                            context.getExternalFilesDir(
-                                Environment.DIRECTORY_DOCUMENTS
-                            )?.absolutePath
-                        }",
-                        "${FORM_A_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf"
-                    )
                     viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                         Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
-                        val fileUri = uriFromFile(context, pdfFile)
+                        val fileUri = formPath?.let { uriFromFile(context, it) }
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.type = "application/pdf"
                         shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
@@ -424,7 +420,7 @@ fun DigitalFormAScreen(
                     showLoader = showLoader.value,
                 ) {
                     if (formPathState.value.isFile) {
-                        navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf")
+                        navController.navigate("pdf_viewer/${formPathState.value.name}")
                     } else {
                         showLoader.value = true
                         viewModel.generateFormAPdf(context) { formGenerated, formPath ->
@@ -458,8 +454,8 @@ fun DigitalFormAScreen(
                         if (fromScreen == ARG_FROM_SETTING)
                             navController.popBackStack()
                         else {
-                            navController.navigate(Graph.HOME) {
-                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                                     inclusive = true
                                     saveState = false
                                 }

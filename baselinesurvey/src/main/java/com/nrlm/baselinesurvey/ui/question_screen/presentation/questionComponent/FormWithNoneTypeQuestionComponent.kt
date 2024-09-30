@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -61,6 +60,7 @@ import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioButtonOptionComponent
 import com.nrlm.baselinesurvey.ui.common_components.SummaryCardComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
+import com.nrlm.baselinesurvey.ui.htmltext.HtmlText
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -81,7 +81,7 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.tagList
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import kotlinx.coroutines.launch
 
 @Composable
@@ -130,7 +130,7 @@ fun FormWithNoneTypeQuestionComponent(
 
     SideEffect {
         if (noneOptionValue != null) {
-            isNoneQuestionAnswered.value = true
+            isNoneQuestionAnswered.value = noneOptionValue?.selectedValueId?.isNotEmpty() ?: false
         }
 
     }

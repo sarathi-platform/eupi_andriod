@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.base
+package com.nrlm.baselinesurvey.base
 
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.COMMON_ERROR_MSG

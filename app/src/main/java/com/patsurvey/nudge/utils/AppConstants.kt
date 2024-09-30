@@ -6,10 +6,10 @@ import com.patsurvey.nudge.R
 
 const val BLANK_STRING=""
 const val ONE="1"
-const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH=8
 const val MAXIMUM_RANGE=99999
+const val MAX_IMAGE_FOR_FORM_C_OR_D = 15
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
@@ -70,6 +70,8 @@ const val PREF_KEY_IDENTITY_NUMBER="key_identity_number"
 const val PREF_KEY_PROFILE_IMAGE="profile_image"
 const val PREF_KEY_ROLE_NAME = "role_name"
 const val PREF_KEY_TYPE_NAME = "type_name"
+const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+
 const val PREF_KEY_VO_ENDORSEMENT_STATUS = "voEndorsementStatus"
 const val SNACKBAR_TAG = "snackbar"
 const val SNACKBAR_MESSAGE = "snackbarMessage"
@@ -232,14 +234,21 @@ val LEFT_BRACKET_QUOTE_REGEX = Regex("\\[")
 
 const val HEADING_QUESTION_TYPE = "heading"
 
-const val DEFAULT_LANGUAGE_ID = 2
+const val BENGAL_STATE_ID = 34
+const val BENGAL_STRING_VALUE = 1
+const val DEFAULT_STATE_ID = 4
+const val BENGAL_STRING_VALUE_OTHER = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
-const val EMPTY_STRING="";
+const val VO_ENDORSEMENT_CONSTANT = "VO Endorsement"
+const val EMPTY_STRING = "";
 
 const val MIN_PROGRESS_COUNT_INT = 0
 const val MIN_PROGRESS_COUNT_FLOAT = 0F
 
-const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE=1
-const val EARNING_FAMILY_MEMBERS_OPTION_VALUE=2
+const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE = 1
+const val EARNING_FAMILY_MEMBERS_OPTION_VALUE = 2
+const val UPCM_USER = "Ultra Poor change maker (UPCM)"
+
+const val QUESTION_IMAGE_LINK_KEY = "QUESTION_IMAGE_LINK"
 

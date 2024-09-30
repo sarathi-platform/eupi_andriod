@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -33,6 +34,11 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.nudge.core.CoreObserverInterface
+import com.nudge.core.CoreObserverManager
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.CoreLogger
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -41,10 +47,11 @@ import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
-import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
+import com.patsurvey.nudge.navigation.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.QUESTION_IMAGE_LINK_KEY
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,12 +60,14 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity(), OnLocaleChangedListener {
+class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverInterface {
+
+    private var TAG = MainActivity::class.java.simpleName
+
     private val localizationDelegate = LocalizationActivityDelegate(this)
 
     @Inject
     lateinit var sharedPrefs: PrefRepo
-
 
 
     private val mViewModel: MainActivityViewModel by viewModels()
@@ -83,7 +92,15 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
         super.onCreate(savedInstanceState)
-        getSyncEnabled()
+        CoreAppDetails.setApplicationDetails(
+            CoreAppDetails.ApplicationDetails(
+                packageName = packageName,
+                applicationID = BuildConfig.APPLICATION_ID,
+                activity = this
+            )
+        )
+        CoreObserverManager.addObserver(this)
+        getRemoteConfig()
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
@@ -222,7 +239,12 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
         }
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        registerReceiver(smsBroadcastReceiver, intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            registerReceiver(smsBroadcastReceiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(smsBroadcastReceiver, intentFilter)
+
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -274,8 +296,16 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         AnalyticsHelper.cleanup()
         mViewModel.isOnline.removeObservers(this)
         applicationContext.cacheDir.deleteRecursively()
+        CoreObserverManager.removeObserver(this)
         RetryHelper.cleanUp()
         super.onDestroy()
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        val configOverride = Configuration(newBase?.resources?.configuration)
+        configOverride.fontScale = 1.0f
+        applyOverrideConfiguration(configOverride)
     }
 
     override fun onAfterLocaleChanged() {
@@ -288,11 +318,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     override fun onResume() {
         localizationDelegate.onResume(applicationContext)
         super.onResume()
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        applyOverrideConfiguration(localizationDelegate.updateConfigurationLocale(newBase))
-        super.attachBaseContext(newBase)
     }
 
     override fun getApplicationContext(): Context {
@@ -314,15 +339,21 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     val currentLanguage: Locale
         get() = localizationDelegate.getLanguage(this)
 
-    fun getSyncEnabled() {
+    fun getRemoteConfig() {
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 3600
+            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
         remoteConfig.fetchAndActivate()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    val configShowDataTab = remoteConfig["showDataTab"].asBoolean()
+                    CoreLogger.d(
+                        tag = TAG,
+                        msg = "showDataTabKey: showDataTabKey = ${configShowDataTab}"
+                    )
+                    mViewModel.saveDataTabVisibility(configShowDataTab)
                     Log.d(
                         "SyncEnabled",
                         "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
@@ -338,5 +369,26 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
                 }
             }
+    }
+
+    override fun updateMissionActivityStatusOnGrantInit(onSuccess: (isSuccess: Boolean) -> Unit) {
+        mViewModel.updateBaselineStatusOnInit() {
+            onSuccess(it)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArrayList(QUESTION_IMAGE_LINK_KEY, ArrayList(quesImageList))
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (quesImageList.isEmpty()) {
+            quesImageList =
+                savedInstanceState.getStringArrayList(QUESTION_IMAGE_LINK_KEY)?.toMutableList()
+                    ?: mutableListOf()
+            NudgeLogger.d(TAG, "onRestoreInstanceState: $quesImageList")
+        }
     }
 }

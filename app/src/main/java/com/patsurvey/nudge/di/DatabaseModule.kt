@@ -2,6 +2,7 @@ package com.patsurvey.nudge.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.syncmanager.database.SyncManagerDatabase
@@ -22,7 +23,9 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeDatabase::class.java, NUDGE_DATABASE)
             // Add Migrations for each migration object created.
-            .addMigrations(NudgeDatabase.MIGRATION_1_2).addCallback(NudgeDatabase.NudgeDatabaseCallback())
+            .addMigrations(NudgeDatabase.MIGRATION_1_2, NudgeDatabase.MIGRATION_2_3)
+            .addCallback(NudgeDatabase.NudgeDatabaseCallback())
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .fallbackToDestructiveMigration()
             .build()
 

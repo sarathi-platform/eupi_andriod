@@ -20,5 +20,9 @@ data class QuestionAnswerResponseModel(
     @SerializedName("topicName") var topicName: String = BLANK_STRING,
     @SerializedName("clientId") var clientId: String = BLANK_STRING,
     @SerializedName("payload") var payload: String = BLANK_STRING,
-    @SerializedName("question") var question: QuestionResponsModel? = null
+    @SerializedName("ansType") var ansType: String? = BLANK_STRING,
+    @SerializedName("question") var question: QuestionResponsModel? = null,
+    @SerializedName("filePath") var filePath: String? = BLANK_STRING,
+    @SerializedName("imageUrl") var imageUrl: String? = BLANK_STRING,
+    @SerializedName("location") var location: String? = BLANK_STRING
 )

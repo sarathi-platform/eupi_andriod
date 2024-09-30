@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,8 +94,8 @@ import com.patsurvey.nudge.activities.ui.theme.rejectColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.model.response.OptionsItem
+import de.charlex.compose.material.HtmlText
 import java.io.File
 
 @Composable
@@ -1250,9 +1251,22 @@ fun IncrementDecrementView(modifier: Modifier,
             }
         )
     }
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(5.dp)) {
+
+    LaunchedEffect(key1 = Unit) {
+        if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && questionFlag.equals(
+                QUESTION_FLAG_RATIO,
+                true
+            ) && (currentValue <= 1)
+        ) {
+            onValueChange(ONE)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+    ) {
         Row(
             modifier = Modifier
                 .padding(vertical = 6.dp),
@@ -1334,8 +1348,12 @@ fun IncrementDecrementView(modifier: Modifier,
                         var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
-                                findOptionValueCount(optionList, optionValue ?: 1)
-                            val newCurrentCount = incDecValue(0, currentCount, optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE)
+                                findOptionValueCount(optionList, optionValue ?: 1, questionFlag)
+                            val newCurrentCount = incDecValue(
+                                0,
+                                currentCount,
+                                optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE
+                            )
                             val intCnt =
                                 if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
                             if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE) {
@@ -1377,7 +1395,8 @@ fun IncrementDecrementView(modifier: Modifier,
                         if(onlyNumberField(it)) {
                             var errorType=NumericQuestionsErrorEnum.NO_ERROR.name
                             if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
-                                val otherOptionValueCount =  findOptionValueCount(optionList,optionValue?:1)
+                                val otherOptionValueCount =
+                                    findOptionValueCount(optionList, optionValue ?: 1, questionFlag)
                                 val intCnt =
                                     if (it.isEmpty()) 0 else it.toInt()
                                 if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE) {
@@ -1462,7 +1481,7 @@ fun IncrementDecrementView(modifier: Modifier,
                     var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                     if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                         val otherOptionValueCount =
-                            findOptionValueCount(optionList, optionValue ?: 1)
+                            findOptionValueCount(optionList, optionValue ?: 1, questionFlag)
                         val newCurrentCount = incDecValue(1, currentCount)
                         val intCnt =
                             if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
@@ -1493,11 +1512,22 @@ fun IncrementDecrementView(modifier: Modifier,
 
 }
 
-fun findOptionValueCount(optionList: List<OptionsItem>, optionValue:Int):Int{
+fun findOptionValueCount(
+    optionList: List<OptionsItem>,
+    optionValue: Int,
+    questionFlag: String
+): Int {
     optionList?.let {
-        it.forEach {
-            if(optionValue != it.optionValue){
-                return it.count?:0
+        it.forEach { optionItem ->
+            if (optionValue != optionItem.optionValue) {
+                if (optionItem.optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && questionFlag.equals(
+                        QUESTION_FLAG_RATIO,
+                        true
+                    ) && optionItem.count == 0
+                ) {
+                    return 1
+                }
+                return optionItem.count ?: 0
             }
         }
     }

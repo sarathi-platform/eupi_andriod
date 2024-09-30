@@ -33,7 +33,6 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.lightGray2
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 
@@ -50,7 +49,7 @@ fun ListTypeQuestion(
     onAnswerSelection: (Int,Int) -> Unit
 ) {
     Column(modifier = modifier) {
-        HtmlText(
+        de.charlex.compose.material.HtmlText(
             modifier = Modifier
                 .border(
                     BorderStroke(1.dp, lightGray2),
@@ -144,7 +143,7 @@ fun OptionCard(
                 Modifier.padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                HtmlText(
+                de.charlex.compose.material.HtmlText(
                     text = buttonTitle,
                     style = TextStyle(
                         color = if(selectedIndex == index) Color.White else Color.Black,

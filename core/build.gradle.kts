@@ -11,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -33,11 +33,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.0"
+    }
 }
 
 dependencies {
-
-    val roomVersion =
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -47,6 +51,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     val room_version = "2.6.1"
+    implementation(project(":internetSpeedChecker"))
 
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
@@ -63,16 +68,39 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.43.2")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
-
-    implementation(project(":internetSpeedChecker"))
-
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
 
     //Firebase Firestore
     implementation("com.google.firebase:firebase-firestore")
+    implementation("androidx.navigation:navigation-compose:2.7.4")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     //CSV Export
-    implementation ("com.opencsv:opencsv:5.3")
+    implementation("com.opencsv:opencsv:5.3")
+
+    val compose_version = "1.4.1"
+    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation("androidx.compose.ui:ui:$compose_version")
+    implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
+
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-compose:2.7.4")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+//Material
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material:1.5.3")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("com.github.wwdablu:SimplyPDF:2.0.0")
+
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
 
 }

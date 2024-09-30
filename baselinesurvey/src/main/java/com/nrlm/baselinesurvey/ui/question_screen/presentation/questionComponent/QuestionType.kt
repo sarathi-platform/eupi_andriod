@@ -49,6 +49,7 @@ import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.OptionCard
 import com.nrlm.baselinesurvey.ui.common_components.RadioButtonOptionComponent
+import com.nrlm.baselinesurvey.ui.htmltext.HtmlText
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -58,7 +59,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 
@@ -371,7 +371,8 @@ private fun InputType(optionsItem: OptionItemEntity) {
     EditTextWithTitleComponent(
         optionsItem.display,
         optionsItem.selectedValue ?: "",
-        onInfoButtonClicked = {}
+        onInfoButtonClicked = {},
+        additionalValidation = { _, _ -> true }
     ) {
         //  onAnswerSelection(optionsItem.optionId?:0,it)
     }

@@ -1,16 +1,21 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -26,6 +31,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,9 +51,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nrlm.baselinesurvey.BANNER
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
@@ -61,6 +69,8 @@ import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
+import com.nrlm.baselinesurvey.ui.theme.lightBlue
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -71,6 +81,7 @@ import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormTypeQuestionScreen(
@@ -248,6 +259,42 @@ fun FormTypeQuestionScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (!viewModel.loaderState.value.isLoaderVisible) {
+/*flatten() -- used for remove one list*/
+                        val tempList = viewModel.updatedOptionList.toList()
+                        var contentList: List<ContentList> = tempList.map{ it.optionItemEntity?.contentEntities!! }.flatten()
+                        var contentVallue:MutableState<ContentList?> = remember {
+                            mutableStateOf(null)
+                        }
+                        scope.launch {
+                             contentVallue.value =    viewModel.getContentData(
+                                contentList,
+                                 BANNER
+                                 )
+                            }
+                        if (contentVallue?.value?.contentType == BANNER) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 20.dp)
+                                    .background(
+                                        lightBlue, shape = RoundedCornerShape(6.dp)
+                                    )
+                                    .border(
+                                        border = ButtonDefaults.outlinedBorder,
+                                        shape = RoundedCornerShape(6.dp)
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = contentVallue?.value?.contentValue ?: "",
+                                    color = Color.Red,
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                )
+                                Spacer(modifier = Modifier.size(dimen_24_dp))
+                            }
+                        }
                         NestedLazyListForFormQuestions(
                             viewModel = viewModel,
                             answeredQuestionCountIncreased = {

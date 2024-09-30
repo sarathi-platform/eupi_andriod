@@ -93,6 +93,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -130,6 +131,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -200,6 +202,10 @@ fun SocialMappingDidiListScreen(
     val screenHeight = configuration.screenHeightDp
 
     val focusManager = LocalFocusManager.current
+    val showLoadConfirmationDialog = remember {
+        mutableStateOf(false)
+    }
+
     BackHandler() {
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
@@ -209,6 +215,20 @@ fun SocialMappingDidiListScreen(
             }
             navController.popBackStack()
         }
+    }
+    if (showLoadConfirmationDialog.value) {
+        ShowCustomDialog(
+            title = BLANK_STRING,
+            message = stringResource(R.string.are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed),
+            positiveButtonTitle = stringResource(id = R.string.ok),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            onPositiveButtonClick = {
+                completeSocialMapping(didiViewModel, stepId, context, villageId, navController)
+                showLoadConfirmationDialog.value = false
+            }, onNegativeButtonClick = {
+                showLoadConfirmationDialog.value = false
+            }
+        )
     }
 
     if(didiViewModel.showDidiImageDialog.value){
@@ -623,54 +643,7 @@ fun SocialMappingDidiListScreen(
                     ),
                     positiveButtonOnClick = {
                         if (completeTolaAdditionClicked) {
-                            didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
-                                if (isPreviousStepComplete) {
-                                    didiViewModel.saveSocialMappingCompletionDate()
-                                    //TODO Integrate Api when backend fixes the response.
-                                    if ((context as MainActivity).isOnline.value ?: false) {
-                                        if (didiViewModel.isTolaSynced.value == 2) {
-                                            didiViewModel.addDidisToNetwork(object : NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                    didiViewModel.callWorkFlowAPI(
-                                                        villageId,
-                                                        stepId,
-                                                        object : NetworkCallbackListener {
-                                                            override fun onSuccess() {
-                                                            }
-
-                                                            override fun onFailed() {
-//                                                                showCustomToast(context, SYNC_FAILED)
-                                                            }
-                                                        })
-                                                }
-                                                override fun onFailed() {
-
-                                                }
-
-                                            })
-
-                                        }
-                                    }
-                                    didiViewModel.markSocialMappingComplete(villageId, stepId)
-                                    didiViewModel.saveWorkflowEventIntoDb(
-                                        stepStatus = StepStatus.COMPLETED,
-                                        villageId = villageId,
-                                        stepId = stepId
-                                    )
-                                    (context as MainActivity).isFilterApplied.value = false
-                                    navController.navigate(
-                                        "sm_step_completion_screen/${
-                                            context.getString(R.string.social_mapping_completed_message)
-                                                .replace(
-                                                    "{VILLAGE_NAME}",
-                                                    didiViewModel.villageEntity.value?.name ?: ""
-                                                )
-                                        }"
-                                    )
-                                } else {
-                                    showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
-                                }
-                            }
+                            showLoadConfirmationDialog.value = true
                         } else {
                             completeTolaAdditionClicked = true
                         }
@@ -717,6 +690,63 @@ fun SocialMappingDidiListScreen(
     }
 }
 
+private fun completeSocialMapping(
+    didiViewModel: AddDidiViewModel,
+    stepId: Int,
+    context: Context,
+    villageId: Int,
+    navController: NavHostController
+) {
+    didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+        if (isPreviousStepComplete) {
+            didiViewModel.saveSocialMappingCompletionDate()
+            //TODO Integrate Api when backend fixes the response.
+            if ((context as MainActivity).isOnline.value ?: false) {
+                if (didiViewModel.isTolaSynced.value == 2) {
+                    didiViewModel.addDidisToNetwork(object : NetworkCallbackListener {
+                        override fun onSuccess() {
+                            didiViewModel.callWorkFlowAPI(
+                                villageId,
+                                stepId,
+                                object : NetworkCallbackListener {
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+//                                                                showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                        }
+
+                        override fun onFailed() {
+
+                        }
+
+                    })
+
+                }
+            }
+            didiViewModel.markSocialMappingComplete(villageId, stepId)
+            didiViewModel.saveWorkflowEventIntoDb(
+                stepStatus = StepStatus.COMPLETED,
+                villageId = villageId,
+                stepId = stepId
+            )
+            (context as MainActivity).isFilterApplied.value = false
+            navController.navigate(
+                "sm_step_completion_screen/${
+                    context.getString(R.string.social_mapping_completed_message)
+                        .replace(
+                            "{VILLAGE_NAME}",
+                            didiViewModel.villageEntity.value?.name ?: ""
+                        )
+                }"
+            )
+        } else {
+            showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
+        }
+    }
+}
 
 
 private fun decoupledConstraints(): ConstraintSet {
@@ -1069,7 +1099,7 @@ fun DidiItemCard(
                                 .layoutId("latestStatusCollapsed")
                         ) {
                             Text(
-                                text = getLatestStatusText(context, didi),
+                                text = getLatestStatusText(context, didi,didiViewModel),
                                 style = TextStyle(
                                     color = blueDark,
                                     fontSize = 12.sp,
@@ -1252,7 +1282,7 @@ fun DidiItemCard(
                                         if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                             didiMarkedNotAvailable.value = false
                                         }
-                                        navController.navigate("didi_pat_summary/${didi.id}")
+                                        navController.navigate("didi_pat_summary/${didi.id}/${false}")
 
                                     } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
                                         val quesIndex = 0
@@ -1484,7 +1514,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = getLatestStatusText(context, didi),
+                text = getLatestStatusText(context, didi,didiViewModel),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
@@ -1499,7 +1529,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
     }
 }
 
-fun getLatestStatusText(context: Context, didi: DidiEntity): String {
+fun getLatestStatusText(context: Context, didi: DidiEntity,viewModel:AddDidiViewModel): String {
     var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.social_mapping_complete_status_text)
@@ -1509,10 +1539,10 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
                 status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                     when (didi.voEndorsementStatus) {
                         DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                            context.getString(R.string.vo_selected_status_text)
+                            getVoNameForState(context,viewModel.getStateId(),R.plurals.vo_selected_status_text)
                         }
                         DidiEndorsementStatus.REJECTED.ordinal -> {
-                           context.getString(R.string.vo_rejected_status_text)
+                            getVoNameForState(context,viewModel.getStateId(),R.plurals.vo_rejected_status_text)
                         }
                         else -> {
                             context.getString(R.string.pat_selected_status_text)

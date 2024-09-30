@@ -64,6 +64,7 @@
     <string name="not_added">লোকেচন যোগ কৰা নাই</string>
     <string name="mark_as_completed">সম্পূৰ্ণ চিহ্ন</string>
     <string name="village_text">গাওঁ</string>
+    <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এইশাখাটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ\'ব।</string>
     <string name="vo_name">VOৰ নাম</string>
     <string name="total">মুঠ</string>
     <string name="participation_date_wealth_ranking">তাৰিখ</string>
@@ -97,16 +98,16 @@
     <string name="complete_didi_addition">বাইদেউসকলৰ যোগ সম্পূৰ্ণ কৰক</string>
     <string name="user_id_text">ID/ পৰিচয়:</string>
     <string name="empty_tola_string">কোনো পাৰা যোগ কৰা নাই</string>
-    <string name="tola_conirmation_text_plural">মুঠ %1$s নতুন পাৰা সফলতাৰে যোগ কৰা হল</string>
-    <string name="tola_conirmation_text_singular">মুঠ %1$s নতুন পাৰা সফলতাৰে যোগ কৰা হল</string>
+    <string name="tola_conirmation_text_plural">মুঠ %1$s পাৰা সফলতাৰে যোগ কৰা হল</string>
+    <string name="tola_conirmation_text_singular">মুঠ %1$s পাৰা সফলতাৰে যোগ কৰা হল</string>
     <string name="complete_transect_walk_text">গাঁৱৰ ভ্রমণ সম্পূৰ্ণ কৰক</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} ভ্রমণ সম্পূৰ্ণ হল</string>
     <string name="wealth_ranking_completed_message">{VILLAGE_NAME} গাঁৱৰ অংশগ্রহণমূলক সম্পদ ৰেংকিং \nসম্পূৰ্ণ হল</string>
     <string name="complete_social_walk_text">সামাজিক মানচিত্র সম্পূৰ্ণ কৰক</string>
     <string name="review_wealth_ranking">সম্পদ ৰেংকিং পুনৰীক্ষণ</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} সামাজিক মানচিত্র \n সম্পূৰ্ণ হল</string>
-    <string name="didi_conirmation_text_plural">%1$s গৰাকী নতুন বাইদেউ \n সফলতাৰে যোগ কৰা হল</string>
-    <string name="didi_conirmation_text_singular">%1$s নতুন বাইদেউ \n সফলতাৰে যোগ কৰা হল</string>
+    <string name="didi_conirmation_text_plural">%1$s গৰাকী বাইদেউ \n সফলতাৰে যোগ কৰা হল</string>
+    <string name="didi_conirmation_text_singular">%1$s বাইদেউ \n সফলতাৰে যোগ কৰা হল</string>
     <string name="transect_walk_sub_text_plural">%1$s গাওঁৰ পাৰা সম্পূৰ্ণ হৈছে</string>
     <string name="social_mapping_sub_text_plural">%1$s গৰাকী বাইদেউ চিনাক্ত কৰা হৈছে</string>
     <string name="wealth_ranking_sub_text_plural">%1$s গৰাকী দৰিদ্ৰ বাইদেউ চিনাক্ত কৰা হৈছে</string>
@@ -289,7 +290,10 @@
     <string name="take_photo_text">ফটো তোলক</string>
     <string name="retake_photo_text">পুনৰ ফটো তোলক</string>
     <string name="previous_step_not_complete_messgae_text">পূৰ্ববৰ্তী পৰ্যায় সম্পূৰ্ণ হোৱা নাই</string>
-    <string name="vo_endorsement_inprogress_village_banner_text">VO অনুমোদন প্ৰগতিশীল অৱস্থাত আছে</string>
+    <plurals name="vo_endorsement_inprogress_village_banner_text">
+        <item quantity="one">VO অনুমোদন প্ৰগতিশীল অৱস্থাত আছে</item>
+        <item quantity="other">VO অনুমোদন প্ৰগতিশীল অৱস্থাত আছে</item>
+    </plurals>
     <string name="latest_status_text">শেহতীয়া স্থিতি:</string>
     <string name="ranking_text_rich">ধনী</string>
     <string name="ranking_text_medium">মধ্যমীয়া</string>
@@ -300,8 +304,15 @@
     <string name="pat_completed_for_didi_plural">%1$s বাইদেউ সকলৰ বাবে PAT সম্পূৰ্ণ কৰা হৈছে</string>
     <string name="pat_marked_not_available_singular">%1$s বাইদেউ উপলব্ধ নাই হিচাপে চিহ্নিত কৰা হৈছে</string>
     <string name="pat_marked_not_available_plural">%1$s বাইদেউ সকল উপলব্ধ নাই হিচাপে চিহ্নিত কৰা হৈছে</string>
-    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
-    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
+    <plurals name="pat_didi_sent_to_vo_endorsement_singular">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</item>
+    </plurals>
+    <plurals name="pat_didi_sent_to_vo_endorsement_plural">
+        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>
+        <item quantity="other">%1$s অতি দৰিদ্ৰ বাইদেউ সকল VO অনুমোদনৰ বাবে পঠোৱা হৈছে</item>
+    </plurals>
+
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s অতি দৰিদ্ৰ বাইদেউ BPM অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s অতি দৰিদ্ৰ বাইদেউ সকল BPM অনুমোদনৰ বাবে পঠোৱা হৈছে</string>
     <string name="link_form_c">লিংক ফর্ম C</string>
@@ -385,9 +396,9 @@
     <string name="export_data_test">তথ্য ৰপ্তানি কৰক</string>
     <string name="network_not_available_message">নেটৱৰ্ক উপলব্ধ নহয়, অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক!</string>
     <string name="total_members_can_not_be_less_than_earning_members">পৰিয়ালৰ মুঠ সদস্য আৰ্নিং সদস্যতকৈ কম হ’ব নোৱাৰে।</string>
-    <string name="logout_confirmation">আপুনি নিশ্চিতভাৱে লগআউট কৰিবনে?</string>
+    <string name="logout_confirmation">আপুনি নিশ্চিত নেকি যে আপুনি লগআউট কৰিব বিচাৰে?</string>
     <string name="warning">সতৰ্কবাণী!</string>
-    <string name="data_lost_message">" আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব"</string>
+    <string name="data_lost_message">আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব</string>
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
@@ -395,6 +406,121 @@
     <string name="didi_verified_by_bpc">বিপিচিৰ দ্বাৰা পৰীক্ষা কৰা ডিডিছ</string>
     <string name="bpc_verification_in_progress_village_banner_text">BPC যাচাইকরণ প্রক্রিয়াধীন</string>
     <string name="recover_old_data">পুৰণি তথ্য পুনৰুদ্ধাৰ কৰক</string>
+    <string name="this_language_is_not_available_for_selection">এই ভাষা নিৰ্বাচনৰ বাবে উপলব্ধ নহয়</string>
+    <string name="change_language">ভাষা সলনি কৰক</string>
+
+    <plurals name="vo_name">
+        <item quantity="one">CLF Name</item>
+        <item quantity="other">VO Name</item>
+    </plurals>
+    <plurals name="seletc_village_screen_text">
+        <item quantity="one">Select Village &amp; CLF</item>
+        <item quantity="other">Select Village &amp; VO</item>
+    </plurals>
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didi sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didis sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_screen_title">
+        <item quantity="one">List of Didis for CLF Endorsement</item>
+        <item quantity="other">List of Didis for VO Endorsement</item>
+    </plurals>
+    <plurals name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">
+        <item quantity="one">You are sending %1$s PAT completed Didis for CLF Endorsement</item>
+        <item quantity="other">You are sending %1$s PAT completed Didis for VO Endorsementt</item>
+    </plurals>
+    <plurals name="send_all_for_vo_endorsement">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed_message">
+        <item quantity="one">CLF Endorsement for {VILLAGE_NAME} \nis completed</item>
+        <item quantity="other">VO Endorsement for {VILLAGE_NAME} \nis completed</item>
+    </plurals>
+    <plurals name="send_for_vo_text">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+    <plurals name="total_no_of_ultra_poor">
+        <item quantity="one">Total no. Ultra-Poor families endorsed by CLF:</item>
+        <item quantity="other">Total no. Ultra-Poor families endorsed by VO:</item>
+    </plurals>
+    <plurals name="final_list_of_user">
+        <item quantity="one">Final list of Ultra Poor families endorsed by CLF (Village Organization)</item>
+        <item quantity="other">Final list of Ultra Poor families endorsed by VO (Village Organization)</item>
+    </plurals>
+    <plurals name="no_didis_availble_for_vo_endorsement">
+        <item quantity="one">No Didis available for CLF Endorsement.</item>
+        <item quantity="other">No Didis available for VO Endorsement.</item>
+    </plurals>
+    <plurals name="vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+    <plurals name="summary_vo_endoresement_text_plural">
+        <item quantity="one">Didis sent for CLF Endorsement</item>
+        <item quantity="other">Didis sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="didis_endorsed_by_vo_plural">
+        <item quantity="one">Didis Endorsed by CLF</item>
+        <item quantity="other">Didis Endorsed by VO</item>
+    </plurals>
+    <plurals name="didi_endorsed_by_vo_singular">
+        <item quantity="one">Didi Endorsed by CLF</item>
+        <item quantity="other">Didi Endorsed by VO</item>
+    </plurals>
+    <plurals name="summary_vo_endoresement_text_singular">
+        <item quantity="one">Didi sent for CLF Endorsement</item>
+        <item quantity="other">Didi sent for VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed_village_banner_text">
+        <item quantity="one">CLF Endorsement completed</item>
+        <item quantity="other">VO Endorsement completed</item>
+    </plurals>
+    <plurals name="step_vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+    <plurals name="vo_endorsement_completed">
+        <item quantity="one">CLF Endorsement \nCompleted</item>
+        <item quantity="other">VO Endorsement \nCompleted</item>
+    </plurals>
+    <plurals name="vo_selected_status_text">
+        <item quantity="one">CLF Endorsed</item>
+        <item quantity="other">VO Endorsed</item>
+    </plurals>
+    <plurals name="vo_rejected_status_text">
+        <item quantity="one">CLF Rejected</item>
+        <item quantity="other">VO Rejected</item>
+    </plurals>
+    <plurals name="vo_summary_rejected_empty_text">
+        <item quantity="one">No didi rejected by CLF</item>
+        <item quantity="other">No didi rejected by VO</item>
+    </plurals>
+    <plurals name="vo_summary_endorsed_empty_text">
+        <item quantity="one">No didi endorsed by CLF</item>
+        <item quantity="other">No didi endorsed by VO</item>
+    </plurals>
+    <plurals name="village_is_not_vo_endorsed_right_now">
+        <item quantity="one">Village is not CLF Endorsed Right Now!</item>
+        <item quantity="other">Village is not VO Endorsed Right Now!</item>
+    </plurals>
+    <plurals name="vo_endorsement_not_started">
+        <item quantity="one">CLF Endorsement is not started</item>
+        <item quantity="other">VO Endorsement is not started</item>
+    </plurals>
+    <plurals name="vo">
+        <item quantity="one">CLF: </item>
+        <item quantity="other">VO: </item>
+    </plurals>
+
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="shg_member_text">1. সহায়ক গোটৰ সদস্য</string>
+    <string name="able_bodied_women_text">2. সক্ষম মহিলা</string>
 
 
 </resources>

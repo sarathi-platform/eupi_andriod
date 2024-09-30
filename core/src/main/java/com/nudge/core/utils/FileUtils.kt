@@ -2,6 +2,7 @@ package com.nudge.core.utils
 
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.database.DatabaseUtils
 import android.net.Uri
 import android.os.Environment
@@ -10,9 +11,10 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.uriFromFile
 import java.io.BufferedOutputStream
 import java.io.File
-import android.database.Cursor
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -411,11 +413,42 @@ object FileUtils {
         return filename
     }
 
-    private fun getName(filename: String?): String? {
+    fun getName(filename: String?): String? {
         if (filename == null) {
             return null
         }
         val index = filename.lastIndexOf('/')
         return filename.substring(index + 1)
     }
+
+    fun getImageUri(context: Context, fileName: String): Uri? {
+        val file =
+            findImageFile(context, fileName)
+        return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+            uriFromFile(
+                context, file,
+                it
+            )
+        }
+    }
+
+    fun findImageFile(context: Context, fileName: String): File {
+        var file =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+        if (!file.exists()) {
+            file =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+        }
+        return file
+    }
+
+    fun findImageFileUsingFilePath(context: Context, filePath: String): Uri? {
+        val path = if (filePath.contains("|")) filePath.split("|")[0] else filePath
+        val fileName = getName(filename = path)
+        fileName?.let {
+            return getImageUri(context, it)
+        }
+        return Uri.EMPTY
+    }
+
 }

@@ -1,0 +1,202 @@
+{
+  "status": "SUCCESS",
+  "message": "SUCCESS",
+  "data": [
+    {
+      "livelihood": {
+        "id": 9,
+        "name": "Goetry",
+        "status": 1,
+        "image": "Image1.png",
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Goetry",
+            "id": 9
+          },
+          {
+            "languageCode": "bn",
+            "name": "গোয়েট্রি",
+            "id": 9
+          }
+        ]
+      },
+      "assets": {
+        "id": 27,
+        "name": "Adult Male",
+        "status": 1,
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Adult Male",
+            "id": 27
+          },
+          {
+            "languageCode": "en",
+            "name": "Adult Female",
+            "id": 28
+          },
+          {
+            "languageCode": "bn",
+            "name": "প্রাপ্তবয়স্ক পুরুষ",
+            "id": 27
+          },
+          {
+            "languageCode": "bn",
+            "name": "প্রাপ্তবয়স্ক মহিলা",
+            "id": 28
+          }
+        ]
+      },
+      "products": {
+        "id": 22,
+        "name": "Baby Boy",
+        "status": 1,
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Baby Boy",
+            "id": 22
+          },
+          {
+            "languageCode": "en",
+            "name": "Baby Girl",
+            "id": 23
+          },
+          {
+            "languageCode": "bn",
+            "name": "ছেলে শিশু",
+            "id": 22
+          },
+          {
+            "languageCode": "bn",
+            "name": "বাচ্চা মেয়ে",
+            "id": 23
+          }
+        ]
+      },
+      "events": {
+        "id": 10,
+        "name": "Birth",
+        "status": 1,
+        "type": null,
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Birth",
+            "id": 10
+          },
+          {
+            "languageCode": "bn",
+            "name": "জন্ম",
+            "id": 10
+          }
+        ]
+      }
+    },
+    {
+      "livelihood": {
+        "id": 10,
+        "name": "Agriculture",
+        "status": 1,
+        "image": "Image1.png",
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Agriculture",
+            "id": 10
+          },
+          {
+            "languageCode": "bn",
+            "name": "কৃষি",
+            "id": 10
+          }
+        ]
+      },
+      "assets": {
+        "id": 29,
+        "name": "Hand Pump",
+        "status": 1,
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Hand Pump",
+            "id": 29
+          },
+          {
+            "languageCode": "en",
+            "name": "Tube Well",
+            "id": 30
+          },
+          {
+            "languageCode": "bn",
+            "name": "হাত চাপা",
+            "id": 29
+          },
+          {
+            "languageCode": "bn",
+            "name": "টিউব ওয়েল",
+            "id": 30
+          }
+        ]
+      },
+      "products": {
+        "id": 24,
+        "name": "Tomato",
+        "status": 1,
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Tomato",
+            "id": 24
+          },
+          {
+            "languageCode": "en",
+            "name": "Potato",
+            "id": 25
+          },
+          {
+            "languageCode": "en",
+            "name": "Brinjal",
+            "id": 26
+          },
+          {
+            "languageCode": "bn",
+            "name": "টমেটো",
+            "id": 24
+          },
+          {
+            "languageCode": "bn",
+            "name": "আলু",
+            "id": 25
+          },
+          {
+            "languageCode": "bn",
+            "name": "বেগুন",
+            "id": 26
+          }
+        ]
+      },
+      "events": {
+        "id": 11,
+        "name": "Events",
+        "status": 1,
+        "type": null,
+        "languages": [
+          {
+            "languageCode": "en",
+            "name": "Events",
+            "id": 11
+          },
+          {
+            "languageCode": "bn",
+            "name": "ঘটনা",
+            "id": 11
+          }
+        ]
+      }
+    }
+  ],
+  "lastSyncTime": "",
+  "requestId": null
+}

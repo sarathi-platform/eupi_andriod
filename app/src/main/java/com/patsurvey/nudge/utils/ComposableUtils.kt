@@ -57,6 +57,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.AddDidiViewModel
@@ -315,13 +316,14 @@ fun DidiItemCardForPat(
                                     if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                                         || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
                                     ) {
+                                        prefRepo.saveQuestionScreenOpenFrom(PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal)
                                         if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                             didiMarkedNotAvailable.value = false
                                         }
                                         if (prefRepo.isUserBPC())
-                                            navController.navigate("bcp_didi_pat_summary/${didi.id}")
+                                            navController.navigate("bcp_didi_pat_summary/${didi.id}/${false}")
                                         else
-                                            navController.navigate("didi_pat_summary/${didi.id}")
+                                            navController.navigate("didi_pat_summary/${didi.id}/${false}")
 
                                     } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                         val quesIndex = 0
@@ -687,6 +689,18 @@ fun showDidiImageDialog(didi: DidiEntity,onCloseClick:()->Unit){
     }
 }
 
+@Composable
+fun CustomLoaderDialog(isVisible:Boolean){
+    Dialog(onDismissRequest = {  }) {
+        Box(modifier = Modifier
+            .size(50.dp, 50.dp)
+            .background(Color.White), contentAlignment = Alignment.Center){
+            LoaderComponent(visible =isVisible)
+
+        }
+    }
+
+}
 @Composable
 fun showCustomDialog(
     title:String,

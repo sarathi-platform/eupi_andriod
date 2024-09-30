@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -15,9 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
@@ -42,9 +40,12 @@ import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.utils.FileUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -111,8 +112,9 @@ class BaseLineStartViewModel @Inject constructor(
         val directory = getImagePath(context)
         val filePath = File(
             directory,
-            "${didi.didiId}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
+            "${didi.didiId}-${didi.didiName}-${startSurveyScreenUserCase.getSectionUseCase.getUserId()}_${System.currentTimeMillis()}.png"
         )
+        Log.d("TAG", "getFileName: ${filePath}")
         return filePath
     }
 
@@ -126,7 +128,7 @@ class BaseLineStartViewModel @Inject constructor(
                 photoUri.value = tempUri
                 handleImageCapture(
                     photoPath = imagePath,
-                    context = (event.context as MainActivity),
+                    context = event.context,
                     didiEntity.value,
                 )
             }
@@ -215,6 +217,7 @@ class BaseLineStartViewModel @Inject constructor(
     private suspend fun writeImageUploadEvent(didiId: Int) {
         val question = sectionDetails.questionList.first()
 
+        val stateId = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getStateId().toString()
 
         val imageUploadEvent = eventsWriterHelperImpl.createImageUploadEvent(
             didi = didiEntity.value,
@@ -223,7 +226,7 @@ class BaseLineStartViewModel @Inject constructor(
             userType = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getUserType()
                 ?: BLANK_STRING,
             questionId = question.questionId ?: 0,
-            referenceId = didiId.toString() ?: "0",
+            referenceId = stateId,
             sectionDetails = sectionDetails,
             subjectType = "Didi"
         )
@@ -245,22 +248,29 @@ class BaseLineStartViewModel @Inject constructor(
         locationCoordinates: LocationCoordinates,
         didiEntity: SurveyeeEntity
     ) {
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            BaselineLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
+        job = BaselineCore.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            BaselineLogger.d("BaseLineStartViewModel", "saveFilePathInDb -> start")
 
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
+
+            delay(500)
+            val compressedDidi = compressImage(
+                updatedLocalPath.value,
+                BaselineCore.getAppContext(),
+                getFileNameFromURL(photoPath)
+            )
             val finalPathWithCoordinates =
-                "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+                "$compressedDidi|(${locationCoordinates.lat}, ${locationCoordinates.long})"
 
             BaselineLogger.d(
-                "PatDidiSummaryViewModel",
+                "BaseLineStartViewModel",
                 "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates"
             )
 
             startSurveyScreenUserCase.saveSurveyeeImagePathUseCase.invoke(didiEntity, finalPathWithCoordinates)
 
             BaselineLogger.d(
-                "PatDidiSummaryViewModel",
+                "BaseLineStartViewModel",
                 "saveFilePathInDb -> didiDao.saveLocalImagePath after"
             )
         }
@@ -271,7 +281,7 @@ class BaseLineStartViewModel @Inject constructor(
         sectionId: Int,
         surveyId: Int,
         isFromImageFail: Boolean,
-        localContext: Context
+        localContext: Activity
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedLanguage = startSurveyScreenUserCase.getSectionUseCase.getSelectedLanguage()
@@ -296,10 +306,19 @@ class BaseLineStartViewModel @Inject constructor(
                 )
             }
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
-                photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
-                    didiEntity.value.crpImageLocalPath.split("|")[0].toUri()
-                else
-                    _didiEntity.value.crpImageLocalPath.toUri()
+                CoreAppDetails.getContext()?.applicationContext?.let {
+
+                    photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
+                        FileUtils.findImageFileUsingFilePath(
+                            it,
+                            didiEntity.value.crpImageLocalPath.split("|")[0]
+                        ) ?: Uri.EMPTY
+                    else
+                        FileUtils.findImageFileUsingFilePath(
+                            it,
+                            didiEntity.value.crpImageLocalPath
+                        ) ?: Uri.EMPTY
+                }
                 shouldShowPhoto.value = true
             }
             isAdharCard.value = didiInfo.value?.isAdharCard ?: -1

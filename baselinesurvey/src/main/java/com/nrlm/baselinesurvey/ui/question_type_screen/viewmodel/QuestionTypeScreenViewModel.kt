@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -46,6 +45,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -194,7 +194,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 when (conditionsDto?.resultType) {
                     ResultType.Questions.name -> {
                         conditionsDto?.resultList?.forEach { questionList ->
-                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true
+                                || questionList.type?.equals(
+                                    QuestionType.FormWithNone.name,
+                                    true
+                                ) == true
+                            ) {
                                 val mOptionItemEntityList =
                                     questionList.convertFormTypeQuestionListToOptionItemEntity(
                                         optionItemEntity.sectionId,
@@ -275,6 +280,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }
             }
         }
+
     }
 
     private fun getOptionItemEntityState(
@@ -558,6 +564,19 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                             updateQuestionStateForCondition(false, conditionsDto)
                         }
+                    } else {
+                        val stringValue =
+                            event.optionItemEntityState?.optionItemEntity?.values?.filter {
+                                event.userInputValue.split(
+                                    DELIMITER_MULTISELECT_OPTIONS
+                                ).contains(it.value)
+                            }?.map { it.value } ?: listOf()
+                        event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
+
+                            conditionsDto?.checkConditionForMultiSelectDropDown(stringValue)
+                                ?.let { updateQuestionStateForCondition(it, conditionsDto) }
+                                ?: updateQuestionStateForCondition(false, conditionsDto)
+                        }
                     }
                 }
 
@@ -755,6 +774,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     )
                 ) {
                     removeAnswersForUnSelectedConditions(event.formQuestionResponseEntity)
+                } else {
+                    removeAnswersForUnSelectedConditions(event.formQuestionResponseEntity, true)
                 }
 
                 updateCachedData()
@@ -870,16 +891,37 @@ class QuestionTypeScreenViewModel @Inject constructor(
         }
     }
 
-    private fun removeAnswersForUnSelectedConditions(response: FormQuestionResponseEntity) {
+    private fun removeAnswersForUnSelectedConditions(
+        response: FormQuestionResponseEntity,
+        isMultiSelectDropDown: Boolean = false
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val tempList = updatedOptionList.toList()
                 val optionMarked = tempList.find {
                     it.optionId == response.optionId
                 }
-                val unSelectedConditionDtoList =
-                    optionMarked?.optionItemEntity?.conditions?.filter { it?.checkCondition(response.selectedValue) != true }
+//                val unSelectedConditionDtoList =
+//                    optionMarked?.optionItemEntity?.conditions?.filter { it?.checkCondition(response.selectedValue) != true }
 
+                val unSelectedConditionDtoList = if (isMultiSelectDropDown) {
+                    val string = (optionMarked?.optionItemEntity?.values?.filter {
+                        response.selectedValue.split(
+                            DELIMITER_MULTISELECT_OPTIONS
+                        ).contains(it.value)
+                    }?.map { it.value } ?: listOf())
+                    optionMarked?.optionItemEntity?.conditions?.filter {
+                        it?.checkConditionForMultiSelectDropDown(
+                            string
+                        ) != true
+                    }
+                } else {
+                    optionMarked?.optionItemEntity?.conditions?.filter {
+                        it?.checkCondition(
+                            response.selectedValue
+                        ) != true
+                    }
+                }
 
                 unSelectedConditionDtoList?.forEach { unSelectedConditionDto ->
                     unSelectedConditionDto?.resultList?.forEach { qList ->

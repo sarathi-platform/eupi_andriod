@@ -1,0 +1,360 @@
+package com.sarathi.missionactivitytask.ui.components
+
+import ComponentName
+import android.net.Uri
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import coil.compose.AsyncImage
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_35_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_48_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.dividerColor
+import com.nudge.core.ui.theme.greenLight
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.iconBackgroundgrayColor
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
+import com.nudge.core.ui.theme.smallerTextStyle
+import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.missionactivitytask.R
+import getColorForComponent
+
+
+@Composable
+fun StepsBoxGrantComponent(
+    modifier: Modifier = Modifier,
+    boxTitle: String,
+    subTitle: String,
+    stepNo: Int,
+    index: Int,
+    imageUri: Uri?,
+    totalCount: Int = 0,
+    pendingCount: Int = 0,
+    isCompleted: Boolean = false,
+    isDividerVisible: Boolean = true,
+    onclick: (Int) -> Unit
+) {
+    val curPercentage = animateFloatAsState(
+        targetValue =
+        (pendingCount / totalCount.toFloat()),
+        label = BLANK_STRING,
+        animationSpec = tween()
+    )
+    val dividerMargins = dimen_35_dp
+
+    ConstraintLayout(
+        modifier = Modifier
+            .background(Color.White)
+            .border(
+                width = 0.dp,
+                color = Color.Transparent,
+            )
+            .then(modifier)
+    ) {
+        val (step_no, stepBox, divider1, divider2, divider3) = createRefs()
+        BasicCardView(
+            colors = CardDefaults.cardColors(containerColor = if (isCompleted) greenLight else white),
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = dimen_1_dp,
+                    color = if (isCompleted) greenOnline else greyBorderColor,
+                    shape = RoundedCornerShape(dimen_6_dp)
+                )
+                .background(if (isCompleted) greenLight else white)
+                .clickable {
+                    onclick(index)
+                }
+                .constrainAs(stepBox) {
+                    start.linkTo(parent.start)
+                    top.linkTo(step_no.bottom, margin = (-16).dp)
+                }
+
+        ) {
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dimen_8_dp, bottom = dimen_10_dp)
+                    .padding(end = dimen_16_dp, start = dimen_8_dp),
+            ) {
+                val (textContainer, buttonContainer, iconContainer) = createRefs()
+                val constraintModifier = Modifier
+                    .constrainAs(iconContainer) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+
+                    .size(dimen_56_dp)
+                    .padding(
+                        top = if (isCompleted) 0.dp else dimen_6_dp,
+                        start = if (isCompleted) 0.dp else dimen_4_dp
+                    )
+                    .background(
+                        color = getColorForComponent(
+                            SurveyStatusEnum.INPROGRESS.name,
+                            ComponentName.SECTION_BOX_ICON_CONTAINER_COLOR
+                        ),
+                        shape = CircleShape
+                    ) // Set the circular background
+                    .clip(CircleShape) // Clip the content to a circular shape
+                    .padding(dimen_8_dp) //
+                if (imageUri != null) {
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = null,
+                        modifier = constraintModifier,
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .constrainAs(iconContainer) {
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            }
+                            .size(dimen_50_dp)
+                            .clip(CircleShape)
+                            .background(
+                                color = getColorForComponent(
+                                    SurveyStatusEnum.INPROGRESS.name,
+                                    ComponentName.SECTION_BOX_ICON_CONTAINER_COLOR
+                                ),
+                                shape = CircleShape
+                            ),
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 14.dp)
+                        .constrainAs(textContainer) {
+                            top.linkTo(iconContainer.top)
+                            start.linkTo(iconContainer.end)
+                            bottom.linkTo(iconContainer.bottom)
+                            end.linkTo(buttonContainer.start)
+                            width = Dimension.fillToConstraints
+                        }
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = boxTitle,
+                        modifier = Modifier
+                            .padding(
+                                top = dimen_10_dp,
+                                end = dimen_10_dp
+                            )
+                            .fillMaxWidth(),
+                        softWrap = true,
+                        color = if (isCompleted) greenOnline else blueDark,
+                        textAlign = TextAlign.Start,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 2,
+                        style = largeTextStyle.copy(blueDark)
+                    )
+                    LinearProgressBarComponent(
+                        progress = curPercentage.value
+                    )
+                    if (subTitle != BLANK_STRING) {
+                        Text(
+                            text = subTitle,
+                            color = if (isCompleted) greenOnline else blueDark,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            softWrap = true,
+                            textAlign = TextAlign.Start,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
+                            style = smallTextStyleMediumWeight2
+                        )
+                    }
+                }
+
+                IconButtonForward(
+                    modifier = Modifier
+                        .constrainAs(buttonContainer) {
+                            bottom.linkTo(textContainer.bottom)
+                            top.linkTo(textContainer.top)
+                            end.linkTo(parent.end)
+                        }
+                        .size(dimen_40_dp)
+                ) {
+                    onclick(index)
+                }
+
+            }
+        }
+        if (isCompleted) {
+            Image(
+                painter = painterResource(id = R.drawable.icon_check_circle_green),
+                contentDescription = null,
+                modifier = modifier
+                    .border(
+                        width = dimen_2_dp,
+                        color = Color.Transparent,
+                        shape = CircleShape
+
+                    )
+                    .clip(CircleShape)
+                    .background(Color.Transparent)
+                    .constrainAs(step_no) {
+                        start.linkTo(parent.start, margin = dimen_16_dp)
+                        top.linkTo(parent.top)
+                    }
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .border(
+                        width = dimen_1_dp,
+                        color = blueDark,
+                        shape = CircleShape
+                    )
+                    .background(Color.White, shape = CircleShape)
+                    .padding(dimen_6_dp)
+                    .constrainAs(step_no) {
+                        start.linkTo(parent.start, margin = dimen_16_dp)
+                        top.linkTo(parent.top)
+                    }
+            ) {
+                Text(
+                    text = "$stepNo",
+                    color = textColorDark,
+                    style = smallerTextStyle.copy(color = blueDark),
+                    modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_10_dp)
+
+                )
+            }
+
+        }
+        if (isDividerVisible) {
+            Divider(
+                color = dividerColor,
+                modifier = Modifier
+                    .height(dimen_8_dp)
+                    .width(dimen_1_dp)
+                    .constrainAs(divider1) {
+                        start.linkTo(parent.start, margin = dividerMargins)
+                        top.linkTo(stepBox.bottom)
+                    }
+                    .padding(vertical = dimen_2_dp)
+            )
+
+            Divider(
+                color = dividerColor,
+                modifier = Modifier
+                    .height(dimen_8_dp)
+                    .width(dimen_1_dp)
+                    .constrainAs(divider2) {
+                        start.linkTo(parent.start, margin = dividerMargins)
+                        top.linkTo(divider1.bottom)
+                    }
+                    .padding(vertical = dimen_2_dp)
+            )
+            Divider(
+                color = dividerColor,
+                modifier = Modifier
+                    .height(dimen_8_dp)
+                    .width(dimen_1_dp)
+                    .constrainAs(divider3) {
+                        start.linkTo(parent.start, margin = dividerMargins)
+                        top.linkTo(divider2.bottom)
+                    }
+                    .padding(vertical = dimen_2_dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun IconButtonForward(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .clip(RoundedCornerShape(dimen_100_dp))
+            .background(blueDark)
+            .clickable {
+                onClick()
+            }
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier)
+    ) {
+        Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StepBoxPreview() {
+    StepsBoxGrantComponent(
+        boxTitle = "TransectBox",
+        subTitle = "10 Poor didis identified",
+        stepNo = 1,
+        index = 1,
+        isCompleted = false,
+        imageUri = Uri.EMPTY
+    ) {}
+}

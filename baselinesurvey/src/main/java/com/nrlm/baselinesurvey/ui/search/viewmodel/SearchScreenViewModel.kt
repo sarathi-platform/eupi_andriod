@@ -39,11 +39,24 @@ class SearchScreenViewModel @Inject constructor(
     private var _filteredComplexSearchStateList = mutableStateListOf<ComplexSearchState>()
     val filteredComplexSearchStateList: SnapshotStateList<ComplexSearchState> get() = _filteredComplexSearchStateList
 
-    fun initSearch(surveyId: Int) {
+    fun initSearch(surveyId: Int, sectionId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val selectedLanguageId =
                 searchScreenUserCase.getSectionListForSurveyUseCase.getSelectedLanguage()
-            val sectionDetail = searchScreenUserCase.getSectionListForSurveyUseCase.invoke(surveyId, selectedLanguageId)
+            val sectionDetail = if (sectionId == 0)
+                searchScreenUserCase.getSectionListForSurveyUseCase.invoke(
+                    surveyId,
+                    selectedLanguageId
+                )
+            else
+                listOf(
+                    searchScreenUserCase.getSectionUseCase.invoke(
+                        sectionId = sectionId,
+                        surveyId = surveyId,
+                        languageId = selectedLanguageId
+                    )
+                )
+
             val mComplexSearchStateList = sectionDetail.convertToComplexSearchState()
             if (complexSearchStateList.value.isNotEmpty()) {
                 _complexSearchStateList.value.clear()

@@ -21,8 +21,6 @@ import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
-import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
@@ -32,6 +30,8 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.navigationmanager.graphs.navigateToSectionListScreen
+import com.nudge.navigationmanager.routes.Step_Complition_Screen_ROUTE_NAME
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -176,11 +176,11 @@ fun handleButtonClick(
 ) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navigateToSectionListScreen(surveyeeId, surveyId, navController)
+            navController.navigateToSectionListScreen(surveyeeId, surveyId)
         }
 
         is ButtonName.CONTINUE_BUTTON -> {
-            navigateToSectionListScreen(surveyeeId, surveyId, navController)
+            navController.navigateToSectionListScreen(surveyeeId, surveyId)
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {
@@ -188,7 +188,7 @@ fun handleButtonClick(
         }
 
         is ButtonName.SHOW_BUTTON -> {
-            navigateToSectionListScreen(surveyeeId, surveyId, navController)
+            navController.navigateToSectionListScreen(surveyeeId, surveyId)
         }
 
         is ButtonName.EXPORT_BUTTON -> {

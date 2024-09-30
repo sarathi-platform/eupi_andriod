@@ -19,7 +19,7 @@
     <string name="mark_complete_text">পাৰা সংযোজন সম্পূৰ্ণ কৰক</string>
     <string name="go_back_text">উভতি যাওক</string>
     <string name="progress_item_text">প্রগতি</string>
-    <string name="didis_item_text_plural">বাইদেউসকল</string>
+    <string name="didis_item_text_plural">বাইদেউয়ে</string>
     <string name="didis_item_text_singular">বাইদেউ</string>
     <string name="didis_list_text">বাইদেউসকলৰ তালিকা</string>
     <string name="poor_didi_item_text">দুখীয়া বাইদেউ</string>
@@ -378,10 +378,10 @@
         <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
     <string name="mission">মিছনসমূহ</string>
-    <string name="x_didi_pending">%s %s Pending</string>
+    <string name="x_didi_pending">%s %s বাকী আছে</string>
     <string name="save">চেভ</string>
 
-    <string name="name_comparision">নামটো</string>
+    <string name="name_comparision">পৰিয়ালৰ নাম</string>
     <string name="age_comparision">বয়স কিমান</string>
     <string name="relationship_comparision">বাইদেউ’ৰ সৈতে সম্পৰ্ক</string>
     <string name="income_source_comparision">আয়ৰ উৎস কিমান</string>
@@ -393,7 +393,7 @@
     <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">যোৱা ১২ মাহত ক্ষুদ্ৰ ব্যৱসায়ৰ পৰা ঘৰুৱা আয় কিমান?</string>
-    <string name="didi_title">"দিদি:"</string>
+    <string name="didi_title">"বাইদেউ:"</string>
     <string name="dada_title">"বাইদেউৰ  স্বামীৰ নাম: "</string>
     <string name="caste_titile">"জাতি: "</string>
     <string name="aadhar_card_titile">দিদিৰ আধাৰ কাৰ্ড আছে নেকি?</string>
@@ -454,8 +454,8 @@
     <string name="logout_confirmation">আপুনি নিশ্চিতভাৱে লগআউট কৰিব বিচাৰেনে?</string>
     <string name="import_restart_dialog_message">ফাইলৰ পৰা ডাটা আমদানি কৰাৰ পিছত এপটো পুনৰ আৰম্ভ কৰিব লাগিব আৰু বৰ্তমানৰ তথ্য হেৰাই যাব।</string>
     <string name="no_logs_available">কোনো লগ উপলব্ধ নহয়</string>
-    <string name="hamlets_item_text_plural">Hamlets</string>
-    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="hamlets_item_text_plural">টা হেমলেট</string>
+    <string name="hamlets_item_text_singular">টা হেমলেট</string>
     <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
@@ -470,5 +470,6 @@
     <string name="only_one_entry_can_be_added">কেৱল এটা প্ৰবিষ্টি যোগ কৰিব পাৰি</string>
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="form_e">Form C</string>
 
 </resources>

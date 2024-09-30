@@ -30,6 +30,9 @@ interface QuestionListDao {
     @Query("DELETE from $QUESTION_TABLE")
     fun deleteQuestionTable()
 
+    @Query("DELETE from $QUESTION_TABLE WHERE languageId=:languageId")
+    fun deleteQuestionTableForLanguage(languageId: Int)
+
     @Query("SELECT surveyPassingMark from $QUESTION_TABLE LIMIT 1")
     fun getPassingScore(): Int
 

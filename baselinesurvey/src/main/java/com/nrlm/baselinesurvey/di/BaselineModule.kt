@@ -6,7 +6,10 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepository
+import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepositoryImpl
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
@@ -24,7 +27,7 @@ import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepository
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.auth.repository.OtpVerificationRepository
@@ -37,12 +40,6 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
-import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepository
-import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepositoryImpl
-import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ClearLocalDBExportUseCase
-import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
-import com.nrlm.baselinesurvey.ui.backup.domain.use_case.GetExportOptionListUseCase
-import com.nrlm.baselinesurvey.ui.backup.domain.use_case.GetUserDetailsExportUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepositoryImpl
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
@@ -108,16 +105,6 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetail
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectStatusUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.GetSummaryFileRepository
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.GetSummaryFileRepositoryImpl
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.ClearLocalDBUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSummaryFileUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetUserDetailsUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
@@ -151,6 +138,10 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivity
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -163,12 +154,12 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSplashScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         baselineDatabase: NudgeBaselineDatabase
     ): SplashScreenRepository {
-        return SplashScreenRepositoryImpl(prefRepo, apiService, languageListDao, baselineDatabase)
+        return SplashScreenRepositoryImpl(prefBSRepo, baseLineApiService, languageListDao, baselineDatabase)
     }
 
     @Provides
@@ -235,21 +226,21 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideLanguageScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         villageListDao: VillageListDao
     ): LanguageScreenRepository {
-        return LanguageScreenRepositoryImpl(prefRepo, languageListDao, villageListDao)
+        return LanguageScreenRepositoryImpl(prefBSRepo, languageListDao, villageListDao)
     }
 
     @Provides
     @Singleton
     fun provideLoginScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefRepo, apiService)
+        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService)
     }
 
     @Provides
@@ -264,10 +255,10 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideOtpVerificationRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService
     ): OtpVerificationRepository {
-        return OtpVerificationRepositoryImpl(prefRepo, apiService)
+        return OtpVerificationRepositoryImpl(prefBSRepo, baseLineApiService)
     }
 
     @Provides
@@ -284,22 +275,22 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSurveyeeListScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
-        activityTaskDao: ActivityTaskDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao
+        matActivityDao: ActivityDao,
+        baselineTaskDao: ActivityTaskDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
-            prefRepo,
-            apiService,
+            prefBSRepo,
+            baseLineApiService,
             surveyeeEntityDao,
             languageListDao,
-            activityTaskDao,
             missionActivityDao,
-            taskDao
+            matActivityDao,
+            baselineTaskDao
         )
     }
 
@@ -330,8 +321,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSectionListScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
@@ -342,8 +333,8 @@ object BaselineModule {
         taskDao: ActivityTaskDao
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
-            prefRepo,
-            apiService,
+            prefBSRepo,
+            baseLineApiService,
             surveyEntityDao,
             sectionEntityDao,
             questionEntityDao,
@@ -376,8 +367,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideQuestionScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
@@ -390,8 +381,8 @@ object BaselineModule {
         contentDao: ContentDao
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
-            prefRepo = prefRepo,
-            apiService = apiService,
+            prefBSRepo = prefBSRepo,
+            baseLineApiService = baseLineApiService,
             surveyeeEntityDao = surveyeeEntityDao,
             surveyEntityDao = surveyEntityDao,
             sectionEntityDao = sectionEntityDao,
@@ -443,10 +434,10 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideMainActivityRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService
     ): MainActivityRepository {
-        return MainActivityRepositoryImpl(prefRepo, apiService)
+        return MainActivityRepositoryImpl(prefBSRepo, baseLineApiService)
     }
 
     @Provides
@@ -462,8 +453,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideDataLoadingScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
+        prefBSRepo: PrefBSRepo,
+        baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
@@ -476,12 +467,13 @@ object BaselineModule {
         contentDao: ContentDao,
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        downloaderManager: DownloaderManager
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
-            prefRepo,
-            apiService,
+            prefBSRepo,
+            baseLineApiService,
             languageListDao,
             surveyeeEntityDao,
             surveyEntityDao,
@@ -494,7 +486,8 @@ object BaselineModule {
             contentDao,
             baselineDatabase,
             didiSectionProgressEntityDao,
-            apiStatusDao
+            apiStatusDao,
+            downloaderManager = downloaderManager
         )
     }
 
@@ -513,18 +506,20 @@ object BaselineModule {
             fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
             fetchSectionStatusFromNetworkUseCase = FetchSectionStatusFromNetworkUseCase(repository),
             fetchSurveyAnswerFromNetworkUseCase = FetchSurveyAnswerFromNetworkUseCase(repository),
-            loggedInUseCase = LoggedInUseCase(splashScreenRepository)
+            loggedInUseCase = LoggedInUseCase(splashScreenRepository),
+            fetchLanguageConfigFromNetworkUseCase = FetchLanguageFromNetworkConfigUseCase(splashScreenRepository),
+            saveLanguageConfigUseCase = SaveLanguageConfigUseCase(splashScreenRepository)
         )
     }
 
     @Provides
     @Singleton
     fun provideStartSurveyScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         surveyeeEntityDao: SurveyeeEntityDao,
         didiInfoDao: DidiInfoDao
     ): StartScreenRepository {
-        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao, didiInfoDao)
+        return StartScreenRepositoryImpl(prefBSRepo, surveyeeEntityDao, didiInfoDao)
     }
 
     @Provides
@@ -549,13 +544,13 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSurveyStateRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         surveyeeEntityDao: SurveyeeEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         didiInfoDao: DidiInfoDao
     ): SurveyStateRepository {
         return SurveyStateRepositoryImpl(
-            prefRepo,
+            prefBSRepo,
             surveyeeEntityDao,
             didiSectionProgressEntityDao,
             didiInfoDao
@@ -568,14 +563,14 @@ object BaselineModule {
         questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         contentDao: ContentDao
     ): FormQuestionResponseRepository {
         return FormQuestionResponseRepositoryImpl(
             questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             contentDao = contentDao
         )
     }
@@ -612,9 +607,9 @@ object BaselineModule {
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefRepo)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefBSRepo)
     }
 
     @Provides
@@ -624,57 +619,25 @@ object BaselineModule {
         taskDao: ActivityTaskDao,
         surveyeeEntityDao: SurveyeeEntityDao,
         missionEntityDao: MissionEntityDao,
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): MissionSummaryScreenRepository {
         return MissionSummaryScreenRepositoryImpl(
             missionActivityDao,
             taskDao,
             surveyeeEntityDao,
             missionEntityDao,
-            prefRepo
+            prefBSRepo
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideSettingBSScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: ApiService,
-        nudgeBaselineDatabase: NudgeBaselineDatabase
-    ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService, nudgeBaselineDatabase)
-    }
 
-    @Provides
-    @Singleton
-    fun provideGetSummaryFileRepository(
-        activityTaskDao: ActivityTaskDao,
-        missionActivityDao: MissionActivityDao
-    ): GetSummaryFileRepository {
-        return GetSummaryFileRepositoryImpl(activityTaskDao, missionActivityDao)
-    }
-
-    @Provides
-    @Singleton
-    fun providesSettingScreenUseCase(
-        repository: SettingBSRepository,
-        getSummaryFileRepository: GetSummaryFileRepository
-    ): SettingBSUserCase {
-        return SettingBSUserCase(
-            getUserDetailsUseCase = GetUserDetailsUseCase(repository),
-            logoutUseCase = LogoutUseCase(repository),
-            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
-            clearLocalDBUseCase = ClearLocalDBUseCase(repository),
-            getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository)
-        )
-    }
 
     @Provides
     @Singleton
     fun provideProfileBSRepository(
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): ProfileBSRepository {
-        return ProfileBSRepositoryImpl(prefRepo)
+        return ProfileBSRepositoryImpl(prefBSRepo)
     }
 
     @Provides
@@ -693,21 +656,23 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesSearchScreenUseCase(
-        sectionListScreenRepository: SectionListScreenRepository
+        sectionListScreenRepository: SectionListScreenRepository,
+        questionScreenRepository: QuestionScreenRepository
     ): SearchScreenUseCase {
         return SearchScreenUseCase(
             getSectionListForSurveyUseCase = GetSectionListForSurveyUseCase(
                 sectionListScreenRepository
-            )
+            ),
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository)
         )
     }
 
     @Provides
     @Singleton
     fun provideCasteListRepository(
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): CasteListRepository {
-        return CasteListRepositoryImpl(prefRepo)
+        return CasteListRepositoryImpl(prefBSRepo)
     }
 
     @Provides
@@ -721,7 +686,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideEventsWriterRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         surveyEntityDao: SurveyEntityDao,
         missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
@@ -731,7 +696,7 @@ object BaselineModule {
         eventWriterHelper: EventWriterHelperImpl
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             surveyEntityDao = surveyEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao,
             eventsDao = eventsDao,
@@ -743,7 +708,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesEventWriterHelper(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         repositoryImpl: EventsWriterRepositoryImpl,
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
@@ -755,10 +720,11 @@ object BaselineModule {
         activityDao: MissionActivityDao,
         missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        matActivityDao: ActivityDao,
         baselineDatabase: NudgeBaselineDatabase
     ): EventWriterHelper {
         return EventWriterHelperImpl(
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             repositoryImpl = repositoryImpl,
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
@@ -770,7 +736,8 @@ object BaselineModule {
             activityDao = activityDao,
             missionEntityDao = missionEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao,
-            baselineDatabase = baselineDatabase
+            baselineDatabase = baselineDatabase,
+            matActivityDao = matActivityDao
         )
     }
 
@@ -791,26 +758,27 @@ object BaselineModule {
         )
     }
 
-   @Singleton
-   @Provides
-   fun provideExportImportRepository(
-       prefRepo: PrefRepo,
-       nudgeBaselineDatabase: NudgeBaselineDatabase
-   ): ExportImportRepository {
-       return ExportImportRepositoryImpl(prefRepo, nudgeBaselineDatabase)
-   }
+    @Singleton
+    @Provides
+    fun provideUpdateBaselineStatusOnInitRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao,
+        grantMissionDao: MissionDao,
+        grantActivityDao: ActivityDao
+    ): UpdateBaselineStatusOnInitRepository {
+        return UpdateBaselineStatusOnInitRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            missionEntityDao = missionEntityDao,
+            missionActivityDao = missionActivityDao,
+            grantMissionDao = grantMissionDao,
+            grantActivityDao = grantActivityDao
+        )
+    }
 
     @Singleton
     @Provides
-    fun provideExportImportUseCase(
-        repository: ExportImportRepository,
-        eventsWriterRepository: EventsWriterRepository
-    ): ExportImportUseCase {
-        return ExportImportUseCase(
-            getExportOptionListUseCase = GetExportOptionListUseCase(repository),
-            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
-            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository),
-            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
-        )
+    fun provideUpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository: UpdateBaselineStatusOnInitRepository): UpdateBaselineStatusOnInitUseCase {
+        return UpdateBaselineStatusOnInitUseCase(updateBaselineStatusOnInitRepository)
     }
 }

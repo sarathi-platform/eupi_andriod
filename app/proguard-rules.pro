@@ -111,6 +111,8 @@
 -keep @androidx.room.Entity class *
 -dontwarn androidx.room.paging.**
 -keep class com.thenudge.uat.database.model.** {*; }
+-keep class com.nrlm.baselinesurvey.database.entity.** { *;}
+-keep class com.nrlm.baselinesurvey.model.** { *;}
 
 -dontwarn com.opencsv.**
 -dontwarn org.apache.commons.beanutils.**
