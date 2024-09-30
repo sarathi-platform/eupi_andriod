@@ -45,6 +45,13 @@ interface SubjectLivelihoodEventMappingDao {
         modifiedDate: Long
     )
 
+    @Query("Update subject_livelihood_event_mapping_table set status = 2 where transactionId=:transactionId and subjectId=:subjectId and userId=:userId and status=1")
+    suspend fun softDeleteLivelihoodEventMapping(
+        userId: String,
+        transactionId: String,
+        subjectId: Int
+    )
+
     @Query(
         "select subject_livelihood_event_mapping_table.transactionId, subject_livelihood_event_mapping_table.subjectId, subject_livelihood_event_mapping_table.date, subject_livelihood_event_mapping_table.livelihoodId, subject_livelihood_event_mapping_table.livelihoodEventId, subject_livelihood_event_mapping_table.livelihoodEventType, \n" +
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
