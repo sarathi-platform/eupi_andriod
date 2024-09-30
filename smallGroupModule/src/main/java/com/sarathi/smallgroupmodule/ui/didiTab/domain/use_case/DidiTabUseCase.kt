@@ -69,4 +69,8 @@ class DidiTabUseCase @Inject constructor(
         }
     }
 
+    suspend fun isApiStatusFailed(): Boolean {
+        return fetchDidiDetailsFromNetworkUseCase.isFetchDidiDetailsAPIStatusFailed()
+    }
+
 }

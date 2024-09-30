@@ -538,8 +538,11 @@
     <string name="change_language">Change Language</string>
 
 
-
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="mission">Missions</string>
     <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
+    <string name="mark_activity_in_progress">Mark Activity In Progress</string>
+    <string name="select_mission">Select Mission</string>
+    <string name="select_activity_for">Select Activity for </string>
+    <string name="select_all">Select All</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.nudge.navigationmanager.graphs
 
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.routes.ACTIVITY_REOPENING_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_LANGUAGE_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_LOGIN_SCREEN_ROUTE_NAME
@@ -215,6 +216,7 @@ sealed class SettingScreens(val route: String) {
     object IMAGE_VIEWER : SettingScreens(route = "$IMAGE_VIEWER_ROUTE_NAME/{${NavigationParams.ARG_IMAGE_PATH.value}}")
 
     object BACKUP_RECOVERY_SCREEN : SettingScreens(route = BACKUP_RECOVERY_SCREEN_ROUTE_NAME)
+    object ACTIVITY_REOPENING_SCREEN : SettingScreens(route = ACTIVITY_REOPENING_SCREEN_ROUTE_NAME)
 }
 
 sealed class LogoutScreens(val route: String){

@@ -6,6 +6,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.unit.sp
 import com.nudge.core.R
 
@@ -61,10 +62,23 @@ val defaultTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )
+
+val defaultTextSpanStyle = SpanStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp
+)
+
 val defaultSpanStyle = SpanStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,
     fontSize = 14.sp
+)
+
+val scriptStyleSuper = SpanStyle(
+    baselineShift = BaselineShift.Superscript,
+    fontSize = 14.sp,
+    color = redOffline
 )
 
 val quesOptionTextStyle = TextStyle(

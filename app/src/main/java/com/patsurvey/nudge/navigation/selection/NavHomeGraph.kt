@@ -32,6 +32,7 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
@@ -758,11 +759,19 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             }
         )) {
-            FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
+            FormImageViewerScreen(
+                navController = navController,
+                fileName = it.arguments?.getString(ARG_IMAGE_PATH) ?: "",
+                viewModel = hiltViewModel()
+            )
         }
 
-        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route) {
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
+            ActivityReopeningScreen(navController = navController)
         }
 
     }
