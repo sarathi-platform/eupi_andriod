@@ -4,8 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.CoreObserverManager
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityScreenViewModel @Inject constructor(
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
@@ -32,6 +35,7 @@ class ActivityScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
+    var programId: Int = 0
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
@@ -40,7 +44,7 @@ class ActivityScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                initActivityScreen()
+                loadMissionRelatedData(isRefresh = false)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -53,6 +57,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
             _activityList.value = getActivityUseCase.getActivities(missionId)
             getContentValue(_activityList.value)
             checkButtonValidation()
@@ -60,12 +65,28 @@ class ActivityScreenViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+
         }
     }
 
-    fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean) {
+    private fun loadMissionRelatedData(isRefresh: Boolean) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            fetchAllDataUseCase.fetchMissionRelatedData(
+                missionId = missionId,
+                programId = programId,
+                isRefresh = false,
+                { isSuccess, successMsg ->
+
+                    initActivityScreen()
+                })
+        }
+    }
+
+    fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean, programId: Int) {
         this.missionId = missionId
         this.isMissionCompleted = isMissionCompleted
+        this.programId = programId
     }
 
     fun isFilePathExists(filePath: String): Boolean {
@@ -120,5 +141,15 @@ class ActivityScreenViewModel @Inject constructor(
                 isFromRegenerate = false
             )
         }
+    }
+
+    private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
+        CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
+            onSuccess(it)
+        }
+    }
+    override fun refreshData() {
+        loadMissionRelatedData(isRefresh = true)
+
     }
 }

@@ -18,6 +18,7 @@ fun GrantTaskScreen(
     missionId: Int,
     activityName: String,
     activityId: Int,
+    programId: Int,
     onSettingClick: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -45,12 +46,14 @@ fun GrantTaskScreen(
         isSecondaryButtonVisible = viewModel.isGenerateFormButtonVisible.value,
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,
+        programId = programId ,
         taskScreenContent = { vm, mNavController ->
             TaskScreenContent(vm, mNavController)
         },
         taskScreenContentForGroup = { groupKey, vm, navController ->
             TaskScreenContentForGroup(groupKey, vm, navController)
         }
+
     )
 }
 

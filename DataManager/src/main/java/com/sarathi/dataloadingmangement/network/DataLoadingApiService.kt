@@ -3,8 +3,9 @@ package com.sarathi.dataloadingmangement.network
 import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
-import com.sarathi.dataloadingmangement.domain.MissionRequest
+import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodOptionResponse
+import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.AssetJournalApiResponse
@@ -32,17 +33,19 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface DataLoadingApiService {
-    @POST(SUB_PATH_GET_MISSION)
+    @POST(SUB_PATH_GET_ACTIVITY_DETAILS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ProgrameResponse>>
+    suspend fun getActivityDetails(@Body missionRequest: ActivityRequest): ApiResponseModel<List<ActivityResponse>>
+
+    @GET(SUB_PATH_GET_MISSION_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getMissionList(): ApiResponseModel<List<ProgrameResponse>>
+
 
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
-
-    // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
-    //  @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyFromNetwork(@Body request: SurveyRequest): ApiResponseModel<SurveyResponseModel>
 
     @GET(SUBPATH_CONFIG_GET_LANGUAGE)

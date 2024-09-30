@@ -99,6 +99,7 @@ const val TAG = "TaskScreen"
 fun TaskScreen(
     navController: NavController,
     viewModel: TaskScreenViewModel,
+    programId: Int,
     missionId: Int,
     activityName: String,
     activityId: Int,
@@ -134,7 +135,7 @@ fun TaskScreen(
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(taskList?.size) {
-        viewModel.setMissionActivityId(missionId, activityId)
+        viewModel.setMissionActivityId(missionId, activityId, programId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
 

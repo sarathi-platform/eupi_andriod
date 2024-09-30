@@ -32,7 +32,7 @@ data class ProgrammeEntity(
                 actualStartDate = programmeResponse.actualStartDate ?: BLANK_STRING,
                 name = programmeResponse.name,
                 programmeId = programmeResponse.id,
-                startDate = programmeResponse.startDate,
+                startDate = programmeResponse.startDate ?: BLANK_STRING,
                 userId = uniqueUserIdentifier
             )
 

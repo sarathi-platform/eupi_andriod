@@ -84,7 +84,9 @@ fun MissionScreen(
     val showAppExitDialog = remember {
         mutableStateOf(false)
     }
-
+    val dataNotLoadedDialog = remember {
+        mutableStateOf(false)
+    }
     BackHandler {
         showAppExitDialog.value = true
     }
@@ -100,6 +102,18 @@ fun MissionScreen(
             },
             onPositiveButtonClick = {
                 onBackPressed()
+            }
+        )
+    }
+    if (dataNotLoadedDialog.value) {
+        ShowCustomDialog(
+            message = stringResource(id = R.string.data_not_Loaded),
+            positiveButtonTitle = stringResource(id = R.string.ok),
+            onNegativeButtonClick = {
+                dataNotLoadedDialog.value = false
+            },
+            onPositiveButtonClick = {
+                dataNotLoadedDialog.value = false
             }
         )
     }
@@ -167,13 +181,24 @@ fun MissionScreen(
                                 needToShowProgressBar = true,
                                 primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
-                                    onNavigationToActivity(
-                                        mission.description.contains(
-                                            "Baseline",
-                                            true
-                                        ), //TODO Temp code to be removed after data is fetched from server.
-                                        mission
-                                    ) //TODO handle navigation to activity based on mission.
+                                    viewModel.isMissionLoaded(
+                                        missionId = mission.missionId,
+                                        programId = mission.programId,
+                                        onComplete = { isDataLoaded ->
+                                            if (!isDataLoaded && !isOnline(context = context)) {
+                                                dataNotLoadedDialog.value = true
+                                            } else {
+                                                onNavigationToActivity(
+                                                    mission.description.contains(
+                                                        "Baseline",
+                                                        true
+                                                    ),
+                                                    mission
+                                                )
+                                            }
+
+                                        })
+                                    //TODO handle navigation to activity based on mission.
                                     /*navigateToActivityScreen(
                                         navController,
                                         missionName = mission.description,

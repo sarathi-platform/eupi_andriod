@@ -8,7 +8,12 @@ import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 
 interface IMissionRepository {
-    suspend fun fetchMissionDataFromServer(
+    suspend fun fetchActivityDataFromServer(
+        programId: Int,
+        missionId: Int
+    ): ApiResponseModel<List<ActivityResponse>>
+
+    suspend fun fetchMissionListFromServer(
     ): ApiResponseModel<List<ProgrameResponse>>
 
     suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int)
@@ -29,7 +34,12 @@ interface IMissionRepository {
 
 
     suspend fun getAllMission(): List<MissionUiModel>
+    suspend fun saveActivityConfig(
+        missionActivityModel: ActivityResponse,
+        missionId: Int,
+    )
 
-    suspend fun isActivityAvailable(activityType: String): Int
-
+    suspend fun isMissionLoaded(missionId: Int, programId: Int): Int
+    suspend fun setMissionLoaded(missionId: Int, programId: Int)
+    suspend fun getActivityTypesForMission(missionId: Int): List<String>
 }

@@ -68,6 +68,7 @@ open class TaskScreenViewModel @Inject constructor(
     var missionId = 0
     var activityId = 0
     var activityType: String? = null
+    var programId: Int = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
     var activityConfigUiModelWithoutSurvey: ActivityConfigEntity? = null
     private val _taskList =
@@ -418,9 +419,10 @@ open class TaskScreenViewModel @Inject constructor(
 
     }
 
-    fun setMissionActivityId(missionId: Int, activityId: Int) {
+    fun setMissionActivityId(missionId: Int, activityId: Int, programId: Int) {
         this.missionId = missionId
         this.activityId = activityId
+        this.programId = programId
         getActivityType(missionId, activityId)
     }
 
@@ -566,7 +568,11 @@ open class TaskScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
+            fetchAllDataUseCase.fetchMissionRelatedData(
+                missionId = missionId,
+                programId = programId,
+                isRefresh = isRefresh,
+                { isSuccess, successMsg ->
                 // Temp method to be removed after baseline is migrated to Grant flow.
                 updateStatusForBaselineMission() { success ->
                     CoreLogger.i(
@@ -575,7 +581,7 @@ open class TaskScreenViewModel @Inject constructor(
                     )
                     initTaskScreen(taskUiModel) // Move this out of the lambda block once the above method is removed
                 }
-            }, isRefresh = isRefresh)
+                })
         }
     }
 

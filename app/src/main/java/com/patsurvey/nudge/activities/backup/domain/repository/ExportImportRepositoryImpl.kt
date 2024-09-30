@@ -52,6 +52,7 @@ class ExportImportRepositoryImpl @Inject constructor(
         prefBSRepo.setDataSyncStatus(false)
         coreSharedPrefs.setDataLoaded(isDataLoaded = false)
         coreSharedPrefs.setDidiTabDataLoaded(false)
+        coreSharedPrefs.setDataLoaded(false)
     }
 
     override fun getUserMobileNumber(): String {

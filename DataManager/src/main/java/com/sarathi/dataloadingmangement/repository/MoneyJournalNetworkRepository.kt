@@ -19,6 +19,7 @@ class MoneyJournalNetworkRepository @Inject constructor(
     }
 
     override suspend fun saveMoneyJournalIntoDb(moneyJournals: List<MoneyJournalApiResponse>) {
+        if (moneyJournalDao.isMoneyJournalExist(sharedPrefs.getUniqueUserIdentifier()) == 0) {
         val moneyJournalEntities = ArrayList<MoneyJournalEntity>()
         moneyJournals.forEach {
             moneyJournalEntities.add(
@@ -29,5 +30,6 @@ class MoneyJournalNetworkRepository @Inject constructor(
             )
         }
         moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntities)
+    }
     }
 }
