@@ -46,6 +46,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    debugImplementation("androidx.compose.ui:ui-tooling:1.6.8")
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"

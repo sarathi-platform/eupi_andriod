@@ -69,7 +69,7 @@ fun FormSummaryDialog(
                         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        CircularImageViewComponent(modifier = Modifier, imageUri ?: Uri.EMPTY)
+                        CircularImageViewComponent(modifier = Modifier, imageUri ?: Uri.EMPTY) {}
                         Column(
                             modifier = Modifier
                                 .weight(1f)

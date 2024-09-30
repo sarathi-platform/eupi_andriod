@@ -12,10 +12,11 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_72_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.missionactivitytask.navigation.navigateToActivitySelectTaskScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodTaskScreen
@@ -92,6 +93,10 @@ fun ActivityRowCard(
 
                         ActivityTypeEnum.SURVEY.name.lowercase(
                             Locale.ENGLISH
+                        ), ActivityTypeEnum.BASIC.name.lowercase(
+                            Locale.ENGLISH
+                        ), ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(
+                            Locale.ENGLISH
                         ) -> {
                             navigateToSurveyTaskScreen(
                                 navController,
@@ -100,11 +105,25 @@ fun ActivityRowCard(
                                 activityName = activity.description
                             )
                         }
+
+                    ActivityTypeEnum.SELECT.name.lowercase(
+                        Locale.ENGLISH
+                    ) ,
+                    ActivityTypeEnum.TRAINING.name.lowercase(
+                        Locale.ENGLISH
+                    )-> {
+                    navigateToActivitySelectTaskScreen(
+                        navController,
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        activityName = activity.description
+                    )
+                }
                     }
                 }
             }
             item {
-                CustomVerticalSpacer(size = dimen_20_dp)
+                CustomVerticalSpacer(size = dimen_72_dp)
             }
         }
     }

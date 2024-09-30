@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -45,14 +46,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
-import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.R
 
@@ -175,7 +177,9 @@ fun ButtonPositive(
 @Composable
 fun ButtonOutline(
     modifier: Modifier = Modifier,
-    buttonTitle: String = "add_tola",
+    buttonTitle: String = BLANK_STRING,
+    isIconVisible: Boolean = true,
+    isSelected: Boolean = false,
     icon: ImageVector = Icons.Default.Add,
     onClick: () -> Unit
 ) {
@@ -188,27 +192,31 @@ fun ButtonOutline(
             .fillMaxWidth()
             .padding(vertical = 0.dp)
             .then(modifier),
-        contentPadding = PaddingValues(vertical = 0.dp)
+        contentPadding = PaddingValues(vertical = 0.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = if (isSelected) blueDark else Color.Transparent)
     ) {
         Row(
-            modifier = Modifier.align(Alignment.CenterVertically),/*.padding(vertical = 6.dp)*/
+            modifier = Modifier.align(Alignment.CenterVertically),
+            /*.padding(vertical = 6.dp)*/
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Icon(
-                icon,
-                contentDescription = "Add Button",
-                tint = blueDark,
-                modifier = Modifier
-                    .absolutePadding(top = 0.dp, right = 2.dp)
-                    .size(22.dp)
-            )
+            if (isIconVisible) {
+                Icon(
+                    icon,
+                    contentDescription = "Add Button",
+                    tint = blueDark,
+                    modifier = Modifier
+                        .absolutePadding(top = 0.dp, right = 2.dp)
+                        .size(22.dp)
+                )
+            }
             Text(
                 text = buttonTitle,
-                color = blueDark,
-                style = mediumTextStyle,
-                textAlign = TextAlign.Center,
+                color = if (isSelected
+                ) white else textColorDark,
                 modifier = Modifier
+                    .wrapContentWidth()
                     .align(Alignment.CenterVertically)
                     .absolutePadding(bottom = 3.dp)
             )
@@ -221,7 +229,11 @@ fun ButtonOutline(
 fun ButtonOutlinePreview() {
     ButtonOutline(
         modifier = Modifier.fillMaxWidth(),
-    ) {}
+        isSelected = true,
+        buttonTitle = "Not Available",
+        isIconVisible = false,
+        onClick = {}
+    )
 }
 
 @Composable

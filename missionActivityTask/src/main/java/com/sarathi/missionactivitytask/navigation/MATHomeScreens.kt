@@ -56,4 +56,11 @@ sealed class MATHomeScreens(val route: String) {
     object SectionScreen :
         MATHomeScreens(route = "${MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}")
 
+    object ActivitySelectTaskScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_SELECT_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+
+    object LivelihoodPopSurveyScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_TOOLBAR_TITLE}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_GRANT_ID}}/{${MissionActivityConstants.ARG_GRANT_TYPE}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}")
+
+
 }

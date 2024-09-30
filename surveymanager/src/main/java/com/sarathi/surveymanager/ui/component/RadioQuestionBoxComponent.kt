@@ -38,11 +38,14 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -57,12 +60,14 @@ fun RadioQuestionBoxComponent(
     optionUiModelList: List<OptionsUiModel>,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
+    showCardView: Boolean = false,
     isEditAllowed: Boolean = true,
+    isQuestionTypeToggle: Boolean = false,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()
-    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
+    var selectedIndex by remember(questionIndex) { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
     SideEffect {
@@ -79,11 +84,11 @@ fun RadioQuestionBoxComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = if (isQuestionTypeToggle) 60.dp else 100.dp, maxCustomHeight)
     ) {
         Card(
             elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
+                defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
             ),
             shape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier
@@ -98,13 +103,16 @@ fun RadioQuestionBoxComponent(
             Column(modifier = Modifier.background(white)) {
 
                 Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
+                    Modifier.padding(top = if (isQuestionTypeToggle) dimen_5_dp else dimen_16_dp),
+                    verticalArrangement = Arrangement.spacedBy(if (isQuestionTypeToggle) dimen_5_dp else dimen_18_dp)
                 ) {
                     LazyColumn(
                         state = outerState,
                         modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+                            .heightIn(
+                                min = if (isQuestionTypeToggle) 60.dp else 100.dp,
+                                max = maxCustomHeight
+                            )
                     ) {
 
                         item {
@@ -133,6 +141,7 @@ fun RadioQuestionBoxComponent(
                                             modifier = Modifier.weight(1f),
                                             index = _index,
                                             optionsItem = option,
+                                            isIconRequired = !isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
                                             if (isEditAllowed) {
@@ -158,18 +167,48 @@ fun RadioQuestionBoxComponent(
                                 )
                             }
                         }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_10_dp)
-                            )
+                        if (!isQuestionTypeToggle) {
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_10_dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun ToggleQuestionBoxComponent(
+    modifier: Modifier = Modifier,
+    questionIndex: Int,
+    questionDisplay: String,
+    isRequiredField: Boolean = true,
+    optionUiModelList: List<OptionsUiModel>,
+    selectedOptionIndex: Int = -1,
+    showCardView: Boolean = false,
+    maxCustomHeight: Dp,
+    isEditAllowed: Boolean = true,
+    onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
+) {
+    RadioQuestionBoxComponent(
+        modifier = modifier,
+        questionIndex = questionIndex,
+        questionDisplay = questionDisplay,
+        isRequiredField = isRequiredField,
+        maxCustomHeight = maxCustomHeight,
+        selectedOptionIndex = selectedOptionIndex,
+        isQuestionTypeToggle = true,
+        showCardView = showCardView,
+        optionUiModelList = optionUiModelList,
+        isEditAllowed = isEditAllowed,
+        onAnswerSelection = onAnswerSelection
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true)

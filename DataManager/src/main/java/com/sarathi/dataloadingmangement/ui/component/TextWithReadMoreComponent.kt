@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.sarathi.dataloadingmangement.R
 
@@ -49,6 +47,7 @@ fun TextWithReadMoreComponent(
             ShowCustomDialog(title = title,
                 message = contentData,
                 negativeButtonTitle = stringResource(id = R.string.close),
+                dismissOnClickOutside = true,
                 onNegativeButtonClick = {
                     showDialog = false
                 },
@@ -61,7 +60,11 @@ fun TextWithReadMoreComponent(
 
 @Composable
 fun TextWithReadMore(
-    text: String, textStyle: TextStyle, maxLines: Int, onClickReadMore: () -> Unit
+    text: String,
+    textStyle: TextStyle,
+    readMoreButtonLabel: String = "See all",
+    maxLines: Int,
+    onClickReadMore: () -> Unit
 ) {
     var expand by remember { mutableStateOf(false) }
 
@@ -72,7 +75,7 @@ fun TextWithReadMore(
                 .align(Alignment.Start),
             text = text,
             lineHeight = 24.sp,
-            maxLines = if (expand) Int.MAX_VALUE else 1,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { result ->
                 layoutResult.value = result
@@ -84,7 +87,7 @@ fun TextWithReadMore(
             LinkTextButtonWithIcon(
                 modifier = Modifier
                     .align(Alignment.Start),
-                title = "See all",
+                title = readMoreButtonLabel,
                 textColor = summaryCardViewBlue,
                 iconTint = summaryCardViewBlue
             ) {

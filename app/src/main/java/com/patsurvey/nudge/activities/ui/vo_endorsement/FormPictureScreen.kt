@@ -94,6 +94,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.toDateInMMDDYYFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -114,7 +115,6 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.navigation.selection.VoEndorsmentScreeens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.MAX_IMAGE_FOR_FORM_C_OR_D

@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
-import com.nudge.core.BLANK_STRING
-
-class QuestionUiModel(
+class SelectActivityOptionUiModel(
+    val subtitle: TaskCardModel?,
+    val subtitle1: TaskCardModel?,
     var questionId: Int,
     var isMandatory: Boolean,
     var surveyId: Int,
@@ -16,8 +16,5 @@ class QuestionUiModel(
     var summary: String? = "",
     val tagId: List<Int>,
     val surveyName: String,
-    val formId: Int,
-    var subjectId: Int = 0,
-    var subjectType: String = BLANK_STRING
-    )
-
+    val formId: Int
+)

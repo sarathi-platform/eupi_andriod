@@ -29,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -61,7 +62,7 @@ open class TaskScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    val getActivityUseCase: GetActivityUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
     var missionId = 0
@@ -75,6 +76,10 @@ open class TaskScreenViewModel @Inject constructor(
     private val _filterList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
+
+    internal val _questionUiModel = mutableStateOf<HashMap<Int, QuestionUiModel>>(hashMapOf())
+    val questionUiModel: State<HashMap<Int, QuestionUiModel>> get() = _questionUiModel
+
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
 
     /**
@@ -285,6 +290,9 @@ open class TaskScreenViewModel @Inject constructor(
             filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
+            if (filterTaskMap.isNotEmpty())
+                expandFirstNotStartedItem()
+
             updateListForAllFilter()
 
             if (isFilterEnabled.value) {
@@ -299,6 +307,11 @@ open class TaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+
+    open fun expandFirstNotStartedItem() {
+
     }
 
     private fun updateFilterForActivity(activityId: Int) {
@@ -322,7 +335,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateProgress() {
+    fun updateProgress() {
         val completedCount = (taskList.value.entries.filter {
             it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name
                     || it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.COMPLETED.name
@@ -457,7 +470,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkButtonValidation() {
+    suspend fun checkButtonValidation() {
         var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId

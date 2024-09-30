@@ -62,6 +62,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetwo
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
@@ -102,6 +103,7 @@ import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
@@ -129,6 +131,7 @@ import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepos
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SelectActivitySurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -193,7 +196,8 @@ class DataLoadingModule {
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .addMigrations(
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -806,6 +810,27 @@ class DataLoadingModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideSelectActivitySurveyRepository(
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyDao: SurveyEntityDao,
+        grantConfigDao: GrantConfigDao
+    ): IActivitySelectSurveyRepository {
+        return SelectActivitySurveyRepositoryImpl(
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyDao,
+            grantConfigDao = grantConfigDao
+
+        )
+    }
+
     @Singleton
     @Provides
     fun provideRegenerateGrantEventRepository(
@@ -839,9 +864,10 @@ class DataLoadingModule {
         formEventWriterUseCase: FormEventWriterUseCase,
         documentEventWriterUseCase: DocumentEventWriterUseCase,
         attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 
-    ): RegenerateGrantEventUsecase {
+        ): RegenerateGrantEventUsecase {
         return RegenerateGrantEventUsecase(
             regenerateGrantEventRepositoryImpl = regenerateGrantEventRepositoryImpl,
             matStatusEventWriterUseCase = matStatusEventWriterUseCase,
@@ -850,7 +876,8 @@ class DataLoadingModule {
             formEventWriterUseCase = formEventWriterUseCase,
             documentEventWriterUseCase = documentEventWriterUseCase,
             attendanceEventWriterUseCase = attendanceEventWriterUseCase,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            getActivityUiConfigUseCase = getActivityUiConfigUseCase,
         )
     }
 
