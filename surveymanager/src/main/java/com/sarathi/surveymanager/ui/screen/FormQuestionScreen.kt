@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.text.TextUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -91,7 +92,8 @@ fun FormQuestionScreen(
                             viewModel = viewModel,
                             maxHeight,
                             onAnswerSelect = {
-
+                                viewModel.updateQuestionResponseMap(question)
+                                viewModel.runConditionCheck(question)
                             },
 
                             )
@@ -115,7 +117,7 @@ fun FormScreenQuestionUiContent(
     onAnswerSelect: (QuestionUiModel) -> Unit,
 ) {
 
-    if (viewModel.questionVisibilityMap[question.questionId].value()) {
+    if (viewModel.visibilityMap[question.questionId].value()) {
         when (question.type) {
             QuestionType.InputNumber.name,
             QuestionType.TextField.name,
@@ -138,9 +140,8 @@ fun FormScreenQuestionUiContent(
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING
                 ) { selectedValue, remainingAmout ->
-                    /*viewModel.totalRemainingAmount = remainingAmout
                     saveInputTypeAnswer(selectedValue, question, viewModel)
-                    onAnswerSelect(question)*/
+                    onAnswerSelect(question)
                 }
             }
 
@@ -297,4 +298,18 @@ fun FormScreenQuestionUiContent(
         }
     }
 
+}
+
+fun saveInputTypeAnswer(
+    selectedValue: String,
+    question: QuestionUiModel,
+    viewModel: FormQuestionScreenViewModel
+) {
+    if (TextUtils.isEmpty(selectedValue)) {
+        question.options?.firstOrNull()?.isSelected = false
+    } else {
+        question.options?.firstOrNull()?.isSelected = true
+    }
+    question.options?.firstOrNull()?.selectedValue = selectedValue
+    viewModel.checkButtonValidation()
 }

@@ -19,6 +19,10 @@ class QuestionUiModel(
     val formId: Int,
     var subjectId: Int = 0,
     var subjectType: String = BLANK_STRING,
-    var isConditional: Boolean = false
-)
+    var isConditional: Boolean = false,
+    var showQuestion: Boolean = false
+) {
+
+
+}
 

@@ -26,14 +26,14 @@ interface SourceTargetQuestionMappingEntityDao {
                 "LEFT JOIN conditions_table ON source_target_question_mapping_table.id = conditions_table.sourceTargetQuestionRefId " +
                 "WHERE source_target_question_mapping_table.surveyId = :surveyId " +
                 "AND source_target_question_mapping_table.sectionId = :sectionId " +
-                "AND source_target_question_mapping_table.targetQuestionId IN (:questionIdList) " +
+                "AND source_target_question_mapping_table.sourceQuestionId IN (:sourceQuestionIdList) " +
                 "AND source_target_question_mapping_table.userId = :userId"
     )
     fun getConditionsForQuestion(
         userId: String,
         surveyId: Int,
         sectionId: Int,
-        questionIdList: List<Int>
+        sourceQuestionIdList: List<Int>
     ): List<ConditionsUiModel>
 
 }

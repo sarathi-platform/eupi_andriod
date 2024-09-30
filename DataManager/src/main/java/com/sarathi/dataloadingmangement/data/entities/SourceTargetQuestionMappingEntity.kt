@@ -17,7 +17,7 @@ data class SourceTargetQuestionMappingEntity(
     val sectionId: Int,
     val sourceQuestionId: Int,
     val targetQuestionId: Int,
-    val conditionOperator: String
+    val conditionOperator: String?
 
 ) {
 
@@ -29,14 +29,9 @@ data class SourceTargetQuestionMappingEntity(
             userId: String,
             targetQuestionId: Int,
             conditions: Conditions,
-            conditionOperator: String? = BLANK_STRING
+            conditionOperator: String?
         ): SourceTargetQuestionMappingEntity? {
             var sourceTargetQuestionMappingEntity: SourceTargetQuestionMappingEntity? = null
-
-            var mConditionOperator = BLANK_STRING
-
-            if (conditionOperator != null)
-                mConditionOperator = conditionOperator
 
             conditions.sourceQuestion?.let {
                 sourceTargetQuestionMappingEntity = SourceTargetQuestionMappingEntity(
@@ -45,7 +40,7 @@ data class SourceTargetQuestionMappingEntity(
                     sectionId = sectionId,
                     sourceQuestionId = it,
                     targetQuestionId = targetQuestionId,
-                    conditionOperator = mConditionOperator
+                    conditionOperator = conditionOperator
                 )
             }
 
@@ -62,13 +57,9 @@ data class SourceTargetQuestionMappingEntity(
         ): List<SourceTargetQuestionMappingEntity> {
             val sourceTargetQuestionMappingEntityList: ArrayList<SourceTargetQuestionMappingEntity> =
                 ArrayList()
-            var mConditionOperator = BLANK_STRING
 
             if (conditionsList == null)
                 return sourceTargetQuestionMappingEntityList
-
-            if (conditionOperator != null)
-                mConditionOperator = conditionOperator
 
             conditionsList.forEach {
 
@@ -78,7 +69,7 @@ data class SourceTargetQuestionMappingEntity(
                     sectionId = sectionId,
                     targetQuestionId = targetQuestionId,
                     conditions = it,
-                    conditionOperator = mConditionOperator
+                    conditionOperator = conditionOperator
                 )?.let {
                     sourceTargetQuestionMappingEntityList.add(it)
                 }

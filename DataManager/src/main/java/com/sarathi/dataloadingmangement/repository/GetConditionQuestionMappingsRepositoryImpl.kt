@@ -22,7 +22,7 @@ class GetConditionQuestionMappingsRepositoryImpl @Inject constructor(
             userId = corePrefRepo.getUniqueUserIdentifier(),
             surveyId = surveyId,
             sectionId = sectionId,
-            questionIdList = questionIdList
+            sourceQuestionIdList = questionIdList
         )
     }
 

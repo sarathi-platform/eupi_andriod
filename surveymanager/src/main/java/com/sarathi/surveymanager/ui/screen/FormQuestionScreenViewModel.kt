@@ -1,7 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
@@ -21,8 +20,10 @@ import javax.inject.Inject
 class FormQuestionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val getTaskUseCase: GetTaskUseCase,
-    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
 ) : BaseViewModel() {
+
+    private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
 
     var taskId: Int = 0
     var sectionId: Int = 0
@@ -37,12 +38,17 @@ class FormQuestionScreenViewModel @Inject constructor(
 
     var isActivityNotCompleted = mutableStateOf(true)
 
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+
+//    private val _questionUiModel = mutableStateListOf<QuestionUiModel>()
+//    val questionUiModel: SnapshotStateList<QuestionUiModel> get() = _questionUiModel
+
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
-    val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
-
     val conditionsUtils = ConditionsUtils.getInstance()
+
+    val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -65,12 +71,6 @@ class FormQuestionScreenViewModel @Inject constructor(
                 formId = formId
             )
 
-            questionUiModel.value.forEach {
-                questionVisibilityMap.put(it.questionId, !it.isConditional)
-                if (it.options?.any { optionsUiModel -> optionsUiModel.isSelected == true } == true) {
-                    questionVisibilityMap.put(it.questionId, true)
-                }
-            }
             val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
                 .invoke(
                     surveyId = surveyId,
@@ -79,12 +79,9 @@ class FormQuestionScreenViewModel @Inject constructor(
                 )
 
             conditionsUtils.apply {
-                setSourceTargetMap(sourceTargetQuestionMapping)
-                setQuestionConditionMap(sourceTargetQuestionMapping)
-                setConditionsUiModelList(sourceTargetQuestionMapping)
-                setResponseMap(questionUiModel.value)
+                init(questionUiModel.value, sourceTargetQuestionMapping)
+                initQuestionVisibilityMap(questionUiModel.value)
             }
-
         }
     }
 
@@ -107,4 +104,27 @@ class FormQuestionScreenViewModel @Inject constructor(
         this.missionId = missionId
         this.referenceId = referenceId
     }
+
+    fun checkButtonValidation() {
+        questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
+            val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
+            if (!result) {
+                isButtonEnable.value = false
+                return
+            }
+
+        }
+        isButtonEnable.value = true
+
+
+    }
+
+    fun updateQuestionResponseMap(question: QuestionUiModel) {
+        conditionsUtils.updateQuestionResponseMap(question)
+    }
+
+    fun runConditionCheck(sourceQuestion: QuestionUiModel) {
+        conditionsUtils.runConditionCheck(sourceQuestion)
+    }
+
 }
