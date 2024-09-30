@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ARG_MISSION_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.model.CoreAppDetails
@@ -23,7 +25,7 @@ import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -185,7 +187,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 finishActivity()
             },
             onNavigateToBaselineMission = { mission: MissionUiModel ->
-                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
+                navController.navigate("$DATA_LOADING_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
             }
         )
         SmallGroupNavigation(
@@ -948,8 +950,19 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
                 navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
             }
         }
-        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
-            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route,
+            arguments = listOf(navArgument(ARG_MISSION_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_MISSION_NAME) {
+                    type = NavType.StringType
+                })) {
+            DataLoadingScreenComponent(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
+                missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+            )
         }
     }
 }

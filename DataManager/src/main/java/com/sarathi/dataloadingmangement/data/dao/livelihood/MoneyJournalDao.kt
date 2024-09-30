@@ -88,4 +88,7 @@ interface MoneyJournalDao {
         durationStart: Long,
         durationEnd: Long
     ): IncomeExpenseUiModel?
+
+    @Query("select count(*) from money_journal_table where userId=:userId")
+    suspend fun isMoneyJournalExist(userId: String): Int
 }

@@ -13,5 +13,5 @@ data class ProgrameResponse(
     @SerializedName("name")
     val name: String,
     @SerializedName("startDate")
-    val startDate: String
+    val startDate: String?
 )

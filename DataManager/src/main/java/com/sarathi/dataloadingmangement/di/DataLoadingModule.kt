@@ -193,7 +193,8 @@ class DataLoadingModule {
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .addMigrations(
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -631,12 +632,6 @@ class DataLoadingModule {
             formUseCase = formUseCase,
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
-            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
-                fetchDidiDetailsFromNetworkRepository
-            ),
-            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
-            assetJournalUseCase = assetJournalUseCase,
-            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
         )
     }
 

@@ -12,9 +12,9 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
     private val repository: ISurveySaveNetworkRepository,
     private val sharedPrefs: CoreSharedPrefs,
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(missionId: Int): Boolean {
         try {
-            repository.getSurveyIds().forEach {
+            repository.getSurveyIds(missionId).forEach {
                 callSurveAnsweryApi(
                     GetSurveyAnswerRequest(
                         surveyId = it,

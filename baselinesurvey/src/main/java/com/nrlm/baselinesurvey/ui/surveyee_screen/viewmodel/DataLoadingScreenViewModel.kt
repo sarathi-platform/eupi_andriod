@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
-import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.State
@@ -9,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
 import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
@@ -31,6 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DataLoadingScreenViewModel @Inject constructor(
     val fetchDataUseCase: FetchDataUseCase,
+    val updateBaselineStatusOnInitUseCase: UpdateBaselineStatusOnInitUseCase
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -301,5 +302,13 @@ class DataLoadingScreenViewModel @Inject constructor(
         surveyApiCount = 0
         onEvent(LoaderEvent.UpdateLoaderState(false))
         errorNavigate.value = true
+    }
+
+
+    fun setGrantDbMissionDataLoaded() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            updateBaselineStatusOnInitUseCase.setMissionLoadedInGrantDb()
+
+        }
     }
 }
