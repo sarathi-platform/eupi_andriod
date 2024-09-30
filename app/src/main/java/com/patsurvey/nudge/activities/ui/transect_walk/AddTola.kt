@@ -196,7 +196,7 @@ fun AddTolaBox(
 
             ShowDialogForGPsLocation(
                 title = stringResource(R.string.permission_required_prompt_title),
-                message = stringResource(R.string.location_not_enable),
+                message = stringResource(R.string.gps_location_not_enable),
                 setShowDialog = {
                     getGpsLoaction.value
                 },
@@ -517,7 +517,7 @@ fun TolaBox(
         if (getGpsLoaction.value) {
             ShowDialogForGPsLocation(
                 title = stringResource(R.string.permission_required_prompt_title),
-                message = stringResource(R.string.location_not_enable),
+                message = stringResource(R.string.gps_location_not_enable),
                 setShowDialog = {
                     getGpsLoaction.value
                 },
