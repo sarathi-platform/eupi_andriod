@@ -15,7 +15,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
     IAssetJournalRepository {
     override suspend fun saveOrEditAssetJournal(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        createdDate: Long
     ) {
         val assetJournal = AssetJournalEntity.getAssetJournalEntity(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -29,7 +30,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
                 ?: BLANK_STRING,
             referenceType = "LivelihoodEvent",
             referenceId = eventData.livelihoodId,
-            assetId = eventData.assetType
+            assetId = eventData.assetType,
+            createdDate = createdDate
         )
 
         assetJournalDao.insetAssetJournalEntry(assetJournal)
@@ -66,11 +68,13 @@ class AssetJournalRepositoryImpl @Inject constructor(
 
     override suspend fun getSaveAssetJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTIme: Long
     ): SaveAssetJournalEventDto {
         return SaveAssetJournalEventDto(
             assetCount = eventData.assetCount,
-            createdDate = System.currentTimeMillis(),
+            createdDate = currentDateTime,
             particulars = particular,
             referenceId = eventData.livelihoodId,
             subjectId = eventData.subjectId,
@@ -82,9 +86,12 @@ class AssetJournalRepositoryImpl @Inject constructor(
             transactionDate = eventData.date,
             transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
                 ?: BLANK_STRING,
-            assetId = eventData.assetType
-
-
+            assetId = eventData.assetType,
+            modifiedDate = modifiedDateTIme
         )
+    }
+
+    override suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity> {
+        return assetJournalDao.getAssetJournalForUser(coreSharedPrefs.getUniqueUserIdentifier())
     }
 }

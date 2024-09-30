@@ -88,4 +88,11 @@ interface MoneyJournalDao {
         durationStart: Long,
         durationEnd: Long
     ): IncomeExpenseUiModel?
+
+    @Query("Select * from money_journal_table where userId=:userId and referenceType=:referenceType")
+    suspend fun getMoneyJournalTransactionForUser(
+        referenceType: String = "LivelihoodEvent",
+        userId: String,
+    ): List<MoneyJournalEntity>
+
 }

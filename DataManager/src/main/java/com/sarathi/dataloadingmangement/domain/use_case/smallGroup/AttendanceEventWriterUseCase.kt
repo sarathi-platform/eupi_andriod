@@ -12,7 +12,7 @@ class AttendanceEventWriterUseCase @Inject constructor(
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
 
-    suspend operator fun invoke() {
+    suspend operator fun invoke(isFromRegenerate: Boolean) {
 
         val activeAttendanceHistory =
             attendanceEventWriterRepository.getAllActiveAttendanceForUser()
@@ -21,7 +21,8 @@ class AttendanceEventWriterUseCase @Inject constructor(
             val event = eventWriterRepositoryImpl.createAndSaveEvent(
                 eventItem = saveAttendanceEventDto,
                 eventName = EventName.SAVE_SUBJECT_ATTENDANCE_EVENT,
-                surveyName = SMALL_GROUP_ATTENDANCE_MISSION
+                surveyName = SMALL_GROUP_ATTENDANCE_MISSION,
+                isFromRegenerate = isFromRegenerate
             )
             event?.let {
                 eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -39,7 +40,8 @@ class AttendanceEventWriterUseCase @Inject constructor(
             val event = eventWriterRepositoryImpl.createAndSaveEvent(
                 eventItem = saveAttendanceEventDto,
                 eventName = EventName.DELETE_SUBJECT_ATTENDANCE_EVENT,
-                surveyName = SMALL_GROUP_ATTENDANCE_MISSION
+                surveyName = SMALL_GROUP_ATTENDANCE_MISSION,
+                isFromRegenerate = isFromRegenerate
             )
             event?.let {
                 eventWriterRepositoryImpl.saveEventToMultipleSources(

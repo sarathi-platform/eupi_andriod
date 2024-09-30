@@ -12,14 +12,19 @@ class FormEventWriterUseCase @Inject constructor(
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
 
-    suspend fun writeFormEvent(surveyName: String, formEntity: FormEntity) {
+    suspend fun writeFormEvent(
+        surveyName: String,
+        formEntity: FormEntity,
+        isFromRegenerate: Boolean = false
+    ) {
 
         val saveAnswerEventDto = repository.getSaveFormAnswerEventDto(formEntity)
         eventWriterRepositoryImpl.createAndSaveEvent(
             saveAnswerEventDto,
             EventName.UPDATE_FORM_DETAILS_EVENT,
             EventType.STATEFUL,
-            surveyName = surveyName
+            surveyName = surveyName,
+            isFromRegenerate = isFromRegenerate
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

@@ -121,6 +121,9 @@ object MigrationQueries {
             "sectionStatus TEXT\n" +
             ")"
 
+    val ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME =
+        "ALTER TABLE $LIVELIHOOD_LANGUAGE_TABLE_NAME RENAME COLUMN livelihoodId TO referenceId\n"
+
 
     val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID =
         "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceId' INTEGER"

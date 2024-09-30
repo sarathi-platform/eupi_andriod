@@ -73,6 +73,7 @@ class SurveyScreenViewModel @Inject constructor(
                 grantType = granType,
                 taskId = taskId,
                 uriList = ArrayList(),
+                isFromRegenerate = false,
                 activityId = activityConfig?.activityId.value(),
                 activityReferenceId = activityConfig?.referenceId,
                 activityReferenceType = activityConfig?.referenceType
@@ -96,7 +97,7 @@ class SurveyScreenViewModel @Inject constructor(
                 taskId = taskId, status = status
             )
             sectionStatusEventWriterUserCase(
-                surveyId, sectionId, taskId, status
+                surveyId, sectionId, taskId, status, isFromRegenerate = false
             )
             withContext(mainDispatcher) {
                 callBack()

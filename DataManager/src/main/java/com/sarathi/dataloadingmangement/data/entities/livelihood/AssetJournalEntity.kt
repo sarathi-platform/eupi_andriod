@@ -43,6 +43,7 @@ data class AssetJournalEntity(
             subjectId: Int,
             assetId: Int,
             transactionFlow: String,
+            createdDate: Long
         ): AssetJournalEntity {
             return AssetJournalEntity(
                 id = 0,
@@ -60,7 +61,7 @@ data class AssetJournalEntity(
                 transactionType = referenceType,
                 assetId = assetId,
                 modifiedDate = System.currentTimeMillis(),
-                createdDate = System.currentTimeMillis()
+                createdDate = createdDate
             )
 
         }

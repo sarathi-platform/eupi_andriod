@@ -58,7 +58,7 @@ class RegenerateGrantEventRepositoryImpl @Inject constructor(
         return documentDao.getDocumentSummaryData(userId = coreSharedPrefs.getUniqueUserIdentifier())
     }
 
-    override suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity {
+    override suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity? {
         return taskDao.getTaskById(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             taskId = taskId

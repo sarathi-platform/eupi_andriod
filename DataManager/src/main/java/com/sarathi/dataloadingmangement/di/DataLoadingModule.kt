@@ -78,6 +78,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProd
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
@@ -864,6 +865,7 @@ class DataLoadingModule {
         formEventWriterUseCase: FormEventWriterUseCase,
         documentEventWriterUseCase: DocumentEventWriterUseCase,
         attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
+        regenerateLivelihoodEventUseCase: RegenerateLivelihoodEventUseCase,
         coreSharedPrefs: CoreSharedPrefs,
         getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 
@@ -877,6 +879,7 @@ class DataLoadingModule {
             documentEventWriterUseCase = documentEventWriterUseCase,
             attendanceEventWriterUseCase = attendanceEventWriterUseCase,
             coreSharedPrefs = coreSharedPrefs,
+            regenerateLivelihoodEventUseCase = regenerateLivelihoodEventUseCase,
             getActivityUiConfigUseCase = getActivityUiConfigUseCase,
         )
     }
@@ -1428,6 +1431,22 @@ class DataLoadingModule {
     ): FetchSubjectLivelihoodEventHistoryRepository {
         return FetchSubjectLivelihoodEventHistoryRepositoryImpl(
             coreSharedPrefs, subjectLivelihoodEventMappingDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegenerateLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): RegenerateLivelihoodEventUseCase {
+        return RegenerateLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
+            eventWriterRepository = eventWriterRepositoryImpl
         )
     }
 }

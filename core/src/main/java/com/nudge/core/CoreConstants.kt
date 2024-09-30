@@ -89,6 +89,7 @@ const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
 const val DD_mmm_YY_FORMAT = "dd MMM, yy"
 const val DD_mmm_hh_mm_FORMAT = "dd MMM, hh:mm"
+const val DD_mmm_hh_mm_a_FORMAT = "dd MMM, hh:mm a"
 const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
@@ -118,3 +119,4 @@ const val DEFAULT_ERROR_CODE = 500
 
 const val MAX_CELL_COUNT_FOR_SELECT_ACTIVITY = 2
 const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
+const val NOT_DECIDED_LIVELIHOOD_ID = -1

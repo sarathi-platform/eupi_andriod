@@ -51,6 +51,8 @@ class EventWriterRepositoryImpl @Inject constructor(
         eventName: EventName,
         eventType: EventType,
         surveyName: String,
+        isFromRegenerate: Boolean
+
     ): Events? {
 
         if (eventType != EventType.STATEFUL)
@@ -158,6 +160,7 @@ class EventWriterRepositoryImpl @Inject constructor(
             consumer_status = BLANK_STRING,
             payloadLocalId = BLANK_STRING,
             metadata = MetadataDto(
+                isRegenerateFile = isFromRegenerate,
                 mission = surveyName,
                 depends_on = listOf(),
                 request_payload_size = requestPayload.json().getSizeInLong(),
