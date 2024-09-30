@@ -114,7 +114,7 @@ class RegenerateGrantEventUsecase @Inject constructor(
                     missionId = taskEntity?.missionId ?: -1
                 )
                 val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
-                    taskEntity.activityId,
+                    taskEntity!!.activityId,
                     taskEntity.missionId
                 )
                 surveyAnswerEventWriterUseCase.invoke(

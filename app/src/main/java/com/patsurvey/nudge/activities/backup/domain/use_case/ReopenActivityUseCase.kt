@@ -49,7 +49,8 @@ class ReopenActivityUseCase @Inject constructor(
             ).forEach { activity ->
                 matStatusEventWriterUseCase.updateActivityStatus(
                     activityEntity = activity,
-                    surveyName = missionName
+                    surveyName = missionName,
+                    isFromRegenerate = false
                 )
             }
 
@@ -57,7 +58,7 @@ class ReopenActivityUseCase @Inject constructor(
              * Update Mission Status
              * */
             updateMissionActivityTaskStatusUseCase.markMissionInProgress(missionId)
-            matStatusEventWriterUseCase.updateMissionStatus(missionId, missionName)
+            matStatusEventWriterUseCase.updateMissionStatus(missionId, missionName,false)
             return true
         } catch (e: Exception) {
             CoreLogger.e(
