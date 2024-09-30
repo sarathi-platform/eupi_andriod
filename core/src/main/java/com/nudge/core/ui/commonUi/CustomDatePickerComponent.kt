@@ -8,7 +8,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -44,12 +43,12 @@ fun CustomDatePickerComponent(
 ) {
 
     if (datePickerDialogProperties.getDatePickerDialogVisibilityState().value) {
-        DatePickerDialog(
+        CustomDatePickerDialog(
             modifier = modifier.padding(all = 20.dp),
             shape = datePickerDialogProperties.shape,
             tonalElevation = datePickerDialogProperties.tonalElevation,
             properties = datePickerDialogProperties.properties,
-            colors = DatePickerDefaults.colors(
+            colors = CustomDatePickerDefaults.colors(
                 containerColor = searchFieldBg
             ),
             onDismissRequest = { onDismissRequest() },
