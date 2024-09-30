@@ -7,8 +7,10 @@ import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
+import com.nudge.core.PREF_DATA_TAB_VISIBILITY
 import com.nudge.core.PREF_MIX_PANEL_TOKEN
 import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
+import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.value
@@ -263,12 +265,20 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         savePref(PREF_KEY_DATA_TAB_DATA_LOADED, isDataLoaded)
     }
 
+    override fun saveDataTabVisibility(isEnabled: Boolean) {
+        savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
+    }
+
     override fun getSyncBatchSize(): Int {
         return prefs.getLong(PREF_KEY_SYNC_BATCH_SIZE, 0L).toInt()
     }
 
     override fun getSyncRetryCount(): Int {
         return prefs.getLong(PREF_KEY_SYNC_RETRY_COUNT, 0L).toInt()
+    }
+
+    override fun saveIsSyncEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_SYNC_ENABLED, isEnabled).apply()
     }
 
     override fun getBuildEnvironment(): String {
@@ -292,6 +302,17 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun isSyncImageBlobUploadEnable(): Boolean {
         return getPref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, false)
+    }
+    override fun saveSyncBatchSize(batchSize: Long) {
+        prefs.edit().putLong(PREF_KEY_SYNC_BATCH_SIZE, batchSize).apply()
+    }
+
+    override fun saveSyncRetryCount(retryCount: Long) {
+        prefs.edit().putLong(PREF_KEY_SYNC_RETRY_COUNT, retryCount).apply()
+    }
+
+    override fun setSyncOptionEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, isEnabled).apply()
     }
 
 

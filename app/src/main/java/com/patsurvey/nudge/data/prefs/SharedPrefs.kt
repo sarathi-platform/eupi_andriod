@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
+import com.nudge.core.PREF_DATA_TAB_VISIBILITY
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_BATCH_SIZE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_ENABLED
@@ -46,8 +47,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
-
-        const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"
 
     }
 

@@ -50,7 +50,7 @@ data class Events (
     val error_message: String? = BLANK_STRING,
 
     @ColumnInfo("metadata")
-    val metadata: String?,
+    var metadata: String?,
 
     @ColumnInfo("payloadLocalId")
     val payloadLocalId: String?,

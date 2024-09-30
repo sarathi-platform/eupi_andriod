@@ -2,11 +2,15 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
 import android.text.TextUtils
+import com.nudge.core.PARENT_EVENT_NAME
+import com.nudge.core.PARENT_TOPIC_NAME
 import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -140,6 +144,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 )
 
 
+                val mEventName = it.name
+                val mEventTopic = it.type
                 uriList?.forEach { uri ->
                     compressImage(
                         imageUri = findImageFile(
@@ -151,6 +157,14 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                     )
                     val imageEvent = it.also { event ->
                         event.id = UUID.randomUUID().toString()
+                        val metaData = event.metadata?.getMetaDataDtoFromString()
+                        metaData?.let { metadataDto ->
+                            metadataDto.data = mapOf(
+                                PARENT_EVENT_NAME to mEventName,
+                                PARENT_TOPIC_NAME to mEventTopic
+                            )
+                            event.metadata = metadataDto.json()
+                        }
                         event.name = EventName.UPLOAD_IMAGE_EVENT.topicName
                         event.type = EventName.UPLOAD_IMAGE_EVENT.topicName
                     }
