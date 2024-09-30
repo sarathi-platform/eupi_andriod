@@ -21,10 +21,15 @@ interface ISubjectLivelihoodEventMapping {
 
     suspend fun addOrUpdateLivelihoodEvent(
         eventData: LivelihoodEventScreenData,
-        currentDateTime: Long
+        currentDateTime: Long,
+        modifiedDateTime: Long
     )
 
-    suspend fun softDeleteLivelihoodEvent(transactionId: String, subjectId: Int)
+    suspend fun softDeleteLivelihoodEvent(
+        transactionId: String,
+        subjectId: Int,
+        modifiedDateTime: Long
+    )
 
     suspend fun getLivelihoodEventDto(
         eventData: LivelihoodEventScreenData,

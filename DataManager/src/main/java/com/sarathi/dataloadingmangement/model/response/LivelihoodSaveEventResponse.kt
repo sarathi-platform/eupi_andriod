@@ -35,4 +35,6 @@ data class LivelihoodSaveEventResponse(
     val createdDate: Long,
     @SerializedName("modifiedDate")
     val modifiedDate: Long,
+    @SerializedName("status")
+    val status: Int,
 )

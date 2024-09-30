@@ -31,10 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nudge.core.R
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.date_picker_component.CustomDatePickerColors
 import com.nudge.core.ui.date_picker_component.CustomDatePickerDefaults
 import com.nudge.core.ui.date_picker_component.CustomDatePickerFormatter
@@ -60,6 +62,7 @@ fun CustomDateRangePickerBottomSheetComponent(
 ) {
 
     val localConfiguration = LocalConfiguration.current
+    val context = LocalContext.current
 
     val screenHeightDp = localConfiguration.screenHeightDp.dp
 
@@ -121,7 +124,14 @@ fun CustomDateRangePickerBottomSheetComponent(
                     Button(
                         modifier = Modifier,
                         onClick = {
-                            onSheetConfirmButtonClicked()
+                            if (dateRangePickerProperties.state.selectedStartDateMillis != null) {
+                                onSheetConfirmButtonClicked()
+                            } else {
+                                showCustomToast(
+                                    context = context,
+                                    msg = "Please select the start date"
+                                )
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = blueDark
