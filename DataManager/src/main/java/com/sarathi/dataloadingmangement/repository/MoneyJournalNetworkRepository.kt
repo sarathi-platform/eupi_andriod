@@ -19,17 +19,17 @@ class MoneyJournalNetworkRepository @Inject constructor(
     }
 
     override suspend fun saveMoneyJournalIntoDb(moneyJournals: List<MoneyJournalApiResponse>) {
-        if (moneyJournalDao.isMoneyJournalExist(sharedPrefs.getUniqueUserIdentifier()) == 0) {
-        val moneyJournalEntities = ArrayList<MoneyJournalEntity>()
-        moneyJournals.forEach {
-            moneyJournalEntities.add(
-                MoneyJournalEntity.getMoneyJournalEntity(
-                    it,
-                    sharedPrefs.getUniqueUserIdentifier()
+        if (moneyJournalDao.isMoneyJournalEntryExistForUser(sharedPrefs.getUniqueUserIdentifier()) == 0) {
+            val moneyJournalEntities = ArrayList<MoneyJournalEntity>()
+            moneyJournals.forEach {
+                moneyJournalEntities.add(
+                    MoneyJournalEntity.getMoneyJournalEntity(
+                        it,
+                        sharedPrefs.getUniqueUserIdentifier()
+                    )
                 )
-            )
-        }
-        moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntities)
+            }
+            moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntities)
     }
     }
 }
