@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
@@ -885,11 +886,13 @@ class DataLoadingModule {
     fun fetchDidiDetailsFromNetworkRepository(
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
-        subjectEntityDao: SubjectEntityDao
+        subjectEntityDao: SubjectEntityDao,
+        apiStatusDao: ApiStatusDao
     ): FetchDidiDetailsFromNetworkRepository {
         return FetchDidiDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs, dataLoadingApiService,
-            subjectEntityDao
+            subjectEntityDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -906,12 +909,14 @@ class DataLoadingModule {
     fun provideFetchSmallGroupDetailsFromNetworkRepository(
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
-        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        apiStatusDao: ApiStatusDao
     ): FetchSmallGroupDetailsFromNetworkRepository {
         return FetchSmallGroupDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs,
             dataLoadingApiService,
-            smallGroupDidiMappingDao
+            smallGroupDidiMappingDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -940,14 +945,16 @@ class DataLoadingModule {
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao,
         subjectAttributeDao: SubjectAttributeDao,
-        attributeValueReferenceDao: AttributeValueReferenceDao
+        attributeValueReferenceDao: AttributeValueReferenceDao,
+        apiStatusDao: ApiStatusDao
     ): FetchSmallGroupAttendanceHistoryFromNetworkRepository {
         return FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
             dataLoadingApiService = dataLoadingApiService,
             subjectEntityDao = subjectEntityDao,
             subjectAttributeDao = subjectAttributeDao,
-            attributeValueReferenceDao = attributeValueReferenceDao
+            attributeValueReferenceDao = attributeValueReferenceDao,
+            apiStatusDao = apiStatusDao
         )
     }
 

@@ -196,5 +196,12 @@ class TaskStatusRepositoryImpl @Inject constructor(
         return updatedMission
     }
 
+    override suspend fun markInProgressActivitiesStatus(missionId: Int, activityIds: List<Int>) {
+        activityDao.markActivitiesInProgress(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(), missionId = missionId,
+            activityIds = activityIds
+        )
+    }
+
 
 }

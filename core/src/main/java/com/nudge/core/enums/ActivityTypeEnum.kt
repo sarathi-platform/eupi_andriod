@@ -17,6 +17,20 @@ enum class ActivityTypeEnum {
             }
         }
 
+        fun getActivityTypeIdFromName(activityType: String): Int {
+
+            return when (activityType.toLowerCase()) {
+                GRANT.name.toLowerCase() -> 1
+                SURVEY.name.toLowerCase() -> 2
+                BASIC.name.toLowerCase() -> 3
+                SELECT.name.toLowerCase() -> 4
+                LIVELIHOOD.name.toLowerCase() -> 5
+                else -> 2
+
+            }
+
+        }
+
         fun showSurveyQuestionOnTaskScreen(activityType: String?): Boolean {
 
             if (activityType == null)
@@ -31,8 +45,6 @@ enum class ActivityTypeEnum {
         }
 
     }
-
-
 }
 
 enum class SurveyFlow {
