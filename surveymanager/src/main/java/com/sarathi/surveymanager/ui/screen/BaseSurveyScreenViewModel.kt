@@ -113,18 +113,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     referenceId = referenceId,
                     grantId = grantID
                 )
-
-                val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
-                    .invoke(
-                        surveyId = surveyId,
-                        sectionId = sectionId,
-                        questionIdList = questionUiModel.value.map { it.questionId }
-                    )
-
-                conditionsUtils.apply {
-                    init(questionUiModel.value, sourceTargetQuestionMapping)
-                    initQuestionVisibilityMap(questionUiModel.value)
-                }
             }
 
             taskEntity?.let { task ->

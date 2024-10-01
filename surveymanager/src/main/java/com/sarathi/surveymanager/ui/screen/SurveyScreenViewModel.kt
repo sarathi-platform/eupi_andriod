@@ -9,6 +9,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -43,6 +44,7 @@ class SurveyScreenViewModel @Inject constructor(
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
     private val getSectionListUseCase: GetSectionListUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -55,9 +57,9 @@ class SurveyScreenViewModel @Inject constructor(
     formEventWriterUseCase,
     coreSharedPrefs,
     getActivityUiConfigUseCase,
-    getSectionListUseCase
+    getSectionListUseCase,
+    getConditionQuestionMappingsUseCase
 ) {
-
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

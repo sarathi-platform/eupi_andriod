@@ -9,6 +9,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -37,7 +38,9 @@ class GrantSurveyScreenViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
-    private val getSectionListUseCase: GetSectionListUseCase
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
+
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -50,7 +53,8 @@ class GrantSurveyScreenViewModel @Inject constructor(
     formEventWriterUseCase,
     coreSharedPrefs,
     getActivityUiConfigUseCase,
-    getSectionListUseCase
+    getSectionListUseCase,
+    getConditionQuestionMappingsUseCase
 ) {
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
