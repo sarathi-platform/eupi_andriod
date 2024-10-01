@@ -101,7 +101,7 @@ class SyncRepositoryImpl(
                     EventStatusEntity(
                         clientId = it.clientId,
                         errorMessage = BLANK_STRING,
-                        status = it.status,
+                        status = it.status ?: BLANK_STRING,
                         mobileNumber = it.mobileNumber,
                         createdBy = corePrefRepo.getUserId(),
                         eventStatusId = 0,
@@ -172,7 +172,7 @@ class SyncRepositoryImpl(
                     EventStatusEntity(
                         clientId = it.clientId,
                         errorMessage = it.errorMessage,
-                        status = it.status,
+                        status = it.status ?: BLANK_STRING,
                         mobileNumber = corePrefRepo.getMobileNo(),
                         createdBy = corePrefRepo.getUserId(),
                         eventStatusId = 0
@@ -333,11 +333,7 @@ class SyncRepositoryImpl(
     override suspend fun getEventListForConsumer(): List<String> {
         return eventDao.getAllEventsForConsumerStatus(
             corePrefRepo.getMobileNo(),
-            listOf(
-                EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-                EventSyncStatus.CONSUMER_FAILED.eventSyncStatus,
-                EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus
-            )
+            EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
         )
     }
 

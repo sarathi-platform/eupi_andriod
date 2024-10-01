@@ -138,12 +138,12 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun getUserId(): String {
-        return prefs.getString(PREF_KEY_USER_ID, BLANK_STRING)
+        return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING)
             ?: BLANK_STRING
     }
 
     override fun saveUserId(userId: String) {
-        prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
+        prefs.edit().putString(PREF_KEY_USER_NAME, userId).apply()
     }
 
     override fun setUserId(userId: String) {

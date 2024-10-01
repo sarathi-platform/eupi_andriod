@@ -197,14 +197,14 @@ class SyncUploadWorker @AssistedInject constructor(
             }
 
             syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
-                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
-                    selectedSyncType,
-                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
-                    success,
-                    message,
-                    requestIds,
-                    ex
-                )
+//                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+//                    selectedSyncType,
+//                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+//                    success,
+//                    message,
+//                    requestIds,
+//                    ex
+//                )
             }
             CoreLogger.d(
                 applicationContext,
@@ -592,17 +592,26 @@ class SyncUploadWorker @AssistedInject constructor(
         imageEventList: List<ImageEventDetailsModel>,
         onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
-        try {
             if (imageEventList.isNotEmpty()) {
                 CoreLogger.d(
                     applicationContext,
                     TAG,
                     "findImageEventAndImageList: ${imageEventList.json()} "
                 )
-                val imageMultiPartList = ArrayList<MultipartBody.Part>()
                 imageEventList.forEach { imageDetail ->
                     try {
-                        addImageToMultipart(imageDetail, imageMultiPartList)
+                        val imageMultiPart = addImageToMultipart(imageDetail)
+                        imageMultiPart?.let {
+                            syncImageToServerAPI(
+                                imageMultipartList = listOf(it),
+                                imageStatusEventList = listOf(imageDetail)
+                            ) { response ->
+                                onAPIResponse(response)
+                            }
+                        } ?: handleFailedImageStatus(
+                            imageEventDetail = imageDetail,
+                            errorMessage = SyncException.IMAGE_MULTIPART_IS_NULL_EXCEPTION.message
+                        )
                     } catch (e: Exception) {
                         handleFailedImageStatus(
                             imageEventDetail = imageDetail,
@@ -610,26 +619,14 @@ class SyncUploadWorker @AssistedInject constructor(
                                 ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
                         )
                     }
-
-                    if (imageMultiPartList.isNotEmpty()) {
-                        syncImageToServerAPI(
-                            imageMultipartList = imageMultiPartList,
-                            imageStatusEventList = imageEventList
-                        ) {
-                            onAPIResponse(it)
-                        }
-                    }
                 }
+
             }
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
     }
 
     private suspend fun SyncUploadWorker.addImageToMultipart(
-        imageDetail: ImageEventDetailsModel,
-        imageMultiPartList: ArrayList<MultipartBody.Part>
-    ) {
+        imageDetail: ImageEventDetailsModel
+    ): MultipartBody.Part? {
         imageDetail.fileName?.let { imageName ->
             if (imageName.isNotEmpty()) {
                 val picturePath = getImagePathFromPicture()
@@ -646,9 +643,7 @@ class SyncUploadWorker @AssistedInject constructor(
                         imageFile = file,
                         imageEventDetail = imageDetail
                     )
-                    imageMultiPart?.let {
-                        imageMultiPartList.add(it)
-                    }
+                    return imageMultiPart
                 } else {
                     handleFailedImageStatus(
                         imageEventDetail = imageDetail,
@@ -665,6 +660,7 @@ class SyncUploadWorker @AssistedInject constructor(
             imageEventDetail = imageDetail,
             errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
         )
+        return null
     }
 }
 

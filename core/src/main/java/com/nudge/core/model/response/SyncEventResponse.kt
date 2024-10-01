@@ -2,6 +2,7 @@ package com.nudge.core.model.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class SyncEventResponse(
     @SerializedName("clientId")
@@ -10,7 +11,7 @@ data class SyncEventResponse(
 
     @SerializedName("status")
     @Expose
-    val status: String,
+    val status: String? = BLANK_STRING,
 
     @SerializedName("requestId")
     @Expose

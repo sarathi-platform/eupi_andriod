@@ -59,7 +59,6 @@ class PatDidiSummaryRepository @Inject constructor(
             userType = userType
         )
     }
-
     suspend fun getTolaFromServerId(id: Int): TolaEntity? {
         return tolaDao.fetchSingleTolaFromServerId(id)
     }
