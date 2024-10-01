@@ -47,7 +47,7 @@ class DataTabUseCase @Inject constructor(
                 }
                 livelihoodUseCase.invoke()
 
-
+               coreSharedPrefs.setDataTabDataLoaded(true)
                 withContext(CoreDispatchers.mainDispatcher) {
                     onComplete(true, BLANK_STRING)
                 }
