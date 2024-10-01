@@ -34,7 +34,9 @@ data class SaveLivelihoodEventDto(
     @SerializedName("modifiedDate")
     val modifiedDate: Long,
     @SerializedName("status")
-    val status: Int
+    val status: Int,
+    @SerializedName("eventType")
+    val eventType: String
 ) {
 
 }
