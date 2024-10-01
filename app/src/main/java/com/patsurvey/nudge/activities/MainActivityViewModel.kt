@@ -78,10 +78,10 @@ class MainActivityViewModel @Inject constructor(
     fun saveSyncRetryCountFromRemoteConfig(retryCount: Long) {
         prefRepo.saveSyncRetryCount(retryCount)
     }
-
     fun saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable: Boolean) {
         prefRepo.setSyncOptionEnabled(isSyncOptionEnable)
     }
+
 
     fun saveDataTabVisibility(isEnabled: Boolean) {
         prefRepo.saveDataTabVisibility(isEnabled)
@@ -89,6 +89,10 @@ class MainActivityViewModel @Inject constructor(
 
     fun saveMixPanelToken(token: String) {
         coreSharedPrefs.saveMixPanelToken(token)
+    }
+
+    fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean) {
+        coreSharedPrefs.saveSyncImageBlobUploadEnable(isBlobUploadEnable)
     }
 
     fun updateBaselineStatusOnInit(onSuccess: (isSuccess: Boolean) -> Unit) {

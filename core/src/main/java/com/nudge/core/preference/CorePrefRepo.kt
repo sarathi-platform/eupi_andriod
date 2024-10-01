@@ -70,5 +70,8 @@ interface CorePrefRepo {
     fun getMixPanelToken(): String
 
     fun saveMixPanelToken(token: String)
+    fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean)
+    fun isSyncImageBlobUploadEnable(): Boolean
+
 
 }

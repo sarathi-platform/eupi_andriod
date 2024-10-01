@@ -17,14 +17,18 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
+import com.nudge.syncmanager.domain.repository.SyncBlobRepository
+import com.nudge.syncmanager.domain.repository.SyncBlobRepositoryImpl
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import com.nudge.syncmanager.domain.repository.SyncRepositoryImpl
 import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
+import com.nudge.syncmanager.domain.usecase.BlobUploadUseCase
 import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
 import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
 import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
 import com.nudge.syncmanager.domain.usecase.SyncAnalyticsEventUseCase
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
+import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
@@ -225,7 +229,8 @@ object UseCaseModule {
         eventStatusDao: EventStatusDao,
         imageStatusDao: ImageStatusDao,
         apiService: SyncApiService,
-        eventsDao: EventsDao
+        eventsDao: EventsDao,
+        blobImageUploader: BlobImageUploader
     ): SyncRepository {
         return SyncRepositoryImpl(
             corePrefRepo = corePrefRepo,
@@ -233,7 +238,8 @@ object UseCaseModule {
             eventStatusDao = eventStatusDao,
             imageStatusDao = imageStatusDao,
             apiService = apiService,
-            eventDao = eventsDao
+            eventDao = eventsDao,
+            imageUploader = blobImageUploader
         )
     }
 
@@ -258,6 +264,7 @@ object UseCaseModule {
     fun provideSyncManagerUseCase(
         repository: SyncRepository,
         syncAPiRepository: SyncApiRepository,
+        syncBlobRepository: SyncBlobRepository,
         analyticsManager: AnalyticsManager
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
@@ -265,6 +272,7 @@ object UseCaseModule {
             syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
             getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
             fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
+            syncBlobUploadUseCase = BlobUploadUseCase(syncBlobRepository),
             syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
                 analyticsManager = analyticsManager
             )
@@ -277,6 +285,26 @@ object UseCaseModule {
         analyticsManager: AnalyticsManager,
     ): SyncAnalyticsEventUseCase {
         return SyncAnalyticsEventUseCase(analyticsManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncBlobRepository(
+        apiService: SyncApiService,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+        blobImageUploader: BlobImageUploader,
+        eventsDao: EventsDao
+    ): SyncBlobRepository {
+        return SyncBlobRepositoryImpl(
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao,
+            corePrefRepo = corePrefRepo,
+            apiService = apiService,
+            blobImageUploader = blobImageUploader,
+            eventsDao = eventsDao
+        )
     }
 
 

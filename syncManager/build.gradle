@@ -7,7 +7,8 @@ plugins {
 android {
     namespace 'com.nudge.syncmanager'
     compileSdk 34
-
+    def localProperties = new Properties()
+    localProperties.load(new FileInputStream(rootProject.file("local.properties")))
     defaultConfig {
         minSdk 24
 
@@ -16,6 +17,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BLOB_CONNECTION_STRING", localProperties['blob_connection_token'])
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -68,6 +72,7 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.5.3")
     implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("com.microsoft.azure.android:azure-storage-android:2.0.0@aar")
 
     //Communication Module
     implementation(project(":CommunicationModule"))

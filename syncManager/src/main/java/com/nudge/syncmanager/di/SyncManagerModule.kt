@@ -5,6 +5,8 @@ import androidx.work.WorkManager
 import com.nudge.core.Core
 import com.nudge.syncmanager.firebase.FirebaseRepository
 import com.nudge.syncmanager.firebase.FirebaseRepositoryImpl
+import com.nudge.syncmanager.imageupload.BlobImageUploader
+import com.nudge.syncmanager.imageupload.ImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 import dagger.Module
 import dagger.Provides
@@ -14,9 +16,13 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
+
 @InstallIn(SingletonComponent::class)
 @Module
 class SyncManagerModule {
+
+
+
     @Singleton
     @Provides
     fun provideSyncApi(retrofit: Retrofit): SyncApiService {
@@ -40,4 +46,11 @@ class SyncManagerModule {
     fun provideWorkManager(@ApplicationContext context: Context):WorkManager{
         return WorkManager.getInstance(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideImageUploader(): ImageUploader {
+        return BlobImageUploader()
+    }
+
 }

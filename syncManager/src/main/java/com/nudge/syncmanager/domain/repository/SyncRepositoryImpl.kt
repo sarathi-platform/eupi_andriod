@@ -24,6 +24,7 @@ import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_NAME
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
+import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 
 class SyncRepositoryImpl(
@@ -32,7 +33,8 @@ class SyncRepositoryImpl(
     val eventStatusDao: EventStatusDao,
     val corePrefRepo: CorePrefRepo,
     val imageStatusDao: ImageStatusDao,
-    val requestStatusDao: RequestStatusDao
+    val requestStatusDao: RequestStatusDao,
+    val imageUploader: BlobImageUploader
 ) : SyncRepository {
     val pendingEventStatusList = listOf(
         EventSyncStatus.OPEN.eventSyncStatus,

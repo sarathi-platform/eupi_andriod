@@ -38,6 +38,7 @@ import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
@@ -142,16 +143,6 @@ class SyncUploadWorker @AssistedInject constructor(
                             selectedSyncType,
                             eventListAfterPayloadCheck
                         )
-
-//                    val apiResponse =
-//                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(dataEventList)
-//                    totalPendingEventCount =
-//                        handleAPIResponse(
-//                            apiResponse,
-//                            totalPendingEventCount,
-//                            selectedSyncType,
-//                            mPendingEventList
-//                        )
                 }
 
                 val imageEventIdsList =
@@ -168,15 +159,28 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventIds = imageEventIdsList
                         )
                     if (imageEventList.isNotEmpty()) {
-                        findImageEventAndImage(imageEventList) { response ->
-                            totalPendingEventCount =
-                                handleAPIResponse(
-                                    response,
-                                    totalPendingEventCount,
-                                    selectedSyncType,
-                                    mPendingEventList
-                                )
+                        if (syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()) {
+                            findImageEventAndImage(imageEventList) { response ->
+                                totalPendingEventCount =
+                                    handleAPIResponse(
+                                        response,
+                                        totalPendingEventCount,
+                                        selectedSyncType,
+                                        mPendingEventList
+                                    )
+                            }
+                        } else {
+                            findImageEventAndImageForMultipart(imageEventList) { response ->
+                                totalPendingEventCount =
+                                    handleAPIResponse(
+                                        response,
+                                        totalPendingEventCount,
+                                        selectedSyncType,
+                                        mPendingEventList
+                                    )
+                            }
                         }
+
                     }
                 }
 
@@ -448,8 +452,12 @@ class SyncUploadWorker @AssistedInject constructor(
                                 SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                             metadata = SyncImageMetadataRequest(
                                 data = Data(
-                                    filePath = file.absolutePath,
-                                    contentType = getFileMimeType(file = file)
+                                    filePath = file.path,
+                                    contentType = getFileMimeType(file),
+                                    isOnlyData = false,
+                                    blobUrl = BLANK_STRING,
+                                    driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                                 ),
                                 dependsOn = emptyList()
                             ).json()
@@ -502,6 +510,85 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private suspend fun findImageEventAndImage(
+        imageEventList: List<ImageEventDetailsModel>,
+        onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
+    ) {
+
+        CoreLogger.d(
+            applicationContext,
+            TAG,
+            "findImageEventAndImageList: ${imageEventList.json()} "
+        )
+        imageEventList.forEach { imageDetail ->
+            val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
+            var uploadedBlobUrl = BLANK_STRING
+            try {
+                syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
+                    filePath = picturePath,
+                    fileName = imageDetail.fileName ?: BLANK_STRING
+                ) { message, isExceptionOccur ->
+                    if (!isExceptionOccur) {
+                        uploadedBlobUrl = message
+                    }
+                    syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
+                        imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
+                        isBlobUploaded = isExceptionOccur,
+                        blobUrl = if (isExceptionOccur) BLANK_STRING else message,
+                        errorMessage = if (isExceptionOccur) message else BLANK_STRING,
+                        eventId = imageDetail.eventId ?: BLANK_STRING,
+                        requestId = BLANK_STRING,
+                        status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
+                        else EventSyncStatus.OPEN.eventSyncStatus
+                    )
+                }
+            } catch (e: Exception) {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = e.message
+                        ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
+                )
+            }
+            val file = File(picturePath)
+            if (uploadedBlobUrl.isNotEmpty()) {
+                val imageEvent = Events(
+                    id = imageDetail.id,
+                    name = imageDetail.name,
+                    type = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                    createdBy = imageDetail.createdBy,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    request_payload = imageDetail.request_payload,
+                    status = imageDetail.status,
+                    metadata = SyncImageMetadataRequest(
+                        data = Data(
+                            filePath = picturePath,
+                            contentType = getFileMimeType(file),
+                            isOnlyData = true,
+                            blobUrl = uploadedBlobUrl,
+                            driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                                SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
+                        ),
+                        dependsOn = emptyList()
+                    ).json(),
+                    mobile_number = imageDetail.mobile_number,
+                    payloadLocalId = imageDetail.payloadLocalId
+                )
+
+                val apiResponse =
+                    syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                        events = listOf(imageEvent),
+                    )
+                onAPIResponse(apiResponse)
+            } else {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message
+                )
+            }
+        }
+    }
+
+
+    private suspend fun findImageEventAndImageForMultipart(
         imageEventList: List<ImageEventDetailsModel>,
         onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
@@ -579,8 +666,6 @@ class SyncUploadWorker @AssistedInject constructor(
             errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
         )
     }
-
-
 }
 
 fun createEventResponseList(

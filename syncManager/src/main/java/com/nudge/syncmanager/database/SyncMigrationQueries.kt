@@ -39,6 +39,7 @@ object SyncMigrationQueries {
                 "    requestId TEXT,\n" +
                 "    errorMessage TEXT,\n" +
                 "    imageEventId TEXT NOT NULL\n" +
+                "    blobUrl TEXT \n" +
                 ")"
 
     const val CREATE_REQUEST_STATUS_TABLE =
