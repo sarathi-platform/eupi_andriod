@@ -16,6 +16,7 @@ import com.nudge.core.DRIVE_TYPE
 import com.nudge.core.EMPTY_EVENT_LIST_FAILURE
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.FAILED_RESPONSE_FAILURE
+import com.nudge.core.FILE_NAME
 import com.nudge.core.FILE_PATH
 import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
@@ -448,6 +449,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
                     var metaDataMap = hashMapOf<String, Any>(
                         FILE_PATH to file.path,
+                        FILE_NAME to (imageEvent.fileName ?: BLANK_STRING),
                         CONTENT_TYPE to getFileMimeType(file).toString(),
                         IS_ONLY_DATA to false,
                         BLOB_URL to BLANK_STRING,
@@ -567,9 +569,10 @@ class SyncUploadWorker @AssistedInject constructor(
             if (uploadedBlobUrl.isNotEmpty()) {
                 var metaDataMap = hashMapOf<String, Any>(
                     FILE_PATH to file.path,
+                    FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
                     CONTENT_TYPE to getFileMimeType(file).toString(),
                     IS_ONLY_DATA to false,
-                    BLOB_URL to BLANK_STRING,
+                    BLOB_URL to uploadedBlobUrl,
                     DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
                         SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
                 )
