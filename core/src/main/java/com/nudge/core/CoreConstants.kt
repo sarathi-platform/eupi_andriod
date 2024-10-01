@@ -163,4 +163,5 @@ const val CONTENT_TYPE = "content_type"
 const val IS_ONLY_DATA = "isOnlyData"
 const val DRIVE_TYPE = "driveType"
 const val BLOB_URL = "blobUrl"
-
+const val POST_SELECTION_CONTAINER = "uat/eupi-documents/content"
+const val SELECTION_CONTAINER = "uat/eupi-documents"

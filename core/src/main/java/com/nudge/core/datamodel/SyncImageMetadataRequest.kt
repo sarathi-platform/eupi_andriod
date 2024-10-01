@@ -1,6 +1,8 @@
 package com.nudge.core.datamodel
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.SYNC_SELECTION_DRIVE
 
 data class SyncImageMetadataRequest(
     @field:SerializedName("depends_on")
