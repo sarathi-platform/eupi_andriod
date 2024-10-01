@@ -592,7 +592,6 @@ class SyncUploadWorker @AssistedInject constructor(
         imageEventList: List<ImageEventDetailsModel>,
         onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
-        try {
             if (imageEventList.isNotEmpty()) {
                 CoreLogger.d(
                     applicationContext,
@@ -623,9 +622,6 @@ class SyncUploadWorker @AssistedInject constructor(
                 }
 
             }
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
     }
 
     private suspend fun SyncUploadWorker.addImageToMultipart(

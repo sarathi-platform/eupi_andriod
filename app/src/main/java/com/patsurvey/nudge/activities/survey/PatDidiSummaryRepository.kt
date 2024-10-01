@@ -59,12 +59,6 @@ class PatDidiSummaryRepository @Inject constructor(
             userType = userType
         )
     }
-
-
-//    suspend fun uploadDidiImage(image: MultipartBody.Part,didiId: RequestBody,location:RequestBody,userType:RequestBody): ApiResponseModel<Object> {
-//        return apiService.uploadDidiImage(didiId =  didiId, image = image, location = location, userType = userType)
-//    }
-
     suspend fun getTolaFromServerId(id: Int): TolaEntity? {
         return tolaDao.fetchSingleTolaFromServerId(id)
     }
