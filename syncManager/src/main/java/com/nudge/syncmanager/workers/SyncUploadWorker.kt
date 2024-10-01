@@ -571,7 +571,7 @@ class SyncUploadWorker @AssistedInject constructor(
                     FILE_PATH to file.path,
                     FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
                     CONTENT_TYPE to getFileMimeType(file).toString(),
-                    IS_ONLY_DATA to false,
+                    IS_ONLY_DATA to true,
                     BLOB_URL to uploadedBlobUrl,
                     DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
                         SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
