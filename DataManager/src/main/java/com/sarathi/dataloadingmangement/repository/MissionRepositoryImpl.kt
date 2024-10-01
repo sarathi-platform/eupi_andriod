@@ -157,7 +157,8 @@ class MissionRepositoryImpl @Inject constructor(
             activities.forEach { missionActivityModel ->
                 val activityCount = missionActivityDao.getActivityCount(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    missionActivityModel.id
+                    missionId = missionId,
+                    activityId = missionActivityModel.id
                 )
                 if (activityCount == 0) {
                     missionActivityDao.insertMissionActivity(
@@ -179,10 +180,10 @@ class MissionRepositoryImpl @Inject constructor(
 
                 } else {
                     missionActivityDao.updateActivityActiveStatus(
-                        missionId,
-                        sharedPrefs.getUniqueUserIdentifier(),
-                        1,
-                        missionActivityModel.id
+                        missionId = missionId,
+                        userId = sharedPrefs.getUniqueUserIdentifier(),
+                        isActive = 1,
+                        activityId = missionActivityModel.id
                     )
                 }
 

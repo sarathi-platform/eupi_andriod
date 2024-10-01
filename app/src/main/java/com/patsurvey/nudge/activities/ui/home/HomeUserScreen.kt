@@ -11,6 +11,7 @@ import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.UPCM_USER
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants
 
 @Composable
 fun HomeUserScreen(
@@ -20,7 +21,8 @@ fun HomeUserScreen(
     onSettingIconClick: () -> Unit
 ) {
     if (prefRepo.getLoggedInUserType() == UPCM_USER) {
-        navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
+        if (navController.currentBackStackEntry?.destination?.route != MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME)
+            navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
 
 //        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
     }else {
