@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -58,7 +57,6 @@ fun InputComponent(
     }
 
     val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -113,7 +111,6 @@ fun InputComponent(
             },
             keyboardActions = KeyboardActions(onDone = {
                 focusManager.clearFocus()
-                keyboardController?.hide()
                 onAnswerSelection(txt.value, remainingAmount)
             }),
             maxLines = 2,

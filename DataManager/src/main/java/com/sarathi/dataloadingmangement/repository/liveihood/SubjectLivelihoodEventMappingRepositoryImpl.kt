@@ -67,8 +67,7 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         ) {
             softDeleteLivelihoodEvent(
                 transactionId = subjectLivelihoodEventMappingEntity.transactionId,
-                subjectId = subjectLivelihoodEventMappingEntity.subjectId,
-                modifiedDateTime = modifiedDateTime
+                subjectId = subjectLivelihoodEventMappingEntity.subjectId
             )
         }
         subjectLivelihoodEventMappingDao.insertSubjectLivelihoodEventMapping(
@@ -88,6 +87,14 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             transactionId = transactionId,
             subjectId = subjectId,
             modifiedDate = modifiedDateTime
+        )
+    }
+
+    override suspend fun softDeleteLivelihoodEvent(transactionId: String, subjectId: Int) {
+        subjectLivelihoodEventMappingDao.softDeleteLivelihoodEventMapping(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId,
+            subjectId = subjectId
         )
     }
 

@@ -31,6 +31,11 @@ interface ISubjectLivelihoodEventMapping {
         modifiedDateTime: Long
     )
 
+    suspend fun softDeleteLivelihoodEvent(
+        transactionId: String,
+        subjectId: Int
+    )
+
     suspend fun getLivelihoodEventDto(
         eventData: LivelihoodEventScreenData,
         currentDateTime: Long,
