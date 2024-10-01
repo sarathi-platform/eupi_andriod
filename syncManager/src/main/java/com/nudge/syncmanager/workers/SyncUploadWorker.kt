@@ -13,13 +13,16 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.BLOB_URL
 import com.nudge.core.CONTENT_TYPE
 import com.nudge.core.DRIVE_TYPE
+import com.nudge.core.EMPTY_EVENT_LIST_FAILURE
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.FAILED_RESPONSE_FAILURE
 import com.nudge.core.FILE_PATH
 import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.IS_ONLY_DATA
 import com.nudge.core.MULTIPART_FORM_DATA
+import com.nudge.core.NULL_RESPONSE_FAILURE
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
@@ -707,8 +710,3 @@ fun createEventResponseList(
     }
     return failedEventList
 }
-
-private const val EMPTY_EVENT_LIST_FAILURE = "EMPTY_LIST_FAILURE"
-private const val NULL_RESPONSE_FAILURE = "NULL_RESPONSE_FAILURE"
-private const val FAILED_RESPONSE_FAILURE = "FAILED_RESPONSE_FAILURE"
-
