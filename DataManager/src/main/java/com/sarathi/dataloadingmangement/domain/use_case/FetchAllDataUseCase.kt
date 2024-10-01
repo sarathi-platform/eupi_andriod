@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,9 @@ class FetchAllDataUseCase @Inject constructor(
     val formUseCase: FormUseCase,
     val moneyJournalUseCase: FetchMoneyJournalUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
+    val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
+
+
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -64,7 +68,10 @@ class FetchAllDataUseCase @Inject constructor(
             val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
+                if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
+                    fetchLivelihoodOptionNetworkUseCase.invoke()
+                }
                 if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
                     formUseCase.invoke(missionId)
                     moneyJournalUseCase.invoke()

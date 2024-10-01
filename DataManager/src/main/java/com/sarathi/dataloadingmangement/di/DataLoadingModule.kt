@@ -603,17 +603,13 @@ class DataLoadingModule {
         downloaderManager: DownloaderManager,
         languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
-        surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
-        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
         formUseCase: FormUseCase,
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
-        fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
-        assetJournalUseCase: FetchAssetJournalUseCase,
-        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
+        fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -636,6 +632,7 @@ class DataLoadingModule {
             formUseCase = formUseCase,
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
+            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase
         )
     }
 
