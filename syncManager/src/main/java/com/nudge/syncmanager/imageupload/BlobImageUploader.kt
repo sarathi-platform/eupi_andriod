@@ -10,18 +10,18 @@ import java.io.IOException
 import javax.inject.Inject
 
 class BlobImageUploader @Inject constructor() : ImageUploader {
-
-    val containerName = "uat/eupi-documents"
     val TAG = "BLOB Image Upload"
 
     override suspend fun uploadImage(
         filePath: String,
         fileName: String,
+        containerName: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         return uploadImageInBlobStorage(
             filePath,
             fileName,
+            containerName = containerName,
             onUploadImageResponse = { message, isException ->
                 onUploadImageResponse(message, isException)
             })
@@ -30,6 +30,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
     private suspend fun uploadImageInBlobStorage(
         photoPath: String,
         fileName: String,
+        containerName: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         try {
