@@ -48,6 +48,7 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
@@ -194,6 +195,8 @@ private fun Step1TabContent(viewModel: ActivityReopeningScreenViewModel) {
                 viewModel.onMissionSelected(missionUiModel)
             }
         }
+
+        customVerticalSpacer(size = dimen_50_dp)
     }
 }
 
