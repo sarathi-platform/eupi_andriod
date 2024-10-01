@@ -1,7 +1,10 @@
 package com.nudge.syncmanager.domain.repository
 
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.POST_SELECTION_CONTAINER
+import com.nudge.core.SELECTION_CONTAINER
 import com.nudge.core.SOMETHING_WENT_WRONG
+import com.nudge.core.UPCM_USER
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
@@ -35,6 +38,7 @@ class SyncBlobRepositoryImpl(
         blobImageUploader.uploadImage(
             filePath = filePath,
             fileName = fileName,
+            containerName = if (corePrefRepo.getUserType() == UPCM_USER) POST_SELECTION_CONTAINER else SELECTION_CONTAINER,
             onUploadImageResponse = { message, isExceptionOccur ->
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext().applicationContext,
