@@ -42,13 +42,16 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.request.getAddDidiRequestPayloadFromString
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.FOR_VO_ENDORSEMENT_VALUE
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY_STEP_ID
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.WEALTH_RANKING_STEP_ID
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getPatScoreEventName
@@ -236,7 +239,8 @@ class SettingRepository @Inject constructor(
                     }
 
                     StepType.VO_ENDROSEMENT.name -> {
-                        didiDao.getAllDidisForVillage(villageId).filter { it.forVoEndorsement == 1 }
+                        didiDao.getAllDidisForVillage(villageId)
+                            .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE }
                     }
 
                     else -> {
@@ -265,7 +269,8 @@ class SettingRepository @Inject constructor(
         }
     }
 
-    private val rankingEditStepsId = listOf<Int>(43, 44, 46)
+    private val rankingEditStepsId =
+        listOf<Int>(WEALTH_RANKING_STEP_ID, PAT_SURVEY_STEP_ID, WEALTH_RANKING_STEP_ID)
 
     private suspend fun generateWorkFlowStatusEvent(villageId: Int) {
         stepsListDao.getAllStepsForVillage(villageId).forEach {

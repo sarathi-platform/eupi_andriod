@@ -2,6 +2,7 @@ package com.patsurvey.nudge.model.dataModel
 
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 import com.patsurvey.nudge.database.DidiEntity
 
 data class RankingEditEvent(
@@ -11,13 +12,13 @@ data class RankingEditEvent(
     val type: String,
     @SerializedName("status")
     val status: Boolean,
-    @SerializedName("name") var name: String = "",
-    @SerializedName("guardianName") var guardianName: String = "",
-    @SerializedName("address") var address: String = "",
+    @SerializedName("name") var name: String = BLANK_STRING,
+    @SerializedName("guardianName") var guardianName: String = BLANK_STRING,
+    @SerializedName("address") var address: String = BLANK_STRING,
     @SerializedName("cohortId") var cohortId: Int = -1,
-    @SerializedName("cohortName") var cohortName: String = "",
+    @SerializedName("cohortName") var cohortName: String = BLANK_STRING,
     @SerializedName("deviceId") var deviceId: String,
-    @SerializedName("cohortDeviceId") var cohortDeviceId: String? = "",
+    @SerializedName("cohortDeviceId") var cohortDeviceId: String? = BLANK_STRING,
 ) {
 
     companion object {
@@ -36,7 +37,7 @@ data class RankingEditEvent(
                 name = didiEntity.name,
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
-                cohortId = didiEntity.cohortId,
+                cohortId = 0, // TODO Add serverId from tola table.
                 cohortName = didiEntity.cohortName,
                 deviceId = didiEntity.localUniqueId,
                 cohortDeviceId = tolaDeviceId

@@ -33,6 +33,7 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.FOR_VO_ENDORSEMENT_VALUE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
@@ -825,7 +826,8 @@ class FormPictureScreenViewModel @Inject constructor(
                     stepId = stepId
                 )
 
-            val didiList = repository.getAllDidisForVillage().filter { it.forVoEndorsement == 1 }
+            val didiList = repository.getAllDidisForVillage()
+                .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE }
 
             val tolaDeviceIdMap: Map<Int, String> = repository.getTolaDeviceIdMap(
                 villageId = villageId,
