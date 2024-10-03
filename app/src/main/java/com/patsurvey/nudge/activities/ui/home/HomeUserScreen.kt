@@ -5,13 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.UPCM_USER
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants
 
 @Composable
 fun HomeUserScreen(
@@ -21,7 +21,9 @@ fun HomeUserScreen(
     onSettingIconClick: () -> Unit
 ) {
     if (prefRepo.getLoggedInUserType() == UPCM_USER) {
-        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        if (navController.currentBackStackEntry?.destination?.route != MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME) {
+            navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
+        }
     }else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(

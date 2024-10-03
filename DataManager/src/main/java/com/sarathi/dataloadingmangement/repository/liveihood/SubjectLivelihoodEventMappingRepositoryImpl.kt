@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
-import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
@@ -48,10 +47,18 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun addOrUpdateLivelihoodEvent(eventData: LivelihoodEventScreenData) {
+    override suspend fun addOrUpdateLivelihoodEvent(
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
+    ) {
         val subjectLivelihoodEventMappingEntity =
             SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
-                coreSharedPrefs.getUniqueUserIdentifier(), eventData
+                coreSharedPrefs.getUniqueUserIdentifier(),
+                eventData,
+                createdDate = currentDateTime,
+                modifiedDate = modifiedDateTime,
+                status = 1
             )
         if (subjectLivelihoodEventMappingDao.isLivelihoodEventMappingExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -59,14 +66,12 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             ) > 0
         ) {
             softDeleteLivelihoodEvent(
-                subjectId = subjectLivelihoodEventMappingEntity.subjectId,
-                transactionId = subjectLivelihoodEventMappingEntity.transactionId
+                transactionId = subjectLivelihoodEventMappingEntity.transactionId,
+                subjectId = subjectLivelihoodEventMappingEntity.subjectId
             )
         }
         subjectLivelihoodEventMappingDao.insertSubjectLivelihoodEventMapping(
-            subjectLivelihoodEventMappingEntity = subjectLivelihoodEventMappingEntity.copy(
-                modifiedDate = getCurrentTimeInMillis()
-            )
+            subjectLivelihoodEventMappingEntity = subjectLivelihoodEventMappingEntity
         )
 
 
@@ -74,8 +79,18 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
 
     override suspend fun softDeleteLivelihoodEvent(
         transactionId: String,
-        subjectId: Int
+        subjectId: Int,
+        modifiedDateTime: Long
     ) {
+        subjectLivelihoodEventMappingDao.softDeleteLivelihoodEventMapping(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId,
+            subjectId = subjectId,
+            modifiedDate = modifiedDateTime
+        )
+    }
+
+    override suspend fun softDeleteLivelihoodEvent(transactionId: String, subjectId: Int) {
         subjectLivelihoodEventMappingDao.softDeleteLivelihoodEventMapping(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             transactionId = transactionId,
@@ -83,7 +98,11 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getLivelihoodEventDto(eventData: LivelihoodEventScreenData): SaveLivelihoodEventDto {
+    override suspend fun getLivelihoodEventDto(
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
+    ): SaveLivelihoodEventDto {
         return SaveLivelihoodEventDto(
             subjectId = eventData.subjectId,
             eventId = eventData.eventId,
@@ -97,7 +116,11 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             date = eventData.date,
             livelihoodValue = eventData.livelihoodValue,
             assetTypeValue = eventData.assetTypeValue,
-            productValue = eventData.productValue
+            productValue = eventData.productValue,
+            createdDate = currentDateTime,
+            modifiedDate = modifiedDateTime,
+            status = 1,
+            eventType = eventData.selectedEvent.name
         )
     }
 
@@ -108,6 +131,12 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
     override suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(transactionId: String): List<SubjectLivelihoodEventMappingEntity>? {
         return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
             userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = transactionId
+        )
+    }
+
+    override suspend fun getLivelihoodEventForUser(): List<SubjectLivelihoodEventMappingEntity> {
+        return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingForUser(
+            coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 

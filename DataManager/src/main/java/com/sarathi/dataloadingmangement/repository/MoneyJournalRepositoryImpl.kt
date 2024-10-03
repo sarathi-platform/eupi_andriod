@@ -36,7 +36,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             "GRANT",
             subjectType,
             subjectId,
-            INFLOW
+            INFLOW,
+            createdDate = System.currentTimeMillis()
         )
         if (moneyJournalDao.isTransactionAlreadyExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = referenceId
@@ -84,7 +85,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
 
     override suspend fun saveAndUpdateMoneyJournalTransaction(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        createdData: Long
     ) {
         val moneyJournalEntity = MoneyJournalEntity.getMoneyJournalEntity(
             coreSharedPrefs.getUniqueUserIdentifier(),
@@ -98,6 +100,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             eventData.subjectId,
             eventData.selectedEvent.moneyJournalEntryFlowType?.name ?: BLANK_STRING,
             dateFormat = "dd/MM/yyyy",
+            createdDate = createdData
 
             )
         moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
@@ -131,23 +134,31 @@ class MoneyJournalRepositoryImpl @Inject constructor(
 
     override suspend fun getMoneyJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTime: Long
     ): SaveMoneyJournalEventDto {
         return SaveMoneyJournalEventDto(
             amount = eventData.amount,
-            createdDate = System.currentTimeMillis(),
+            createdDate = currentDateTime,
             particulars = particular,
             referenceType = "LivelihoodEvent",
             transactionType = "LivelihoodEvent",
-            transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
+            transactionFlow = eventData.selectedEvent.moneyJournalEntryFlowType?.name
                 ?: BLANK_STRING,
             transactionId = eventData.transactionId,
             subjectId = eventData.subjectId,
             subjectType = "Didi",
             transactionDate = eventData.date,
             referenceId = eventData.livelihoodId,
-            status = 1
+            status = 1,
+            modifiedDate = modifiedDateTime
         )
+    }
+
+    override suspend fun getMoneyJournalEventForUser(): List<MoneyJournalEntity> {
+        return moneyJournalDao.getMoneyJournalTransactionForUser(userId = coreSharedPrefs.getUniqueUserIdentifier())
+
     }
 
 

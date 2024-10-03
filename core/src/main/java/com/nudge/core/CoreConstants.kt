@@ -89,9 +89,12 @@ const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
 const val DD_mmm_YY_FORMAT = "dd MMM, yy"
 const val DD_mmm_hh_mm_FORMAT = "dd MMM, hh:mm"
+const val DD_mmm_hh_mm_a_FORMAT = "dd MMM, hh:mm a"
 const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
+
+const val BASELINE_MISSION_NAME = "Baseline"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
@@ -110,3 +113,10 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+
+const val DEFAULT_SUCCESS_CODE = 200
+const val DEFAULT_ERROR_CODE = 500
+
+const val MAX_CELL_COUNT_FOR_SELECT_ACTIVITY = 2
+const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
+const val NOT_DECIDED_LIVELIHOOD_ID = -1

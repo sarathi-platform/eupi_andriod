@@ -43,6 +43,10 @@ class DidiTabViewModel @Inject constructor(
     val filteredSmallGroupList: State<List<SmallGroupSubTabUiModel>> get() = _filteredSmallGroupList
 
     val countMap = mutableMapOf<SubTabs, Int>()
+    val isSubjectApiStatusFailed =
+        mutableStateOf(false)
+
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -87,6 +91,7 @@ class DidiTabViewModel @Inject constructor(
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             }
+            isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
         }
     }
 

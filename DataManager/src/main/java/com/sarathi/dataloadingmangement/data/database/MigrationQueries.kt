@@ -1,10 +1,12 @@
 package com.sarathi.dataloadingmangement.data.database
 
+import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
 import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
@@ -119,5 +121,19 @@ object MigrationQueries {
             " taskId INTEGER NOT NULL,\n" +
             "sectionStatus TEXT\n" +
             ")"
+
+    val ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE =
+        "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN 'isDataLoaded' INTEGER DEFAULT 1 NOT NULL"
+
+
+    val ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME =
+        "ALTER TABLE $LIVELIHOOD_LANGUAGE_TABLE_NAME RENAME COLUMN livelihoodId TO referenceId\n"
+
+
+    val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID =
+        "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceId' INTEGER"
+
+    val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE =
+        "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceType' TEXT"
 }
 

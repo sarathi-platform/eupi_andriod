@@ -18,6 +18,7 @@ fun SurveyTaskScreen(
     missionId: Int,
     activityName: String,
     activityId: Int,
+    programId: Int,
     onSettingClick: () -> Unit
 ) {
 
@@ -44,7 +45,8 @@ fun SurveyTaskScreen(
         },
         taskScreenContentForGroup = { groupKey, vm, navController ->
             TaskScreenContentForGroup(groupKey, vm, navController)
-        }
+        },
+        programId = programId
     )
 
 

@@ -14,6 +14,7 @@ interface IEventWriterRepository {
         eventName: EventName,
         eventType: EventType = EventType.STATEFUL,
         surveyName: String,
+        isFromRegenerate: Boolean
     ): Events?
 
     suspend fun saveEventToMultipleSources(

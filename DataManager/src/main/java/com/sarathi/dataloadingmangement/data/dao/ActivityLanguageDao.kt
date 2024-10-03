@@ -16,4 +16,7 @@ interface ActivityLanguageDao {
     @Query("delete from activity_language_attribute_table where userId=:userId")
     fun deleteActivityLanguageAttributeForUser(userId: String)
 
+    @Query("delete from activity_language_attribute_table where userId=:userId and missionId=:missionId and activityId=:activityId")
+    fun deleteActivityLanguageAttributeForActivity(userId: String, missionId: Int, activityId: Int)
+
 }

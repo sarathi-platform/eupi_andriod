@@ -40,6 +40,7 @@ class ExportImportRepositoryImpl @Inject constructor(
                 villageListDao().deleteAllVilleges()
                 surveyEntityDao().deleteAllSurvey(userId)
                 didiInfoEntityDao().deleteAllDidiInfo(userId)
+
             }
 
         }catch (ex:Exception){
@@ -52,6 +53,8 @@ class ExportImportRepositoryImpl @Inject constructor(
         prefBSRepo.setDataSyncStatus(false)
         coreSharedPrefs.setDataLoaded(isDataLoaded = false)
         coreSharedPrefs.setDidiTabDataLoaded(false)
+        coreSharedPrefs.setDataTabDataLoaded(false)
+
     }
 
     override fun getUserMobileNumber(): String {

@@ -68,6 +68,7 @@
     <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
     <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="decrease_in_number">decrease in Number</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
     <string name="livelihood">Livelihood</string>
@@ -100,4 +101,5 @@
     <string name="search_didi">Search didi</string>
     <string name="search_by_small_groups">Search by small groups</string>
     <string name="total_didis">Total Didis - %1$s</string>
+    <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
 </resources>

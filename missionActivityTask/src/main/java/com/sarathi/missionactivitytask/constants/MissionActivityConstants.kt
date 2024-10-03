@@ -17,6 +17,10 @@ object MissionActivityConstants {
     const val GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME = "grant_survey_summary_screen"
     const val ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME = "add_image_screen_screen"
     const val MAT_SECTION_SCREEN_ROUTE_NAME = "mat_section_screen"
+    const val ACTIVITY_SELECT_SCREEN_ROUTE_NAME = "activity_select_screen"
+    const val ACTIVITY_BASIC_SCREEN_ROUTE_NAME = "activity_basic_screen"
+    const val LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME = "livelihood_pop_survey_screen"
+
     const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
     const val ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME = "activity_completion_screen"
     const val MISSION_FINAL_STEP_SCREEN_ROUTE_NAME = "mission_final_step_screen"
@@ -27,6 +31,7 @@ object MissionActivityConstants {
 
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"
+    const val ARG_PROGRAM_ID = "program_id"
     const val ARG_TASK_ID_LIST = "task_id_list"
     const val ARG_IS_FROM_SETTING_SCREEN = "isFromSettingScreen"
     const val ARG_MISSION_COMPLETED = "mission_completed"
@@ -48,7 +53,8 @@ object MissionActivityConstants {
     const val ARG_SANCTIONED_AMOUNT = "sanctioned_amount"
     const val ARG_TOTAL_SUBMITTED_AMOUNT = "total_submitted_amount"
     const val ARG_ACTIVITY_MASSAGE = "activity_massage"
-    const val ARG_IS_FROM_ACTIVITY = "from_activity"
+    const val ARG_IS_FROM_ACTIVITY = "is_from_activity"
+    const val ARG_FROM_ACTIVITY = "from_activity"
     const val FINAL_STEP_COMPLETION_DELAY = 3000L
     const val ARG_FORM_PATH = "form_path"
     const val ARG_MAT_ID = "mat_id"

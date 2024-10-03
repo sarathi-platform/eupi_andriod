@@ -42,7 +42,8 @@ data class MoneyJournalEntity(
             subjectType: String,
             subjectId: Int,
             transactionFlow: String,
-            dateFormat: String = DD_MMM_YYYY_FORMAT
+            dateFormat: String = DD_MMM_YYYY_FORMAT,
+            createdDate: Long
         ): MoneyJournalEntity {
             return MoneyJournalEntity(
                 id = 0,
@@ -59,7 +60,7 @@ data class MoneyJournalEntity(
                 status = 1,
                 transactionType = grantType,
                 modifiedDate = System.currentTimeMillis(),
-                createdDate = System.currentTimeMillis()
+                createdDate = createdDate
             )
 
         }

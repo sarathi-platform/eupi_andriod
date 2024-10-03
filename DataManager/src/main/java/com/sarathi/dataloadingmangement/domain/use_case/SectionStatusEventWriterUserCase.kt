@@ -12,7 +12,13 @@ class SectionStatusEventWriterUserCase @Inject constructor(
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
 
-    suspend operator fun invoke(surveyId: Int, sectionId: Int, taskId: Int, status: String) {
+    suspend operator fun invoke(
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        status: String,
+        isFromRegenerate: Boolean
+    ) {
 
         val event = sectionStatusEventWriterRepository.writeSectionStatusEvent(
             surveyId,
@@ -25,7 +31,8 @@ class SectionStatusEventWriterUserCase @Inject constructor(
         writeEventInFile(
             eventItem = event,
             eventName = EventName.UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT,
-            surveyName = survey?.surveyName.value()
+            surveyName = survey?.surveyName.value(),
+            isFromRegenerate
         )
 
     }
@@ -35,12 +42,14 @@ class SectionStatusEventWriterUserCase @Inject constructor(
         eventItem: T,
         eventName: EventName,
         surveyName: String,
+        isFromRegenerate: Boolean,
     ) {
         eventWriterRepositoryImpl.createAndSaveEvent(
             eventItem,
             eventName,
             EventType.STATEFUL,
-            surveyName
+            surveyName,
+            isFromRegenerate
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

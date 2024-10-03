@@ -44,6 +44,7 @@ fun ToolBarWithMenuComponent(
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
+    showSettingsButton: Boolean = true,
     isDataNotAvailable: Boolean = false,
     onBottomUI: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues) -> Unit,
@@ -86,16 +87,18 @@ fun ToolBarWithMenuComponent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        onSettingClick()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.more_icon),
-                            contentDescription = "more action button",
-                            tint = blueDark,
-                            modifier = Modifier
-                                .padding(10.dp)
-                        )
+                    if (showSettingsButton) {
+                        IconButton(onClick = {
+                            onSettingClick()
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
                     }
                 },
                 backgroundColor = Color.White,
