@@ -6,6 +6,8 @@ import android.util.Log
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DATA_TAB_DATA_LOADED
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DIDI_TAB_DATA_LOADED
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
@@ -41,6 +43,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
+
+        const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"
 
     }
 
@@ -275,5 +279,19 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun getPageOpenFromOTPScreen(): Boolean {
         return prefs.getBoolean(PREF_KEY_FROM_OTP_SCREEN, false)
+    }
+
+    override fun saveDataTabVisibility(isEnabled: Boolean) {
+        savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
+    }
+
+    override fun isDataTabVisible(): Boolean = getPref(PREF_DATA_TAB_VISIBILITY, false)
+
+    override fun isDataTabDataLoaded(): Boolean {
+        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED + getMobileNumber(), false)
+    }
+
+    override fun isDidiTabDataLoaded(): Boolean {
+        return getPref(PREF_KEY_DIDI_TAB_DATA_LOADED + getMobileNumber(), false)
     }
 }

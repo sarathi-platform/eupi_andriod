@@ -156,7 +156,7 @@ fun DisbursementFormSummaryScreen(
                                     .weight(1.0f)
                                     .height(dimen_56_dp)
                                     .clickable {
-                                        viewModel.generateFormE(false, {})
+                                        viewModel.generateFormE(false, missionId, activityId, {})
 
                                     }
                                     .border(width = dimen_1_dp, color = borderGrey)
@@ -180,7 +180,11 @@ fun DisbursementFormSummaryScreen(
                                     .padding(start = dimen_10_dp)
                                     .weight(1.0f)
                                     .clickable {
-                                        viewModel.generateFormE(true) { filepath ->
+                                        viewModel.generateFormE(
+                                            isDownload = true,
+                                            missionId = missionId,
+                                            activityId = activityId
+                                        ) { filepath ->
                                             navigateToPdfViewerScreen(
                                                 navController = navController,
                                                 filePath = getFileNameFromURL(filepath)
@@ -214,14 +218,15 @@ fun DisbursementFormSummaryScreen(
                                     .padding(10.dp)
                             ) {
                                 ButtonPositive(
-                                    buttonTitle = stringResource(R.string.attach_physical_form_e),
+                                    buttonTitle = viewModel.attachPhysicalFormButtonText.value,
                                     isActive = true,
                                     isArrowRequired = false,
                                     onClick = {
                                         navigateToAddImageScreen(
                                             navController = navController,
                                             activityId = activityId,
-                                            taskIdList = taskList
+                                            taskIdList = taskList,
+                                            missionId = missionId
                                         )
                                     }
                                 )
@@ -341,7 +346,7 @@ private fun MakeDisburesementRow(
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageViewComponent(modifier = Modifier, imageUri ?: Uri.EMPTY)
+            CircularImageViewComponent(modifier = Modifier, imageUri ?: Uri.EMPTY) {}
             Column(
                 modifier = Modifier
                     .weight(1f)

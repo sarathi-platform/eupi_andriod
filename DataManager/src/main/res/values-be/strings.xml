@@ -26,7 +26,7 @@
     <string name="select">सायख\'</string>
     <string name="edit_disable_message">"खामानिया जाजुबनायनि उनाव सुजुनायखौ होनाय जानाय नङा "</string>
     <string name="submit">"जमा हो "</string>
-    <string name="delete">মুছে ফেলুন</string>
+    <string name="delete">खोमोर</string>
     <string name="date">अक्ट:</string>
     <string name="amount">बिबां:</string>
     <string name="nature">স্বভাব:</string>
@@ -59,10 +59,10 @@
     <string name="cancel">"दान "</string>
     <string name="search">"नागिर "</string>
     <string name="search_for_mission">मिसनजों नागिर</string>
-    <string name="search_by_didis">Search by didis</string>
-    <string name="event">Event:</string>
-    <string name="asset">Assets:</string>
-    <string name="add_event">Add Event</string>
+    <string name="search_by_didis">"आब'जों नागिर "</string>
+    <string name="event">जाथाय:</string>
+    <string name="asset">सम्फथिफोर:</string>
+    <string name="add_event">जाथायखौ होफा</string>
     <plurals name="primary_and_secondary_value_not_same">
         <item quantity="one">First and Second livelihood cannot be the same</item>
         <item quantity="other">सेथि आरो नैथि जिउ राहाया रोखोमसे जानो हाया।</item>
@@ -85,6 +85,22 @@
         <item quantity="other">"दान "</item>
     </plurals>
     <string name="are_you_sure">"नों थार नामा? "</string>
+    <string name="livelihood">"जिउराहा "</string>
+    <string name="date_range_picker_label_text">"निफ्राय - निसिम"</string>
+    <string name="total_asset">"गासै सम्फथिफोर "</string>
+    <string name="events">"जाथाय "</string>
+    <string name="type_of_asset">"सम्पदनि रोखोम "</string>
+    <string name="products">"दिहुनजानाय बेसादफोर "</string>
+    <string name="view_edit_history">" सुजुनाय जारिमिनखौ नाय "</string>
+    <string name="show_less">"खम दिन्थि। "</string>
+    <string name="show_more">"आरोबाव दिन्थिबाव। "</string>
+    <string name="all_events">जाथायखौ होफा:</string>
+    <string name="last_events">"जोबथा मोन %1$s जाथायफोर: "</string>
+    <string name="increse_in_number">"अनजिमा बारायनाय "</string>
+    <string name="asset_type">सम्पदनि रोखोम:</string>
+    <string name="event_date">" जाथायनि सम:"</string>
+    <string name="edit_history">"जारिमिनखौ सुजु। "</string>
+    <string name="increase_in_number">"अनजिमा बारायनाय "</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे हाबाफारिखौ फोजोबनायनि उनाव सोलायनो हानाय नङा।</string>
     <string name="not_be_able_to_make_changes_after_completing_this_mission">नोंथाङा थारैनो सोलिहोबाय थानो लुबैदोंना? नोंथाङा बे मिसनखौ फोजोबनायनि उनाव सोलायनो हानाय नङा</string>
 
@@ -97,4 +113,6 @@
     <string name="search_didi">आब\'खौ नागिर</string>
     <string name="search_by_small_groups">फिसा हानजाजों नागिर</string>
     <string name="total_didis">गासै आब\'मोन - %1$s</string>
+    <string name="decrease_in_number">decrease in Number</string>
+    <string name="no_didi_s_assigned_to_you">"नोंनो जेबो बाइदेउ होनाय जायाखै "</string>
 </resources>

@@ -20,9 +20,8 @@ class LivelihoodEventWriterUseCase @Inject constructor(
             saveLivelihoodEventDto,
             EventName.LIVELIHOOD_OPTIONS_EVENT,
             EventType.STATEFUL,
-            LIVELIHOOD
-
-
+            LIVELIHOOD,
+            isFromRegenerate = false
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

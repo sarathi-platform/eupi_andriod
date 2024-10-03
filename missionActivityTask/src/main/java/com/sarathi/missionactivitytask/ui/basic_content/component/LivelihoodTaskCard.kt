@@ -109,7 +109,9 @@ fun LivelihoodTaskCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (imagePath != null) {
-                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath)
+                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath) {
+
+                    }
                 }
                 Column(
                     modifier = Modifier

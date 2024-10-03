@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -165,12 +167,12 @@ fun <T> SelectionSheetItemView(
     items: List<T>,
     SelectionSheetItem: @Composable (index: Int, item: T) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(dimen_20_dp)
     ) {
-        items.forEachIndexed { index, item ->
+        itemsIndexed(items) { index, item ->
             Column {
                 CustomVerticalSpacer()
                 SelectionSheetItem(index, item)

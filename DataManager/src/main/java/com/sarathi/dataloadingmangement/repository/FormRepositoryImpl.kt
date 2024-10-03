@@ -104,8 +104,8 @@ class FormRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getFormEFileName(): String {
-        return "${coreSharedPrefs.getMobileNo()}_FORM_E_${
+    override fun getFormEFileName(pdfName: String): String {
+        return "${coreSharedPrefs.getMobileNo()}_${pdfName}_${
             System.currentTimeMillis().toDateInMMDDYYFormat()
         }"
     }
@@ -114,7 +114,10 @@ class FormRepositoryImpl @Inject constructor(
         formDao.insertAllFormDetail(formDetails)
     }
 
-    override suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>? {
-        return activityConfigDao.getActivityConfigUiModel(userId = coreSharedPrefs.getUniqueUserIdentifier())
+    override suspend fun getActivityConfigUiModel(missionId: Int): List<ActivityConfigEntity>? {
+        return activityConfigDao.getActivityConfigUiModel(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId
+        )
     }
 }

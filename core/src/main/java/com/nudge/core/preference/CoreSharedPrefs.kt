@@ -33,8 +33,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
         const val PREF_KEY_LANGUAGE_ID = "language_id"
-
-        const val PREF_CASTE_LIST = "caste_list"
         const val PREF_KEY_USER_ID = "user_id"
         const val PREF_KEY_DATA_LOADED = "is_data_loaded"
         const val PREF_KEY_DIDI_TAB_DATA_LOADED = "is_didi_tab_data_loaded"
@@ -177,6 +175,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return getPref(PREF_KEY_USER_NAME, BLANK_STRING).toInt()
     }
 
+    override fun setName(name: String) {
+        savePref(PREF_KEY_NAME, name)
+    }
+
     fun setUserEmail(email: String) {
         savePref(PREF_KEY_EMAIL, email)
     }
@@ -242,11 +244,12 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun isDataTabDataLoaded(): Boolean {
-        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED, false)
+        return prefs.getBoolean(PREF_KEY_DATA_TAB_DATA_LOADED + getMobileNo(), false)
     }
 
     override fun setDataTabDataLoaded(isDataLoaded: Boolean) {
-        savePref(PREF_KEY_DATA_TAB_DATA_LOADED, isDataLoaded)
+        savePref(PREF_KEY_DATA_TAB_DATA_LOADED + getMobileNo(), isDataLoaded)
     }
+
 
 }

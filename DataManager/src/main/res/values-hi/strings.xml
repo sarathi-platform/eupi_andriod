@@ -77,6 +77,25 @@
         <item quantity="other">Select second livelihood for didi</item>
     </plurals>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="decrease_in_number">decrease in Number</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="livelihood">Livelihood</string>
+    <string name="date_range_picker_label_text">From - To</string>
+    <string name="total_asset">Total Asset</string>
+    <string name="events">Events</string>
+    <string name="type_of_asset">Type of Asset</string>
+    <string name="products">Products</string>
+    <string name="view_edit_history">View edit history</string>
+    <string name="show_less">Show Less</string>
+    <string name="show_more">Show more</string>
+    <string name="all_events">All Events:</string>
+    <string name="last_events">Last %1$s events:</string>
+    <string name="increse_in_number">Increase in Number</string>
+    <string name="asset_type">Asset Type:</string>
+    <string name="event_date">Event Date:</string>
+    <string name="edit_history">Edit history</string>
+    <string name="increase_in_number">Increase in Number</string>
     <string name="proceed_txt">Proceed</string>
     <plurals name="cancel_txt">
         <item quantity="one">Cancel</item>
@@ -98,4 +117,5 @@
     <string name="search_didi">Search didi</string>
     <string name="search_by_small_groups">Search by small groups</string>
     <string name="total_didis">Total Didis - %1$s</string>
+    <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
 </resources>

@@ -113,6 +113,9 @@ fun DidiTabScreen(
 
     ToolBarWithMenuComponent(
         title = stringResource(id = DataLoadingRes.string.app_name),
+        dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value) stringResource(
+            R.string.not_able_to_load
+        ) else stringResource(R.string.no_didi_s_assigned_to_you),
         modifier = modifier,
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,

@@ -59,10 +59,10 @@
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
     <string name="search_for_mission">মিছনৰ দ্বাৰা সন্ধান কৰক</string>
-    <string name="search_by_didis">Search by didis</string>
-    <string name="event">Event:</string>
-    <string name="asset">Assets:</string>
-    <string name="add_event">Add Event</string>
+    <string name="search_by_didis">"বাইদেউৰ দ্বাৰা সন্ধান কৰক "</string>
+    <string name="event">কাৰ্য্য:</string>
+    <string name="asset">সম্পদ:</string>
+    <string name="add_event">কাৰ্য্য যোগ কৰক</string>
     <plurals name="primary_and_secondary_value_not_same">
         <item quantity="one">First and Second livelihood cannot be the same</item>
         <item quantity="other">"প্ৰথম আৰু দ্বিতীয় জীৱিকা একে হ'ব নোৱাৰে"</item>
@@ -85,6 +85,22 @@
     </plurals>
     <string name="are_you_sure">আপুনি নিশ্চিত নে?</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
+    <string name="livelihood">"জীৱিকা "</string>
+    <string name="date_range_picker_label_text">"পৰা - লৈ "</string>
+    <string name="total_asset">"মুঠ সম্পত্তি "</string>
+    <string name="events">"কাৰ্য্য "</string>
+    <string name="type_of_asset">"সম্পদৰ প্ৰকাৰ "</string>
+    <string name="products">"সামগ্ৰীসমূহ "</string>
+    <string name="view_edit_history">"সম্পাদনাৰ ইতিহাস চাওক "</string>
+    <string name="show_less">"কম দেখুৱাওক "</string>
+    <string name="show_more">"অধিক দেখুৱাওক "</string>
+    <string name="all_events">কাৰ্য্য যোগ কৰক:</string>
+    <string name="last_events">"অন্তিম %1$s টা ঘটনা: "</string>
+    <string name="increse_in_number">"সংখ্যা বৃদ্ধি "</string>
+    <string name="asset_type">সম্পদৰ প্ৰকাৰ:</string>
+    <string name="event_date">কাৰ্য্যৰ তাৰিখ:</string>
+    <string name="edit_history">"ইতিহাস সম্পাদনা কৰক "</string>
+    <string name="increase_in_number">"সংখ্যা বৃদ্ধি "</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">"\"আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই কাৰ্যকলাপ সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ'ব। "</string>
     <string name="not_be_able_to_make_changes_after_completing_this_mission">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এই অভিযানটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি এই অভিযানত পৰিৱৰ্তন কৰিব নোৱাৰিব।</string>
 
@@ -97,5 +113,7 @@
     <string name="search_didi">বাইদেউঅনুসন্ধান কৰক</string>
     <string name="search_by_small_groups">সৰু গোটৰ দ্বাৰা সন্ধান কৰক</string>
     <string name="total_didis">মুঠ বাইদেউ - %1$s</string>
+    <string name="decrease_in_number">সংখ্যা হ্ৰাস পায়</string>
+    <string name="no_didi_s_assigned_to_you">"আপোনাক কোনো বাইদেউ আৱণ্টন কৰা হোৱা নাই "</string>
 
 </resources>

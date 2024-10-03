@@ -10,5 +10,7 @@ data class DeleteLivelihoodEvent(
     @SerializedName("subjectId")
     val subjectId: Int,
     @SerializedName("subjectType")
-    val subjectType: String
+    val subjectType: String,
+    @SerializedName("modifiedDate")
+    val modifiedDate: Long
 )

@@ -23,6 +23,8 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
@@ -33,6 +35,7 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -1191,6 +1194,16 @@ fun onlyNumberField(value: String): Boolean {
 
 fun getQuestionNumber(questionIndex: Int): String {
     return "${questionIndex + 1}. "
+}
+
+fun String.stringToInt(): Int {
+    return if (this.isNullOrEmpty())
+        0
+    else this.toInt()
+}
+
+fun customGridHeight(optionListSize: Int): Dp {
+    return if (optionListSize >= MAX_CELL_COUNT_FOR_SELECT_ACTIVITY) (MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY * (optionListSize / MAX_CELL_COUNT_FOR_SELECT_ACTIVITY)).dp else dimen_60_dp
 }
 
 fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {

@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.viewmodels
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.model.CoreAppDetails
 import androidx.lifecycle.viewModelScope
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -22,6 +23,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 abstract class BaseViewModel : ViewModel() {
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
+
+    val isDidiImageDialogVisible = mutableStateOf(false)
 
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main

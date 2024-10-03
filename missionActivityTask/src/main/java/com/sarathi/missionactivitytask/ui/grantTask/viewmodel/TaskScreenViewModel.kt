@@ -29,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
@@ -42,6 +43,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
+import com.sarathi.missionactivitytask.utils.toHashMap
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -60,12 +62,13 @@ open class TaskScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    val getActivityUseCase: GetActivityUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
     var activityType: String? = null
+    var programId: Int = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
     var activityConfigUiModelWithoutSurvey: ActivityConfigEntity? = null
     private val _taskList =
@@ -74,6 +77,10 @@ open class TaskScreenViewModel @Inject constructor(
     private val _filterList =
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
+
+    internal val _questionUiModel = mutableStateOf<HashMap<Int, QuestionUiModel>>(hashMapOf())
+    val questionUiModel: State<HashMap<Int, QuestionUiModel>> get() = _questionUiModel
+
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
 
     /**
@@ -174,25 +181,21 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun updateListForAllFilter() {
         filterTaskMap =
-            taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
+            taskList.value.entries
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-        _filterList.value = taskList.value.toList()
-            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+        _filterList.value = taskList.value
     }
 
     private fun updateListForSelectedFilter() {
 
-        val sortedList = taskList.value.toList()
-            .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }
-            .toMap() as HashMap<Int, HashMap<String, TaskCardModel>>
+        val sortedList = taskList.value
 
         val tempFilterTaskMap = sortedList
             .filter {
                 it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
                     filterByValueKey.value, ignoreCase = true
                 )
-            } as HashMap<Int, HashMap<String, TaskCardModel>>
+            }.toHashMap()
         filterTaskMap =
             tempFilterTaskMap.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
@@ -202,7 +205,7 @@ open class TaskScreenViewModel @Inject constructor(
             )
         }
         _filterList.value =
-            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+            tempFilterList.toHashMap()
     }
 
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
@@ -279,16 +282,17 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value.toList()
-                .sortedByDescending { it.second[TaskCardSlots.TASK_STATUS.name]?.value }.toMap()
+            var _filterListt = _taskList.value
             updateValueInMainThread(
                 _filterList,
-                _filterListt as HashMap<Int, HashMap<String, TaskCardModel>>
+                _filterListt
             )
 
             filterTaskMap =
-                _taskList.value.entries.sortedByDescending { it.value[TaskCardSlots.TASK_STATUS.name]?.value }
-                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+
+            if (filterTaskMap.isNotEmpty())
+                expandFirstNotStartedItem()
 
             updateListForAllFilter()
 
@@ -304,6 +308,11 @@ open class TaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+
+    open fun expandFirstNotStartedItem() {
+
     }
 
     private fun updateFilterForActivity(activityId: Int) {
@@ -327,7 +336,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateProgress() {
+    fun updateProgress() {
         val completedCount = (taskList.value.entries.filter {
             it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.NOT_AVAILABLE.name
                     || it.value[TaskCardSlots.TASK_STATUS.name]?.value == SurveyStatusEnum.COMPLETED.name
@@ -410,9 +419,10 @@ open class TaskScreenViewModel @Inject constructor(
 
     }
 
-    fun setMissionActivityId(missionId: Int, activityId: Int) {
+    fun setMissionActivityId(missionId: Int, activityId: Int, programId: Int) {
         this.missionId = missionId
         this.activityId = activityId
+        this.programId = programId
         getActivityType(missionId, activityId)
     }
 
@@ -436,7 +446,7 @@ open class TaskScreenViewModel @Inject constructor(
         val taskListForAppliedFilter = if (isFilterApplied) {
             val tempFilterList =
                 sortedList.filter { it.value[TaskCardSlots.FILTER_BY.name]?.value == filterByValueKey.value }
-            tempFilterList as HashMap<Int, HashMap<String, TaskCardModel>>
+            tempFilterList.toHashMap()
         } else {
             sortedList
         }
@@ -462,7 +472,7 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkButtonValidation() {
+    suspend fun checkButtonValidation() {
         var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId
@@ -478,7 +488,8 @@ open class TaskScreenViewModel @Inject constructor(
             )
             eventWriterUseCase.updateActivityStatus(
                 missionId = missionId,
-                activityId = activityId, surveyName = "CSG"
+                activityId = activityId, surveyName = "CSG",
+                isFromRegenerate = false
             )
         }
     }
@@ -557,7 +568,11 @@ open class TaskScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
+            fetchAllDataUseCase.fetchMissionRelatedData(
+                missionId = missionId,
+                programId = programId,
+                isRefresh = isRefresh,
+                { isSuccess, successMsg ->
                 // Temp method to be removed after baseline is migrated to Grant flow.
                 updateStatusForBaselineMission() { success ->
                     CoreLogger.i(
@@ -566,7 +581,7 @@ open class TaskScreenViewModel @Inject constructor(
                     )
                     initTaskScreen(taskUiModel) // Move this out of the lambda block once the above method is removed
                 }
-            }, isRefresh = isRefresh)
+                })
         }
     }
 

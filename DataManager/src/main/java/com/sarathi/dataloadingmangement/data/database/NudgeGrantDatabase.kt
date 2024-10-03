@@ -8,7 +8,6 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.utils.CoreLogger
-import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
@@ -55,6 +54,19 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MONEY_JOUNRAL_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_PRODUCT_CONFIG_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SECTION_STATUS_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
@@ -95,7 +107,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLiveliho
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 2
+const val NUDGE_GRANT_DATABASE_VERSION = 4
 
 @Database(
     entities = [
@@ -188,6 +200,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
     abstract fun tagReferenceEntityDao(): TagReferenceEntityDao
+
     abstract fun moneyJournalDao(): MoneyJournalDao
     abstract fun assetJournalDao(): AssetJournalDao
     abstract fun livelihoodLanguageDao(): LivelihoodLanguageDao
@@ -206,14 +219,47 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
-        private val CREATE_MONEY_JOUNRAL_TABLE =
-            "CREATE TABLE IF NOT EXISTS $MONEY_JOURNAL_TABLE_NAME (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `transactionId` TEXT NOT NULL, `transactionDate` INTEGER NOT NULL, `transactionDetails` TEXT NOT NULL, `transactionFlow` TEXT NOT NULL, `transactionType` TEXT NOT NULL, `transactionAmount` REAL NOT NULL, `referenceId` INTEGER NOT NULL, `referenceType` TEXT NOT NULL, `subjectId` INTEGER NOT NULL, `subjectType` TEXT NOT NULL, `status` INTEGER NOT NULL, `modifiedDate` INTEGER NOT NULL,`createdDate` INTEGER NOT NULL)"
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val NUDGE_GRANT_DATABASE_MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_1_2")
                 migration(db, listOf(CREATE_MONEY_JOUNRAL_TABLE))
+            }
+        }
+        val NUDGE_GRANT_DATABASE_MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_2_3")
+                migration(
+                    db,
+                    listOf(
+                        CREATE_MONEY_JOUNRAL_TABLE,
+                        MigrationQueries.CREATE_ASSET_JOURNAL_TABLE,
+                        CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE,
+                        CREATE_LIVELIHOOD_TABLE,
+                        CREATE_PRODUCT_CONFIG_TABLE,
+                        CREATE_LIVELIHOOD_ASSET_TABLE,
+                        CREATE_LIVELIHOOD_EVENT_TABLE,
+                        CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_,
+                        CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE,
+                        CREATE_SECTION_STATUS_TABLE
+                    )
+                )
+            }
+        }
+
+        val NUDGE_GRANT_DATABASE_MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_3_4")
+                migration(
+                    db,
+                    listOf(
+                        ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID,
+                        ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE,
+                        ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
+                        ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
+                    )
+                )
             }
         }
 

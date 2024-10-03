@@ -181,7 +181,7 @@ fun <T, U> SearchBarWithDropdownComponent(
                             },
                             placeholder = {
                                 Text(
-                                    text = stringResource(R.string.search_label),
+                                    text = stringResource(R.string.search),
                                     color = Color.Gray
                                 )
                             },

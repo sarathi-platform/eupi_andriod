@@ -12,6 +12,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ARG_MISSION_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.model.CoreAppDetails
@@ -23,7 +25,7 @@ import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -32,6 +34,7 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
@@ -70,6 +73,7 @@ import com.patsurvey.nudge.utils.ARG_DIDI_ID
 import com.patsurvey.nudge.utils.ARG_DIDI_STATUS
 import com.patsurvey.nudge.utils.ARG_FORM_PATH
 import com.patsurvey.nudge.utils.ARG_FOR_REPLACEMENT
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_SCREEN
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
@@ -183,7 +187,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 finishActivity()
             },
             onNavigateToBaselineMission = { mission: MissionUiModel ->
-                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
+                navController.navigate("$DATA_LOADING_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
             }
         )
         SmallGroupNavigation(
@@ -493,13 +497,18 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         composable(route = PatScreens.DIDI_PAT_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            })){
+            }, navArgument(ARG_FROM_PAT_SUMMARY_SCREEN) {
+                type = NavType.BoolType
+            }
+            )) {
             PatDidiSummaryScreen(
-                navController=navController,
+                navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
+                isComingFromPatSummaryScreen = it.arguments?.getBoolean(ARG_FROM_PAT_SUMMARY_SCREEN)
+                    ?: false
             ) {
                 navController.popBackStack()
             }
@@ -652,7 +661,8 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
 
 sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
-    object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
+    object DIDI_PAT_SUMMARY_SCREEN :
+        PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}/{$ARG_FROM_PAT_SUMMARY_SCREEN}")
 
     object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object SINGLE_QUESTION_SCREEN : PatScreens(route = "single_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
@@ -751,11 +761,19 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             }
         )) {
-            FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
+            FormImageViewerScreen(
+                navController = navController,
+                fileName = it.arguments?.getString(ARG_IMAGE_PATH) ?: "",
+                viewModel = hiltViewModel()
+            )
         }
 
-        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route) {
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
+            ActivityReopeningScreen(navController = navController)
         }
 
     }
@@ -932,8 +950,19 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
                 navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
             }
         }
-        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
-            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route,
+            arguments = listOf(navArgument(ARG_MISSION_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_MISSION_NAME) {
+                    type = NavType.StringType
+                })) {
+            DataLoadingScreenComponent(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
+                missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+            )
         }
     }
 }
@@ -1081,13 +1110,18 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         composable(route = BpcDidiListScreens.DIDI_PAT_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            })){
+            }, navArgument(ARG_FROM_PAT_SUMMARY_SCREEN) {
+                type = NavType.BoolType
+            })
+        ) {
             PatDidiSummaryScreen(
-                navController=navController,
+                navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
+                isComingFromPatSummaryScreen = it.arguments?.getBoolean(ARG_FROM_PAT_SUMMARY_SCREEN)
+                    ?: false
             ) {
                 navController.popBackStack()
             }
@@ -1121,7 +1155,8 @@ sealed class BpcDidiListScreens(val route: String) {
 
     object BPC_ADD_MORE_DIDI_LIST : BpcDidiListScreens(route = "bpc_add_more_didi_list/{$ARG_FOR_REPLACEMENT}")
 
-    object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}")
+    object DIDI_PAT_SUMMARY_SCREEN :
+        BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}/{$ARG_FROM_PAT_SUMMARY_SCREEN}")
 
     object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object SINGLE_QUESTION_SCREEN : PatScreens(route = "bpc_single_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")

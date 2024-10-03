@@ -19,13 +19,18 @@ data class SubjectLivelihoodEventMappingEntity(
     val livelihoodEventId: Int,
     val livelihoodEventType: String,
     val surveyResponse: String,
-    val status: Int
+    val status: Int,
+    val createdDate: Long,
+    val modifiedDate: Long
 
 ) {
     companion object {
         fun getSubjectLivelihoodEventMappingEntity(
             uniqueUserIdentifier: String,
-            eventData: LivelihoodEventScreenData
+            eventData: LivelihoodEventScreenData,
+            createdDate: Long,
+            modifiedDate: Long,
+            status: Int
         ): SubjectLivelihoodEventMappingEntity {
             return SubjectLivelihoodEventMappingEntity(
                 userId = uniqueUserIdentifier,
@@ -37,8 +42,9 @@ data class SubjectLivelihoodEventMappingEntity(
                 livelihoodEventId = eventData.eventId,
                 livelihoodEventType = eventData.selectedEvent.name,
                 surveyResponse = eventData.json(),
-                status = 1
-
+                status = status,
+                modifiedDate = modifiedDate,
+                createdDate = createdDate,
             )
         }
 

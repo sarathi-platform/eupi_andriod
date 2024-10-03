@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
@@ -50,6 +52,7 @@ import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
 import kotlinx.coroutines.launch
@@ -71,7 +74,17 @@ fun BaseSurveyScreen(
     onAnswerSelect: (QuestionUiModel) -> Unit,
     totalSubmittedAmount: Int,
     onSubmitButtonClick: () -> Unit,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    surveyQuestionContent: (LazyListScope.(maxHeight: Dp) -> Unit) = { maxHeight ->
+        BaseSurveyQuestionContent(
+            viewModel,
+            sanctionedAmount,
+            totalSubmittedAmount,
+            onAnswerSelect,
+            grantType,
+            maxHeight
+        )
+    }
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -97,7 +110,14 @@ fun BaseSurveyScreen(
         title = toolbarTitle,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            if (grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase())
+                navController.popBackStack()
+            else {
+                navController.popBackStack()
+                navController.popBackStack()
+            }
+        },
         isSearch = false,
         onSearchValueChange = {
 
@@ -146,178 +166,11 @@ fun BaseSurveyScreen(
                         .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
-                    item { CustomVerticalSpacer() }
-                    itemsIndexed(
-                        items = viewModel.questionUiModel.value
-                    ) { index, question ->
-
-                        when (question.type) {
-                            QuestionType.InputNumber.name -> {
-                                InputComponent(
-                                    maxLength = 7,
-                                    isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
-                                    sanctionedAmount = sanctionedAmount,
-                                    remainingAmount = getSanctionedAmountMessage(
-                                        question,
-                                        sanctionedAmount = sanctionedAmount,
-                                        remainingAmount = totalSubmittedAmount - getSelectedValueInInt(
-                                            question.options?.firstOrNull()?.selectedValue
-                                                ?: BLANK_STRING, 0
-                                        )
-                                    ),
-                                    isMandatory = question.isMandatory,
-                                    isEditable = viewModel.isActivityNotCompleted.value,
-                                    defaultValue = question.options?.firstOrNull()?.selectedValue
-                                        ?: BLANK_STRING,
-                                    title = question.questionDisplay,
-                                    isOnlyNumber = true,
-                                    hintText = question.options?.firstOrNull()?.description
-                                        ?: BLANK_STRING
-                                ) { selectedValue, remainingAmout ->
-                                    viewModel.totalRemainingAmount = remainingAmout
-                                    saveInputTypeAnswer(selectedValue, question, viewModel)
-                                    onAnswerSelect(question)
-                                }
-                            }
-
-                            QuestionType.DateType.name -> {
-
-                                DatePickerComponent(
-                                    isMandatory = question.isMandatory,
-                                    defaultValue = question.options?.firstOrNull()?.selectedValue
-                                        ?: BLANK_STRING,
-                                    title = question.questionDisplay,
-                                    isEditable = viewModel.isActivityNotCompleted.value,
-                                    hintText = question.options?.firstOrNull()?.description
-                                        ?: BLANK_STRING
-                                ) { selectedValue ->
-                                    saveInputTypeAnswer(selectedValue, question, viewModel)
-                                    onAnswerSelect(question)
-
-                                }
-                            }
-
-                            QuestionType.MultiImage.name -> {
-                                AddImageComponent(
-                                    fileNamePrefix = viewModel.getPrefixFileName(question),
-                                    filePaths = commaSeparatedStringToList(
-                                        question.options?.firstOrNull()?.selectedValue
-                                            ?: BLANK_STRING
-                                    ),
-                                    isMandatory = question.isMandatory,
-                                    title = question.questionDisplay,
-                                    isEditable = viewModel.isActivityNotCompleted.value,
-                                    maxCustomHeight = maxHeight,
-                                    subtitle = question.display
-                                ) { selectedValue, isDeleted ->
-                                    saveMultiImageTypeAnswer(
-                                        selectedValue,
-                                        question.options,
-                                        isDeleted
-                                    )
-                                    viewModel.checkButtonValidation()
-                                    onAnswerSelect(question)
-
-                                }
-                            }
-
-                            QuestionType.SingleSelectDropDown.name,
-                            QuestionType.DropDown.name -> {
-                                DropDownTypeComponent(
-                                    isEditAllowed = viewModel.isActivityNotCompleted.value,
-                                    title = question.questionDisplay,
-                                    questionNumber = if (TextUtils.equals(
-                                            grantType.toLowerCase(),
-                                            ActivityTypeEnum.SURVEY.name.toLowerCase()
-                                        )
-                                    ) getQuestionNumber(index) else BLANK_STRING,
-                                    isMandatory = question.isMandatory,
-                                    showQuestionInCard = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
-                                    sources = getOptionsValueDto(question.options ?: listOf()),
-                                    onAnswerSelection = { selectedValue ->
-                                        question.options?.forEach { option ->
-                                            option.isSelected = selectedValue.id == option.optionId
-                                        }
-                                        viewModel.checkButtonValidation()
-                                        onAnswerSelect(question)
-
-                                    }
-                                )
-                            }
-
-                            QuestionType.MultiSelectDropDown.name -> {
-                                TypeMultiSelectedDropDownComponent(
-                                    title = question.questionDisplay,
-                                    isMandatory = question.isMandatory,
-                                    sources = getOptionsValueDto(question.options ?: listOf()),
-                                    isEditAllowed = viewModel.isActivityNotCompleted.value,
-                                    onAnswerSelection = { selectedItems ->
-                                        val selectedOptions =
-                                            selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
-                                        question.options?.forEach { options ->
-                                            if (selectedOptions.find { it == options.description.toString() } != null) {
-                                                options.isSelected = true
-                                            } else {
-                                                options.isSelected = false
-                                            }
-                                        }
-                                        viewModel.checkButtonValidation()
-                                        onAnswerSelect(question)
-
-                                    }
-                                )
-                            }
-
-                            QuestionType.AutoCalculation.name -> {
-                                CalculationResultComponent(
-                                    title = question.questionDisplay,
-                                )
-                            }
-
-                            QuestionType.RadioButton.name -> {
-                                RadioQuestionBoxComponent(
-                                    questionIndex = index,
-                                    questionDisplay = question.questionDisplay,
-                                    isRequiredField = question.isMandatory,
-                                    maxCustomHeight = maxHeight,
-                                    optionUiModelList = question.options.value(),
-                                    onAnswerSelection = { questionIndex, optionItemIndex ->
-                                        question.options?.forEachIndexed { index, _ ->
-                                            question.options?.get(index)?.isSelected = false
-                                        }
-                                        question.options?.get(optionItemIndex)?.isSelected = true
-                                        onAnswerSelect(question)
-                                        viewModel.checkButtonValidation()
-                                    }
-                                )
-                            }
-
-                            QuestionType.MultiSelect.name,
-                            QuestionType.Grid.name -> {
-                                GridTypeComponent(
-                                    questionIndex = index,
-                                    questionDisplay = question.questionDisplay,
-                                    isRequiredField = question.isMandatory,
-                                    maxCustomHeight = maxHeight,
-                                    optionUiModelList = question.options.value(),
-                                    onAnswerSelection = { selectedOptionIndex, isSelected ->
-
-                                        question.options?.get(selectedOptionIndex)?.isSelected =
-                                            isSelected
-
-                                        onAnswerSelect(question)
-                                        viewModel.checkButtonValidation()
-                                    },
-                                    questionDetailExpanded = {
-
-                                    }
-                                )
-                            }
-
-                            QuestionType.Toggle.name -> {
-                            }
-                        }
+                    if (!grantType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
+                        item { CustomVerticalSpacer() }
                     }
+
+                    surveyQuestionContent(maxHeight)
 
                     item { CustomVerticalSpacer() }
                 }
@@ -325,6 +178,233 @@ fun BaseSurveyScreen(
         },
         onSettingClick = onSettingClick
     )
+}
+
+fun LazyListScope.BaseSurveyQuestionContent(
+    viewModel: BaseSurveyScreenViewModel,
+    sanctionedAmount: Int,
+    totalSubmittedAmount: Int,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
+    grantType: String,
+    maxHeight: Dp
+) {
+
+    itemsIndexed(
+        items = viewModel.questionUiModel.value
+    ) { index, question ->
+
+        QuestionUiContent(
+            question,
+            sanctionedAmount,
+            totalSubmittedAmount,
+            viewModel,
+            onAnswerSelect,
+            maxHeight,
+            grantType,
+            index
+        )
+    }
+
+}
+
+@Composable
+fun QuestionUiContent(
+    question: QuestionUiModel,
+    sanctionedAmount: Int,
+    totalSubmittedAmount: Int,
+    viewModel: BaseSurveyScreenViewModel,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
+    maxHeight: Dp,
+    grantType: String,
+    index: Int
+) {
+    when (question.type) {
+        QuestionType.InputNumber.name -> {
+            InputComponent(
+                maxLength = 7,
+                isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
+                sanctionedAmount = sanctionedAmount,
+                remainingAmount = getSanctionedAmountMessage(
+                    question,
+                    sanctionedAmount = sanctionedAmount,
+                    remainingAmount = totalSubmittedAmount - getSelectedValueInInt(
+                        question.options?.firstOrNull()?.selectedValue
+                            ?: BLANK_STRING, 0
+                    )
+                ),
+                isMandatory = question.isMandatory,
+                isEditable = viewModel.isActivityNotCompleted.value,
+                defaultValue = question.options?.firstOrNull()?.selectedValue
+                    ?: BLANK_STRING,
+                title = question.questionDisplay,
+                isOnlyNumber = true,
+                hintText = question.options?.firstOrNull()?.description
+                    ?: BLANK_STRING
+            ) { selectedValue, remainingAmout ->
+                viewModel.totalRemainingAmount = remainingAmout
+                saveInputTypeAnswer(selectedValue, question, viewModel)
+                onAnswerSelect(question)
+            }
+        }
+
+        QuestionType.DateType.name -> {
+
+            DatePickerComponent(
+                isMandatory = question.isMandatory,
+                defaultValue = question.options?.firstOrNull()?.selectedValue
+                    ?: BLANK_STRING,
+                title = question.questionDisplay,
+                isEditable = viewModel.isActivityNotCompleted.value,
+                hintText = question.options?.firstOrNull()?.description
+                    ?: BLANK_STRING
+            ) { selectedValue ->
+                saveInputTypeAnswer(selectedValue, question, viewModel)
+                onAnswerSelect(question)
+
+            }
+        }
+
+        QuestionType.MultiImage.name -> {
+            AddImageComponent(
+                fileNamePrefix = viewModel.getPrefixFileName(question),
+                filePaths = commaSeparatedStringToList(
+                    question.options?.firstOrNull()?.selectedValue
+                        ?: BLANK_STRING
+                ),
+                isMandatory = question.isMandatory,
+                title = question.questionDisplay,
+                isEditable = viewModel.isActivityNotCompleted.value,
+                maxCustomHeight = maxHeight,
+                subtitle = question.display
+            ) { selectedValue, isDeleted ->
+                saveMultiImageTypeAnswer(
+                    selectedValue,
+                    question.options,
+                    isDeleted
+                )
+                viewModel.checkButtonValidation()
+                onAnswerSelect(question)
+
+            }
+        }
+
+        QuestionType.SingleSelectDropDown.name,
+        QuestionType.DropDown.name -> {
+            DropDownTypeComponent(
+                isEditAllowed = viewModel.isActivityNotCompleted.value,
+                title = question.questionDisplay,
+                questionNumber = if (TextUtils.equals(
+                        grantType.toLowerCase(),
+                        ActivityTypeEnum.SURVEY.name.toLowerCase()
+                    )
+                ) getQuestionNumber(index) else BLANK_STRING,
+                isMandatory = question.isMandatory,
+                showQuestionInCard = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
+                sources = getOptionsValueDto(question.options ?: listOf()),
+                onAnswerSelection = { selectedValue ->
+                    question.options?.forEach { option ->
+                        option.isSelected = selectedValue.id == option.optionId
+                    }
+                    viewModel.checkButtonValidation()
+                    onAnswerSelect(question)
+
+                }
+            )
+        }
+
+        QuestionType.MultiSelectDropDown.name -> {
+            TypeMultiSelectedDropDownComponent(
+                title = question.questionDisplay,
+                isMandatory = question.isMandatory,
+                sources = getOptionsValueDto(question.options ?: listOf()),
+                isEditAllowed = viewModel.isActivityNotCompleted.value,
+                onAnswerSelection = { selectedItems ->
+                    val selectedOptions =
+                        selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
+                    question.options?.forEach { options ->
+                        if (selectedOptions.find { it == options.description.toString() } != null) {
+                            options.isSelected = true
+                        } else {
+                            options.isSelected = false
+                        }
+                    }
+                    viewModel.checkButtonValidation()
+                    onAnswerSelect(question)
+
+                }
+            )
+        }
+
+        QuestionType.AutoCalculation.name -> {
+            CalculationResultComponent(
+                title = question.questionDisplay,
+            )
+        }
+
+        QuestionType.RadioButton.name -> {
+            RadioQuestionBoxComponent(
+                questionIndex = index,
+                questionDisplay = question.questionDisplay,
+                isRequiredField = question.isMandatory,
+                maxCustomHeight = maxHeight,
+                isQuestionTypeToggle = false,
+                showCardView = grantType.equals(
+                    ActivityTypeEnum.SURVEY.name,
+                    ignoreCase = true
+                ),
+                optionUiModelList = question.options.value(),
+                onAnswerSelection = { questionIndex, optionItemIndex ->
+                    question.options?.forEachIndexed { index, _ ->
+                        question.options?.get(index)?.isSelected = false
+                    }
+                    question.options?.get(optionItemIndex)?.isSelected = true
+                    onAnswerSelect(question)
+                    viewModel.checkButtonValidation()
+                }
+            )
+        }
+
+        QuestionType.MultiSelect.name,
+        QuestionType.Grid.name -> {
+            GridTypeComponent(
+                questionIndex = index,
+                questionDisplay = question.questionDisplay,
+                isRequiredField = question.isMandatory,
+                maxCustomHeight = maxHeight,
+                optionUiModelList = question.options.value(),
+                onAnswerSelection = { selectedOptionIndex, isSelected ->
+
+                    question.options?.get(selectedOptionIndex)?.isSelected =
+                        isSelected
+
+                    onAnswerSelect(question)
+                    viewModel.checkButtonValidation()
+                },
+                questionDetailExpanded = {
+
+                }
+            )
+        }
+
+        QuestionType.Toggle.name -> {
+            ToggleQuestionBoxComponent(
+                questionIndex = index,
+                questionDisplay = question.questionDisplay,
+                isRequiredField = question.isMandatory,
+                maxCustomHeight = maxHeight,
+                showCardView = false,
+                optionUiModelList = question.options.value(),
+                onAnswerSelection = { questionIndex, optionItemIndex ->
+                    question.options?.forEachIndexed { index, _ ->
+                        question.options?.get(index)?.isSelected = false
+                    }
+                    question.options?.get(optionItemIndex)?.isSelected = true
+                    onAnswerSelect(question)
+                    viewModel.checkButtonValidation()
+                }
+            )
+        }
+    }
 }
 
 @Composable
@@ -350,7 +430,7 @@ fun getSelectedOptionId(options: List<OptionsUiModel>?): String {
     return selectedItems
 }
 
-private fun saveInputTypeAnswer(
+fun saveInputTypeAnswer(
     selectedValue: String,
     question: QuestionUiModel,
     viewModel: BaseSurveyScreenViewModel
@@ -418,7 +498,7 @@ fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
 
 }
 
-private fun getSelectedValueInInt(selectedValue: String, sanctionedAmount: Int): Int {
+fun getSelectedValueInInt(selectedValue: String, sanctionedAmount: Int): Int {
     return if (selectedValue.isNotBlank()) selectedValue.toInt() else sanctionedAmount
 }
 

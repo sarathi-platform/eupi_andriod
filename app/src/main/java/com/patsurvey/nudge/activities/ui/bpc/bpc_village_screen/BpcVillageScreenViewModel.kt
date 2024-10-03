@@ -86,6 +86,7 @@ class BpcVillageScreenViewModel @Inject constructor(
 
     private fun fetchUserAndVillageDetails() {
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = false) {
+            villageSelectionRepository.fetchCastList(isRefresh = false)
             villageSelectionRepository.fetchPatQuestionsFromNetwork(prefRepo.getPageOpenFromOTPScreen())
             _villagList.value = it.villageList
             _filterVillageList.value = villageList.value
@@ -149,6 +150,7 @@ class BpcVillageScreenViewModel @Inject constructor(
                 _villagList.value = it.villageList
                 _filterVillageList.value = villageList.value
                 villageSelectionRepository.fetchPatQuestionsFromNetwork(true)
+                villageSelectionRepository.fetchCastList(isRefresh = true)
                 showCustomToast(context, context.getString(R.string.fetched_successfully))
 
             } else {

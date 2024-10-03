@@ -44,7 +44,9 @@ import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.INFLOW
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
@@ -145,9 +147,9 @@ fun AddEventScreen(
                     CustomDatePickerTextFieldComponent(
                         isMandatory = true,
                         defaultValue = viewModel.selectedDate.value,
-                        title = "Date",
+                        title = stringResource(R.string.date),
                         isEditable = true,
-                        hintText = "Select" ?: BLANK_STRING,
+                        hintText = stringResource(R.string.select) ?: BLANK_STRING,
                         datePickerState = datePickerState,
                         datePickerProperties = datePickerProperties,
                         datePickerDialogProperties = datePickerDialogProperties,
@@ -161,8 +163,8 @@ fun AddEventScreen(
 
                 item {
                     TypeDropDownComponent(
-                        isEditAllowed = true,
-                        title = "Livelihood",
+                        isEditAllowed = !showDeleteButton,
+                        title = stringResource(R.string.livelihood),
                         isMandatory = true,
                         sources = viewModel.livelihoodDropdownValue,
                         selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
@@ -231,8 +233,8 @@ fun AddEventScreen(
 
                 item {
                     TypeDropDownComponent(
-                        isEditAllowed = true,
-                        title = "Events",
+                        isEditAllowed = !showDeleteButton,
+                        title = stringResource(R.string.events),
                         isMandatory = true,
                         selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
                         sources = viewModel.livelihoodEventDropdownValue,
@@ -247,12 +249,11 @@ fun AddEventScreen(
                     item {
                         TypeDropDownComponent(
                             isEditAllowed = true,
-                            title = "Type of Asset*",
+                            title = stringResource(R.string.type_of_asset),
                             selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
-
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
                                 viewModel.validateForm()
                             }
@@ -265,7 +266,7 @@ fun AddEventScreen(
                     item {
                         TypeDropDownComponent(
                             isEditAllowed = true,
-                            title = "Products*",
+                            title = stringResource(R.string.products),
                             isMandatory = true,
                             sources = viewModel.livelihoodProductDropdownValue,
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
@@ -280,9 +281,14 @@ fun AddEventScreen(
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
                     item {
+                        val str =
+                            if (getLivelihoodEventFromName(viewModel.eventType).assetJournalEntryFlowType?.name?.equals(
+                                    INFLOW
+                                ) == true
+                            ) stringResource(R.string.increase_in_number) else stringResource(R.string.decrease_in_number)
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
-                            title = "Increase in Number*",
+                            title = str,
                             isEditAllowed = true,
                             currentValue = viewModel.assetCount.value,
                             onAnswerSelection = { inputValue ->
@@ -300,7 +306,7 @@ fun AddEventScreen(
                             isMandatory = true,
                             isEditable = true,
                             defaultValue = viewModel.amount.value,
-                            title = "Amount",
+                            title = stringResource(R.string.amount),
                             isOnlyNumber = true,
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->

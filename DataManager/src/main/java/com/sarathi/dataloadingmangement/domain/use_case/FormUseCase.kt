@@ -45,9 +45,9 @@ class FormUseCase @Inject constructor(
         return false
     }
 
-    suspend fun invoke(): Boolean {
+    suspend fun invoke(missionId: Int): Boolean {
         try {
-            repository.getActivityConfigUiModel()?.forEach { config ->
+            repository.getActivityConfigUiModel(missionId)?.forEach { config ->
                 getFormDetailFromApi(
                     FormDetailRequest(
                         activityId = config.activityId,
@@ -123,8 +123,8 @@ class FormUseCase @Inject constructor(
         repository.updateFormData(isFormGenerated, localReferenceId, generatedDate)
     }
 
-    fun getFormEFileName(): String {
-        return repository.getFormEFileName()
+    fun getFormEFileName(pdfName: String): String {
+        return repository.getFormEFileName(pdfName)
     }
 
 }

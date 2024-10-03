@@ -42,13 +42,14 @@ fun SubmitPhysicalFormScreen(
     navController: NavController = rememberNavController(),
     viewModel: SubmitPhysicalFormScreenViewModel,
     activityId: Int,
+    missionId: Int,
     taskIdList: String
 ) {
     val outerState = rememberLazyListState()
     val context = LocalContext.current
     LaunchedEffect(key1 = true) {
 
-        viewModel.setTotalDidi(activityId = activityId)
+        viewModel.setTotalDidi(activityId = activityId, missionId)
     }
     Scaffold(modifier = Modifier.fillMaxWidth(),
         containerColor = white,
@@ -72,21 +73,19 @@ fun SubmitPhysicalFormScreen(
                         })
                     Spacer(modifier = Modifier.width(10.dp))
                     ButtonPositive(modifier = Modifier.weight(0.4f),
-                        buttonTitle = stringResource(R.string.submit_form_e),
+                        buttonTitle = viewModel.submitPhysicalFormButtonText.value,
                         isActive = viewModel.isButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
                             viewModel.saveMultiImage(activityId)
-                            viewModel.updateFromTable(
+                            viewModel.updateFormTable(
+                                missionId = missionId,
                                 activityId = activityId,
                                 taskIdList,
-                                onCompleted = {
+                                onCompleted = { message ->
                                     navigateToActivityCompletionScreen(
                                         navController,
-                                        context.getString(
-                                            R.string.form_e_generated_successfully_for_didis,
-                                            viewModel.totalDidi.value.toString()
-                                        )
+                                        message.replace("%1s", viewModel.totalDidi.value.toString())
 
                                     )
                                 })
@@ -105,7 +104,7 @@ fun SubmitPhysicalFormScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = dimen_5_dp),
-                    text = stringResource(R.string.attach_physical_form_e_signed_sealed),
+                    text = viewModel.attachPhyicalFormTitle.value,
                     style = largeTextStyle
                 )
                 BoxWithConstraints(

@@ -83,16 +83,22 @@ interface PrefRepo {
 
    fun isNeedQuestionToScroll(): Boolean
 
-    fun getUserId(): String
+   fun getUserId(): String
 
-    fun saveIsSyncEnabled(isEnabled: Boolean)
-    fun getISSyncEnabled(): Boolean
+   fun saveIsSyncEnabled(isEnabled: Boolean)
+   fun getISSyncEnabled(): Boolean
    fun getPreviousUserMobile(): String
    fun setPreviousUserMobile(mobileNumber: String)
 
    fun setDataSyncStatus(status: Boolean)
-   fun getLoggedInUserType():String
+   fun getLoggedInUserType(): String
    fun savePageOpenFromOTPScreen(status: Boolean)
    fun getPageOpenFromOTPScreen(): Boolean
+
+   fun saveDataTabVisibility(isEnabled: Boolean)
+
+   fun isDataTabVisible(): Boolean
+   fun isDataTabDataLoaded(): Boolean
+   fun isDidiTabDataLoaded(): Boolean
 
 }

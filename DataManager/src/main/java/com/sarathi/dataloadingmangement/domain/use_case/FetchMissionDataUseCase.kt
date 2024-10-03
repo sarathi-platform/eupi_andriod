@@ -10,10 +10,54 @@ import javax.inject.Inject
 class FetchMissionDataUseCase @Inject constructor(
     private val repository: IMissionRepository,
 ) {
-    suspend fun invoke(): Boolean {
+    suspend fun invoke(missionId: Int, programId: Int): Boolean {
         try {
 
-            val apiResponse = repository.fetchMissionDataFromServer()
+            val apiResponse = repository.fetchActivityDataFromServer(programId, missionId)
+            if (apiResponse.status.equals(SUCCESS, true)) {
+                apiResponse.data?.let { activityApiResponse ->
+
+                    activityApiResponse.forEach { activity ->
+                        repository.saveActivityConfig(
+                            missionId = missionId,
+                            missionActivityModel = activity,
+                        )
+                        repository.saveMissionsActivityTaskToDB(
+                            missionId = missionId,
+                            activityId = activity.id,
+                            subject = activity.activityConfig?.subject ?: BLANK_STRING,
+                            activities = activity.taskResponses ?: listOf()
+                        )
+                    }
+                }
+
+
+                return true
+
+            } else {
+                return false
+            }
+
+        } catch (apiException: ApiException) {
+            throw apiException
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
+
+
+    suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
+        return repository.isMissionLoaded(missionId, programId)
+    }
+
+    suspend fun setMissionLoaded(missionId: Int, programId: Int) {
+        return repository.setMissionLoaded(missionId, programId)
+    }
+
+    suspend fun getAllMissionList(): Boolean {
+        try {
+
+            val apiResponse = repository.fetchMissionListFromServer()
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { missionApiResponse ->
 
@@ -26,15 +70,6 @@ class FetchMissionDataUseCase @Inject constructor(
                                 missionId = mission.id,
                                 activities = mission.activities
                             )
-                            mission.activities.forEach { activity ->
-
-                                repository.saveMissionsActivityTaskToDB(
-                                    missionId = mission.id,
-                                    activityId = activity.id,
-                                    subject = activity.activityConfig?.subject ?: BLANK_STRING,
-                                    activities = activity.taskResponses ?: listOf()
-                                )
-                            }
                         }
                     }
                     return true
@@ -54,5 +89,8 @@ class FetchMissionDataUseCase @Inject constructor(
     suspend fun getAllMission(): List<MissionUiModel> {
         return repository.getAllMission()
     }
+
+    suspend fun getActivityTypesForMission(missionId: Int): List<String> =
+        repository.getActivityTypesForMission(missionId = missionId)
 
 }

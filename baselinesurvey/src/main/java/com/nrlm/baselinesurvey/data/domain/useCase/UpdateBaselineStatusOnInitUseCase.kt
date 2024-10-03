@@ -40,4 +40,9 @@ class UpdateBaselineStatusOnInitUseCase @Inject constructor(
         }
 
     }
+    suspend fun setMissionLoadedInGrantDb() {
+        val mission = updateBaselineStatusOnInitRepository.getBaselineMission()
+
+        updateBaselineStatusOnInitRepository.updateBaselineMissionDataLoadedForGrant(missionId = mission.missionId)
+    }
 }
