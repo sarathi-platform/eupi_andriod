@@ -21,10 +21,9 @@ fun HomeUserScreen(
     onSettingIconClick: () -> Unit
 ) {
     if (prefRepo.getLoggedInUserType() == UPCM_USER) {
-        if (navController.currentBackStackEntry?.destination?.route != MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME)
+        if (navController.currentBackStackEntry?.destination?.route != MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME) {
             navController.navigate(NudgeNavigationGraph.MAT_GRAPH)
-
-//        DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        }
     }else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(
