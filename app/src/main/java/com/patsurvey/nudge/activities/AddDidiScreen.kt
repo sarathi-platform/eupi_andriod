@@ -192,8 +192,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 .padding(horizontal = 16.dp)
                 .padding(bottom = dimensionResource(id = R.dimen.dp_20))
         ) {
-            ButtonPositive(
-                buttonTitle = if(didiDetailId == 0) stringResource(id = R.string.add_didi)
+            ButtonPositiveWithDebounce(
+                buttonTitle = if (didiDetailId == 0) stringResource(id = R.string.add_didi)
                 else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
                 isActive = didiViewModel?.isDidiValid?.value == true,
@@ -201,8 +201,10 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                     .fillMaxWidth()
             ) {
                 didiViewModel?.validateDidiDetails()
-                if(didiDetailId == 0) {
-                   didiViewModel?.saveDidiIntoDatabase((context as MainActivity).isOnline.value ?: false, object :LocalDbListener{
+                if (didiDetailId == 0) {
+                    didiViewModel?.saveDidiIntoDatabase(
+                        (context as MainActivity).isOnline.value ?: false,
+                        object : LocalDbListener {
                        override fun onInsertionSuccess() {
                            onNavigation()
                            showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added,didiViewModel?.didiName?.value))
