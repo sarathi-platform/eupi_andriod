@@ -521,8 +521,8 @@ abstract class BaseRepository{
                 ).json()
             rankingEditEventList.add(
                 Events(
-                    name = EventName.RANKING_FLAG_EDIT.name,
-                    type = EventName.RANKING_FLAG_EDIT.topicName,
+                    name = EventName.RANKING_FLAG_EDIT_NEW.name,/*EventName.RANKING_FLAG_EDIT.name,*/
+                    type = EventName.RANKING_FLAG_EDIT_NEW.topicName,/*EventName.RANKING_FLAG_EDIT.topicName,*/
                     createdBy = userID,
                     mobile_number = mobileNumber,
                     request_payload = payload,
@@ -537,7 +537,7 @@ abstract class BaseRepository{
                         request_payload_size = payload.getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(
                             eventItem,
-                            EventName.RANKING_FLAG_EDIT
+                            EventName.RANKING_FLAG_EDIT_NEW
                         )
                     ).json()
                 )
