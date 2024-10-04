@@ -26,7 +26,7 @@
     <string name="select">Select</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="submit">Submit</string>
-    <string name="delete">Delete</string>
+    <string name="delete">Deleted</string>
     <string name="date">Date:</string>
     <string name="amount">Amount:</string>
     <string name="asset">Assets:</string>
@@ -104,6 +104,8 @@
     <string name="event_date">Event Date:</string>
     <string name="edit_history">Edit history</string>
     <string name="increase_in_number">Increase in Number</string>
+    <string name="decrease_in_number">decrease in Number</string>
+    <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
     <string name="data_send_to_server">Data sent to Server</string>
     <string name="images_send_to_server">Images sent to Server</string>
     <string name="data_processes_by_server">Data processed by Server</string>

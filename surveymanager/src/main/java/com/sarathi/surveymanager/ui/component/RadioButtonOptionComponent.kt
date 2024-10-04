@@ -29,6 +29,7 @@ fun RadioButtonOptionComponent(
     index: Int,
     selectedIndex: Int,
     optionsItem: OptionsUiModel,
+    isIconRequired: Boolean = true,
     onOptionSelected: (OptionsUiModel) -> Unit
 ) {
     Column(
@@ -45,7 +46,7 @@ fun RadioButtonOptionComponent(
             OutlineButtonWithIconComponent(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(110.dp),
+                    .height(if (isIconRequired) 110.dp else 50.dp),
                 buttonTitle = optionsItem.description ?: "",
                 textColor = if (optionsItem.isSelected == true) Color.White else blueDark,
                 buttonBackgroundColor = if (optionsItem.isSelected != true) Color.White else blueDark,
@@ -60,10 +61,10 @@ fun RadioButtonOptionComponent(
                         redOffline
                 },
                 //TODO need to remove this condition when get image from backend
-                icon = if (index == 0)
+                icon = if (isIconRequired) if (index == 0)
                     painterResource(id = R.drawable.icon_check)
                 else
-                    painterResource(id = R.drawable.icon_close)
+                    painterResource(id = R.drawable.icon_close) else null
             ) {
                 onOptionSelected(optionsItem)
             }

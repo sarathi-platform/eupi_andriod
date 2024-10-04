@@ -28,8 +28,9 @@ data class ActivityConfigEntity(
     var activityId: Int,
     var missionId: Int,
     var icon: String,
-
-    ) {
+    val referenceId: Int?,
+    val referenceType: String?
+) {
     companion object {
         fun getActivityConfigEntity(
             activityId: Int,
@@ -49,7 +50,9 @@ data class ActivityConfigEntity(
                 activityId = activityId,
                 missionId = missionId,
                 taskCompletion = activityConfig.taskCompletion ?: BLANK_STRING,
-                icon = activityConfig.icon ?: BLANK_STRING
+                icon = activityConfig.icon ?: BLANK_STRING,
+                referenceId = activityConfig.referenceId,
+                referenceType = activityConfig.referenceType
             )
 
         }

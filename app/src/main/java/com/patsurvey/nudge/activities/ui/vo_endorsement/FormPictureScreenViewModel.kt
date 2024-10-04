@@ -33,6 +33,7 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.FOR_VO_ENDORSEMENT_VALUE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
@@ -818,21 +819,35 @@ class FormPictureScreenViewModel @Inject constructor(
 
     override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val villageId = repository.prefRepo.getSelectedVillage().id
             val stepEntity =
                 repository.getStepForVillage(
-                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    villageId = villageId,
                     stepId = stepId
                 )
 
-            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
-                stepEntity,
-                villageId = repository.prefRepo.getSelectedVillage().id,
-                stepType = StepType.VO_ENDROSEMENT.name,
-                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
-                repository.prefRepo.getUserId()
+            val didiList = repository.getAllDidisForVillage()
+                .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE }
+
+            val tolaDeviceIdMap: Map<Int, String> = repository.getTolaDeviceIdMap(
+                villageId = villageId,
+                tolaDao = repository.tolaDao
             )
 
-            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
+
+            val addRankingFlagEditEventList = repository.createRankingFlagEditEvent(
+                eventItem = stepEntity,
+                villageId = villageId,
+                stepType = StepType.VO_ENDROSEMENT.name,
+                didiList = didiList,
+                tolaDeviceIdMap = tolaDeviceIdMap,
+                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                userID = repository.prefRepo.getUserId()
+            )
+
+            addRankingFlagEditEventList.forEach { rankingEditEvent ->
+                repository.saveEventToMultipleSources(rankingEditEvent, listOf())
+            }
         }
     }
 }

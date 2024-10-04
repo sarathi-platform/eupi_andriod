@@ -7,6 +7,7 @@
     <string name="bangla">হিন্দি</string>
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+    <string name="location_not_enable">Location not enabled.</string>
 
     <plurals name="didis_added">
         <item quantity="one">বাইদেউ যোগ কৰা হল</item>
@@ -522,6 +523,10 @@
     <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="shg_member_text">1. সহায়ক গোটৰ সদস্য</string>
     <string name="able_bodied_women_text">2. সক্ষম মহিলা</string>
+    <string name="mark_activity_in_progress">প্ৰগতিশীল কাৰ্যকলাপ চিহ্নিত কৰক</string>
+    <string name="select_mission">মিছন বাছক</string>
+    <string name="select_activity_for">ইয়াৰ বাবে কাৰ্যকলাপ সমূহ বাছক</string>
+    <string name="select_all">সকলো বাছক</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Sync ৰ বাবে তথ্য উপলব্ধ নহয়। অনুগ্ৰহ কৰি ছিঙ্কৰ আগতে কিছু কাৰ্য্য কৰক।</string>
 
 

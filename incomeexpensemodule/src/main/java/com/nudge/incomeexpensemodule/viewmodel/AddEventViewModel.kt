@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
@@ -117,11 +119,10 @@ class AddEventViewModel @Inject constructor(
                     listOf(
                         livelihoodForDidi.first()?.livelihoodId.value(),
                         livelihoodForDidi.last()?.livelihoodId.value()
-                    )
+                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter Not decided events
                 )
                 _livelihoodDropdownValue.clear()
                 _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
-
 
             }
 
@@ -220,7 +221,8 @@ class AddEventViewModel @Inject constructor(
 
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
-
+            val createdDateTime = getCurrentTimeInMillis()
+            val modifiedDate = getCurrentTimeInMillis()
             val mTransactionId =
                 if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
                     .toString()
@@ -246,11 +248,15 @@ class AddEventViewModel @Inject constructor(
             )
             saveLivelihoodEventUseCase.addOrEditEvent(
                 particular = getParticulars(),
-                eventData = livelihoodScreenData
+                createdDate = createdDateTime,
+                eventData = livelihoodScreenData,
+                modifiedDate = modifiedDate
             )
             writeLivelihoodEventUseCase.writeLivelihoodEvent(
                 particular = getParticulars(),
-                eventData = livelihoodScreenData
+                eventData = livelihoodScreenData,
+                createdDateTime = createdDateTime,
+                modifiedDate = modifiedDate
             )
 
         }
@@ -317,14 +323,17 @@ class AddEventViewModel @Inject constructor(
 
     fun onDeleteClick(transactionId: String, subjectId: Int) {
         ioViewModelScope {
+            val currentDateTime = System.currentTimeMillis()
             saveLivelihoodEventUseCase.deleteLivelihoodEvent(
                 transactionId = transactionId,
                 subjectId = subjectId,
-                getLivelihoodEventFromName(eventType)
+                getLivelihoodEventFromName(eventType),
+                modifiedDate = currentDateTime
             )
             writeLivelihoodEventUseCase.writeDeleteLivelihoodEvent(
                 transactionId = transactionId,
-                subjectId = subjectId
+                subjectId = subjectId,
+                modifiedDate = currentDateTime
             )
         }
     }

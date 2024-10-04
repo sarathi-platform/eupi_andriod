@@ -132,7 +132,7 @@ fun EditHistoryScreen(
                                 currentHistoryData = currentItem,
                                 nextHistoryData = nextItem,
                                 isRecentData = index == 0,
-                                isDeleted = isDeletedAllData
+                                isDeleted = isDeletedAllData && index == 0
                             )
                         }
                         customVerticalSpacer()

@@ -44,7 +44,9 @@ import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.INFLOW
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
@@ -279,9 +281,14 @@ fun AddEventScreen(
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
                     item {
+                        val str =
+                            if (getLivelihoodEventFromName(viewModel.eventType).assetJournalEntryFlowType?.name?.equals(
+                                    INFLOW
+                                ) == true
+                            ) stringResource(R.string.increase_in_number) else stringResource(R.string.decrease_in_number)
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
-                            title = stringResource(R.string.increase_in_number),
+                            title = str,
                             isEditAllowed = true,
                             currentValue = viewModel.assetCount.value,
                             onAnswerSelection = { inputValue ->

@@ -42,6 +42,10 @@ class GetLivelihoodSaveEventRepositoryImpl @Inject constructor(
                         selectedEvent = getLivelihoodEventFromName(it.eventType ?: BLANK_STRING),
                         livelihoodValue = it.livelihoodValue ?: BLANK_STRING
                     ),
+                    createdDate = it.createdDate,
+                    modifiedDate = it.modifiedDate,
+                    status = it.status
+
                 )
             )
         }

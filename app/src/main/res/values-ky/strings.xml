@@ -183,6 +183,7 @@
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Summary</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
+    <string name="location_not_enable">Location not enabled.</string>
 
     <string name="add_tola">Add Para / Tola</string>
     <string name="enter_otp_text">Enter OTP</string>
@@ -543,6 +544,10 @@
     <string name="able_bodied_women_text">2. Able-bodied women</string>
     <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
+    <string name="mark_activity_in_progress">Mark Activity In Progress</string>
+    <string name="select_mission">Select Mission</string>
+    <string name="select_activity_for">"Select Activity for "</string>
+    <string name="select_all">Select All</string>
 
 
 </resources>

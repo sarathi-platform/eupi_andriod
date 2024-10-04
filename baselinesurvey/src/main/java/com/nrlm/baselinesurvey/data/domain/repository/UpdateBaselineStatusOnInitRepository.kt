@@ -22,5 +22,7 @@ interface UpdateBaselineStatusOnInitRepository {
         status: String,
         userId: String
     )
+    suspend fun updateBaselineMissionDataLoadedForGrant(missionId: Int)
+
 
 }

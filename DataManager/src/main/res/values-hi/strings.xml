@@ -72,6 +72,7 @@
     <string name="images_send_to_server">छवियाँ सर्वर पर भेजी गईं</string>
     <string name="data_processes_by_server">सर्वर द्वारा संसाधित डेटा</string>
     <string name="images_processes_by_server">छवियाँ सर्वर द्वारा संसाधित की गईं</string>
+    <string name="decrease_in_number">decrease in Number</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
     <string name="livelihood">Livelihood</string>
@@ -104,4 +105,5 @@
     <string name="search_didi">Search didi</string>
     <string name="search_by_small_groups">Search by small groups</string>
     <string name="total_didis">Total Didis - %1$s</string>
+    <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
 </resources>

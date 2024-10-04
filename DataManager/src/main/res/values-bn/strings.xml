@@ -102,4 +102,6 @@
     <string name="images_send_to_server">ছবি সার্ভারে পাঠানো হয়েছে</string>
     <string name="data_processes_by_server">সার্ভার দ্বারা প্রক্রিয়াকৃত ডেটা</string>
     <string name="images_processes_by_server">সার্ভার দ্বারা প্রক্রিয়াকৃত ছবি</string>
+    <string name="decrease_in_number">সংখ্যা হ্রাস</string>
+    <string name="no_didi_s_assigned_to_you">"আপনাকে কোনো দিদির সাথে যুক্ত করা হয়নি "</string>
 </resources>

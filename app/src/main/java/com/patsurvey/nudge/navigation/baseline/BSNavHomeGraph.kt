@@ -36,6 +36,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScree
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.utils.NavigationParams
 
@@ -46,8 +47,25 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
         startDestination = HomeScreens.DATA_LOADING_SCREEN.route
     ) {
 
-        composable(route = HomeScreens.DATA_LOADING_SCREEN.route) {
-            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route,
+            arguments = listOf(
+                navArgument(ARG_MISSION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(ARG_MISSION_NAME) {
+                    type = NavType.StringType
+                },
+
+                )
+        ) {
+            DataLoadingScreenComponent(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
+                missionDescription = it.arguments?.getString(ARG_MISSION_NAME)
+                    ?: com.patsurvey.nudge.utils.BLANK_STRING,
+
+                )
         }
         composable(route = HomeScreens.MISSION_SUMMARY_SCREEN.route, arguments = listOf(
             navArgument(name = ARG_MISSION_ID) {

@@ -102,5 +102,7 @@
     <string name="images_send_to_server">চাৰ্ভাৰলৈ প্ৰেৰণ কৰা ছবিসমূহ</string>
     <string name="data_processes_by_server">চাৰ্ভাৰৰ দ্বাৰা প্ৰক্ৰিয়া কৰা তথ্য</string>
     <string name="images_processes_by_server">চাৰ্ভাৰৰ দ্বাৰা প্ৰক্ৰিয়া কৰা প্ৰতিমুৰ্তিসমূহ</string>
+    <string name="decrease_in_number">সংখ্যা হ্ৰাস পায়</string>
+    <string name="no_didi_s_assigned_to_you">"আপোনাক কোনো বাইদেউ আৱণ্টন কৰা হোৱা নাই "</string>
 
 </resources>

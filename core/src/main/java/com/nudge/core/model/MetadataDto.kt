@@ -27,6 +27,9 @@ data class MetadataDto(
     @SerializedName("parentEntity")
     val parentEntity: Map<String, String> = emptyMap(),
 
+    @SerializedName("isRegenerateFile")
+    val isRegenerateFile: Boolean = false,
+
     @Expose
     @SerializedName("isOnlyData")
     val isOnlyData: Boolean? = true,

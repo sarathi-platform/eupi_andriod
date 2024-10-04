@@ -44,6 +44,7 @@ fun ToolBarWithMenuComponent(
     isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
     navController: NavController? = rememberNavController(),
+    dataNotLoadMsg: String = stringResource(R.string.not_able_to_load),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
     isDataNotAvailable: Boolean = false,
@@ -123,7 +124,7 @@ fun ToolBarWithMenuComponent(
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        stringResource(R.string.not_able_to_load),
+                        dataNotLoadMsg,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         style = defaultTextStyle,

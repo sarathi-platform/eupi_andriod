@@ -14,4 +14,8 @@ class UpdateActivityStatusUseCase @Inject constructor(private val repository: Su
         )
     }
 
+    suspend fun markActivitiesInProgress(missionId: Int, activityIds: List<Int>) {
+        repository.markActivitiesInProgress(missionId, activityIds)
+    }
+
 }

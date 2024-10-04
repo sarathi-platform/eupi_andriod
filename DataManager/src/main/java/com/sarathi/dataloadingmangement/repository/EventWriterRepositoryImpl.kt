@@ -30,6 +30,7 @@ import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveDocumentEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveFormAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
+import com.sarathi.dataloadingmangement.model.events.TrainingTypeActivitySaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
@@ -54,6 +55,8 @@ class EventWriterRepositoryImpl @Inject constructor(
         eventName: EventName,
         eventType: EventType,
         surveyName: String,
+        isFromRegenerate: Boolean
+
     ): Events? {
 
         if (eventType != EventType.STATEFUL)
@@ -63,7 +66,19 @@ class EventWriterRepositoryImpl @Inject constructor(
         when (eventName) {
 
             EventName.GRANT_SAVE_RESPONSE_EVENT -> {
-                requestPayload = (eventItem as SaveAnswerEventDto).json()
+                requestPayload = when (eventItem) {
+                    is SaveAnswerEventDto -> {
+                        (eventItem as SaveAnswerEventDto).json()
+                    }
+
+                    is TrainingTypeActivitySaveAnswerEventDto -> {
+                        (eventItem as TrainingTypeActivitySaveAnswerEventDto).json()
+                    }
+
+                    else -> {
+                        (eventItem as SaveAnswerEventDto).json()
+                    }
+                }
 
             }
 
@@ -147,6 +162,7 @@ class EventWriterRepositoryImpl @Inject constructor(
             modified_date = System.currentTimeMillis().toDate(),
             payloadLocalId = BLANK_STRING,
             metadata = MetadataDto(
+                isRegenerateFile = isFromRegenerate,
                 mission = surveyName,
                 depends_on = listOf(),
                 request_payload_size = requestPayload.json().getSizeInLong(),

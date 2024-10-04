@@ -82,6 +82,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
@@ -248,6 +249,28 @@ fun Modifier.debounceClickable(
         indication = LocalIndication.current,
         interactionSource = remember { MutableInteractionSource() }
     )
+}
+
+inline fun Modifier.debounceClickable(
+    debounceInterval: Long = 500,
+    crossinline onClick: () -> Unit,
+): Modifier {
+    var lastClickTime = 0L
+    var clickCount = 0
+    return clickable() {
+        Log.d("Utils", "debounceClickable, initial clickCount = $clickCount")
+        val currentTime = System.currentTimeMillis()
+        if ((currentTime - lastClickTime) < debounceInterval) {
+            clickCount = clickCount++
+            return@clickable
+        }
+        lastClickTime = currentTime
+        Log.d(
+            "Utils",
+            "debounceClickable: buttonClicked lastClickTime = $lastClickTime, clickCount = $clickCount"
+        )
+        onClick()
+    }
 }
 
 fun Context.setScreenOrientation(orientation: Int) {

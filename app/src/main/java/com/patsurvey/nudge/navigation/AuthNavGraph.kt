@@ -9,15 +9,19 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ARG_MISSION_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.SYNC_DATA
 import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
@@ -31,6 +35,7 @@ import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
+import com.patsurvey.nudge.utils.BLANK_STRING
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
@@ -113,16 +118,37 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             ProfileBSScreen(navController = navController, viewModel = hiltViewModel())
         }
 
-        composable(route = AuthScreen.DATA_LOADING_SCREEN.route) {
-            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route,
+            arguments = listOf(
+                navArgument(ARG_MISSION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(ARG_MISSION_NAME) {
+                    type = NavType.StringType
+                },
+
+
+                )
+        ) {
+            DataLoadingScreenComponent(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                missionId = it.arguments?.getInt(
+                    ARG_MISSION_ID
+                ) ?: -1,
+                missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+            )
         }
 
-        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route) {
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
             SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
+        }
+        composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
+            ActivityReopeningScreen(navController = navController)
         }
 
         composable(route = SettingScreens.SYNC_HISTORY_SCREEN.route,
@@ -140,5 +166,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
     }
+
+//    settingNavGraph(navController)
+//   logoutGraph(navController =navController)
 }
 
