@@ -61,6 +61,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nudge.core.getRemoteConfig
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -145,7 +147,11 @@ fun BpcVillageSelectionScreen(
                 navController.navigate(AuthScreen.LOGIN.route)
             },
             onPositiveButtonClick = {
-                viewModel.clearLocalDB(context = context)
+                viewModel.clearLocalDB(context = context) {
+                    CoreAppDetails.getApplicationDetails()?.activity?.let {
+                        getRemoteConfig(it)
+                    }
+                }
                 viewModel.showUserChangedDialog.value = false
             })
     }

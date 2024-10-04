@@ -10,11 +10,20 @@ import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.BLOB_URL
+import com.nudge.core.CONTENT_TYPE
+import com.nudge.core.DRIVE_TYPE
+import com.nudge.core.EMPTY_EVENT_LIST_FAILURE
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.FAILED_RESPONSE_FAILURE
+import com.nudge.core.FILE_NAME
+import com.nudge.core.FILE_PATH
 import com.nudge.core.FORM_C_TOPIC
 import com.nudge.core.FORM_D_TOPIC
 import com.nudge.core.IMAGE_EVENT_STRING
+import com.nudge.core.IS_ONLY_DATA
 import com.nudge.core.MULTIPART_FORM_DATA
+import com.nudge.core.NULL_RESPONSE_FAILURE
 import com.nudge.core.PRODUCER
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.SOMETHING_WENT_WRONG
@@ -24,7 +33,6 @@ import com.nudge.core.UPCM_USER
 import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.convertFileIntoMultipart
 import com.nudge.core.database.entities.Events
-import com.nudge.core.datamodel.Data
 import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.datamodel.SyncImageMetadataRequest
 import com.nudge.core.datamodel.SyncImageUploadPayload
@@ -36,6 +44,7 @@ import com.nudge.core.getImagePathFromPicture
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
@@ -437,6 +446,21 @@ class SyncUploadWorker @AssistedInject constructor(
             imageStatusEventList.forEach { imageEvent ->
                 imageEvent.filePath?.let {
                     val file = File(it)
+
+                    var metaDataMap = hashMapOf<String, Any>(
+                        FILE_PATH to file.path,
+                        FILE_NAME to (imageEvent.fileName ?: BLANK_STRING),
+                        CONTENT_TYPE to getFileMimeType(file).toString(),
+                        IS_ONLY_DATA to false,
+                        BLOB_URL to BLANK_STRING,
+                        DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                            SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
+                    )
+                    imageEvent.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
+                        metaDataMap.putAll(
+                            it1
+                        )
+                    }
                     imagePayloadRequest.add(
                         SyncImageUploadPayload(
                             createdBy = imageEvent.createdBy,
@@ -451,14 +475,7 @@ class SyncUploadWorker @AssistedInject constructor(
                             driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
                                 SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                             metadata = SyncImageMetadataRequest(
-                                data = Data(
-                                    filePath = file.path,
-                                    contentType = getFileMimeType(file),
-                                    isOnlyData = false,
-                                    blobUrl = BLANK_STRING,
-                                    driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
-                                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
-                                ),
+                                data = metaDataMap,
                                 dependsOn = emptyList()
                             ).json()
                         )
@@ -550,6 +567,20 @@ class SyncUploadWorker @AssistedInject constructor(
             }
             val file = File(picturePath)
             if (uploadedBlobUrl.isNotEmpty()) {
+                var metaDataMap = hashMapOf<String, Any>(
+                    FILE_PATH to file.path,
+                    FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
+                    CONTENT_TYPE to getFileMimeType(file).toString(),
+                    IS_ONLY_DATA to true,
+                    BLOB_URL to uploadedBlobUrl,
+                    DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
+                )
+                imageDetail.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
+                    metaDataMap.putAll(
+                        it1
+                    )
+                }
                 val imageEvent = Events(
                     id = imageDetail.id,
                     name = imageDetail.name,
@@ -559,14 +590,7 @@ class SyncUploadWorker @AssistedInject constructor(
                     request_payload = imageDetail.request_payload,
                     status = imageDetail.status,
                     metadata = SyncImageMetadataRequest(
-                        data = Data(
-                            filePath = picturePath,
-                            contentType = getFileMimeType(file),
-                            isOnlyData = true,
-                            blobUrl = uploadedBlobUrl,
-                            driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
-                                SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
-                        ),
+                        data = metaDataMap,
                         dependsOn = emptyList()
                     ).json(),
                     mobile_number = imageDetail.mobile_number,
@@ -689,8 +713,3 @@ fun createEventResponseList(
     }
     return failedEventList
 }
-
-private const val EMPTY_EVENT_LIST_FAILURE = "EMPTY_LIST_FAILURE"
-private const val NULL_RESPONSE_FAILURE = "NULL_RESPONSE_FAILURE"
-private const val FAILED_RESPONSE_FAILURE = "FAILED_RESPONSE_FAILURE"
-

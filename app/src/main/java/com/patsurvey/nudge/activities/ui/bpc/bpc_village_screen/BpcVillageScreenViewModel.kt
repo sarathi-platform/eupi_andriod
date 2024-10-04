@@ -165,7 +165,7 @@ class BpcVillageScreenViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(context: Context) {
+    fun clearLocalDB(context: Context, onDataClearComplete: () -> Unit) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             casteListDao.deleteCasteTable()
@@ -184,6 +184,7 @@ class BpcVillageScreenViewModel @Inject constructor(
             syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init()
+            onDataClearComplete()
         }
     }
 

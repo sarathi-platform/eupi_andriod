@@ -60,8 +60,13 @@ interface CorePrefRepo {
     fun isDataTabDataLoaded(): Boolean
 
     fun setDataTabDataLoaded(isDataLoaded: Boolean)
+    fun saveDataTabVisibility(isEnabled: Boolean)
     fun getSyncBatchSize(): Int
     fun getSyncRetryCount(): Int
+    fun saveIsSyncEnabled(isEnabled: Boolean)
+    fun saveSyncBatchSize(batchSize: Long)
+    fun saveSyncRetryCount(retryCount: Long)
+    fun setSyncOptionEnabled(isEnabled: Boolean)
 
     fun saveBuildEnvironment(buildEnv: String)
 

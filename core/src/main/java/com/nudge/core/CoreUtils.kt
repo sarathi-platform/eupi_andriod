@@ -1,6 +1,7 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -28,6 +29,11 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.get
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
@@ -1269,6 +1275,54 @@ fun isDataEvent(event: Events): Boolean {
 fun isImageEvent(event: Events): Boolean {
     return event.name.lowercase(Locale.ENGLISH)
         .contains(IMAGE_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC
+}
+
+fun getRemoteConfig(activity: Activity) {
+    CoreLogger.d(tag = TAG, msg = "getRemoteConfig Called: ")
+    val coreSharedPrefs = CoreSharedPrefs.getInstance(activity)
+    val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+    val configSettings = remoteConfigSettings {
+        minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
+    }
+    remoteConfig.setConfigSettingsAsync(configSettings)
+    remoteConfig.fetchAndActivate()
+        .addOnCompleteListener(activity) { task ->
+            if (task.isSuccessful) {
+                val configShowDataTab = remoteConfig["showDataTab"].asBoolean()
+                CoreLogger.d(
+                    tag = TAG,
+                    msg = "showDataTabKey: showDataTabKey = ${configShowDataTab}"
+                )
+                coreSharedPrefs.saveDataTabVisibility(configShowDataTab)
+                Log.d(
+                    "SyncEnabled",
+                    "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                )
+                val isSyncEnable = remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
+                val isSyncOptionEnable =
+                    remoteConfig[REMOTE_CONFIG_SYNC_OPTION_ENABLE].asBoolean()
+                val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
+                val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
+
+                val mixPanelToken = remoteConfig[REMOTE_CONFIG_MIX_PANEL_TOKEN].asString()
+                val isImageBlobUploadEnable =
+                    remoteConfig[REMOTE_CONFIG_SYNC_IMAGE_UPLOAD_ENABLE].asBoolean()
+                CoreLogger.d(
+                    activity,
+                    "SyncEnabled",
+                    "sync enabled : $isSyncEnable :: Sync batch Size : " +
+                            "$syncBatchSize :: Sync Retry Count: $syncRetryCount " +
+                            ":: Setting Sync Option Enable : $isSyncOptionEnable" +
+                            ":: Setting Image BLOB Upload Enable: $isImageBlobUploadEnable"
+                )
+                coreSharedPrefs.saveIsSyncEnabled(isSyncEnable)
+                coreSharedPrefs.saveSyncBatchSize(syncBatchSize)
+                coreSharedPrefs.saveSyncRetryCount(syncRetryCount)
+                coreSharedPrefs.setSyncOptionEnabled(isSyncOptionEnable)
+                coreSharedPrefs.saveMixPanelToken(mixPanelToken)
+                coreSharedPrefs.saveSyncImageBlobUploadEnable(isImageBlobUploadEnable)
+            }
+        }
 }
 
 

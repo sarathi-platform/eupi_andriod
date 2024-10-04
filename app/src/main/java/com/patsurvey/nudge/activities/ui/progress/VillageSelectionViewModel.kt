@@ -180,7 +180,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(context: Context) {
+    fun clearLocalDB(context: Context, onDataClearComplete: () -> Unit) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             casteListDao.deleteCasteTable()
@@ -199,6 +199,8 @@ class VillageSelectionViewModel @Inject constructor(
             syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init(context)
+            onDataClearComplete()
+
         }
     }
 

@@ -29,8 +29,11 @@ data class MetadataDto(
 
     @Expose
     @SerializedName("isOnlyData")
-    val isOnlyData: Boolean? = true
+    val isOnlyData: Boolean? = true,
 
+    @Expose
+    @SerializedName("data")
+    var data: Map<String, Any> = emptyMap()
 )
 
 fun String.getMetaDataDtoFromString(): MetadataDto? {

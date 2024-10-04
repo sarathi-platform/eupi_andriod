@@ -29,21 +29,10 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.firebase.Firebase
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.get
-import com.google.firebase.remoteconfig.remoteConfig
-import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.REMOTE_CONFIG_MIX_PANEL_TOKEN
-import com.nudge.core.REMOTE_CONFIG_SYNC_BATCH_SIZE
-import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
-import com.nudge.core.REMOTE_CONFIG_SYNC_IMAGE_UPLOAD_ENABLE
-import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
-import com.nudge.core.REMOTE_CONFIG_SYNC_RETRY_COUNT
+import com.nudge.core.getRemoteConfig
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -106,7 +95,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             )
         )
         CoreObserverManager.addObserver(this)
-        getRemoteConfig()
+        getRemoteConfig(this)
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
@@ -345,53 +334,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     val currentLanguage: Locale
         get() = localizationDelegate.getLanguage(this)
 
-    fun getRemoteConfig() {
-        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
-        val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
-        }
-        remoteConfig.setConfigSettingsAsync(configSettings)
-        remoteConfig.fetchAndActivate()
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val configShowDataTab = remoteConfig["showDataTab"].asBoolean()
-                    CoreLogger.d(
-                        tag = TAG,
-                        msg = "showDataTabKey: showDataTabKey = ${configShowDataTab}"
-                    )
-                    mViewModel.saveDataTabVisibility(configShowDataTab)
-                    Log.d(
-                        "SyncEnabled",
-                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
-                    )
-                    val isSyncEnable = remoteConfig[REMOTE_CONFIG_SYNC_ENABLE].asBoolean()
-                    val isSyncOptionEnable =
-                        remoteConfig[REMOTE_CONFIG_SYNC_OPTION_ENABLE].asBoolean()
-                    val syncBatchSize = remoteConfig[REMOTE_CONFIG_SYNC_BATCH_SIZE].asLong()
-                    val syncRetryCount = remoteConfig[REMOTE_CONFIG_SYNC_RETRY_COUNT].asLong()
-
-                    val mixPanelToken = remoteConfig[REMOTE_CONFIG_MIX_PANEL_TOKEN].asString()
-                    val isImageBlobUploadEnable =
-                        remoteConfig[REMOTE_CONFIG_SYNC_IMAGE_UPLOAD_ENABLE].asBoolean()
-                    NudgeLogger.d(
-                        "SyncEnabled",
-                        "sync enabled : $isSyncEnable :: Sync batch Size : " +
-                                "$syncBatchSize :: Sync Retry Count: $syncRetryCount " +
-                                ":: Setting Sync Option Enable : $isSyncOptionEnable" +
-                                ":: Setting Image BLOB Upload Enable: $isImageBlobUploadEnable"
-                    )
-                    mViewModel.saveSyncEnabledFromRemoteConfig(
-                        isSyncEnable
-                    )
-                    mViewModel.saveSyncBatchSizeFromRemoteConfig(syncBatchSize)
-                    mViewModel.saveSyncRetryCountFromRemoteConfig(syncRetryCount)
-                    mViewModel.saveSyncOptionEnablesFromRemoteConfig(isSyncOptionEnable)
-                    mViewModel.saveMixPanelToken(mixPanelToken)
-                    mViewModel.saveSyncImageBlobUploadEnable(isImageBlobUploadEnable)
-
-                }
-            }
-    }
 
     override fun updateMissionActivityStatusOnGrantInit(onSuccess: (isSuccess: Boolean) -> Unit) {
         mViewModel.updateBaselineStatusOnInit() {

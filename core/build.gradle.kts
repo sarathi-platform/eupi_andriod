@@ -75,6 +75,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("androidx.navigation:navigation-compose:2.7.4")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-config-ktx:21.6.1")
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
