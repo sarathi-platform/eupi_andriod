@@ -77,7 +77,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
@@ -85,7 +84,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubj
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
@@ -614,8 +612,6 @@ class DataLoadingModule {
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
-        assetJournalUseCase: FetchAssetJournalUseCase,
-        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
         analyticsManager: AnalyticsManager
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
@@ -639,12 +635,7 @@ class DataLoadingModule {
             formUseCase = formUseCase,
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
-            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
-                fetchDidiDetailsFromNetworkRepository
-            ),
-            fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
-            assetJournalUseCase = assetJournalUseCase,
-            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
+            fetchLivelihoodOptionNetworkUseCase = fetchLivelihoodOptionNetworkUseCase
         )
     }
 

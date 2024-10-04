@@ -528,10 +528,8 @@ abstract class BaseRepository{
                     createdBy = userID,
                     mobile_number = mobileNumber,
                     request_payload = payload,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = "",
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
