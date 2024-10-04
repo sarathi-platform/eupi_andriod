@@ -183,6 +183,7 @@
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Summary</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
+    <string name="location_not_enable">Location not enabled.</string>
 
     <string name="add_tola">Add Para / Tola</string>
     <string name="enter_otp_text">Enter OTP</string>
