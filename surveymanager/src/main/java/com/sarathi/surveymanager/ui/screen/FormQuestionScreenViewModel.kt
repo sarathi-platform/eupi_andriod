@@ -46,7 +46,7 @@ class FormQuestionScreenViewModel @Inject constructor(
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
-    val conditionsUtils = ConditionsUtils.getInstance()
+    val conditionsUtils = ConditionsUtils()
 
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 

@@ -14,7 +14,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.utils.onlyNumberField
 
-class ConditionsUtils private constructor() {
+class ConditionsUtils {
 
     private val LOGGING_TAG = ConditionsUtils::class.java.simpleName
 
@@ -31,18 +31,6 @@ class ConditionsUtils private constructor() {
     private var questionUiModel: List<QuestionUiModel> = listOf()
 
     val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
-
-    companion object {
-        private var INSTANCE: ConditionsUtils? = null
-
-        fun getInstance(): ConditionsUtils {
-
-            INSTANCE = ConditionsUtils()
-
-            return INSTANCE!!
-
-        }
-    }
 
     private fun setConditionsUiModelList(conditionsUiModelList: List<ConditionsUiModel>) {
         this.conditionsUiModelList = conditionsUiModelList
@@ -259,20 +247,23 @@ class ConditionsUtils private constructor() {
             QuestionType.InputNumber.name,
             QuestionType.NumericField.name,
             QuestionType.SingleSelectDropDown.name,
-            QuestionType.ToggleGrid.name,
             QuestionType.RadioButton.name,
             QuestionType.Toggle.name,
             QuestionType.DropDown.name,
             -> {
+                /**
+                 * Handle SingleSelect Questions conditions.
+                 */
                 evaluateSingleResponseConditions(response, conditions)
             }
 
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name,
+            QuestionType.ToggleGrid.name,
             QuestionType.MultiSelectDropDown.name,
             -> {
                 /**
-                 * Handle MultiselectConditions
+                 * Handle MultiSelect Questions conditions.
                  */
                 evaluateMultipleResponseConditions(response, conditions)
             }
