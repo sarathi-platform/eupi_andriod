@@ -235,7 +235,9 @@ fun QuestionUiContent(
 ) {
     when (question.type) {
         QuestionType.InputNumber.name,
-        QuestionType.TextField.name -> {
+        QuestionType.TextField.name,
+        QuestionType.NumericField.name,
+        QuestionType.InputText.name -> {
             InputComponent(
                 maxLength = 7,
                 isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
@@ -253,7 +255,7 @@ fun QuestionUiContent(
                 defaultValue = question.options?.firstOrNull()?.selectedValue
                     ?: BLANK_STRING,
                 title = question.questionDisplay,
-                isOnlyNumber = true,
+                isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
                 hintText = question.options?.firstOrNull()?.description
                     ?: BLANK_STRING
             ) { selectedValue, remainingAmout ->
