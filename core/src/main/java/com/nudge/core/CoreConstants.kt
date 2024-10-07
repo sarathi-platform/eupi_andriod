@@ -16,6 +16,7 @@ const val NO_TOLA_TITLE = "NO TOLA"
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
+const val APP_CONFIG_TABLE = "app_config"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -110,3 +111,5 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+const val CORE_DATABASE = "CoreDatabase"
+const val CORE_DB_VERSION = 1
