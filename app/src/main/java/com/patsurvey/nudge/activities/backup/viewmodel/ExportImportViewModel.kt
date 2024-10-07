@@ -98,6 +98,8 @@ class ExportImportViewModel @Inject constructor(
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
+    val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
+    val exportOptionList: State<List<SettingOptionModel>> get() = _exportOptionList
 
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
@@ -112,6 +114,8 @@ class ExportImportViewModel @Inject constructor(
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         _optionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
+        _exportOptionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportBackupOptionList()
+
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
     }

@@ -32,7 +32,7 @@ import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.utils.UPCM_USER
 
 @Composable
-fun ExportImportScreen(
+fun ExportBackupImportScreen(
     viewModel: ExportImportViewModel = hiltViewModel(),
     navController: NavController) {
         val context=LocalContext.current
@@ -56,51 +56,51 @@ fun ExportImportScreen(
 
     CommonSettingScreen(
         userType = viewModel.loggedInUserType.value,
-        title = stringResource(id = R.string.backup_recovery),
+        title = stringResource(id = R.string.export_backup_file),
         versionText = BLANK_STRING,
-        optionList = viewModel.optionList.value,
+        optionList = viewModel.exportOptionList.value,
         onBackClick = {navController.popBackStack()},
         isScreenHaveLogoutButton = false,
         onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
-//                SettingTagEnum.LOAD_SERVER_DATA.name -> {
-//                    viewModel.showLoadConfirmationDialog.value=true
-//                }
+                SettingTagEnum.LOAD_SERVER_DATA.name -> {
+                    viewModel.showLoadConfirmationDialog.value=true
+                }
 
-//                SettingTagEnum.EXPORT_DATABASE.name -> {
-//                    viewModel.exportLocalDatabase(true) {
-//                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-//                    }
+                SettingTagEnum.EXPORT_DATABASE.name -> {
+                    viewModel.exportLocalDatabase(true) {
+                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
+                }
+
+                SettingTagEnum.EXPORT_IMAGES.name -> {
+                    viewModel.exportLocalImages()
+                }
+
+                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
+                    viewModel.compressEventData(context.getString(R.string.export_event_file))
+                }
+
+//                SettingTagEnum.IMPORT_DATA.name ->{
+//                    viewModel.showRestartAppDialog.value=true
 //                }
 //
-//                SettingTagEnum.EXPORT_IMAGES.name -> {
-//                    viewModel.exportLocalImages()
+//                SettingTagEnum.EXPORT_LOG_FILE.name -> {
+//                    viewModel.exportOnlyLogFile(context)
+//                }
+
+//                SettingTagEnum.REGENERATE_EVENTS.name -> {
+//                    viewModel.regenerateEvents(context.getString(R.string.share_export_file))
+//                }
+
+//                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
+//                    viewModel.exportBaseLineQnA(context)
 //                }
 //
-//                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
-//                    viewModel.compressEventData(context.getString(R.string.export_event_file))
+//                SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
+//                    viewModel.markAllActivityInProgress(context)
 //                }
-
-                SettingTagEnum.IMPORT_DATA.name ->{
-                    viewModel.showRestartAppDialog.value=true
-                }
-
-                SettingTagEnum.EXPORT_LOG_FILE.name -> {
-                    viewModel.exportOnlyLogFile(context)
-                }
-
-                SettingTagEnum.REGENERATE_EVENTS.name -> {
-                    viewModel.regenerateEvents(context.getString(R.string.share_export_file))
-                }
-
-                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
-                    viewModel.exportBaseLineQnA(context)
-                }
-
-                SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
-                    viewModel.markAllActivityInProgress(context)
-                }
             }
         },
         onLogoutClick = {},
@@ -178,6 +178,6 @@ fun ExportImportScreen(
 }
 @Preview(showBackground = true)
 @Composable
-fun ExportImportScreenPreview(){
-    ExportImportScreen(navController = rememberNavController())
+fun ExportBackupImportScreen(){
+    ExportBackupImportScreen(navController = rememberNavController())
 }
