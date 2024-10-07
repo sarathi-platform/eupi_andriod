@@ -26,4 +26,5 @@
     <string name="end_date_label">End date</string>
     <string name="reopen_activity_step_1">Step 1</string>
     <string name="reopen_activity_step_2">Step 2</string>
+    <string name="small_group_filter_label">"Small Group: "</string>
 </resources>

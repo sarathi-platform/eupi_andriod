@@ -33,4 +33,5 @@
     <string name="end_date_label">जोबनाय खालार</string>
     <string name="reopen_activity_step_1">थाखो 1</string>
     <string name="reopen_activity_step_2">थाखो 2</string>
+    <string name="small_group_filter_label">"Small Group: "</string>
 </resources>
