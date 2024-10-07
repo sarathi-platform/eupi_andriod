@@ -14,5 +14,6 @@ enum class QuestionType {
     Toggle,
     DropDown,
     TextField,
-    NumericField
+    NumericField,
+    InputText
 }

@@ -75,7 +75,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     var isNoSection = mutableStateOf(false)
 
-    val conditionsUtils = ConditionsUtils.getInstance()
+    val conditionsUtils = ConditionsUtils()
 
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 
@@ -124,6 +124,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             isNoSection.value = sectionList.size == 1
 
+            val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
+                .invoke(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    questionIdList = questionUiModel.value.map { it.questionId }
+                )
+
+            conditionsUtils.apply {
+                init(questionUiModel.value, sourceTargetQuestionMapping)
+                initQuestionVisibilityMap(questionUiModel.value)
+            }
 
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {

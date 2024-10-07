@@ -450,7 +450,11 @@ class ConditionsUtils {
      */
     private fun runValidResponseCheck(response: String?): Boolean {
         var isResponseValid = true
-        if ((response == null || response == BLANK_STRING) && !onlyNumberField(response.value()))
+        if ((response == null || response == BLANK_STRING) && !onlyNumberField(
+                response.value(),
+                excludeBlankSpace = true
+            )
+        )
             isResponseValid = false
 
         return isResponseValid

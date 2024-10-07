@@ -36,4 +36,7 @@ interface SourceTargetQuestionMappingEntityDao {
         sourceQuestionIdList: List<Int>
     ): List<ConditionsUiModel>
 
+    @Query("DELETE FROM source_target_question_mapping_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId")
+    fun clearAllSourceTargetQuestionMappingForUser(userId: String, surveyId: Int, sectionId: Int)
+
 }

@@ -10,7 +10,7 @@ data class ConditionsEntity(
     @PrimaryKey(true)
     @ColumnInfo("id")
     val id: Int = 0,
-
+    val userId: String?,
     val sourceTargetQuestionRefId: Long,
     val conditions: String
 ) {
@@ -19,11 +19,13 @@ data class ConditionsEntity(
 
         fun getConditionsEntity(
             sourceTargetQuestionRefId: Long,
-            conditions: String
+            conditions: String,
+            userId: String?
         ): ConditionsEntity {
             return ConditionsEntity(
                 sourceTargetQuestionRefId = sourceTargetQuestionRefId,
-                conditions = conditions
+                conditions = conditions,
+                userId = userId
             )
         }
 

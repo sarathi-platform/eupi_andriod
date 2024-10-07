@@ -121,6 +121,12 @@ class SurveyDownloadRepository @Inject constructor(
 
                     conditionDtoWithParentIdList.add(ConditionDtoWithParentId(question!!, 0))
                 }
+
+                sourceTargetQuestionMappingEntityDao.clearAllSourceTargetQuestionMappingForUser(
+                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                    surveyId = surveyApiResponse.surveyId,
+                    sectionId = section.sectionId
+                )
                 saveQuestionOptionsAtAllLevel(
                     conditionDtoWithParentIdList,
                     section,
@@ -244,13 +250,13 @@ class SurveyDownloadRepository @Inject constructor(
                         sectionId = section.sectionId
                     )
                 )
-
+                val userId = coreSharedPrefs.getUniqueUserIdentifier()
                 question.conditions?.forEach {
                     val sourceTargetQuestionMappingEntity = SourceTargetQuestionMappingEntity
                         .getSourceTargetQuestionMappingEntity(
                             surveyId = surveyResponseModel.surveyId,
                             sectionId = section.sectionId,
-                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            userId = userId,
                             targetQuestionId = question.questionId!!,
                             conditions = it,
                             conditionOperator = question.conditionsOpererator
@@ -262,8 +268,9 @@ class SurveyDownloadRepository @Inject constructor(
                             )
                         conditionsEntityDao.addConditionEntity(
                             ConditionsEntity.getConditionsEntity(
-                                refId,
-                                it.expression.value()
+                                sourceTargetQuestionRefId = refId,
+                                conditions = it.expression.value(),
+                                userId = userId
                             )
                         )
                     }

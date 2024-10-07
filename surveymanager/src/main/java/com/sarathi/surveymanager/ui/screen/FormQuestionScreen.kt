@@ -121,7 +121,8 @@ fun FormScreenQuestionUiContent(
         when (question.type) {
             QuestionType.InputNumber.name,
             QuestionType.TextField.name,
-            QuestionType.NumericField.name -> {
+            QuestionType.NumericField.name,
+            QuestionType.InputText.name -> {
                 InputComponent(
                     maxLength = 7,
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
@@ -157,7 +158,7 @@ fun FormScreenQuestionUiContent(
                         ?: BLANK_STRING
                 ) { selectedValue ->
 //                                saveInputTypeAnswer(selectedValue, question, viewModel)
-//                                onAnswerSelect(question)
+                    onAnswerSelect(question)
 
                 }
             }
@@ -181,7 +182,7 @@ fun FormScreenQuestionUiContent(
                         isDeleted
                     )
 //                                viewModel.checkButtonValidation()
-//                                onAnswerSelect(question)
+                    onAnswerSelect(question)
 
                 }
             }
@@ -200,7 +201,7 @@ fun FormScreenQuestionUiContent(
                             option.isSelected = selectedValue.id == option.optionId
                         }
 //                                    viewModel.checkButtonValidation()
-//                                    onAnswerSelect(question)
+                        onAnswerSelect(question)
 
                     }
                 )
@@ -223,7 +224,7 @@ fun FormScreenQuestionUiContent(
                             }
                         }
 //                                    viewModel.checkButtonValidation()
-//                                    onAnswerSelect(question)
+                        onAnswerSelect(question)
 
                     }
                 )
@@ -249,7 +250,7 @@ fun FormScreenQuestionUiContent(
                             question.options?.get(index)?.isSelected = false
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
-//                                    onAnswerSelect(question)
+                        onAnswerSelect(question)
 //                                    viewModel.checkButtonValidation()
                     }
                 )
@@ -265,10 +266,8 @@ fun FormScreenQuestionUiContent(
                     optionUiModelList = question.options.value(),
                     onAnswerSelection = { selectedOptionIndex, isSelected ->
 
-                        question.options?.get(selectedOptionIndex)?.isSelected =
-                            isSelected
-
-//                                    onAnswerSelect(question)
+                        question.options?.get(selectedOptionIndex)?.isSelected = isSelected
+                        onAnswerSelect(question)
 //                                    viewModel.checkButtonValidation()
                     },
                     questionDetailExpanded = {
@@ -290,7 +289,7 @@ fun FormScreenQuestionUiContent(
                             question.options?.get(index)?.isSelected = false
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
-//                                    onAnswerSelect(question)
+                        onAnswerSelect(question)
 //                                    viewModel.checkButtonValidation()
                     }
                 )
