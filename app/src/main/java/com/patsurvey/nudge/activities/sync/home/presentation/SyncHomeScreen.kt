@@ -336,10 +336,6 @@ fun SyncHomeContent(
             }
         }
                     }
-
-
-
-
 }
 
 @Composable
@@ -387,7 +383,7 @@ fun BottomContent(
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.sync_all_data),
                 isArrowRequired = false,
-                isActive = if( viewModel.dataProducerEventProgress.floatValue!=1.0F) true else false
+                isActive = if( viewModel.dataProducerEventProgress.floatValue==1.0F && viewModel.imageProducerEventProgress.floatValue==1.0F ) false else true
 
             ) {
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
