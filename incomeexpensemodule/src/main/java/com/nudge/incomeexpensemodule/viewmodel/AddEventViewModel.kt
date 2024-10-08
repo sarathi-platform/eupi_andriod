@@ -22,6 +22,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivel
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
@@ -63,7 +64,9 @@ class AddEventViewModel @Inject constructor(
     val livelihoodProductDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodProductDropdownValue
 
     private var eventList: List<LivelihoodEventUiModel> = ArrayList<LivelihoodEventUiModel>()
+    private var livelihoodList: List<LivelihoodModel> = ArrayList<LivelihoodModel>()
     private var assetTypeList: List<ProductAssetUiModel> = ArrayList<ProductAssetUiModel>()
+    private var producTypeList: List<ProductAssetUiModel> = ArrayList<ProductAssetUiModel>()
     var questionVisibilityMap = mutableStateMapOf<LivelihoodEventDataCaptureTypeEnum, Boolean>()
 
     var eventType: String = ""
@@ -132,16 +135,19 @@ class AddEventViewModel @Inject constructor(
             }
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
-            val livelihoodDropDown = getLivelihoodListFromDbUseCase.invoke(
+            livelihoodList = getLivelihoodListFromDbUseCase.invoke(
                 listOf(
                     livelihoodForDidi.first().livelihoodId.value(),
                     livelihoodForDidi.last().livelihoodId.value()
                 )
             )
             _livelihoodDropdownValue.clear()
-            _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
+            _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodList))
 
-            validateForm(subjectId, onValidationComplete = { evalutorResult ->
+            validateForm(
+                subjectId,
+                fieldName = BLANK_STRING,
+                onValidationComplete = { evalutorResult ->
 
             })
 
@@ -157,7 +163,10 @@ class AddEventViewModel @Inject constructor(
             _livelihoodProductDropdownValue.clear()
             fetEventValues()
             fetchAssestProductValues()
-            validateForm(subjectId, onValidationComplete = { evalutorResult ->
+            validateForm(
+                subjectId,
+                fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name,
+                onValidationComplete = { evalutorResult ->
 
             })
         }
@@ -178,11 +187,16 @@ class AddEventViewModel @Inject constructor(
                 )
             }
         )
-        _livelihoodProductDropdownValue.addAll(
-            fetchProductUseCase.invoke(
-                selectedLivelihoodId.value,
-                selectedProductId.value
+        producTypeList = fetchProductUseCase.invoke(selectedLivelihoodId.value)
+        _livelihoodProductDropdownValue.addAll(producTypeList.map {
+            ValuesDto(
+                it.id,
+                it.name,
+                it.id == selectedProductId.value,
+                originalName = it.originalName
             )
+        }
+
         )
     }
 
@@ -232,7 +246,7 @@ class AddEventViewModel @Inject constructor(
         _livelihoodAssetDropdownValue.clear()
         _livelihoodProductDropdownValue.clear()
         getAssetCountValue(subjectId = subjectId)
-        validateForm(subjectId) { isValid ->
+        validateForm(subjectId, fieldName = AddEventFieldEnum.EVENT_TYPE.name) { isValid ->
             // Update question visibility based on validation result
             val livelihoodDataCaptureTypes =
                 getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes
@@ -304,8 +318,8 @@ class AddEventViewModel @Inject constructor(
         return particulars
     }
 
-    fun validateForm(subjectId: Int, onValidationComplete: (Boolean) -> Unit) {
-        validationExpressionEvalutor(subjectId) { isValid ->
+    fun validateForm(subjectId: Int, fieldName: String, onValidationComplete: (Boolean) -> Unit) {
+        validationExpressionEvalutor(subjectId, fieldName) { isValid ->
             // Pass the result back through the callback
             onValidationComplete(isValid)
             // Update submit button state based on validation result
@@ -377,11 +391,40 @@ class AddEventViewModel @Inject constructor(
 
     fun validationExpressionEvalutor(
         subjectId: Int,
+        fieldName: String,
         onValidationResult: (Boolean) -> Unit
     ) {
         ioViewModelScope {
-            val validationExpression =
-                eventList.find { it.id == selectedEventId.value }?.validations?.expression
+            val selectedLivelihood =
+                livelihoodList.find { it.livelihoodId == selectedLivelihoodId.value }
+            val selectedEvent = eventList.find { it.id == selectedEventId.value }
+            val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
+            val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
+            if (selectedLivelihood?.validation?.livelihoodType == selectedLivelihood?.type && selectedLivelihood?.validation?.eventType == selectedEvent?.eventType) {
+                if (selectedAssetTypeId.value != -1 && selectedAssetType?.type == selectedLivelihood?.validation?.assetType) {
+
+                } else if (selectedProductId.value != -1 && selectedProduct?.type == selectedLivelihood?.validation?.productType) {
+
+                } else {
+                    val validation =
+                        selectedLivelihood?.validation?.validation?.find { it.field == fieldName }
+                    if (validation != null) {
+                        val expressionResult = validationUseCase.invoke(
+                            validationExpression = validation.expression,
+                            livelihoodId = selectedLivelihoodId.value,
+                            subjectId = subjectId,
+                            selectedAssetType = selectedAssetTypeId.value
+                        )
+                        onValidationResult(expressionResult)
+                    } else {
+                        onValidationResult(true)
+                    }
+                }
+
+            } else {
+                onValidationResult(true)
+            }
+
             onValidationResult(
                 validationUseCase.invoke(
                 validationExpression,

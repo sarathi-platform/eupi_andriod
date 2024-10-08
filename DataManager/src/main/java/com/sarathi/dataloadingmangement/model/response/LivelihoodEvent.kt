@@ -8,6 +8,5 @@ class LivelihoodEvent(
     @SerializedName("status") var status: Int? = null,
     @SerializedName("image") var image: String? = null,
     @SerializedName("type") var type: String? = null,
-    @SerializedName("validation") var validation: Validation?,
     @SerializedName("languages") var languages: ArrayList<LanguageReference> = arrayListOf()
 )

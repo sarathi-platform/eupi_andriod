@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
@@ -15,7 +16,6 @@ import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.data.converters.StringConverter
 import com.sarathi.dataloadingmangement.data.converters.TagConverter
-import com.sarathi.dataloadingmangement.data.converters.ValidationConverter
 import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao

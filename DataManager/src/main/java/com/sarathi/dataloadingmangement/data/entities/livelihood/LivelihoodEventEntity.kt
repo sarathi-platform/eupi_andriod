@@ -2,12 +2,9 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
-import com.sarathi.dataloadingmangement.data.converters.ValidationConverter
 import com.sarathi.dataloadingmangement.model.response.LivelihoodEvent
-import com.sarathi.dataloadingmangement.model.response.Validation
 
 @Entity(tableName = LIVELIHOOD_EVENT_TABLE_NAME)
 data class LivelihoodEventEntity(
@@ -19,9 +16,7 @@ data class LivelihoodEventEntity(
     var name: String,
     var status: Int,
     var type: String?,
-    @TypeConverters(ValidationConverter::class)
-    var validations: Validation?
-    
+
 
     ) {
     companion object {
@@ -38,8 +33,7 @@ data class LivelihoodEventEntity(
                 name = livelihoodEvent.name ?: BLANK_STRING,
                 status = livelihoodEvent.status ?: 0,
                 type = livelihoodEvent.type,
-                livelihoodId = livelihoodId,
-                validations = livelihoodEvent.validation
+                livelihoodId = livelihoodId
             )
         }
 

@@ -47,7 +47,6 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                             livelihoodId = livelihoodId,
                             value = item.value,
                             image = item.image,
-                            validation = item.validation
                         )
                     )
                     saveLivelihoodLanguageToDB(

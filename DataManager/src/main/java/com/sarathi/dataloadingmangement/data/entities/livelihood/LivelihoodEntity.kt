@@ -2,6 +2,9 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.nudge.core.database.converters.ValidationConverter
+import com.nudge.core.model.response.Validations
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.response.Livelihood
@@ -15,8 +18,13 @@ data class LivelihoodEntity(
     var userId: String,
     var name: String,
     var status: Int,
-    var type: Int? = 0,
-    var image: String?
+    //Todo Add column type for migration
+    var type: String = BLANK_STRING,
+    var image: String?,
+
+    //Todo Add column in migration
+    @TypeConverters(ValidationConverter::class)
+    var validations: Validations?
 
 ) {
     companion object {
@@ -31,7 +39,9 @@ data class LivelihoodEntity(
                 userId = userId,
                 name = livelihood.name ?: BLANK_STRING,
                 status = livelihood.status ?: 0,
-                image = livelihood.image ?: BLANK_STRING
+                image = livelihood.image ?: BLANK_STRING,
+                validations = livelihood.validations,
+                type = livelihood.type ?: BLANK_STRING
             )
         }
 

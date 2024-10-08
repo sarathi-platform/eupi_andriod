@@ -2,12 +2,9 @@ package com.sarathi.dataloadingmangement.data.entities.livelihood
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.converters.ValidationConverter
 import com.sarathi.dataloadingmangement.model.response.Asset
-import com.sarathi.dataloadingmangement.model.response.Validation
 
 
 @Entity(tableName = ASSETS_TABLE_NAME)
@@ -19,12 +16,9 @@ data class AssetEntity(
     var userId: String,
     var name: String,
     var status: Int,
-    var type: Int? = 0,
+    var type: String = BLANK_STRING,
     var value: Double? = 0.0,
-    var image: String?,
-    //Todo add migration here
-    @TypeConverters(ValidationConverter::class)
-    var validations: Validation?
+    var image: String?
 ) {
     companion object {
         fun getAssetEntity(
@@ -33,7 +27,6 @@ data class AssetEntity(
             livelihoodId: Int,
             value: Double?,
             image: String?,
-            validation: Validation?
         ): AssetEntity {
             return AssetEntity(
                 id = 0,
@@ -44,7 +37,7 @@ data class AssetEntity(
                 livelihoodId = livelihoodId,
                 value = value,
                 image = image,
-                validations = validation
+                type = asset.type ?: BLANK_STRING
             )
         }
 

@@ -51,6 +51,7 @@ import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -165,7 +166,10 @@ fun AddEventScreen(
                         onDateSelected = { date ->
                             viewModel.selectedDate.value = date.value().getDate()
                             viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm(subjectId = subjectId) {}
+                            viewModel.validateForm(
+                                subjectId = subjectId,
+                                fieldName = AddEventFieldEnum.DATE.name
+                            ) {}
                         }
                     )
                 }
@@ -180,7 +184,10 @@ fun AddEventScreen(
 
                         onAnswerSelection = { selectedValue ->
                             viewModel.onLivelihoodSelect(selectedValue.id, subjectId)
-                            viewModel.validateForm(subjectId = subjectId) {}
+                            viewModel.validateForm(
+                                subjectId = subjectId,
+                                fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name
+                            ) {}
                         }
                     )
 
@@ -259,7 +266,10 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodEventDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.onEventSelected(selectedValue, subjectId)
-                                viewModel.validateForm(subjectId = subjectId) { isValid ->
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    fieldName = AddEventFieldEnum.EVENT_TYPE.name
+                                ) { isValid ->
                                     if (isValid) {
                                         // If valid, hide the alert message
                                         isEventAlertMsgVisible.value = Pair(false, BLANK_STRING)
@@ -295,7 +305,10 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
-                                viewModel.validateForm(subjectId = subjectId) {}
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    fieldName = AddEventFieldEnum.ASSET_TYPE.name
+                                ) {}
                             }
                         )
                     }
@@ -312,7 +325,10 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
-                                viewModel.validateForm(subjectId = subjectId) {}
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    fieldName = AddEventFieldEnum.PRODUCT_TYPE.name
+                                ) {}
                             }
                         )
                     }
@@ -331,7 +347,10 @@ fun AddEventScreen(
                             maxValue = viewModel.maxAssetValue.value,
                             onAnswerSelection = { inputValue ->
                                 viewModel.assetCount.value = inputValue
-                                viewModel.validateForm(subjectId = subjectId) {}
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    AddEventFieldEnum.ASSET_COUNT.name
+                                ) {}
                             }
                         )
                     }
@@ -349,7 +368,10 @@ fun AddEventScreen(
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
-                            viewModel.validateForm(subjectId = subjectId) {}
+                            viewModel.validateForm(
+                                subjectId = subjectId,
+                                fieldName = AddEventFieldEnum.AMOUNT.name
+                            ) {}
                         }
                     }
 
