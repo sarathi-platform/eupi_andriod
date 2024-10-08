@@ -185,19 +185,9 @@ fun TaskScreen(
                             scope.launch {
                                 scaffoldState.hide()
                             }
-                            viewModel.markActivityCompleteStatus()
-                            navigateToActivityCompletionScreen(
-                                isFromActivity = true,
-                                navController = navController,
-                                activityMsg = context.getString(
-                                    R.string.activity_completion_message,
-                                    activityName
-                                ),
-                                activityRoutePath = activityName
-                            )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
-                                painter = painterResource(id = R.drawable.icon_close), // Replace with your close icon
+                                painter = painterResource(id = R.drawable.icon_close),
                                 contentDescription = "Close",
                                 tint = blueDark
                             )
