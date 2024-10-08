@@ -251,3 +251,9 @@ const val UPCM_USER = "Ultra Poor change maker (UPCM)"
 
 const val QUESTION_IMAGE_LINK_KEY = "QUESTION_IMAGE_LINK"
 
+const val WEALTH_RANKING_STEP_ID = 46
+const val PAT_SURVEY_STEP_ID = 43
+const val VO_ENDORSEMENT_STEP_ID = 44
+
+const val FOR_VO_ENDORSEMENT_VALUE = 1
+
