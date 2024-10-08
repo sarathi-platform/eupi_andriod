@@ -61,4 +61,20 @@ interface CorePrefRepo {
 
     fun setDataTabDataLoaded(isDataLoaded: Boolean)
 
+    fun getPreviousUserMobile(): String
+
+    fun clearSharedPreference()
+
+    fun getAppLanguageId(): Int?
+    fun saveAppLanguageId(languageId: Int?)
+    fun getAccessToken(): String?
+    fun saveAccessToken(token: String)
+    fun saveMobileNumber(mobileNumber: String)
+
+    fun isCrpDataLoaded(): Boolean
+    fun setCrpDataLoaded(isDataLoaded: Boolean)
+
+    fun isBpcDataLoaded(): Boolean
+    fun setBpcDataLoaded(isDataLoaded: Boolean)
+
 }

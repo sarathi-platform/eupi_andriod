@@ -65,7 +65,8 @@ import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
+import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModelV2
+import com.patsurvey.nudge.activities.ui.progress.events.SelectionEvents
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dropDownBg
@@ -90,19 +91,20 @@ import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VillageSelectionScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: VillageSelectionViewModel,
+    viewModel: VillageSelectionViewModelV2,
     onNavigateToSetting:()->Unit
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.compareWithPreviousUser(context = context)
+        viewModel.onEvent(InitDataEvent.InitDataState)
     }
 
     val villages by viewModel.filterVillageList.collectAsState()
@@ -142,8 +144,7 @@ fun VillageSelectionScreen(
                 navController.navigate(AuthScreen.LOGIN.route)
             },
             onPositiveButtonClick = {
-
-                viewModel.clearLocalDB(context = context)
+                viewModel.onEvent(InitDataEvent.InitChangeUserState)
                 viewModel.showUserChangedDialog.value = false
             })
     }
@@ -151,26 +152,22 @@ fun VillageSelectionScreen(
     LaunchedEffect(key1 = true) {
         val imagesList= (context as MainActivity).quesImageList
         if(imagesList.isNotEmpty()){
-            imagesList.forEach {
-                viewModel.downloadImageItem(context,it)
-            }
+            viewModel.onEvent(SelectionEvents.DownloadQuestionImages(imagesList))
+
+
         }
-        viewModel.saveVideosToDb(context)
+//        viewModel.saveVideosToDb(context)
     }
     val showRetryLoader = remember {
         mutableStateOf(false)
     }
 
     val pullRefreshState = rememberPullRefreshState(
-        viewModel.showLoader.value,
-        {
-            if ((context as MainActivity).isOnline.value ?: false) {
-                if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData(context)
-            } else {
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
-            }
+        viewModel.showLoader.value, {
+            viewModel.refreshData()
 
-        })
+        }
+    )
 
     if (viewModel.showLoader.value) {
         Scaffold(
@@ -179,7 +176,11 @@ fun VillageSelectionScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
+                            text = getVoNameForState(
+                                context,
+                                viewModel.stateId.value,
+                                R.plurals.seletc_village_screen_text
+                            ),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -229,7 +230,11 @@ fun VillageSelectionScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
+                            text = getVoNameForState(
+                                context,
+                                viewModel.stateId.value,
+                                R.plurals.seletc_village_screen_text
+                            ),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -333,6 +338,7 @@ fun VillageSelectionScreen(
                                     onFilterSelected = {
                                     },
                                     onSearchValueChange = {
+                                        viewModel.onEvent()
                                         viewModel.performQuery(it)
                                     }
                                 )

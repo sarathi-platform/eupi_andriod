@@ -1,7 +1,9 @@
 package com.patsurvey.nudge.base
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -28,11 +30,20 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
+import com.sarathi.dataloadingmangement.util.LoaderState
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class BaseViewModel : ViewModel(){
 
@@ -99,6 +110,44 @@ abstract class BaseViewModel : ViewModel(){
         super.onCleared()
         job?.cancel()
     }
+
+    val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    val loaderState: State<LoaderState> get() = _loaderState
+
+    val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+
+    open fun <T> onEvent(event: T) {
+        if (event is LoaderEvent.UpdateLoaderState) {
+            _loaderState.value = _loaderState.value.copy(
+                isLoaderVisible = event.showLoader
+            )
+        }
+    }
+
+    open fun refreshData() {}
+
+    fun ViewModel.ioViewModelScope(
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        viewModelScope.launch(context = ioDispatcher, start = start) {
+            block()
+        }
+    }
+
+    fun ViewModel.launchViewModelScope(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+
+        viewModelScope.launch(context = context, start = start) {
+            block()
+        }
+    }
+
     open fun onCatchError(e:Exception) {
         NudgeLogger.e("BaseViewModel", "onCatchError: ${e.message}")
         when (e) {

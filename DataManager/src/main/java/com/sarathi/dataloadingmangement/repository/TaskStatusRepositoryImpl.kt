@@ -83,10 +83,11 @@ class TaskStatusRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun reCheckActivityStatus(): List<ActivityEntity> {
+    override suspend fun reCheckActivityStatus(missionId: Int): List<ActivityEntity> {
         val updatedActivities = mutableListOf<ActivityEntity>()
         missionDao.getActiveMissions(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId
         ).forEach { missionEntity ->
             activityDao
                 .getActiveActivities(

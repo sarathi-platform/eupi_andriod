@@ -29,14 +29,35 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUse
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.ChangeUserRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.ChangeUserRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchCasteListRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchCasteListRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchPatQuestionRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchPatQuestionRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.ChangeUserUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCasteListUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCrpDataUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchPatQuestionUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NudgeDatabase
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.PoorDidiListDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.UserDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -130,4 +151,105 @@ object UseCaseModule {
     ): GetSummaryFileRepository {
         return GetSummaryFileRepositoryImpl(activityTaskDao, missionActivityDao)
     }
+
+    @Provides
+    @Singleton
+    fun provideFetchCrpDataUseCase(
+        fetchUserDetailUseCase: FetchUserDetailUseCase,
+        fetchPatQuestionUseCase: FetchPatQuestionUseCase,
+        fetchCasteListUseCase: FetchCasteListUseCase
+    ): FetchCrpDataUseCase {
+        return FetchCrpDataUseCase(
+            fetchUserDetailUseCase = fetchUserDetailUseCase,
+            fetchPatQuestionUseCase = fetchPatQuestionUseCase,
+            fetchCasteListUseCase = fetchCasteListUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchPatQuestionUseCase(
+        fetchPatQuestionRepository: FetchPatQuestionRepository
+    ): FetchPatQuestionUseCase {
+        return FetchPatQuestionUseCase(fetchPatQuestionRepository = fetchPatQuestionRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchPatQuestionRepository(
+        languageListDao: LanguageListDao,
+        questionListDao: QuestionListDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchPatQuestionRepository {
+        return FetchPatQuestionRepositoryImpl(languageListDao, questionListDao, coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchCasteListUseCase(
+        fetchCasteListRepository: FetchCasteListRepository
+    ): FetchCasteListUseCase {
+
+        return FetchCasteListUseCase(fetchCasteListRepository = fetchCasteListRepository)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchCasteListRepository(
+        languageListDao: LanguageListDao,
+        casteListDao: CasteListDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchCasteListRepository {
+        return FetchCasteListRepositoryImpl(
+            languageListDao = languageListDao,
+            casteListDao = casteListDao,
+            corePrefRepo = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideChangeUserUseCase(
+        changeUserRepository: ChangeUserRepository
+    ): ChangeUserUseCase {
+        return ChangeUserUseCase(changeUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChangeUserRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao,
+        didiDao: DidiDao,
+        stepsListDao: StepsListDao,
+        tolaDao: TolaDao,
+        lastSelectedTolaDao: LastSelectedTolaDao,
+        numericAnswerDao: NumericAnswerDao,
+        answerDao: AnswerDao,
+        questionListDao: QuestionListDao,
+        userDao: UserDao,
+        villageListDao: VillageListDao,
+        bpcSummaryDao: BpcSummaryDao,
+        poorDidiListDao: PoorDidiListDao,
+        syncManagerDatabase: SyncManagerDatabase,
+    ): ChangeUserRepository {
+        return ChangeUserRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            casteListDao = casteListDao,
+            didiDao = didiDao,
+            stepsListDao = stepsListDao,
+            tolaDao = tolaDao,
+            lastSelectedTolaDao = lastSelectedTolaDao,
+            numericAnswerDao = numericAnswerDao,
+            answerDao = answerDao,
+            questionListDao = questionListDao,
+            userDao = userDao,
+            villageListDao = villageListDao,
+            bpcSummaryDao = bpcSummaryDao,
+            poorDidiListDao = poorDidiListDao,
+            syncManagerDatabase = syncManagerDatabase
+        )
+    }
+
 }

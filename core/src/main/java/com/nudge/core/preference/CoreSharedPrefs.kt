@@ -2,9 +2,13 @@ package com.nudge.core.preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.nudge.core.ACCESS_TOKEN
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.PREF_KEY_BPC_DATA_LOADED
+import com.nudge.core.PREF_KEY_CRP_DATA_LOADED
+import com.nudge.core.PREF_KEY_PREVIOUS_USER_MOBILE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.value
@@ -253,4 +257,51 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         savePref(PREF_KEY_DATA_TAB_DATA_LOADED, isDataLoaded)
     }
 
+    override fun getPreviousUserMobile(): String {
+        return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
+    }
+
+    override fun clearSharedPreference() {
+        val editor = prefs.edit()
+        editor.clear()
+        editor.apply()
+    }
+
+    override fun getAppLanguageId(): Int? {
+        return prefs.getInt(PREF_KEY_LANGUAGE_ID, 2) ?: 2
+    }
+
+    override fun saveAppLanguageId(languageId: Int?) {
+        languageId?.let {
+            prefs.edit().putInt(PREF_KEY_LANGUAGE_ID, languageId).apply()
+        }
+    }
+
+    override fun getAccessToken(): String? {
+        return prefs.getString(ACCESS_TOKEN, "")
+    }
+
+    override fun saveAccessToken(token: String) {
+        prefs.edit().putString(ACCESS_TOKEN, token).apply()
+    }
+
+    override fun saveMobileNumber(mobileNumber: String) {
+        prefs.edit().putString(PREF_MOBILE_NUMBER, mobileNumber).apply()
+    }
+
+    override fun isCrpDataLoaded(): Boolean {
+        return prefs.getBoolean(PREF_KEY_CRP_DATA_LOADED, false)
+    }
+
+    override fun setCrpDataLoaded(isDataLoaded: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_CRP_DATA_LOADED, isDataLoaded).apply()
+    }
+
+    override fun isBpcDataLoaded(): Boolean {
+        return prefs.getBoolean(PREF_KEY_BPC_DATA_LOADED, false)
+    }
+
+    override fun setBpcDataLoaded(isDataLoaded: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_BPC_DATA_LOADED, isDataLoaded).apply()
+    }
 }

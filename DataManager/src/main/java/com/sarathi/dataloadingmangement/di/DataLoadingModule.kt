@@ -135,6 +135,8 @@ import com.sarathi.dataloadingmangement.repository.SurveySaveNetworkRepositoryIm
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.UserPropertiesRepository
+import com.sarathi.dataloadingmangement.repository.UserPropertiesRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.AssetJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.AssetRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.liveihood.CoreLivelihoodRepositoryImpl
@@ -1395,5 +1397,13 @@ class DataLoadingModule {
         return FetchSubjectLivelihoodEventHistoryRepositoryImpl(
             coreSharedPrefs, subjectLivelihoodEventMappingDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPropertiesRepository(
+        coreSharedPrefs: CoreSharedPrefs
+    ): UserPropertiesRepository {
+        return UserPropertiesRepositoryImpl(coreSharedPrefs)
     }
 }

@@ -5,10 +5,11 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
+import com.nudge.core.ACCESS_TOKEN
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.PREF_KEY_PREVIOUS_USER_MOBILE
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -39,7 +40,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
-        const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
 
         const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"

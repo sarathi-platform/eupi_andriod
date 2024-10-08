@@ -100,7 +100,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private suspend fun updateActivityStatus() {
         val updateActivityStatusList =
-            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus()
+            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus(missionId)
         val updateMissionStatusList = updateMissionActivityTaskStatusUseCase.reCheckMissionStatus()
         updateActivityStatusList.forEach {
             matStatusEventWriterUseCase.updateActivityStatus(

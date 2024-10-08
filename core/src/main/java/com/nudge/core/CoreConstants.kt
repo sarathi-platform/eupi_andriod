@@ -110,3 +110,10 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+
+const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+const val ACCESS_TOKEN = "ACCESS_TOKEN"
+const val PREF_KEY_CRP_DATA_LOADED = "is_crp_data_loaded"
+const val PREF_KEY_BPC_DATA_LOADED = "is_bpc_data_loaded"
+const val BPC_USER_TYPE = "Project Coordinator"
+const val CRP_USER_TYPE = "Community Resource Person"
