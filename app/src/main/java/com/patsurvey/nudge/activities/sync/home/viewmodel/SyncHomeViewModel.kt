@@ -51,6 +51,7 @@ import com.patsurvey.nudge.utils.roundOffDecimalFloat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -84,6 +85,7 @@ class SyncHomeViewModel @Inject constructor(
     val loaderState: State<LoaderState> get() = _loaderState
     val isSyncImageActive = mutableStateOf(false)
     val isSyncDataFirstDialog = mutableStateOf(false)
+    var isPullToRefreshVisible= mutableStateOf(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -327,7 +329,7 @@ class SyncHomeViewModel @Inject constructor(
                 )
             }
             withContext(CoreDispatchers.mainDispatcher) {
-                loaderState.value.isLoaderVisible = false
+               isPullToRefreshVisible.value = false
             }
         }
     }

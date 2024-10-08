@@ -1335,6 +1335,12 @@ fun getRemoteConfig(activity: Activity) {
                 coreSharedPrefs.saveMixPanelToken(mixPanelToken)
                 coreSharedPrefs.saveSyncImageBlobUploadEnable(isImageBlobUploadEnable)
             }
+            else{
+                CoreLogger.d(
+                    tag = TAG,
+                    msg = "Remote Config Task is not successfull"
+                )
+            }
         }
 }
 

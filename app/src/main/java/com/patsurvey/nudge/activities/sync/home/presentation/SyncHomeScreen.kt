@@ -16,7 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -62,7 +66,7 @@ import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
@@ -210,20 +214,21 @@ fun SyncHomeContent(
 ) {
     val context = LocalContext.current
     val pullRefreshState = rememberPullRefreshState(
-        viewModel.loaderState.value.isLoaderVisible,
+        viewModel.isPullToRefreshVisible.value,
         {
-            if (isOnline(context)) {
-                viewModel.loaderState.value.isLoaderVisible = true
-                viewModel.refreshConsumerStatus()
-            } else {
-                Toast.makeText(
-                    context,
-                    context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+//            if (isOnline(context)) {
+//                viewModel.loaderState.value.isLoaderVisible = true
+//                viewModel.refreshConsumerStatus()
+//            } else {
+//                Toast.makeText(
+//                    context,
+//                    context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
+//                    Toast.LENGTH_LONG
+//                ).show()
+//            }
 
-        })
+        }
+    )
     if (viewModel.isSyncDataFirstDialog.value) {
         showCustomDialog(
             title = stringResource(R.string.alert_dialog_title_text),
@@ -240,7 +245,29 @@ fun SyncHomeContent(
     ToolbarWithMenuComponent(
         title = stringResource(id = R.string.sync_all_data),
         modifier = Modifier.fillMaxSize(),
-        isMenuIconRequired = false,
+        isMenuIconRequired = true,
+        actions = {
+            IconButton(
+                onClick = {
+                    if (isOnline(context)) {
+                        viewModel.isPullToRefreshVisible.value = true
+                        viewModel.refreshConsumerStatus()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            ) {
+           Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Refresh Data button",
+                    tint =blueDark
+                )
+            }
+        },
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
             BottomContent(
@@ -249,63 +276,70 @@ fun SyncHomeContent(
                 isNetworkAvailable = isNetworkAvailable
             )
         }) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState)
-        )
-        {
-            PullRefreshIndicator(
-                refreshing = viewModel.loaderState.value.isLoaderVisible,
-                state = pullRefreshState,
-                modifier = Modifier
-                    .padding(top = dimen_50_dp)
-                    .align(Alignment.TopCenter)
-                    .zIndex(1f),
-                contentColor = blueDark,
-            )
-            LazyColumn(
-                modifier = Modifier
-                    .background(Color.White)
-                    .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
-                    .fillMaxSize()
-            ) {
-                item {
-                    LastSyncTime(viewModel) {
-                        CoreLogger.d(
-                            context,
-                            "SyncHomeScreen",
-                            "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
-                        )
-                        if (viewModel.isSyncStarted.value)
-                            viewModel.cancelSyncUploadWorker()
+        Column {
+
+            Box(modifier = Modifier
+                .fillMaxSize().pullRefresh(pullRefreshState)
+            )            {
+                PullRefreshIndicator(
+                    refreshing = viewModel.isPullToRefreshVisible.value,
+                    state = pullRefreshState,
+                    modifier = Modifier
+                        .padding(top = dimen_100_dp)
+                        .align(Alignment.TopCenter)
+                        .zIndex(1f),
+                    contentColor = blueDark,
+                )
+
+
+
+                LazyColumn(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(start = dimen_10_dp, end = dimen_10_dp, top = dimen_65_dp)
+                        .fillMaxSize()
+                ) {
+                    item {
+                        LastSyncTime(viewModel) {
+                            CoreLogger.d(
+                                context,
+                                "SyncHomeScreen",
+                                "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
+                            )
+                            if (viewModel.isSyncStarted.value)
+                                viewModel.cancelSyncUploadWorker()
+                        }
                     }
-                }
-                item {
-                    SyncDataCard(
-                        viewModel = viewModel,
-                        context = context,
-                        isNetworkAvailable = isNetworkAvailable
-                    ) {
-                        navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
+                    item {
+                        SyncDataCard(
+                            viewModel = viewModel,
+                            context = context,
+                            isNetworkAvailable = isNetworkAvailable
+                        ) {
+                            navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
+                        }
                     }
-                }
-                item {
-                    SyncImageCard(
-                        viewModel = viewModel,
-                        context = context,
-                        isNetworkAvailable = isNetworkAvailable,
-                        totalImageEventCount = viewModel.totalImageEventCount
-                    ) {
-                        navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
+                    item {
+                        SyncImageCard(
+                            viewModel = viewModel,
+                            context = context,
+                            isNetworkAvailable = isNetworkAvailable,
+                            totalImageEventCount = viewModel.totalImageEventCount
+                        ) {
+                            navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
+                        }
                     }
-                }
-                item {
-                    HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
+                    item {
+                        HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
+                    }
                 }
             }
         }
-    }
+                    }
+
+
+
+
 }
 
 @Composable
@@ -353,7 +387,8 @@ fun BottomContent(
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.sync_all_data),
                 isArrowRequired = false,
-                isActive = true
+                isActive = if( viewModel.dataProducerEventProgress.floatValue!=1.0F) true else false
+
             ) {
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
                 CoreLogger.d(
@@ -370,26 +405,29 @@ fun BottomContent(
 @Composable
 fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
     if (viewModel.lastSyncTime.longValue != 0L) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimen_10_dp)
-                .clickable {
-                    onCancelWorker()
-                },
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(id = R.string.last_sync_date_time),
-                style = mediumTextStyle,
-                color = textColorDark
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
+                    .clickable {
+                        onCancelWorker()
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.last_sync_date_time),
+                    style = mediumTextStyle,
+                    color = textColorDark
+                )
 
-            Text(
-                text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
-                style = mediumTextStyle,
-                color = textColorDark
-            )
+                Text(
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                    style = mediumTextStyle,
+                    color = textColorDark
+                )
+
+
+
         }
     }
 }
@@ -507,6 +545,7 @@ private fun SyncDataCard(
         isProgressBarVisible = viewModel.isDataPBVisible.value,
         syncButtonTitle = stringResource(id = R.string.sync_only_data),
         isImageSyncCard = false,
+
         onSyncButtonClick = {
             viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
             CoreLogger.d(
