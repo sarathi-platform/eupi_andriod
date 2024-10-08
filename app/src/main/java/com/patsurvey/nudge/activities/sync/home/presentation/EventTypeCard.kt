@@ -41,6 +41,7 @@ import com.nudge.core.ui.theme.smallTextStyleWithUnderline
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenDark
+import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.syncItemCountStyle
 import com.patsurvey.nudge.activities.ui.theme.syncProgressBg
@@ -258,7 +259,9 @@ fun EventTypeCard(
                         onClick = {
                             onSyncButtonClick()
                         },
-                        colors = ButtonDefaults.buttonColors(blueDark),
+                        colors = if(producerProgress!=1.0f) ButtonDefaults.buttonColors(blueDark) else  ButtonDefaults.buttonColors(
+                            languageItemInActiveBorderBg) ,
+                        enabled = if (producerProgress!=1.0f ) true else false,
                         modifier = Modifier
                             .padding(top = dimen_10_dp)
                             .constrainAs(syncButton) {
