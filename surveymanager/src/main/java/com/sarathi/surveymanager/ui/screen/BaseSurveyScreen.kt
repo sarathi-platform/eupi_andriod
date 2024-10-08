@@ -30,13 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -59,7 +59,6 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
-import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
@@ -138,20 +137,11 @@ fun BaseSurveyScreen(
 
         },
         onBottomUI = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(R.string.submit),
-                    isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
-                    isLeftArrow = false,
-                    onClick = {
-                        onSubmitButtonClick()
-                    }
-                )
-            }
+            SubmitButtonBottomUi(
+                isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                buttonTitle = stringResource(R.string.submit),
+                onSubmitButtonClick = onSubmitButtonClick
+            )
         },
         onContentUI = {
             BoxWithConstraints(
@@ -262,6 +252,7 @@ fun QuestionUiContent(
                 viewModel.totalRemainingAmount = remainingAmout
                 saveInputTypeAnswer(selectedValue, question, viewModel)
                 onAnswerSelect(question)
+                viewModel.checkButtonValidation()
             }
         }
 
@@ -278,7 +269,7 @@ fun QuestionUiContent(
             ) { selectedValue ->
                 saveInputTypeAnswer(selectedValue, question, viewModel)
                 onAnswerSelect(question)
-
+                viewModel.checkButtonValidation()
             }
         }
 

@@ -539,17 +539,18 @@ fun NavGraphBuilder.MatNavigation(
                 totalSubmittedAmount = it.arguments?.getInt(
                     ARG_TOTAL_SUBMITTED_AMOUNT
                 ) ?: 0,
-                onFormTypeQuestionClicked = { sectionId, surveyId, formId, taskId, activityId, activityConfigId, missionId ->
+                onFormTypeQuestionClicked = { sectionId, surveyId, formId, taskId, activityId, activityConfigId, missionId, subjectType, referenceId ->
                     navigateToFormQuestionScreen(
-                        navController,
-                        taskId,
-                        sectionId,
-                        surveyId,
-                        formId,
-                        activityId,
-                        activityConfigId,
-                        missionId,
-                        BLANK_STRING
+                        navController = navController,
+                        taskId = taskId,
+                        sectionId = sectionId,
+                        surveyId = surveyId,
+                        formId = formId,
+                        activityId = activityId,
+                        activityConfigId = activityConfigId,
+                        missionId = missionId,
+                        referenceId = referenceId,
+                        subjectType = subjectType
                     )
                 }
             )
@@ -1005,6 +1006,9 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.StringType
                 nullable = true
             },
+            navArgument(ARG_SUBJECT_TYPE) {
+                type = NavType.StringType
+            }
         )
     ) {
 
@@ -1017,7 +1021,8 @@ fun NavGraphBuilder.MatNavigation(
             activityId = it.arguments?.getInt(ARG_ACTIVITY_ID).value(),
             activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
             missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
-            referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value()
+            referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
+            subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value()
         )
     }
 
@@ -1227,8 +1232,9 @@ fun navigateToFormQuestionScreen(
     activityId: Int,
     activityConfigId: Int,
     missionId: Int,
-    referenceId: String
+    referenceId: String,
+    subjectType: String
 ) {
     val refIdWithNull = if (TextUtils.isEmpty(referenceId)) null else referenceId
-    navController.navigate("${FORM_QUESTION_SCREEN_ROUTE_NAME}/$sectionId/$surveyId/$formId/$taskId/$activityId/$activityConfigId/$missionId/$refIdWithNull")
+    navController.navigate("${FORM_QUESTION_SCREEN_ROUTE_NAME}/$sectionId/$surveyId/$formId/$taskId/$activityId/$activityConfigId/$missionId/$refIdWithNull/$subjectType")
 }

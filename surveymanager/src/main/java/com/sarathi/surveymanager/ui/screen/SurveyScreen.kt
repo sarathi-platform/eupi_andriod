@@ -29,7 +29,7 @@ fun SurveyScreen(
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit,
-    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int) -> Unit
+    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit
 ) {
     BaseSurveyScreen(
         viewModel = viewModel,
@@ -87,7 +87,7 @@ fun SurveyScreen(
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
                     viewModel.updateTaskStatus(taskId)
                 },
-                onFormTypeQuestionClicked = { sectionId, surveyId, formId ->
+                onFormTypeQuestionClicked = { sectionId, surveyId, formId, referenceId ->
                     onFormTypeQuestionClicked(
                         sectionId,
                         surveyId,
@@ -95,7 +95,9 @@ fun SurveyScreen(
                         taskId,
                         activityId,
                         activityConfigId,
-                        missionId
+                        missionId,
+                        subjectType,
+                        referenceId
                     )
                 },
                 grantType = activityType,
@@ -112,7 +114,7 @@ fun LazyListScope.SurveyScreenContent(
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
     onAnswerSelect: (QuestionUiModel) -> Unit,
-    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int) -> Unit,
+    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, referenceId: String) -> Unit,
     grantType: String,
     maxHeight: Dp
 ) {
@@ -152,7 +154,8 @@ fun LazyListScope.SurveyScreenContent(
                         onFormTypeQuestionClicked(
                             question.sectionId,
                             question.surveyId,
-                            question.formId
+                            question.formId,
+                            viewModel.referenceId
                         )
                     }
                 }

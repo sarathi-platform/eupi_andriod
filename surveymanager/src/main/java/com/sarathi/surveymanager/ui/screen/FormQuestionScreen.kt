@@ -11,11 +11,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.value
@@ -23,6 +25,7 @@ import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
@@ -48,6 +51,7 @@ fun FormQuestionScreen(
     activityConfigId: Int,
     missionId: Int,
     referenceId: String,
+    subjectType: String
 ) {
 
     LaunchedEffect(key1 = Unit) {
@@ -59,7 +63,8 @@ fun FormQuestionScreen(
             activityId,
             activityConfigId,
             missionId,
-            referenceId
+            referenceId,
+            subjectType = subjectType
         )
         viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
 
@@ -70,7 +75,15 @@ fun FormQuestionScreen(
         modifier = modifier,
         onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = {},
-        onBottomUI = { },
+        onBottomUI = {
+            SubmitButtonBottomUi(
+                isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                buttonTitle = stringResource(R.string.submit),
+                onSubmitButtonClick = {
+
+                }
+            )
+        },
         onSettingClick = {},
         onContentUI = {
 
@@ -157,7 +170,7 @@ fun FormScreenQuestionUiContent(
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING
                 ) { selectedValue ->
-//                                saveInputTypeAnswer(selectedValue, question, viewModel)
+                    saveInputTypeAnswer(selectedValue, question, viewModel)
                     onAnswerSelect(question)
 
                 }
@@ -181,8 +194,8 @@ fun FormScreenQuestionUiContent(
                         question.options,
                         isDeleted
                     )
-//                                viewModel.checkButtonValidation()
                     onAnswerSelect(question)
+                    viewModel.checkButtonValidation()
 
                 }
             }
@@ -200,8 +213,8 @@ fun FormScreenQuestionUiContent(
                         question.options?.forEach { option ->
                             option.isSelected = selectedValue.id == option.optionId
                         }
-//                                    viewModel.checkButtonValidation()
                         onAnswerSelect(question)
+                        viewModel.checkButtonValidation()
 
                     }
                 )
@@ -223,8 +236,8 @@ fun FormScreenQuestionUiContent(
                                 options.isSelected = false
                             }
                         }
-//                                    viewModel.checkButtonValidation()
                         onAnswerSelect(question)
+                        viewModel.checkButtonValidation()
 
                     }
                 )
@@ -251,7 +264,7 @@ fun FormScreenQuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-//                                    viewModel.checkButtonValidation()
+                        viewModel.checkButtonValidation()
                     }
                 )
             }

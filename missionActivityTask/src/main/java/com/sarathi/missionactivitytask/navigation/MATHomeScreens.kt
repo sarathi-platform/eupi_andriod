@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.navigation
 
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_QUESTION_SCREEN_ROUTE_NAME
 
 sealed class MATHomeScreens(val route: String) {
@@ -66,6 +67,6 @@ sealed class MATHomeScreens(val route: String) {
 
 
     object FormQuestionScreen :
-        MATHomeScreens(route = "${FORM_QUESTION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_FORM_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{$ARG_REFERENCE_ID}")
+        MATHomeScreens(route = "${FORM_QUESTION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_FORM_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{$ARG_REFERENCE_ID}/{$ARG_SUBJECT_TYPE}")
 
 }

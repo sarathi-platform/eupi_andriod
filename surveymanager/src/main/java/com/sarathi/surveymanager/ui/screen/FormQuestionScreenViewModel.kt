@@ -9,18 +9,25 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FormQuestionScreenViewModel @Inject constructor(
+open class FormQuestionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val getTaskUseCase: GetTaskUseCase,
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
+    private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
+    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -31,6 +38,7 @@ class FormQuestionScreenViewModel @Inject constructor(
     var formId: Int = 0
     var activityId: Int = 0
     var activityConfigId: Int = 0
+    var subjectType: String = BLANK_STRING
     var missionId: Int = 0
     var referenceId: String = BLANK_STRING
 
@@ -93,7 +101,8 @@ class FormQuestionScreenViewModel @Inject constructor(
         activityId: Int,
         activityConfigId: Int,
         missionId: Int,
-        referenceId: String
+        referenceId: String,
+        subjectType: String
     ) {
         this.taskId = taskId
         this.sectionId = sectionId
@@ -103,6 +112,40 @@ class FormQuestionScreenViewModel @Inject constructor(
         this.activityConfigId = activityConfigId
         this.missionId = missionId
         this.referenceId = referenceId
+        this.subjectType = subjectType
+    }
+
+    fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            saveQuestionAnswerIntoDb(currentQuestionUiModel)
+
+            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
+                questionUiModel = currentQuestionUiModel,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = subjectType,
+                taskLocalId = taskEntity?.localTaskId
+                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                referenceId = referenceId,
+                grantId = 0,
+                grantType = BLANK_STRING,
+                taskId = taskId,
+                uriList = ArrayList(),
+                activityId = activityId,
+                activityReferenceId = 0,
+                activityReferenceType = BLANK_STRING
+            )
+        }
+    }
+
+    protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
+        saveSurveyAnswerUseCase.saveSurveyAnswer(
+            questionUiModel = question,
+            subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+            taskId = taskId,
+            referenceId = referenceId,
+            grantId = 0,
+            grantType = BLANK_STRING
+        )
     }
 
     fun checkButtonValidation() {
@@ -115,8 +158,6 @@ class FormQuestionScreenViewModel @Inject constructor(
 
         }
         isButtonEnable.value = true
-
-
     }
 
     fun updateQuestionResponseMap(question: QuestionUiModel) {
