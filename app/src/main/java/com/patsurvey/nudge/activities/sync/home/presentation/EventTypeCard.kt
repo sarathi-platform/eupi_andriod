@@ -236,15 +236,10 @@ fun EventTypeCard(
                                 }
                         )
                     }
-                    if (producerPer >=1)
-                    {
-
-                    }
                 }
 
                 progress?.let { per ->
                     if (per >= 1) {
-                        //
                         Text(
                             text = stringResource(R.string.synced),
                             style = smallTextStyle,
