@@ -39,6 +39,7 @@ import com.nudge.core.ui.commonUi.QuestionComponent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
@@ -58,6 +59,7 @@ fun <T> DropDownComponent(
     expanded: Boolean = false,
     mTextFieldSize: Size,
     diableItem: Int = -1,
+    isEditAllowed: Boolean = true,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
@@ -74,7 +76,11 @@ fun <T> DropDownComponent(
         horizontalAlignment = Alignment.Start
     ) {
         if (title.isNotBlank()) {
-            QuestionComponent(title = title, isRequiredField = isMandatory)
+            QuestionComponent(
+                title = title,
+                isRequiredField = isMandatory,
+                isQuestionEditAllowed = isEditAllowed
+            )
         }
         CustomOutlineTextField(
             value = selectedItem,
@@ -101,7 +107,7 @@ fun <T> DropDownComponent(
                     onGlobalPositioned(coordinates)
 //                    mTextFieldSize = coordinates.size.toSize()
                 },
-            textStyle = newMediumTextStyle.copy(blueDark),
+            textStyle = newMediumTextStyle.copy(if (isEditAllowed) blueDark else grayColor),
             singleLine = true,
             maxLines = 1,
             placeholder = {

@@ -28,8 +28,10 @@ import com.nudge.core.ui.theme.red
 fun QuestionComponent(
     isRequiredField: Boolean = true,
     title: String = BLANK_STRING,
-    subTitle: String = BLANK_STRING
-) {
+    subTitle: String = BLANK_STRING,
+    isQuestionEditAllowed: Boolean = true,
+
+    ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,7 +47,7 @@ fun QuestionComponent(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = blueDark,
+                            color = if (isQuestionEditAllowed) blueDark else grayColor,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
