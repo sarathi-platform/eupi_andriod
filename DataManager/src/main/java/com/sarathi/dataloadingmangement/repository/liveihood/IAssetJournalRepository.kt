@@ -10,6 +10,7 @@ interface IAssetJournalRepository {
         eventData: LivelihoodEventScreenData,
         createdDate: Long
     )
+
     suspend fun softDeleteAssetJournalEvent(transactionId: String, subjectId: Int)
     suspend fun getAssetForTransaction(transactionId: String, subjectId: Int): AssetJournalEntity?
     suspend fun getSaveAssetJournalEventDto(
@@ -21,5 +22,11 @@ interface IAssetJournalRepository {
 
     suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity>
     suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int): Int
+    suspend fun getTotalAssetCountForParticularAssetType(
+        livelihoodId: Int,
+        subjectId: Int,
+        assetIds: List<Int>
+    ): Int
+
     suspend fun getTotalAssetCount(livelihoodId: Int, subjectId: Int, assetId: Int): Int
 }

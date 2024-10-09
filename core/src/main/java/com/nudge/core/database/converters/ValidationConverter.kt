@@ -9,7 +9,7 @@ import java.lang.reflect.Type
 class ValidationConverter {
 
     @TypeConverter
-    fun fromValidationDto(validation: List<Validations>): String {
+    fun fromValidationDto(validation: List<Validations>?): String {
 
         val type: Type = object : TypeToken<List<Validations>?>() {}.type
         return Gson().toJson(validation, type)
@@ -18,7 +18,8 @@ class ValidationConverter {
     @TypeConverter
     fun toValidationDto(validation: String?): List<Validations>? {
         val type = object : TypeToken<List<Validations>?>() {}.type
-        return Gson().fromJson(validation, type)
+        return Gson().fromJson<List<Validations>>(validation, type)
+
     }
 
 }

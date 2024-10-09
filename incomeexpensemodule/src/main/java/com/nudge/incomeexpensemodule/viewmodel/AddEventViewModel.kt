@@ -10,7 +10,6 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
-import com.nudge.core.replaceLastWord
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
@@ -76,6 +75,8 @@ class AddEventViewModel @Inject constructor(
     var selectedEventId = mutableStateOf(-1)
     var assetCount = mutableStateOf("")
     var amount = mutableStateOf("")
+    var amountInfoMessage = mutableStateOf("")
+    var assetTypeInfoMessage = mutableStateOf("")
     var selectedDate = mutableStateOf("")
     var isSubmitButtonEnable = mutableStateOf(false)
     var selectedDateInLong: Long = 0
@@ -97,15 +98,7 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
-    private fun getAssetCountValue(subjectId: Int) {
-        validationAssetCountAndMessage(subjectId = subjectId) { isValid, assetCount, msg ->
-            maxAssetValue.value = if (isValid && assetCount > 0) {
-                assetCount
-            } else {
-                MAXIMUM_RANGE
-            }
-        }
-    }
+
 
     private fun fetchEventData(subjectId: Int, transactionId: String) {
         ioViewModelScope {
@@ -147,9 +140,9 @@ class AddEventViewModel @Inject constructor(
             validateForm(
                 subjectId,
                 fieldName = BLANK_STRING,
-                onValidationComplete = { evalutorResult ->
+                onValidationComplete = { evalutorResult, message ->
 
-            })
+                })
 
         }
     }
@@ -166,9 +159,9 @@ class AddEventViewModel @Inject constructor(
             validateForm(
                 subjectId,
                 fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name,
-                onValidationComplete = { evalutorResult ->
+                onValidationComplete = { evalutorResult, message ->
 
-            })
+                })
         }
     }
 
@@ -245,15 +238,14 @@ class AddEventViewModel @Inject constructor(
 
         _livelihoodAssetDropdownValue.clear()
         _livelihoodProductDropdownValue.clear()
-        getAssetCountValue(subjectId = subjectId)
-        validateForm(subjectId, fieldName = AddEventFieldEnum.EVENT_TYPE.name) { isValid ->
-            // Update question visibility based on validation result
-            val livelihoodDataCaptureTypes =
-                getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes
-            livelihoodDataCaptureTypes.forEach { captureType ->
-                questionVisibilityMap[captureType] =
-                    isValid && questionVisibilityMap.containsKey(captureType)
-            }
+
+    }
+
+    fun loadAssetAndProduct() {
+        val livelihoodDataCaptureTypes =
+            getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes
+        livelihoodDataCaptureTypes.forEach { captureType ->
+            questionVisibilityMap[captureType] = questionVisibilityMap.containsKey(captureType)
         }
         ioViewModelScope {
             fetchAssestProductValues()
@@ -318,23 +310,15 @@ class AddEventViewModel @Inject constructor(
         return particulars
     }
 
-    fun validateForm(subjectId: Int, fieldName: String, onValidationComplete: (Boolean) -> Unit) {
-        validationExpressionEvalutor(subjectId, fieldName) { isValid ->
-            // Pass the result back through the callback
-            onValidationComplete(isValid)
-            // Update submit button state based on validation result
-            isSubmitButtonEnable.value = if (isValid) checkValidData() else false
-
-        }
-    }
-
-    fun validateAssetForm(
+    fun validateForm(
         subjectId: Int,
-        onValidationComplete: (Boolean) -> Unit
+        fieldName: String,
+        onValidationComplete: (Boolean, String) -> Unit
     ) {
-        validateAssetTypeExpression(subjectId) { isValid ->
-            onValidationComplete(isValid)
-            // Update the submit button state based on validation result
+        validationExpressionEvalutor(subjectId, fieldName) { isValid, message ->
+            // Pass the result back through the callback
+            onValidationComplete(isValid, message)
+            // Update submit button state based on validation result
             isSubmitButtonEnable.value = if (isValid) checkValidData() else false
 
         }
@@ -392,7 +376,7 @@ class AddEventViewModel @Inject constructor(
     fun validationExpressionEvalutor(
         subjectId: Int,
         fieldName: String,
-        onValidationResult: (Boolean) -> Unit
+        onValidationResult: (Boolean, String) -> Unit
     ) {
         ioViewModelScope {
             val selectedLivelihood =
@@ -400,91 +384,70 @@ class AddEventViewModel @Inject constructor(
             val selectedEvent = eventList.find { it.id == selectedEventId.value }
             val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
-            if (selectedLivelihood?.validation?.livelihoodType == selectedLivelihood?.type && selectedLivelihood?.validation?.eventType == selectedEvent?.eventType) {
-                if (selectedAssetTypeId.value != -1 && selectedAssetType?.type == selectedLivelihood?.validation?.assetType) {
+            val selectedValidations =
+                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.originalName }
 
-                } else if (selectedProductId.value != -1 && selectedProduct?.type == selectedLivelihood?.validation?.productType) {
+            if (selectedValidations != null && selectedValidations.isNotEmpty()) {
+                var validation =
+                    selectedValidations.first().validation.find { it.field == fieldName }
 
-                } else {
-                    val validation =
-                        selectedLivelihood?.validation?.validation?.find { it.field == fieldName }
+                if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null) {
+                    validation =
+                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName }
                     if (validation != null) {
                         val expressionResult = validationUseCase.invoke(
-                            validationExpression = validation.expression,
-                            livelihoodId = selectedLivelihoodId.value,
+                            validationExpression = validation.condition,
                             subjectId = subjectId,
-                            selectedAssetType = selectedAssetTypeId.value
+                            selectedAsset = selectedAssetType,
+                            selectedLivelihood = selectedLivelihood,
+                            assetCount = assetCount.value,
+                            amount = amount.value,
+                            message = validation.message
                         )
-                        onValidationResult(expressionResult)
+                        onValidationResult(expressionResult.first, expressionResult.second)
+                    }
+
+                } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
+                    validation =
+                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName }
+
+                    if (validation != null) {
+                        val expressionResult = validationUseCase.invoke(
+                            validationExpression = validation.condition,
+                            selectedLivelihood = selectedLivelihood,
+                            subjectId = subjectId,
+                            selectedAsset = selectedAssetType,
+                            assetCount = assetCount.value,
+                            amount = amount.value,
+                            message = validation.message
+
+
+                        )
+                        onValidationResult(expressionResult.first, expressionResult.second)
+                    }
+                } else {
+                    if (validation != null) {
+                        val expressionResult = validationUseCase.invoke(
+                            validationExpression = validation.condition,
+                            selectedLivelihood = selectedLivelihood,
+                            subjectId = subjectId,
+                            selectedAsset = selectedAssetType,
+                            assetCount = assetCount.value,
+                            amount = amount.value,
+                            message = validation.message
+
+
+                        )
+                        onValidationResult(expressionResult.first, expressionResult.second)
                     } else {
-                        onValidationResult(true)
+                        onValidationResult(true, BLANK_STRING)
                     }
                 }
 
             } else {
-                onValidationResult(true)
+                onValidationResult(true, BLANK_STRING)
             }
 
-            onValidationResult(
-                validationUseCase.invoke(
-                validationExpression,
-                selectedLivelihoodId.value,
-                subjectId,
-                selectedAssetTypeId.value
-                )
-            )
-
-        }
-    }
-
-    fun validationAssetCountAndMessage(
-        subjectId: Int,
-        onValidationResult: (Boolean, Int, String) -> Unit
-    ) {
-        ioViewModelScope {
-            val event = eventList.find { it.id == selectedEventId.value }
-            val validationExpression = event?.validations?.expression
-            val validationAlertMsg = event?.validations?.message ?: BLANK_STRING
-            // Calculate asset count once for reuse
-            val assetCount = validationUseCase.getAssetCount(
-                    validationExpression,
-                    selectedLivelihoodId.value,
-                    subjectId,
-                    selectedAssetTypeId.value
-            )
-            // Replace the last word in the validation message with the asset count
-            val updatedMessage = replaceLastWord(
-                sentence = validationAlertMsg,
-                newWord = assetCount.toString()
-            )
-            // Evaluate the validation and pass the results to the callback
-            val isValid = validationUseCase.invoke(
-                validationExpression,
-                selectedLivelihoodId.value,
-                subjectId,
-                selectedAssetTypeId.value
-            )
-
-            // Invoke the callback with the result of validation, asset count, and updated message
-            onValidationResult(isValid, assetCount, updatedMessage)
-        }
-    }
-
-    fun validateAssetTypeExpression(
-        subjectId: Int,
-        onValidationAssetResult: (Boolean) -> Unit
-    ) {
-        ioViewModelScope {
-            val validationExpression =
-                assetTypeList.find { it.id == selectedAssetTypeId.value }?.validation?.expression
-            onValidationAssetResult(
-                validationUseCase.invoke(
-                validationExpression,
-                selectedLivelihoodId.value,
-                subjectId,
-                selectedAssetTypeId.value
-                )
-            )
 
         }
     }

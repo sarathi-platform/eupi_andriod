@@ -1,6 +1,7 @@
 package com.nudge.core.model.uiModel
 
 import androidx.room.TypeConverters
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.model.response.Validations
 
@@ -11,7 +12,7 @@ data class LivelihoodModel(
     var originalName: String,
     var type: String,
     @TypeConverters(ValidationConverter::class)
-    val validation: Validations?
+    val validations: List<Validations>?
 ) {
 
     companion object {
@@ -21,7 +22,8 @@ data class LivelihoodModel(
                 "All",
                 status = 1,
                 originalName = "",
-                validation = listOf()
+                validations = listOf(),
+                type = BLANK_STRING
             )
         }
     }

@@ -1423,10 +1423,12 @@ class DataLoadingModule {
     @Singleton
     fun provideLivelihoodEventValidationUseCase(
         assetJournalRepo: AssetJournalRepositoryImpl,
+        assetRepositoryImpl: AssetRepositoryImpl
 
         ): LivelihoodEventValidationUseCase {
         return LivelihoodEventValidationUseCase(
             assetJournalRepository = assetJournalRepo,
+            assetRepository = assetRepositoryImpl
         )
     }
 }

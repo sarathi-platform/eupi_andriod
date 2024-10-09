@@ -24,7 +24,7 @@ data class LivelihoodEntity(
 
     //Todo Add column in migration
     @TypeConverters(ValidationConverter::class)
-    var validations: Validations?
+    var validations: List<Validations>?
 
 ) {
     companion object {

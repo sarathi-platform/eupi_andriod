@@ -1,6 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
-import androidx.compose.foundation.layout.Column
+import android.text.TextUtils
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -91,6 +91,7 @@ fun AddEventScreen(
         }
     )
 
+
     val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
 
     ToolBarWithMenuComponent(
@@ -147,9 +148,12 @@ fun AddEventScreen(
         onRetry = {},
         onContentUI = { paddingValues, b, function ->
             LazyColumn(
-                modifier = Modifier.padding(
-                    horizontal = dimen_16_dp
-                )
+                modifier = Modifier
+                    .padding(
+                        horizontal = dimen_16_dp
+                    )
+                    .fillMaxWidth()
+
             ) {
 
 
@@ -169,7 +173,9 @@ fun AddEventScreen(
                             viewModel.validateForm(
                                 subjectId = subjectId,
                                 fieldName = AddEventFieldEnum.DATE.name
-                            ) {}
+                            ) { isValid, message ->
+
+                            }
                         }
                     )
                 }
@@ -187,7 +193,9 @@ fun AddEventScreen(
                             viewModel.validateForm(
                                 subjectId = subjectId,
                                 fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name
-                            ) {}
+                            ) { isValid, message ->
+
+                            }
                         }
                     )
 
@@ -257,7 +265,6 @@ fun AddEventScreen(
                     }
 
                     // val isEventAlertMsgVisible = remember { mutableStateOf(false) }
-                    Column {
                         TypeDropDownComponent(
                             isEditAllowed = !showDeleteButton,
                             title = stringResource(R.string.events),
@@ -269,15 +276,11 @@ fun AddEventScreen(
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.EVENT_TYPE.name
-                                ) { isValid ->
+                                ) { isValid, message ->
                                     if (isValid) {
+                                        viewModel.loadAssetAndProduct()
                                         // If valid, hide the alert message
-                                        isEventAlertMsgVisible.value = Pair(false, BLANK_STRING)
-                                    } else {
-                                        // If not valid, trigger asset count and validation message
-                                        viewModel.validationAssetCountAndMessage(subjectId = subjectId) { isValidation, assetCount, msg ->
-                                            isEventAlertMsgVisible.value = Pair(true, msg)
-                                        }
+                                        isEventAlertMsgVisible.value = Pair(true, message)
                                     }
                                 }
                             })
@@ -293,10 +296,11 @@ fun AddEventScreen(
                     }
 
 
-                }
+
 
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
                     item {
+
                         TypeDropDownComponent(
                             isEditAllowed = true,
                             title = stringResource(R.string.type_of_asset),
@@ -308,10 +312,20 @@ fun AddEventScreen(
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.ASSET_TYPE.name
-                                ) {}
+                                ) { isValid, message ->
+                                    viewModel.assetTypeInfoMessage.value = message
+                                }
                             }
                         )
+                        if (!TextUtils.isEmpty(viewModel.assetTypeInfoMessage.value)) {
+                            Text(
+                                text = viewModel.assetTypeInfoMessage.value,
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                            )
+                        }
                     }
+
 
 
                 }
@@ -328,7 +342,9 @@ fun AddEventScreen(
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.PRODUCT_TYPE.name
-                                ) {}
+                                ) { isValid, message ->
+
+                                }
                             }
                         )
                     }
@@ -350,7 +366,9 @@ fun AddEventScreen(
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     AddEventFieldEnum.ASSET_COUNT.name
-                                ) {}
+                                ) { isValid, message ->
+
+                                }
                             }
                         )
                     }
@@ -371,7 +389,16 @@ fun AddEventScreen(
                             viewModel.validateForm(
                                 subjectId = subjectId,
                                 fieldName = AddEventFieldEnum.AMOUNT.name
-                            ) {}
+                            ) { isValid, message ->
+                                viewModel.amountInfoMessage.value = message
+                            }
+                        }
+                        if (!TextUtils.isEmpty(viewModel.amountInfoMessage.value)) {
+                            Text(
+                                text = viewModel.amountInfoMessage.value,
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                            )
                         }
                     }
 
