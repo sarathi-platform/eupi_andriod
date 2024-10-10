@@ -119,7 +119,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             productValue = eventData.productValue,
             createdDate = currentDateTime,
             modifiedDate = modifiedDateTime,
-            status = 1
+            status = 1,
+            eventType = eventData.selectedEvent.name
         )
     }
 

@@ -1,6 +1,10 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.app.Activity
+
+import android.location.Location
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,7 +88,8 @@ import com.patsurvey.nudge.utils.DOUBLE_QUOTE_REGEX
 import com.patsurvey.nudge.utils.IGNORED_REGEX
 import com.patsurvey.nudge.utils.LEFT_BRACKET_QUOTE_REGEX
 import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.LocationUtil.getLocation
+import com.patsurvey.nudge.utils.LocationUtil.getLocationAdded
 import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.RIGHT_BRACKET_QUOTE_REGEX
@@ -95,7 +100,9 @@ import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.function.Consumer
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun AddTolaBox(
     modifier: Modifier = Modifier,
@@ -129,6 +136,9 @@ fun AddTolaBox(
     val showLoader = remember {
         mutableStateOf(false)
     }
+    var getGpsLoaction =  remember {
+        mutableStateOf(false)
+    }
 
     val showInlineLocationError = remember {
         mutableStateOf(false)
@@ -136,8 +146,7 @@ fun AddTolaBox(
 
     LaunchedEffect(key1 = showLoader.value) {
         if (showLoader.value) {
-            delay(3000)
-            location = LocationUtil.location
+            delay(200)
             if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                 locationAdded = true
             } else {
@@ -165,7 +174,8 @@ fun AddTolaBox(
             .then(modifier)
     ) {
 
-        if (shouldRequestPermission.value){
+        if (shouldRequestPermission.value) {
+
             ShowDialogForTolaLocation(
                 title = stringResource(R.string.permission_required_prompt_title),
                 message = stringResource(R.string.location_permission_dialog_prompt_message),
@@ -181,7 +191,22 @@ fun AddTolaBox(
                 }
             )
         }
+        if (getGpsLoaction.value) {
 
+
+            ShowDialogForGPsLocation(
+                title = stringResource(R.string.permission_required_prompt_title),
+                message = stringResource(R.string.gps_location_not_enable),
+                setShowDialog = {
+                    getGpsLoaction.value
+                },
+
+                cancelButtonClicked = {
+
+                    getGpsLoaction.value =false
+                }
+            )
+        }
         Column(
             modifier = Modifier
                 .scrollable(rememberScrollState(), orientation = Orientation.Vertical),
@@ -213,20 +238,23 @@ fun AddTolaBox(
             OutlinedTextField(
                 value = mTolaName,
                 onValueChange = {
-                    if(!it.contains(IGNORED_REGEX)
+                    if (!it.contains(IGNORED_REGEX)
                         && !it.contains(DOUBLE_QUOTE_REGEX)
                         && !it.contains(LEFT_BRACKET_QUOTE_REGEX)
                         && !it.contains(RIGHT_BRACKET_QUOTE_REGEX)
-                        && !containsEmoji(it)){
+                        && !containsEmoji(it)
+                    ) {
                         mTolaName = it
                     }
                 },
                 placeholder = {
-                    Text(text = stringResource(id = R.string.enter_name_text), style = TextStyle(
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp
-                    ), color = placeholderGrey)
+                    Text(
+                        text = stringResource(id = R.string.enter_name_text), style = TextStyle(
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        ), color = placeholderGrey
+                    )
                 },
                 textStyle = TextStyle(
                     fontFamily = NotoSans,
@@ -263,6 +291,40 @@ fun AddTolaBox(
                         )
 
                     ) {
+                        var locationByGps: Location? = null
+                        var locationByNetwork: Location? = null
+                        val gpsConsumer = Consumer<Location> { gpsLocation ->
+                            if (gpsLocation != null) {
+                                locationByGps = gpsLocation
+                                location = LocationCoordinates(
+                                    locationByGps?.latitude ?: 0.0,
+                                    locationByGps?.longitude ?: 0.0
+
+                                )
+                            }
+                        }
+                        val networkConsumer =
+                            Consumer<Location> { networkLocation ->
+                                if (networkLocation != null) {
+                                    locationByNetwork = networkLocation
+                                    location = LocationCoordinates(
+                                        locationByNetwork?.latitude ?: 0.0,
+                                        locationByNetwork?.longitude ?: 0.0
+
+                                    )
+                                }
+                            }
+                       getLocation(
+                           context as Activity,
+                            gpsConsumer,
+                            networkConsumer
+                        )
+                            if (!getLocationAdded) {
+                                getGpsLoaction.value =true
+                            }
+                            else{
+                                getGpsLoaction.value =false
+                            }
                         showLoader.value = true
                         focusManager.clearFocus()
                     }
@@ -296,7 +358,9 @@ fun AddTolaBox(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
+                        text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(
+                            R.string.get_location_text
+                        ),
                         textAlign = TextAlign.Center,
                         style = smallTextStyle,
                         color = if (locationAdded) greenOnline else blueDark,
@@ -304,7 +368,7 @@ fun AddTolaBox(
                     )
                 }
             }
-            if (showInlineLocationError.value) {
+            if (showInlineLocationError.value  &&!getLocationAdded) {
                 Text(
                     text = stringResource(id = R.string.location_unavailable),
                     style = mediumTextStyle,
@@ -354,7 +418,7 @@ fun AddTolaBox(
         }
     }
 }
-
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun TolaBox(
     modifier: Modifier = Modifier,
@@ -368,6 +432,7 @@ fun TolaBox(
     index: Int,
     saveButtonClicked: (newName: String, newLocation: LocationCoordinates?) -> Unit
 ) {
+
     var showEditView by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -386,7 +451,9 @@ fun TolaBox(
             tolaLocation ?: LocationCoordinates()
         )
     }
-
+    var getGpsLoaction =  remember {
+        mutableStateOf(false)
+    }
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
@@ -401,7 +468,7 @@ fun TolaBox(
 
     LaunchedEffect(key1 = showLoader.value) {
         if (showLoader.value) {
-            delay(3000)
+            delay(200)
             if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                 locationAdded = true
             } else {
@@ -414,6 +481,7 @@ fun TolaBox(
             showLoader.value = false
         }
     }
+
 
     Box(
         modifier = Modifier
@@ -429,8 +497,7 @@ fun TolaBox(
             .then(modifier),
     ) {
 
-
-        if (shouldRequestPermission.value){
+        if (shouldRequestPermission.value) {
             ShowDialogForTolaLocation(
                 title = stringResource(R.string.permission_required_prompt_title),
                 message = stringResource(R.string.location_permission_dialog_prompt_message),
@@ -443,6 +510,20 @@ fun TolaBox(
                 },
                 cancelButtonClicked = {
                     showPermissionDialog = true
+                }
+            )
+        }
+
+        if (getGpsLoaction.value) {
+            ShowDialogForGPsLocation(
+                title = stringResource(R.string.permission_required_prompt_title),
+                message = stringResource(R.string.gps_location_not_enable),
+                setShowDialog = {
+                    getGpsLoaction.value
+                },
+
+                cancelButtonClicked = {
+                    getGpsLoaction.value =false
                 }
             )
         }
@@ -483,7 +564,9 @@ fun TolaBox(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (isLocationAvailable) stringResource(id = R.string.location_added_text) else stringResource(id = R.string.not_added),
+                            text = if (isLocationAvailable) stringResource(id = R.string.location_added_text) else stringResource(
+                                id = R.string.not_added
+                            ),
                             style = smallTextStyleNormalWeight,
                             color = textColorDark
                         )
@@ -502,8 +585,8 @@ fun TolaBox(
                     // edit tola
                     coroutineScope.launch {
                         delay(200)
-                        NudgeLogger.e("tola->",index.toString())
-                        listState.animateScrollToItem(index+2)
+                        NudgeLogger.e("tola->", index.toString())
+                        listState.animateScrollToItem(index + 2)
                     }
                 }
             }
@@ -518,7 +601,10 @@ fun TolaBox(
                     Column(
                         modifier = Modifier,
                     ) {
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(
@@ -543,22 +629,26 @@ fun TolaBox(
                                     }
                                 }
                             )
-                            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier
-                                .absolutePadding(top = 2.dp)
-                                .clickable {
-                                    location = tolaLocation ?: LocationCoordinates()
-                                    showEditView = false
-                                    showInlineLocationError.value = false
-                                })
+                            Icon(imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = textColorDark,
+                                modifier = Modifier
+                                    .absolutePadding(top = 2.dp)
+                                    .clickable {
+                                        location = tolaLocation ?: LocationCoordinates()
+                                        showEditView = false
+                                        showInlineLocationError.value = false
+                                    })
                         }
                         OutlinedTextField(
                             value = mTolaName,
                             onValueChange = {
-                                if(!it.contains(IGNORED_REGEX)
+                                if (!it.contains(IGNORED_REGEX)
                                     && !it.contains(DOUBLE_QUOTE_REGEX)
                                     && !it.contains(LEFT_BRACKET_QUOTE_REGEX)
                                     && !it.contains(RIGHT_BRACKET_QUOTE_REGEX)
-                                    && !containsEmoji(it)){
+                                    && !containsEmoji(it)
+                                ) {
                                     mTolaName = it
                                 }
                             },
@@ -601,6 +691,7 @@ fun TolaBox(
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(Color.White)
                                 .clickable(
+
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(
                                         bounded = true,
@@ -608,7 +699,46 @@ fun TolaBox(
                                     )
 
                                 ) {
-                                    location = LocationUtil.location
+                                    var locationByGps: Location? = null
+                                    var locationByNetwork: Location? = null
+                                    val gpsConsumer = Consumer<Location> { gpsLocation ->
+                                        if (gpsLocation != null) {
+                                            locationByGps = gpsLocation
+                                            location = LocationCoordinates(
+                                                locationByGps?.latitude ?: 0.0,
+                                                locationByGps?.longitude ?: 0.0
+
+                                            )
+                                        }
+                                    }
+                                    val networkConsumer =
+                                        Consumer<Location> { networkLocation ->
+                                            if (networkLocation != null) {
+                                                locationByNetwork = networkLocation
+                                                location = LocationCoordinates(
+                                                    locationByNetwork?.latitude ?: 0.0,
+                                                    locationByNetwork?.longitude ?: 0.0
+
+                                                )
+                                            }
+                                        }
+
+                                   getLocation(
+                                        context = context,
+                                        gpsConsumer,
+                                        networkConsumer
+                                    )
+                                    coroutineScope.launch {
+                                        delay(500)
+
+                                        if (showInlineLocationError.value && !getLocationAdded) {
+                                            getGpsLoaction.value =true
+
+                                        }
+                                        else{
+                                            getGpsLoaction.value =false
+                                        }
+                                    }
                                     showLoader.value = true
                                     focusManager.clearFocus()
                                 }
@@ -642,7 +772,9 @@ fun TolaBox(
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
+                                    text = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) stringResource(
+                                        R.string.location_added_text
+                                    ) else stringResource(R.string.get_location_text),
                                     textAlign = TextAlign.Center,
                                     style = smallTextStyle,
                                     color = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) greenOnline else blueDark,
@@ -650,9 +782,10 @@ fun TolaBox(
                                 )
                             }
                         }
-                        if (showInlineLocationError.value && !locationAdded) {
+                        if (showInlineLocationError.value && !locationAdded && !getLocationAdded) {
+
                             Text(
-                                text =  stringResource(id = R.string.location_unavailable),
+                                text = stringResource(id = R.string.location_unavailable),
                                 style = mediumTextStyle,
                                 textAlign = TextAlign.Start,
                                 fontSize = 12.sp,
@@ -669,7 +802,6 @@ fun TolaBox(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp),
-//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             if (!isTransectWalkCompleted) {
                                 ButtonOutline(
@@ -701,7 +833,10 @@ fun TolaBox(
                                     showEditView = false
                                     showInlineLocationError.value = false
                                 } else {
-                                    showCustomToast(context, context.getString(R.string.enter_tola_name_message))
+                                    showCustomToast(
+                                        context,
+                                        context.getString(R.string.enter_tola_name_message)
+                                    )
                                 }
                             }
                         }
@@ -718,7 +853,7 @@ fun ShowDialogForTolaLocation(
     message: String,
     setShowDialog: (Boolean) -> Unit,
     positiveButtonClicked: () -> Unit,
-    cancelButtonClicked:() -> Unit,
+    cancelButtonClicked: () -> Unit,
 ) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -770,4 +905,58 @@ fun ShowDialogForTolaLocation(
             }
         }
     }
+
+}
+
+@Composable
+fun ShowDialogForGPsLocation(
+    title: String,
+    message: String,
+    setShowDialog: () -> Unit,
+    cancelButtonClicked: () -> Unit,
+) {
+    Dialog(onDismissRequest = { setShowDialog() }) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Start,
+                        style = buttonTextStyle,
+                        maxLines = 1,
+                        color = textColorDark,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = message,
+                        textAlign = TextAlign.Start,
+                        style = smallTextStyleMediumWeight,
+                        maxLines = 2,
+                        color = textColorDark,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        ButtonNegative(
+                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            setShowDialog()
+                            cancelButtonClicked()
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                    }
+                }
+            }
+        }
+    }
+
 }

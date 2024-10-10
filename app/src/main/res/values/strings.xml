@@ -446,6 +446,8 @@
     <string name="location_permission_dialog_prompt_message">Location Permission required, please grant permission.</string>
     <string name="empty_tola_button_text">Continue without Para / Tola addition</string>
     <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
+    <string name="location_not_enable">Location not enabled.</string>
+    <string name="gps_location_not_enable">GPS Location not enabled.</string>
 
     <string name="pat_selected_status_text">PAT Selected</string>
     <string name="pat_rejected_status_text">PAT Rejected</string>

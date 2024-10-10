@@ -25,123 +25,6 @@ import java.util.function.Consumer
 
 object LocationUtil {
 
-    fun getLocation(context: Activity): LocationCoordinates? {
-
-        val mLocationManager: LocationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val batteryManager =
-            context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-        val batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-
-            if (isLocationEnabled(context, mLocationManager)) {
-                val criteria = getCriteria(
-                    if (batteryLevel > 30)
-                        Criteria.ACCURACY_FINE
-                    else
-                        Criteria.ACCURACY_COARSE
-                )
-                try {
-                    val locationProvider = mLocationManager.getBestProvider(
-                        criteria, true
-                    )
-
-                    val location =
-                        locationProvider?.let { mLocationManager.getLastKnownLocation(it) }
-
-                    Log.d(
-                        "LocationUtil",
-                        "locationProvider: $locationProvider, location: lat-${location?.latitude}, long-${location?.longitude}"
-                    )
-
-
-                    return if (location != null) {
-                        AnalyticsHelper.logLocationEvents(
-                            Events.LOCATION_FETCHED,
-                            mapOf(
-                                EventParams.LOCATION_CRITERIA to "$criteria",
-                                EventParams.LOCATION_PROVIDER to locationProvider!!,
-                            )
-                        )
-                        LocationCoordinates(location.latitude, location.longitude)
-                    } else {
-                        context.runOnUiThread {
-                            Toast.makeText(context, "Location not Available", Toast.LENGTH_LONG)
-                                .show()
-                        }
-                        AnalyticsHelper.logLocationEvents(
-                            Events.LOCATION_FETCH_FAILED,
-                            mapOf(
-                                EventParams.LOCATION_CRITERIA to "$criteria",
-                                EventParams.LOCATION_PROVIDER to locationProvider!!,
-                            )
-                        )
-                        LocationCoordinates(0.0, 0.0)
-                    }
-                } catch (ex: Exception) {
-                    AnalyticsHelper.logLocationEvents(
-                        Events.LOCATION_FETCH_FAILED,
-                        mapOf(
-                            EventParams.LOCATION_CRITERIA to "$criteria",
-                            EventParams.EXCEPTION to ex.message!!,
-                        )
-                    )
-                    return null
-                }
-            } else {
-                context.runOnUiThread {
-                    Toast.makeText(context, "Location not Enabled", Toast.LENGTH_LONG).show()
-                }
-                return null
-            }
-
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            && ActivityCompat.shouldShowRequestPermissionRationale(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        ) {
-            ActivityCompat.requestPermissions(
-                context,
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                1
-            )
-            return null
-        } else {
-            context.runOnUiThread {
-                Toast.makeText(context, context.getString(R.string.location_permission_not_granted_message), Toast.LENGTH_LONG).show()
-            }
-            AnalyticsHelper.logLocationEvents(
-                Events.LOCATION_PERMISSION_GRANTED,
-                mapOf(
-                    EventParams.PERMISSION_GRANTED to (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED)
-                )
-            )
-            showPermissionDialog = true
-            return null
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.R)
     fun getLocation(context: Activity, gpsConsumer: Consumer<Location>, networkConsumer: Consumer<Location>) {
         NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): called")
@@ -155,6 +38,7 @@ object LocationUtil {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            getLocationAdded =true
             NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): permission granted")
             val hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             val hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
@@ -163,12 +47,15 @@ object LocationUtil {
             if (hasGps || hasNetwork) {
                 if (hasGps) {
                     NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): hasGps: locationManager.getCurrentLocation called")
-                    locationManager.getCurrentLocation(
-                        LocationManager.GPS_PROVIDER,
-                        null,
-                        context.mainExecutor,
-                        gpsConsumer
-                    )
+                    try {
+                        locationManager.getCurrentLocation(
+                            LocationManager.GPS_PROVIDER,
+                            null,
+                            context.mainExecutor,
+                            gpsConsumer
+                        )
+                    }catch (e:Exception){
+                    }
                 }
                 if (hasNetwork) {
                     NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): hasNetwork: locationManager.getCurrentLocation called")
@@ -180,12 +67,12 @@ object LocationUtil {
                     )
                 }
             } else {
+                getLocationAdded =false
                 NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): hasGps: false || hasNetwork: false")
-
-//                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
-//                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                Toast.makeText(context, context.getString(R.string.location_not_enable), Toast.LENGTH_SHORT).show()
             }
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(
+        }
+        else if (ActivityCompat.shouldShowRequestPermissionRationale(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
@@ -223,7 +110,6 @@ object LocationUtil {
             showPermissionDialog = true
         }
     }
-
     fun getLocation(context: Activity, gpsLocationListener: LocationListener, networkLocationListener: LocationListener) {
         NudgeLogger.d("LocationUtil", "getLocation: called")
         val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -261,8 +147,7 @@ object LocationUtil {
 
             } else {
                 NudgeLogger.d("LocationUtil", "getLocation: hasGps || hasNetwork: false")
-//                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
-//                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                Toast.makeText(context, context.getString(R.string.location_not_enable), Toast.LENGTH_SHORT).show()
             }
 
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -355,6 +240,7 @@ object LocationUtil {
 
         return criteria
     }
+    var getLocationAdded = false
 
     var showPermissionDialog = false
 
@@ -481,5 +367,4 @@ object LocationUtil {
             )
         }
     }
-
 }
