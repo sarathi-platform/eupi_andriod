@@ -29,17 +29,26 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUse
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.ChangeUserRepository
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.ChangeUserRepositoryImpl
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchCasteListRepository
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchCasteListRepositoryImpl
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchPatQuestionRepository
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchPatQuestionRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.ChangeUserRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchCasteListRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchPatQuestionRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchSelectionUserDataRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.PreferenceProviderRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.SelectionVillageRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.ChangeUserRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchCasteListRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchPatQuestionRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchSelectionUserDataRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.PreferenceProviderRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.SelectionVillageRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.ChangeUserUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCasteListUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCrpDataUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchPatQuestionUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.PreferenceProviderUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
@@ -57,7 +66,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
+import com.sarathi.dataloadingmangement.repository.UserPropertiesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -155,14 +164,16 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideFetchCrpDataUseCase(
-        fetchUserDetailUseCase: FetchUserDetailUseCase,
+        fetchSelectionUserDataRepository: FetchSelectionUserDataRepository,
         fetchPatQuestionUseCase: FetchPatQuestionUseCase,
-        fetchCasteListUseCase: FetchCasteListUseCase
+        fetchCasteListUseCase: FetchCasteListUseCase,
+        userPropertiesRepository: UserPropertiesRepository
     ): FetchCrpDataUseCase {
         return FetchCrpDataUseCase(
-            fetchUserDetailUseCase = fetchUserDetailUseCase,
+            fetchSelectionUserDataRepository = fetchSelectionUserDataRepository,
             fetchPatQuestionUseCase = fetchPatQuestionUseCase,
-            fetchCasteListUseCase = fetchCasteListUseCase
+            fetchCasteListUseCase = fetchCasteListUseCase,
+            userPropertiesRepository = userPropertiesRepository
         )
     }
 
@@ -219,6 +230,7 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideChangeUserRepository(
+        selectionSharedPrefs: SharedPrefs,
         coreSharedPrefs: CoreSharedPrefs,
         casteListDao: CasteListDao,
         didiDao: DidiDao,
@@ -235,6 +247,7 @@ object UseCaseModule {
         syncManagerDatabase: SyncManagerDatabase,
     ): ChangeUserRepository {
         return ChangeUserRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
             coreSharedPrefs = coreSharedPrefs,
             casteListDao = casteListDao,
             didiDao = didiDao,
@@ -252,4 +265,64 @@ object UseCaseModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun providesSelectionVillageUseCase(
+        selectionVillageRepository: SelectionVillageRepository
+    ): SelectionVillageUseCase {
+        return SelectionVillageUseCase(
+            selectionVillageRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSelectionVillageRepository(
+        selectionSharedPrefs: SharedPrefs,
+        coreSharedPrefs: CoreSharedPrefs,
+        villageListDao: VillageListDao
+    ): SelectionVillageRepository {
+        return SelectionVillageRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs,
+            villageListDao = villageListDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesPreferenceProviderUseCase(
+        preferenceProviderRepository: PreferenceProviderRepository
+    ): PreferenceProviderUseCase {
+        return PreferenceProviderUseCase(preferenceProviderRepository)
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesPreferenceProviderRepository(
+        selectionSharedPrefs: SharedPrefs,
+        coreSharedPrefs: CoreSharedPrefs
+    ): PreferenceProviderRepository {
+        return PreferenceProviderRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchSelectionUserDataRepository(
+        sharedPrefs: CoreSharedPrefs,
+        apiService: ApiService,
+        languageListDao: LanguageListDao,
+        villageListDao: VillageListDao
+    ): FetchSelectionUserDataRepository {
+        return FetchSelectionUserDataRepositoryImpl(
+            sharedPrefs = sharedPrefs,
+            apiService = apiService,
+            languageDao = languageListDao,
+            villageListDao = villageListDao
+        )
+    }
 }

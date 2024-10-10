@@ -29,13 +29,13 @@ interface VillageListDao {
     fun insertAll(villages: List<VillageEntity>)
 
     @Transaction()
-    fun insertOnlyNewData(villages: List<VillageEntity>, userBPC: Boolean) {
+    fun insertOnlyNewData(villages: List<VillageEntity>, userBPC: Boolean = false) {
         softDeleteVillage()
         villages.forEach {
             val localVillage = getVillageFromId(it.id, it.languageId)
             if (localVillage == null) {
                 insertVillage(it.copy(isActive = 1))
-            } else if (localVillage.isDataLoadTriedOnce != 1 && userBPC) {
+            } else if (localVillage.isDataLoadTriedOnce != 1) {
                 deleteVillageById(localVillage.localVillageId)
                 insertVillage(it.copy(isActive = 1))
             } else {

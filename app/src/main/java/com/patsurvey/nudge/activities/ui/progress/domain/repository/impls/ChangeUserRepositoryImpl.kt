@@ -1,7 +1,9 @@
-package com.patsurvey.nudge.activities.ui.progress.domain.repository
+package com.patsurvey.nudge.activities.ui.progress.domain.repository.impls
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.ChangeUserRepository
+import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -17,6 +19,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import javax.inject.Inject
 
 class ChangeUserRepositoryImpl @Inject constructor(
+    private val selectionSharedPrefs: SharedPrefs,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val casteListDao: CasteListDao,
     private val didiDao: DidiDao,
@@ -60,6 +63,12 @@ class ChangeUserRepositoryImpl @Inject constructor(
         coreSharedPrefs.saveAppLanguageId(languageId)
         coreSharedPrefs.saveAccessToken(accessToken ?: "")
         coreSharedPrefs.saveMobileNumber(mobileNo)
+    }
+
+    override fun logout() {
+        selectionSharedPrefs.saveAccessToken("")
+        selectionSharedPrefs.saveMobileNumber("")
+        selectionSharedPrefs.saveSettingOpenFrom(0)
     }
 
 }

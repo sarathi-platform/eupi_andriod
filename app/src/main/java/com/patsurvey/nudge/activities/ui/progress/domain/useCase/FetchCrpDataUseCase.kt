@@ -1,13 +1,13 @@
 package com.patsurvey.nudge.activities.ui.progress.domain.useCase
 
 import com.nudge.core.CRP_USER_TYPE
-import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchSelectionUserDataRepository
 import com.sarathi.dataloadingmangement.repository.UserPropertiesRepository
 import javax.inject.Inject
 
 class FetchCrpDataUseCase @Inject constructor(
     private val userPropertiesRepository: UserPropertiesRepository,
-    private val fetchUserDetailUseCase: FetchUserDetailUseCase,
+    private val fetchSelectionUserDataRepository: FetchSelectionUserDataRepository,
     private val fetchPatQuestionUseCase: FetchPatQuestionUseCase,
     private val fetchCasteListUseCase: FetchCasteListUseCase,
 ) : FetchSelectionUserUseCase(userPropertiesRepository) {
@@ -21,7 +21,13 @@ class FetchCrpDataUseCase @Inject constructor(
             return
         }
 
-        val isUserDetailsFetched = fetchUserDetailUseCase.invoke()
+        val localLanguageList = fetchSelectionUserDataRepository.fetchLanguage()
+        val userViewApiRequest = createMultiLanguageVillageRequest(localLanguageList)
+
+        val isUserDetailsFetched =
+            fetchSelectionUserDataRepository.fetchAndSaveUserDetailsAndVillageListFromNetwork(
+                userViewApiRequest
+            )
         if (isUserDetailsFetched) {
             fetchPatQuestionUseCase.invoke()
             fetchCasteListUseCase.invoke()
@@ -30,5 +36,6 @@ class FetchCrpDataUseCase @Inject constructor(
             onComplete(false)
         }
     }
+
 
 }

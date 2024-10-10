@@ -4,22 +4,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.ChangeUserUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCrpDataUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.PreferenceProviderUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.activities.ui.progress.events.SelectionEvents
-import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.base.BaseViewModelV2
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.SearchEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@HiltViewModel
 class VillageSelectionViewModelV2 @Inject constructor(
     private val fetchCrpDataUseCase: FetchCrpDataUseCase,
-    private val changeUserUseCase: ChangeUserUseCase
-) : BaseViewModel() {
+    private val changeUserUseCase: ChangeUserUseCase,
+    private val selectionVillageUseCase: SelectionVillageUseCase,
+    val preferenceProviderUseCase: PreferenceProviderUseCase
+) : BaseViewModelV2(fetchCrpDataUseCase) {
 
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
@@ -56,8 +64,27 @@ class VillageSelectionViewModelV2 @Inject constructor(
                 }
             }
 
-            is SelectionEvents.GetStateId -> {
-                event.result(fetchCrpDataUseCase.getStateId())
+            is SelectionEvents.UpdateSelectedVillage -> {
+                villageSelected.value = event.selectedIndex
+                selectionVillageUseCase.setSelectedVillage(filterVillageList.value[villageSelected.value])
+            }
+
+            is SearchEvent.PerformSearch -> {
+                _filterVillageList.value = if (event.searchTerm.isNotEmpty()) {
+                    val filteredList = ArrayList<VillageEntity>()
+                    villageList.value.forEach { village ->
+                        if (village.name.lowercase().contains(event.searchTerm.lowercase())) {
+                            filteredList.add(village)
+                        }
+                    }
+                    filteredList
+                } else {
+                    villageList.value
+                }
+            }
+
+            is SelectionEvents.Logout -> {
+                changeUserUseCase.logout()
             }
         }
 
@@ -77,15 +104,25 @@ class VillageSelectionViewModelV2 @Inject constructor(
         viewModelScope.launch(ioDispatcher + exceptionHandler) {
             fetchCrpDataUseCase.invoke(isRefresh = isRefresh,
                 onComplete = {
+                    initVillageSelectionScreen()
                     onEvent(SelectionEvents.GetStateId { result ->
                         stateId.value = result
                     })
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             )
 
         }
 
+    }
+
+    private fun initVillageSelectionScreen() {
+        ioViewModelScope {
+            _villagList.value = selectionVillageUseCase.getVillageListFromDb()
+            _filterVillageList.value = villageList.value
+            withContext(mainDispatcher) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
     }
 
     override fun refreshData() {

@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities.ui.progress.domain.useCase
 
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.ChangeUserRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.ChangeUserRepository
 import javax.inject.Inject
 
 class ChangeUserUseCase @Inject constructor(
@@ -11,6 +11,10 @@ class ChangeUserUseCase @Inject constructor(
         changeUserRepository.clearDbForUser()
         changeUserRepository.clearPrefsForUser()
         result()
+    }
+
+    fun logout() {
+        changeUserRepository.logout()
     }
 
 }

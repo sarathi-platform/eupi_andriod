@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities.ui.progress.domain.useCase
 
-import com.patsurvey.nudge.activities.ui.progress.domain.repository.FetchPatQuestionRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchPatQuestionRepository
 import javax.inject.Inject
 
 class FetchPatQuestionUseCase @Inject constructor(
@@ -8,7 +8,7 @@ class FetchPatQuestionUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke() {
-
+        //TODO add implementation
     }
 
 }

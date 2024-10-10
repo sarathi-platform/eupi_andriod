@@ -23,4 +23,12 @@ class UserPropertiesRepositoryImpl @Inject constructor(
         return coreSharedPrefs.getStateId()
     }
 
+    override fun isUserBpc(): Boolean {
+        return coreSharedPrefs.isUserBPC()
+    }
+
+    override fun getAppLanguage(): String {
+        return coreSharedPrefs.getAppLanguage()
+    }
+
 }

@@ -77,4 +77,7 @@ interface CorePrefRepo {
     fun isBpcDataLoaded(): Boolean
     fun setBpcDataLoaded(isDataLoaded: Boolean)
 
+    fun setIsUserBPC(isBpcUser: Boolean)
+    fun isUserBPC(): Boolean
+
 }

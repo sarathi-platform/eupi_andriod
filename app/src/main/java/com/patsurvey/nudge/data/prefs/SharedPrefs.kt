@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nudge.core.ACCESS_TOKEN
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.PREF_KEY_PREVIOUS_USER_MOBILE
+import com.nudge.core.PREF_KEY_USER_BPC
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
@@ -32,7 +33,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_PAGE_FROM = "page_from"
         const val PREF_KEY_STEP_ID = "step_id"
         const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
-        const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_LAST_SYNC_TIME = "last_sync_time"
         const val PREF_KEY_SETTING_OPEN_FROM = "setting_open_from"
         const val PREF_KEY_QUESTIONS_OPEN_FROM = "questions_open_from"

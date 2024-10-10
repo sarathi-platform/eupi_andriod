@@ -117,3 +117,6 @@ const val PREF_KEY_CRP_DATA_LOADED = "is_crp_data_loaded"
 const val PREF_KEY_BPC_DATA_LOADED = "is_bpc_data_loaded"
 const val BPC_USER_TYPE = "Project Coordinator"
 const val CRP_USER_TYPE = "Community Resource Person"
+const val PREF_KEY_USER_BPC = "is_user_bpc"
+
+const val DEFAULT_STATE_ID = -1

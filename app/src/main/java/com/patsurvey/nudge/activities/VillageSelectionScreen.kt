@@ -83,7 +83,6 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -92,6 +91,7 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.missionactivitytask.utils.event.SearchEvent
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -126,7 +126,9 @@ fun VillageSelectionScreen(
             message =stringResource(id = R.string.do_you_want_to_exit_the_app),
             positiveButtonTitle = stringResource(id = R.string.exit),
             negativeButtonTitle = stringResource(id = R.string.cancel),
-            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
+            onNegativeButtonClick = {
+                viewModel.showAppExitDialog.value = false
+            },
             onPositiveButtonClick = {
                 (context as? MainActivity)?.finish()
             })
@@ -140,7 +142,7 @@ fun VillageSelectionScreen(
             dismissOnBackPress = false,
             onNegativeButtonClick = {
                 viewModel.showUserChangedDialog.value = false
-                viewModel.logout()
+                viewModel.onEvent(SelectionEvents.Logout)
                 navController.navigate(AuthScreen.LOGIN.route)
             },
             onPositiveButtonClick = {
@@ -191,8 +193,8 @@ fun VillageSelectionScreen(
                     },
                     actions = {
                         IconButton(onClick = {
-                            viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-                            viewModel.savePageOpenFromOTPScreen()
+                            viewModel.preferenceProviderUseCase.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+                            viewModel.preferenceProviderUseCase.savePageOpenFromOTPScreen(false)
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -245,7 +247,7 @@ fun VillageSelectionScreen(
                     },
                     actions = {
                         IconButton(onClick = {
-                            viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+                            viewModel.preferenceProviderUseCase.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -296,7 +298,7 @@ fun VillageSelectionScreen(
                                 }
 
                             }
-                            BlueButtonWithIconWithFixedWidthWithoutIcon(
+                            /*BlueButtonWithIconWithFixedWidthWithoutIcon(
                                 modifier = Modifier,
                                 buttonText = stringResource(id = R.string.click_to_refresh),
                                 onClick = {
@@ -315,7 +317,7 @@ fun VillageSelectionScreen(
                                         viewModel.showLoader.value = false
                                     }
                                 }
-                            )
+                            )*/
                         }
                     }
                 } else {
@@ -338,8 +340,12 @@ fun VillageSelectionScreen(
                                     onFilterSelected = {
                                     },
                                     onSearchValueChange = {
-                                        viewModel.onEvent()
-                                        viewModel.performQuery(it)
+                                        viewModel.onEvent(
+                                            SearchEvent.PerformSearch(
+                                                searchTerm = it,
+                                                isGroupingApplied = false
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -350,8 +356,8 @@ fun VillageSelectionScreen(
                                     voName = village.federationName,
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
-                                    isUserBPC = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
-                                    isVoEndorsementComplete = (if(!viewModel.prefRepo.isUserBPC()) viewModel.isVoEndorsementComplete.value[village.id] else true)
+                                    isUserBPC = if (villages.isNotEmpty()) viewModel.isUserBPC() else false,
+                                    isVoEndorsementComplete = (if (!viewModel.isUserBPC()) viewModel.isVoEndorsementComplete.value[village.id] else true)
                                         ?: false,
                                     stepId = village.stepId,
                                     statusId = village.statusId,
@@ -360,8 +366,7 @@ fun VillageSelectionScreen(
 
                                 ) {
                                     NudgeLogger.d("VillageAndVoBoxForBottomSheet","id = $it")
-                                    viewModel.villageSelected.value = it
-                                    viewModel.updateSelectedVillage(villages)
+                                    viewModel.onEvent(SelectionEvents.UpdateSelectedVillage(it))
                                 }
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
@@ -387,20 +392,26 @@ fun VillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
-                            viewModel.savePageOpenFromOTPScreen()
-                            if (viewModel.prefRepo.isUserBPC()) {
+                            viewModel.preferenceProviderUseCase.savePageOpenFromOTPScreen(false)
+                            if (viewModel.isUserBPC()) {
                                val stepId= villages[viewModel.villageSelected.value].stepId
                                val statusId= villages[viewModel.villageSelected.value].statusId
                                 when (fetchBorderColorForVillage(stepId, statusId)) {
                                     0,2 -> showCustomToast(
                                         context, getVoNameForState(context,viewModel.getStateId(),R.plurals.village_is_not_vo_endorsed_right_now))
                                     else -> {
-                                        viewModel.updateSelectedVillage(villageList = villages)
+                                        viewModel.onEvent(
+                                            SelectionEvents.UpdateSelectedVillage(
+                                                viewModel.villageSelected.value
+                                            )
+                                        )
+//                                        viewModel.updateSelectedVillage(villageList = villages)
                                         navController.navigateToProgressScreen()
                                     }
                                 }
                             } else {
-                                viewModel.updateSelectedVillage(villageList = villages)
+                                viewModel.onEvent(SelectionEvents.UpdateSelectedVillage(viewModel.villageSelected.value))
+//                                viewModel.updateSelectedVillage(villageList = villages)
                                 navController.navigateToProgressScreen()
                             }
 
@@ -445,8 +456,7 @@ fun VillageAndVoBoxForBottomSheet(
     statusId:Int=0,
     stateId:Int,
     stepId:Int=0,
-    onVillageSeleted: (Int) -> Unit,
-
+    onVillageSelected: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -476,9 +486,9 @@ fun VillageAndVoBoxForBottomSheet(
                             )
                         )
 
-                        else -> onVillageSeleted(index)
+                        else -> onVillageSelected(index)
                     }
-                } else onVillageSeleted(index)
+                } else onVillageSelected(index)
 
 
             }

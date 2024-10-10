@@ -9,6 +9,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_KEY_BPC_DATA_LOADED
 import com.nudge.core.PREF_KEY_CRP_DATA_LOADED
 import com.nudge.core.PREF_KEY_PREVIOUS_USER_MOBILE
+import com.nudge.core.PREF_KEY_USER_BPC
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.value
@@ -303,5 +304,13 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun setBpcDataLoaded(isDataLoaded: Boolean) {
         prefs.edit().putBoolean(PREF_KEY_BPC_DATA_LOADED, isDataLoaded).apply()
+    }
+
+    override fun setIsUserBPC(isBpcUser: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_USER_BPC, isBpcUser).apply()
+    }
+
+    override fun isUserBPC(): Boolean {
+        return prefs.getBoolean(PREF_KEY_USER_BPC, false)
     }
 }
