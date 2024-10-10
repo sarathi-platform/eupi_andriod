@@ -173,7 +173,7 @@ fun DataSummaryScreen(
         sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
         onSheetConfirmButtonClicked = {
 
-            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
+            if (dateRangePickerProperties.state.selectedEndDateMillis != null) {
                 dateRangePickerProperties.state.setSelection(
                     dateRangePickerProperties.state.selectedStartDateMillis,
                     getCurrentTimeInMillis()
@@ -591,6 +591,10 @@ private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
                 painter = painterResource(id = R.drawable.ic_delete_stamp),
                 contentDescription = null,
             )
+//            Text(
+//                text = stringResource(R.string.delete),
+//                style = smallTextStyle.copy(redIconColor)
+//            )
         }
     }
 }

@@ -102,4 +102,7 @@
     <string name="total_didis">Bebak Aibi song - %1$s</string>
     <string name="decrease_in_number">decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">"Khoroksa Aibi phano yapharjakya nono "</string>
+    <string name="save_text">Save</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">Cancel</string>
 </resources>

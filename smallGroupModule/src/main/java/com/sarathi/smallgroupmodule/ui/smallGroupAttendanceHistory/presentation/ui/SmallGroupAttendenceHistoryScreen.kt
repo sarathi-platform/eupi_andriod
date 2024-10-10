@@ -195,7 +195,7 @@ fun SmallGroupAttendanceHistoryScreen(
         dateRangePickerProperties = dateRangePickerProperties,
         sheetHeight = SheetHeight.CustomSheetHeight(dimen_56_dp),
         onSheetConfirmButtonClicked = {
-            if (dateRangePickerProperties.state.selectedEndDateMillis == null) {
+            if (dateRangePickerProperties.state.selectedEndDateMillis != null) {
                 dateRangePickerProperties.state.setSelection(
                     dateRangePickerProperties.state.selectedStartDateMillis,
                     getCurrentTimeInMillis()

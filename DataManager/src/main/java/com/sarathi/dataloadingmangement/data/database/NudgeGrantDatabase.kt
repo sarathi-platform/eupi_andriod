@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
@@ -54,9 +55,16 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_ASSET_COLUMN_ADD
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_ASSET_COLUMN_DROP
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_validation
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_COLUMN_ADD_TYPE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_DROP
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_PRODUCT_COLUMN_ADD
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_PRODUCT_COLUMN_DROP
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
@@ -163,7 +171,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
     ContentMapConverter::class,
     ValuesDtoConverter::class,
     DateConverter::class,
-    TagConverter::class
+    TagConverter::class,
+    ValidationConverter::class
 
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
@@ -200,7 +209,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
     abstract fun tagReferenceEntityDao(): TagReferenceEntityDao
-
     abstract fun moneyJournalDao(): MoneyJournalDao
     abstract fun assetJournalDao(): AssetJournalDao
     abstract fun livelihoodLanguageDao(): LivelihoodLanguageDao
@@ -257,7 +265,15 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID,
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE,
                         ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
-                        ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
+                        ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE,
+                        ALTER_LIVELIHOOD_ASSET_COLUMN_DROP,
+                        ALTER_LIVELIHOOD_ASSET_COLUMN_ADD,
+                        ALTER_LIVELIHOOD_PRODUCT_COLUMN_DROP,
+                        ALTER_LIVELIHOOD_PRODUCT_COLUMN_ADD,
+                        ALTER_LIVELIHOOD_COLUMN_DROP,
+                        ALTER_LIVELIHOOD_COLUMN_COLUMN_ADD_TYPE,
+                        ALTER_LIVELIHOOD_COLUMN_ADD_validation
+
                     )
                 )
             }

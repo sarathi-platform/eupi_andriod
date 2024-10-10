@@ -95,4 +95,63 @@ interface AssetJournalDao {
         userId: String
     ): List<AssetJournalEntity>
 
+    @Query(
+        "select sum(assetCount)  \n" +
+                " from asset_journal_table\n" +
+                " where userId = :userId \n" +
+                " and subjectId = :subjectId \n" +
+                " and referenceId = :livelihoodId\n" +
+                " and status=1 \n " +
+                "and transactionFlow = :transactionFlow  " +
+                "and transactionId != :transactionId" +
+                " group by  referenceId"
+    )
+    suspend fun getAssetCountForLivelihood(
+        subjectId: Int,
+        livelihoodId: Int,
+        userId: String,
+        transactionFlow: String,
+        transactionId: String
+    ): Int?
+
+    @Query(
+        "select sum(assetCount)  \n" +
+                " from asset_journal_table\n" +
+                " where userId = :userId \n" +
+                " and subjectId = :subjectId \n" +
+                " and referenceId = :livelihoodId\n" +
+                "and assetId=:assetId " +
+                " and status=1 " +
+                "and transactionFlow=:transactionFlow " +
+                "and transactionId!=:transactionId " +
+                " group by  referenceId"
+    )
+    suspend fun getAssetCountForLivelihood(
+        subjectId: Int,
+        livelihoodId: Int,
+        assetId: Int,
+        transactionFlow: String,
+        transactionId: String,
+        userId: String,
+    ): Int?
+
+    @Query(
+        "select sum(assetCount)  \n" +
+                " from asset_journal_table\n" +
+                " where  assetId in (:assetIds) and userId = :userId \n" +
+                " and subjectId = :subjectId \n" +
+                " and referenceId = :livelihoodId\n" +
+                " and status=1 \n " +
+                "and transactionFlow=:transactionFlow " +
+                "and transactionId!=:transactionId " +
+                " group by  referenceId"
+    )
+    suspend fun getAssetCountForLivelihoodAndAssetId(
+        subjectId: Int,
+        livelihoodId: Int,
+        userId: String,
+        assetIds: List<Int>,
+        transactionFlow: String,
+        transactionId: String
+    ): Int?
 }

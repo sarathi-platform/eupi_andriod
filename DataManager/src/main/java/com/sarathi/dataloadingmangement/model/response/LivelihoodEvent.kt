@@ -9,5 +9,4 @@ class LivelihoodEvent(
     @SerializedName("image") var image: String? = null,
     @SerializedName("type") var type: String? = null,
     @SerializedName("languages") var languages: ArrayList<LanguageReference> = arrayListOf()
-) {
-}
+)
