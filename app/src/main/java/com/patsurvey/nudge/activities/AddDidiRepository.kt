@@ -331,13 +331,17 @@ class AddDidiRepository @Inject constructor(
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
 
-                val requestPayload = getPatScoreSaveEvent(
+                var requestPayload = getPatScoreSaveEvent(
                     didiEntity = (eventItem as DidiEntity),
                     questionListDao = questionListDao,
                     prefRepo = prefRepo,
                     selectedTolaEntity?.localUniqueId ?: "",
                     selectedTolaEntity?.serverId ?: 0
                 )
+                if (EventName.NOT_AVAILBLE_PAT_SCORE==eventName)
+                {
+                    requestPayload=requestPayload.copy(score = 0.0)
+                }
 
                 var savePatScoreEvent = getPatSaveScoreEvent(
                     eventItem = eventItem,
