@@ -20,15 +20,20 @@ class LivelihoodEventValidationUseCase @Inject constructor(
         selectedAsset: ProductAssetUiModel?,
         assetCount: String,
         amount: String,
-        message: String
+        message: String,
+        transactionId: String
     ): Pair<Boolean, String> {
         if (!TextUtils.isEmpty(validationExpression) || !(TextUtils.isEmpty(message))) {
             var map = HashMap<String, String>()
+            var msgmap = HashMap<String, String>()
             val expressionArray = validationExpression?.split(" ")
             val msgExpressionArray = message?.split(" ")
             ValidationExpressionEnum.values().forEach {
-                if (expressionArray?.contains(it.name) == true || msgExpressionArray?.contains(it.name) == true) {
-                    map[it.name] = ""
+                if (expressionArray?.contains(it.originalValue) == true) {
+                    map[it.originalValue] = ""
+                }
+                if (msgExpressionArray?.contains(it.originalValue) == true) {
+                    msgmap[it.originalValue] = BLANK_STRING
                 }
             }
             if (validationExpression?.contains("{") == true && validationExpression.contains("}")) {
@@ -36,67 +41,50 @@ class LivelihoodEventValidationUseCase @Inject constructor(
                     map[it] = ""
                 }
             }
+            if (message?.contains("{") == true && message.contains("}")) {
+                extractSubstrings(message).forEach {
+                    msgmap[it] = ""
+                }
+            }
 
             map.forEach {
-                when {
-                    it.key.contains("{") && it.key.contains("}") && it.key.contains(
-                        "ASSET_COUNT"
-                    ) -> {
-                        val assetType =
-                            it.key.replace("{", "").replace("}", "").split("%").firstOrNull()
-                        val assetIds =
-                            assetRepository.getAssetsForLivelihood(selectedLivelihood.livelihoodId)
-                                .filter { it.type.equals(assetType, true) }.map { it.id }
-
-                        map[it.key] =
-                            assetJournalRepository.getTotalAssetCountForParticularAssetType(
-                                livelihoodId = selectedLivelihood.livelihoodId,
-                                subjectId = subjectId,
-                                assetIds = assetIds
-                            ).toString()
-                    }
-
-                    it.key == ValidationExpressionEnum.TOTAL_ASSET_COUNT.name -> {
-                        map[it.key] =
-                            assetJournalRepository.getTotalAssetCount(
-                                livelihoodId = selectedLivelihood.livelihoodId,
-                                subjectId = subjectId
-                            ).toString()
-                    }
-
-                    it.key == ValidationExpressionEnum.ASSET_TYPE.name -> {
-                        map[it.key] = selectedAsset?.id.toString()
-                    }
-
-                    it.key == ValidationExpressionEnum.SELECTED_ASSET_COUNT.name -> {
-                        map[it.key] = assetCount.toString()
-                    }
-
-                    it.key == ValidationExpressionEnum.SELECTED_AMOUNT.name -> {
-                        map[it.key] = amount
-                    }
-
-
-                    it.key == ValidationExpressionEnum.TOTAL_SELECTED_ASSET_COUNT.name -> {
-                        map[it.key] =
-                            assetJournalRepository.getTotalAssetCount(
-                                livelihoodId = selectedLivelihood.livelihoodId,
-                                subjectId = subjectId,
-                                assetId = selectedAsset?.id ?: -1
-                            ).toString()
-                    }
-
-                }
+                fetchMapValues(
+                    it,
+                    selectedLivelihood,
+                    map,
+                    subjectId,
+                    transactionId,
+                    selectedAsset,
+                    assetCount,
+                    amount
+                )
+            }
+            msgmap.forEach {
+                fetchMapValues(
+                    it,
+                    selectedLivelihood,
+                    msgmap,
+                    subjectId,
+                    transactionId,
+                    selectedAsset,
+                    assetCount,
+                    amount
+                )
             }
             var completeExpression = validationExpression
             var validationMessage = message
             map.forEach {
                 completeExpression = completeExpression?.replace(it.key, it.value)
+
+            }
+            msgmap.forEach {
                 validationMessage = validationMessage.replace(it.key, it.value)
 
             }
             return Pair(
-                ExpressionEvaluator.evaluateExpression(completeExpression ?: BLANK_STRING),
+                if (completeExpression?.isNotEmpty() == true) ExpressionEvaluator.evaluateExpression(
+                    completeExpression ?: BLANK_STRING
+                ) else true,
                 validationMessage
             )
 
@@ -104,13 +92,77 @@ class LivelihoodEventValidationUseCase @Inject constructor(
         return Pair(true, BLANK_STRING)
     }
 
-    enum class ValidationExpressionEnum {
+    private suspend fun fetchMapValues(
+        it: Map.Entry<String, String>,
+        selectedLivelihood: LivelihoodModel,
+        map: HashMap<String, String>,
+        subjectId: Int,
+        transactionId: String,
+        selectedAsset: ProductAssetUiModel?,
+        assetCount: String,
+        amount: String
+    ) {
+        when {
+            it.key.contains("{") && it.key.contains("}") && it.key.contains(
+                "ASSET_COUNT"
+            ) -> {
+                val assetType =
+                    it.key.replace("{", "").replace("}", "").split("%").firstOrNull()
+                val assetIds =
+                    assetRepository.getAssetsForLivelihood(selectedLivelihood.livelihoodId)
+                        .filter { it.type.equals(assetType, true) }.map { it.id }
 
-        TOTAL_ASSET_COUNT,
-        ASSET_TYPE,
-        SELECTED_ASSET_COUNT,
-        TOTAL_SELECTED_ASSET_COUNT,
-        SELECTED_AMOUNT,
+                map[it.key] =
+                    assetJournalRepository.getTotalAssetCountForParticularAssetType(
+                        livelihoodId = selectedLivelihood.livelihoodId,
+                        subjectId = subjectId,
+                        assetIds = assetIds,
+                        transactionId = transactionId
+                    ).toString()
+            }
+
+            it.key == ValidationExpressionEnum.TOTAL_ASSET_COUNT.originalValue -> {
+                map[it.key] =
+                    assetJournalRepository.getTotalAssetCount(
+                        livelihoodId = selectedLivelihood.livelihoodId,
+                        subjectId = subjectId,
+                        transactionId = transactionId
+                    ).toString()
+            }
+
+            it.key == ValidationExpressionEnum.ASSET_TYPE.originalValue -> {
+                map[it.key] = selectedAsset?.id.toString()
+            }
+
+            it.key == ValidationExpressionEnum.SELECTED_ASSET_COUNT.originalValue -> {
+                map[it.key] = assetCount.toString()
+            }
+
+            it.key == ValidationExpressionEnum.SELECTED_AMOUNT.originalValue -> {
+                map[it.key] = amount
+            }
+
+
+            it.key == ValidationExpressionEnum.TOTAL_SELECTED_ASSET_COUNT.originalValue -> {
+                map[it.key] =
+                    assetJournalRepository.getTotalAssetCount(
+                        livelihoodId = selectedLivelihood.livelihoodId,
+                        subjectId = subjectId,
+                        assetId = selectedAsset?.id ?: -1,
+                        transactionId = transactionId
+                    ).toString()
+            }
+
+        }
+    }
+
+    enum class ValidationExpressionEnum(val originalValue: String) {
+
+        TOTAL_ASSET_COUNT(originalValue = "#TOTAL_ASSET_COUNT#"),
+        ASSET_TYPE(originalValue = "#ASSET_TYPE#"),
+        SELECTED_ASSET_COUNT(originalValue = "#SELECTED_ASSET_COUNT#"),
+        TOTAL_SELECTED_ASSET_COUNT(originalValue = "#TOTAL_SELECTED_ASSET_COUNT#"),
+        SELECTED_AMOUNT(originalValue = "#SELECTED_AMOUNT#"),
 
     }
 

@@ -10,6 +10,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
@@ -45,7 +46,8 @@ class AddEventViewModel @Inject constructor(
     private val saveLivelihoodEventUseCase: SaveLivelihoodEventUseCase,
     private val fetchSavedEventUseCase: FetchSavedEventUseCase,
     private val writeLivelihoodEventUseCase: WriteLivelihoodEventUseCase,
-    private val validationUseCase: LivelihoodEventValidationUseCase
+    private val validationUseCase: LivelihoodEventValidationUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs,
 ) : BaseViewModel() {
 
     val showDeleteDialog = mutableStateOf(false)
@@ -76,12 +78,15 @@ class AddEventViewModel @Inject constructor(
     var assetCount = mutableStateOf("")
     var amount = mutableStateOf("")
     var amountInfoMessage = mutableStateOf("")
+    var assetCountInfoMessage = mutableStateOf("")
+    var productInfoMessage = mutableStateOf("")
     var assetTypeInfoMessage = mutableStateOf("")
+    var eventTypeInfoMessage = mutableStateOf("")
     var selectedDate = mutableStateOf("")
     var isSubmitButtonEnable = mutableStateOf(false)
     var selectedDateInLong: Long = 0
     val maxAssetValue = mutableIntStateOf(MAXIMUM_RANGE)
-
+    var fieldValidationAndMessageMap = mutableStateMapOf<String, Pair<Boolean, String>>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -97,7 +102,6 @@ class AddEventViewModel @Inject constructor(
 
         }
     }
-
 
 
     private fun fetchEventData(subjectId: Int, transactionId: String) {
@@ -137,17 +141,28 @@ class AddEventViewModel @Inject constructor(
             _livelihoodDropdownValue.clear()
             _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodList))
 
-            validateForm(
-                subjectId,
-                fieldName = BLANK_STRING,
-                onValidationComplete = { evalutorResult, message ->
+            revalidateAllFieldsInEdit(subjectId, transactionId)
 
-                })
+
 
         }
     }
 
-    fun onLivelihoodSelect(livelihoodId: Int, subjectId: Int) {
+    private fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
+        AddEventFieldEnum.values().forEach {
+            validateForm(
+                subjectId,
+                fieldName = it.name,
+                transactionId = transactionId,
+                onValidationComplete = { evalutorResult, message ->
+                    fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
+
+                }
+            )
+        }
+    }
+
+    fun onLivelihoodSelect(livelihoodId: Int, subjectId: Int, transactionId: String) {
         resetForm()
         ioViewModelScope {
             selectedLivelihoodId.value = livelihoodId
@@ -159,6 +174,8 @@ class AddEventViewModel @Inject constructor(
             validateForm(
                 subjectId,
                 fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name,
+
+                transactionId = transactionId,
                 onValidationComplete = { evalutorResult, message ->
 
                 })
@@ -210,6 +227,9 @@ class AddEventViewModel @Inject constructor(
         getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
             questionVisibilityMap[it] = false
 
+        }
+        AddEventFieldEnum.values().forEach {
+            fieldValidationAndMessageMap[it.name] = Pair(true, BLANK_STRING)
         }
     }
 
@@ -313,15 +333,29 @@ class AddEventViewModel @Inject constructor(
     fun validateForm(
         subjectId: Int,
         fieldName: String,
+        transactionId: String,
         onValidationComplete: (Boolean, String) -> Unit
     ) {
-        validationExpressionEvalutor(subjectId, fieldName) { isValid, message ->
+        validationExpressionEvalutor(
+            subjectId,
+            fieldName,
+            transactionId = transactionId
+        ) { isValid, message ->
             // Pass the result back through the callback
             onValidationComplete(isValid, message)
             // Update submit button state based on validation result
-            isSubmitButtonEnable.value = if (isValid) checkValidData() else false
+            var fieldValidationFromConfig = true
+            fieldValidationAndMessageMap.forEach {
+
+                if (!it.value.first) {
+                    fieldValidationFromConfig = false
+                }
+            }
+            isSubmitButtonEnable.value =
+                if (fieldValidationFromConfig && checkValidData()) true else false
 
         }
+
     }
 
     private fun checkValidData(): Boolean {
@@ -376,6 +410,7 @@ class AddEventViewModel @Inject constructor(
     fun validationExpressionEvalutor(
         subjectId: Int,
         fieldName: String,
+        transactionId: String,
         onValidationResult: (Boolean, String) -> Unit
     ) {
         ioViewModelScope {
@@ -389,11 +424,11 @@ class AddEventViewModel @Inject constructor(
 
             if (selectedValidations != null && selectedValidations.isNotEmpty()) {
                 var validation =
-                    selectedValidations.first().validation.find { it.field == fieldName }
+                    selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
 
                 if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null) {
                     validation =
-                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName }
+                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
                     if (validation != null) {
                         val expressionResult = validationUseCase.invoke(
                             validationExpression = validation.condition,
@@ -402,14 +437,18 @@ class AddEventViewModel @Inject constructor(
                             selectedLivelihood = selectedLivelihood,
                             assetCount = assetCount.value,
                             amount = amount.value,
-                            message = validation.message
+                            message = validation.message,
+                            transactionId = transactionId
                         )
                         onValidationResult(expressionResult.first, expressionResult.second)
+                    } else {
+                        onValidationResult(true, BLANK_STRING)
+
                     }
 
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
                     validation =
-                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName }
+                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
 
                     if (validation != null) {
                         val expressionResult = validationUseCase.invoke(
@@ -419,11 +458,13 @@ class AddEventViewModel @Inject constructor(
                             selectedAsset = selectedAssetType,
                             assetCount = assetCount.value,
                             amount = amount.value,
-                            message = validation.message
-
+                            message = validation.message,
+                            transactionId = transactionId
 
                         )
                         onValidationResult(expressionResult.first, expressionResult.second)
+                    } else {
+                        onValidationResult(true, BLANK_STRING)
                     }
                 } else {
                     if (validation != null) {
@@ -434,9 +475,8 @@ class AddEventViewModel @Inject constructor(
                             selectedAsset = selectedAssetType,
                             assetCount = assetCount.value,
                             amount = amount.value,
-                            message = validation.message
-
-
+                            message = validation.message,
+                            transactionId = transactionId
                         )
                         onValidationResult(expressionResult.first, expressionResult.second)
                     } else {

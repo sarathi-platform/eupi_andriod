@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +34,7 @@ import com.nudge.core.ui.commonUi.componet_.component.ButtonNegative
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.commonUi.componet_.component.InputComponent
 import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
+import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomDatePickerDialogProperties
 import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
 import com.nudge.core.ui.commonUi.rememberDatePickerProperties
@@ -150,7 +150,7 @@ fun AddEventScreen(
             LazyColumn(
                 modifier = Modifier
                     .padding(
-                        horizontal = dimen_16_dp
+                        horizontal = dimen_16_dp,
                     )
                     .fillMaxWidth()
 
@@ -172,7 +172,8 @@ fun AddEventScreen(
                             viewModel.selectedDateInLong = date.value()
                             viewModel.validateForm(
                                 subjectId = subjectId,
-                                fieldName = AddEventFieldEnum.DATE.name
+                                fieldName = AddEventFieldEnum.DATE.name,
+                                transactionId = transactionId,
                             ) { isValid, message ->
 
                             }
@@ -189,11 +190,13 @@ fun AddEventScreen(
                         selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
 
                         onAnswerSelection = { selectedValue ->
-                            viewModel.onLivelihoodSelect(selectedValue.id, subjectId)
+                            viewModel.onLivelihoodSelect(selectedValue.id, subjectId, transactionId)
                             viewModel.validateForm(
                                 subjectId = subjectId,
-                                fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name
-                            ) { isValid, message ->
+                                fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name,
+                                transactionId = transactionId,
+
+                                ) { isValid, message ->
 
                             }
                         }
@@ -255,45 +258,39 @@ fun AddEventScreen(
 
 
                 item {
-                    val isEventAlertMsgVisible = remember {
-                        mutableStateOf(
-                            Pair<Boolean, String?>(
-                                false,
-                                BLANK_STRING
-                            )
-                        )
-                    }
 
-                    // val isEventAlertMsgVisible = remember { mutableStateOf(false) }
-                        TypeDropDownComponent(
-                            isEditAllowed = !showDeleteButton,
-                            title = stringResource(R.string.events),
-                            isMandatory = true,
-                            selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
-                            sources = viewModel.livelihoodEventDropdownValue,
-                            onAnswerSelection = { selectedValue ->
-                                viewModel.onEventSelected(selectedValue, subjectId)
-                                viewModel.validateForm(
-                                    subjectId = subjectId,
-                                    fieldName = AddEventFieldEnum.EVENT_TYPE.name
-                                ) { isValid, message ->
-                                    if (isValid) {
-                                        viewModel.loadAssetAndProduct()
-                                        // If valid, hide the alert message
-                                        isEventAlertMsgVisible.value = Pair(true, message)
-                                    }
+                    TypeDropDownComponent(
+                        isEditAllowed = !showDeleteButton,
+                        title = stringResource(R.string.events),
+                        isMandatory = true,
+                        selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
+                        sources = viewModel.livelihoodEventDropdownValue,
+                        onAnswerSelection = { selectedValue ->
+                            viewModel.onEventSelected(selectedValue, subjectId)
+                            viewModel.validateForm(
+                                subjectId = subjectId,
+                                fieldName = AddEventFieldEnum.EVENT_TYPE.name,
+                                transactionId = transactionId
+                            ) { isValid, message ->
+                                if (isValid) {
+                                    viewModel.loadAssetAndProduct()
                                 }
-                            })
-                        if (isEventAlertMsgVisible.value.first) {
-                            isEventAlertMsgVisible.value.second?.let { message ->
-                                Text(
-                                    text = message,
-                                    modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                    style = quesOptionTextStyle.copy(color = eventTextColor)
-                                )
+                                viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.EVENT_TYPE.name] =
+                                    Pair(isValid, message)
+
                             }
-                        }
+                        })
+                    if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.EVENT_TYPE.name]?.second)) {
+
+                        Text(
+                            text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.EVENT_TYPE.name]?.second
+                                ?: BLANK_STRING,
+                            modifier = Modifier.padding(horizontal = dimen_5_dp),
+                            style = quesOptionTextStyle.copy(color = eventTextColor)
+                        )
+
                     }
+                }
 
 
 
@@ -311,21 +308,24 @@ fun AddEventScreen(
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
                                 viewModel.validateForm(
                                     subjectId = subjectId,
-                                    fieldName = AddEventFieldEnum.ASSET_TYPE.name
+                                    fieldName = AddEventFieldEnum.ASSET_TYPE.name,
+                                    transactionId = transactionId
                                 ) { isValid, message ->
-                                    viewModel.assetTypeInfoMessage.value = message
+
+                                    viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_TYPE.name] =
+                                        Pair(isValid, message)
                                 }
                             }
                         )
-                        if (!TextUtils.isEmpty(viewModel.assetTypeInfoMessage.value)) {
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_TYPE.name]?.second)) {
                             Text(
-                                text = viewModel.assetTypeInfoMessage.value,
+                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_TYPE.name]?.second
+                                    ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
                             )
                         }
                     }
-
 
 
                 }
@@ -341,12 +341,24 @@ fun AddEventScreen(
                                 viewModel.selectedProductId.value = selectedValue.id
                                 viewModel.validateForm(
                                     subjectId = subjectId,
-                                    fieldName = AddEventFieldEnum.PRODUCT_TYPE.name
+                                    fieldName = AddEventFieldEnum.PRODUCT_TYPE.name,
+                                    transactionId = transactionId,
                                 ) { isValid, message ->
 
+                                    viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.PRODUCT_TYPE.name] =
+                                        Pair(isValid, message)
                                 }
                             }
                         )
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.PRODUCT_TYPE.name]?.second)) {
+                            Text(
+                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.PRODUCT_TYPE.name]?.second
+                                    ?: BLANK_STRING,
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                            )
+                        }
+
                     }
 
                 }
@@ -365,12 +377,25 @@ fun AddEventScreen(
                                 viewModel.assetCount.value = inputValue
                                 viewModel.validateForm(
                                     subjectId = subjectId,
-                                    AddEventFieldEnum.ASSET_COUNT.name
+                                    AddEventFieldEnum.ASSET_COUNT.name,
+                                    transactionId = transactionId
                                 ) { isValid, message ->
+                                    viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name] =
+                                        Pair(isValid, message)
 
                                 }
+                                viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name]?.first
+                                    ?: false
                             }
                         )
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name]?.second)) {
+                            Text(
+                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name]?.second
+                                    ?: BLANK_STRING,
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                            )
+                        }
                     }
 
                 }
@@ -386,16 +411,21 @@ fun AddEventScreen(
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
+
                             viewModel.validateForm(
                                 subjectId = subjectId,
-                                fieldName = AddEventFieldEnum.AMOUNT.name
+                                fieldName = AddEventFieldEnum.AMOUNT.name,
+                                transactionId = transactionId,
                             ) { isValid, message ->
-                                viewModel.amountInfoMessage.value = message
+                                viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.AMOUNT.name] =
+                                    Pair(isValid, message)
+
                             }
                         }
-                        if (!TextUtils.isEmpty(viewModel.amountInfoMessage.value)) {
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.AMOUNT.name]?.second)) {
                             Text(
-                                text = viewModel.amountInfoMessage.value,
+                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.AMOUNT.name]?.second
+                                    ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
                             )
@@ -403,6 +433,7 @@ fun AddEventScreen(
                     }
 
                 }
+                customVerticalSpacer(size = 100.dp)
 
             }
 
