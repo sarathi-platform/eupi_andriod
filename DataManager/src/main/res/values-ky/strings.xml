@@ -100,4 +100,6 @@
     <string name="search_didi">Naitukdi Aibi no</string>
     <string name="search_by_small_groups">Chikon Bodolrok bai naituk di</string>
     <string name="total_didis">Bebak Aibi song - %1$s</string>
+    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Nini thangthai samung paikha ba, tangmung pai ridi.</string>
+    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*Tangmung paimani yagulo, nwng tai kisisa phano swlai wi manya.</string>
 </resources>

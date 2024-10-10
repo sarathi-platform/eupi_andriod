@@ -178,7 +178,7 @@ fun TaskScreen(
                         Text(
                             modifier = Modifier
                                 .weight(1f),
-                            text = "Since you have completed all the tasks please complete the activity",
+                            text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
                             style = newMediumTextStyle.copy(color = blueDark)
                         )
                         IconButton(onClick = {
@@ -197,7 +197,7 @@ fun TaskScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "*On completing the activity, you will not be able to edit the details",
+                        text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
                         style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
                     )
 

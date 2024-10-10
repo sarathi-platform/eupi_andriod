@@ -472,5 +472,7 @@
     <string name="all_activities_marked_as_in_progress">सभी गतिविधियाँ प्रगति पर चिह्नित हैं</string>
     <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
     <string name="form_e">फॉर्म E</string>
+    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Since you have completed all the tasks please complete the activity</string>
+    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*On completing the activity, you will not be able to edit the details</string>
 
 </resources>
