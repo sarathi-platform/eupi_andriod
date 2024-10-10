@@ -37,6 +37,7 @@ import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.black20
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.utils.MAX_IMAGE_FOR_FORM_C_OR_D
 import com.patsurvey.nudge.utils.uriFromFile
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -62,7 +63,7 @@ fun FormImageViewerScreen(
 
     LaunchedEffect(key1 = true) {
 
-        for (i in 1..5) {
+        for (i in 1..MAX_IMAGE_FOR_FORM_C_OR_D) {
             imageList.value = imageList.value.also {
                 Log.d("TAG", "FormImageViewerScreen: ${viewModel.getFormPathKey(viewModel.getFormSubPath(fileName, i))}")
                 val imagePath =

@@ -34,6 +34,7 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.FOR_VO_ENDORSEMENT_VALUE
+import com.patsurvey.nudge.utils.MAX_IMAGE_FOR_FORM_C_OR_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
@@ -125,7 +126,7 @@ class FormPictureScreenViewModel @Inject constructor(
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
         setVillage(repository.prefRepo.getSelectedVillage().id)
-        for (i in 1..5) {
+        for (i in 1..MAX_IMAGE_FOR_FORM_C_OR_D) {
             formCPageList.value = formCPageList.value.also {
                 Log.d("FormPictureScreenViewModel", "init: ${getFormPathKey(getFormSubPath(FORM_C, i))}")
                 val imagePath =
