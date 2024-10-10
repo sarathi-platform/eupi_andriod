@@ -190,7 +190,7 @@ fun FormPictureScreen(
     if (showBackPopup.value) {
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
-            message = stringResource(R.string.do_you_want_to_exit),
+            message = stringResource(R.string.form_alert_dialog_message),
             positiveButtonTitle = stringResource(id = R.string.proceed_txt),
             negativeButtonTitle = stringResource(id = R.string.cancel_txt),
             onPositiveButtonClick = {
