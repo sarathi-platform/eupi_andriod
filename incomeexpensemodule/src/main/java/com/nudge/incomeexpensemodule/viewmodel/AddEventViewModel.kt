@@ -129,18 +129,19 @@ class AddEventViewModel @Inject constructor(
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
             if (livelihoodForDidi != null) {
-                val livelihoodDropDown = getLivelihoodListFromDbUseCase.invoke(
+                livelihoodList = getLivelihoodListFromDbUseCase.invoke(
                     listOf(
                         livelihoodForDidi.first()?.livelihoodId.value(),
                         livelihoodForDidi.last()?.livelihoodId.value()
                     ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter Not decided events
                 )
                 _livelihoodDropdownValue.clear()
-                _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodDropDown))
+                _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodList))
                 revalidateAllFieldsInEdit(subjectId, transactionId)
 
 
         }
+    }
     }
 
 
@@ -155,6 +156,7 @@ class AddEventViewModel @Inject constructor(
 
                 }
             )
+    }
     }
 
     fun onLivelihoodSelect(livelihoodId: Int, subjectId: Int, transactionId: String) {
@@ -492,8 +494,9 @@ class AddEventViewModel @Inject constructor(
 
         }
     }
+    }
 
-}
+
 
 
 
