@@ -5,9 +5,9 @@ import com.microsoft.azure.storage.CloudStorageAccount
 import com.microsoft.azure.storage.StorageException
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
-import com.nudge.syncmanager.BuildConfig
 import java.io.IOException
 import javax.inject.Inject
+
 
 class BlobImageUploader @Inject constructor() : ImageUploader {
     val TAG = "BLOB Image Upload"
@@ -16,12 +16,14 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         filePath: String,
         fileName: String,
         containerName: String,
+        blobConnectionUrl: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         return uploadImageInBlobStorage(
             filePath,
             fileName,
             containerName = containerName,
+            blobConnectionUrl = blobConnectionUrl,
             onUploadImageResponse = { message, isException ->
                 onUploadImageResponse(message, isException)
             })
@@ -31,13 +33,14 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         photoPath: String,
         fileName: String,
         containerName: String,
+        blobConnectionUrl: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         try {
 
-            val storageConnectionString = BuildConfig.BLOB_CONNECTION_STRING
-        val account = CloudStorageAccount
-            .parse(storageConnectionString)
+
+            val account = CloudStorageAccount
+                .parse(blobConnectionUrl)
 
         val blobClient = account.createCloudBlobClient()
 

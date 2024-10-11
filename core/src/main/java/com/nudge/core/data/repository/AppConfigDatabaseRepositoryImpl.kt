@@ -1,8 +1,11 @@
 package com.nudge.core.data.repository
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
+import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.entities.AppConfigEntity
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import javax.inject.Inject
 
@@ -15,6 +18,7 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
         appConfigDao.deleteAppConfig(userId = userId)
         val appConfigEntities = ArrayList<AppConfigEntity>()
         data.toList().forEach {
+
             appConfigEntities.add(
                 AppConfigEntity.getAppConfigEntity(
                     key = it.first,
@@ -25,6 +29,25 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
         }
 
         appConfigDao.insertAll(appConfigEntities)
+        saveIntoSharedPreference(data)
+    }
+
+    suspend fun saveIntoSharedPreference(data: HashMap<String, String>) {
+        if (data.containsKey(AppConfigKeysEnum.DATA_TAB_VISIBILITY.name)) {
+            coreSharedPrefs.saveDataTabVisibility(data[AppConfigKeysEnum.DATA_TAB_VISIBILITY.name].toBoolean())
+        }
+        if (data.containsKey(AppConfigKeysEnum.SYNC_ENABLED_V2.name)) {
+            coreSharedPrefs.savePref(
+                REMOTE_CONFIG_SYNC_OPTION_ENABLE,
+                data[AppConfigKeysEnum.SYNC_ENABLED_V2.name].toBoolean()
+            )
+        }
+        if (data.containsKey(AppConfigKeysEnum.SYNC_ENABLED.name)) {
+            coreSharedPrefs.savePref(
+                REMOTE_CONFIG_SYNC_ENABLE,
+                data[AppConfigKeysEnum.SYNC_ENABLED.name].toBoolean()
+            )
+        }
 
     }
 
