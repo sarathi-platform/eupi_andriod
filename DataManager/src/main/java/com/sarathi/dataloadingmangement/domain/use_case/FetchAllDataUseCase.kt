@@ -39,12 +39,12 @@ class FetchAllDataUseCase @Inject constructor(
     ) {
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
             fetchLanguageUseCase.invoke()
-            fetchAppConfigFromNetworkUseCase.invoke()
             fetchUserDetailUseCase.invoke()
             fetchDidiDetailsFromNetworkUseCase.invoke()
             val isMissionDataFetched = fetchMissionDataUseCase.invoke()
             fetchSurveyDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
+                fetchAppConfigFromNetworkUseCase.invoke()
                 fetchSurveyAnswerFromNetworkUseCase.invoke()
                 formUseCase.invoke()
                 moneyJournalUseCase.invoke()

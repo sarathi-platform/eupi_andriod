@@ -14,11 +14,11 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
         val userId = coreSharedPrefs.getUniqueUserIdentifier()
         appConfigDao.deleteAppConfig(userId = userId)
         val appConfigEntities = ArrayList<AppConfigEntity>()
-        data.map {
+        data.toList().forEach {
             appConfigEntities.add(
                 AppConfigEntity.getAppConfigEntity(
-                    key = it.key,
-                    value = it.value,
+                    key = it.first,
+                    value = it.second,
                     userId = userId
                 )
             )
