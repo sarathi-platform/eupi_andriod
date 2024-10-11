@@ -26,8 +26,9 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
+import javax.inject.Inject
 
-class SyncRepositoryImpl(
+class SyncRepositoryImpl @Inject constructor(
     val apiService: SyncApiService,
     val eventDao: EventsDao,
     val eventStatusDao: EventStatusDao,

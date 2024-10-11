@@ -43,6 +43,9 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.GetExportOptionList
 import com.patsurvey.nudge.activities.backup.domain.use_case.GetUserDetailsExportUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityEventHelperUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
+import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
+import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
+import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
@@ -364,4 +367,37 @@ object UseCaseModule {
         )
 
     }
+
+    @Provides
+    @Singleton
+    fun providesFetchEventsFromDBUseCase(repository: SyncRepository): FetchEventsFromDBUseCase {
+        return FetchEventsFromDBUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCheckEventLimitThresholdUseCase(
+        checkEventLimitThresholdRepository: CheckEventLimitThresholdRepository,
+        fetchEventsFromDBUseCase: FetchEventsFromDBUseCase
+    ): CheckEventLimitThresholdUseCase {
+        return CheckEventLimitThresholdUseCase(
+            checkEventLimitThresholdRepository,
+            fetchEventsFromDBUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesCheckEventLimitThresholdRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao
+    ): CheckEventLimitThresholdRepository {
+        return CheckEventLimitThresholdRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            eventsDao = eventsDao,
+            eventStatusDao = eventStatusDao
+        )
+    }
+
 }
