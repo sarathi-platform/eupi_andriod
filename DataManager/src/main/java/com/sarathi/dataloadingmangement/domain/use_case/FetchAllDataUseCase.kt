@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
@@ -23,8 +24,7 @@ class FetchAllDataUseCase @Inject constructor(
     val moneyJournalUseCase: FetchMoneyJournalUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
     val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
-
-
+    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -37,7 +37,7 @@ class FetchAllDataUseCase @Inject constructor(
             fetchLanguageUseCase.invoke()
             fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
-
+            fetchAppConfigFromNetworkUseCase.invoke()
             fetchContentDataFromNetworkUseCase.invoke()
 
             coreSharedPrefs.setDataLoaded(true)
