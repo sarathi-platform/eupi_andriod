@@ -40,6 +40,7 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.LogWriter
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
@@ -80,25 +81,27 @@ import java.io.File
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+import com.patsurvey.nudge.R as appRes
 
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     private val getActivityUseCase: GetActivityUseCase,
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     private val formUseCase: FormUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
     val formUiConfigUseCase: GetFormUiConfigUseCase
-):BaseViewModel() {
+) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     var showLogoutDialog = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
-    var applicationId= mutableStateOf(BLANK_STRING)
-    lateinit var mAppContext:Context
+    var applicationId = mutableStateOf(BLANK_STRING)
+    lateinit var mAppContext: Context
     val optionList: State<List<SettingOptionModel>> get() = _optionList
-    var userType:String= BLANK_STRING
+    var userType: String = BLANK_STRING
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
 
     val formAAvailable = mutableStateOf(false)
@@ -110,17 +113,19 @@ class SettingBSViewModel @Inject constructor(
 
 
     val loaderState: State<LoaderState> get() = _loaderState
-    fun initOptions(context:Context) {
-        applicationId.value= CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
+    fun initOptions(context: Context) {
+        applicationId.value =
+            CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
-        mAppContext = if(userType!= UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
+        mAppContext =
+            if (userType != UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
         getActivityFormGenerateList(onGetData = {
             if (activityFormGenerateList.value.isNotEmpty()) {
                 checkFromEAvailable(activityFormGenerateList.value)
             }
         })
-        val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
-        val settingOpenFrom=settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
+        val villageId = settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
+        val settingOpenFrom = settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
         val list = ArrayList<SettingOptionModel>()
 
         list.add(
@@ -170,6 +175,7 @@ class SettingBSViewModel @Inject constructor(
             )
         )
 
+
         list.add(
             SettingOptionModel(
                 5,
@@ -186,9 +192,18 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                7,
+                context.getString(appRes.string.refresh_config),
+                BLANK_STRING,
+                SettingTagEnum.APP_CONFIG.name
 
-        _optionList.value=list
-        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
+            )
+        )
+
+        _optionList.value = list
+        if (userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
         }
     }
@@ -201,7 +216,7 @@ class SettingBSViewModel @Inject constructor(
             }
             delay(2000)
             withContext(CoreDispatchers.mainDispatcher) {
-               showLoader.value=false
+                showLoader.value = false
                 onLogout(settingUseCaseResponse)
             }
         }
@@ -417,19 +432,19 @@ class SettingBSViewModel @Inject constructor(
             didiList =
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
-            if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+        if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+        ) {
+            withContext(CoreDispatchers.mainDispatcher) {
+                formAAvailable.value = true
+            }
+        } else {
+            withContext(
+                CoreDispatchers.mainDispatcher
             ) {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formAAvailable.value = true
-                }
-            } else {
-                withContext(
-                    CoreDispatchers.mainDispatcher
-                ) {
-                    formAAvailable.value = false
-                }
+                formAAvailable.value = false
             }
         }
+    }
 
 
     suspend fun checkFormBAvailability(context: Context, villageId: Int) {
@@ -440,32 +455,32 @@ class SettingBSViewModel @Inject constructor(
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
 
-            if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
-            ) {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formBAvailable.value = true
-                }
-            } else {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formBAvailable.value = false
-                }
-
+        if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
+        ) {
+            withContext(CoreDispatchers.mainDispatcher) {
+                formBAvailable.value = true
             }
+        } else {
+            withContext(CoreDispatchers.mainDispatcher) {
+                formBAvailable.value = false
+            }
+
+        }
     }
 
 
     suspend fun checkFormCAvailability(context: Context, villageId: Int) {
 
-            val stepList =
-                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
-            if (filteredStepList[0] != null) {
-                formCAvailable.value =
-                    filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formCAvailable.value = false
-            }
+        val stepList =
+            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
+        val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
+        if (filteredStepList[0] != null) {
+            formCAvailable.value =
+                filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
+        } else {
+            formCAvailable.value = false
         }
+    }
 
     fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
@@ -476,6 +491,7 @@ class SettingBSViewModel @Inject constructor(
         }
 
     }
+
     private suspend fun getSummaryFile(): Pair<String, Uri?>? {
         val summaryFileNameWithoutExtension = "${SARATHI}_${
             getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
@@ -492,13 +508,12 @@ class SettingBSViewModel @Inject constructor(
     }
 
 
-
-    fun exportOnlyLogFile(context: Context){
-        NudgeLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
+    fun exportOnlyLogFile(context: Context) {
+        NudgeLogger.d("ExportImportViewModel", "exportOnlyLogFile: ----")
         try {
             CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                val logFile= LogWriter.buildLogFile(appContext = mAppContext){
+                val logFile = LogWriter.buildLogFile(appContext = mAppContext) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
                 }
@@ -523,9 +538,9 @@ class SettingBSViewModel @Inject constructor(
 
                 }
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             onEvent(LoaderEvent.UpdateLoaderState(false))
-            NudgeLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}",e)
+            NudgeLogger.e("ExportImportViewModel", "exportOnlyLogFile :${e.message}", e)
         }
     }
 
@@ -553,7 +568,7 @@ class SettingBSViewModel @Inject constructor(
         selectedVillageId: Int,
         didiList: List<DidiEntity>,
 
-    ) =
+        ) =
         PdfUtils.getFormBPdf(
             mAppContext,
             stateId,
@@ -576,7 +591,7 @@ class SettingBSViewModel @Inject constructor(
     ) =
         PdfUtils.getFormCPdf(
             mAppContext,
-            stateId ,
+            stateId,
             villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
@@ -621,15 +636,16 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun getUserMobileNumber():String{
+    fun getUserMobileNumber(): String {
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
 
     private fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return arrayListOf(uri)
-        return arrayListOf(uriFromFile(mAppContext,uri.toFile(),applicationId.value))
+        return arrayListOf(uriFromFile(mAppContext, uri.toFile(), applicationId.value))
     }
+
     private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
         if (activityFormUIModelList.isNotEmpty()) {
             CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
@@ -646,6 +662,15 @@ class SettingBSViewModel @Inject constructor(
 
         } else {
             formEAvailableList.value = emptyList()
+        }
+    }
+
+    fun fetchhAppConfig() {
+        showLoader.value = true
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+            showLoader.value = false
+
         }
     }
 }

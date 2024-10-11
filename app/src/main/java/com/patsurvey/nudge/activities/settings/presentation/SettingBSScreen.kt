@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.UPCM_USER
+import com.nudge.core.isOnline
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
@@ -121,6 +122,16 @@ fun SettingBSScreen(
 
                     SettingTagEnum.SHARE_LOGS.name -> {
                         viewModel.exportOnlyLogFile(context)
+                    }
+                    SettingTagEnum.APP_CONFIG.name -> {
+                        if (isOnline(context)) {
+                            viewModel.fetchhAppConfig()
+                        } else {
+                            com.nudge.core.showCustomToast(
+                                context,
+                                msg = context.getString(R.string.network_not_available_message)
+                            )
+                        }
                     }
                 }
             },
