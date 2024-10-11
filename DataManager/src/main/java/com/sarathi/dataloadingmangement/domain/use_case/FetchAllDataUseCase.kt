@@ -37,9 +37,10 @@ class FetchAllDataUseCase @Inject constructor(
             fetchLanguageUseCase.invoke()
             fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
-            fetchAppConfigFromNetworkUseCase.invoke()
             fetchContentDataFromNetworkUseCase.invoke()
-
+            if (!isRefresh) {
+                fetchAppConfigFromNetworkUseCase.invoke()
+            }
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)
             CoroutineScope(Dispatchers.IO).launch {
