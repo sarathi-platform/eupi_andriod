@@ -17,5 +17,6 @@ enum class SettingTagEnum {
     EXPORT_BASELINE_QNA,
     MARK_ACTIVITY_IN_PROGRESS,
     SYNC_DATA_NOW,
-    SYNC_STOP
+    SYNC_STOP,
+    APP_CONFIG
 }

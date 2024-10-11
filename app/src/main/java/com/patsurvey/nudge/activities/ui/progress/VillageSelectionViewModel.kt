@@ -14,6 +14,7 @@ import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -149,7 +150,8 @@ class VillageSelectionViewModel @Inject constructor(
     val downloader: AndroidDownloader,
     val lastSelectedTolaDao: LastSelectedTolaDao,
 
-    val villageSelectionRepository: VillageSelectionRepository
+    val villageSelectionRepository: VillageSelectionRepository,
+    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 
 ) : BaseViewModel() {
     private var isNeedToCallVillageApi: Boolean = true
@@ -222,6 +224,8 @@ class VillageSelectionViewModel @Inject constructor(
             if (success) {
                 fetchQuestions(isFromOTPScreen)
                 fetchCastList(isFromOTPScreen)
+                fetchAppConfig()
+
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                     if ((System.currentTimeMillis() - prefRepo.getPref(
                             LAST_UPDATE_TIME,
@@ -238,6 +242,7 @@ class VillageSelectionViewModel @Inject constructor(
             }
         }
     }
+
 
     fun fetchUserWiseData() {
         if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING).equals(
@@ -1905,4 +1910,9 @@ class VillageSelectionViewModel @Inject constructor(
         prefRepo.savePageOpenFromOTPScreen(false)
     }
 
+    fun fetchAppConfig() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+        }
+    }
 }
