@@ -79,7 +79,7 @@ fun <T> DropDownComponent(
             QuestionComponent(
                 title = title,
                 isRequiredField = isMandatory,
-                isQuestionEditAllowed = isEditAllowed
+                isEditAllowed = isEditAllowed
             )
         }
         CustomOutlineTextField(

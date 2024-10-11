@@ -29,7 +29,7 @@ fun QuestionComponent(
     isRequiredField: Boolean = true,
     title: String = BLANK_STRING,
     subTitle: String = BLANK_STRING,
-    isQuestionEditAllowed: Boolean = true,
+    isEditAllowed: Boolean = true,
 
     ) {
     Column(
@@ -47,7 +47,7 @@ fun QuestionComponent(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = if (isQuestionEditAllowed) blueDark else grayColor,
+                            color = if (isEditAllowed) blueDark else grayColor,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
