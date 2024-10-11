@@ -8,7 +8,7 @@ import com.nudge.core.APP_CONFIG_TABLE
 @Entity(tableName = APP_CONFIG_TABLE)
 data class AppConfigEntity(
 
-    @PrimaryKey()
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
     @ColumnInfo("key")
     val key: String,
