@@ -18,8 +18,10 @@ import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
+import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -71,7 +73,7 @@ fun FormQuestionScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = "Form",
+        title = "Form", // TODO change this to the value fetched in survey config.
         modifier = modifier,
         onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = {},
@@ -111,6 +113,8 @@ fun FormQuestionScreen(
 
                             )
                     }
+
+                    customVerticalSpacer(size = dimen_56_dp)
 
                 }
             }

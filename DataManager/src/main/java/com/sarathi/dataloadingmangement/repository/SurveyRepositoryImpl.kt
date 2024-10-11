@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.MODE_TAG
 import com.sarathi.dataloadingmangement.NATURE_TAG
@@ -80,13 +81,14 @@ class SurveyRepositoryImpl @Inject constructor(
                 tagId = it.tag,
                 surveyName = surveyName ?: BLANK_STRING,
                 formId = it.formId ?: DEFAULT_ID,
+                order = it.order.value(0),
                 isConditional = it.isConditional
             )
             questionUiList.add(questionUiModel)
 
         }
 
-        return questionUiList
+        return questionUiList.sortedBy { it.order }
     }
 
     override suspend fun getFormQuestion(

@@ -152,6 +152,19 @@ class ConditionsUtils {
                     )
                 }
             }
+
+            QuestionType.InputText.name,
+            QuestionType.TextField.name -> {
+                val isSelectedOptions = question.options?.filter { it.isSelected == true }
+                isSelectedOptions?.map { it.optionId!! }?.let {
+                    updateResponseMap(question.questionId, it)
+                } ?: {
+                    CoreLogger.d(
+                        tag = LOGGING_TAG,
+                        msg = "updateQuestionResponseMap: isSelectedOptions List is null -> ${isSelectedOptions}"
+                    )
+                }
+            }
         }
     }
 
@@ -257,6 +270,14 @@ class ConditionsUtils {
                 evaluateSingleResponseConditions(response, conditions)
             }
 
+            /**
+             * Handle Text input Questions conditions.
+             */
+            QuestionType.InputText.name,
+            QuestionType.TextField.name -> {
+                evaluateSingleResponseConditionForTextInput(response, conditions, sourceQuestion)
+            }
+
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name,
             QuestionType.ToggleGrid.name,
@@ -333,6 +354,23 @@ class ConditionsUtils {
 
     }
 
+    private fun evaluateSingleResponseConditionForTextInput(
+        response: List<Int>?,
+        conditions: Conditions,
+        sourceQuestion: QuestionUiModel
+    ): Boolean {
+        if (response.isNullOrEmpty())
+            return false
+
+        val textResponse =
+            sourceQuestion.options?.find { it.optionId == response.first() }?.selectedValue
+
+        if (textResponse.isNullOrEmpty())
+            return false
+
+        return evaluateExpressionForTextInput(textResponse, conditions.expression)
+    }
+
     private fun evaluateMultipleResponseConditions(
         responses: List<Int>?,
         conditions: Conditions
@@ -367,6 +405,20 @@ class ConditionsUtils {
         val operands = getOperandsForExpression(operandVariables, response)
 
         return evaluate(operator, operands)
+    }
+
+    /**
+     * Create and evaluate condition expression for text inputs.
+     */
+    private fun evaluateExpressionForTextInput(response: String, expression: String?): Boolean {
+
+        val operator = getOperatorForExpression(expression)
+
+        val operandVariables = getOperandVariables(expression, operator)
+
+        val operands = getOperandsForExpressionForTextInput(operandVariables, response)
+
+        return evaluateTextInput(operator, operands)
     }
 
     /**
@@ -420,6 +472,30 @@ class ConditionsUtils {
     }
 
     /**
+     * Get the actual operands for the variables returned by the [getOperandVariables] method for text inputs.
+     * It will replace the [OPERAND_DELIMITER] with the actual response value as [Pair]
+     * where the first value will be the response and the second will be the expected value for the condition to satisfy.
+     */
+    private fun getOperandsForExpressionForTextInput(
+        operandVariables: List<String>?,
+        response: String
+    ): Pair<String, String> {
+        var operands: Pair<String, String>
+        var first = BLANK_STRING
+        var second = BLANK_STRING
+        operandVariables?.forEach { opVar ->
+
+            if (opVar.equals(OPERAND_DELIMITER)) {
+                first = response
+            } else {
+                second = opVar
+            }
+        }
+        operands = Pair(first, second)
+        return operands
+    }
+
+    /**
      * Evaluates the expression with the operators provided by [getOperatorForExpression] method
      * and the operands with value provided by [getOperandsForExpression] method.
      */
@@ -439,6 +515,20 @@ class ConditionsUtils {
 
             Operator.MORE_THAN -> {
                 operands.first > operands.second
+            }
+
+            else -> false
+        }
+    }
+
+    /**
+     * Evaluates the expression with the operators provided by [getOperatorForExpression] method
+     * and the operands with value provided by [getOperandsForExpression] method for text input.
+     */
+    private fun evaluateTextInput(operator: String, operands: Pair<String, String>): Boolean {
+        return when (Operator.checkStringOperator(operator)) {
+            Operator.EQUAL_TO -> {
+                operands.first == operands.second
             }
 
             else -> false
