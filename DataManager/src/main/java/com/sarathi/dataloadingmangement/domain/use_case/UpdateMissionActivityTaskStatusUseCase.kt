@@ -48,8 +48,8 @@ class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val rep
         repository.markCompleteMissionStatus(missionId)
     }
 
-    suspend fun reCheckActivityStatus(missionId: Int,programId:Int): List<ActivityEntity> {
-        return repository.reCheckActivityStatus(missionId =missionId,programId=programId )
+    suspend fun reCheckActivityStatus(missionId: Int): List<ActivityEntity> {
+        return repository.reCheckActivityStatus(missionId =missionId)
     }
 
     suspend fun reCheckMissionStatus(): List<MissionEntity> {

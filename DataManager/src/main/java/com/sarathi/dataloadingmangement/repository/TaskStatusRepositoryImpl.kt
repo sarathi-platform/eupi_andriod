@@ -83,7 +83,7 @@ class TaskStatusRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun reCheckActivityStatus(missionId:Int,programId:Int): List<ActivityEntity> {
+    override suspend fun reCheckActivityStatus(missionId:Int): List<ActivityEntity> {
         val updatedActivities = mutableListOf<ActivityEntity>()
             activityDao
                 .getActiveActivities(
@@ -125,20 +125,6 @@ class TaskStatusRepositoryImpl @Inject constructor(
 
                         }
            }
-                    //                    else {
-//                        activityDao.updateActivityStatus(
-//                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-//                            activityId = activity.activityId,
-//                            missionId = missionEntity.missionId,
-//                            status = SurveyStatusEnum.COMPLETED.name
-//                        )
-//                        if (activity.status != SurveyStatusEnum.COMPLETED.name) {
-//                            updatedActivities.add(
-//                                activity.copy(status = SurveyStatusEnum.COMPLETED.name)
-//                            )
-//                        }
-//                    }
-
         }
         return updatedActivities
     }

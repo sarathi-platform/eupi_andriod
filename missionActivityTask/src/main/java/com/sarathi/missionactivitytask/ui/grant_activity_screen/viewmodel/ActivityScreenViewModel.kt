@@ -125,7 +125,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private suspend fun updateActivityStatus() {
         val updateActivityStatusList =
-            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus(missionId,programId)
+            updateMissionActivityTaskStatusUseCase.reCheckActivityStatus(missionId)
         updateActivityStatusList.forEach {
             matStatusEventWriterUseCase.updateActivityStatus(
                 surveyName = BLANK_STRING,
