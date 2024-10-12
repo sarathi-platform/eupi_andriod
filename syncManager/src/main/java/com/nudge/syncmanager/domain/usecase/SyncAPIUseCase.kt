@@ -69,7 +69,7 @@ class SyncAPIUseCase(
                         if (it.isNotEmpty()) {
                             repository.updateEventConsumerStatus(eventList = it)
                             if (it.all { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }) {
-                                response(false, consumerAPIResponse.message, it.size, null)
+                                response(true, consumerAPIResponse.message, it.size, null)
                             } else if (it.any { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }) {
                                 it.filter { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }
                                     .forEach { syncEventResponse ->

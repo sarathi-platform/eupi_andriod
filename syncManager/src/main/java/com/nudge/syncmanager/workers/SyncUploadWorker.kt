@@ -18,9 +18,6 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.FAILED_RESPONSE_FAILURE
 import com.nudge.core.FILE_NAME
 import com.nudge.core.FILE_PATH
-import com.nudge.core.FORM_C_TOPIC
-import com.nudge.core.FORM_D_TOPIC
-import com.nudge.core.IMAGE_EVENT_STRING
 import com.nudge.core.IS_ONLY_DATA
 import com.nudge.core.MULTIPART_FORM_DATA
 import com.nudge.core.NULL_RESPONSE_FAILURE
@@ -47,6 +44,9 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.core.network.ApiException
+import com.nudge.core.network.ApiException.EmptyResponse
+import com.nudge.core.network.ApiException.NullResponse
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
@@ -55,6 +55,8 @@ import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -106,115 +108,128 @@ class SyncUploadWorker @AssistedInject constructor(
                 totalPendingEventCount
             )
             DeviceBandwidthSampler.getInstance().startSampling()
-// Reset retry count to 0 if producer failed
+
+            /**
+             * Reset retry count to 0 if producer failed
+             * */
             syncManagerUseCase.addUpdateEventUseCase.resetFailedEventStatusForProducerFailed()
 
-            while (totalPendingEventCount > 0) {
-                mPendingEventList =
-                    syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
-                        batchLimit = batchLimit,
-                        retryCount = retryCount,
-                        syncType = selectedSyncType
-                )
+            if (totalPendingEventCount > 0) {
 
-                if (mPendingEventList.isEmpty()) {
-                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncProducerSuccessEvent(
-                        selectedSyncType
-                    )
-                    return Result.success(
-                        workDataOf(
-                            WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed"
-                        )
-                    )
-                }
+                if (selectedSyncType == SyncType.SYNC_ALL.ordinal || selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal)
+                    syncDataEvent(selectedSyncType)
 
-                CoreLogger.d(
-                    applicationContext,
-                    TAG,
-                    "doWork: pendingEvents List: ${mPendingEventList.json()}"
-                )
-                val dataEventList =
-                    mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
+                if (selectedSyncType == SyncType.SYNC_ALL.ordinal || selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal)
+                    syncImageEvents(selectedSyncType)
 
-
-
-                if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
-                    val eventListAfterPayloadCheck =
-                        getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
-                    val apiResponse =
-                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                            eventListAfterPayloadCheck
-                        )
-                    totalPendingEventCount =
-                        handleAPIResponse(
-                            apiResponse,
-                            totalPendingEventCount,
-                            selectedSyncType,
-                            eventListAfterPayloadCheck
-                        )
-                }
-
-                val imageEventIdsList =
-                    mPendingEventList.filter { it.name.contains(IMAGE_EVENT_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC }
-                        .map { it.id }
-                CoreLogger.d(
-                    applicationContext,
-                    TAG,
-                    "doWork: imageEventIdsList List: ${imageEventIdsList.json()}"
-                )
-                if ((selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && imageEventIdsList.isNotEmpty()) {
-                    val imageEventList =
-                        syncManagerUseCase.fetchEventsFromDBUseCase.fetchAllImageEventDetails(
-                            eventIds = imageEventIdsList
-                        )
-                    if (imageEventList.isNotEmpty()) {
-                        if (syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()) {
-                            findImageEventAndImage(imageEventList) { response ->
-                                totalPendingEventCount =
-                                    handleAPIResponse(
-                                        response,
-                                        totalPendingEventCount,
-                                        selectedSyncType,
-                                        mPendingEventList
-                                    )
-                            }
-                        } else {
-                            findImageEventAndImageForMultipart(imageEventList) { response ->
-                                totalPendingEventCount =
-                                    handleAPIResponse(
-                                        response,
-                                        totalPendingEventCount,
-                                        selectedSyncType,
-                                        mPendingEventList
-                                    )
-                            }
-                        }
-
-                    }
-                }
-
-
-
-                DeviceBandwidthSampler.getInstance().stopSampling()
-                batchLimit =
-                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
-                CoreLogger.d(
-                    applicationContext,
-                    TAG,
-                    "doWork: Next batchLimit: $batchLimit"
-                )
             }
 
-            syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
-//                syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
-//                    selectedSyncType,
-//                    CommonEventParams(batchLimit, retryCount, connectionQuality.name),
-//                    success,
-//                    message,
-//                    requestIds,
-//                    ex
-//                )
-            }
+            /* while (totalPendingEventCount > 0) {
+                 mPendingEventList =
+                     syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
+                         batchLimit = batchLimit,
+                         retryCount = retryCount,
+                         syncType = selectedSyncType
+                 )
+
+                 if (mPendingEventList.isEmpty()) {
+                     syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncProducerSuccessEvent(
+                         selectedSyncType
+                     )
+                     return Result.success(
+                         workDataOf(
+                             WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed"
+                         )
+                     )
+                 }
+
+                 CoreLogger.d(
+                     applicationContext,
+                     TAG,
+                     "doWork: pendingEvents List: ${mPendingEventList.json()}"
+                 )
+                 val dataEventList =
+                     mPendingEventList.filter { !it.name.contains(IMAGE_EVENT_STRING) && it.name != FORM_C_TOPIC && it.name != FORM_D_TOPIC }
+
+
+
+                 if ((selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && dataEventList.isNotEmpty()) {
+                     val eventListAfterPayloadCheck =
+                         getEventListAccordingToPayloadSize(dataEventList, connectionQuality)
+                     val apiResponse =
+                         syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                             eventListAfterPayloadCheck
+                         )
+                     totalPendingEventCount =
+                         handleAPIResponse(
+                             apiResponse,
+                             totalPendingEventCount,
+                             selectedSyncType,
+                             eventListAfterPayloadCheck
+                         )
+                 }
+
+                 val imageEventIdsList =
+                     mPendingEventList.filter { it.name.contains(IMAGE_EVENT_STRING) || it.name == FORM_C_TOPIC || it.name == FORM_D_TOPIC }
+                         .map { it.id }
+                 CoreLogger.d(
+                     applicationContext,
+                     TAG,
+                     "doWork: imageEventIdsList List: ${imageEventIdsList.json()}"
+                 )
+                 if ((selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal || selectedSyncType == SyncType.SYNC_ALL.ordinal) && imageEventIdsList.isNotEmpty()) {
+                     val imageEventList =
+                         syncManagerUseCase.fetchEventsFromDBUseCase.fetchAllImageEventDetails(
+                             eventIds = imageEventIdsList
+                         )
+                     if (imageEventList.isNotEmpty()) {
+                         if (syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()) {
+                             findImageEventAndImage(imageEventList) { response ->
+                                 totalPendingEventCount =
+                                     handleAPIResponse(
+                                         response,
+                                         totalPendingEventCount,
+                                         selectedSyncType,
+                                         mPendingEventList
+                                     )
+                             }
+                         } else {
+                             findImageEventAndImageForMultipart(imageEventList) { response ->
+                                 totalPendingEventCount =
+                                     handleAPIResponse(
+                                         response,
+                                         totalPendingEventCount,
+                                         selectedSyncType,
+                                         mPendingEventList
+                                     )
+                             }
+                         }
+
+                     }
+                 }
+
+
+
+                 DeviceBandwidthSampler.getInstance().stopSampling()
+                 batchLimit =
+                     getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
+                 CoreLogger.d(
+                     applicationContext,
+                     TAG,
+                     "doWork: Next batchLimit: $batchLimit"
+                 )
+             }
+
+             syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+                 syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+                     selectedSyncType,
+                     CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                     success,
+                     message,
+                     requestIds,
+                     ex
+                 )
+             }*/
             CoreLogger.d(
                 applicationContext,
                 TAG,
@@ -233,6 +248,149 @@ class SyncUploadWorker @AssistedInject constructor(
         } finally {
             DeviceBandwidthSampler.getInstance().stopSampling()
         }
+    }
+
+
+    private suspend fun syncDataEvent(selectedSyncType: Int) {
+        val syncType = SyncType.SYNC_ONLY_DATA.ordinal
+        var totalPendingDataEventCount =
+            syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(syncType)
+
+        while (totalPendingDataEventCount > 0) {
+            try {
+                val mPendingEventList =
+                    syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
+                        batchLimit = batchLimit,
+                        retryCount = retryCount,
+                        syncType = syncType
+                    )
+
+                if (mPendingEventList.isEmpty()) {
+                    syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncProducerSuccessEvent(
+                        syncType
+                    )
+                    break
+                }
+
+                CoreLogger.d(
+                    tag = TAG,
+                    msg = "syncDataEvent: pendingEvents List: ${mPendingEventList.json()}"
+                )
+
+                val eventListAfterPayloadCheck =
+                    getEventListAccordingToPayloadSize(mPendingEventList, connectionQuality)
+                val apiResponse =
+                    syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                        eventListAfterPayloadCheck
+                    )
+                totalPendingDataEventCount =
+                    handleAPIResponse(
+                        apiResponse,
+                        totalPendingDataEventCount,
+                        syncType,
+                        eventListAfterPayloadCheck
+                    )
+
+                batchLimit =
+                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
+
+            } catch (ex: ApiException) {
+                break
+            } catch (e: Exception) {
+                break
+            }
+
+        }
+
+        syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+            syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+                selectedSyncType,
+                CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                success,
+                message,
+                requestIds,
+                ex
+            )
+        }
+
+    }
+
+    private suspend fun syncImageEvents(selectedSyncType: Int) {
+        val syncType = SyncType.SYNC_ONLY_IMAGES.ordinal
+        var totalPendingImageEventCount =
+            syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(syncType)
+        val isBlobSyncEnabled =
+            syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()
+
+        while (totalPendingImageEventCount > 0) {
+
+            try {
+                val mPendingEventList =
+                    syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventFromDb(
+                        batchLimit = batchLimit,
+                        retryCount = retryCount,
+                        syncType = syncType
+                    )
+
+                val mImageEventIdsList = mPendingEventList.map { it.id }
+
+                CoreLogger.d(
+                    tag = TAG,
+                    msg = "doWork: imageEventIdsList List: ${mImageEventIdsList.json()}"
+                )
+
+                val imageEventList =
+                    syncManagerUseCase.fetchEventsFromDBUseCase.fetchAllImageEventDetails(
+                        mImageEventIdsList
+                    )
+
+                if (imageEventList.isEmpty()) {
+                    break
+                }
+
+                if (isBlobSyncEnabled) {
+                    findImageEventAndImage(imageEventList) { response ->
+                        totalPendingImageEventCount =
+                            handleAPIResponse(
+                                response,
+                                totalPendingImageEventCount,
+                                syncType,
+                                mPendingEventList
+                            )
+                    }
+                } else {
+                    findImageEventAndImageForMultipart(imageEventList) { response ->
+                        totalPendingImageEventCount =
+                            handleAPIResponse(
+                                response,
+                                totalPendingImageEventCount,
+                                selectedSyncType,
+                                mPendingEventList
+                            )
+                    }
+                }
+                batchLimit =
+                    getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
+
+            } catch (ex: ApiException) {
+                break
+            } catch (e: Exception) {
+                break
+            }
+
+        }
+
+        syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+            syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
+                selectedSyncType,
+                CommonEventParams(batchLimit, retryCount, connectionQuality.name),
+                success,
+                message,
+                requestIds,
+                ex
+            )
+        }
+
     }
 
     private fun getEventListAccordingToPayloadSize(
@@ -269,39 +427,51 @@ class SyncUploadWorker @AssistedInject constructor(
         selectedSyncType: Int,
         mPendingEventList: List<Events>
     ): Int {
-        var totalPendingEventCount1 = totalPendingEventCount
+        var mTotalPendingEventCount = totalPendingEventCount
         if (apiResponse.status == SUCCESS) {
             apiResponse.data?.let { eventList ->
                 if (eventList.isNotEmpty()) {
                     processEventList(eventList)
-                    totalPendingEventCount1 =
+                    mTotalPendingEventCount =
                         syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(
                             syncType = selectedSyncType
                         )
                     CoreLogger.d(
                         applicationContext,
                         TAG,
-                        "doWork: After totalPendingEventCount: $totalPendingEventCount1"
+                        "doWork: After totalPendingEventCount: $mTotalPendingEventCount"
                     )
-                } else handleAPIResponseFailure(
+                } else {
+                    handleAPIResponseFailure(
+                        mPendingEventList,
+                        EMPTY_EVENT_LIST_FAILURE,
+                        selectedSyncType = selectedSyncType
+                    )
+                    throw EmptyResponse()
+                }
+            } ?: withContext(Dispatchers.IO) {
+                handleAPIResponseFailure(
                     mPendingEventList,
-                    EMPTY_EVENT_LIST_FAILURE,
+                    NULL_RESPONSE_FAILURE,
+                    apiResponse.message,
                     selectedSyncType = selectedSyncType
                 )
-            } ?: handleAPIResponseFailure(
+                throw NullResponse()
+            }
+        } else {
+            handleAPIResponseFailure(
                 mPendingEventList,
-                NULL_RESPONSE_FAILURE,
+                FAILED_RESPONSE_FAILURE,
                 apiResponse.message,
-                selectedSyncType = selectedSyncType
+                selectedSyncType
             )
-        } else handleAPIResponseFailure(
-            mPendingEventList,
-            FAILED_RESPONSE_FAILURE,
-            apiResponse.message,
-            selectedSyncType
-        )
+            throw ApiException.HttpError(
+                statusCode = apiResponse.status,
+                message = apiResponse.message
+            )
+        }
         DeviceBandwidthSampler.getInstance().stopSampling()
-        return totalPendingEventCount1
+        return mTotalPendingEventCount
     }
 
     private suspend fun processEventList(eventList: List<SyncEventResponse>) {

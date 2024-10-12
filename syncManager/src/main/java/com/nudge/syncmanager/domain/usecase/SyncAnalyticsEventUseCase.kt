@@ -109,19 +109,24 @@ class SyncAnalyticsEventUseCase @Inject constructor(
         requestIdCount: Int,
         ex: Throwable?
     ) {
-        if (success)
+        if (success) {
             sendSyncConsumerSuccessEvent(
                 selectedSyncType,
                 requestIdCount
             )
-        else if (!success && ex == null) {
+        }
+
+
+        if (!success && ex == null) {
             sendSyncConsumerApiFailEvent(
                 selectedSyncType,
                 message,
                 commonEventParams,
                 requestIdCount
             )
-        } else {
+        }
+
+        if (!success && ex != null) {
             sendSyncConsumerFailureDueToExceptionAnalyticsEvent(
                 ex,
                 selectedSyncType,
