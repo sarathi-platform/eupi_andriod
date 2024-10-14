@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities.ui.splash
 
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
+    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 ) : BaseViewModel() {
 
     fun isLoggedIn(): Boolean {
@@ -116,5 +119,10 @@ class ConfigViewModel @Inject constructor(
 
     fun getLoggedInUserType(): String {
         return configRepository.getLoggedInUserType()
+    }
+    fun fetchAppConfigForProperties() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke(listOf(AppConfigKeysEnum.MIX_PANEL_KEY.name))
+        }
     }
 }

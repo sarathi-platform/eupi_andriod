@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    val retrofit = "2.9.0"
+    val okhttp3 = "4.9.0"
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -77,7 +79,6 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-config-ktx:21.6.1")
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
@@ -106,5 +107,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
     implementation("com.mixpanel.android:mixpanel-android:7.+")
+
+    implementation("com.squareup.retrofit2:retrofit:$retrofit")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofit")
+    implementation("com.squareup.okhttp3:logging-interceptor:$okhttp3")
+
 
 }

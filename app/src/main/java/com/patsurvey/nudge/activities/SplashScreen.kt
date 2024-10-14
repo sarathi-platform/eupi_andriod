@@ -93,6 +93,7 @@ fun SplashScreen(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
+                viewModel.fetchAppConfigForProperties()
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>

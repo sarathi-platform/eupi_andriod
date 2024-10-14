@@ -13,7 +13,7 @@ interface ITaskStatusRepository {
     fun markInProgressActivityStatus(activityId: Int, missionId: Int)
     fun markCompleteMissionStatus(missionId: Int)
     fun markInProgressMissionStatus(missionId: Int)
-    suspend fun reCheckActivityStatus(): List<ActivityEntity>
+    suspend fun reCheckActivityStatus(missionId:Int): List<ActivityEntity>
     suspend fun reCheckMissionStatus(): List<MissionEntity>
 
     suspend fun markInProgressActivitiesStatus(missionId: Int, activityIds: List<Int>)

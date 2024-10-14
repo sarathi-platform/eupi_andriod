@@ -36,6 +36,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.datamodel.SyncImageMetadataRequest
 import com.nudge.core.datamodel.SyncImageUploadPayload
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.SyncException
 import com.nudge.core.getBatchSize
@@ -76,8 +77,27 @@ class SyncUploadWorker @AssistedInject constructor(
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
         return try {
             connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
-            batchLimit = syncManagerUseCase.syncAPIUseCase.getSyncBatchSize()
-            retryCount = syncManagerUseCase.syncAPIUseCase.getSyncRetryCount()
+            batchLimit =
+                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_BATCH_SIZE.name)
+                    .toInt()
+            retryCount =
+                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_RETRY_COUNT.name)
+                    .toInt()
+            val isBlobImageUploadEnable =
+                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.BLOB_IMAGE_UPLOAD_ENABLED.name)
+                    .toBoolean()
+            var preSelectionContainerName = BLANK_STRING
+            var postSelectionContainerName = BLANK_STRING
+            var azureConnectionString = BLANK_STRING
+            if (isBlobImageUploadEnable) {
+                azureConnectionString =
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.ENCODED_KEY.name)
+                preSelectionContainerName =
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SELECTION_CONTAINER_NAME.name)
+                postSelectionContainerName =
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.POST_SELECTION_CONTAINER_NAME.name)
+
+            }
             CoreLogger.d(
                 applicationContext,
                 TAG,
@@ -168,8 +188,13 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventIds = imageEventIdsList
                         )
                     if (imageEventList.isNotEmpty()) {
-                        if (syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()) {
-                            findImageEventAndImage(imageEventList) { response ->
+                        if (isBlobImageUploadEnable) {
+                            findImageEventAndImage(
+                                imageEventList,
+                                postSelectionContainerName = postSelectionContainerName,
+                                selectionContainerName = preSelectionContainerName,
+                                blobConnectionUrl = azureConnectionString
+                            ) { response ->
                                 totalPendingEventCount =
                                     handleAPIResponse(
                                         response,
@@ -528,6 +553,9 @@ class SyncUploadWorker @AssistedInject constructor(
 
     private suspend fun findImageEventAndImage(
         imageEventList: List<ImageEventDetailsModel>,
+        postSelectionContainerName: String,
+        selectionContainerName: String,
+        blobConnectionUrl: String,
         onAPIResponse: suspend (ApiResponseModel<List<SyncEventResponse>>) -> Unit
     ) {
 
@@ -542,7 +570,10 @@ class SyncUploadWorker @AssistedInject constructor(
             try {
                 syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
                     filePath = picturePath,
-                    fileName = imageDetail.fileName ?: BLANK_STRING
+                    fileName = imageDetail.fileName ?: BLANK_STRING,
+                    postSelectionContainerName = postSelectionContainerName,
+                    selectionContainerName = selectionContainerName,
+                    blobConnectionUrl = blobConnectionUrl
                 ) { message, isExceptionOccur ->
                     if (!isExceptionOccur) {
                         uploadedBlobUrl = message
