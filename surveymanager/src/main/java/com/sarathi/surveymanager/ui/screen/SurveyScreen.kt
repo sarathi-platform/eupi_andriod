@@ -2,10 +2,14 @@
 
 package com.sarathi.surveymanager.ui.screen
 
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 
 @Composable
@@ -24,7 +28,8 @@ fun SurveyScreen(
     activityType: String,
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit
 ) {
     BaseSurveyScreen(
         viewModel = viewModel,
@@ -69,10 +74,97 @@ fun SurveyScreen(
                 navController.popBackStack()
                 navController.popBackStack()
             }
+        },
+        surveyQuestionContent = { maxHeight ->
+            SurveyScreenContent(
+                viewModel = viewModel,
+                sanctionedAmount = sanctionedAmount,
+                totalSubmittedAmount = totalSubmittedAmount,
+                onAnswerSelect = { questionUiModel ->
+                    viewModel.updateQuestionResponseMap(questionUiModel)
+                    viewModel.runConditionCheck(questionUiModel)
+
+                    viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                    viewModel.updateTaskStatus(taskId)
+                },
+                onFormTypeQuestionClicked = { sectionId, surveyId, formId, referenceId ->
+                    onFormTypeQuestionClicked(
+                        sectionId,
+                        surveyId,
+                        formId,
+                        taskId,
+                        activityId,
+                        activityConfigId,
+                        missionId,
+                        subjectType,
+                        referenceId
+                    )
+                },
+                grantType = activityType,
+                maxHeight = maxHeight
+            )
         }
     )
 
 
+}
+
+fun LazyListScope.SurveyScreenContent(
+    viewModel: BaseSurveyScreenViewModel,
+    sanctionedAmount: Int,
+    totalSubmittedAmount: Int,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
+    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, referenceId: String) -> Unit,
+    grantType: String,
+    maxHeight: Dp
+) {
+
+    val formIdCountMap: MutableMap<Int, Int> = mutableMapOf()
+
+    viewModel.questionUiModel.value.forEachIndexed { index, question ->
+        if (question.formId == 0) {
+            item {
+                if (viewModel.visibilityMap[question.questionId].value()) {
+                    QuestionUiContent(
+                        question,
+                        sanctionedAmount,
+                        totalSubmittedAmount,
+                        viewModel,
+                        onAnswerSelect,
+                        maxHeight,
+                        grantType,
+                        index
+                    )
+                }
+            }
+        } else {
+            val formIdCount = formIdCountMap.get(question.formId).value(0)
+            if (formIdCount == 0) {
+                item {
+                    FormQuestionUiContent(
+                        question,
+                        sanctionedAmount,
+                        totalSubmittedAmount,
+                        viewModel,
+                        onAnswerSelect,
+                        maxHeight,
+                        grantType,
+                        index
+                    ) {
+                        onFormTypeQuestionClicked(
+                            question.sectionId,
+                            question.surveyId,
+                            question.formId,
+                            viewModel.referenceId
+                        )
+                    }
+                }
+            }
+            formIdCountMap[question.formId] = formIdCount + 1
+        }
+
+
+    }
 }
 
 

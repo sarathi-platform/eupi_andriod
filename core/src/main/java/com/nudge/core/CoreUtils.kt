@@ -904,6 +904,33 @@ fun <T> List<T>?.value(): List<T> {
     return this ?: emptyList()
 }
 
+fun <T, R> List<T>.ifNotEmpty(block: (List<T>) -> R): R? {
+
+    if (this.isEmpty())
+        return null
+
+    return block(this)
+
+}
+
+fun String.equals(others: List<String>, ignoreCase: Boolean = false): Boolean {
+    var result = false
+    if (others.isEmpty())
+        return result
+
+    result = this.equals(others[0], ignoreCase)
+
+    if (others.size == 1) {
+        return result
+    }
+
+    others.drop(1).forEach { s2 ->
+        result = result || this.equals(s2, ignoreCase)
+    }
+
+    return result
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -1295,3 +1322,14 @@ fun decodeBase64ToPlainText(encodedString: String): String {
 
 
 
+
+fun replaceLastWord(sentence: String?, newWord: String?): String {
+    if (sentence.isNullOrBlank() || newWord.isNullOrBlank()) {
+        return sentence ?: BLANK_STRING
+    }
+    val words = sentence.split(" ").toMutableList()
+    if (words.isNotEmpty()) {
+        words[words.size - 1] = newWord
+    }
+    return words.joinToString(" ")
+}

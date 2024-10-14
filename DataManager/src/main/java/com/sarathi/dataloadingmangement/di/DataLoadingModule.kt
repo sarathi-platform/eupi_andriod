@@ -17,6 +17,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
+import com.sarathi.dataloadingmangement.data.dao.ConditionsEntityDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.DocumentDao
@@ -31,6 +32,7 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -68,6 +70,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
@@ -82,6 +85,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProd
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.LivelihoodEventValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
@@ -107,6 +111,8 @@ import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepository
+import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
@@ -356,9 +362,19 @@ class DataLoadingModule {
     @Singleton
     fun subjectLivelihoodEventMappingDao(db: NudgeGrantDatabase) =
         db.subjectLivelihoodEventMappingDao()
+
     @Provides
     @Singleton
     fun provideSectionStatusEntityDao(db: NudgeGrantDatabase) = db.sectionStatusEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSourceTargetQuestionMappingEntityDao(db: NudgeGrantDatabase) =
+        db.sourceTargetQuestionMappingEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideConditionsEntityDao(db: NudgeGrantDatabase) = db.conditionsEntityDao()
 
 
     @Provides
@@ -371,7 +387,9 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         questionEntityDao: QuestionEntityDao,
         surveyLanguageAttributeDao: SurveyLanguageAttributeDao,
-        tagReferenceEntityDao: TagReferenceEntityDao
+        tagReferenceEntityDao: TagReferenceEntityDao,
+        sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
+        conditionsEntityDao: ConditionsEntityDao
     ): ISurveyDownloadRepository {
         return SurveyDownloadRepository(
             dataLoadingApiService = dataLoadingApiService,
@@ -381,8 +399,9 @@ class DataLoadingModule {
             optionItemDao = optionItemDao,
             questionEntityDao = questionEntityDao,
             surveyLanguageAttributeDao = surveyLanguageAttributeDao,
-            tagReferenceEntityDao = tagReferenceEntityDao
-
+            tagReferenceEntityDao = tagReferenceEntityDao,
+            sourceTargetQuestionMappingEntityDao = sourceTargetQuestionMappingEntityDao,
+            conditionsEntityDao = conditionsEntityDao
         )
     }
 
@@ -1449,6 +1468,30 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideGetConditionQuestionMappingsUseCase(
+        getConditionQuestionMappingsRepository: GetConditionQuestionMappingsRepository
+    ): GetConditionQuestionMappingsUseCase {
+        return GetConditionQuestionMappingsUseCase(getConditionQuestionMappingsRepository = getConditionQuestionMappingsRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetConditionQuestionMappingsRepository(
+        corePrefRepo: CoreSharedPrefs,
+        sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
+        conditionsEntityDao: ConditionsEntityDao
+    ): GetConditionQuestionMappingsRepository {
+
+        return GetConditionQuestionMappingsRepositoryImpl(
+            corePrefRepo = corePrefRepo,
+            sourceTargetQuestionMappingEntityDao = sourceTargetQuestionMappingEntityDao,
+            conditionsEntityDao = conditionsEntityDao
+        )
+
+    }
+
+    @Provides
+    @Singleton
     fun provideRegenerateLivelihoodEventUseCase(
         assetJournalRepo: AssetJournalRepositoryImpl,
         moneyJournalRepository: MoneyJournalRepositoryImpl,
@@ -1460,6 +1503,19 @@ class DataLoadingModule {
             moneyJournalRepo = moneyJournalRepository,
             subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
             eventWriterRepository = eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventValidationUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        assetRepositoryImpl: AssetRepositoryImpl
+
+        ): LivelihoodEventValidationUseCase {
+        return LivelihoodEventValidationUseCase(
+            assetJournalRepository = assetJournalRepo,
+            assetRepository = assetRepositoryImpl
         )
     }
 }

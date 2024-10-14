@@ -401,7 +401,7 @@ fun PrimarySecondaryButtonView(
     if (primaryButtonText.isNotBlank()) {
         PrimaryButton(
             text = primaryButtonText,
-            color = if (!taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+            color = if (!isActivityCompleted && !taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
                 containerColor = blueDark,
                 contentColor = white
             ) else ButtonDefaults.buttonColors(
@@ -409,7 +409,9 @@ fun PrimarySecondaryButtonView(
                 contentColor = blueDark
             ),
             onClick = {
-                taskMarkedNotAvailable.value = false
+                if (!isActivityCompleted) {
+                    taskMarkedNotAvailable.value = false
+                }
                 onPrimaryButtonClick(title)
             },
             modifier = modifier

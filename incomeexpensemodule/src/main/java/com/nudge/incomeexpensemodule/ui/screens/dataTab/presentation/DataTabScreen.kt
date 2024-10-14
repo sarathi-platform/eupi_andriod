@@ -264,7 +264,7 @@ fun DataTabScreen(
                                             dataTabScreenViewModel.onEvent(DataTabEvents.LivelihoodSortApplied)
                                         },
                                         iconTintColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark,
-                                        icon = painterResource(id = CoreRes.drawable.sort_icon),
+                                        icon = painterResource(id = CoreRes.drawable.ic_new_sort_icon),
                                         buttonContainerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
                                         colors = IconButtonDefaults.iconButtonColors(
                                             containerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,

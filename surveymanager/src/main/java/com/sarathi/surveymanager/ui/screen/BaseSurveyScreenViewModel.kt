@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.ui.screen
 import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
@@ -15,6 +16,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -26,6 +28,7 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
 import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -48,6 +51,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSectionListUseCase: GetSectionListUseCase,
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
 ) : BaseViewModel() {
     var surveyId: Int = 0
     var sectionId: Int = 0
@@ -70,6 +74,11 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var activityConfig: ActivityConfigEntity? = null
 
     var isNoSection = mutableStateOf(false)
+
+    val conditionsUtils = ConditionsUtils()
+
+    val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -115,6 +124,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             isNoSection.value = sectionList.size == 1
 
+            val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
+                .invoke(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    questionIdList = questionUiModel.value.map { it.questionId }
+                )
+
+            conditionsUtils.apply {
+                init(questionUiModel.value, sourceTargetQuestionMapping)
+                initQuestionVisibilityMap(questionUiModel.value)
+            }
 
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
@@ -296,5 +316,13 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun updateQuestionResponseMap(question: QuestionUiModel) {
+        conditionsUtils.updateQuestionResponseMap(question)
+    }
+
+    fun runConditionCheck(sourceQuestion: QuestionUiModel) {
+        conditionsUtils.runConditionCheck(sourceQuestion)
     }
 }

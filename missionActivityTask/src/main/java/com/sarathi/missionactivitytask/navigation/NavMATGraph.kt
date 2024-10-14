@@ -33,6 +33,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TITLE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_PATH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
@@ -55,6 +56,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_QUESTION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
@@ -79,6 +81,7 @@ import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepComple
 import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
 import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
+import com.sarathi.surveymanager.ui.screen.FormQuestionScreen
 import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
 import com.sarathi.surveymanager.ui.screen.LivelihoodPopSurveyScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
@@ -563,7 +566,21 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
                 totalSubmittedAmount = it.arguments?.getInt(
                     ARG_TOTAL_SUBMITTED_AMOUNT
-                ) ?: 0
+                ) ?: 0,
+                onFormTypeQuestionClicked = { sectionId, surveyId, formId, taskId, activityId, activityConfigId, missionId, subjectType, referenceId ->
+                    navigateToFormQuestionScreen(
+                        navController = navController,
+                        taskId = taskId,
+                        sectionId = sectionId,
+                        surveyId = surveyId,
+                        formId = formId,
+                        activityId = activityId,
+                        activityConfigId = activityConfigId,
+                        missionId = missionId,
+                        referenceId = referenceId,
+                        subjectType = subjectType
+                    )
+                }
             )
         }
         composable(
@@ -993,6 +1010,55 @@ fun NavGraphBuilder.MatNavigation(
             onSettingClick = onSettingIconClick
         )
     }
+
+    composable(
+        MATHomeScreens.FormQuestionScreen.route,
+        arguments = listOf(
+            navArgument(name = ARG_TASK_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_SECTION_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_SURVEY_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_FORM_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_ACTIVITY_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_MISSION_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_REFERENCE_ID) {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument(ARG_SUBJECT_TYPE) {
+                type = NavType.StringType
+            }
+        )
+    ) {
+
+        FormQuestionScreen(
+            navController = navController,
+            taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
+            sectionId = it.arguments?.getInt(ARG_SECTION_ID).value(),
+            surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
+            formId = it.arguments?.getInt(ARG_FORM_ID).value(),
+            activityId = it.arguments?.getInt(ARG_ACTIVITY_ID).value(),
+            activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
+            missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
+            referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
+            subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value()
+        )
+    }
+
 }
 
 
@@ -1193,4 +1259,20 @@ fun navigateToActivitySelectTaskScreen(
     programId: Int
 ) {
     navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+}
+
+fun navigateToFormQuestionScreen(
+    navController: NavController,
+    taskId: Int,
+    sectionId: Int,
+    surveyId: Int,
+    formId: Int,
+    activityId: Int,
+    activityConfigId: Int,
+    missionId: Int,
+    referenceId: String,
+    subjectType: String
+) {
+    val refIdWithNull = if (TextUtils.isEmpty(referenceId)) null else referenceId
+    navController.navigate("${FORM_QUESTION_SCREEN_ROUTE_NAME}/$sectionId/$surveyId/$formId/$taskId/$activityId/$activityConfigId/$missionId/$refIdWithNull/$subjectType")
 }

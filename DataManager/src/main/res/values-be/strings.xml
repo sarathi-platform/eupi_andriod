@@ -104,4 +104,7 @@
     <string name="images_processes_by_server">Images processed by Server</string>
     <string name="decrease_in_number">decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">"नोंनो जेबो बाइदेउ होनाय जायाखै "</string>
+    <string name="save_text">सेभ</string>
+    <string name="proceed">Proceed</string>
+    <string name="cancel_text">दानगारनाय</string>
 </resources>

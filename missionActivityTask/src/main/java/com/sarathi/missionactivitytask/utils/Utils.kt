@@ -69,3 +69,13 @@ fun Map<Int, HashMap<String, TaskCardModel>>.toHashMap(): HashMap<Int, HashMap<S
     }
     return hashMap
 }
+
+fun Map<Int, HashMap<String, TaskCardModel>>.toLinkedHashMap(): LinkedHashMap<Int, HashMap<String, TaskCardModel>> {
+    val hashMap = linkedMapOf<Int, HashMap<String, TaskCardModel>>()
+    this.forEach {
+
+        hashMap[it.key] = it.value
+
+    }
+    return hashMap
+}

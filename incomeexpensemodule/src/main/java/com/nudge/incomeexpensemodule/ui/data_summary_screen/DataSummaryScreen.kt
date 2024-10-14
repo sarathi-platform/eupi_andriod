@@ -591,6 +591,10 @@ private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
                 painter = painterResource(id = R.drawable.ic_delete_stamp),
                 contentDescription = null,
             )
+//            Text(
+//                text = stringResource(R.string.delete),
+//                style = smallTextStyle.copy(redIconColor)
+//            )
         }
     }
 }

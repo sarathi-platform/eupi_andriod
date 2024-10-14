@@ -104,5 +104,8 @@
     <string name="images_processes_by_server">চাৰ্ভাৰৰ দ্বাৰা প্ৰক্ৰিয়া কৰা প্ৰতিমুৰ্তিসমূহ</string>
     <string name="decrease_in_number">সংখ্যা হ্ৰাস পায়</string>
     <string name="no_didi_s_assigned_to_you">"আপোনাক কোনো বাইদেউ আৱণ্টন কৰা হোৱা নাই "</string>
+    <string name="save_text">চেভ</string>
+    <string name="proceed">আগবাঢ়ক</string>
+    <string name="cancel_text">বাতিল কৰক</string>
 
 </resources>
