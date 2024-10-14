@@ -47,7 +47,9 @@ import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.network.ApiException
 import com.nudge.core.network.ApiException.EmptyResponse
+import com.nudge.core.network.ApiException.HostNotFoundException
 import com.nudge.core.network.ApiException.NullResponse
+import com.nudge.core.network.ApiException.TimeoutException
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
@@ -63,6 +65,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 
 @HiltWorker
@@ -267,6 +271,12 @@ class SyncUploadWorker @AssistedInject constructor(
                     WorkerKeys.SUCCESS_MSG to "Success: All Producer Completed and Count 0"
                 )
             )
+        } catch (ex: SocketTimeoutException) {
+            handleException(ex, mPendingEventList, selectedSyncType)
+        } catch (ex: UnknownHostException) {
+            handleException(ex, mPendingEventList, selectedSyncType)
+        } catch (ex: ApiException) {
+            handleException(ex, mPendingEventList, selectedSyncType)
         } catch (ex: Exception) {
             handleException(ex, mPendingEventList, selectedSyncType)
         } finally {
@@ -318,10 +328,40 @@ class SyncUploadWorker @AssistedInject constructor(
                 batchLimit =
                     getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
 
+            } catch (ex: SocketTimeoutException) {
+                val exception = TimeoutException(ex.message.value())
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: TimeoutException -> ${exception.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw exception
+            } catch (ex: UnknownHostException) {
+                val exception = HostNotFoundException(ex.message.value())
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: HostNotFoundException -> ${exception.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw exception
             } catch (ex: ApiException) {
-                break
-            } catch (e: Exception) {
-                break
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: ApiException -> ${ex.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw ex
+            } catch (ex: Exception) {
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: Exception -> ${ex.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw ex
             }
 
         }
@@ -399,10 +439,40 @@ class SyncUploadWorker @AssistedInject constructor(
                 batchLimit =
                     getBatchSize(ConnectionClassManager.getInstance().currentBandwidthQuality).batchSize
 
+            } catch (ex: SocketTimeoutException) {
+                val exception = TimeoutException(ex.message.value())
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: TimeoutException -> ${exception.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw exception
+            } catch (ex: UnknownHostException) {
+                val exception = HostNotFoundException(ex.message.value())
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: HostNotFoundException -> ${exception.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw exception
             } catch (ex: ApiException) {
-                break
-            } catch (e: Exception) {
-                break
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: ApiException -> ${ex.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw ex
+            } catch (ex: Exception) {
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = "syncDataEvent: Exception -> ${ex.message}",
+                    ex = ex,
+                    stackTrace = true
+                )
+                throw ex
             }
 
         }
