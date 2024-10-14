@@ -13,7 +13,7 @@ data class EventLimitAlertUiModel(
 
         fun getDefaultEventLimitAlertUiModel(
             alertTitle: String = "Warning",
-            alertMessage: String = "You have few un-synced events. Please sync!",
+            alertMessage: String = "Sync pending data now to stay up-to-date!",
             alertIcon: Int = R.drawable.baseline_warning_amber_24
         ): EventLimitAlertUiModel {
             return EventLimitAlertUiModel(
@@ -25,7 +25,7 @@ data class EventLimitAlertUiModel(
 
         fun getHardEventLimitAlertUiModel(
             alertTitle: String = "Alert",
-            alertMessage: String = "You have reached un-synced events limit. Please sync now!!",
+            alertMessage: String = "Sync now to prevent data loss!",
             alertIcon: Int = R.drawable.baseline_warning_24
         ): EventLimitAlertUiModel {
             return getDefaultEventLimitAlertUiModel(alertTitle, alertMessage, alertIcon)
