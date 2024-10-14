@@ -66,6 +66,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
             }
         }
 
+        if (data.containsKey(AppConfigKeysEnum.USE_BASELINE_V1.name)) {
+            data[AppConfigKeysEnum.USE_BASELINE_V1.name]?.toString()?.let {
+                coreSharedPrefs.savePref(AppConfigKeysEnum.USE_BASELINE_V1.name, it)
+            }
+        }
+
     }
 
     override suspend fun getAppConfig(key: String): String {
@@ -73,6 +79,10 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
             key = key,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         )?.value ?: BLANK_STRING
+    }
+
+    override fun getAppConfigFromPref(key: String): String {
+        return coreSharedPrefs.getPref(key, BLANK_STRING)
     }
 
 

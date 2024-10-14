@@ -189,11 +189,7 @@ fun MissionScreen(
                                                 dataNotLoadedDialog.value = true
                                             } else {
                                                 onNavigationToActivity(
-                                                    false
-                                                    /*mission.description.contains(
-                                                        "Baseline",
-                                                        true
-                                                    )*/, //TODO Temp code to be removed after data is fetched from server.
+                                                    viewModel.isBaselineV1Mission(), //TODO Temp code to be removed after data is fetched from server.
                                                     mission
                                                 )
                                             }
