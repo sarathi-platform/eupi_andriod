@@ -178,6 +178,9 @@ class ConditionsUtils {
 
     }
 
+    /**
+     * Evaluates the condition for a given source question
+     * */
     private fun evaluateConditions(sourceQuestion: QuestionUiModel): Map<Int, Boolean> {
 
         val questionsToShow = mutableMapOf<Int, Boolean>()
@@ -236,6 +239,9 @@ class ConditionsUtils {
                     )
                 )
 
+                /**
+                 * Evaluate conditions for child questions of current targetQuestion if their responses are present
+                 * */
                 evaluateConditions(targetQuestionUiModel)
 
             }
@@ -248,6 +254,9 @@ class ConditionsUtils {
 
     }
 
+    /**
+     * Evaluate conditions where only single expressions are present for evaluation.
+     * */
     private fun evaluateSingleCondition(
         sourceQuestion: QuestionUiModel,
         response: List<Int>?,
@@ -264,15 +273,9 @@ class ConditionsUtils {
             QuestionType.Toggle.name,
             QuestionType.DropDown.name,
             -> {
-                /**
-                 * Handle SingleSelect Questions conditions.
-                 */
                 evaluateSingleResponseConditions(response, conditions)
             }
 
-            /**
-             * Handle Text input Questions conditions.
-             */
             QuestionType.InputText.name,
             QuestionType.TextField.name -> {
                 evaluateSingleResponseConditionForTextInput(response, conditions, sourceQuestion)
@@ -283,9 +286,7 @@ class ConditionsUtils {
             QuestionType.ToggleGrid.name,
             QuestionType.MultiSelectDropDown.name,
             -> {
-                /**
-                 * Handle MultiSelect Questions conditions.
-                 */
+
                 evaluateMultipleResponseConditions(response, conditions)
             }
 
@@ -297,6 +298,12 @@ class ConditionsUtils {
 
     }
 
+    /**
+     * Evaluate multiple conditions for a target question by evaluation each condition individually
+     * and then applying [conditionOperator] on them using [fold] method provided by kotlin.
+     *
+     * See [fold] method documentation to understand it's working.
+     */
     private fun evaluateMultipleCondition(
         sourceQuestion: QuestionUiModel,
         response: List<Int>?,
@@ -342,6 +349,9 @@ class ConditionsUtils {
         }
     }
 
+    /**
+     * Handle SingleSelect Questions conditions.
+     */
     private fun evaluateSingleResponseConditions(
         response: List<Int>?,
         conditions: Conditions
@@ -354,6 +364,9 @@ class ConditionsUtils {
 
     }
 
+    /**
+     * Handle Text input Questions conditions.
+     */
     private fun evaluateSingleResponseConditionForTextInput(
         response: List<Int>?,
         conditions: Conditions,
@@ -371,6 +384,9 @@ class ConditionsUtils {
         return evaluateExpressionForTextInput(textResponse, conditions.expression)
     }
 
+    /**
+     * Handle MultiSelect Questions conditions.
+     */
     private fun evaluateMultipleResponseConditions(
         responses: List<Int>?,
         conditions: Conditions
@@ -409,10 +425,14 @@ class ConditionsUtils {
 
     /**
      * Create and evaluate condition expression for text inputs.
+     * Only [Operator.EQUAL_TO] conditions are valid for this case.
      */
     private fun evaluateExpressionForTextInput(response: String, expression: String?): Boolean {
 
         val operator = getOperatorForExpression(expression)
+
+        if (Operator.checkStringOperator(operator) != Operator.EQUAL_TO)
+            return false
 
         val operandVariables = getOperandVariables(expression, operator)
 
@@ -553,6 +573,9 @@ class ConditionsUtils {
 
 }
 
+/**
+ * [Operator] Enum to capture all valid operators for conditions.
+ * */
 enum class Operator {
     EQUAL_TO,
     LESS_THAN,
@@ -565,10 +588,16 @@ enum class Operator {
 
     companion object {
 
+        /**
+         * Checks the string operator.
+         *
+         * @return [Operator] class object for the given string operator.
+         *
+         * @param operator extracted from [getOperatorForExpression] method as string.
+         * */
         fun checkStringOperator(operator: String) = when (operator) {
             "==",
             "=" -> EQUAL_TO
-
             "<" -> LESS_THAN
             ">" -> MORE_THAN
             "><" -> IN_BETWEEN

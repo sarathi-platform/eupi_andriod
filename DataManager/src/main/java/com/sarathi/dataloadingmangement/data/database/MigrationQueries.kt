@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.data.database
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
+import com.sarathi.dataloadingmangement.CONDITIONS_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
@@ -10,6 +11,7 @@ import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
 import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
+import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
 
@@ -138,7 +140,7 @@ object MigrationQueries {
 
 
     val CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE =
-        "CREATE TABLE source_target_question_mapping_table_new (\n" +
+        "CREATE TABLE IF NOT EXISTS $SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME (\n" +
                 "                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "                userId TEXT NOT NULL,\n" +
                 "                surveyId INTEGER NOT NULL,\n" +
@@ -150,7 +152,7 @@ object MigrationQueries {
                 "            )"
 
     val CREATE_CONDITIONS_TABLE =
-        "CREATE TABLE conditions_table_new (\n" +
+        "CREATE TABLE IF NOT EXISTS $CONDITIONS_TABLE_NAME (\n" +
                 "                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "                userId TEXT,\n" +
                 "                sourceTargetQuestionRefId INTEGER NOT NULL,\n" +

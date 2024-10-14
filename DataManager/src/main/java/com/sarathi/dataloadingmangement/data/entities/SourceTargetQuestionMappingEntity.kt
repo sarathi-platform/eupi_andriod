@@ -4,9 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.survey.response.Conditions
 
-@Entity("source_target_question_mapping_table")
+@Entity(SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME)
 data class SourceTargetQuestionMappingEntity(
 
     @PrimaryKey(true)
