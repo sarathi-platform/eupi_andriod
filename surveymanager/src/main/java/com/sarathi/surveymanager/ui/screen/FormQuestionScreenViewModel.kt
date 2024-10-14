@@ -48,9 +48,6 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
 
-//    private val _questionUiModel = mutableStateListOf<QuestionUiModel>()
-//    val questionUiModel: SnapshotStateList<QuestionUiModel> get() = _questionUiModel
-
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
@@ -132,7 +129,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 uriList = ArrayList(),
                 activityId = activityId,
                 activityReferenceId = 0,
-                activityReferenceType = BLANK_STRING
+                activityReferenceType = BLANK_STRING,
+                isFromRegenerate = false
             )
         }
     }

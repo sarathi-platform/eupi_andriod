@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import android.util.Log
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.STATE
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -31,13 +31,20 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
             }
             return false
         } catch (apiException: ApiException) {
-            Log.e(
-                "TAG",
-                "invoke: ApiException -> ${apiException.message} \n\n STACKTRACE -> ${apiException.stackTrace}",
+            CoreLogger.e(
+                tag = "TAG",
+                msg = "invoke: ApiException -> ${apiException.message}",
+                ex = apiException,
+                stackTrace = true
             )
             throw apiException
         } catch (ex: Exception) {
-            Log.e("TAG", "invoke: Exception -> ${ex.message} \n\n STACKTRACE -> ${ex.stackTrace}")
+            CoreLogger.e(
+                tag = "TAG",
+                msg = "invoke: Exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
             throw ex
         }
     }
