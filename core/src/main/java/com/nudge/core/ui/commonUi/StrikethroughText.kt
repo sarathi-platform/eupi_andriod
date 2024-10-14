@@ -25,7 +25,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.theme.GreyLight
+import com.nudge.core.ui.theme.GreyDark
 import com.nudge.core.ui.theme.defaultTextStyle
 
 
@@ -34,8 +34,8 @@ fun StrikethroughText(
     modifier: Modifier = Modifier,
     text: String,
     textStyle: TextStyle = defaultTextStyle,
-    strikethroughColor: Color = GreyLight,
-    isStrikethrough: Boolean = true
+    strikethroughColor: Color = GreyDark,
+    isStrikethrough: Boolean = false
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 

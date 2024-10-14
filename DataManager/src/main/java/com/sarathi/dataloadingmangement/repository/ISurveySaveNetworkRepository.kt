@@ -7,6 +7,6 @@ import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResp
 interface ISurveySaveNetworkRepository {
     suspend fun getSurveyAnswerFromNetwork(surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
 
-    suspend fun getSurveyIds(): List<Int>
+    suspend fun getSurveyIds(missionId: Int): List<Int>
     fun saveSurveyAnswerToDb(surveyApiResponse: List<QuestionAnswerResponseModel>)
 }

@@ -3,9 +3,11 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -80,6 +82,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProd
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
@@ -619,8 +622,6 @@ class DataLoadingModule {
         downloaderManager: DownloaderManager,
         languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
-        surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
-        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
@@ -628,9 +629,8 @@ class DataLoadingModule {
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
-        assetJournalUseCase: FetchAssetJournalUseCase,
-        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
-    ): FetchAllDataUseCase {
+        fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+        ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
                 missionRepositoryImpl
@@ -652,12 +652,9 @@ class DataLoadingModule {
             formUseCase = formUseCase,
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
-            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
-                fetchDidiDetailsFromNetworkRepository
-            ),
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
-            assetJournalUseCase = assetJournalUseCase,
-            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
+            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase
+
         )
     }
 
@@ -881,6 +878,7 @@ class DataLoadingModule {
         formEventWriterUseCase: FormEventWriterUseCase,
         documentEventWriterUseCase: DocumentEventWriterUseCase,
         attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
+        regenerateLivelihoodEventUseCase: RegenerateLivelihoodEventUseCase,
         coreSharedPrefs: CoreSharedPrefs,
         getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 
@@ -894,6 +892,7 @@ class DataLoadingModule {
             documentEventWriterUseCase = documentEventWriterUseCase,
             attendanceEventWriterUseCase = attendanceEventWriterUseCase,
             coreSharedPrefs = coreSharedPrefs,
+            regenerateLivelihoodEventUseCase = regenerateLivelihoodEventUseCase,
             getActivityUiConfigUseCase = getActivityUiConfigUseCase,
         )
     }
@@ -903,11 +902,13 @@ class DataLoadingModule {
     fun fetchDidiDetailsFromNetworkRepository(
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
-        subjectEntityDao: SubjectEntityDao
+        subjectEntityDao: SubjectEntityDao,
+        apiStatusDao: ApiStatusDao
     ): FetchDidiDetailsFromNetworkRepository {
         return FetchDidiDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs, dataLoadingApiService,
-            subjectEntityDao
+            subjectEntityDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -924,12 +925,14 @@ class DataLoadingModule {
     fun provideFetchSmallGroupDetailsFromNetworkRepository(
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
-        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        apiStatusDao: ApiStatusDao
     ): FetchSmallGroupDetailsFromNetworkRepository {
         return FetchSmallGroupDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs,
             dataLoadingApiService,
-            smallGroupDidiMappingDao
+            smallGroupDidiMappingDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -958,14 +961,16 @@ class DataLoadingModule {
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao,
         subjectAttributeDao: SubjectAttributeDao,
-        attributeValueReferenceDao: AttributeValueReferenceDao
+        attributeValueReferenceDao: AttributeValueReferenceDao,
+        apiStatusDao: ApiStatusDao
     ): FetchSmallGroupAttendanceHistoryFromNetworkRepository {
         return FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
             dataLoadingApiService = dataLoadingApiService,
             subjectEntityDao = subjectEntityDao,
             subjectAttributeDao = subjectAttributeDao,
-            attributeValueReferenceDao = attributeValueReferenceDao
+            attributeValueReferenceDao = attributeValueReferenceDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -1464,5 +1469,21 @@ class DataLoadingModule {
             conditionsEntityDao = conditionsEntityDao
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegenerateLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): RegenerateLivelihoodEventUseCase {
+        return RegenerateLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
+            eventWriterRepository = eventWriterRepositoryImpl
+        )
     }
 }

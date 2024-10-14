@@ -1,11 +1,14 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import android.util.Log
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import javax.inject.Inject
@@ -18,6 +21,7 @@ class RegenerateGrantEventUsecase @Inject constructor(
     private val formEventWriterUseCase: FormEventWriterUseCase,
     private val documentEventWriterUseCase: DocumentEventWriterUseCase,
     private val attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
+    private val regenerateLivelihoodEventUseCase: RegenerateLivelihoodEventUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 ) {
@@ -40,6 +44,7 @@ class RegenerateGrantEventUsecase @Inject constructor(
         writeMissionStatusEvent()
         writeActivityStatusEvent()
         writeTaskStatusEvent()
+        writeIncomeExpenseEvent()
         writeSurveyAnswerEvents()
         writeFormUpdateEvent()
         writeDocumentUploadEvent()
@@ -47,20 +52,28 @@ class RegenerateGrantEventUsecase @Inject constructor(
     }
 
     private suspend fun writeAttendanceEvent() {
-        attendanceEventWriterUseCase.invoke()
+        attendanceEventWriterUseCase.invoke(isFromRegenerate = true)
     }
 
     private suspend fun writeMissionStatusEvent() {
 
         regenerateGrantEventRepositoryImpl.getAllMissionsForUser().forEach {
-            matStatusEventWriterUseCase.updateMissionStatus(missionEntity = it, "")
+            matStatusEventWriterUseCase.updateMissionStatus(
+                missionEntity = it,
+                "",
+                isFromRegenerate = true
+            )
         }
     }
 
     private suspend fun writeActivityStatusEvent() {
         regenerateGrantEventRepositoryImpl.getAllActivityForUser().forEach {
 
-            matStatusEventWriterUseCase.updateActivityStatus(activityEntity = it, surveyName = "")
+            matStatusEventWriterUseCase.updateActivityStatus(
+                activityEntity = it,
+                surveyName = "",
+                isFromRegenerate = true
+            )
         }
 
     }
@@ -74,55 +87,61 @@ class RegenerateGrantEventUsecase @Inject constructor(
             matStatusEventWriterUseCase.updateTaskStatus(
                 taskEntity = it,
                 subjectType = subjectType,
-                surveyName = ""
+                surveyName = "",
+                isFromRegenerate = true
             )
 
         }
     }
 
     private suspend fun writeSurveyAnswerEvents() {
-        val surveyAnswers = regenerateGrantEventRepositoryImpl.getAllSurveyAnswerForUSer()
-            .distinctBy { it.referenceId }
-        surveyAnswers.forEach { surveyAnswer ->
-            val taskEntity = regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
-            val questionUiModel = fetchDataUseCase.invoke(
-                surveyId = surveyAnswer.surveyId,
-                sectionId = surveyAnswer.sectionId,
-                subjectId = surveyAnswer.subjectId,
-                referenceId = surveyAnswer.referenceId,
-                activityConfigId = taskEntity.activityId,
-                grantId = surveyAnswer.grantId
-            )
-            val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
-                activityId = taskEntity.activityId,
-                missionId = taskEntity.missionId
-            )
-            val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
-                taskEntity.activityId,
-                taskEntity.missionId
-            )
-            surveyAnswerEventWriterUseCase.invoke(
-                questionUiModels = questionUiModel,
-                taskId = surveyAnswer.taskId,
-                subjectId = surveyAnswer.subjectId,
-                referenceId = surveyAnswer.referenceId,
-                grantId = surveyAnswer.grantId,
-                grantType = surveyAnswer.grantType,
-                taskLocalId = taskEntity.localTaskId,
-                subjectType = subjectType,
-                activityId = activityConfig?.activityId.value(),
-                activityReferenceId = activityConfig?.referenceId,
-                activityReferenceType = activityConfig?.referenceType
-            )
+        try {
+            val surveyAnswers = regenerateGrantEventRepositoryImpl.getAllSurveyAnswerForUSer()
+                .distinctBy { it.referenceId }
+            surveyAnswers.forEach { surveyAnswer ->
+                val taskEntity =
+                    regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
+                val questionUiModel = fetchDataUseCase.invoke(
+                    surveyId = surveyAnswer.surveyId,
+                    sectionId = surveyAnswer.sectionId,
+                    subjectId = surveyAnswer.subjectId,
+                    referenceId = surveyAnswer.referenceId,
+                    activityConfigId = taskEntity?.activityId ?: -1,
+                    grantId = surveyAnswer.grantId
+                )
+                val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
+                    activityId = taskEntity?.activityId ?: -1,
+                    missionId = taskEntity?.missionId ?: -1
+                )
+                val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
+                    taskEntity!!.activityId,
+                    taskEntity.missionId
+                )
+                surveyAnswerEventWriterUseCase.invoke(
+                    questionUiModels = questionUiModel,
+                    taskId = surveyAnswer.taskId,
+                    subjectId = surveyAnswer.subjectId,
+                    referenceId = surveyAnswer.referenceId,
+                    grantId = surveyAnswer.grantId,
+                    grantType = surveyAnswer.grantType,
+                    taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                    subjectType = subjectType,
+                    isFromRegenerate = true,
+                    activityId = activityConfig?.activityId.value(),
+                    activityReferenceId = activityConfig?.referenceId,
+                    activityReferenceType = activityConfig?.referenceType
+                )
 
+            }
+        } catch (exception: Exception) {
+            Log.e("Regenerate", exception.localizedMessage)
         }
-
 
     }
 
     private suspend fun writeFormUpdateEvent() {
         regenerateGrantEventRepositoryImpl.getAllFormData().forEach {
-            formEventWriterUseCase.writeFormEvent("", it)
+            formEventWriterUseCase.writeFormEvent("", it, isFromRegenerate = true)
 
         }
     }
@@ -136,10 +155,15 @@ class RegenerateGrantEventUsecase @Inject constructor(
                     generatedDate = document.generateDate.toString(),
                     documentType = document.documentType,
                     documentName = getFileNameFromURL(it),
-                    activityId = document.activityId
+                    activityId = document.activityId,
+                    isFromRegenerate = true
                 )
             }
         }
+    }
+
+    private suspend fun writeIncomeExpenseEvent() {
+        regenerateLivelihoodEventUseCase.invoke()
     }
 
 }

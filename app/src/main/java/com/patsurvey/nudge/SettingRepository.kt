@@ -42,13 +42,17 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.request.getAddDidiRequestPayloadFromString
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.FOR_VO_ENDORSEMENT_VALUE
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY_STEP_ID
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.WEALTH_RANKING_STEP_ID
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.getPatScoreSaveEvent
@@ -218,19 +222,55 @@ class SettingRepository @Inject constructor(
     }
 
     private suspend fun generateRankingEditEvent(villageId: Int) {
-        stepsListDao.getAllStepsForVillage(villageId).forEach {
-            val event = createRankingFlagEditEvent(
-                it,
-                it.villageId,
-                stepType = StepType.getStepTypeFromId(it.id).name,
-                prefRepo.getMobileNumber() ?: BLANK_STRING,
-                prefRepo.getUserId()
-            )
 
-            saveEventToMultipleSources(event, listOf())
+
+        stepsListDao.getAllStepsForVillage(villageId).forEach {
+            if (rankingEditStepsId.contains(it.id)) {
+
+
+                val didiEntity = when (StepType.getStepTypeFromId(it.id).name) {
+                    StepType.WEALTH_RANKING.name -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                    }
+
+                    StepType.PAT_SURVEY.name -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                            .filter { it.wealth_ranking == WealthRank.POOR.rank }
+                    }
+
+                    StepType.VO_ENDROSEMENT.name -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                            .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE }
+                    }
+
+                    else -> {
+                        didiDao.getAllDidisForVillage(villageId)
+                    }
+                }
+
+                val tolaDeviceIdMap = getTolaDeviceIdMap(villageId = villageId, tolaDao = tolaDao)
+
+                val eventList = createRankingFlagEditEvent(
+                    eventItem = it,
+                    villageId = villageId,
+                    stepType = StepType.getStepTypeFromId(it.id).name,
+                    didiList = didiEntity,
+                    tolaDeviceIdMap = tolaDeviceIdMap,
+                    mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                    userID = prefRepo.getUserId()
+                )
+
+                eventList.forEach { event ->
+                    saveEventToMultipleSources(event, listOf())
+                }
+
+            }
 
         }
     }
+
+    private val rankingEditStepsId =
+        listOf<Int>(WEALTH_RANKING_STEP_ID, PAT_SURVEY_STEP_ID, WEALTH_RANKING_STEP_ID)
 
     private suspend fun generateWorkFlowStatusEvent(villageId: Int) {
         stepsListDao.getAllStepsForVillage(villageId).forEach {

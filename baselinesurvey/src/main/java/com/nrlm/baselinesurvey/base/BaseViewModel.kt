@@ -32,7 +32,10 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -42,6 +45,20 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 abstract class BaseViewModel() : ViewModel() {
+
+    val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+
+    fun ViewModel.ioViewModelScope(
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        viewModelScope.launch(context = ioDispatcher, start = start) {
+            block()
+        }
+    }
+
     abstract fun <T> onEvent(event: T)
 
     open fun updateQuestionStateForCondition(
@@ -265,5 +282,7 @@ abstract class BaseViewModel() : ViewModel() {
             updateLoaderEvent()
         }
     }
+
+
 }
 

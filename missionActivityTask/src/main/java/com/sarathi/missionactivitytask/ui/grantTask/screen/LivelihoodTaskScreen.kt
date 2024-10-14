@@ -31,6 +31,7 @@ fun LivelihoodTaskScreen(
     missionId: Int,
     activityName: String,
     activityId: Int,
+    programId: Int,
     onSettingClick: () -> Unit
 ) {
 
@@ -57,7 +58,8 @@ fun LivelihoodTaskScreen(
         },
         taskScreenContentForGroup = { groupKey, _, _ ->
             livelihoodTaskScreenContentForGroup(groupKey, viewModel, navController)
-        }
+        },
+        programId = programId
 
     )
 }

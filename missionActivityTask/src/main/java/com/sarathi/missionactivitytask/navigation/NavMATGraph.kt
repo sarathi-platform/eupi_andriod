@@ -43,6 +43,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MA
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_PROGRAM_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SANCTIONED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
@@ -121,7 +122,8 @@ fun NavGraphBuilder.MatNavigation(
                         navController,
                         missionName = mission.description,
                         missionId = mission.missionId,
-                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
+                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name,
+                        programId = mission.programId
                     )
                 }
             }
@@ -136,6 +138,9 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_MISSION_COMPLETED) {
                     type = NavType.BoolType
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
                 })
         ) {
             ActivityScreen(
@@ -150,6 +155,9 @@ fun NavGraphBuilder.MatNavigation(
                 isMissionCompleted = it.arguments?.getBoolean(
                     ARG_MISSION_COMPLETED
                 ) ?: false,
+                programId = it.arguments?.getInt(
+                    ARG_PROGRAM_ID
+                ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -163,7 +171,11 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                }
+            )
         ) {
             GrantTaskScreen(
                 navController = navController,
@@ -177,6 +189,9 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+                programId = it.arguments?.getInt(
+                    ARG_PROGRAM_ID
+                ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -191,6 +206,9 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
                 },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                }
             )
         ) {
           LivelihoodTaskScreen(
@@ -205,6 +223,9 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+              programId = it.arguments?.getInt(
+                  ARG_PROGRAM_ID
+              ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -219,7 +240,11 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                }
+            )
         ) {
             SurveyTaskScreen(
                 navController = navController,
@@ -233,6 +258,9 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+                programId = it.arguments?.getInt(
+                    ARG_PROGRAM_ID
+                ) ?: 0,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -849,7 +877,11 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
-                })
+                },
+                navArgument(name = ARG_PROGRAM_ID) {
+                    type = NavType.IntType
+                },
+                )
         ) {
             ActivitySelectTaskScreen(
                 navController = navController,
@@ -863,7 +895,8 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
-                onSettingClick = onSettingIconClick
+                onSettingClick = onSettingIconClick,
+                programId = it.arguments?.getInt(ARG_PROGRAM_ID).value()
             )
         }
     }
@@ -1172,9 +1205,10 @@ fun navigateToActivityScreen(
     navController: NavController,
     missionId: Int,
     missionName: String,
-    isMissionCompleted: Boolean
+    isMissionCompleted: Boolean,
+    programId: Int
 ) {
-    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted")
+    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted/$programId")
 }
 
 fun navigateToAddImageScreen(
@@ -1192,35 +1226,39 @@ fun navigateToGrantTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
 fun navigateToLivelihoodTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
 
 fun navigateToSurveyTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
 
 fun navigateToActivitySelectTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
-    activityName: String
+    activityName: String,
+    programId: Int
 ) {
-    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
+    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
 
 fun navigateToFormQuestionScreen(

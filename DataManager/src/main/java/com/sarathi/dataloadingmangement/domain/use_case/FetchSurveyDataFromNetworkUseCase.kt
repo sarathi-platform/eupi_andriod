@@ -17,9 +17,10 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     private val sharedPrefs: CoreSharedPrefs,
     private val activityConfigDao: ActivityConfigDao,
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(missionId: Int): Boolean {
         try {
-            activityConfigDao.getSurveyIds().forEach { surveyId ->
+            activityConfigDao.getSurveyIds(missionId, sharedPrefs.getUniqueUserIdentifier())
+                .forEach { surveyId ->
                 callSurveyApi(
                         SurveyRequest(
                             referenceId = getReferenceId(),

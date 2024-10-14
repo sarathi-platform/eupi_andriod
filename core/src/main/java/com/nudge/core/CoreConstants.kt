@@ -16,6 +16,7 @@ const val NO_TOLA_TITLE = "NO TOLA"
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
+const val APP_CONFIG_TABLE = "app_config"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -89,9 +90,12 @@ const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
 const val DD_mmm_YY_FORMAT = "dd MMM, yy"
 const val DD_mmm_hh_mm_FORMAT = "dd MMM, hh:mm"
+const val DD_mmm_hh_mm_a_FORMAT = "dd MMM, hh:mm a"
 const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
+
+const val BASELINE_MISSION_NAME = "Baseline"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
@@ -111,9 +115,15 @@ const val MAXIMUM_RANGE_LENGTH = 10
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
 
+const val DEFAULT_SUCCESS_CODE = 200
+const val DEFAULT_ERROR_CODE = 500
 
 const val MAX_CELL_COUNT_FOR_SELECT_ACTIVITY = 2
 const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
+
+const val NOT_DECIDED_LIVELIHOOD_ID = -1
+const val CORE_DATABASE = "CoreDatabase"
+const val CORE_DB_VERSION = 1
 
 const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1

@@ -9,4 +9,5 @@ sealed class InitDataEvent {
     data class InitEditHistoryState(val transactionId: String) : InitDataEvent()
     data class InitDataStateWithCallBack(val callBack: () -> Unit) : InitDataEvent()
     object InitFormQuestionScreenState : InitDataEvent()
+    data class InitActivityListState(val missionId: Int) : InitDataEvent()
 }

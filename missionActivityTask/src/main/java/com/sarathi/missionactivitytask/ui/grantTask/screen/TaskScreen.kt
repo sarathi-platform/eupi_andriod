@@ -99,6 +99,7 @@ const val TAG = "TaskScreen"
 fun TaskScreen(
     navController: NavController,
     viewModel: TaskScreenViewModel,
+    programId: Int,
     missionId: Int,
     activityName: String,
     activityId: Int,
@@ -134,7 +135,7 @@ fun TaskScreen(
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(taskList?.size) {
-        viewModel.setMissionActivityId(missionId, activityId)
+        viewModel.setMissionActivityId(missionId, activityId, programId)
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
 
@@ -316,7 +317,7 @@ fun TaskScreen(
                                     if (viewModel.filterList.value.isNotEmpty() && viewModel.questionUiModel.value.isNotEmpty()) {
                                         viewModel.filterList.value.keys.let {
                                             val questionTitle =
-                                                viewModel.questionUiModel.value[it.first()]?.display.value()
+                                                viewModel.questionUiModel.value[it.first()]?.questionDisplay.value()
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()

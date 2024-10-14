@@ -15,7 +15,7 @@ interface IRegenerateGrantEventRepository {
     suspend fun getAllSurveyAnswerForUSer(): List<SurveyAnswerEntity>
     suspend fun getAllFormData(): List<FormEntity>
     suspend fun getDocumentData(): List<DocumentEntity>
-    suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity
+    suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity?
 
 
 }

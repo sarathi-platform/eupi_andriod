@@ -16,8 +16,8 @@ data class LivelihoodLanguageReferenceEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int = 0,
-    @ColumnInfo(name = "livelihoodId")
-    var livelihoodId: Int,
+    @ColumnInfo(name = "referenceId")
+    var referenceId: Int,
     @ColumnInfo(name = "referenceType")
     var referenceType: String,
     @ColumnInfo(name = "languageCode")
@@ -35,7 +35,7 @@ data class LivelihoodLanguageReferenceEntity(
         ): LivelihoodLanguageReferenceEntity {
             return LivelihoodLanguageReferenceEntity(
                 id = 0,
-                livelihoodId = languageReference.id ?: 0,
+                referenceId = languageReference.id ?: 0,
                 userId = uniqueUserIdentifier,
                 languageCode = languageReference.languageCode ?: BLANK_STRING,
                 name = languageReference.name ?: BLANK_STRING,

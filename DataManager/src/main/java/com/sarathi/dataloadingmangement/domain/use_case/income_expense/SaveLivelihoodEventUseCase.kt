@@ -13,9 +13,18 @@ class SaveLivelihoodEventUseCase @Inject constructor(
     private val subjectLivelihoodEventMappingRepository: ISubjectLivelihoodEventMapping
 ) {
 
-    suspend fun addOrEditEvent(eventData: LivelihoodEventScreenData, particular: String) {
+    suspend fun addOrEditEvent(
+        eventData: LivelihoodEventScreenData,
+        particular: String,
+        createdDate: Long,
+        modifiedDate: Long
+    ) {
 
-        subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(eventData)
+        subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
+            eventData,
+            currentDateTime = createdDate,
+            modifiedDateTime = modifiedDate
+        )
 
         assetJournalRepository.softDeleteAssetJournalEvent(
             eventData.transactionId,
@@ -28,13 +37,16 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
             assetJournalRepository.saveOrEditAssetJournal(
                 particular = particular,
-                eventData = eventData
+                eventData = eventData,
+                createdDate = createdDate
+
             )
         }
         eventData.selectedEvent.moneyJournalEntryFlowType?.let {
             moneyJournalRepo.saveAndUpdateMoneyJournalTransaction(
                 particular = particular,
-                eventData = eventData
+                eventData = eventData,
+                createdData = createdDate
             )
         }
 
@@ -43,9 +55,14 @@ class SaveLivelihoodEventUseCase @Inject constructor(
     suspend fun deleteLivelihoodEvent(
         transactionId: String,
         subjectId: Int,
-        selectedEvent: LivelihoodEventTypeDataCaptureMapping
+        selectedEvent: LivelihoodEventTypeDataCaptureMapping,
+        modifiedDate: Long
     ) {
-        subjectLivelihoodEventMappingRepository.softDeleteLivelihoodEvent(transactionId, subjectId)
+        subjectLivelihoodEventMappingRepository.softDeleteLivelihoodEvent(
+            transactionId,
+            subjectId,
+            modifiedDateTime = modifiedDate
+        )
         selectedEvent.assetJournalEntryFlowType?.let {
             assetJournalRepository.softDeleteAssetJournalEvent(
                 subjectId = subjectId,

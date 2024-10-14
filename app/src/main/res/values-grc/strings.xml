@@ -7,6 +7,7 @@
     <string name="bangla">হিন্দি</string>
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+    <string name="location_not_enable">Location not enabled.</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi ko ondapaha</item>
@@ -515,6 +516,10 @@
     <string name="section_information_tab_title">Section ni gimin uiatanirang</string>
     <string name="shg_member_text">1. SHG member</string>
     <string name="able_bodied_women_text">2. Able-bodied women</string>
+    <string name="mark_activity_in_progress">Mark Activity In Progress</string>
+    <string name="select_mission">Select Mission</string>
+    <string name="select_activity_for">"Select Activity for "</string>
+    <string name="select_all">Select All</string>
 
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->
