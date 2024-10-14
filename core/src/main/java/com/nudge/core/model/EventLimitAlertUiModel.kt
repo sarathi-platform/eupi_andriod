@@ -12,8 +12,8 @@ data class EventLimitAlertUiModel(
     companion object {
 
         fun getDefaultEventLimitAlertUiModel(
-            alertTitle: String = "Warning",
-            alertMessage: String = "Sync pending data now to stay up-to-date!",
+            alertTitle: String,
+            alertMessage: String,
             alertIcon: Int = R.drawable.baseline_warning_amber_24
         ): EventLimitAlertUiModel {
             return EventLimitAlertUiModel(
@@ -24,8 +24,8 @@ data class EventLimitAlertUiModel(
         }
 
         fun getHardEventLimitAlertUiModel(
-            alertTitle: String = "Alert",
-            alertMessage: String = "Sync now to prevent data loss!",
+            alertTitle: String,
+            alertMessage: String,
             alertIcon: Int = R.drawable.baseline_warning_24
         ): EventLimitAlertUiModel {
             return getDefaultEventLimitAlertUiModel(alertTitle, alertMessage, alertIcon)

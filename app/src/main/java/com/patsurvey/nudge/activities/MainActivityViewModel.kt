@@ -128,11 +128,17 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun showSoftLimitAlert(): EventLimitAlertUiModel {
-        return EventLimitAlertUiModel.getDefaultEventLimitAlertUiModel()
+    fun showSoftLimitAlert(title: String, message: String): EventLimitAlertUiModel {
+        return EventLimitAlertUiModel.getDefaultEventLimitAlertUiModel(
+            alertTitle = title,
+            alertMessage = message
+        )
     }
 
-    fun showHardLimitAlert(): EventLimitAlertUiModel {
-        return EventLimitAlertUiModel.getHardEventLimitAlertUiModel()
+    fun showHardLimitAlert(title: String, message: String): EventLimitAlertUiModel {
+        return EventLimitAlertUiModel.getHardEventLimitAlertUiModel(
+            alertTitle = title,
+            alertMessage = message
+        )
     }
 }

@@ -55,9 +55,7 @@ import com.patsurvey.nudge.utils.QUESTION_IMAGE_LINK_KEY
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -109,6 +107,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 val onlineStatus = remember { mutableStateOf(false) }
 
                 val notificationHandler: NotificationHandler = NotificationHandler(context = this)
+
+                val localContext = LocalContext.current
 
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -162,11 +162,17 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 }
 
                 LaunchedEffect(Unit) {
-                    delay(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES))
+                    // TODO move this code to Mission and Village screens.
+//                    delay(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES))
 
                     mViewModel.onEvent(CommonEvents.CheckEventLimitThreshold { result ->
                         if (result == SyncAlertType.SOFT_ALERT) {
-                            notificationHandler?.createSoftAlertNotification(mViewModel.showSoftLimitAlert())
+                            notificationHandler?.createSoftAlertNotification(
+                                mViewModel.showSoftLimitAlert(
+                                    title = localContext.getString(R.string.warning_text),
+                                    message = localContext.getString(R.string.notification_alert_message)
+                                )
+                            )
                         }
 
                         if (result == SyncAlertType.HARD_ALERT) {
@@ -201,7 +207,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 }
 
                 if (mViewModel.showHardEventLimitAlert.value.showDialog) {
-                    val alertModel = mViewModel.showHardLimitAlert()
+                    val alertModel = mViewModel.showHardLimitAlert(
+                        title = localContext.getString(R.string.alert_dialog_title_text),
+                        message = localContext.getString(R.string.hard_threshold_alert_message)
+                    )
                     ShowCustomDialog(
                         title = alertModel.alertTitle,
                         message = alertModel.alertMessage,
