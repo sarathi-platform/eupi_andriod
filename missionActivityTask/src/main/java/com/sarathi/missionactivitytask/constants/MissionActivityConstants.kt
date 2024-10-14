@@ -28,6 +28,7 @@ object MissionActivityConstants {
     const val LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME = "livelihood_task_screen"
 
     const val LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME = "livelihood_dropdown_screen"
+    const val FORM_QUESTION_SCREEN_ROUTE_NAME = "form_question_screen"
 
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"
@@ -59,5 +60,7 @@ object MissionActivityConstants {
     const val ARG_FORM_PATH = "form_path"
     const val ARG_MAT_ID = "mat_id"
     const val ARG_CONTENT_SCREEN_CATEGORY = "content_screen_category"
+    const val ARG_QUESTION_ID = "question_id"
+    const val ARG_FORM_ID = "form_id"
 
 }
