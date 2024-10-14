@@ -447,7 +447,7 @@ class AddEventViewModel @Inject constructor(
 
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
                     validation =
-                        selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
+                        selectedValidations.find { it.productType == selectedProduct?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
 
                     validateExpression(
                         validation,
