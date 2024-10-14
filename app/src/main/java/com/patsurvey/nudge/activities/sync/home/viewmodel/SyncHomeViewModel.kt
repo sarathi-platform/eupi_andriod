@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.sync.home.viewmodel
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.CountDownTimer
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.compose.runtime.State
@@ -42,6 +43,7 @@ import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.ConnectionMonitorV2
@@ -51,7 +53,6 @@ import com.patsurvey.nudge.utils.roundOffDecimalFloat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -86,6 +87,8 @@ class SyncHomeViewModel @Inject constructor(
     val isSyncImageActive = mutableStateOf(false)
     val isSyncDataFirstDialog = mutableStateOf(false)
     var isPullToRefreshVisible= mutableStateOf(false)
+    var clickCount =   0
+    var timerRunning = false
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -159,6 +162,38 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
+    val timer =
+        object : CountDownTimer(5000, 500) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                clickCount = 0
+                timerRunning = false
+            }
+
+        }
+    @SuppressLint("SuspiciousIndentation")
+    fun onLastSyncTimeClick(showToastMsgResId:(Int)->Unit){
+        if (!timerRunning) {
+            timer.start()
+            timerRunning = true
+        }
+        clickCount++
+        if (clickCount ==5) {
+            if (isSyncStarted.value) {
+                isDataPBVisible.value = false
+              isImagePBVisible.value = false
+                cancelSyncUploadWorker()
+            showToastMsgResId(R.string.sync_worker_cancelled)
+            }
+            else{
+                showToastMsgResId(R.string.sync_already_cancelled)
+            }
+            clickCount = 0
+            timer.cancel()
+            timerRunning = false
+        }
+    }
     fun calculateBarProgress(totalEventCount: Int, successEventCount: Int, type: String): Float {
         CoreLogger.d(
             CoreAppDetails.getApplicationContext(),
