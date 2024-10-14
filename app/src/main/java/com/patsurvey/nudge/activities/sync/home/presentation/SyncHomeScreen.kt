@@ -373,14 +373,6 @@ fun BottomContent(
 
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (viewModel.failedEventList.value.isNotEmpty()) {
-//                            Text(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(dimen_5_dp),
-//                                text = stringResource(id = R.string.sync_failed_message),
-//                                style = smallTextStyle,
-//                                color = textColorDark
-//                            )
                             ButtonPositive(
                                 modifier = Modifier.wrapContentHeight(),
                                 buttonTitle = stringResource(id = R.string.export_failed_event),
