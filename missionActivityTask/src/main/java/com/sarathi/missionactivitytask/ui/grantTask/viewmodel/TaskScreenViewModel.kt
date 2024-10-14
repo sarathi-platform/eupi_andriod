@@ -44,6 +44,7 @@ import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.missionactivitytask.utils.toHashMap
+import com.sarathi.missionactivitytask.utils.toLinkedHashMap
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -75,8 +76,8 @@ open class TaskScreenViewModel @Inject constructor(
         mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
     val taskList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _taskList
     private val _filterList =
-        mutableStateOf<HashMap<Int, HashMap<String, TaskCardModel>>>(hashMapOf())
-    val filterList: State<HashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
+        mutableStateOf<LinkedHashMap<Int, HashMap<String, TaskCardModel>>>(linkedMapOf())
+    val filterList: State<LinkedHashMap<Int, HashMap<String, TaskCardModel>>> get() = _filterList
 
     internal val _questionUiModel = mutableStateOf<HashMap<Int, QuestionUiModel>>(hashMapOf())
     val questionUiModel: State<HashMap<Int, QuestionUiModel>> get() = _questionUiModel
@@ -181,9 +182,10 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun updateListForAllFilter() {
         filterTaskMap =
-            taskList.value.entries
+            taskList.value.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
-        _filterList.value = taskList.value
+        _filterList.value = taskList.value.toList()
+            .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }.toMap().toLinkedHashMap()
     }
 
     private fun updateListForSelectedFilter() {
@@ -197,7 +199,8 @@ open class TaskScreenViewModel @Inject constructor(
                 )
             }.toHashMap()
         filterTaskMap =
-            tempFilterTaskMap.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+            tempFilterTaskMap.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
+                .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
         val tempFilterList = sortedList.filter {
             it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
@@ -205,7 +208,9 @@ open class TaskScreenViewModel @Inject constructor(
             )
         }
         _filterList.value =
-            tempFilterList.toHashMap()
+            tempFilterList.toList()
+                .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }
+                .toMap().toLinkedHashMap()
     }
 
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
@@ -282,14 +287,17 @@ open class TaskScreenViewModel @Inject constructor(
 
             }
 
-            var _filterListt = _taskList.value
+            var _filterListt = _taskList.value.toList()
+                .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }
+                .toMap().toLinkedHashMap()
             updateValueInMainThread(
                 _filterList,
                 _filterListt
             )
 
             filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                _taskList.value.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
+                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
             if (filterTaskMap.isNotEmpty())
                 expandFirstNotStartedItem()
@@ -466,9 +474,12 @@ open class TaskScreenViewModel @Inject constructor(
         }
         if (isGroupingApplied) {
             filterTaskMap =
-                finalFilteredList.entries.groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
+                finalFilteredList.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
+                    .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
         } else {
-            _filterList.value = finalFilteredList
+            _filterList.value = finalFilteredList.toList()
+                .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }
+                .toMap().toLinkedHashMap()
         }
     }
 

@@ -547,4 +547,6 @@
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">Select Activity for </string>
     <string name="select_all">Select All</string>
+    <string name="refresh_config">Refresh app config</string>
+
 </resources>

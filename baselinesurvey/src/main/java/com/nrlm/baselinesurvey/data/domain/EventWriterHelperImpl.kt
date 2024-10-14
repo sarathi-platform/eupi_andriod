@@ -718,30 +718,36 @@ class EventWriterHelperImpl @Inject constructor(
                         )
 
                         if (pendingCount > 0) {
+                            var currentActivityStatus=  baselineDatabase.missionActivityEntityDao().getActivity(userId =getBaseLineUserId() , missionId = missionEntity.missionId, activityId = it.activityId).status
+                            if (currentActivityStatus !=SurveyState.INPROGRESS.name) {
+                                baselineDatabase.missionActivityEntityDao().updateActivityStatus(
+                                    userId = getBaseLineUserId(),
+                                    missionId = missionEntity.missionId,
+                                    activityId = it.activityId,
+                                    status = SurveyState.INPROGRESS.name
+                                )
+                                saveActivityStatusEvent(
+                                    missionId = it.missionId,
+                                    activityId = it.activityId,
+                                    activityStatus = SurveyState.INPROGRESS.ordinal
+                                )
+                            }
+                        }
+                    } else {
+                        var currentActivityStatus=  baselineDatabase.missionActivityEntityDao().getActivity(userId =getBaseLineUserId() , missionId = missionEntity.missionId, activityId = it.activityId).status
+                        if (currentActivityStatus !=SurveyState.COMPLETED.name) {
                             baselineDatabase.missionActivityEntityDao().updateActivityStatus(
                                 userId = getBaseLineUserId(),
-                                missionId = missionEntity.missionId,
                                 activityId = it.activityId,
-                                status = SurveyState.INPROGRESS.name
+                                missionId = missionEntity.missionId,
+                                status = SurveyState.COMPLETED.name
                             )
                             saveActivityStatusEvent(
                                 missionId = it.missionId,
                                 activityId = it.activityId,
-                                activityStatus = SurveyState.INPROGRESS.ordinal
+                                activityStatus = SurveyState.COMPLETED.ordinal
                             )
                         }
-                    } else {
-                        baselineDatabase.missionActivityEntityDao().updateActivityStatus(
-                            userId = getBaseLineUserId(),
-                            activityId = it.activityId,
-                            missionId = missionEntity.missionId,
-                            status = SurveyState.COMPLETED.name
-                        )
-                        saveActivityStatusEvent(
-                            missionId = it.missionId,
-                            activityId = it.activityId,
-                            activityStatus = SurveyState.COMPLETED.ordinal
-                        )
                     }
                 }
             val totalActivityCount = baselineDatabase.missionActivityEntityDao()
@@ -750,27 +756,35 @@ class EventWriterHelperImpl @Inject constructor(
             if (totalActivityCount > 0) {
                 val pendingActivityCount = baselineDatabase.missionActivityEntityDao()
                     .getPendingActivity(getBaseLineUserId(), missionId = missionEntity.missionId)
+
+
                 if (pendingActivityCount > 0) {
+             var currentMissionStatus=  baselineDatabase.missionEntityDao().getMission(userId =getBaseLineUserId() ,missionEntity.missionId).status
+                    if (currentMissionStatus !=SurveyState.INPROGRESS.name) {
+                        missionEntityDao.updateMissionStatus(
+                            userId = getBaseLineUserId(),
+                            missionId = missionEntity.missionId,
+                            status = SurveyState.INPROGRESS.name
+                        )
+                        saveMissionStatusEvent(
+                            missionStatus = SurveyState.INPROGRESS.ordinal,
+                            missionId = missionEntity.missionId
+                        )
+                    }
+                }
+            } else {
+                var currentMissionStatus=  baselineDatabase.missionEntityDao().getMission(userId =getBaseLineUserId() ,missionEntity.missionId).status
+                if (currentMissionStatus !=SurveyState.COMPLETED.name) {
                     missionEntityDao.updateMissionStatus(
                         userId = getBaseLineUserId(),
                         missionId = missionEntity.missionId,
-                        status = SurveyState.INPROGRESS.name
+                        status = SurveyState.COMPLETED.name
                     )
                     saveMissionStatusEvent(
-                        missionStatus = SurveyState.INPROGRESS.ordinal,
+                        missionStatus = SurveyState.COMPLETED.ordinal,
                         missionId = missionEntity.missionId
                     )
                 }
-            } else {
-                missionEntityDao.updateMissionStatus(
-                    userId = getBaseLineUserId(),
-                    missionId = missionEntity.missionId,
-                    status = SurveyState.COMPLETED.name
-                )
-                saveMissionStatusEvent(
-                    missionStatus = SurveyState.COMPLETED.ordinal,
-                    missionId = missionEntity.missionId
-                )
             }
         }
     }
