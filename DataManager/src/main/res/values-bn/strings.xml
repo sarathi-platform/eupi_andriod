@@ -98,6 +98,5 @@
     <string name="search_didi">দিদি সার্চ করুন</string>
     <string name="search_by_small_groups">ছোট গ্রুপ দ্বারা সার্চ করুন</string>
     <string name="total_didis">মোট দিদি - %1$s</string>
-    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">যেহেতু আপনি সমস্ত কাজ সম্পন্ন করেছেন, অনুগ্রহ করে কার্যকলাপটি সম্পূর্ণ করুন।</string>
-    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*কার্যকলাপ সম্পূর্ণ করার পরে, আপনি ডাটা এডিট করতে করতে পারবেন না।</string>
+
 </resources>

@@ -512,7 +512,5 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form E</string>
-    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Nini thangthai samung paikha ba, tangmung pai ridi.</string>
-    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*Tangmung paimani yagulo, nwng tai kisisa phano swlai wi manya.</string>
 
 </resources>
