@@ -51,6 +51,7 @@ import com.nudge.core.network.ApiException.NullResponse
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
+import com.nudge.core.value
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
@@ -74,6 +75,11 @@ class SyncUploadWorker @AssistedInject constructor(
     private var batchLimit = BATCH_DEFAULT_LIMIT
     private var retryCount = RETRY_DEFAULT_COUNT
     private var connectionQuality = ConnectionQuality.UNKNOWN
+
+    private var isBlobImageUploadEnable = false
+    var preSelectionContainerName = BLANK_STRING
+    var postSelectionContainerName = BLANK_STRING
+    var azureConnectionString = BLANK_STRING
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
@@ -81,16 +87,14 @@ class SyncUploadWorker @AssistedInject constructor(
             connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             batchLimit =
                 syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_BATCH_SIZE.name)
-                    .toInt()
+                    .toIntOrNull().value(BATCH_DEFAULT_LIMIT)
             retryCount =
                 syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_RETRY_COUNT.name)
-                    .toInt()
-            val isBlobImageUploadEnable =
+                    .toIntOrNull().value(RETRY_DEFAULT_COUNT)
+            isBlobImageUploadEnable =
                 syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.BLOB_IMAGE_UPLOAD_ENABLED.name)
                     .toBoolean()
-            var preSelectionContainerName = BLANK_STRING
-            var postSelectionContainerName = BLANK_STRING
-            var azureConnectionString = BLANK_STRING
+
             if (isBlobImageUploadEnable) {
                 azureConnectionString =
                     syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.ENCODED_KEY.name)
@@ -339,8 +343,6 @@ class SyncUploadWorker @AssistedInject constructor(
         val syncType = SyncType.SYNC_ONLY_IMAGES.ordinal
         var totalPendingImageEventCount =
             syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(syncType)
-        val isBlobSyncEnabled =
-            syncManagerUseCase.syncBlobUploadUseCase.isSyncImageBlobUploadEnable()
 
         while (totalPendingImageEventCount > 0) {
 
@@ -368,8 +370,13 @@ class SyncUploadWorker @AssistedInject constructor(
                     break
                 }
 
-                if (isBlobSyncEnabled) {
-                    findImageEventAndImage(imageEventList) { response ->
+                if (isBlobImageUploadEnable) {
+                    findImageEventAndImage(
+                        imageEventList = imageEventList,
+                        postSelectionContainerName = postSelectionContainerName,
+                        selectionContainerName = preSelectionContainerName,
+                        blobConnectionUrl = azureConnectionString
+                    ) { response ->
                         totalPendingImageEventCount =
                             handleAPIResponse(
                                 response,
