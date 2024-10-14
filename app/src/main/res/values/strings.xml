@@ -360,7 +360,7 @@
         <item quantity="one">CLF Endorsement completed</item>
         <item quantity="other">VO Endorsement completed</item>
     </plurals>
-
+    <string name="do_you_want_to_exit">Do you realy want to exit?.</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
     <string name="bpc_verification_in_progress_village_banner_text">BPC Verification In Progress</string>
 
@@ -564,6 +564,8 @@
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">Select Activity for </string>
     <string name="select_all">Select All</string>
+    <string name="refresh_config">Refresh app config</string>
+
     <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>

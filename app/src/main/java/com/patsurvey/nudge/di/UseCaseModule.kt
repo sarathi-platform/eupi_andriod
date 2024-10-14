@@ -17,6 +17,7 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
@@ -278,7 +279,8 @@ object UseCaseModule {
         repository: SyncRepository,
         syncAPiRepository: SyncApiRepository,
         syncBlobRepository: SyncBlobRepository,
-        analyticsManager: AnalyticsManager
+        analyticsManager: AnalyticsManager,
+        fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
             addUpdateEventUseCase = AddUpdateEventUseCase(repository),
@@ -288,7 +290,8 @@ object UseCaseModule {
             syncBlobUploadUseCase = BlobUploadUseCase(syncBlobRepository),
             syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
                 analyticsManager = analyticsManager
-            )
+            ),
+            fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
         )
     }
 

@@ -33,7 +33,6 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.enums.SyncAlertType
-import com.nudge.core.getRemoteConfig
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.notifications.NotificationHandler
 import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
@@ -104,7 +103,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             )
         )
         CoreObserverManager.addObserver(this)
-        getRemoteConfig(this)
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()

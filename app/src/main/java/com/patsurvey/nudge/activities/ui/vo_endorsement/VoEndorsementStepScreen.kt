@@ -25,11 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.NudgeLogger
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -54,7 +58,8 @@ fun VoEndorsementStepScreen(
             ConstraintLayout(
                 modifier = Modifier
                     .background(Color.White)
-                    .fillMaxSize().padding(top = 16.dp)
+                    .fillMaxSize()
+                    .padding(top = 16.dp)
                     .border(
                         width = 0.dp,
                         color = Color.Transparent,
@@ -90,6 +95,20 @@ fun VoEndorsementStepScreen(
                                 },
                                 modifier = Modifier.padding(top = 32.dp)
                             )
+                            Box(
+                                modifier = Modifier.padding(
+                                    horizontal = dimen_16_dp,
+                                    vertical = dimen_50_dp
+                                )
+                            ) {
+                                ButtonPositive(
+                                    buttonTitle = stringResource(id = R.string.next),
+                                    onClick = {
+                                        NudgeLogger.d("VoEndorsementScreen", "Next Button Clicked")
+                                        val stepStatus = false
+                                        navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
+                                    })
+                            }
                         }
                     }
                 }
