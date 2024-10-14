@@ -56,10 +56,11 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_TABLE
@@ -68,6 +69,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LI
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MONEY_JOUNRAL_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_PRODUCT_CONFIG_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SECTION_STATUS_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
@@ -268,7 +270,9 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID,
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE,
                         ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
-                        ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
+                        ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE,
+                        CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE,
+                        CREATE_CONDITIONS_TABLE
                     )
                 )
             }

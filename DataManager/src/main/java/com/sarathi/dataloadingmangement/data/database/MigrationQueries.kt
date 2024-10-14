@@ -135,5 +135,28 @@ object MigrationQueries {
 
     val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE =
         "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceType' TEXT"
+
+
+    val CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE =
+        "CREATE TABLE source_target_question_mapping_table_new (\n" +
+                "                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "                userId TEXT NOT NULL,\n" +
+                "                surveyId INTEGER NOT NULL,\n" +
+                "                sectionId INTEGER NOT NULL,\n" +
+                "                sourceQuestionId INTEGER NOT NULL,\n" +
+                "                targetQuestionId INTEGER NOT NULL,\n" +
+                "                conditionOperator TEXT,\n" +
+                "                createdAt INTEGER \n" +
+                "            )"
+
+    val CREATE_CONDITIONS_TABLE =
+        "CREATE TABLE conditions_table_new (\n" +
+                "                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "                userId TEXT,\n" +
+                "                sourceTargetQuestionRefId INTEGER NOT NULL,\n" +
+                "                conditions TEXT NOT NULL,\n" +
+                "                createdAt INTEGER\n" +
+                "            )"
+
 }
 
