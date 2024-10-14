@@ -34,7 +34,7 @@ class FetchAllDataUseCase @Inject constructor(
         isRefresh: Boolean = true
     ) {
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            //   fetchLanguageUseCase.invoke()
+            fetchLanguageUseCase.invoke()
             fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
 
