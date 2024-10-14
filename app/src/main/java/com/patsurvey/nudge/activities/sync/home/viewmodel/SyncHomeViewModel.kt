@@ -163,7 +163,7 @@ class SyncHomeViewModel @Inject constructor(
     }
 
     val timer =
-        object : CountDownTimer(3000, 500) {
+        object : CountDownTimer(5000, 500) {
             override fun onTick(millisUntilFinished: Long) {}
 
             override fun onFinish() {
