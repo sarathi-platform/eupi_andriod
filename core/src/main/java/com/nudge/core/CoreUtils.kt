@@ -1264,3 +1264,14 @@ fun openSettings() {
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
 }
+
+fun replaceLastWord(sentence: String?, newWord: String?): String {
+    if (sentence.isNullOrBlank() || newWord.isNullOrBlank()) {
+        return sentence ?: BLANK_STRING
+    }
+    val words = sentence.split(" ").toMutableList()
+    if (words.isNotEmpty()) {
+        words[words.size - 1] = newWord
+    }
+    return words.joinToString(" ")
+}

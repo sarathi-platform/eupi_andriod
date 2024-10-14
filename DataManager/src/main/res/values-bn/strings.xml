@@ -100,4 +100,7 @@
     <string name="total_didis">মোট দিদি - %1$s</string>
     <string name="decrease_in_number">সংখ্যা হ্রাস</string>
     <string name="no_didi_s_assigned_to_you">"আপনাকে কোনো দিদির সাথে যুক্ত করা হয়নি "</string>
+    <string name="save_text">েভ করুন</string>
+    <string name="proceed">এগিয়ে যান</string>
+    <string name="cancel_text">বাতিল করুন</string>
 </resources>

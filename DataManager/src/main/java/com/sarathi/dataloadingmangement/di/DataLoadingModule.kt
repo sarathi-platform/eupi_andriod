@@ -82,6 +82,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProd
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.LivelihoodEventValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
@@ -1484,6 +1485,19 @@ class DataLoadingModule {
             moneyJournalRepo = moneyJournalRepository,
             subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
             eventWriterRepository = eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventValidationUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        assetRepositoryImpl: AssetRepositoryImpl
+
+        ): LivelihoodEventValidationUseCase {
+        return LivelihoodEventValidationUseCase(
+            assetJournalRepository = assetJournalRepo,
+            assetRepository = assetRepositoryImpl
         )
     }
 }

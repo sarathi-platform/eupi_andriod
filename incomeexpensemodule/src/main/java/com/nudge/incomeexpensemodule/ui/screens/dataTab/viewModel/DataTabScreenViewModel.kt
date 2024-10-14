@@ -296,7 +296,14 @@ class DataTabScreenViewModel @Inject constructor(
         _filters.addAll(livelihoodModelsList)
     }
 
+    override fun refreshData() {
+        super.refreshData()
+        loadAddDataForDataTab(isRefresh = true)
+
+
+    }
 }
+
 
 const val LIVELIHOOD_FILTER = "livelihood_filter"
 

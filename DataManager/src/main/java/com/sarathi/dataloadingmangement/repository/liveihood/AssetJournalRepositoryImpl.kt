@@ -4,6 +4,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJournalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import javax.inject.Inject
@@ -94,4 +95,82 @@ class AssetJournalRepositoryImpl @Inject constructor(
     override suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity> {
         return assetJournalDao.getAssetJournalForUser(coreSharedPrefs.getUniqueUserIdentifier())
     }
+
+    override suspend fun getTotalAssetCount(
+        livelihoodId: Int,
+        subjectId: Int,
+        transactionId: String
+    ): Int {
+        val inflowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+
+        ) ?: 0
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+        ) ?: 0
+        return inflowValue - outFlowValue
+    }
+
+
+    override suspend fun getTotalAssetCount(
+        livelihoodId: Int,
+        subjectId: Int,
+        assetId: Int,
+        transactionId: String
+    ): Int {
+        val inflowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            assetId = assetId,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+        ) ?: 0
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            assetId = assetId,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+        ) ?: 0
+        return inflowValue - outFlowValue
+    }
+
+    override suspend fun getTotalAssetCountForParticularAssetType(
+        livelihoodId: Int,
+        subjectId: Int,
+        assetIds: List<Int>,
+        transactionId: String
+    ): Int {
+        val inflowValue = assetJournalDao.getAssetCountForLivelihoodAndAssetId(
+            subjectId = subjectId,
+            livelihoodId = livelihoodId,
+            assetIds = assetIds,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
+            transactionId = transactionId
+        ) ?: 0
+
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihoodAndAssetId(
+            subjectId = subjectId,
+            livelihoodId = livelihoodId,
+            assetIds = assetIds,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            transactionId = transactionId
+        ) ?: 0
+
+        return inflowValue - outFlowValue
+
+    }
+
 }
