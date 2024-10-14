@@ -192,8 +192,10 @@ const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
 
 
-const val DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD = 750
-const val DEFAULT_HARD_EVENT_LIMIT_THRESHOLD = 1000
+const val DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD =
+    75000  // TODO Change this to older value after navigation is fixed.
+const val DEFAULT_HARD_EVENT_LIMIT_THRESHOLD =
+    100000 // TODO Change this to older value after navigation is fixed.
 
 const val THRESHOLD_TYPE_SOFT = "SOFT_THRESHOLD"
 const val THRESHOLD_TYPE_HARD = "HARD_THRESHOLD"

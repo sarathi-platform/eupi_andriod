@@ -54,7 +54,8 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
             )
         }
 
-        if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {
+        // TODO Uncomment code after navigation is fixed.
+        /*if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {
             data[AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {
                 coreSharedPrefs.setSoftEventLimitThreshold(it)
             }
@@ -64,7 +65,7 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
             data[AppConfigKeysEnum.HARD_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {
                 coreSharedPrefs.setHardEventLimitThreshold(it)
             }
-        }
+        }*/
 
         if (data.containsKey(AppConfigKeysEnum.USE_BASELINE_V1.name)) {
             data[AppConfigKeysEnum.USE_BASELINE_V1.name]?.toString()?.let {
