@@ -3,8 +3,8 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -75,7 +75,7 @@ class ActivityScreenViewModel @Inject constructor(
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,
-                isRefresh = false,
+                isRefresh = isRefresh,
                 { isSuccess, successMsg ->
 
                     initActivityScreen()
@@ -149,6 +149,8 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
     override fun refreshData() {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+
         loadMissionRelatedData(isRefresh = true)
 
     }
