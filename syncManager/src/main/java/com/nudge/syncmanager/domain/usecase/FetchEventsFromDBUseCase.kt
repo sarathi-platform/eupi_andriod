@@ -3,8 +3,9 @@ package com.nudge.syncmanager.domain.usecase
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.syncmanager.domain.repository.SyncRepository
+import javax.inject.Inject
 
-class FetchEventsFromDBUseCase(
+class FetchEventsFromDBUseCase @Inject constructor(
     private val repository: SyncRepository
 ) {
     suspend fun fetchAllImageEventDetails(eventIds: List<String>) =

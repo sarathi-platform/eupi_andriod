@@ -80,5 +80,9 @@ interface CorePrefRepo {
     fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean)
     fun isSyncImageBlobUploadEnable(): Boolean
 
+    fun setSoftEventLimitThreshold(threshold: Int)
+    fun getSoftEventLimitThreshold(): Int
+    fun setHardEventLimitThreshold(threshold: Int)
+    fun getHardEventLimitThreshold(): Int
 
 }

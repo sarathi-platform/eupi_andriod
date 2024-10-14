@@ -5,6 +5,9 @@ interface SyncBlobRepository {
     suspend fun uploadImageOnBlob(
         filePath: String,
         fileName: String,
+        postSelectionContainerName: String,
+        selectionContainerName: String,
+        blobConnectionUrl: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     )
 

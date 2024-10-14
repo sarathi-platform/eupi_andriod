@@ -26,4 +26,8 @@
     <string name="end_date_label">End date</string>
     <string name="reopen_activity_step_1">Step 1</string>
     <string name="reopen_activity_step_2">Step 2</string>
+    <string name="warning_title">Warning</string>
+    <string name="warning_text">Warning</string>
+    <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
+    <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
 </resources>

@@ -111,6 +111,9 @@
     <string name="data_processes_by_server">Data processed by Server</string>
     <string name="images_processes_by_server">Images processed by Server</string>
     <string name="sync_view_progress" translatable="false">View Progress</string>
+    <string name="sync_worker_cancelled" translatable="false">Sync worker cancelled</string>
+    <string name="sync_already_cancelled" translatable="false">Sync is already Cancelled</string>
+
     <string name="synced" translatable="false">Synced</string>
 
 </resources>

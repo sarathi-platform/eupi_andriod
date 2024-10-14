@@ -4,11 +4,15 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
+import com.nudge.core.DEFAULT_HARD_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
 import com.nudge.core.PREF_DATA_TAB_VISIBILITY
+import com.nudge.core.PREF_HARD_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.PREF_MIX_PANEL_TOKEN
+import com.nudge.core.PREF_SOFT_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
@@ -315,5 +319,20 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
 
+    override fun setSoftEventLimitThreshold(threshold: Int) {
+        prefs.edit().putInt(PREF_SOFT_EVENT_LIMIT_THRESHOLD, threshold).apply()
+    }
 
+    override fun getSoftEventLimitThreshold(): Int {
+        return prefs.getInt(PREF_SOFT_EVENT_LIMIT_THRESHOLD, DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD)
+    }
+
+    override fun setHardEventLimitThreshold(threshold: Int) {
+        prefs.edit().putInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, threshold).apply()
+    }
+
+    override fun getHardEventLimitThreshold(): Int {
+        return prefs.getInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, DEFAULT_HARD_EVENT_LIMIT_THRESHOLD)
+
+    }
 }

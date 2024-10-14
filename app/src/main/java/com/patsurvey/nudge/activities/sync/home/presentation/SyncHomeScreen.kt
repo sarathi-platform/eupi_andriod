@@ -65,6 +65,7 @@ import com.nudge.core.isImageEvent
 import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -279,7 +280,8 @@ fun SyncHomeContent(
         Column {
 
             Box(modifier = Modifier
-                .fillMaxSize().pullRefresh(pullRefreshState)
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
             )            {
                 PullRefreshIndicator(
                     refreshing = viewModel.isPullToRefreshVisible.value,
@@ -329,13 +331,25 @@ fun SyncHomeContent(
                             navController.navigate(SettingScreens.SYNC_HISTORY_SCREEN.route)
                         }
                     }
+                    item{
+                        if (viewModel.failedEventList.value.isNotEmpty()) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(dimen_5_dp),
+                                text = stringResource(id = R.string.sync_failed_message),
+                                style = smallTextStyle,
+                                color = textColorDark
+                            )
+                        }
+                    }
                     item {
                         HandleWorkerState(uploadWorkerInfo, viewModel, context, scope)
                     }
-                }
+                    customVerticalSpacer(size=200.dp) }
             }
         }
-                    }
+    }
 }
 
 @Composable
@@ -345,7 +359,7 @@ fun BottomContent(
     isNetworkAvailable: MutableState<Boolean>
 ) {
     Box(
-        modifier = Modifier
+        modifier = Modifier.background(white)
             .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
             .padding(vertical = dimensionResource(id = R.dimen.dp_15))
     ) {
@@ -359,14 +373,6 @@ fun BottomContent(
 
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (viewModel.failedEventList.value.isNotEmpty()) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(dimen_5_dp),
-                                text = stringResource(id = R.string.sync_failed_message),
-                                style = smallTextStyle,
-                                color = textColorDark
-                            )
                             ButtonPositive(
                                 modifier = Modifier.wrapContentHeight(),
                                 buttonTitle = stringResource(id = R.string.export_failed_event),
@@ -400,13 +406,14 @@ fun BottomContent(
 
 @Composable
 fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
+    val context = LocalContext.current
     if (viewModel.lastSyncTime.longValue != 0L) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
                     .clickable {
-                        onCancelWorker()
+                        viewModel.onLastSyncTimeClick { showCustomToast(context = context,msg= context.getString(it)) }
                     },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -445,7 +452,6 @@ fun List<Events>.filterAndCountProducerEvents(predicate: (Events) -> Boolean): P
         }.size
     return totalCount to successCount
 }
-
 
 
 fun HandleWorkerState(
