@@ -3,6 +3,7 @@ package com.nudge.syncmanager.imageupload
 
 import com.microsoft.azure.storage.CloudStorageAccount
 import com.microsoft.azure.storage.StorageException
+import com.nudge.core.decodeBase64ToPlainText
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import java.io.IOException
@@ -40,7 +41,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
 
 
             val account = CloudStorageAccount
-                .parse(blobConnectionUrl)
+                .parse(decodeBase64ToPlainText(blobConnectionUrl))
 
         val blobClient = account.createCloudBlobClient()
 

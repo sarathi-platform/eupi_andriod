@@ -1,7 +1,6 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -21,6 +20,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
@@ -31,11 +31,6 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
-import com.google.firebase.Firebase
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.get
-import com.google.firebase.remoteconfig.remoteConfig
-import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
@@ -1290,35 +1285,13 @@ fun isImageEvent(event: Events): Boolean {
         .contains(IMAGE_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC
 }
 
-fun getRemoteConfig(activity: Activity) {
-    CoreLogger.d(tag = TAG, msg = "getRemoteConfig Called: ")
-    val coreSharedPrefs = CoreSharedPrefs.getInstance(activity)
-    val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
-    val configSettings = remoteConfigSettings {
-        minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
-    }
-    remoteConfig.setConfigSettingsAsync(configSettings)
-    remoteConfig.fetchAndActivate()
-        .addOnCompleteListener(activity) { task ->
-            if (task.isSuccessful) {
-                CoreLogger.d(
-                    tag = TAG,
-                    msg = "showDataTabKey: showDataTabKey = ${configShowDataTab}"
-                )
-                Log.d(
-                    "SyncEnabled",
-                    "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
-                )
-                val mixPanelToken = remoteConfig[REMOTE_CONFIG_MIX_PANEL_TOKEN].asString()
-                coreSharedPrefs.saveMixPanelToken(mixPanelToken)
-            }
-            else{
-                CoreLogger.d(
-                    tag = TAG,
-                    msg = "Remote Config Task is not successfull"
-                )
-            }
-        }
+fun decodeBase64ToPlainText(encodedString: String): String {
+    // Decode Base64 encoded string
+    val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+
+    // Convert decoded bytes to String
+    return String(decodedBytes, Charsets.UTF_8)
 }
+
 
 

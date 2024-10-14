@@ -91,7 +91,7 @@ class SyncUploadWorker @AssistedInject constructor(
             var azureConnectionString = BLANK_STRING
             if (isBlobImageUploadEnable) {
                 azureConnectionString =
-                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.AZURE_STORAGE_DETAIL.name)
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.ENCODED_KEY.name)
                 preSelectionContainerName =
                     syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SELECTION_CONTAINER_NAME.name)
                 postSelectionContainerName =

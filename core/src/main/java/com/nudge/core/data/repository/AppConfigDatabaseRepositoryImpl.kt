@@ -48,6 +48,11 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 data[AppConfigKeysEnum.SYNC_ENABLED.name].toBoolean()
             )
         }
+        if (data.containsKey(AppConfigKeysEnum.MIX_PANEL_KEY.name)) {
+            coreSharedPrefs.saveMixPanelToken(
+                data[AppConfigKeysEnum.MIX_PANEL_KEY.name].toString()
+            )
+        }
 
     }
 

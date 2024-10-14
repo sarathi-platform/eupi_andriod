@@ -10,18 +10,26 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 class MixPanelAnalyticsProvider @Inject constructor(
-    context: Context,
-    sharedPrefs: CoreSharedPrefs
+    val context: Context,
+    val sharedPrefs: CoreSharedPrefs
 ) : IAnalyticsProvider {
     var mixpanelAPI: MixpanelAPI? = null
 
     init {
+        intiMixpanelApi()
+    }
+
+    private fun intiMixpanelApi(
+    ) {
         val token = sharedPrefs.getMixPanelToken()
         if (!token.equals(BLANK_STRING, true))
             mixpanelAPI = MixpanelAPI.getInstance(context, token, true)
     }
 
     override fun trackEvent(eventName: String, properties: Map<String, Any>?) {
+        if (mixpanelAPI == null) {
+            intiMixpanelApi()
+        }
         mixpanelAPI?.let {
             it.track(eventName, properties?.let { JSONObject(it) })
         }
