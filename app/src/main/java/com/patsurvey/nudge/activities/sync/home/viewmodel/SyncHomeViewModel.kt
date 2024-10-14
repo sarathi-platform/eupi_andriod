@@ -187,7 +187,7 @@ class SyncHomeViewModel @Inject constructor(
             showToastMsgResId(R.string.sync_worker_cancelled)
             }
             else{
-                showToastMsgResId(R.string.sync_already_canceled)
+                showToastMsgResId(R.string.sync_already_cancelled)
             }
             clickCount = 0
             timer.cancel()
