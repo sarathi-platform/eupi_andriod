@@ -3,6 +3,8 @@ package com.patsurvey.nudge.base
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.ui.commonUi.componet_.component.AlertDialogState
+import com.nudge.core.ui.events.DialogEvents
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -42,6 +44,8 @@ abstract class BaseViewModel : ViewModel(){
     val showDidiImageDialog = mutableStateOf(false)
     val showAppExitDialog = mutableStateOf(false)
     val dialogDidiEntity = mutableStateOf<DidiEntity?>(null)
+
+    val showHardEventLimitAlert = mutableStateOf(AlertDialogState())
 
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
@@ -199,6 +203,15 @@ abstract class BaseViewModel : ViewModel(){
 
     open fun isSyncEnabled(prefRepo: PrefRepo): Boolean {
         return prefRepo.getISSyncEnabled()
+
+    }
+
+    open fun <T> onEvent(event: T) {
+
+        if (event is DialogEvents.ShowAlertDialogEvent) {
+            showHardEventLimitAlert.value =
+                showHardEventLimitAlert.value.copy(showDialog = event.showDialog)
+        }
 
     }
 

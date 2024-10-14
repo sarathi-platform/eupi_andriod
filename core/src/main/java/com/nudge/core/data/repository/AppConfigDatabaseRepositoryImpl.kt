@@ -54,6 +54,18 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
             )
         }
 
+        if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {
+            data[AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {
+                coreSharedPrefs.setSoftEventLimitThreshold(it)
+            }
+        }
+
+        if (data.containsKey(AppConfigKeysEnum.HARD_EVENT_LIMIT_THRESHOLD.name)) {
+            data[AppConfigKeysEnum.HARD_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {
+                coreSharedPrefs.setHardEventLimitThreshold(it)
+            }
+        }
+
     }
 
     override suspend fun getAppConfig(key: String): String {

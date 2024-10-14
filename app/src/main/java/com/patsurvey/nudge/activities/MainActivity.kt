@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -31,7 +32,12 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.enums.SyncAlertType
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.notifications.NotificationHandler
+import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
+import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.ui.events.DialogEvents
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -66,6 +72,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
     private val mViewModel: MainActivityViewModel by viewModels()
 
+
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
     val isOnline = mutableStateOf(true)
     val connectionSpeedType = mutableStateOf("")
@@ -98,6 +105,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
                 val onlineStatus = remember { mutableStateOf(false) }
+
+                val notificationHandler: NotificationHandler = NotificationHandler(context = this)
+
+                val localContext = LocalContext.current
 
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -149,6 +160,27 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                         }
                     }
                 }
+
+                LaunchedEffect(Unit) {
+                    // TODO move this code to Mission and Village screens.
+//                    delay(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES))
+
+                    mViewModel.onEvent(CommonEvents.CheckEventLimitThreshold { result ->
+                        if (result == SyncAlertType.SOFT_ALERT) {
+                            notificationHandler?.createSoftAlertNotification(
+                                mViewModel.showSoftLimitAlert(
+                                    title = localContext.getString(R.string.warning_text),
+                                    message = localContext.getString(R.string.notification_alert_message)
+                                )
+                            )
+                        }
+
+                        if (result == SyncAlertType.HARD_ALERT) {
+                            mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = true))
+                        }
+                    })
+                }
+
                 if (mViewModel.tokenExpired.value) {
                     ShowOptDialogForVillageScreen(
                         modifier = Modifier,
@@ -170,6 +202,27 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                                     showCustomToast(this, message)
                                 }
                             }
+                        }
+                    )
+                }
+
+                if (mViewModel.showHardEventLimitAlert.value.showDialog) {
+                    val alertModel = mViewModel.showHardLimitAlert(
+                        title = localContext.getString(R.string.alert_dialog_title_text),
+                        message = localContext.getString(R.string.hard_threshold_alert_message)
+                    )
+                    ShowCustomDialog(
+                        title = alertModel.alertTitle,
+                        message = alertModel.alertMessage,
+                        icon = alertModel.alertIcon,
+                        positiveButtonTitle = stringResource(R.string.ok),
+                        negativeButtonTitle = stringResource(R.string.cancel),
+                        onPositiveButtonClick = {
+                            // TODO navigation to sync screen.
+                            mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = false))
+                        },
+                        onNegativeButtonClick = {
+                            mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = false))
                         }
                     )
                 }
