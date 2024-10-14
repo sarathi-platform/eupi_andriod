@@ -31,7 +31,6 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.getRemoteConfig
 import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -95,7 +94,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             )
         )
         CoreObserverManager.addObserver(this)
-        getRemoteConfig(this)
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()

@@ -32,6 +32,7 @@ interface AttributeValueReferenceDao {
                 "and subAtt.attribute = 'Attendance'\n" +
                 "and attRef.`key` = 'AttendanceDate'\n" +
                 "and attRef.userId = :userId \n" +
+                "and subAtt.isActive = 1 \n" +
                 "group by attRef.value"
     )
     suspend fun getMarkedDatesList(userId: String, subjectIds: List<Int>): List<MarkedDatesUiModel>

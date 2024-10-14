@@ -10,6 +10,9 @@ class BlobUploadUseCase(
     suspend fun uploadImageOnBlob(
         filePath: String,
         fileName: String,
+        postSelectionContainerName: String,
+        selectionContainerName: String,
+        blobConnectionUrl: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         CoreLogger.d(
@@ -17,7 +20,13 @@ class BlobUploadUseCase(
             "BlobUploadUseCase",
             "uploadImageOnBlob : FilePath: $filePath :: FileName: $fileName"
         )
-        syncBlobRepository.uploadImageOnBlob(filePath, fileName) { message, isExceptionOccur ->
+        syncBlobRepository.uploadImageOnBlob(
+            filePath,
+            fileName,
+            postSelectionContainerName = postSelectionContainerName,
+            selectionContainerName = selectionContainerName,
+            blobConnectionUrl = blobConnectionUrl
+        ) { message, isExceptionOccur ->
             onUploadImageResponse(message, isExceptionOccur)
         }
     }
