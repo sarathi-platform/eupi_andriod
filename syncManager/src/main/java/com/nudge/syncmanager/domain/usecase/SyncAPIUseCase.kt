@@ -1,8 +1,11 @@
 package com.nudge.syncmanager.domain.usecase
 
+import com.facebook.network.connectionclass.ConnectionClassManager
+import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.entities.Events
+import com.nudge.core.getBatchSize
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
@@ -41,7 +44,10 @@ class SyncAPIUseCase(
 
     suspend fun fetchConsumerEventStatus(response: (success: Boolean, message: String, requestIdCount: Int, ex: Throwable?) -> Unit) {
         val requestIdList = repository.getEventListForConsumer()
-        val chunkedRequestIDs = requestIdList.chunked(40)
+        val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
+        DeviceBandwidthSampler.getInstance().startSampling()
+        val chunkedRequestIDs =
+            requestIdList.chunked(getBatchSize(connectionQuality).maxClientIdsForStatus)
         chunkedRequestIDs.forEach {
             try {
                 val eventConsumerRequest = EventConsumerRequest(
@@ -93,6 +99,9 @@ class SyncAPIUseCase(
                     "fetchConsumerStatus Consumer Exception: ${exception}"
                 )
                 response(false, exception.message.value(), it.size, exception)
+            } finally {
+                DeviceBandwidthSampler.getInstance().stopSampling()
+
             }
         }
     }

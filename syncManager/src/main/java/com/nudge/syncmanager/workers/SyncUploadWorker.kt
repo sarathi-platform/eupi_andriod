@@ -432,7 +432,7 @@ class SyncUploadWorker @AssistedInject constructor(
             "doWork: Event Payload size: ${dataEventList.json().getSizeInLong()}"
         )
         var eventListAccordingToPayload: List<Events> = dataEventList
-        while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSize && eventListAccordingToPayload.size > 1) {
+        while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSizeInkb && eventListAccordingToPayload.size > 1) {
             eventListAccordingToPayload =
                 eventListAccordingToPayload.subList(0, (eventListAccordingToPayload.size / 2))
             eventPayloadSize = eventListAccordingToPayload.json().getSizeInLong() / 1000
