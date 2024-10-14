@@ -279,7 +279,8 @@ fun SyncHomeContent(
         Column {
 
             Box(modifier = Modifier
-                .fillMaxSize().pullRefresh(pullRefreshState)
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
             )            {
                 PullRefreshIndicator(
                     refreshing = viewModel.isPullToRefreshVisible.value,
@@ -400,13 +401,14 @@ fun BottomContent(
 
 @Composable
 fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
+    val context = LocalContext.current
     if (viewModel.lastSyncTime.longValue != 0L) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
                     .clickable {
-                        onCancelWorker()
+                        viewModel.onLastSyncTimeClick { showCustomToast(context = context,msg= context.getString(it)) }
                     },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -445,7 +447,6 @@ fun List<Events>.filterAndCountProducerEvents(predicate: (Events) -> Boolean): P
         }.size
     return totalCount to successCount
 }
-
 
 
 fun HandleWorkerState(
