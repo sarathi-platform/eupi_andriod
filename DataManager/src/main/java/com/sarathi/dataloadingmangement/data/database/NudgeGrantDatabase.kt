@@ -227,8 +227,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun conditionsEntityDao(): ConditionsEntityDao
 
-    class NudgeDatabaseCallback : Callback()
-
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
