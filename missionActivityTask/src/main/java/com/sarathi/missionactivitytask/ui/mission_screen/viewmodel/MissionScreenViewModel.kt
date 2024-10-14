@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.parseStringToList
@@ -150,10 +151,13 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     fun getStateId() = fetchAllDataUseCase.getStateId()
-    fun isBaselineV1Mission(): Boolean {
+    fun isBaselineV1Mission(missionName: String): Boolean {
         val baseline_v1_ids =
             fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
                 .parseStringToList()
-        return baseline_v1_ids.contains(getStateId())
+        return baseline_v1_ids.contains(getStateId()) && missionName.contains(
+            BASELINE_MISSION_NAME,
+            true
+        )
     }
 }
