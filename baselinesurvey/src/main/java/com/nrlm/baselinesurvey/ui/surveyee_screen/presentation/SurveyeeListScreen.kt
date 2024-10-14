@@ -192,7 +192,6 @@ fun SurveyeeListScreen(
                                         )
                                     }"
                                 )
-                                // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                             },
                             negativeButtonOnClick = {
 
@@ -249,7 +248,6 @@ fun SurveyeeListScreen(
                                     )
                                 }"
                             )
-                            // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                         },
                         negativeButtonOnClick = {
 
