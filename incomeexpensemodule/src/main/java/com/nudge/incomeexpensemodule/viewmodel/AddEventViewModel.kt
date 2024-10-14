@@ -10,6 +10,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
@@ -173,8 +174,8 @@ class AddEventViewModel @Inject constructor(
                 fieldName = AddEventFieldEnum.LIVELIHOOD_TYPE.name,
 
                 transactionId = transactionId,
-                onValidationComplete = { evalutorResult, message ->
-
+                onValidationComplete = { _, _ ->
+// No need to handle here
                 })
         }
     }
@@ -237,7 +238,7 @@ class AddEventViewModel @Inject constructor(
                 id = it.livelihoodId,
                 value = it.name,
                 originalName = it.originalName,
-                isSelected = if (selectedLivelihoodId.value == it.livelihoodId) true else false
+                isSelected = selectedLivelihoodId.value == it.livelihoodId
             )
         }
     }
@@ -351,8 +352,7 @@ class AddEventViewModel @Inject constructor(
                     fieldValidationFromConfig = false
                 }
             }
-            isSubmitButtonEnable.value =
-                if (fieldValidationFromConfig && checkValidData()) true else false
+            isSubmitButtonEnable.value = fieldValidationFromConfig && checkValidData()
 
         }
 
@@ -410,6 +410,10 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
+    /*
+    This method is responsible to handle the validation that is coming through backend using livelihood config
+
+     */
     fun validationExpressionEvalutor(
         subjectId: Int,
         fieldName: String,
@@ -432,59 +436,36 @@ class AddEventViewModel @Inject constructor(
                 if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null) {
                     validation =
                         selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
-                    if (validation != null) {
-                        val expressionResult = validationUseCase.invoke(
-                            validationExpression = validation.condition,
-                            subjectId = subjectId,
-                            selectedAsset = selectedAssetType,
-                            selectedLivelihood = selectedLivelihood,
-                            assetCount = assetCount.value,
-                            amount = amount.value,
-                            message = validation.message,
-                            transactionId = transactionId
-                        )
-                        onValidationResult(expressionResult.first, expressionResult.second)
-                    } else {
-                        onValidationResult(true, BLANK_STRING)
-
-                    }
+                    validateExpression(
+                        validation,
+                        subjectId,
+                        selectedAssetType,
+                        selectedLivelihood,
+                        transactionId,
+                        onValidationResult
+                    )
 
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
                     validation =
                         selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
 
-                    if (validation != null) {
-                        val expressionResult = validationUseCase.invoke(
-                            validationExpression = validation.condition,
-                            selectedLivelihood = selectedLivelihood,
-                            subjectId = subjectId,
-                            selectedAsset = selectedAssetType,
-                            assetCount = assetCount.value,
-                            amount = amount.value,
-                            message = validation.message,
-                            transactionId = transactionId
-
-                        )
-                        onValidationResult(expressionResult.first, expressionResult.second)
-                    } else {
-                        onValidationResult(true, BLANK_STRING)
-                    }
+                    validateExpression(
+                        validation,
+                        subjectId,
+                        selectedAssetType,
+                        selectedLivelihood,
+                        transactionId,
+                        onValidationResult
+                    )
                 } else {
-                    if (validation != null) {
-                        val expressionResult = validationUseCase.invoke(
-                            validationExpression = validation.condition,
-                            selectedLivelihood = selectedLivelihood,
-                            subjectId = subjectId,
-                            selectedAsset = selectedAssetType,
-                            assetCount = assetCount.value,
-                            amount = amount.value,
-                            message = validation.message,
-                            transactionId = transactionId
-                        )
-                        onValidationResult(expressionResult.first, expressionResult.second)
-                    } else {
-                        onValidationResult(true, BLANK_STRING)
-                    }
+                    validateExpression(
+                        validation,
+                        subjectId,
+                        selectedAssetType,
+                        selectedLivelihood,
+                        transactionId,
+                        onValidationResult
+                    )
                 }
 
             } else {
@@ -494,7 +475,33 @@ class AddEventViewModel @Inject constructor(
 
         }
     }
+
+    private suspend fun validateExpression(
+        validation: Validation?,
+        subjectId: Int,
+        selectedAssetType: ProductAssetUiModel?,
+        selectedLivelihood: LivelihoodModel,
+        transactionId: String,
+        onValidationResult: (Boolean, String) -> Unit
+    ) {
+        if (validation != null) {
+            val expressionResult = validationUseCase.invoke(
+                validationExpression = validation.condition,
+                subjectId = subjectId,
+                selectedAsset = selectedAssetType,
+                selectedLivelihood = selectedLivelihood,
+                assetCount = assetCount.value,
+                amount = amount.value,
+                message = validation.message,
+                transactionId = transactionId
+            )
+            onValidationResult(expressionResult.first, expressionResult.second)
+        } else {
+            onValidationResult(true, BLANK_STRING)
+
+        }
     }
+}
 
 
 

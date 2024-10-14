@@ -13,6 +13,11 @@ class LivelihoodEventValidationUseCase @Inject constructor(
     private val assetJournalRepository: IAssetJournalRepository,
     private val assetRepository: IAssetRepository
 ) {
+    /*
+    This method search ValidationExpressionEnum' fields into validationExpression string and put it into map
+    and fetchMapValues put their actuals from local db and then again make conditional statement with values
+     and ExpressionEvaluator.evaluateExpression("5>4 && 7<4) give result of expression
+     */
     suspend fun invoke(
         validationExpression: String?,
         selectedLivelihood: LivelihoodModel,
@@ -28,6 +33,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
             var msgmap = HashMap<String, String>()
             val expressionArray = validationExpression?.split(" ")
             val msgExpressionArray = message?.split(" ")
+            //Searching the ValidationExpressionEnum and putting it on map
             ValidationExpressionEnum.values().forEach {
                 if (expressionArray?.contains(it.originalValue) == true) {
                     map[it.originalValue] = ""
@@ -36,6 +42,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
                     msgmap[it.originalValue] = BLANK_STRING
                 }
             }
+            //Sometimes expression have {male%Asset_count} to fetch this regex we used extractSubstrings(expression) to fetch and put into map
             if (validationExpression?.contains("{") == true && validationExpression.contains("}")) {
                 extractSubstrings(validationExpression).forEach {
                     map[it] = ""
