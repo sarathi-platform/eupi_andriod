@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.ui.splash
 
 
 import androidx.compose.runtime.mutableStateOf
-import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -122,7 +121,7 @@ class ConfigViewModel @Inject constructor(
     }
     fun fetchAppConfigForProperties() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke(listOf(AppConfigKeysEnum.MIX_PANEL_KEY.name))
+            fetchAppConfigFromNetworkUseCase.invoke()
         }
     }
 }
