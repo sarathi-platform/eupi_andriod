@@ -18,6 +18,12 @@ class QuestionUiModel(
     val surveyName: String,
     val formId: Int,
     var subjectId: Int = 0,
-    var subjectType: String = BLANK_STRING
-    )
+    var order: Int,
+    var subjectType: String = BLANK_STRING,
+    var isConditional: Boolean = false,
+    var showQuestion: Boolean = false
+) {
+
+
+}
 

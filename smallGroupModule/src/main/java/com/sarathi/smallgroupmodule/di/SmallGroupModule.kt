@@ -111,7 +111,8 @@ class SmallGroupModule {
     fun provideSmallGroupAttendanceHistoryUseCase(
         fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository,
         fetchSmallGroupAttendanceHistoryFromDbRepository: FetchSmallGroupAttendanceHistoryFromDbRepository,
-        updateAttendanceToDbRepository: UpdateAttendanceToDbRepository
+        updateAttendanceToDbRepository: UpdateAttendanceToDbRepository,
+        fetchMarkedDatesRepository: FetchMarkedDatesRepository
     ): SmallGroupAttendanceHistoryUseCase {
         return SmallGroupAttendanceHistoryUseCase(
             fetchSmallGroupDetailsFromDbUseCase = FetchSmallGroupDetailsFromDbUseCase(
@@ -120,7 +121,8 @@ class SmallGroupModule {
             fetchSmallGroupAttendanceHistoryFromDbUseCase = FetchSmallGroupAttendanceHistoryFromDbUseCase(
                 fetchSmallGroupAttendanceHistoryFromDbRepository
             ),
-            deleteAttendanceToDbUseCase = DeleteAttendanceToDbUseCase(updateAttendanceToDbRepository)
+            deleteAttendanceToDbUseCase = DeleteAttendanceToDbUseCase(updateAttendanceToDbRepository),
+            fetchMarkedDatesUseCase = FetchMarkedDatesUseCase(fetchMarkedDatesRepository)
         )
     }
 

@@ -16,7 +16,7 @@ interface AssetDao {
 
 
     @Query(
-        "select assets_table.assetId as id, livelihood_language_reference_table.name, assets_table.name as originalName \n" +
+        "select assets_table.assetId as id, livelihood_language_reference_table.name, assets_table.name as originalName, assets_table.type \n" +
                 " from assets_table inner join livelihood_language_reference_table \n" +
                 " on assets_table.assetId= livelihood_language_reference_table.referenceId \n" +
                 " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +

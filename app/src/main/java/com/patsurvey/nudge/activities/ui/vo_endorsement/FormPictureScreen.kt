@@ -124,6 +124,7 @@ import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
 import com.patsurvey.nudge.utils.uriFromFile
+import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -167,14 +168,13 @@ fun FormPictureScreen(
         mutableStateOf(0.dp)
     }
 
-    /*  val showIcon = remember {
-          mutableStateOf(false)
-      }*/
-
     val formCCardExpanded = remember {
         mutableStateOf(false)
     }
     val formDCardExpanded = remember {
+        mutableStateOf(false)
+    }
+    val showBackPopup = remember {
         mutableStateOf(false)
     }
 
@@ -187,10 +187,20 @@ fun FormPictureScreen(
         .setParameter("requestId", requestId, memoryCacheKey = null)
         .build()
 
-    BackHandler() {
-        navController.popBackStack()
-    }
+    if (showBackPopup.value) {
+        ShowCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message = stringResource(R.string.form_alert_dialog_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed_txt),
+            negativeButtonTitle = stringResource(id = R.string.cancel_txt),
+            onPositiveButtonClick = {
+                navController.popBackStack()
+            }, onNegativeButtonClick = {
+                showBackPopup.value = false
+            }
+        )
 
+    }
     val scaffoldState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
     val scope = rememberCoroutineScope()
@@ -272,13 +282,23 @@ fun FormPictureScreen(
                             contract = ActivityResultContracts.TakePicture(),
                             onResult = { success ->
                                 if (success) {
-                                    formPictureScreenViewModel.photoUri = formPictureScreenViewModel.tempUri
-                                    handleImageCapture(formPictureScreenViewModel.photoUri, formPictureScreenViewModel.imagePathForCapture, context = (context as MainActivity), formName = formPictureScreenViewModel.getFormSubPath(
-                                        formPictureScreenViewModel.shouldShowCamera.value.first
-                                        , if (formPictureScreenViewModel.retakeImageIndex.value != -1)formPictureScreenViewModel.formCPageList.value.size + 1 else formPictureScreenViewModel.retakeImageIndex.value + 1), viewModal = formPictureScreenViewModel)
-                                    formPictureScreenViewModel.shouldShowCamera.value = Pair("", false)
+                                    formPictureScreenViewModel.photoUri =
+                                        formPictureScreenViewModel.tempUri
+                                    handleImageCapture(
+                                        formPictureScreenViewModel.photoUri,
+                                        formPictureScreenViewModel.imagePathForCapture,
+                                        context = (context as MainActivity),
+                                        formName = formPictureScreenViewModel.getFormSubPath(
+                                            formPictureScreenViewModel.shouldShowCamera.value.first,
+                                            if (formPictureScreenViewModel.retakeImageIndex.value != -1) formPictureScreenViewModel.formCPageList.value.size + 1 else formPictureScreenViewModel.retakeImageIndex.value + 1
+                                        ),
+                                        viewModal = formPictureScreenViewModel
+                                    )
+                                    formPictureScreenViewModel.shouldShowCamera.value =
+                                        Pair("", false)
                                 } else {
-                                    formPictureScreenViewModel.shouldShowCamera.value = Pair("", false)
+                                    formPictureScreenViewModel.shouldShowCamera.value =
+                                        Pair("", false)
                                     formPictureScreenViewModel.tempUri = Uri.EMPTY
                                     formPictureScreenViewModel.imagePathForCapture = ""
                                 }
@@ -359,7 +379,11 @@ fun FormPictureScreen(
                                                     .data(File(formPictureScreenViewModel.imagePath.value))
                                                     .memoryCachePolicy(CachePolicy.DISABLED)
                                                     .diskCachePolicy(CachePolicy.DISABLED)
-                                                    .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                    .setParameter(
+                                                        "requestId",
+                                                        requestId,
+                                                        memoryCacheKey = null
+                                                    )
                                                     .build()
                                                 delay(250)
                                                 if (!scaffoldState.isVisible)
@@ -387,19 +411,32 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
-                                                        NudgeLogger.d("FormPictureScreen", "Permission previously granted")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen",
+                                                            "Permission previously granted"
+                                                        )
 
                                                         if (formPictureScreenViewModel.formCPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                                 Pair(FORM_C, true)
-                                                            val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                formPictureScreenViewModel.shouldShowCamera.value.first,
-                                                                formPictureScreenViewModel.formCPageList.value.size + 1
-                                                            ) + "_" + System.currentTimeMillis()
-                                                                .toDateInMMDDYYFormat()
-                                                            val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
-                                                            formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
-                                                            val uri = uriFromFile(context = context, imageFile)
+                                                            val formName =
+                                                                formPictureScreenViewModel.getFormSubPath(
+                                                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                                    formPictureScreenViewModel.formCPageList.value.size + 1
+                                                                ) + "_" + System.currentTimeMillis()
+                                                                    .toDateInMMDDYYFormat()
+
+                                                            val imageFile =
+                                                                formPictureScreenViewModel.getImageFileName(
+                                                                    context,
+                                                                    formName
+                                                                )
+                                                            formPictureScreenViewModel.imagePathForCapture =
+                                                                imageFile.absolutePath
+                                                            val uri = uriFromFile(
+                                                                context = context,
+                                                                imageFile
+                                                            )
                                                             formPictureScreenViewModel.tempUri = uri
                                                             cameraLauncher.launch(uri)
                                                         } else {
@@ -421,7 +458,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) -> {
-                                                        NudgeLogger.d("FormPictureScreen", "Show camera permissions dialog")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen",
+                                                            "Show camera permissions dialog"
+                                                        )
                                                         ActivityCompat.requestPermissions(
                                                             localContext as Activity,
                                                             arrayOf(
@@ -434,7 +474,10 @@ fun FormPictureScreen(
                                                     }
 
                                                     else -> {
-                                                        NudgeLogger.d("FormPictureScreen: ", "permission not granted")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen: ",
+                                                            "permission not granted"
+                                                        )
                                                         shouldRequestPermission.value = true
                                                     }
                                                 }
@@ -444,18 +487,31 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.CAMERA
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
-                                                        NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                                        NudgeLogger.d(
+                                                            "PatImagePreviewScreen",
+                                                            "Permission previously granted"
+                                                        )
 
                                                         if (formPictureScreenViewModel.formCPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
-                                                            formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_C, true)
-                                                            val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                FORM_C,
-                                                                formPictureScreenViewModel.formCPageList.value.size + 1
-                                                            ) + "_" + System.currentTimeMillis()
-                                                                .toDateInMMDDYYFormat()
-                                                            val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
-                                                            formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
-                                                            val uri = uriFromFile(context = context, imageFile)
+                                                            formPictureScreenViewModel.shouldShowCamera.value =
+                                                                Pair(FORM_C, true)
+                                                            val formName =
+                                                                formPictureScreenViewModel.getFormSubPath(
+                                                                    FORM_C,
+                                                                    formPictureScreenViewModel.formCPageList.value.size + 1
+                                                                ) + "_" + System.currentTimeMillis()
+                                                                    .toDateInMMDDYYFormat()
+                                                            val imageFile =
+                                                                formPictureScreenViewModel.getImageFileName(
+                                                                    context,
+                                                                    formName
+                                                                )
+                                                            formPictureScreenViewModel.imagePathForCapture =
+                                                                imageFile.absolutePath
+                                                            val uri = uriFromFile(
+                                                                context = context,
+                                                                imageFile
+                                                            )
                                                             formPictureScreenViewModel.tempUri = uri
                                                             cameraLauncher.launch(uri)
                                                         } else {
@@ -470,7 +526,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.CAMERA
                                                     ) -> {
-                                                        NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                        NudgeLogger.d(
+                                                            "PatImagePreviewScreen",
+                                                            "Show camera permissions dialog"
+                                                        )
                                                         ActivityCompat.requestPermissions(
                                                             localContext as Activity,
                                                             arrayOf(
@@ -483,7 +542,10 @@ fun FormPictureScreen(
                                                     }
 
                                                     else -> {
-                                                        NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                        NudgeLogger.d(
+                                                            "requestCameraPermission: ",
+                                                            "permission not granted"
+                                                        )
                                                         shouldRequestPermission.value = true
                                                     }
                                                 }
@@ -509,7 +571,8 @@ fun FormPictureScreen(
                                                             "FormPictureScreen",
                                                             "Permission previously granted"
                                                         )
-                                                        formPictureScreenViewModel.retakeImageIndex.value = index
+                                                        formPictureScreenViewModel.retakeImageIndex.value =
+                                                            index
                                                         formPictureScreenViewModel.shouldShowCamera.value =
                                                             Pair(FORM_C, true)
                                                         val formName =
@@ -526,7 +589,10 @@ fun FormPictureScreen(
                                                         formPictureScreenViewModel.imagePathForCapture =
                                                             imageFile.absolutePath
                                                         val uri =
-                                                            uriFromFile(context = context, imageFile)
+                                                            uriFromFile(
+                                                                context = context,
+                                                                imageFile
+                                                            )
                                                         formPictureScreenViewModel.tempUri = uri
                                                         cameraLauncher.launch(uri)
 
@@ -547,7 +613,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) -> {
-                                                        NudgeLogger.d("FormPictureScreen", "Show camera permissions dialog")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen",
+                                                            "Show camera permissions dialog"
+                                                        )
                                                         ActivityCompat.requestPermissions(
                                                             localContext as Activity,
                                                             arrayOf(
@@ -560,7 +629,10 @@ fun FormPictureScreen(
                                                     }
 
                                                     else -> {
-                                                        NudgeLogger.d("FormPictureScreen: ", "permission not granted")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen: ",
+                                                            "permission not granted"
+                                                        )
                                                         shouldRequestPermission.value = true
                                                     }
                                                 }
@@ -570,7 +642,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.CAMERA
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
-                                                        NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                                        NudgeLogger.d(
+                                                            "PatImagePreviewScreen",
+                                                            "Permission previously granted"
+                                                        )
 
                                                         formPictureScreenViewModel.retakeImageIndex.value =
                                                             index
@@ -590,7 +665,10 @@ fun FormPictureScreen(
                                                         formPictureScreenViewModel.imagePathForCapture =
                                                             imageFile.absolutePath
                                                         val uri =
-                                                            uriFromFile(context = context, imageFile)
+                                                            uriFromFile(
+                                                                context = context,
+                                                                imageFile
+                                                            )
                                                         formPictureScreenViewModel.tempUri = uri
                                                         cameraLauncher.launch(uri)
                                                     }
@@ -599,7 +677,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.CAMERA
                                                     ) -> {
-                                                        NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                        NudgeLogger.d(
+                                                            "PatImagePreviewScreen",
+                                                            "Show camera permissions dialog"
+                                                        )
                                                         ActivityCompat.requestPermissions(
                                                             localContext as Activity,
                                                             arrayOf(
@@ -612,7 +693,10 @@ fun FormPictureScreen(
                                                     }
 
                                                     else -> {
-                                                        NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                        NudgeLogger.d(
+                                                            "requestCameraPermission: ",
+                                                            "permission not granted"
+                                                        )
                                                         shouldRequestPermission.value = true
                                                     }
                                                 }
@@ -627,11 +711,22 @@ fun FormPictureScreen(
                                                 formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
                                         },
                                         deleteButtonClicked = {
-                                            formPictureScreenViewModel.formCPageList.value = mutableListOf()
-                                            formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
-                                            formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
+                                            formPictureScreenViewModel.formCPageList.value =
+                                                mutableListOf()
+                                            formPictureScreenViewModel.formCImageList.value =
+                                                mutableMapOf()
+                                            formPictureScreenViewModel.formsCClicked.value =
+                                                --formPictureScreenViewModel.formsCClicked.value
                                             for (i in 1..MAX_IMAGE_FOR_FORM_C_OR_D) {
-                                                formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
+                                                formPictureScreenViewModel.repository.prefRepo.savePref(
+                                                    formPictureScreenViewModel.getFormPathKey(
+                                                        formPictureScreenViewModel.getFormSubPath(
+                                                            FORM_C,
+                                                            i
+                                                        )
+                                                    ),
+                                                    ""
+                                                )
                                             }
                                         }
                                     )
@@ -669,7 +764,11 @@ fun FormPictureScreen(
                                                     .data(File(formPictureScreenViewModel.imagePath.value))
                                                     .memoryCachePolicy(CachePolicy.DISABLED)
                                                     .diskCachePolicy(CachePolicy.DISABLED)
-                                                    .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                    .setParameter(
+                                                        "requestId",
+                                                        requestId,
+                                                        memoryCacheKey = null
+                                                    )
                                                     .build()
                                                 delay(250)
                                                 if (!scaffoldState.isVisible)
@@ -696,19 +795,31 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
-                                                        NudgeLogger.d("FormPictureScreen", "Permission previously granted")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen",
+                                                            "Permission previously granted"
+                                                        )
 
                                                         if (formPictureScreenViewModel.formDPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
                                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                                 Pair(FORM_D, true)
-                                                            val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                formPictureScreenViewModel.shouldShowCamera.value.first,
-                                                                formPictureScreenViewModel.formDPageList.value.size + 1
-                                                            ) + "_" + System.currentTimeMillis()
-                                                                .toDateInMMDDYYFormat()
-                                                            val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
-                                                            formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
-                                                            val uri = uriFromFile(context = context, imageFile)
+                                                            val formName =
+                                                                formPictureScreenViewModel.getFormSubPath(
+                                                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                                    formPictureScreenViewModel.formDPageList.value.size + 1
+                                                                ) + "_" + System.currentTimeMillis()
+                                                                    .toDateInMMDDYYFormat()
+                                                            val imageFile =
+                                                                formPictureScreenViewModel.getImageFileName(
+                                                                    context,
+                                                                    formName
+                                                                )
+                                                            formPictureScreenViewModel.imagePathForCapture =
+                                                                imageFile.absolutePath
+                                                            val uri = uriFromFile(
+                                                                context = context,
+                                                                imageFile
+                                                            )
                                                             formPictureScreenViewModel.tempUri = uri
                                                             cameraLauncher.launch(uri)
                                                         } else {
@@ -729,7 +840,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) -> {
-                                                        NudgeLogger.d("FormPictureScreen", "Show camera permissions dialog")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen",
+                                                            "Show camera permissions dialog"
+                                                        )
                                                         ActivityCompat.requestPermissions(
                                                             localContext as Activity,
                                                             arrayOf(
@@ -742,7 +856,10 @@ fun FormPictureScreen(
                                                     }
 
                                                     else -> {
-                                                        NudgeLogger.d("FormPictureScreen: ", "permission not granted")
+                                                        NudgeLogger.d(
+                                                            "FormPictureScreen: ",
+                                                            "permission not granted"
+                                                        )
                                                         shouldRequestPermission.value = true
                                                     }
                                                 }
@@ -752,18 +869,31 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.CAMERA
                                                     ) == PackageManager.PERMISSION_GRANTED -> {
-                                                        NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                                        NudgeLogger.d(
+                                                            "PatImagePreviewScreen",
+                                                            "Permission previously granted"
+                                                        )
 
                                                         if (formPictureScreenViewModel.formDPageList.value.size < MAX_IMAGE_FOR_FORM_C_OR_D) {
-                                                            formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_D, true)
-                                                            val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                FORM_D,
-                                                                formPictureScreenViewModel.formDPageList.value.size + 1
-                                                            ) + "_" + System.currentTimeMillis()
-                                                                .toDateInMMDDYYFormat()
-                                                            val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
-                                                            formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
-                                                            val uri = uriFromFile(context = context, imageFile)
+                                                            formPictureScreenViewModel.shouldShowCamera.value =
+                                                                Pair(FORM_D, true)
+                                                            val formName =
+                                                                formPictureScreenViewModel.getFormSubPath(
+                                                                    FORM_D,
+                                                                    formPictureScreenViewModel.formDPageList.value.size + 1
+                                                                ) + "_" + System.currentTimeMillis()
+                                                                    .toDateInMMDDYYFormat()
+                                                            val imageFile =
+                                                                formPictureScreenViewModel.getImageFileName(
+                                                                    context,
+                                                                    formName
+                                                                )
+                                                            formPictureScreenViewModel.imagePathForCapture =
+                                                                imageFile.absolutePath
+                                                            val uri = uriFromFile(
+                                                                context = context,
+                                                                imageFile
+                                                            )
                                                             formPictureScreenViewModel.tempUri = uri
                                                             cameraLauncher.launch(uri)
                                                         } else {
@@ -778,7 +908,10 @@ fun FormPictureScreen(
                                                         localContext as Activity,
                                                         Manifest.permission.CAMERA
                                                     ) -> {
-                                                        NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                        NudgeLogger.d(
+                                                            "PatImagePreviewScreen",
+                                                            "Show camera permissions dialog"
+                                                        )
                                                         ActivityCompat.requestPermissions(
                                                             localContext as Activity,
                                                             arrayOf(
@@ -791,7 +924,10 @@ fun FormPictureScreen(
                                                     }
 
                                                     else -> {
-                                                        NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                        NudgeLogger.d(
+                                                            "requestCameraPermission: ",
+                                                            "permission not granted"
+                                                        )
                                                         shouldRequestPermission.value = true
                                                     }
                                                 }
@@ -803,23 +939,40 @@ fun FormPictureScreen(
                                                 index
                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                 Pair(FORM_D, true)
-                                            val formName = formPictureScreenViewModel.getFormSubPath(
-                                                formPictureScreenViewModel.shouldShowCamera.value.first,
-                                                formPictureScreenViewModel.formDPageList.value.size + 1
-                                            ) + "_" + System.currentTimeMillis()
-                                                .toDateInMMDDYYFormat()
-                                            val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
-                                            formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                            val formName =
+                                                formPictureScreenViewModel.getFormSubPath(
+                                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                    formPictureScreenViewModel.formDPageList.value.size + 1
+                                                ) + "_" + System.currentTimeMillis()
+                                                    .toDateInMMDDYYFormat()
+                                            val imageFile =
+                                                formPictureScreenViewModel.getImageFileName(
+                                                    context,
+                                                    formName
+                                                )
+                                            formPictureScreenViewModel.imagePathForCapture =
+                                                imageFile.absolutePath
                                             val uri = uriFromFile(context = context, imageFile)
                                             formPictureScreenViewModel.tempUri = uri
                                             cameraLauncher.launch(uri)
                                         },
                                         deleteButtonClicked = {
-                                            formPictureScreenViewModel.formDPageList.value = mutableListOf()
-                                            formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
-                                            formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
+                                            formPictureScreenViewModel.formDPageList.value =
+                                                mutableListOf()
+                                            formPictureScreenViewModel.formDImageList.value =
+                                                mutableMapOf()
+                                            formPictureScreenViewModel.formsDClicked.value =
+                                                --formPictureScreenViewModel.formsDClicked.value
                                             for (i in 1..MAX_IMAGE_FOR_FORM_C_OR_D) {
-                                                formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
+                                                formPictureScreenViewModel.repository.prefRepo.savePref(
+                                                    formPictureScreenViewModel.getFormPathKey(
+                                                        formPictureScreenViewModel.getFormSubPath(
+                                                            FORM_D,
+                                                            i
+                                                        )
+                                                    ),
+                                                    ""
+                                                )
                                             }
                                         }
                                     )
@@ -827,9 +980,11 @@ fun FormPictureScreen(
                             }
                         }
 
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.CenterHorizontally)) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.CenterHorizontally)
+                        ) {
                             Spacer(modifier = Modifier.height(10.dp))
                             Text(
                                 text = stringResource(id = R.string.reference_of_forms),
@@ -853,7 +1008,7 @@ fun FormPictureScreen(
                                         context.getString(R.string.no_data_form_a_not_generated_text)
                                     )
                             }
-                            formLinkView(linkText = stringResource(id = R.string.link_of_b) ) {
+                            formLinkView(linkText = stringResource(id = R.string.link_of_b)) {
                                 formPictureScreenViewModel.showLoaderForTime(500)
                                 if (formPictureScreenViewModel.formBAvailable.value) {
                                     navController.navigate(VoEndorsmentScreeens.FORM_B_SCREEN.route)
@@ -865,14 +1020,12 @@ fun FormPictureScreen(
                             }
                         }
                     }
-
-
-
                 }
-
-
-
-
+                if (formPictureScreenViewModel.formCPageList.value.isNotEmpty() || formPictureScreenViewModel.formDPageList.value.isNotEmpty()) {
+                    BackHandler() {
+                        showBackPopup.value = true
+                    }
+                }
 
                 if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formCPageList.value.isNotEmpty() && formPictureScreenViewModel.formDPageList.value.isNotEmpty()) {
                     DoubleButtonBox(
@@ -892,7 +1045,9 @@ fun FormPictureScreen(
                         positiveButtonOnClick = {
                             NudgeLogger.d("FormPictureScreen", "submit button clicked")
                             formPictureScreenViewModel.repository.prefRepo.savePref(
-                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,true)
+                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
+                                true
+                            )
                             formPictureScreenViewModel.updateVoEndorsementEditFlag()
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
                             formPictureScreenViewModel.markVoEndorsementComplete(
@@ -909,7 +1064,11 @@ fun FormPictureScreen(
 
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
-                                    getVoNameForState(context,formPictureScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed_message)
+                                    getVoNameForState(
+                                        context,
+                                        formPictureScreenViewModel.getStateId(),
+                                        R.plurals.vo_endorsement_completed_message
+                                    )
                                         .replace(
                                             "{VILLAGE_NAME}",
                                             formPictureScreenViewModel.villageEntity.value?.name ?: BLANK_STRING
@@ -926,7 +1085,6 @@ fun FormPictureScreen(
         }
     }
 }
-
 private fun handleImageCapture(
     uri: Uri,
     photoPath: String,
@@ -998,7 +1156,11 @@ private fun handleImageCapture(
     viewModal.shouldShowCamera.value = Pair("", false)
 }
 
-private fun requestCameraPermission(context: Activity, viewModal: FormPictureScreenViewModel, requestPermission: () -> Unit) {
+private fun requestCameraPermission(
+    context: Activity,
+    viewModal: FormPictureScreenViewModel,
+    requestPermission: () -> Unit
+) {
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
 
@@ -1246,14 +1408,15 @@ fun ExpandableFormPictureCard(
                     )
                 }
             }
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(10.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 26.dp)
-            ,
+                    .padding(horizontal = 26.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -1334,7 +1497,8 @@ fun ExpandableFormPictureCard(
                             .background(Color.Transparent)
                             .align(Alignment.Center),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_delete_icon),
                             contentDescription = "delete form image",
@@ -1365,9 +1529,11 @@ fun ExpandableFormPictureCard(
                     modifier = Modifier.padding(horizontal = 26.dp)
                 )
             }
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(10.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+            )
         }
     }
 }
@@ -1439,37 +1605,37 @@ fun PageItem(
 }
 
 
-    @Composable
-    fun formLinkView(linkText: String, onLinkClick: () -> Unit) {
+@Composable
+fun formLinkView(linkText: String, onLinkClick: () -> Unit) {
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Column {
-                Text(
-                    text = linkText,
-                    style = TextStyle(
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        textDecoration = TextDecoration.Underline
-                    ),
-                    color = textColorDark,
-                    modifier = Modifier.clickable {
-                        onLinkClick()
-                    }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column {
+            Text(
+                text = linkText,
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    textDecoration = TextDecoration.Underline
+                ),
+                color = textColorDark,
+                modifier = Modifier.clickable {
+                    onLinkClick()
+                }
+            )
+            Spacer(modifier = Modifier.height(4.dp))
 
-            }
         }
     }
+}
 
 
 @Preview(showBackground = true)
 @Composable
-fun formAAndBLinksPreview(){
+fun formAAndBLinksPreview() {
     formLinkView(linkText = "Link To Form A", onLinkClick = {})
 }

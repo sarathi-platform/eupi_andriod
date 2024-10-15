@@ -897,6 +897,33 @@ fun <T> List<T>?.value(): List<T> {
     return this ?: emptyList()
 }
 
+fun <T, R> List<T>.ifNotEmpty(block: (List<T>) -> R): R? {
+
+    if (this.isEmpty())
+        return null
+
+    return block(this)
+
+}
+
+fun String.equals(others: List<String>, ignoreCase: Boolean = false): Boolean {
+    var result = false
+    if (others.isEmpty())
+        return result
+
+    result = this.equals(others[0], ignoreCase)
+
+    if (others.size == 1) {
+        return result
+    }
+
+    others.drop(1).forEach { s2 ->
+        result = result || this.equals(s2, ignoreCase)
+    }
+
+    return result
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -906,9 +933,9 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
+fun getDayPriorCurrentTimeMillis(sourceDuration: Long, sourceUnit: TimeUnit = TimeUnit.DAYS): Long {
     val currentTime = System.currentTimeMillis()
-    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, sourceUnit)
 }
 
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
@@ -1236,4 +1263,15 @@ fun openSettings() {
     }
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
+}
+
+fun replaceLastWord(sentence: String?, newWord: String?): String {
+    if (sentence.isNullOrBlank() || newWord.isNullOrBlank()) {
+        return sentence ?: BLANK_STRING
+    }
+    val words = sentence.split(" ").toMutableList()
+    if (words.isNotEmpty()) {
+        words[words.size - 1] = newWord
+    }
+    return words.joinToString(" ")
 }

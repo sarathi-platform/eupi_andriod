@@ -1,6 +1,9 @@
 package com.sarathi.surveymanager.ui.screen
 
 import android.text.TextUtils
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -8,6 +11,8 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,22 +22,32 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -45,12 +60,12 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
-import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
+import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -90,6 +105,12 @@ fun BaseSurveyScreen(
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    BackHandler {
+        navController.popBackStack()
+        navController.popBackStack()
+    }
+
     LaunchedEffect(key1 = true) {
         viewModel.setPreviousScreenData(
             surveyId,
@@ -123,20 +144,11 @@ fun BaseSurveyScreen(
 
         },
         onBottomUI = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(R.string.submit),
-                    isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
-                    isLeftArrow = false,
-                    onClick = {
-                        onSubmitButtonClick()
-                    }
-                )
-            }
+            SubmitButtonBottomUi(
+                isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                buttonTitle = stringResource(R.string.submit),
+                onSubmitButtonClick = onSubmitButtonClick
+            )
         },
         onContentUI = {
             BoxWithConstraints(
@@ -219,7 +231,10 @@ fun QuestionUiContent(
     index: Int
 ) {
     when (question.type) {
-        QuestionType.InputNumber.name -> {
+        QuestionType.InputNumber.name,
+        QuestionType.TextField.name,
+        QuestionType.NumericField.name,
+        QuestionType.InputText.name -> {
             InputComponent(
                 maxLength = 7,
                 isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
@@ -237,13 +252,14 @@ fun QuestionUiContent(
                 defaultValue = question.options?.firstOrNull()?.selectedValue
                     ?: BLANK_STRING,
                 title = question.questionDisplay,
-                isOnlyNumber = true,
+                isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
                 hintText = question.options?.firstOrNull()?.description
                     ?: BLANK_STRING
             ) { selectedValue, remainingAmout ->
                 viewModel.totalRemainingAmount = remainingAmout
                 saveInputTypeAnswer(selectedValue, question, viewModel)
                 onAnswerSelect(question)
+                viewModel.checkButtonValidation()
             }
         }
 
@@ -260,7 +276,7 @@ fun QuestionUiContent(
             ) { selectedValue ->
                 saveInputTypeAnswer(selectedValue, question, viewModel)
                 onAnswerSelect(question)
-
+                viewModel.checkButtonValidation()
             }
         }
 
@@ -404,6 +420,60 @@ fun QuestionUiContent(
                 }
             )
         }
+    }
+}
+
+@Composable
+fun FormQuestionUiContent(
+    question: QuestionUiModel,
+    sanctionedAmount: Int,
+    totalSubmittedAmount: Int,
+    viewModel: BaseSurveyScreenViewModel,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
+    maxHeight: Dp,
+    grantType: String,
+    index: Int,
+    onClick: () -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(dimen_2_dp)
+    ) {
+        BasicCardView(
+
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .padding(dimen_16_dp)
+            ) {
+                Column {
+                    QuestionComponent(
+                        title = question.questionDisplay,
+                        questionNumber = getQuestionNumber(index),
+                        isRequiredField = question.isMandatory
+                    )
+
+                    Row(modifier = Modifier
+                        .clickable(enabled = true) {
+                            onClick()
+                        }
+                        .fillMaxWidth()
+                        .background(if (true) blueDark else languageItemActiveBg)
+                        .padding(dimen_10_dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+
+                    ) {
+                        Text(
+                            text = question.questionSummary.value(),
+                            style = defaultTextStyle.copy(color = if (true) white else greyColor)
+                        )
+                    }
+                }
+            }
+
+        }
+        CustomVerticalSpacer()
     }
 }
 
