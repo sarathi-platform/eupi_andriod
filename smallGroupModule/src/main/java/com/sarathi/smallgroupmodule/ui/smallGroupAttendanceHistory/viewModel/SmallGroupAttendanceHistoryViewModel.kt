@@ -78,7 +78,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                             event.smallGroupId
                         )
 
-                    setDateRangeToOldest(event.smallGroupId)
+                    setDateRangeStartDateToOldestEntryDate(event.smallGroupId)
 
                     _subjectAttendanceHistoryStateList.value =
                         smallGroupAttendanceHistoryUseCase.fetchSmallGroupAttendanceHistoryFromDbUseCase.invoke(
@@ -168,7 +168,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun setDateRangeToOldest(smallGroupId: Int) {
+    private suspend fun setDateRangeStartDateToOldestEntryDate(smallGroupId: Int) {
         val subjectIds =
             smallGroupAttendanceHistoryUseCase.fetchSmallGroupAttendanceHistoryFromDbUseCase.fetchSubjectIdsForSmallGroup(
                 smallGroupId
