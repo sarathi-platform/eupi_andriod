@@ -99,7 +99,7 @@ class DidiTabViewModel @Inject constructor(
     private fun initDidiTab() {
         ioViewModelScope {
             _didiList.value = didiTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
-            _filteredDidiList.value = didiList.value
+            _filteredDidiList.value = didiList.value.sortedBy { it.subjectName }
             _smallGroupList.value =
                 didiTabUseCase.fetchSmallGroupListsFromDbUseCase.invoke()
             _filteredSmallGroupList.value = smallGroupList.value
@@ -142,9 +142,9 @@ class DidiTabViewModel @Inject constructor(
                     filteredList.add(subjectEntity)
                 }
             }
-            filteredList
+            filteredList.sortedBy { it.subjectName }
         } else {
-            didiList.value
+            didiList.value.sortedBy { it.subjectName }
         }
     }
 
