@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -11,7 +12,9 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
+import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
@@ -52,6 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.nudge.core.R as CoreRes
 
 
 @HiltViewModel
@@ -109,6 +113,8 @@ open class TaskScreenViewModel @Inject constructor(
      * */
 
     var isFilterApplied = mutableStateOf(false)
+
+    var filterLabel = BLANK_STRING
 
     var isActivityCompleted = mutableStateOf(false)
 
@@ -190,32 +196,46 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun updateListForSelectedFilter() {
 
+        val context = CoreAppDetails.getContext()
+
         val sortedList = taskList.value
 
         val tempFilterTaskMap = sortedList
             .filter {
-                it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
-                    filterByValueKey.value, ignoreCase = true
-                )
+                getFilterByPredicate(it, context)
             }.toHashMap()
         filterTaskMap =
             tempFilterTaskMap.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
-        val tempFilterList = sortedList.filter {
-            it.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
-                filterByValueKey.value, ignoreCase = true
-            )
-        }
+        val tempFilterList = sortedList.filter { getFilterByPredicate(it, context) }
         _filterList.value =
             tempFilterList.toList()
                 .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }
                 .toMap().toLinkedHashMap()
     }
 
+    private fun getFilterByPredicate(
+        mapEntry: Map.Entry<Int, HashMap<String, TaskCardModel>>,
+        context: Context?
+    ): Boolean {
+        return mapEntry.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
+            getFilterByValueKeyWithoutLabel(context), ignoreCase = true
+        ).value()
+    }
+
+    fun getFilterByValueKeyWithoutLabel(context: Context?): String {
+        return filterByValueKey.value.replace(
+            context?.getString(CoreRes.string.small_group_filter_label).value(), BLANK_STRING
+        ).trim()
+    }
+
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val context = CoreAppDetails.getContext()
+
             activityConfigUiModelWithoutSurvey =
                 getActivityUiConfigUseCase.getActivityConfig(activityId, missionId)
             onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -267,6 +287,8 @@ open class TaskScreenViewModel @Inject constructor(
                             ?: BLANK_STRING).isNotBlank()
                     ) {
                         isFilterEnabled.value = true
+                        filterLabel = context?.getString(CoreRes.string.small_group_filter_label)
+                            .value()/*getFilterLabel(context, _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.label }.first())*/
                     }
                     val progressUiComponent = getUiComponentValues(
                         taskId = it.taskId,
@@ -306,7 +328,7 @@ open class TaskScreenViewModel @Inject constructor(
 
             if (isFilterEnabled.value) {
 
-                createFilterByList()
+                createFilterByList(context)
                 updateFilterForActivity(activityId)
             }
 
@@ -334,14 +356,31 @@ open class TaskScreenViewModel @Inject constructor(
 
     }
 
-    private fun createFilterByList() {
-        val context = CoreAppDetails.getContext()
+    private fun createFilterByList(context: Context?) {
         val allOption = context?.getString(R.string.all_filter_text)
+
         _filterByList.clear()
-        _filterByList.add(allOption)
-        _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.value }.let {
-            _filterByList.addAll(it.distinct())
+
+        _filterByList.add(filterLabel + allOption)
+        _filterByList.add(filterLabel + NO_SG_FILTER_VALUE)
+
+        _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.value }
+            .filter { it != NO_SG_FILTER_VALUE }.let {
+            it.distinct().forEach { filterByItem ->
+                _filterByList.add(filterLabel + filterByItem)
+            }
         }
+    }
+
+    private fun getFilterLabel(context: Context?, filterLabel: String?): String {
+        var result = BLANK_STRING
+        result = when (filterLabel) {
+            FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(CoreRes.string.small_group_filter_label)
+                .value()
+
+            else -> BLANK_STRING
+        }
+        return result
     }
 
     fun updateProgress() {

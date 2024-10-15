@@ -32,5 +32,6 @@
     <string name="end_date_label">অন্তিম তাৰিখ</string>
     <string name="reopen_activity_step_1">পদক্ষেপ 1</string>
     <string name="reopen_activity_step_2">পদক্ষেপ 2</string>
+    <string name="small_group_filter_label">"Filter by Small group: "</string>
 
 </resources>
