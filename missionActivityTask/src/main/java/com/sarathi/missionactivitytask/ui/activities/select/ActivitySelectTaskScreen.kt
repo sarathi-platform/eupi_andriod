@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.activities.select
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -94,6 +95,10 @@ fun ActivitySelectTaskScreen(
     programId:Int,
         onSettingClick: () -> Unit
 ) {
+
+    BackHandler {
+        navController.popBackStack()
+    }
 
     TaskScreen(
         missionId = missionId,

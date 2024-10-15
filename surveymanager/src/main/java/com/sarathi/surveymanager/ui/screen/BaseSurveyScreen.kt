@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.screen
 
 import android.text.TextUtils
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -104,6 +105,12 @@ fun BaseSurveyScreen(
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    BackHandler {
+        navController.popBackStack()
+        navController.popBackStack()
+    }
+
     LaunchedEffect(key1 = true) {
         viewModel.setPreviousScreenData(
             surveyId,

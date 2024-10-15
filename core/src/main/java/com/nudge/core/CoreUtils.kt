@@ -933,9 +933,9 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
+fun getDayPriorCurrentTimeMillis(sourceDuration: Long, sourceUnit: TimeUnit = TimeUnit.DAYS): Long {
     val currentTime = System.currentTimeMillis()
-    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, sourceUnit)
 }
 
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
