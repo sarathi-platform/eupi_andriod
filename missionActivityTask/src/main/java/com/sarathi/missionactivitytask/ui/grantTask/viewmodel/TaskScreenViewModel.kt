@@ -365,7 +365,7 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     private fun getFilterLabel(context: Context?, filterLabel: String?): String {
-        var result = ""
+        var result = BLANK_STRING
         result = when (filterLabel) {
             FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(CoreRes.string.small_group_filter_label)
                 .value()
