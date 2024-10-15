@@ -1159,7 +1159,7 @@ fun DidiItemCard(
                                         color = textColorDark
                                     )
                                 }
-                                if (didi.rankingEdit) {
+                                if (didi.patEdit) {
                                     DropdownMenuItem(onClick = {
                                         showMenu.value = false
                                         onDeleteClicked(didi)

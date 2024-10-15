@@ -85,7 +85,7 @@
         <item quantity="other">"जागोन "</item>
     </plurals>
 
-    <string name="data_change_not_allow">"Date changes are not allowed for attendance edits!"</string>
+    <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\nIf the date is incorrect, then please delete the entry and enter new attendance."</string>
 
     <plurals name="submit">
         <item quantity="one">गथाय</item>

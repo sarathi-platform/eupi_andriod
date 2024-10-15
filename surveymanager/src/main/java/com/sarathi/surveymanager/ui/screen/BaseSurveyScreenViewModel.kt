@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -143,72 +142,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAllAnswerIntoDB() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            questionUiModel.value.forEach { question ->
-                saveQuestionAnswerIntoDb(question)
-
-            }
-            if (sanctionAmount != 0) {
-                val formEntity = fromEUseCase.saveFormEData(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                    taskId = taskId,
-                    surveyId = surveyId,
-                    missionId = taskEntity?.missionId ?: -1,
-                    activityId = taskEntity?.activityId ?: -1,
-                    subjectType = subjectType,
-                    referenceId = referenceId
-                )
-                formEventWriterUseCase.writeFormEvent(
-                    surveyName = questionUiModel.value.firstOrNull()?.surveyName ?: BLANK_STRING,
-                    formEntity = formEntity,
-
-                    )
-            }
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name || taskEntity?.status == SurveyStatusEnum.COMPLETED.name) {
-                taskStatusUseCase.markTaskInProgress(
-                    taskId = taskId
-                )
-                taskStatusUseCase.markActivityInProgress(
-                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
-                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
-                )
-                taskStatusUseCase.markMissionInProgress(
-                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
-                )
-                taskEntity = getTaskUseCase.getTask(taskId)
-                taskEntity?.let {
-                    matStatusEventWriterUseCase.markMATStatus(
-                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
-                            ?: BLANK_STRING,
-                        subjectType = subjectType,
-                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
-                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
-                        taskId = taskEntity?.taskId ?: DEFAULT_ID,
-                        isFromRegenerate = false
-
-                    )
-                }
-
-            }
-            surveyAnswerEventWriterUseCase.invoke(
-                questionUiModels = questionUiModel.value,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
-                referenceId = referenceId,
-                grantId = grantID,
-                grantType = granType,
-                taskId = taskId,
-                isFromRegenerate = false,
-                activityId = activityConfig?.activityId.value(),
-                activityReferenceId = activityConfig?.referenceId,
-                activityReferenceType = activityConfig?.referenceType
-            )
-
-        }
-
-    }
 
     protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
         saveSurveyAnswerUseCase.saveSurveyAnswer(
@@ -246,11 +179,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     }
 
-    fun saveButtonClicked() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveAllAnswerIntoDB()
-        }
-    }
 
     fun setPreviousScreenData(
         surveyId: Int,

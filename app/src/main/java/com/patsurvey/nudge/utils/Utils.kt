@@ -852,7 +852,7 @@ fun roundOffDecimalFloat(number: Float): Float? {
         val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
         df.roundingMode = RoundingMode.CEILING
         df.format(number).toFloat()
-    }catch (ex:Exception){
+    } catch (ex: Exception) {
         NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
         0.00f
     }
@@ -1281,7 +1281,10 @@ fun updateStepStatus(
     }
 }
 
-fun addDefaultLanguage(languageListDao: LanguageListDao,baselineLanguageDao:com.nrlm.baselinesurvey.database.dao.LanguageListDao) {
+fun addDefaultLanguage(
+    languageListDao: LanguageListDao,
+    baselineLanguageDao: com.nrlm.baselinesurvey.database.dao.LanguageListDao
+) {
     languageListDao.insertAll(
         listOf(
             LanguageEntity(

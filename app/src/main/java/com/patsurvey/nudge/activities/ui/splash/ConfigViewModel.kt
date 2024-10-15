@@ -112,7 +112,10 @@ class ConfigViewModel @Inject constructor(
                 "checkAndAddLanguage -> localLanguages: $localLanguages"
             )
             if (localLanguages.isEmpty())
-                addDefaultLanguage(configRepository.languageListDao,configRepository.baselineLanguageDao)
+                addDefaultLanguage(
+                    configRepository.languageListDao,
+                    configRepository.baselineLanguageDao
+                )
         }
     }
 
