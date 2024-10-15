@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -78,7 +77,7 @@ fun CustomDatePickerComponent(
 fun rememberCustomDatePickerState(
     @Suppress("AutoBoxing") initialSelectedDateMillis: Long? = getCurrentTimeInMillis(),
     @Suppress("AutoBoxing") initialDisplayedMonthMillis: Long? = initialSelectedDateMillis,
-    yearRange: IntRange = DatePickerDefaults.YearRange,
+    yearRange: IntRange = CustomDatePickerDefaults.YearRange,
     initialDisplayMode: DisplayMode = DisplayMode.Picker
 ): CustomDatePickerState {
     return rememberDatePickerState(
@@ -94,8 +93,8 @@ fun rememberCustomDatePickerState(
 fun rememberCustomDatePickerDialogProperties(
     modifier: Modifier = Modifier,
     showDatePickerDialog: Boolean = false,
-    shape: Shape = DatePickerDefaults.shape,
-    tonalElevation: Dp = DatePickerDefaults.TonalElevation,
+    shape: Shape = CustomDatePickerDefaults.shape,
+    tonalElevation: Dp = CustomDatePickerDefaults.TonalElevation,
     colors: CustomDatePickerColors = CustomDatePickerDefaults.colors(
         containerColor = searchFieldBg
     ),

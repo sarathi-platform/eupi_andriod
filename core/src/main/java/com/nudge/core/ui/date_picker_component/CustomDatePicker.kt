@@ -354,7 +354,8 @@ object CustomDatePickerDefaults {
         }
     }
 
-    val YearRange: IntRange = IntRange(1900, 2100)
+    val YearRange: IntRange = // IntRange(1900, 2100)
+        IntRange(2023, 2100)
 
     val TonalElevation: Dp = ContainerElevation
 
@@ -876,9 +877,12 @@ private fun DatePickerContent(
             },
             onPreviousClicked = {
                 coroutineScope.launch {
-                    monthsListState.animateScrollToItem(
-                        monthsListState.firstVisibleItemIndex - 1
-                    )
+                    val firstVisibleItemIndex = monthsListState.firstVisibleItemIndex
+                    if (firstVisibleItemIndex - 1 >= 0) {
+                        monthsListState.animateScrollToItem(
+                            firstVisibleItemIndex - 1
+                        )
+                    }
                 }
             },
             onYearPickerButtonClicked = { yearPickerVisible = !yearPickerVisible }

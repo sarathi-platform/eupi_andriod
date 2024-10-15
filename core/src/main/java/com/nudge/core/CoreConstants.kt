@@ -79,6 +79,8 @@ const val DEFAULT_LANGUAGE_ID = 2
 const val ATTENDANCE_TAG_ID = 94
 const val DEFAULT_DATE_RANGE_DURATION: Long = 30
 const val WEEK_DURATION_RANGE: Long = 7
+const val ONE_YEAR_RANGE_DURATION: Long = 365
+const val SIX_MONTH_RANGE_DURATION: Long = 183
 
 const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
