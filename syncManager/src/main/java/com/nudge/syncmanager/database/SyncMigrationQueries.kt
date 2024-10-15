@@ -38,7 +38,7 @@ object SyncMigrationQueries {
                 "    retryCount INTEGER NOT NULL DEFAULT 0,\n" +
                 "    requestId TEXT,\n" +
                 "    errorMessage TEXT,\n" +
-                "    imageEventId TEXT NOT NULL\n" +
+                "    imageEventId TEXT NOT NULL,\n" +
                 "    blobUrl TEXT \n" +
                 ")"
 

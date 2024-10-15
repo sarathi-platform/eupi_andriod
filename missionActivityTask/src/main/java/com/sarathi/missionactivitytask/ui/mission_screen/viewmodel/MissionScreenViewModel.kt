@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
 import android.content.Context
+import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -152,10 +153,13 @@ class MissionScreenViewModel @Inject constructor(
 
     fun getStateId() = fetchAllDataUseCase.getStateId()
     fun isBaselineV1Mission(missionName: String): Boolean {
-        val baseline_v1_ids =
+        var baseline_v1_ids =
             fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
-                .parseStringToList()
-        return baseline_v1_ids.contains(getStateId()) && missionName.contains(
+        if (TextUtils.isEmpty(baseline_v1_ids)) {
+            baseline_v1_ids = "[4,31]"
+        }
+
+        return baseline_v1_ids.parseStringToList().contains(getStateId()) && missionName.contains(
             BASELINE_MISSION_NAME,
             true
         )
