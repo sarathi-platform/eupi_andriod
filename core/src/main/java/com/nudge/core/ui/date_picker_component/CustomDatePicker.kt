@@ -354,8 +354,7 @@ object CustomDatePickerDefaults {
         }
     }
 
-    val YearRange: IntRange = // IntRange(1900, 2100)
-        IntRange(2023, 2100)
+    val YearRange: IntRange = IntRange(2023, 2100) // Restricting year range to start from 2023 as part of SARATHI-3198
 
     val TonalElevation: Dp = ContainerElevation
 
