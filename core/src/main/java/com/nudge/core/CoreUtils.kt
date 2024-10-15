@@ -108,10 +108,22 @@ fun Long.toDateInMonthString(): String {
     return format.format(dateTime)
 }
 fun String.toInMillisec(format: String): Long {
-    val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
-    val date = dateFormat.parse(this)
-    val millis = date?.time
-    return millis ?: 0
+    try {
+
+
+        val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
+        val date = dateFormat.parse(this)
+        val millis = date?.time
+        return millis ?: 0
+
+    } catch (parseException: Exception) {
+        CoreLogger.e(
+            msg = parseException.message ?: BLANK_STRING,
+            tag = "Exception",
+            ex = parseException
+        )
+        return 0
+    }
 }
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 
