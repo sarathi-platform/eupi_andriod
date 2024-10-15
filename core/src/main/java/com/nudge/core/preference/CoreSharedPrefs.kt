@@ -3,8 +3,18 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
+import com.nudge.core.DEFAULT_HARD_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD
+import com.nudge.core.PREF_BUILD_ENVIRONMENT
+import com.nudge.core.PREF_DATA_TAB_VISIBILITY
+import com.nudge.core.PREF_HARD_EVENT_LIMIT_THRESHOLD
+import com.nudge.core.PREF_MIX_PANEL_TOKEN
+import com.nudge.core.PREF_SOFT_EVENT_LIMIT_THRESHOLD
+import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
+import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.value
@@ -20,6 +30,8 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
+        const val PREF_PRODUCER_WORKER_ID = "producer_worker_id"
+
         const val PREF_MOBILE_NO_NAME = "pref_mobile_number"
         const val PREF_USER_TYPE = "type_name"
         const val PREF_KEY_NAME = "key_name"
@@ -36,6 +48,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_USER_ID = "user_id"
         const val PREF_KEY_DATA_LOADED = "is_data_loaded"
         const val PREF_KEY_DIDI_TAB_DATA_LOADED = "is_didi_tab_data_loaded"
+        const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
+        const val PREF_KEY_SYNC_BATCH_SIZE = "sync_batch_size"
+        const val PREF_KEY_SYNC_RETRY_COUNT = "sync_retry_count"
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
 
 
@@ -126,12 +141,12 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun getUserId(): String {
-        return prefs.getString(PREF_KEY_USER_ID, BLANK_STRING)
+        return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING)
             ?: BLANK_STRING
     }
 
     override fun saveUserId(userId: String) {
-        prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
+        prefs.edit().putString(PREF_KEY_USER_NAME, userId).apply()
     }
 
     override fun setUserId(userId: String) {
@@ -216,7 +231,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun savePref(key: String, value: Long) {
-        TODO("Not yet implemented")
+        prefs.edit().putLong(key, value).apply()
     }
 
     override fun savePref(key: String, value: Float) {
@@ -252,4 +267,73 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
 
+    override fun saveDataTabVisibility(isEnabled: Boolean) {
+        savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
+    }
+
+    override fun getSyncBatchSize(): Int {
+        return prefs.getLong(PREF_KEY_SYNC_BATCH_SIZE, 0L).toInt()
+    }
+
+    override fun getSyncRetryCount(): Int {
+        return prefs.getLong(PREF_KEY_SYNC_RETRY_COUNT, 0L).toInt()
+    }
+
+    override fun saveIsSyncEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_SYNC_ENABLED, isEnabled).apply()
+    }
+
+    override fun getBuildEnvironment(): String {
+        return getPref(PREF_BUILD_ENVIRONMENT, DEFAULT_BUILD_ENVIRONMENT)
+    }
+
+    override fun saveBuildEnvironment(buildEnv: String) {
+        savePref(PREF_BUILD_ENVIRONMENT, buildEnv)
+    }
+
+    override fun getMixPanelToken(): String {
+        return getPref(PREF_MIX_PANEL_TOKEN, BLANK_STRING)
+    }
+
+    override fun saveMixPanelToken(token: String) {
+        savePref(PREF_MIX_PANEL_TOKEN, token)
+    }
+
+    override fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean) {
+        savePref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, isBlobUploadEnable)
+    }
+
+    override fun isSyncImageBlobUploadEnable(): Boolean {
+        return getPref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, false)
+    }
+
+    override fun saveSyncBatchSize(batchSize: Long) {
+        prefs.edit().putLong(PREF_KEY_SYNC_BATCH_SIZE, batchSize).apply()
+    }
+
+    override fun saveSyncRetryCount(retryCount: Long) {
+        prefs.edit().putLong(PREF_KEY_SYNC_RETRY_COUNT, retryCount).apply()
+    }
+
+    override fun setSyncOptionEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, isEnabled).apply()
+    }
+
+
+    override fun setSoftEventLimitThreshold(threshold: Int) {
+        prefs.edit().putInt(PREF_SOFT_EVENT_LIMIT_THRESHOLD, threshold).apply()
+    }
+
+    override fun getSoftEventLimitThreshold(): Int {
+        return prefs.getInt(PREF_SOFT_EVENT_LIMIT_THRESHOLD, DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD)
+    }
+
+    override fun setHardEventLimitThreshold(threshold: Int) {
+        prefs.edit().putInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, threshold).apply()
+    }
+
+    override fun getHardEventLimitThreshold(): Int {
+        return prefs.getInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, DEFAULT_HARD_EVENT_LIMIT_THRESHOLD)
+
+    }
 }

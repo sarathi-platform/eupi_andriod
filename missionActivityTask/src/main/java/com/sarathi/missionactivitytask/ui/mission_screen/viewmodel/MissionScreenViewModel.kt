@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.parseStringToList
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -27,7 +31,8 @@ class MissionScreenViewModel @Inject constructor(
     private val fetchAllDataUseCase: FetchAllDataUseCase,
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
-    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList
@@ -147,4 +152,13 @@ class MissionScreenViewModel @Inject constructor(
 
     //TODO Temp code remove after data is fetched from API
     fun getStateId() = fetchAllDataUseCase.getStateId()
+    fun isBaselineV1Mission(missionName: String): Boolean {
+        val baseline_v1_ids =
+            fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
+                .parseStringToList()
+        return baseline_v1_ids.contains(getStateId()) && missionName.contains(
+            BASELINE_MISSION_NAME,
+            true
+        )
+    }
 }
