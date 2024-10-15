@@ -16,6 +16,7 @@ const val NO_TOLA_TITLE = "NO TOLA"
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
+const val APP_CONFIG_TABLE = "app_config"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -78,6 +79,8 @@ const val DEFAULT_LANGUAGE_ID = 2
 const val ATTENDANCE_TAG_ID = 94
 const val DEFAULT_DATE_RANGE_DURATION: Long = 30
 const val WEEK_DURATION_RANGE: Long = 7
+const val ONE_YEAR_RANGE_DURATION: Long = 365
+const val SIX_MONTH_RANGE_DURATION: Long = 183
 
 const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
@@ -119,6 +122,13 @@ const val DEFAULT_ERROR_CODE = 500
 
 const val MAX_CELL_COUNT_FOR_SELECT_ACTIVITY = 2
 const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
-const val NOT_DECIDED_LIVELIHOOD_ID = -1
 
+const val NOT_DECIDED_LIVELIHOOD_ID = -1
 const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
+
+const val NOT_DECIDED_LIVELIHOOD_ID = -1
+const val CORE_DATABASE = "CoreDatabase"
+const val CORE_DB_VERSION = 1
+
+const val OPERAND_DELIMITER = "@?"
+const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1

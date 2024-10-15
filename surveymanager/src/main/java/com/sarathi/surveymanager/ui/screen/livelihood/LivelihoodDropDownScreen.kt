@@ -200,6 +200,7 @@ fun DropdownView(
             title = stringResource(R.string.select_first_livelihood_for_didi),
             isMandatory = true,
             enableItem = selectedItem1 ?: DEFAULT_LIVELIHOOD_ID,
+            diableItem = selectedItem2 ?: 0,
             sources = firstDropDownItems,
             onAnswerSelection = { selectedValue ->
                 selectedItem1 = selectedValue.id

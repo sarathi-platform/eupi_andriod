@@ -360,7 +360,7 @@
         <item quantity="one">CLF Endorsement completed</item>
         <item quantity="other">VO Endorsement completed</item>
     </plurals>
-
+    <string name="do_you_want_to_exit">Do you realy want to exit?.</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
     <string name="bpc_verification_in_progress_village_banner_text">BPC Verification In Progress</string>
 
@@ -547,4 +547,6 @@
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">Select Activity for </string>
     <string name="select_all">Select All</string>
+    <string name="refresh_config">Refresh app config</string>
+
 </resources>

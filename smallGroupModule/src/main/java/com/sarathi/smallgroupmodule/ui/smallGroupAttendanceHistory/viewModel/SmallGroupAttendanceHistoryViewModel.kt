@@ -3,8 +3,9 @@ package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
+import com.nudge.core.ONE_YEAR_RANGE_DURATION
 import com.nudge.core.enums.EventType
+import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
@@ -37,7 +38,8 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
 
     private val _dateRangeFilter: MutableState<Pair<Long, Long>> = mutableStateOf(
         Pair(
-            getDayPriorCurrentTimeMillis(DEFAULT_DATE_RANGE_DURATION), System.currentTimeMillis()
+            getDayPriorCurrentTimeMillis(ONE_YEAR_RANGE_DURATION),
+            System.currentTimeMillis()
         )
     )
     val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
@@ -76,7 +78,8 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                             event.smallGroupId
                         )
 
-//                    onEvent(SmallGroupAttendanceEvent.LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent)
+                    setDateRangeStartDateToOldestEntryDate(event.smallGroupId)
+
                     _subjectAttendanceHistoryStateList.value =
                         smallGroupAttendanceHistoryUseCase.fetchSmallGroupAttendanceHistoryFromDbUseCase.invoke(
                             event.smallGroupId,
@@ -162,6 +165,19 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
             is SmallGroupAttendanceEvent.TerminateDeleteForDateEvent -> {
                 deleteHistoryForDateState = null
             }
+        }
+    }
+
+    private suspend fun setDateRangeStartDateToOldestEntryDate(smallGroupId: Int) {
+        val subjectIds =
+            smallGroupAttendanceHistoryUseCase.fetchSmallGroupAttendanceHistoryFromDbUseCase.fetchSubjectIdsForSmallGroup(
+                smallGroupId
+            )
+        val oldestDate =
+            smallGroupAttendanceHistoryUseCase.fetchMarkedDatesUseCase.invoke(subjectIds)
+                .minOrNull()
+        oldestDate?.let { startDate ->
+            onEvent(CommonEvents.UpdateDateRange(startDate, getCurrentTimeInMillis()))
         }
     }
 

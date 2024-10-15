@@ -10,6 +10,7 @@ import com.sarathi.dataloadingmangement.repository.liveihood.IAssetJournalReposi
 import com.sarathi.dataloadingmangement.repository.liveihood.ISubjectLivelihoodEventMapping
 import javax.inject.Inject
 
+
 class WriteLivelihoodEventUseCase @Inject constructor(
     private val assetJournalRepository: IAssetJournalRepository,
     private val moneyJournalRepo: IMoneyJournalRepository,
@@ -23,7 +24,6 @@ class WriteLivelihoodEventUseCase @Inject constructor(
         createdDateTime: Long,
         modifiedDate: Long
     ) {
-
         val livelihoodPayload =
             subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
                 eventData,

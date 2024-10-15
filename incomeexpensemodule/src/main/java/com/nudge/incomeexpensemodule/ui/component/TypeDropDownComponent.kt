@@ -50,6 +50,7 @@ fun TypeDropDownComponent(
         diableItem = diableItem,
         isMandatory = isMandatory,
         selectedItem = selectedValue ?: hintText,
+        isEditAllowed = isEditAllowed,
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it
