@@ -10,4 +10,8 @@ class FetchAppConfigFromCacheOrDbUsecase @Inject constructor(
     suspend operator fun invoke(key: String): String {
         return apiConfigDatabaseRepository.getAppConfig(key)
     }
+
+    fun invokeFromPref(key: String): String {
+        return apiConfigDatabaseRepository.getAppConfigFromPref(key)
+    }
 }

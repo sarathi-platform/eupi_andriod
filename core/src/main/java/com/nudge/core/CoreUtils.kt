@@ -30,6 +30,7 @@ import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -1286,4 +1287,11 @@ fun replaceLastWord(sentence: String?, newWord: String?): String {
         words[words.size - 1] = newWord
     }
     return words.joinToString(" ")
+}
+
+fun String.parseStringToList(): List<Int?> {
+    val gson = Gson()
+    val type = object :
+        TypeToken<List<Int?>?>() {}.type
+    return gson.fromJson<List<Int>>(this, type)
 }
