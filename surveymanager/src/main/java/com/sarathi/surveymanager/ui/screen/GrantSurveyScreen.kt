@@ -38,7 +38,7 @@ fun GrantSurveyScreen(
         totalSubmittedAmount = totalSubmittedAmount,
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
-            viewModel.saveSingleAnswerIntoDb(questionUiModel)
+            //Not needed
         },
         onSubmitButtonClick = {
             viewModel.saveButtonClicked()

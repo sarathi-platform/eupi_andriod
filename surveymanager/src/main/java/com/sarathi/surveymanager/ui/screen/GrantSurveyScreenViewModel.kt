@@ -1,6 +1,5 @@
 package com.sarathi.surveymanager.ui.screen
 
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
@@ -16,7 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,9 +52,60 @@ class GrantSurveyScreenViewModel @Inject constructor(
     getSectionListUseCase
 ) {
 
-    override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
+
+    fun saveButtonClicked() {
+        saveAllAnswerIntoDB()
+
+    }
+
+    fun saveAllAnswerIntoDB() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveQuestionAnswerIntoDb(currentQuestionUiModel)
+            questionUiModel.value.forEach { question ->
+                saveQuestionAnswerIntoDb(question)
+            }
+            if (sanctionAmount != 0) {
+                val formEntity = fromEUseCase.saveFormEData(
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    taskId = taskId,
+                    surveyId = surveyId,
+                    missionId = taskEntity?.missionId ?: -1,
+                    activityId = taskEntity?.activityId ?: -1,
+                    subjectType = subjectType,
+                    referenceId = referenceId
+                )
+                formEventWriterUseCase.writeFormEvent(
+                    surveyName = questionUiModel.value.firstOrNull()?.surveyName
+                        ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                    formEntity = formEntity,
+
+                    )
+            }
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name || taskEntity?.status == SurveyStatusEnum.COMPLETED.name) {
+                taskStatusUseCase.markTaskInProgress(
+                    taskId = taskId
+                )
+                taskStatusUseCase.markActivityInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                )
+                taskStatusUseCase.markMissionInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                )
+                taskEntity = getTaskUseCase.getTask(taskId)
+                taskEntity?.let {
+                    matStatusEventWriterUseCase.markMATStatus(
+                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
+                            ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                        subjectType = subjectType,
+                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                        taskId = taskEntity?.taskId ?: DEFAULT_ID,
+                        isFromRegenerate = false
+
+                    )
+                }
+
+            }
             saveTransactionMoneyJournalUseCase.saveMoneyJournalForGrant(
                 referenceId = referenceId,
                 grantId = grantID,
@@ -64,22 +114,27 @@ class GrantSurveyScreenViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: -1,
                 subjectType = subjectType
             )
-            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
-                questionUiModel = currentQuestionUiModel,
+            surveyAnswerEventWriterUseCase.invoke(
+                questionUiModels = questionUiModel.value,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                taskLocalId = taskEntity?.localTaskId
+                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
                 referenceId = referenceId,
                 grantId = grantID,
                 grantType = granType,
                 taskId = taskId,
-                uriList = ArrayList(),
+                isFromRegenerate = false,
                 activityId = activityConfig?.activityId.value(),
                 activityReferenceId = activityConfig?.referenceId,
-                activityReferenceType = activityConfig?.referenceType,
-                isFromRegenerate = false
+                activityReferenceType = activityConfig?.referenceType
             )
+
+
         }
+
+
     }
+
 
 }
