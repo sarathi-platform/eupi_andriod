@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -64,6 +65,7 @@ import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
@@ -308,7 +310,8 @@ fun TaskScreen(
                                             modifier = Modifier
                                                 .padding(dimen_10_dp)
                                                 .padding(horizontal = dimen_6_dp),
-                                            progressState = viewModel.progressState
+                                            progressState = viewModel.progressState,
+                                            color = greenOnline
                                         )
                                     }
                                 }
@@ -334,7 +337,7 @@ fun TaskScreen(
                                 customVerticalSpacer()
                                 item {
                                     HtmlText(
-                                        text = getFilterAppliedText(viewModel),
+                                        text = getFilterAppliedText(context, viewModel),
                                         modifier = Modifier.padding(horizontal = dimen_16_dp),
                                         style = defaultTextStyle,
                                         fontSize = dimen_16_sp
@@ -424,7 +427,7 @@ fun TaskScreen(
 }
 
 @Composable
-private fun getFilterAppliedText(viewModel: TaskScreenViewModel): String {
+private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewModel): String {
 
     val count = if (viewModel.isGroupingApplied.value) {
         var size = 0
@@ -435,7 +438,7 @@ private fun getFilterAppliedText(viewModel: TaskScreenViewModel): String {
     } else {
         viewModel.filterList.value.size.toString()
     }
-    val filterByKey = viewModel.filterByValueKey.value
+    val filterByKey = viewModel.getFilterByValueKeyWithoutLabel(context)
     val filterValue = if (filterByKey.equals(
             NO_SG_FILTER_VALUE,
             true

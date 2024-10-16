@@ -28,10 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.nudge.core.BLANK_STRING
@@ -107,27 +109,32 @@ fun <T> BottomSheetScaffoldComponent(
                                                         bottomSheetScaffoldProperties.sheetState.hide()
                                                     }
                                                 },
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             val itemValue =
-                                                if (it.equals(NO_SG_FILTER_VALUE, true)) {
-                                                    defaultValue
+                                                if (it.contains(NO_SG_FILTER_VALUE, true)) {
+                                                    it.replace(NO_SG_FILTER_VALUE, defaultValue)
                                                 } else {
                                                     it
                                                 }
                                             CustomTextViewComponent(
                                                 textProperties = TextProperties
-                                                    .getBasicTextProperties(text = itemValue)
+                                                    .getBasicTextProperties(text = itemValue + itemValue)
                                                     .copy(
                                                         style = mediumTextStyle,
                                                         modifier = Modifier
+                                                            .weight(0.9f),
+                                                        overflow = TextOverflow.Ellipsis
                                                     )
                                             )
                                             if (index == selectedItemIndex.value) {
                                                 Icon(
                                                     imageVector = Icons.Default.Check,
                                                     contentDescription = "Selected item",
-                                                    tint = greenOnline
+                                                    tint = greenOnline,
+                                                    modifier = Modifier
+                                                        .weight(0.1f)
                                                 )
                                             }
                                         }

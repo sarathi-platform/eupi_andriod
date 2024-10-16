@@ -18,4 +18,10 @@ class FetchSmallGroupAttendanceHistoryFromDbUseCase @Inject constructor(
         )
     }
 
+    suspend fun fetchSubjectIdsForSmallGroup(smallGroupId: Int): List<Int> {
+        return fetchSmallGroupAttendanceHistoryFromDbRepository.fetchSubjectIdsForSmallGroup(
+            smallGroupId
+        )
+    }
+
 }

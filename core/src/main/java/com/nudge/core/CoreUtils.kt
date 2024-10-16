@@ -116,10 +116,22 @@ fun Long.toDateInMonthString(): String {
     return format.format(dateTime)
 }
 fun String.toInMillisec(format: String): Long {
-    val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
-    val date = dateFormat.parse(this)
-    val millis = date?.time
-    return millis ?: 0
+    try {
+
+
+        val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
+        val date = dateFormat.parse(this)
+        val millis = date?.time
+        return millis ?: 0
+
+    } catch (parseException: Exception) {
+        CoreLogger.e(
+            msg = parseException.message ?: BLANK_STRING,
+            tag = "Exception",
+            ex = parseException
+        )
+        return 0
+    }
 }
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 
@@ -941,9 +953,9 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
+fun getDayPriorCurrentTimeMillis(sourceDuration: Long, sourceUnit: TimeUnit = TimeUnit.DAYS): Long {
     val currentTime = System.currentTimeMillis()
-    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, sourceUnit)
 }
 
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
