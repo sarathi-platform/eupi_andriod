@@ -7,8 +7,12 @@ interface FetchCasteListRepository {
 
     fun getAllCastesForLanguage(languageId: Int): List<CasteEntity>
 
-    fun fetchCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteEntity>>
+    suspend fun fetchCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteEntity>>?
 
-    fun saveCasteListToDb(casteList: List<CasteEntity>)
+    suspend fun saveCasteListToDb(casteList: List<CasteEntity>)
+
+    suspend fun deleteCasteForLanguage(languageId: Int)
+
+
 
 }

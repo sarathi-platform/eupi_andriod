@@ -4,26 +4,41 @@ import com.nudge.core.preference.CorePrefRepo
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchCasteListRepository
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.network.interfaces.ApiService
 import javax.inject.Inject
 
 class FetchCasteListRepositoryImpl @Inject constructor(
-    private val languageListDao: LanguageListDao,
     private val casteListDao: CasteListDao,
+    private val apiService: ApiService,
     private val corePrefRepo: CorePrefRepo
 ) : FetchCasteListRepository {
 
     override fun getAllCastesForLanguage(languageId: Int): List<CasteEntity> {
-        TODO("Not yet implemented")
+        return casteListDao.getAllCasteForLanguage(languageId)
     }
 
-    override fun fetchCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteEntity>> {
-        TODO("Not yet implemented")
+    override suspend fun fetchCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteEntity>>? {
+        val localCasteList = getAllCastesForLanguage(languageId)
+        return if (localCasteList.isEmpty()) {
+            try {
+                apiService.getCasteList(languageId)
+
+            } catch (ex: Exception) {
+                throw ex
+            }
+        } else {
+            null
+        }
     }
 
-    override fun saveCasteListToDb(casteList: List<CasteEntity>) {
-        TODO("Not yet implemented")
+    override suspend fun saveCasteListToDb(casteList: List<CasteEntity>) {
+        casteListDao.insertAll(casteList)
     }
+
+    override suspend fun deleteCasteForLanguage(languageId: Int) {
+        casteListDao.deleteCasteTableForLanguage(languageId)
+    }
+
 
 }

@@ -29,8 +29,8 @@ class FetchCrpDataUseCase @Inject constructor(
                 userViewApiRequest
             )
         if (isUserDetailsFetched) {
-            fetchPatQuestionUseCase.invoke()
-            fetchCasteListUseCase.invoke()
+            fetchPatQuestionUseCase.invoke(isRefresh)
+            fetchCasteListUseCase.invoke(isRefresh)
             onComplete(true)
         } else {
             onComplete(false)

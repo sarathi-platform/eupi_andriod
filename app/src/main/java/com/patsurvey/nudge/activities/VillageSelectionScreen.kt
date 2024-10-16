@@ -155,8 +155,6 @@ fun VillageSelectionScreen(
         val imagesList= (context as MainActivity).quesImageList
         if(imagesList.isNotEmpty()){
             viewModel.onEvent(SelectionEvents.DownloadQuestionImages(imagesList))
-
-
         }
 //        viewModel.saveVideosToDb(context)
     }
@@ -165,13 +163,13 @@ fun VillageSelectionScreen(
     }
 
     val pullRefreshState = rememberPullRefreshState(
-        viewModel.showLoader.value, {
+        viewModel.loaderState.value.isLoaderVisible, {
             viewModel.refreshData()
 
         }
     )
 
-    if (viewModel.showLoader.value) {
+    if (viewModel.loaderState.value.isLoaderVisible) {
         Scaffold(
             modifier = Modifier,
             topBar = {
@@ -378,7 +376,7 @@ fun VillageSelectionScreen(
                     }
                 }
 
-                if (villages.isNotEmpty() && !viewModel.showLoader.value) {
+                if (villages.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -419,7 +417,7 @@ fun VillageSelectionScreen(
                     }
                 }
                 PullRefreshIndicator(
-                    refreshing = viewModel.showLoader.value,
+                    refreshing = viewModel.loaderState.value.isLoaderVisible,
                     state = pullRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter),
                     contentColor = blueDark,

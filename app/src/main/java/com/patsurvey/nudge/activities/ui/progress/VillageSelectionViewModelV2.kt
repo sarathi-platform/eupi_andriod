@@ -34,7 +34,6 @@ class VillageSelectionViewModelV2 @Inject constructor(
 
     val villageSelected = mutableStateOf(0)
     val stateId = mutableStateOf(1)
-    val showLoader = mutableStateOf(false)
     val showUserChangedDialog = mutableStateOf(false)
 
     var isFromOTPScreen: Boolean = false
@@ -47,6 +46,7 @@ class VillageSelectionViewModelV2 @Inject constructor(
 
         when (event) {
             is InitDataEvent.InitDataState -> {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
                 val isSameUser = fetchCrpDataUseCase.compareWithPreviousUser()
                 if (isSameUser)
                     loadAllData(isRefresh = false)
@@ -60,7 +60,8 @@ class VillageSelectionViewModelV2 @Inject constructor(
 
             is SelectionEvents.DownloadQuestionImages -> {
                 event.questionImageList.forEach { imageLink ->
-                    // TODO Download question image using content manager
+
+                // TODO Download question image using content manager
                 }
             }
 
@@ -100,7 +101,6 @@ class VillageSelectionViewModelV2 @Inject constructor(
     }
 
     private fun loadAllData(isRefresh: Boolean = false) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(ioDispatcher + exceptionHandler) {
             fetchCrpDataUseCase.invoke(isRefresh = isRefresh,
                 onComplete = {

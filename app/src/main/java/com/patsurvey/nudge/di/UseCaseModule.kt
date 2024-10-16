@@ -33,18 +33,21 @@ import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.Change
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchCasteListRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchPatQuestionRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchSelectionUserDataRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.LanguageListRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.PreferenceProviderRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.SelectionVillageRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.ChangeUserRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchCasteListRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchPatQuestionRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchSelectionUserDataRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.LanguageListRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.PreferenceProviderRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.SelectionVillageRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.ChangeUserUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCasteListUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCrpDataUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchPatQuestionUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.LanguageListUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.PreferenceProviderUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -180,9 +183,13 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideFetchPatQuestionUseCase(
-        fetchPatQuestionRepository: FetchPatQuestionRepository
+        fetchPatQuestionRepository: FetchPatQuestionRepository,
+        languageListUseCase: LanguageListUseCase
     ): FetchPatQuestionUseCase {
-        return FetchPatQuestionUseCase(fetchPatQuestionRepository = fetchPatQuestionRepository)
+        return FetchPatQuestionUseCase(
+            fetchPatQuestionRepository = fetchPatQuestionRepository,
+            languageListUseCase = languageListUseCase
+        )
     }
 
     @Provides
@@ -190,31 +197,41 @@ object UseCaseModule {
     fun provideFetchPatQuestionRepository(
         languageListDao: LanguageListDao,
         questionListDao: QuestionListDao,
+        apiService: ApiService,
         coreSharedPrefs: CoreSharedPrefs
     ): FetchPatQuestionRepository {
-        return FetchPatQuestionRepositoryImpl(languageListDao, questionListDao, coreSharedPrefs)
+        return FetchPatQuestionRepositoryImpl(
+            languageListDao,
+            questionListDao,
+            apiService,
+            coreSharedPrefs
+        )
     }
 
     @Provides
     @Singleton
     fun provideFetchCasteListUseCase(
-        fetchCasteListRepository: FetchCasteListRepository
+        fetchCasteListRepository: FetchCasteListRepository,
+        languageListUseCase: LanguageListUseCase
     ): FetchCasteListUseCase {
 
-        return FetchCasteListUseCase(fetchCasteListRepository = fetchCasteListRepository)
+        return FetchCasteListUseCase(
+            fetchCasteListRepository = fetchCasteListRepository,
+            languageListUseCase = languageListUseCase
+        )
 
     }
 
     @Provides
     @Singleton
     fun provideFetchCasteListRepository(
-        languageListDao: LanguageListDao,
         casteListDao: CasteListDao,
+        apiService: ApiService,
         coreSharedPrefs: CoreSharedPrefs
     ): FetchCasteListRepository {
         return FetchCasteListRepositoryImpl(
-            languageListDao = languageListDao,
             casteListDao = casteListDao,
+            apiService = apiService,
             corePrefRepo = coreSharedPrefs
         )
     }
@@ -324,5 +341,25 @@ object UseCaseModule {
             languageDao = languageListDao,
             villageListDao = villageListDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesLanguageListUseCase(
+        languageListRepository: LanguageListRepository
+    ): LanguageListUseCase {
+        return LanguageListUseCase(
+            languageListRepository = languageListRepository
+        )
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesLanguageListRepository(
+        languageListDao: LanguageListDao
+    ): LanguageListRepository {
+        return LanguageListRepositoryImpl(languageListDao)
+
     }
 }
