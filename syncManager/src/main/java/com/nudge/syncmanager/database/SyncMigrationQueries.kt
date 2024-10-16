@@ -5,6 +5,11 @@ import com.nudge.core.IMAGE_STATUS_TABLE_NAME
 import com.nudge.core.REQUEST_STATUS_TABLE_NAME
 
 object SyncMigrationQueries {
+    val ALTER_EVENT_TABLE_COLUMN_RESULT_DROP =
+        "ALTER TABLE 'events_table' DROP COLUMN result"
+
+    val ALTER_EVENT_TABLE_COLUMN_CONSUMER_STATUS_DROP =
+        "ALTER TABLE 'events_table' DROP COLUMN consumer_status"
 
     const val ADD_REQUEST_ID_IN_EVENT_TABLE =
         "ALTER TABLE 'events_table' ADD COLUMN 'requestId' TEXT"
@@ -25,7 +30,7 @@ object SyncMigrationQueries {
 
     const val CREATE_IMAGE_STATUS_TABLE =
         "CREATE TABLE IF NOT EXISTS $IMAGE_STATUS_TABLE_NAME (\n" +
-                "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    'id' TEXT PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "    name TEXT NOT NULL,\n" +
                 "    type TEXT NOT NULL,\n" +
                 "    createdDate INTEGER NOT NULL,\n" +
@@ -35,7 +40,7 @@ object SyncMigrationQueries {
                 "    fileName TEXT,\n" +
                 "    filePath TEXT,\n" +
                 "    status TEXT NOT NULL,\n" +
-                "    retryCount INTEGER NOT NULL DEFAULT 0,\n" +
+                "    retryCount INTEGER,\n" +
                 "    requestId TEXT,\n" +
                 "    errorMessage TEXT,\n" +
                 "    imageEventId TEXT NOT NULL,\n" +

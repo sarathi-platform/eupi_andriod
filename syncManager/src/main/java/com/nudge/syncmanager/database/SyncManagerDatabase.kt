@@ -24,6 +24,8 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.database.SyncMigrationQueries.ADD_EVENT_ID_IN_EVENT_TABLE
 import com.nudge.syncmanager.database.SyncMigrationQueries.ADD_REQUEST_ID_IN_EVENT_TABLE
+import com.nudge.syncmanager.database.SyncMigrationQueries.ALTER_EVENT_TABLE_COLUMN_CONSUMER_STATUS_DROP
+import com.nudge.syncmanager.database.SyncMigrationQueries.ALTER_EVENT_TABLE_COLUMN_RESULT_DROP
 import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_EVENT_STATUS_TABLE
 import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_IMAGE_STATUS_TABLE
 import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_REQUEST_STATUS_TABLE
@@ -62,6 +64,8 @@ abstract class SyncManagerDatabase : RoomDatabase() {
                 migration(
                     db,
                     listOf(
+                        ALTER_EVENT_TABLE_COLUMN_RESULT_DROP,
+                        ALTER_EVENT_TABLE_COLUMN_CONSUMER_STATUS_DROP,
                         ADD_REQUEST_ID_IN_EVENT_TABLE,
                         ADD_EVENT_ID_IN_EVENT_TABLE,
                         CREATE_EVENT_STATUS_TABLE,

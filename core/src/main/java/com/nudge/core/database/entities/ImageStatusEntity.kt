@@ -38,16 +38,16 @@ data class ImageStatusEntity(
     val mobileNumber: String,
 
     @ColumnInfo("fileName")
-    val fileName: String,
+    val fileName: String? = BLANK_STRING,
 
     @ColumnInfo("filePath")
-    val filePath: String,
+    val filePath: String? = BLANK_STRING,
 
     @ColumnInfo("status")
     val status: String,
 
     @ColumnInfo("retryCount")
-    val retryCount: Int = 0,
+    val retryCount: Int? = 0,
 
     @ColumnInfo("errorMessage")
     val errorMessage: String? = BLANK_STRING,
