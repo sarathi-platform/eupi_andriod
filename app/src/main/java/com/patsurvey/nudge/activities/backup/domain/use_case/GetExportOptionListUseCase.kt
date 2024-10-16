@@ -10,17 +10,17 @@ import com.patsurvey.nudge.utils.UPCM_USER
 
 class GetExportOptionListUseCase(private val repository: ExportImportRepository) {
 
-    fun fetchExportOptionList():List<SettingOptionModel>{
+    fun fetchExportOptionList(): List<SettingOptionModel> {
         val list = ArrayList<SettingOptionModel>()
-        val context=BaselineCore.getAppContext()
+        val context = BaselineCore.getAppContext()
         list.add(
-                SettingOptionModel(
-                    1,
-                    context.getString(R.string.export_images),
-                    BLANK_STRING,
-                    SettingTagEnum.EXPORT_IMAGES.name
-                )
+            SettingOptionModel(
+                1,
+                context.getString(R.string.export_images),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_IMAGES.name
             )
+        )
 //            list.add(
 //                SettingOptionModel(
 //                    2,
@@ -28,7 +28,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 //                    BLANK_STRING,
 //                    SettingTagEnum.EXPORT_BACKUP_FILE.name
 //                )
-           // )
+        // )
 //            list.add(
 //                SettingOptionModel(
 //                    3,
@@ -67,11 +67,11 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                    7,
-                    context.getString(R.string.load_server_data),
-                    BLANK_STRING,
-                    SettingTagEnum.LOAD_SERVER_DATA.name
-                )
+                7,
+                context.getString(R.string.load_server_data),
+                BLANK_STRING,
+                SettingTagEnum.LOAD_SERVER_DATA.name
+            )
         )
 
         list.add(
@@ -82,7 +82,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.REGENERATE_EVENTS.name
             )
         )
-        if(repository.getLoggedInUserType()== UPCM_USER) {
+        if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
                     9,
@@ -94,9 +94,11 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         }
         return list.ifEmpty { arrayListOf() }
     }
-    fun fetchExportBackupOptionList():List<SettingOptionModel>{
+
+    fun fetchExportDataOptionList(): List<SettingOptionModel> {
         val list = ArrayList<SettingOptionModel>()
-        val context=BaselineCore.getAppContext()
+        val context = BaselineCore.getAppContext()
+
         list.add(
             SettingOptionModel(
                 1,
@@ -129,6 +131,15 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.EXPORT_LOG_FILE.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.export_backup_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
+            )
+        )
+
 //        if (repository.getLoggedInUserType() == UPCM_USER) {
 //            list.add(
 //                SettingOptionModel(

@@ -56,7 +56,7 @@ fun ExportBackupImportScreen(
 
     CommonSettingScreen(
         userType = viewModel.loggedInUserType.value,
-        title = stringResource(id = R.string.export_backup_file),
+        title = stringResource(id = R.string.export_data),
         versionText = BLANK_STRING,
         optionList = viewModel.exportOptionList.value,
         onBackClick = {navController.popBackStack()},
@@ -82,9 +82,10 @@ fun ExportBackupImportScreen(
                     viewModel.compressEventData(context.getString(R.string.export_event_file))
                 }
 
-//                SettingTagEnum.IMPORT_DATA.name ->{
-//                    viewModel.showRestartAppDialog.value=true
-//                }
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name ->{
+          viewModel.compressEventData(context.getString(R.string.share_export_file))
+
+                }
 //
 //                SettingTagEnum.EXPORT_LOG_FILE.name -> {
 //                    viewModel.exportOnlyLogFile(context)

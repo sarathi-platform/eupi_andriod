@@ -114,7 +114,7 @@ class ExportImportViewModel @Inject constructor(
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         _optionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
-        _exportOptionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportBackupOptionList()
+        _exportOptionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportDataOptionList()
 
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()

@@ -489,6 +489,8 @@
     <string name="import_data">Import Data</string>
     <string name="export_images">Export Only Images</string>
     <string name="export_backup_file">Export BackUp File</string>
+    <string name="export_data">Export Data</string>
+
     <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">Backup/Recovery</string>
 
