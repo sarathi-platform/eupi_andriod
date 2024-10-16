@@ -25,7 +25,7 @@ data class ImageStatusEntity(
 
     @ColumnInfo("createDate")
     @TypeConverters(DateConverter::class)
-    val createdDate: Date = System.currentTimeMillis().toDate(),
+    val createdDate: Date? = System.currentTimeMillis().toDate(),
 
     @ColumnInfo("modifiedDate")
     @TypeConverters(DateConverter::class)

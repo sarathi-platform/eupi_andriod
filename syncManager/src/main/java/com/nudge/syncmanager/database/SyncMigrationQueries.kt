@@ -30,10 +30,10 @@ object SyncMigrationQueries {
 
     const val CREATE_IMAGE_STATUS_TABLE =
         "CREATE TABLE IF NOT EXISTS $IMAGE_STATUS_TABLE_NAME (\n" +
-                "    'id' TEXT PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "id TEXT NOT NULL PRIMARY KEY,\n" +
                 "    name TEXT NOT NULL,\n" +
                 "    type TEXT NOT NULL,\n" +
-                "    createdDate INTEGER NOT NULL,\n" +
+                "    createDate INTEGER,\n" +
                 "    modifiedDate INTEGER NOT NULL,\n" +
                 "    createdBy TEXT NOT NULL,\n" +
                 "    mobileNumber TEXT NOT NULL,\n" +
@@ -41,21 +41,21 @@ object SyncMigrationQueries {
                 "    filePath TEXT,\n" +
                 "    status TEXT NOT NULL,\n" +
                 "    retryCount INTEGER,\n" +
-                "    requestId TEXT,\n" +
                 "    errorMessage TEXT,\n" +
-                "    imageEventId TEXT NOT NULL,\n" +
-                "    blobUrl TEXT \n" +
+                "    imageEventId TEXT,\n" +
+                "    requestId TEXT,\n" +
+                "    blobUrl TEXT\n" +
                 ")"
 
     const val CREATE_REQUEST_STATUS_TABLE =
         "CREATE TABLE IF NOT EXISTS $REQUEST_STATUS_TABLE_NAME (\n" +
-                "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
-                "    status TEXT NOT NULL,\n" +
+                "'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    status TEXT,\n" +
                 "    requestId TEXT,\n" +
-                "    createdDate INTEGER NOT NULL,\n" +
+                "    createdDate INTEGER,\n" +
                 "    modifiedDate INTEGER NOT NULL,\n" +
                 "    createdBy TEXT NOT NULL,\n" +
                 "    mobileNumber TEXT NOT NULL,\n" +
-                "    eventCount INTEGER NOT NULL DEFAULT 0\n" +
+                "    eventCount INTEGER\n" +
                 ")"
 }
