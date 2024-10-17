@@ -346,7 +346,7 @@ fun isArrowFlagVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEn
 fun PatSummeryScreenDidiDetailBoxForSectionOne(
     modifier: Modifier = Modifier,
     screenHeight: Int,
-    didi: DidiEntity,
+    didi: DidiEntity?,
     onCircularImageClick:(DidiEntity) ->Unit
 ) {
     Box(
@@ -371,7 +371,7 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = if (didi.localPath.isNotEmpty()) rememberImagePainter(
+                painter = if (didi?.localPath?.isNotEmpty()==true) rememberImagePainter(
                     Uri.fromFile(
                         File(
                             didi.localPath.split("|")[0]
@@ -392,42 +392,50 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
                     .clip(CircleShape)
                     .background(languageItemActiveBg)
                     .clickable {
-                        onCircularImageClick(didi)
+                        if (didi != null) {
+                            onCircularImageClick(didi)
+                        }
                     }
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = didi.name,
-                color = textColorDark,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp
-            )
+            didi?.name?.let {
+                Text(
+                    text = it,
+                    color = textColorDark,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = didi.guardianName,
-                    style = TextStyle(
-                        color = textColorDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                )
-                Text(
-                    text = didi.address,
-                    style = TextStyle(
-                        color = textColorDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                )
+                didi?.guardianName?.let {
+                    Text(
+                        text = it,
+                        style = TextStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                    )
+                }
+                didi?.address?.let {
+                    Text(
+                        text = it,
+                        style = TextStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                    )
+                }
             }
         }
     }

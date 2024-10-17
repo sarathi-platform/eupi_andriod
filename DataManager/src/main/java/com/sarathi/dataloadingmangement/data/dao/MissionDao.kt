@@ -22,6 +22,7 @@ interface MissionDao {
     @Query(
         "select mission_table.missionId, mission_language_table.description,  mission_table.status as missionStatus , \n" +
                 "count(activity_table.activityId) as activityCount,\n" +
+                " mission_table.programmeId as programId,\n" +
                 " SUM(CASE WHEN activity_table.status = :status THEN 1 ELSE 0 END) AS pendingActivityCount\n" +
                 " from mission_table\n" +
                 "\n" +
@@ -130,5 +131,14 @@ interface MissionDao {
         userId: String,
         missionId: Int
     ): MissionEntity?
+
+    @Query("update  mission_table set isDataLoaded=1  where missionId=:missionId and programmeId=:programId and userId=:userId and isActive=1")
+    suspend fun updateMissionDataLoaded(userId: String, missionId: Int, programId: Int)
+
+    @Query("update  mission_table set isDataLoaded=1  where missionId=:missionId  and userId=:userId and isActive=1")
+    suspend fun updateMissionDataLoaded(userId: String, missionId: Int)
+
+    @Query("Select isDataLoaded from mission_table where missionId=:missionId and programmeId=:programId and userId=:userId and isActive=1")
+    suspend fun isMissionDataLoaded(userId: String, missionId: Int, programId: Int): Int
 
 }

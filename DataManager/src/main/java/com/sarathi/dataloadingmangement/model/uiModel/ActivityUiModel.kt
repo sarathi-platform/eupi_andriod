@@ -12,4 +12,24 @@ data class ActivityUiModel(
     val activityType: String,
     val activityTypeId: Int,
     var icon: String? = BLANK_STRING
-)
+) {
+
+    companion object {
+
+        fun getSelectAllActivityUiModel(missionId: Int, description: String): ActivityUiModel {
+            return ActivityUiModel(
+                missionId = missionId,
+                activityId = -1,
+                description = description,
+                status = BLANK_STRING,
+                taskCount = 0,
+                pendingTaskCount = 0,
+                activityTypeId = 0,
+                activityType = BLANK_STRING
+            )
+
+        }
+
+    }
+
+}

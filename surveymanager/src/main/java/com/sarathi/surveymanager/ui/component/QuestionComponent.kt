@@ -24,7 +24,7 @@ import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.red
 
-@Preview(showBackground = true, showSystemUi = true)
+
 @Composable
 fun QuestionComponent(
     isRequiredField: Boolean = true,
@@ -98,4 +98,15 @@ fun QuestionComponent(
 
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuestionComponentPreview() {
+    QuestionComponent(
+        questionNumber = "1 ",
+        title = "Title",
+        subTitle = "Subtitle",
+        isRequiredField = true
+    )
 }

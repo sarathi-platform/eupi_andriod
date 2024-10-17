@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Log
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
@@ -24,6 +25,10 @@ class GetActivityRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
+        Log.d(
+            "TAG",
+            "isAllActivityCompleted: ${coreSharedPrefs.getUniqueUserIdentifier()} :: $missionId :: $activityId"
+        )
         return activityDao.countActivityByStatus(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             missionId = missionId,

@@ -141,5 +141,19 @@ interface MissionActivityDao {
         status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
     ): Int
 
+    @Query("UPDATE $ACTIVITY_TABLE_NAME SET status = :status WHERE  userId=:userId and missionId = :missionId and activityId in (:activityIds)")
+    fun markActivitiesInProgress(
+        userId: String,
+        missionId: Int,
+        activityIds: List<Int>,
+        status: String = SurveyState.INPROGRESS.name
+    )
+
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId in (:activityIds) and isActive=1 ")
+    suspend fun getActivitiesFormIds(
+        userId: String,
+        missionId: Int,
+        activityIds: List<Int>
+    ): List<MissionActivityEntity>
 
 }

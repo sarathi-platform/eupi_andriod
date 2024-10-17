@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.utils.CoreLogger
+import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.parseStringToList
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -28,7 +31,8 @@ class MissionScreenViewModel @Inject constructor(
     private val fetchAllDataUseCase: FetchAllDataUseCase,
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
-    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList
@@ -78,6 +82,9 @@ class MissionScreenViewModel @Inject constructor(
     private fun initMissionScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateMissionActivityStatus()
+            updateStatusForBaselineMission {
+
+            }
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
             _filterMissionList.value = _missionList.value
             withContext(Dispatchers.Main) {
@@ -89,16 +96,13 @@ class MissionScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
-                // Temp method to be removed after baseline is migrated to Grant flow.
-                updateStatusForBaselineMission() { success ->
-                    CoreLogger.i(
-                        tag = "MissionScreenViewMode",
-                        msg = "updateStatusForBaselineMission: success: $success"
-                    )
-                    initMissionScreen() // Move this out of the lambda block once the above method is removed
-                }
-            }, isRefresh = isRefresh)
+            fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
+                initMissionScreen()
+            }
+            )
+            withContext(Dispatchers.Main) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
         }
     }
 
@@ -123,11 +127,38 @@ class MissionScreenViewModel @Inject constructor(
         updateMissionStatusList.forEach {
             matStatusEventWriterUseCase.updateMissionStatus(
                 surveyName = BLANK_STRING,
-                missionEntity = it
+                missionEntity = it,
+                isFromRegenerate = false
             )
+        }
+    }
+
+    fun isMissionLoaded(
+        missionId: Int,
+        programId: Int,
+        onComplete: (isDataLoaded: Boolean) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val isDataLoaded = fetchAllDataUseCase.fetchMissionDataUseCase.isMissionLoaded(
+                missionId = missionId,
+                programId = programId
+            )
+            withContext(Dispatchers.Main) {
+            onComplete(isDataLoaded == 1)
+        }
         }
     }
 
     //TODO Temp code remove after data is fetched from API
     fun getStateId() = fetchAllDataUseCase.getStateId()
+    fun isBaselineV1Mission(missionName: String): Boolean {
+        val baseline_v1_ids =
+            fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
+                .parseStringToList()
+        return baseline_v1_ids.contains(getStateId()) && missionName.contains(
+            BASELINE_MISSION_NAME,
+            true
+        )
+    }
 }

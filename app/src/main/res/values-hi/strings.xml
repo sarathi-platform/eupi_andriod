@@ -7,6 +7,7 @@
     <string name="bangla">হিন্দি</string>
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+    <string name="location_not_enable">Location not enabled.</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी ज़ोड दी गई है</item>
@@ -521,5 +522,9 @@
     </plurals>
     <string name="shg_member_text">1. SHG सदस्य</string>
     <string name="able_bodied_women_text">2.   सक्षम महिलाएं</string>
+    <string name="mark_activity_in_progress">Mark Activity In Progress</string>
+    <string name="select_mission">Select Mission</string>
+    <string name="select_activity_for">"Select Activity for "</string>
+    <string name="select_all">Select All</string>
 
 </resources>

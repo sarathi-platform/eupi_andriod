@@ -28,7 +28,11 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         taskLocalId: String,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        isFromRegenerate: Boolean,
+        activityId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
     ) {
         val uriList = ArrayList<Uri>()
         val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
@@ -48,13 +52,16 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerMoneyJournalEventDto,
             EventName.MONEY_JOURNAL_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            listOf()
+            listOf(),
+            isFromRegenerate = isFromRegenerate
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,
             EventName.FORM_RESPONSE_EVENT,
             questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            listOf()
+            listOf(),
+            isFromRegenerate = isFromRegenerate
+
         )
         questionUiModels.forEach { questionUiModel ->
             saveSurveyAnswerEvent(
@@ -66,7 +73,12 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 grantId,
                 grantType,
                 taskId,
-                uriList
+                uriList,
+                isFromRegenerate = isFromRegenerate,
+                activityId = activityId,
+                activityReferenceId = activityReferenceId,
+                activityReferenceType = activityReferenceType
+
             )
         }
     }
@@ -80,17 +92,24 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         grantId: Int,
         grantType: String,
         taskId: Int,
-        uriList: ArrayList<Uri>
+        uriList: ArrayList<Uri>,
+        isFromRegenerate: Boolean,
+        activityId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
     ) {
         val saveAnswerEventDto = repository.writeSaveAnswerEvent(
-            questionUiModel,
-            subjectId,
-            subjectType,
-            referenceId,
-            taskLocalId,
-            grantId,
-            grantType,
-            taskId
+            questionUiModel = questionUiModel,
+            subjectId = subjectId,
+            subjectType = subjectType,
+            refrenceId = referenceId,
+            taskLocalId = taskLocalId,
+            grantId = grantId,
+            grantType = grantType,
+            taskId = taskId,
+            activityId = activityId,
+            activityReferenceId = activityReferenceId,
+            activityReferenceType = activityReferenceType
         )
         if (questionUiModel.type == QuestionType.MultiImage.name) {
             questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {
@@ -114,7 +133,10 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerEventDto,
             EventName.GRANT_SAVE_RESPONSE_EVENT,
             questionUiModel.surveyName,
-            uriList
+            uriList,
+            isFromRegenerate = isFromRegenerate
+
+
         )
     }
 
@@ -122,13 +144,15 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         eventItem: T,
         eventName: EventName,
         surveyName: String,
-        uriList: List<Uri>?
+        uriList: List<Uri>?,
+        isFromRegenerate: Boolean
     ) {
         eventWriterRepositoryImpl.createAndSaveEvent(
             eventItem,
             eventName,
             EventType.STATEFUL,
-            surveyName
+            surveyName,
+            isFromRegenerate
         )
             ?.let {
 
@@ -169,7 +193,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         uriList: List<Uri>?,
         grantId: Int,
         grantType: String,
-        taskId: Int
+        taskId: Int,
+        isFromRegenerate: Boolean
     ) {
         val saveAnswerMoneyJournalEventDto = repository.writeDeleteSaveAnswerEvent(
             surveyID,
@@ -186,7 +211,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerMoneyJournalEventDto,
             EventName.GRANT_DELETE_RESPONSE_EVENT,
             surveyName ?: BLANK_STRING,
-            uriList
+            uriList,
+            isFromRegenerate = isFromRegenerate
         )
     }
 

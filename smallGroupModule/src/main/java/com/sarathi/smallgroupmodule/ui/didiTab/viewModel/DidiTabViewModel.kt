@@ -43,6 +43,10 @@ class DidiTabViewModel @Inject constructor(
     val filteredSmallGroupList: State<List<SmallGroupSubTabUiModel>> get() = _filteredSmallGroupList
 
     val countMap = mutableMapOf<SubTabs, Int>()
+    val isSubjectApiStatusFailed =
+        mutableStateOf(false)
+
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -87,6 +91,7 @@ class DidiTabViewModel @Inject constructor(
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             }
+            isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
         }
     }
 
@@ -94,7 +99,7 @@ class DidiTabViewModel @Inject constructor(
     private fun initDidiTab() {
         ioViewModelScope {
             _didiList.value = didiTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
-            _filteredDidiList.value = didiList.value
+            _filteredDidiList.value = didiList.value.sortedBy { it.subjectName }
             _smallGroupList.value =
                 didiTabUseCase.fetchSmallGroupListsFromDbUseCase.invoke()
             _filteredSmallGroupList.value = smallGroupList.value
@@ -137,9 +142,9 @@ class DidiTabViewModel @Inject constructor(
                     filteredList.add(subjectEntity)
                 }
             }
-            filteredList
+            filteredList.sortedBy { it.subjectName }
         } else {
-            didiList.value
+            didiList.value.sortedBy { it.subjectName }
         }
     }
 

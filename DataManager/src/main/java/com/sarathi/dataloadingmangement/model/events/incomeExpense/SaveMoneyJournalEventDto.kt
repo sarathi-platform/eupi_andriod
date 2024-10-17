@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.model.events.incomeExpense
 
 import com.google.gson.annotations.SerializedName
+import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
 
 data class SaveMoneyJournalEventDto(
     @SerializedName("amount")
@@ -26,5 +27,27 @@ data class SaveMoneyJournalEventDto(
     @SerializedName("transactionFlow")
     val transactionFlow: String,
     @SerializedName("transactionType")
-    val transactionType: String
-)
+    val transactionType: String,
+    @SerializedName("modifiedDate")
+    val modifiedDate: Long,
+) {
+    companion object {
+        fun getMoneyJournalEventDto(moneyJournalEntity: MoneyJournalEntity): SaveMoneyJournalEventDto {
+            return SaveMoneyJournalEventDto(
+                amount = moneyJournalEntity.transactionAmount.toInt(),
+                particulars = moneyJournalEntity.transactionDetails,
+                subjectId = moneyJournalEntity.subjectId,
+                transactionId = moneyJournalEntity.transactionId,
+                transactionFlow = moneyJournalEntity.transactionFlow,
+                transactionType = moneyJournalEntity.transactionType,
+                referenceId = moneyJournalEntity.referenceId,
+                referenceType = moneyJournalEntity.referenceType,
+                subjectType = moneyJournalEntity.subjectType,
+                status = moneyJournalEntity.status,
+                transactionDate = moneyJournalEntity.transactionDate,
+                createdDate = moneyJournalEntity.createdDate,
+                modifiedDate = moneyJournalEntity.modifiedDate
+            )
+        }
+    }
+}

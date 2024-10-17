@@ -21,7 +21,6 @@ import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -581,21 +580,32 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val villageId = repository.prefRepo.getSelectedVillage().id
             val stepEntity =
                 repository.getStepForVillage(
-                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    villageId = villageId,
                     stepId = stepId
                 )
 
-            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
-                stepEntity,
-                villageId = repository.prefRepo.getSelectedVillage().id,
+            val didiList = repository.getAllDidisForVillage(villageId)
+
+            val tolaDeviceIdMap: Map<Int, String> =
+                repository.getTolaDeviceIdMap(villageId, repository.tolaDao)
+
+            val addRankingFlagEditEventList = repository.createRankingFlagEditEvent(
+                eventItem = stepEntity,
+                didiList = didiList,
+                villageId = villageId,
                 stepType = StepType.WEALTH_RANKING.name,
-                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
-                repository.prefRepo.getUserId()
+                tolaDeviceIdMap = tolaDeviceIdMap,
+                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                userID = repository.prefRepo.getUserId()
             )
 
-            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
+            addRankingFlagEditEventList.forEach { rankingEditEvent ->
+                repository.saveEventToMultipleSources(rankingEditEvent, listOf())
+            }
+
         }
     }
 

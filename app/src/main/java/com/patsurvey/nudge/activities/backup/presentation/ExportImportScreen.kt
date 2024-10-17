@@ -26,6 +26,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.backup.viewmodel.ExportImportViewModel
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
@@ -99,7 +100,8 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
-                    viewModel.markAllActivityInProgress(context)
+                    navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
+//                    viewModel.markAllActivityInProgress(context)
                 }
             }
         },

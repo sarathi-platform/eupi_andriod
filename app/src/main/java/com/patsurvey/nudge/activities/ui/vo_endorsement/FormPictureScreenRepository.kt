@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
@@ -26,6 +27,7 @@ import javax.inject.Inject
 
 class FormPictureScreenRepository @Inject constructor(
     val prefRepo: PrefRepo,
+    val tolaDao: TolaDao,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
     val apiService: ApiService,

@@ -3,14 +3,17 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
+import com.sarathi.dataloadingmangement.data.dao.ConditionsEntityDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.DocumentDao
@@ -25,6 +28,7 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
@@ -61,6 +65,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetwo
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
@@ -76,6 +82,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProd
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.LivelihoodEventValidationUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
@@ -101,6 +109,9 @@ import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepository
+import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
@@ -128,6 +139,7 @@ import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepos
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SelectActivitySurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
@@ -192,7 +204,8 @@ class DataLoadingModule {
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .addMigrations(
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -347,9 +360,19 @@ class DataLoadingModule {
     @Singleton
     fun subjectLivelihoodEventMappingDao(db: NudgeGrantDatabase) =
         db.subjectLivelihoodEventMappingDao()
+
     @Provides
     @Singleton
     fun provideSectionStatusEntityDao(db: NudgeGrantDatabase) = db.sectionStatusEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSourceTargetQuestionMappingEntityDao(db: NudgeGrantDatabase) =
+        db.sourceTargetQuestionMappingEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideConditionsEntityDao(db: NudgeGrantDatabase) = db.conditionsEntityDao()
 
 
     @Provides
@@ -362,7 +385,9 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         questionEntityDao: QuestionEntityDao,
         surveyLanguageAttributeDao: SurveyLanguageAttributeDao,
-        tagReferenceEntityDao: TagReferenceEntityDao
+        tagReferenceEntityDao: TagReferenceEntityDao,
+        sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
+        conditionsEntityDao: ConditionsEntityDao
     ): ISurveyDownloadRepository {
         return SurveyDownloadRepository(
             dataLoadingApiService = dataLoadingApiService,
@@ -372,8 +397,9 @@ class DataLoadingModule {
             optionItemDao = optionItemDao,
             questionEntityDao = questionEntityDao,
             surveyLanguageAttributeDao = surveyLanguageAttributeDao,
-            tagReferenceEntityDao = tagReferenceEntityDao
-
+            tagReferenceEntityDao = tagReferenceEntityDao,
+            sourceTargetQuestionMappingEntityDao = sourceTargetQuestionMappingEntityDao,
+            conditionsEntityDao = conditionsEntityDao
         )
     }
 
@@ -597,8 +623,6 @@ class DataLoadingModule {
         downloaderManager: DownloaderManager,
         languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
-        surveySaveNetworkRepositoryImpl: SurveySaveNetworkRepositoryImpl,
-        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
         coreSharedPrefs: CoreSharedPrefs,
@@ -606,9 +630,8 @@ class DataLoadingModule {
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
-        assetJournalUseCase: FetchAssetJournalUseCase,
-        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase
-    ): FetchAllDataUseCase {
+        fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+        ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
                 missionRepositoryImpl
@@ -630,12 +653,9 @@ class DataLoadingModule {
             formUseCase = formUseCase,
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
-            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
-                fetchDidiDetailsFromNetworkRepository
-            ),
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
-            assetJournalUseCase = assetJournalUseCase,
-            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase
+            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase
+
         )
     }
 
@@ -805,6 +825,27 @@ class DataLoadingModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideSelectActivitySurveyRepository(
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyDao: SurveyEntityDao,
+        grantConfigDao: GrantConfigDao
+    ): IActivitySelectSurveyRepository {
+        return SelectActivitySurveyRepositoryImpl(
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyDao,
+            grantConfigDao = grantConfigDao
+
+        )
+    }
+
     @Singleton
     @Provides
     fun provideRegenerateGrantEventRepository(
@@ -838,9 +879,11 @@ class DataLoadingModule {
         formEventWriterUseCase: FormEventWriterUseCase,
         documentEventWriterUseCase: DocumentEventWriterUseCase,
         attendanceEventWriterUseCase: AttendanceEventWriterUseCase,
-        coreSharedPrefs: CoreSharedPrefs
+        regenerateLivelihoodEventUseCase: RegenerateLivelihoodEventUseCase,
+        coreSharedPrefs: CoreSharedPrefs,
+        getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 
-    ): RegenerateGrantEventUsecase {
+        ): RegenerateGrantEventUsecase {
         return RegenerateGrantEventUsecase(
             regenerateGrantEventRepositoryImpl = regenerateGrantEventRepositoryImpl,
             matStatusEventWriterUseCase = matStatusEventWriterUseCase,
@@ -849,7 +892,9 @@ class DataLoadingModule {
             formEventWriterUseCase = formEventWriterUseCase,
             documentEventWriterUseCase = documentEventWriterUseCase,
             attendanceEventWriterUseCase = attendanceEventWriterUseCase,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            regenerateLivelihoodEventUseCase = regenerateLivelihoodEventUseCase,
+            getActivityUiConfigUseCase = getActivityUiConfigUseCase,
         )
     }
 
@@ -858,11 +903,13 @@ class DataLoadingModule {
     fun fetchDidiDetailsFromNetworkRepository(
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
-        subjectEntityDao: SubjectEntityDao
+        subjectEntityDao: SubjectEntityDao,
+        apiStatusDao: ApiStatusDao
     ): FetchDidiDetailsFromNetworkRepository {
         return FetchDidiDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs, dataLoadingApiService,
-            subjectEntityDao
+            subjectEntityDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -879,12 +926,14 @@ class DataLoadingModule {
     fun provideFetchSmallGroupDetailsFromNetworkRepository(
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
-        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        apiStatusDao: ApiStatusDao
     ): FetchSmallGroupDetailsFromNetworkRepository {
         return FetchSmallGroupDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs,
             dataLoadingApiService,
-            smallGroupDidiMappingDao
+            smallGroupDidiMappingDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -913,14 +962,16 @@ class DataLoadingModule {
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao,
         subjectAttributeDao: SubjectAttributeDao,
-        attributeValueReferenceDao: AttributeValueReferenceDao
+        attributeValueReferenceDao: AttributeValueReferenceDao,
+        apiStatusDao: ApiStatusDao
     ): FetchSmallGroupAttendanceHistoryFromNetworkRepository {
         return FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
             dataLoadingApiService = dataLoadingApiService,
             subjectEntityDao = subjectEntityDao,
             subjectAttributeDao = subjectAttributeDao,
-            attributeValueReferenceDao = attributeValueReferenceDao
+            attributeValueReferenceDao = attributeValueReferenceDao,
+            apiStatusDao = apiStatusDao
         )
     }
 
@@ -1394,6 +1445,59 @@ class DataLoadingModule {
     ): FetchSubjectLivelihoodEventHistoryRepository {
         return FetchSubjectLivelihoodEventHistoryRepositoryImpl(
             coreSharedPrefs, subjectLivelihoodEventMappingDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetConditionQuestionMappingsUseCase(
+        getConditionQuestionMappingsRepository: GetConditionQuestionMappingsRepository
+    ): GetConditionQuestionMappingsUseCase {
+        return GetConditionQuestionMappingsUseCase(getConditionQuestionMappingsRepository = getConditionQuestionMappingsRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetConditionQuestionMappingsRepository(
+        corePrefRepo: CoreSharedPrefs,
+        sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
+        conditionsEntityDao: ConditionsEntityDao
+    ): GetConditionQuestionMappingsRepository {
+
+        return GetConditionQuestionMappingsRepositoryImpl(
+            corePrefRepo = corePrefRepo,
+            sourceTargetQuestionMappingEntityDao = sourceTargetQuestionMappingEntityDao,
+            conditionsEntityDao = conditionsEntityDao
+        )
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegenerateLivelihoodEventUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        moneyJournalRepository: MoneyJournalRepositoryImpl,
+        subjectLivelihoodEventMappingRepositoryImpl: SubjectLivelihoodEventMappingRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): RegenerateLivelihoodEventUseCase {
+        return RegenerateLivelihoodEventUseCase(
+            assetJournalRepository = assetJournalRepo,
+            moneyJournalRepo = moneyJournalRepository,
+            subjectLivelihoodEventMappingRepository = subjectLivelihoodEventMappingRepositoryImpl,
+            eventWriterRepository = eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodEventValidationUseCase(
+        assetJournalRepo: AssetJournalRepositoryImpl,
+        assetRepositoryImpl: AssetRepositoryImpl
+
+        ): LivelihoodEventValidationUseCase {
+        return LivelihoodEventValidationUseCase(
+            assetJournalRepository = assetJournalRepo,
+            assetRepository = assetRepositoryImpl
         )
     }
 }

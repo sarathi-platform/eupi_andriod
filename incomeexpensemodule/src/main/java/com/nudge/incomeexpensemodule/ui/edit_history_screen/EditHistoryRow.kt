@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.edit_history_screen
 
+import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DD_MMM_YYYY_FORMAT
-import com.nudge.core.DD_mmm_hh_mm_FORMAT
+import com.nudge.core.DD_mmm_hh_mm_a_FORMAT
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getDate
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -42,6 +43,7 @@ import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 
 
@@ -92,18 +94,20 @@ fun EditHistoryRow(
                             data2 = getEventValue(savedEvent = nextSavedEvent),
                         ),
                         data2 = " ${currentSavedEvent?.eventValue ?: BLANK_STRING}",
-                        data3 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_FORMAT)
+                        data3 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_a_FORMAT)
                     )
                     Divider()
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
                         data1 = stringResource(R.string.asset_type),
-                        data2 = " ${currentSavedEvent?.assetTypeValue}",
+                        data2 = if (!TextUtils.isEmpty(currentSavedEvent?.assetTypeValue)) " ${currentSavedEvent?.assetTypeValue}" else "NA",
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
                             data2 = getAssetTypeValue(savedEvent = nextSavedEvent),
                         ),
-                        data3 = formatToIndianRupee("${currentSavedEvent?.amount}"),
+                        data3 = if (getLivelihoodEventFromName(currentHistoryData.livelihoodEventType).moneyJournalEntryFlowType != null) formatToIndianRupee(
+                            "${currentSavedEvent?.amount}"
+                        ) else BLANK_STRING,
                         data3TextColor = dataChangeTextColor(
                             data1 = getEventAmount(currentSavedEvent),
                             data2 = getEventAmount(nextSavedEvent),
@@ -182,12 +186,15 @@ private fun TextDataRowView(
             )
         }
         Spacer(modifier = Modifier.weight(1.0f))
-        data3?.let {
-            Text(
-                text = it,
-                style = defaultTextStyle.copy(data3TextColor)
-            )
+        if (!TextUtils.isEmpty(data3)) {
+            data3?.let {
+                Text(
+                    text = it,
+                    style = defaultTextStyle.copy(data3TextColor)
+                )
+            }
         }
+
     }
 }
 

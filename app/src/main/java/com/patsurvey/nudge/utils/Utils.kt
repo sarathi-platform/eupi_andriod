@@ -82,6 +82,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
@@ -247,6 +248,28 @@ fun Modifier.debounceClickable(
         indication = LocalIndication.current,
         interactionSource = remember { MutableInteractionSource() }
     )
+}
+
+inline fun Modifier.debounceClickable(
+    debounceInterval: Long = 500,
+    crossinline onClick: () -> Unit,
+): Modifier {
+    var lastClickTime = 0L
+    var clickCount = 0
+    return clickable() {
+        Log.d("Utils", "debounceClickable, initial clickCount = $clickCount")
+        val currentTime = System.currentTimeMillis()
+        if ((currentTime - lastClickTime) < debounceInterval) {
+            clickCount = clickCount++
+            return@clickable
+        }
+        lastClickTime = currentTime
+        Log.d(
+            "Utils",
+            "debounceClickable: buttonClicked lastClickTime = $lastClickTime, clickCount = $clickCount"
+        )
+        onClick()
+    }
 }
 
 fun Context.setScreenOrientation(orientation: Int) {
@@ -823,6 +846,19 @@ fun roundOffDecimal(number: Double): Double? {
 
 }
 
+fun roundOffDecimalFloat(number: Float): Float? {
+    return try {
+        val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
+        df.roundingMode = RoundingMode.CEILING
+        df.format(number).toFloat()
+    } catch (ex: Exception) {
+        NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
+        0.00f
+    }
+
+
+}
+
 fun roundOffDecimalPoints(number: Double): String {
     return String.format(Locale.ENGLISH, "%.2f", number)
 }
@@ -1244,7 +1280,10 @@ fun updateStepStatus(
     }
 }
 
-fun addDefaultLanguage(languageListDao: LanguageListDao) {
+fun addDefaultLanguage(
+    languageListDao: LanguageListDao,
+    baselineLanguageDao: com.nrlm.baselinesurvey.database.dao.LanguageListDao
+) {
     languageListDao.insertAll(
         listOf(
             LanguageEntity(
@@ -1276,6 +1315,46 @@ fun addDefaultLanguage(languageListDao: LanguageListDao) {
                 localName = "অসমীয়া"
             ),
             LanguageEntity(
+                5,
+                language = "Bodo",
+                langCode = "be",
+                orderNumber = 5,
+                localName = "बर'"
+            )
+        )
+    )
+
+    baselineLanguageDao.insertAll(
+        listOf(
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                id = 2,
+                language = "English",
+                langCode = "en",
+                orderNumber = 1,
+                localName = "English"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                1,
+                language = "Hindi",
+                langCode = "hi",
+                orderNumber = 2,
+                localName = "हिंदी"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                3,
+                language = "Bengali",
+                langCode = "bn",
+                orderNumber = 3,
+                localName = "বাংলা"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                4,
+                language = "Assamese",
+                langCode = "as",
+                orderNumber = 4,
+                localName = "অসমীয়া"
+            ),
+            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
                 5,
                 language = "Bodo",
                 langCode = "be",

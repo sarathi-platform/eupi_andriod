@@ -16,6 +16,7 @@ const val NO_TOLA_TITLE = "NO TOLA"
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
+const val APP_CONFIG_TABLE = "app_config"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -51,9 +52,11 @@ const val PDF_MIME_TYPE = "application/pdf"
 const val EXCEL_TYPE = "text/csv"
 const val PDF_TYPE = "text/pdf"
 const val REGENERATE_PREFIX = "regenerate_"
+const val SOMETHING_WENT_WRONG = "Something Went Wrong"
 const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
+const val CRP_USER_TYPE = "Community Resource Person"
 const val SUFFIX_IMAGE_ZIP_FILE = "Image"
 const val SUFFIX_EVENT_ZIP_FILE = "file"
 const val BASELINE = "BASELINE_GRANT"
@@ -66,6 +69,15 @@ const val EVENT_STRING="event"
 const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val KOKBOROK_LANGUAGE_CODE="ky"
+const val IMAGE_EVENT_STRING = "IMAGE"
+
+// Header Constant
+const val KEY_HEADER_AUTH = "authorization"
+const val AUTH_TOKEN_PREFIX = "Bearer"
+const val KEY_HEADER_TYPE = "header_type"
+const val KEY_HEADER_MOBILE = "header_type_mobile"
+const val MULTIPART_FORM_DATA = "multipart/form-data"
+const val MULTIPART_IMAGE_PARAM_NAME = "files"
 
 const val SUCCESS = "SUCCESS"
 const val FAIL = "FAIL"
@@ -78,6 +90,8 @@ const val DEFAULT_LANGUAGE_ID = 2
 const val ATTENDANCE_TAG_ID = 94
 const val DEFAULT_DATE_RANGE_DURATION: Long = 30
 const val WEEK_DURATION_RANGE: Long = 7
+const val ONE_YEAR_RANGE_DURATION: Long = 365
+const val SIX_MONTH_RANGE_DURATION: Long = 183
 
 const val ATTENDANCE_PRESENT = "Present"
 const val ATTENDANCE_ABSENT = "Absent"
@@ -89,9 +103,12 @@ const val LIVELIHOOD = "Livelihood"
 const val DIDI = "Didi"
 const val DD_mmm_YY_FORMAT = "dd MMM, yy"
 const val DD_mmm_hh_mm_FORMAT = "dd MMM, hh:mm"
+const val DD_mmm_hh_mm_a_FORMAT = "dd MMM, hh:mm a"
 const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
+
+const val BASELINE_MISSION_NAME = "Baseline"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
@@ -110,3 +127,74 @@ const val MAXIMUM_RANGE_LENGTH = 10
 
 const val NO_SG_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
+const val BATCH_DEFAULT_LIMIT = 5
+const val RETRY_DEFAULT_COUNT = 3
+const val SYNC_DATE_TIME_FORMAT = "yyyy-MM-dd"
+const val SYNC_VIEW_DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss a"
+const val LAST_SYNC_TIME = "last_sync_time"
+const val FAILED_EVENTS_FILE = "Failed_Events_File"
+const val SYNC_SELECTION_DRIVE = "selection"
+const val SYNC_POST_SELECTION_DRIVE = "postSelection"
+const val REMOTE_CONFIG_SYNC_ENABLE = "syncEnabled"
+const val REMOTE_CONFIG_SYNC_OPTION_ENABLE = "isSyncDataEnabled"
+const val REMOTE_CONFIG_SYNC_BATCH_SIZE = "sync_batch_size"
+const val REMOTE_CONFIG_SYNC_RETRY_COUNT = "sync_retry_count"
+const val REMOTE_CONFIG_MIX_PANEL_TOKEN = "mix_panel_token"
+const val PREF_SOFT_EVENT_LIMIT_THRESHOLD = "pref_soft_event_limit_threshold"
+const val PREF_HARD_EVENT_LIMIT_THRESHOLD = "pref_hard_event_limit_threshold"
+
+const val PRODUCER = "Producer"
+const val CONSUMER = "consumer"
+const val FORM_C_TOPIC = "FORM_C_TOPIC"
+const val FORM_D_TOPIC = "FORM_D_TOPIC"
+const val IMAGE_STRING = "image"
+const val DATA_STRING = "data"
+const val DATA_PRODUCER_STRING = "data_producer"
+const val IMAGE_PRODUCER_STRING = "image_producer"
+const val SYNC_IMAGE = "IMAGE"
+const val SYNC_DATA = "DATA"
+
+const val DEFAULT_BUILD_ENVIRONMENT = "UAT"
+const val PREF_BUILD_ENVIRONMENT = "pref_build_environment"
+const val PREF_MIX_PANEL_TOKEN = "pref_mix_panel_token"
+const val REMOTE_CONFIG_SYNC_IMAGE_UPLOAD_ENABLE = "isImageBlobUploadEnable"
+const val PREF_SYNC_IMAGE_UPLOAD_ENABLE = "pref_blob_upload_enable"
+const val PREF_DATA_TAB_VISIBILITY = "data_tab_visibility"
+const val PARENT_EVENT_NAME = "parent_event_name"
+const val PARENT_TOPIC_NAME = "parent_topic_name"
+const val FILE_PATH = "file_path"
+const val FILE_NAME = "file_name"
+const val CONTENT_TYPE = "content_type"
+const val IS_ONLY_DATA = "isOnlyData"
+const val DRIVE_TYPE = "drive_type"
+const val BLOB_URL = "blobUrl"
+const val POST_SELECTION_CONTAINER = "uat/eupi-documents/content"
+const val SELECTION_CONTAINER = "uat/eupi-documents"
+const val EMPTY_EVENT_LIST_FAILURE = "EMPTY_LIST_FAILURE"
+const val NULL_RESPONSE_FAILURE = "NULL_RESPONSE_FAILURE"
+const val FAILED_RESPONSE_FAILURE = "FAILED_RESPONSE_FAILURE"
+
+
+const val DEFAULT_SUCCESS_CODE = 200
+const val DEFAULT_ERROR_CODE = 500
+
+const val MAX_CELL_COUNT_FOR_SELECT_ACTIVITY = 2
+const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
+
+const val NOT_DECIDED_LIVELIHOOD_ID = -1
+const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
+
+const val CORE_DATABASE = "CoreDatabase"
+const val CORE_DB_VERSION = 1
+
+const val OPERAND_DELIMITER = "@?"
+const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
+
+
+const val DEFAULT_SOFT_EVENT_LIMIT_THRESHOLD =
+    75000  // TODO Change this to older value after navigation is fixed.
+const val DEFAULT_HARD_EVENT_LIMIT_THRESHOLD =
+    100000 // TODO Change this to older value after navigation is fixed.
+
+const val THRESHOLD_TYPE_SOFT = "SOFT_THRESHOLD"
+const val THRESHOLD_TYPE_HARD = "HARD_THRESHOLD"

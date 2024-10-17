@@ -230,8 +230,14 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getAppLanguage(): String {
-        return prefBSRepo.getAppLanguage()?:ENGLISH_LANGUAGE_CODE
+        return prefBSRepo.getAppLanguage() ?: ENGLISH_LANGUAGE_CODE
     }
 
-
+    override suspend fun markActivitiesInProgress(missionId: Int, activityIds: List<Int>) {
+        activityDao.markActivitiesInProgress(
+            userId = getBaseLineUserId(),
+            missionId = missionId,
+            activityIds = activityIds
+        )
+    }
 }

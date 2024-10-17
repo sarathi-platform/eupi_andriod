@@ -22,7 +22,7 @@ interface QuestionEntityDao {
         surveyId: Int,
     )
 
-    @Query(
+    /*@Query(
         "select \n" +
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase,\n" +
@@ -45,6 +45,44 @@ interface QuestionEntityDao {
                 "  left join tag_reference_table on question_table.questionId= tag_reference_table.referenceId " +
                 " where survey_language_attribute_table.referenceType =:referenceType \n" +
                 "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId and tag_reference_table.userId=:userId and tag_reference_table.referenceType=:referenceType group by question_table.questionId Order by question_table.`order` asc "
+    )*/
+    @Query(
+        "SELECT \n" +
+                "    COALESCE(survey_language_attribute_table.description, question_table.originalValue) AS description, \n" +
+                "    COALESCE(survey_language_attribute_table.paraphrase, question_table.originalValue) AS paraphrase,\n" +
+                "    question_table.questionId, \n" +
+                "    question_table.originalValue,\n" +
+                "    question_table.sectionId,\n" +
+                "    question_table.surveyId, \n" +
+                "    question_table.formId,\n" +
+                "    question_table.questionImageUrl, \n" +
+                "    question_table.type,\n" +
+                "    question_table.gotoQuestionId, \n" +
+                "    question_table.`order`,\n" +
+                "    question_table.isConditional, \n" +
+                "    question_table.isMandatory,\n" +
+                "    question_table.contentEntities, \n" +
+                "    survey_language_attribute_table.languageCode, \n" +
+                "    question_table.parentQuestionId,\n" +
+                "    GROUP_CONCAT(tag_reference_table.value, ',') AS tag \n" +
+                "FROM \n" +
+                "    question_table \n" +
+                "LEFT JOIN \n" +
+                "    survey_language_attribute_table ON question_table.questionId = survey_language_attribute_table.referenceId \n" +
+                "    AND survey_language_attribute_table.referenceType = :referenceType \n" +
+                "    AND survey_language_attribute_table.languageCode = :languageId \n" +
+                "LEFT JOIN \n" +
+                "    tag_reference_table ON question_table.questionId = tag_reference_table.referenceId \n" +
+                "    AND tag_reference_table.userId = :userId \n" +
+                "    AND tag_reference_table.referenceType = :referenceType \n" +
+                "WHERE \n" +
+                "    question_table.userId = :userId \n" +
+                "    AND question_table.sectionId = :sectionId \n" +
+                "    AND question_table.surveyId = :surveyId \n" +
+                "GROUP BY \n" +
+                "    question_table.questionId \n" +
+                "ORDER BY \n" +
+                "    question_table.`order` ASC;\n"
     )
     fun getSurveySectionQuestionForLanguage(
         userId: String,

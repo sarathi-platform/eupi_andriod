@@ -17,6 +17,7 @@ data class LivelihoodEventEntity(
     var status: Int,
     var type: String?,
 
+
     ) {
     companion object {
         fun getLivelihoodEventEntity(

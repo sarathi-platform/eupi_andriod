@@ -54,3 +54,5 @@ const val BACKUP_RECOVERY_SCREEN_ROUTE_NAME = "backup_recovery_screen"
 const val LOGOUT_HOME_ROUTE_NAME="logout_home_screen"
 const val EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME = "export_backup_file_screen"
 
+const val LOGOUT_HOME_ROUTE_NAME = "logout_home_screen"
+const val ACTIVITY_REOPENING_SCREEN_ROUTE_NAME = "activity_reopening_screen"

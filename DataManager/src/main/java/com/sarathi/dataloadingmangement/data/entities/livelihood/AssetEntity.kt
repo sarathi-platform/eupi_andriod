@@ -16,7 +16,7 @@ data class AssetEntity(
     var userId: String,
     var name: String,
     var status: Int,
-    var type: Int? = 0,
+    var type: String = BLANK_STRING,
     var value: Double? = 0.0,
     var image: String?
 ) {
@@ -26,9 +26,8 @@ data class AssetEntity(
             asset: Asset,
             livelihoodId: Int,
             value: Double?,
-            image: String?
+            image: String?,
         ): AssetEntity {
-
             return AssetEntity(
                 id = 0,
                 assetId = asset.id ?: 0,
@@ -37,7 +36,8 @@ data class AssetEntity(
                 status = asset.status ?: 0,
                 livelihoodId = livelihoodId,
                 value = value,
-                image = image
+                image = image,
+                type = asset.type ?: BLANK_STRING
             )
         }
 

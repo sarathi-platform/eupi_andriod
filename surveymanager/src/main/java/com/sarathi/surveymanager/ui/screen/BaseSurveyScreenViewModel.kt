@@ -3,15 +3,20 @@ package com.sarathi.surveymanager.ui.screen
 import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -22,6 +27,7 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
 import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +47,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val fromEUseCase: FormUseCase,
     private val formEventWriterUseCase: FormEventWriterUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
 ) : BaseViewModel() {
     var surveyId: Int = 0
     var sectionId: Int = 0
@@ -60,6 +69,16 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     val isActivityNotCompleted = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
+
+    var activityConfig: ActivityConfigEntity? = null
+
+    var isNoSection = mutableStateOf(false)
+
+    val conditionsUtils = ConditionsUtils()
+
+    val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
+
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -94,6 +113,28 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     grantId = grantID
                 )
             }
+
+            taskEntity?.let { task ->
+                activityConfig =
+                    getActivityUiConfigUseCase.getActivityConfig(task.activityId, task.missionId)
+            }
+
+            val sectionList = getSectionListUseCase.invoke(surveyId = surveyId)
+
+            isNoSection.value = sectionList.size == 1
+
+            val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
+                .invoke(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    questionIdList = questionUiModel.value.map { it.questionId }
+                )
+
+            conditionsUtils.apply {
+                init(questionUiModel.value, sourceTargetQuestionMapping)
+                initQuestionVisibilityMap(questionUiModel.value)
+            }
+
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -101,67 +142,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAllAnswerIntoDB() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            questionUiModel.value.forEach { question ->
-                saveQuestionAnswerIntoDb(question)
-
-            }
-            if (sanctionAmount != 0) {
-                val formEntity = fromEUseCase.saveFormEData(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                    taskId = taskId,
-                    surveyId = surveyId,
-                    missionId = taskEntity?.missionId ?: -1,
-                    activityId = taskEntity?.activityId ?: -1,
-                    subjectType = subjectType,
-                    referenceId = referenceId
-                )
-                formEventWriterUseCase.writeFormEvent(
-                    surveyName = questionUiModel.value.firstOrNull()?.surveyName ?: BLANK_STRING,
-                    formEntity = formEntity,
-
-                    )
-            }
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name || taskEntity?.status == SurveyStatusEnum.COMPLETED.name) {
-                taskStatusUseCase.markTaskInProgress(
-                    taskId = taskId
-                )
-                taskStatusUseCase.markActivityInProgress(
-                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
-                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
-                )
-                taskStatusUseCase.markMissionInProgress(
-                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
-                )
-                taskEntity = getTaskUseCase.getTask(taskId)
-                taskEntity?.let {
-                    matStatusEventWriterUseCase.markMATStatus(
-                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
-                            ?: BLANK_STRING,
-                        subjectType = subjectType,
-                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
-                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
-                        taskId = taskEntity?.taskId ?: DEFAULT_ID
-
-                    )
-                }
-
-            }
-            surveyAnswerEventWriterUseCase.invoke(
-                questionUiModels = questionUiModel.value,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
-                referenceId = referenceId,
-                grantId = grantID,
-                grantType = granType,
-                taskId = taskId
-            )
-
-        }
-
-    }
 
     protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
         saveSurveyAnswerUseCase.saveSurveyAnswer(
@@ -199,11 +179,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     }
 
-    fun saveButtonClicked() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveAllAnswerIntoDB()
-        }
-    }
 
     fun setPreviousScreenData(
         surveyId: Int,
@@ -247,5 +222,35 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     open fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
 
+    }
+
+    open fun updateTaskStatus(taskId: Int, isTaskCompleted: Boolean = false) {
+        ioViewModelScope {
+            val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
+            surveyEntity?.let { survey ->
+                if (isTaskCompleted) {
+                    taskEntity = taskEntity?.copy(status = SurveyStatusEnum.COMPLETED.name)
+                    taskStatusUseCase.markTaskCompleted(taskId)
+                } else {
+                    taskEntity = taskEntity?.copy(status = SurveyStatusEnum.INPROGRESS.name)
+                    taskStatusUseCase.markTaskInProgress(taskId)
+                }
+                taskEntity?.let { task ->
+                    matStatusEventWriterUseCase.updateTaskStatus(
+                        task,
+                        survey.surveyName,
+                        subjectType
+                    )
+                }
+            }
+        }
+    }
+
+    fun updateQuestionResponseMap(question: QuestionUiModel) {
+        conditionsUtils.updateQuestionResponseMap(question)
+    }
+
+    fun runConditionCheck(sourceQuestion: QuestionUiModel) {
+        conditionsUtils.runConditionCheck(sourceQuestion)
     }
 }

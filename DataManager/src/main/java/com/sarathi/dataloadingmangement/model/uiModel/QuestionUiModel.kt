@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
+import com.nudge.core.BLANK_STRING
+
 class QuestionUiModel(
     var questionId: Int,
     var isMandatory: Boolean,
@@ -14,6 +16,14 @@ class QuestionUiModel(
     var summary: String? = "",
     val tagId: List<Int>,
     val surveyName: String,
-    val formId: Int
-    )
+    val formId: Int,
+    var subjectId: Int = 0,
+    var order: Int,
+    var subjectType: String = BLANK_STRING,
+    var isConditional: Boolean = false,
+    var showQuestion: Boolean = false
+) {
+
+
+}
 

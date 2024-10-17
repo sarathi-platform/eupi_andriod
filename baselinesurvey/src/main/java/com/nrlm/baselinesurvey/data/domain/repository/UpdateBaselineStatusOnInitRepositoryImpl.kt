@@ -56,6 +56,13 @@ class UpdateBaselineStatusOnInitRepositoryImpl @Inject constructor(
             status = status
         )
     }
+
+    override suspend fun updateBaselineMissionDataLoadedForGrant(missionId: Int) {
+        grantMissionDao.updateMissionDataLoaded(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId
+        )
+    }
 }
 
 

@@ -10,6 +10,7 @@ import com.sarathi.dataloadingmangement.repository.liveihood.IAssetJournalReposi
 import com.sarathi.dataloadingmangement.repository.liveihood.ISubjectLivelihoodEventMapping
 import javax.inject.Inject
 
+
 class WriteLivelihoodEventUseCase @Inject constructor(
     private val assetJournalRepository: IAssetJournalRepository,
     private val moneyJournalRepo: IMoneyJournalRepository,
@@ -17,34 +18,56 @@ class WriteLivelihoodEventUseCase @Inject constructor(
     private val eventWriterRepository: IEventWriterRepository
 ) {
 
-    suspend fun writeLivelihoodEvent(eventData: LivelihoodEventScreenData, particular: String) {
-
+    suspend fun writeLivelihoodEvent(
+        eventData: LivelihoodEventScreenData,
+        particular: String,
+        createdDateTime: Long,
+        modifiedDate: Long
+    ) {
         val livelihoodPayload =
-            subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(eventData)
+            subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
+                eventData,
+                currentDateTime = createdDateTime,
+                modifiedDateTime = modifiedDate
+            )
         writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
 
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
 
-            val assetJournalPayload =
-                assetJournalRepository.getSaveAssetJournalEventDto(particular, eventData)
+            val assetJournalPayload = assetJournalRepository.getSaveAssetJournalEventDto(
+                particular,
+                eventData,
+                currentDateTime = createdDateTime,
+                modifiedDateTIme = modifiedDate
+            )
             writeEvent(assetJournalPayload, EventName.ASSET_JOURNAL_EVENT)
 
         }
         eventData.selectedEvent.moneyJournalEntryFlowType?.let {
             val moneyJournalPayload =
-                moneyJournalRepo.getMoneyJournalEventDto(particular, eventData)
+                moneyJournalRepo.getMoneyJournalEventDto(
+                    particular,
+                    eventData,
+                    currentDateTime = createdDateTime,
+                    modifiedDateTime = modifiedDate
+                )
             writeEvent(moneyJournalPayload, EventName.MONEY_JOURNAL_RESPONSE_EVENT)
 
         }
 
     }
 
-    suspend fun writeDeleteLivelihoodEvent(transactionId: String, subjectId: Int) {
+    suspend fun writeDeleteLivelihoodEvent(
+        transactionId: String,
+        subjectId: Int,
+        modifiedDate: Long
+    ) {
         val deleteLivelihoodEventPayload = DeleteLivelihoodEvent(
             doerId = subjectLivelihoodEventMappingRepository.getUserId(),
             transactionId = transactionId,
             subjectId = subjectId,
-            subjectType = "Didi"
+            subjectType = "Didi",
+            modifiedDate = modifiedDate
         )
         writeEvent(deleteLivelihoodEventPayload, EventName.DELETE_RESPONSE_EVENT)
 
@@ -56,7 +79,8 @@ class WriteLivelihoodEventUseCase @Inject constructor(
             eventItem,
             eventName,
             EventType.STATEFUL,
-            surveyName = "Livelihood"
+            surveyName = "Livelihood",
+            isFromRegenerate = false
         )?.let {
 
             eventWriterRepository.saveEventToMultipleSources(

@@ -23,16 +23,20 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
@@ -105,10 +109,22 @@ fun Long.toDateInMonthString(): String {
     return format.format(dateTime)
 }
 fun String.toInMillisec(format: String): Long {
-    val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
-    val date = dateFormat.parse(this)
-    val millis = date?.time
-    return millis ?: 0
+    try {
+
+
+        val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
+        val date = dateFormat.parse(this)
+        val millis = date?.time
+        return millis ?: 0
+
+    } catch (parseException: Exception) {
+        CoreLogger.e(
+            msg = parseException.message ?: BLANK_STRING,
+            tag = "Exception",
+            ex = parseException
+        )
+        return 0
+    }
 }
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 
@@ -894,6 +910,33 @@ fun <T> List<T>?.value(): List<T> {
     return this ?: emptyList()
 }
 
+fun <T, R> List<T>.ifNotEmpty(block: (List<T>) -> R): R? {
+
+    if (this.isEmpty())
+        return null
+
+    return block(this)
+
+}
+
+fun String.equals(others: List<String>, ignoreCase: Boolean = false): Boolean {
+    var result = false
+    if (others.isEmpty())
+        return result
+
+    result = this.equals(others[0], ignoreCase)
+
+    if (others.size == 1) {
+        return result
+    }
+
+    others.drop(1).forEach { s2 ->
+        result = result || this.equals(s2, ignoreCase)
+    }
+
+    return result
+}
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -903,9 +946,9 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
+fun getDayPriorCurrentTimeMillis(sourceDuration: Long, sourceUnit: TimeUnit = TimeUnit.DAYS): Long {
     val currentTime = System.currentTimeMillis()
-    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, sourceUnit)
 }
 
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
@@ -1193,6 +1236,16 @@ fun getQuestionNumber(questionIndex: Int): String {
     return "${questionIndex + 1}. "
 }
 
+fun String.stringToInt(): Int {
+    return if (this.isNullOrEmpty())
+        0
+    else this.toInt()
+}
+
+fun customGridHeight(optionListSize: Int): Dp {
+    return if (optionListSize >= MAX_CELL_COUNT_FOR_SELECT_ACTIVITY) (MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY * (optionListSize / MAX_CELL_COUNT_FOR_SELECT_ACTIVITY)).dp else dimen_60_dp
+}
+
 fun <T> List<T>.findById(id: Int, transform: (T) -> Int): T? {
 
     if (id == -1)
@@ -1223,4 +1276,22 @@ fun openSettings() {
     }
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
+}
+
+fun replaceLastWord(sentence: String?, newWord: String?): String {
+    if (sentence.isNullOrBlank() || newWord.isNullOrBlank()) {
+        return sentence ?: BLANK_STRING
+    }
+    val words = sentence.split(" ").toMutableList()
+    if (words.isNotEmpty()) {
+        words[words.size - 1] = newWord
+    }
+    return words.joinToString(" ")
+}
+
+fun String.parseStringToList(): List<Int?> {
+    val gson = Gson()
+    val type = object :
+        TypeToken<List<Int?>?>() {}.type
+    return gson.fromJson<List<Int>>(this, type)
 }

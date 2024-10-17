@@ -250,7 +250,7 @@ class DataTabScreenViewModel @Inject constructor(
 
     private fun updateCountMap() {
 
-        countMap.put(SubTabs.All, subjectList.value.size)
+        countMap.put(SubTabs.All, filteredDataTabScreenUiEntityList.value.size)
         countMap.put(
             SubTabs.NoEntryWeekTab,
             getLastEventMapListForSubTab(SubTabs.NoEntryWeekTab)
@@ -296,7 +296,14 @@ class DataTabScreenViewModel @Inject constructor(
         _filters.addAll(livelihoodModelsList)
     }
 
+    override fun refreshData() {
+        super.refreshData()
+        loadAddDataForDataTab(isRefresh = true)
+
+
+    }
 }
+
 
 const val LIVELIHOOD_FILTER = "livelihood_filter"
 

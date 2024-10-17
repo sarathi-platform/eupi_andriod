@@ -4,7 +4,6 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
-import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodOptionResponse
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
@@ -25,9 +24,7 @@ class FetchLivelihoodOptionRepositoryImpl @Inject constructor(
     override suspend fun saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>) {
         subjectLivelihoodMappingDao.insertAllSubjectLivelihoodMapping(subjectLivelihoodMappingEntity)
     }
-    override suspend fun getActivityConfigUiModel(): List<ActivityConfigEntity>? {
-        return activityConfigDao.getActivityConfigUiModel(userId = coreSharedPrefs.getUniqueUserIdentifier())
-    }
+
     override suspend fun getActivityIdForLivelihood(): Int {
         return activityConfigDao.getActivityIdForLivelihood(
             activityType = LivelihoodLanguageReferenceType.Livelihood.name,
