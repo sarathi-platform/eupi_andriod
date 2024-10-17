@@ -13,18 +13,11 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
     fun fetchExportOptionList(): List<SettingOptionModel> {
         val list = ArrayList<SettingOptionModel>()
         val context = BaselineCore.getAppContext()
-        list.add(
-            SettingOptionModel(
-                1,
-                context.getString(R.string.export_images),
-                BLANK_STRING,
-                SettingTagEnum.EXPORT_IMAGES.name
-            )
-        )
+
         if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
-                    5,
+                    1,
                     context.getString(R.string.export_baseline_qna),
                     BLANK_STRING,
                     SettingTagEnum.EXPORT_BASELINE_QNA.name
@@ -33,7 +26,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         }
         list.add(
             SettingOptionModel(
-                6,
+                2,
                 context.getString(R.string.import_data),
                 BLANK_STRING,
                 SettingTagEnum.IMPORT_DATA.name
@@ -42,7 +35,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                7,
+                3,
                 context.getString(R.string.load_server_data),
                 BLANK_STRING,
                 SettingTagEnum.LOAD_SERVER_DATA.name
@@ -51,7 +44,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                8,
+                4,
                 context.getString(R.string.regenerate_all_events),
                 BLANK_STRING,
                 SettingTagEnum.REGENERATE_EVENTS.name
@@ -60,7 +53,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
-                    9,
+                    5,
                     context.getString(R.string.mark_activity_inprogress_label),
                     BLANK_STRING,
                     SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
