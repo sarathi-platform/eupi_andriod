@@ -21,30 +21,6 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.EXPORT_IMAGES.name
             )
         )
-//            list.add(
-//                SettingOptionModel(
-//                    2,
-//                    context.getString(R.string.export_event_file),
-//                    BLANK_STRING,
-//                    SettingTagEnum.EXPORT_BACKUP_FILE.name
-//                )
-        // )
-//            list.add(
-//                SettingOptionModel(
-//                    3,
-//                    context.getString(R.string.export_database),
-//                    BLANK_STRING,
-//                    SettingTagEnum.EXPORT_DATABASE.name
-//                )
-//            )
-//        list.add(
-//            SettingOptionModel(
-//                4,
-//                context.getString(R.string.export_log_file),
-//                BLANK_STRING,
-//                SettingTagEnum.EXPORT_LOG_FILE.name
-//            )
-//        )
         if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
@@ -55,7 +31,6 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 )
             )
         }
-        // Removing this for now in Merged build, may get completely removed later.
         list.add(
             SettingOptionModel(
                 6,

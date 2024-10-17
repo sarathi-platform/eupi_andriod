@@ -65,24 +65,6 @@ fun ExportImportScreen(
         onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
-//                SettingTagEnum.LOAD_SERVER_DATA.name -> {
-//                    viewModel.showLoadConfirmationDialog.value=true
-//                }
-
-//                SettingTagEnum.EXPORT_DATABASE.name -> {
-//                    viewModel.exportLocalDatabase(true) {
-//                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-//                    }
-//                }
-//
-//                SettingTagEnum.EXPORT_IMAGES.name -> {
-//                    viewModel.exportLocalImages()
-//                }
-//
-//                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
-//                    viewModel.compressEventData(context.getString(R.string.export_event_file))
-//                }
-
                 SettingTagEnum.IMPORT_DATA.name ->{
                     viewModel.showRestartAppDialog.value=true
                 }
