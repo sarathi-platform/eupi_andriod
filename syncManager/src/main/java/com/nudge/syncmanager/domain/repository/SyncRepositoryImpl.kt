@@ -24,6 +24,7 @@ import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_NAME
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 import javax.inject.Inject
@@ -41,6 +42,13 @@ class SyncRepositoryImpl @Inject constructor(
         EventSyncStatus.OPEN.eventSyncStatus,
         EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
         EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+    )
+
+    val pendingImageEventStatusList = listOf(
+        EventSyncStatus.OPEN.eventSyncStatus,
+        EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
+        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+        EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
     )
     override fun getUserMobileNumber(): String {
         return corePrefRepo.getMobileNo()
@@ -75,7 +83,7 @@ class SyncRepositoryImpl @Inject constructor(
         syncType: Int
     ): List<Events> {
         return eventDao.getAllPendingEventList(
-            pendingEventStatusList,
+            if (syncType == SyncType.SYNC_ONLY_DATA.ordinal) pendingEventStatusList else pendingImageEventStatusList,
             batchLimit = batchLimit,
             retryCount = retryCount,
             mobileNumber = corePrefRepo.getMobileNo(),
@@ -85,7 +93,7 @@ class SyncRepositoryImpl @Inject constructor(
 
     override suspend fun getPendingEventCount(syncType: Int): Int {
         return eventDao.getSyncPendingEventCount(
-            pendingEventStatusList,
+            if (syncType == SyncType.SYNC_ONLY_DATA.ordinal) pendingEventStatusList else pendingImageEventStatusList,
             mobileNumber = corePrefRepo.getMobileNo(),
             syncType = syncType
         )

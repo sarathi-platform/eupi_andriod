@@ -8,6 +8,7 @@ import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.microsoft.azure.storage.StorageException
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.BLOB_URL
@@ -65,6 +66,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -673,7 +676,8 @@ class SyncUploadWorker @AssistedInject constructor(
 
     private suspend fun handleFailedImageStatus(
         imageEventDetail: ImageEventDetailsModel,
-        errorMessage: String
+        errorMessage: String,
+        eventStatus: String
     ) {
         CoreLogger.d(
             applicationContext,
@@ -683,7 +687,7 @@ class SyncUploadWorker @AssistedInject constructor(
         syncManagerUseCase.addUpdateEventUseCase.updateImageDetailsEventStatus(
             eventId = imageEventDetail.id,
             errorMessage = errorMessage,
-            status = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus,
+            status = eventStatus,
             requestId = imageEventDetail.requestId ?: BLANK_STRING
         )
     }
@@ -726,54 +730,77 @@ class SyncUploadWorker @AssistedInject constructor(
                         else EventSyncStatus.OPEN.eventSyncStatus
                     )
                 }
-            } catch (e: Exception) {
-                handleFailedImageStatus(
-                    imageEventDetail = imageDetail,
-                    errorMessage = e.message
-                        ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
-                )
-            }
-            val file = File(picturePath)
-            if (uploadedBlobUrl.isNotEmpty()) {
-                var metaDataMap = hashMapOf<String, Any>(
-                    FILE_PATH to file.path,
-                    FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
-                    CONTENT_TYPE to getFileMimeType(file).toString(),
-                    IS_ONLY_DATA to true,
-                    BLOB_URL to uploadedBlobUrl,
-                    DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
-                        SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
-                )
-                imageDetail.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
-                    metaDataMap.putAll(
-                        it1
+
+                val file = File(picturePath)
+                if (uploadedBlobUrl.isNotEmpty()) {
+                    var metaDataMap = hashMapOf<String, Any>(
+                        FILE_PATH to file.path,
+                        FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
+                        CONTENT_TYPE to getFileMimeType(file).toString(),
+                        IS_ONLY_DATA to true,
+                        BLOB_URL to uploadedBlobUrl,
+                        DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                            SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
+                    )
+                    imageDetail.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
+                        metaDataMap.putAll(
+                            it1
+                        )
+                    }
+                    val imageEvent = Events(
+                        id = imageDetail.id,
+                        name = imageDetail.name,
+                        type = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                        createdBy = imageDetail.createdBy,
+                        modified_date = System.currentTimeMillis().toDate(),
+                        request_payload = imageDetail.request_payload,
+                        status = imageDetail.status,
+                        metadata = SyncImageMetadataRequest(
+                            data = metaDataMap,
+                            dependsOn = emptyList()
+                        ).json(),
+                        mobile_number = imageDetail.mobile_number,
+                        payloadLocalId = imageDetail.payloadLocalId
+                    )
+
+                    val apiResponse =
+                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                            events = listOf(imageEvent),
+                        )
+                    onAPIResponse(apiResponse)
+                } else {
+                    handleFailedImageStatus(
+                        imageEventDetail = imageDetail,
+                        errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message,
+                        eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
                     )
                 }
-                val imageEvent = Events(
-                    id = imageDetail.id,
-                    name = imageDetail.name,
-                    type = EventName.BLOB_UPLOAD_TOPIC.topicName,
-                    createdBy = imageDetail.createdBy,
-                    modified_date = System.currentTimeMillis().toDate(),
-                    request_payload = imageDetail.request_payload,
-                    status = imageDetail.status,
-                    metadata = SyncImageMetadataRequest(
-                        data = metaDataMap,
-                        dependsOn = emptyList()
-                    ).json(),
-                    mobile_number = imageDetail.mobile_number,
-                    payloadLocalId = imageDetail.payloadLocalId
-                )
-
-                val apiResponse =
-                    syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                        events = listOf(imageEvent),
-                    )
-                onAPIResponse(apiResponse)
-            } else {
+            } catch (storageException: StorageException) {
                 handleFailedImageStatus(
                     imageEventDetail = imageDetail,
-                    errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message
+                    errorMessage = storageException.message
+                        ?: SyncException.BLOB_STORAGE_EXCEPTION.message,
+                    eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+                )
+            } catch (fileNotFoundException: FileNotFoundException) {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message,
+                    eventStatus = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
+                )
+            } catch (ioException: IOException) {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = ioException.message
+                        ?: SyncException.BLOB_IO_EXCEPTION.message,
+                    eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+                )
+            } catch (ex: Exception) {
+                handleFailedImageStatus(
+                    imageEventDetail = imageDetail,
+                    errorMessage = ex.message
+                        ?: SyncException.BLOB_UPLOAD_EXCEPTION.message,
+                    eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
                 )
             }
         }
@@ -802,13 +829,15 @@ class SyncUploadWorker @AssistedInject constructor(
                             }
                         } ?: handleFailedImageStatus(
                             imageEventDetail = imageDetail,
-                            errorMessage = SyncException.IMAGE_MULTIPART_IS_NULL_EXCEPTION.message
+                            errorMessage = SyncException.IMAGE_MULTIPART_IS_NULL_EXCEPTION.message,
+                            eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
                         )
                     } catch (e: Exception) {
                         handleFailedImageStatus(
                             imageEventDetail = imageDetail,
                             errorMessage = e.message
-                                ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message
+                                ?: SyncException.EXCEPTION_WHILE_FINDING_IMAGE.message,
+                            eventStatus = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
                         )
                     }
                 }
@@ -839,18 +868,21 @@ class SyncUploadWorker @AssistedInject constructor(
                 } else {
                     handleFailedImageStatus(
                         imageEventDetail = imageDetail,
-                        errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message
+                        errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message,
+                        eventStatus = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
                     )
                 }
             } else {
                 handleFailedImageStatus(
                     imageEventDetail = imageDetail,
-                    errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
+                    errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message,
+                    eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
                 )
             }
         } ?: handleFailedImageStatus(
             imageEventDetail = imageDetail,
-            errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message
+            errorMessage = SyncException.IMAGE_NAME_IS_EMPTY_OR_NULL_EXCEPTION.message,
+            eventStatus = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
         )
         return null
     }
