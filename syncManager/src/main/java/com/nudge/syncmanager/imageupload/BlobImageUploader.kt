@@ -59,14 +59,14 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
             "Image uploaded successfully ${blob.storageUri.primaryUri.toString()}"
         )
             onUploadImageResponse(blob.storageUri.primaryUri.toString(), false)
-        } catch (se: StorageException) {
+        } catch (storageException: StorageException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
                 TAG,
-                "StorageException: ${se.message}",
-                ex = se
+                "StorageException: ${storageException.message}",
+                ex = storageException
             )
-            throw se
+            throw storageException
         } catch (fileNotEx: FileNotFoundException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
@@ -75,14 +75,14 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
                 ex = fileNotEx
             )
             throw fileNotEx
-        } catch (ioe: IOException) {
+        } catch (ioException: IOException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
                 TAG,
-                "IOException: ${ioe.message}",
-                ex = ioe
+                "IOException: ${ioException.message}",
+                ex = ioException
             )
-            throw ioe
+            throw ioException
         }
 
     }
