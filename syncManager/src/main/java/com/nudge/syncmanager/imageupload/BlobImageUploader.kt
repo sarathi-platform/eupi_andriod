@@ -6,6 +6,7 @@ import com.microsoft.azure.storage.StorageException
 import com.nudge.core.decodeBase64ToPlainText
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
+import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
 
@@ -58,22 +59,30 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
             "Image uploaded successfully ${blob.storageUri.primaryUri.toString()}"
         )
             onUploadImageResponse(blob.storageUri.primaryUri.toString(), false)
-        } catch (se: StorageException) {
+        } catch (storageException: StorageException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
                 TAG,
-                "StorageException: ${se.message}",
-                ex = se
+                "StorageException: ${storageException.message}",
+                ex = storageException
             )
-            se.message?.let { onUploadImageResponse(it, true) }
-        } catch (ioe: IOException) {
+            throw storageException
+        } catch (fileNotEx: FileNotFoundException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
                 TAG,
-                "IOException: ${ioe.message}",
-                ex = ioe
+                "FileNotFoundException: ${fileNotEx.message}",
+                ex = fileNotEx
             )
-            ioe.message?.let { onUploadImageResponse(it, true) }
+            throw fileNotEx
+        } catch (ioException: IOException) {
+            CoreLogger.e(
+                CoreAppDetails.getApplicationContext().applicationContext,
+                TAG,
+                "IOException: ${ioException.message}",
+                ex = ioException
+            )
+            throw ioException
         }
 
     }

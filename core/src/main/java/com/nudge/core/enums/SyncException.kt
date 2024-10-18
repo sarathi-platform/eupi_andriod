@@ -10,6 +10,9 @@ enum class SyncException(val message: String) {
     IMAGE_MULTIPART_IS_NULL_EXCEPTION("Image Multipart is Null Exception"),
     IMAGE_EMPTY_URI_EXCEPTION("Image URI empty Exception"),
     BLOB_URL_NOT_FOUND_EXCEPTION("Blob URL not found Exception"),
+    BLOB_STORAGE_EXCEPTION("Blob Storage Exception"),
+    BLOB_IO_EXCEPTION("Blob IO Exception"),
+    BLOB_UPLOAD_EXCEPTION("Blob Upload Exception"),
     PRODUCER_RETRY_COUNT_EXCEEDED_EXCEPTION("Producer Retry Count Exceeded Exception"),
     SOMETHING_WENT_WRONG("Something Went Wrong")
 }
