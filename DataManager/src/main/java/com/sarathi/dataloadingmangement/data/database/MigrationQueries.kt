@@ -160,22 +160,45 @@ object MigrationQueries {
                 "                createdAt INTEGER\n" +
                 "            )"
 
-    val ALTER_LIVELIHOOD_ASSET_COLUMN_DROP =
-        "ALTER TABLE $ASSETS_TABLE_NAME DROP COLUMN type\n"
-    val ALTER_LIVELIHOOD_ASSET_COLUMN_ADD =
-        "ALTER TABLE $ASSETS_TABLE_NAME ADD COLUMN type TEXT\n"
 
-    val ALTER_LIVELIHOOD_PRODUCT_COLUMN_DROP =
-        "ALTER TABLE $PRODUCT_TABLE_NAME DROP COLUMN type\n"
-    val ALTER_LIVELIHOOD_PRODUCT_COLUMN_ADD =
-        "ALTER TABLE $PRODUCT_TABLE_NAME ADD COLUMN type TEXT\n"
-
-    val ALTER_LIVELIHOOD_COLUMN_DROP =
-        "ALTER TABLE $LIVELIHOOD_TABLE_NAME DROP COLUMN type\n"
-    val ALTER_LIVELIHOOD_COLUMN_COLUMN_ADD_TYPE =
-        "ALTER TABLE $LIVELIHOOD_TABLE_NAME ADD COLUMN type TEXT\n"
-
-    val ALTER_LIVELIHOOD_COLUMN_ADD_validation =
+    val ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION =
         "ALTER TABLE $LIVELIHOOD_TABLE_NAME ADD COLUMN validations TEXT\n"
+
+
+    val DROP_LIVELIHOOD_ASSET_TABLE = "DROP TABLE $ASSETS_TABLE_NAME"
+    val DROP_LIVELIHOOD_PRODUCT_TABLE = "DROP TABLE $PRODUCT_TABLE_NAME"
+    val DROP_LIVELIHOOD_TABLE = "DROP TABLE $LIVELIHOOD_TABLE_NAME"
+
+    val CREATE_NEW_LIVELIHOOD_ASSET_TABLE = "CREATE TABLE IF NOT EXISTS $ASSETS_TABLE_NAME (\n" +
+            "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+            "    assetId INTEGER NOT NULL,\n" +
+            "    livelihoodId INTEGER NOT NULL,\n" +
+            "    userId TEXT NOT NULL,\n" +
+            "    name TEXT NOT NULL,\n" +
+            "    status INTEGER NOT NULL,\n" +
+            "    type TEXT,\n" +
+            "    'value' REAL DEFAULT 0.0,\n" +
+            "    'image' TEXT\n" +
+            ")"
+
+    val CREATE_NEW_LIVELIHOOD_PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS $PRODUCT_TABLE_NAME (\n" +
+            "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+            "    productId INTEGER NOT NULL,\n" +
+            "    livelihoodId INTEGER NOT NULL,\n" +
+            "    userId TEXT NOT NULL,\n" +
+            "    name TEXT NOT NULL,\n" +
+            "    status INTEGER NOT NULL,\n" +
+            "    type TEXT\n" +
+            ")"
+
+    val CREATE_NEW_LIVELIHOOD_TABLE = "CREATE TABLE IF NOT EXISTS  $LIVELIHOOD_TABLE_NAME (\n" +
+            "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+            "    livelihoodId INTEGER NOT NULL,\n" +
+            "    userId TEXT NOT NULL,\n" +
+            "    name TEXT NOT NULL,\n" +
+            "    status INTEGER NOT NULL,\n" +
+            "    type TEXT,\n" +
+            "    image TEXT\n" +
+            ")"
 }
 
