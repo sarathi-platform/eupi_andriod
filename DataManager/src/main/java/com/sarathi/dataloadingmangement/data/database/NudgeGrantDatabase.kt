@@ -270,19 +270,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
         val NUDGE_GRANT_DATABASE_MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_3_4")
-                migration(
-                    db,
-                    listOf(
-                        ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID,
-                        ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE,
-                        ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
-                        ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE,
-                        CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE,
-                        CREATE_CONDITIONS_TABLE,
-                        ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
-                    )
-                )
-
                 /**
                  * DROP OLD TABLES AND CREATE NEW ONES with correct data type for column AS SQLite Does not support drop column.
                  * */
