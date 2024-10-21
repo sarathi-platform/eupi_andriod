@@ -45,13 +45,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
@@ -91,8 +91,6 @@ fun MultiSelectSelectDropDown(
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
-        println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
-        println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
     BoxWithConstraints(
         modifier = modifier
@@ -100,7 +98,7 @@ fun MultiSelectSelectDropDown(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = dimen_100_dp, maxCustomHeight)
     ) {
         Card(
             elevation = CardDefaults.cardElevation(

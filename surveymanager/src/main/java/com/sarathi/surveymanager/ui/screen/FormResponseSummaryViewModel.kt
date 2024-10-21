@@ -111,37 +111,42 @@ class FormResponseSummaryViewModel @Inject constructor(
                 )
             }
 
-            taskEntity?.let {
-                activityConfig =
-                    getActivityUiConfigUseCase.getActivityConfig(it.activityId, it.missionId)
-                val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
-                    activityConfigId = activityConfigId,
-                    surveyId = surveyId,
-                    sectionId = sectionId,
-                    taskId = it.taskId,
-                    grantId = NUMBER_ZERO
-                )
-
-                _formQuestionResponseMap.clear()
-                _formQuestionResponseMap.putAll(savedAnswers.groupBy { it.referenceId })
-
-                referenceIdsList.clear()
-                referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
-
-                getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
-                    .also { surveyConfigEntityList ->
-                        getSurveyConfig(surveyConfigEntityList)
-                    }
-
-                isActivityCompleted = getActivityUseCase.isAllActivityCompleted(
-                    missionId = it.missionId.value(NUMBER_ZERO),
-                    activityId = it.activityId.value(NUMBER_ZERO)
-                )
-            }
+            initSurveyConfigAndGetSavedResponses()
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+        }
+    }
+
+    private suspend fun initSurveyConfigAndGetSavedResponses() {
+        taskEntity?.let {
+            activityConfig =
+                getActivityUiConfigUseCase.getActivityConfig(it.activityId, it.missionId)
+
+            val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
+                activityConfigId = activityConfigId,
+                surveyId = surveyId,
+                sectionId = sectionId,
+                taskId = it.taskId,
+                grantId = NUMBER_ZERO
+            )
+
+            _formQuestionResponseMap.clear()
+            _formQuestionResponseMap.putAll(savedAnswers.groupBy { it.referenceId })
+
+            referenceIdsList.clear()
+            referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
+
+            getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
+                .also { surveyConfigEntityList ->
+                    getSurveyConfig(surveyConfigEntityList)
+                }
+
+            isActivityCompleted = getActivityUseCase.isAllActivityCompleted(
+                missionId = it.missionId.value(NUMBER_ZERO),
+                activityId = it.activityId.value(NUMBER_ZERO)
+            )
         }
     }
 

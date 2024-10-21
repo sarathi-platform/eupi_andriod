@@ -147,16 +147,17 @@ fun FormQuestionSummaryScreen(
                         openAlertDialog.value = Pair(true, mReferenceId)
                     },
                     onUpdate = { mReferenceId ->
+                        val activityConfig = formResponseSummaryScreenViewModel.activityConfig
                         onFormTypeQuestionClicked(
                             formResponseSummaryScreenViewModel.sectionId,
                             formResponseSummaryScreenViewModel.surveyId,
                             formResponseSummaryScreenViewModel.formId,
                             mReferenceId,
                             formResponseSummaryScreenViewModel.taskId,
-                            formResponseSummaryScreenViewModel.activityConfig?.activityId.value(),
+                            activityConfig?.activityId.value(),
                             formResponseSummaryScreenViewModel.activityConfigId,
-                            formResponseSummaryScreenViewModel.activityConfig?.missionId.value(),
-                            formResponseSummaryScreenViewModel.activityConfig?.subject.value()
+                            activityConfig?.missionId.value(),
+                            activityConfig?.subject.value()
                         )
                     }
                 )

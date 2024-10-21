@@ -88,8 +88,6 @@ fun DatePickerComponent(
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
-        println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
-        println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
 
     BasicCardView(

@@ -114,7 +114,10 @@ fun FormResponseCard(
                         .filter { it.value.type.equals(CONFIG_SLOT_TYPE_TAG, true) }
                         .forEach { mapEntry ->
                             val response =
-                                getResponseValue(surveyAnswerFormSummaryUiModelList, mapEntry)
+                                getSavedAnswerValueForSummaryField(
+                                    surveyAnswerFormSummaryUiModelList,
+                                    mapEntry
+                                )
                             SubContainerView(
                                 mapEntry.value.copy(value = response),
                                 isNumberFormattingRequired = false
@@ -192,7 +195,7 @@ fun FormResponseCard(
 }
 
 @Composable
-private fun getResponseValue(
+private fun getSavedAnswerValueForSummaryField(
     surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>,
     mapEntry: Map.Entry<String, SurveyCardModel>
 ): String {

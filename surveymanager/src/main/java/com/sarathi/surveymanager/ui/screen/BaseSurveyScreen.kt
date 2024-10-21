@@ -76,6 +76,7 @@ import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
 import kotlinx.coroutines.launch
+import com.nudge.core.R as CoreRes
 
 @Composable
 fun BaseSurveyScreen(
@@ -498,7 +499,7 @@ fun FormQuestionUiContent(
                                 LinkTextButtonWithIcon(
                                     modifier = Modifier
                                         .align(Alignment.Start),
-                                    title = "View Summary",
+                                    title = stringResource(CoreRes.string.view_summary),
                                     isIconRequired = true,
                                     textColor = summaryCardViewBlue,
                                     iconTint = summaryCardViewBlue
