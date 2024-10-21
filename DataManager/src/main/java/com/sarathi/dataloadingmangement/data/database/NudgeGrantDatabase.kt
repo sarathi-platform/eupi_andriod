@@ -12,6 +12,7 @@ import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
+import com.sarathi.dataloadingmangement.data.converters.LanguageConfigConverter
 import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.data.converters.StringConverter
@@ -57,6 +58,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.data.dao.translation.TranslationConfigDao
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
@@ -119,6 +121,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
+import com.sarathi.dataloadingmangement.data.entities.traslation.TranslationConfigEntity
 import java.sql.SQLException
 
 const val NUDGE_GRANT_DATABASE_VERSION = 4
@@ -164,7 +167,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
         SubjectLivelihoodEventMappingEntity::class,
         SectionStatusEntity::class,
         SourceTargetQuestionMappingEntity::class,
-        ConditionsEntity::class
+        ConditionsEntity::class,
+        TranslationConfigEntity::class
     ],
 
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -180,7 +184,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
     ValuesDtoConverter::class,
     DateConverter::class,
     TagConverter::class,
-    ValidationConverter::class
+    ValidationConverter::class,
+    LanguageConfigConverter::class
 
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
@@ -234,6 +239,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun sourceTargetQuestionMappingEntityDao(): SourceTargetQuestionMappingEntityDao
 
     abstract fun conditionsEntityDao(): ConditionsEntityDao
+
+    abstract fun translationConfigDao(): TranslationConfigDao
 
     class NudgeGrantDatabaseCallback : Callback()
     companion object {

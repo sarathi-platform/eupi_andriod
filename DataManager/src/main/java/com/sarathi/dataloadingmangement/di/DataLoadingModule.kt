@@ -376,6 +376,10 @@ class DataLoadingModule {
     @Singleton
     fun provideConditionsEntityDao(db: NudgeGrantDatabase) = db.conditionsEntityDao()
 
+    @Provides
+    @Singleton
+    fun provideTranslationConfigDao(db: NudgeGrantDatabase) = db.translationConfigDao()
+
 
     @Provides
     @Singleton
