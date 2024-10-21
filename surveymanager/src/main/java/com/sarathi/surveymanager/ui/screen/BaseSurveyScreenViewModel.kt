@@ -188,10 +188,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             val surveyConfigForForm = mutableMapOf<String, SurveyCardModel>()
             surveyConfigMapEntry.value.forEach { it ->
                 val model = SurveyCardModel.getSurveyCarModel(it)
-                // TODO handle dynamic values case
-                /*if (it.type == "tag") {
-                    model.copy(value = questionUiModel.value.find { questionUiModel ->  questionUiModel.tagId.contains(it.value) }.options)
-                }*/
                 surveyConfigForForm[it.key] = model
             }
             mSurveyConfig[surveyConfigMapEntry.key] = surveyConfigForForm
