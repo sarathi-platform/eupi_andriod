@@ -147,8 +147,7 @@ object MigrationQueries {
                 "                sectionId INTEGER NOT NULL,\n" +
                 "                sourceQuestionId INTEGER NOT NULL,\n" +
                 "                targetQuestionId INTEGER NOT NULL,\n" +
-                "                conditionOperator TEXT,\n" +
-                "                createdAt INTEGER \n" +
+                "                conditionOperator TEXT \n" +
                 "            )"
 
     val CREATE_CONDITIONS_TABLE =
@@ -156,8 +155,7 @@ object MigrationQueries {
                 "                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "                userId TEXT,\n" +
                 "                sourceTargetQuestionRefId INTEGER NOT NULL,\n" +
-                "                conditions TEXT NOT NULL,\n" +
-                "                createdAt INTEGER\n" +
+                "                conditions TEXT NOT NULL \n" +
                 "            )"
 
 
