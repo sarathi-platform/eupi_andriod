@@ -107,54 +107,6 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
             )
         )
-
-//        if (repository.getLoggedInUserType() == UPCM_USER) {
-//            list.add(
-//                SettingOptionModel(
-//                    5,
-//                    context.getString(R.string.export_baseline_qna),
-//                    BLANK_STRING,
-//                    SettingTagEnum.EXPORT_BASELINE_QNA.name
-//                )
-//            )
-//        }
-        // Removing this for now in Merged build, may get completely removed later.
-//        list.add(
-//            SettingOptionModel(
-//                6,
-//                context.getString(R.string.import_data),
-//                BLANK_STRING,
-//                SettingTagEnum.IMPORT_DATA.name
-//            )
-//        )
-
-//        list.add(
-//            SettingOptionModel(
-//                7,
-//                context.getString(R.string.load_server_data),
-//                BLANK_STRING,
-//                SettingTagEnum.LOAD_SERVER_DATA.name
-//            )
-//        )
-
-//        list.add(
-//            SettingOptionModel(
-//                8,
-//                context.getString(R.string.regenerate_all_events),
-//                BLANK_STRING,
-//                SettingTagEnum.REGENERATE_EVENTS.name
-//            )
-//        )
-//        if(repository.getLoggedInUserType()== UPCM_USER) {
-//            list.add(
-//                SettingOptionModel(
-//                    9,
-//                    context.getString(R.string.mark_activity_inprogress_label),
-//                    BLANK_STRING,
-//                    SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
-//                )
-//            )
-//        }
         return list.ifEmpty { arrayListOf() }
     }
 

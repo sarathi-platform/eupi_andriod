@@ -29,7 +29,7 @@ class ConfigRepository @Inject constructor(
     };
 
     override fun onServerError(error: ErrorModel?) {
-        addDefaultLanguage(languageListDao)
+        addDefaultLanguage(languageListDao,baselineLanguageDao)
     }
 
     fun getAllLanguages(): List<LanguageEntity> = languageListDao.getAllLanguages()
@@ -66,11 +66,11 @@ class ConfigRepository @Inject constructor(
         return prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING)
     }
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        addDefaultLanguage(languageListDao)
+        addDefaultLanguage(languageListDao,baselineLanguageDao)
     }
 
     fun addDefaultLanguage() {
-        addDefaultLanguage(languageListDao)
+        addDefaultLanguage(languageListDao,baselineLanguageDao)
     }
 
     fun getLoggedInUserType(): String {

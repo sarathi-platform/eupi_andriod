@@ -65,6 +65,9 @@ fun ExportImportScreen(
         onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
+                SettingTagEnum.LOAD_SERVER_DATA.name -> {
+                    viewModel.showLoadConfirmationDialog.value=true
+                }
                 SettingTagEnum.IMPORT_DATA.name ->{
                     viewModel.showRestartAppDialog.value=true
                 }
@@ -83,7 +86,6 @@ fun ExportImportScreen(
 
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
-//                    viewModel.markAllActivityInProgress(context)
                 }
             }
         },
