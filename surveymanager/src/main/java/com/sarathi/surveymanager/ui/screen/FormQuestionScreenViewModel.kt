@@ -6,12 +6,15 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
@@ -19,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +32,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -40,7 +45,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var activityConfigId: Int = 0
     var subjectType: String = BLANK_STRING
     var missionId: Int = 0
-    var referenceId: String = BLANK_STRING
+    var referenceId: String = UUID.randomUUID().toString()
 
     var taskEntity: ActivityTaskEntity? = null
 
@@ -52,6 +57,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
     val conditionsUtils = ConditionsUtils()
+
+    var surveyConfig = mutableMapOf<String, SurveyCardModel>()
 
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 
@@ -83,11 +90,30 @@ open class FormQuestionScreenViewModel @Inject constructor(
                     questionIdList = questionUiModel.value.map { it.questionId }
                 )
 
+            taskEntity?.let {
+                getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
+                    .also { surveyConfigEntityList ->
+                        getSurveyConfig(surveyConfigEntityList)
+                    }
+            }
+
+
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
                 initQuestionVisibilityMap(questionUiModel.value)
             }
         }
+    }
+
+    private fun getSurveyConfig(surveyConfigEntityList: List<SurveyConfigEntity>) {
+        val mSurveyConfig = mutableMapOf<String, SurveyCardModel>()
+        surveyConfigEntityList.forEach { surveyConfigEntity ->
+            mSurveyConfig.put(
+                surveyConfigEntity.key,
+                SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
+            )
+        }
+        surveyConfig = mSurveyConfig
     }
 
     fun setPreviousScreenData(
@@ -108,7 +134,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
         this.activityId = activityId
         this.activityConfigId = activityConfigId
         this.missionId = missionId
-        this.referenceId = referenceId
+        if (referenceId != BLANK_STRING) {
+            this.referenceId = referenceId
+        }
         this.subjectType = subjectType
     }
 
@@ -147,7 +175,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     }
 
     fun checkButtonValidation() {
-        questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
+        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+            .forEach { questionUiModel ->
             val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
             if (!result) {
                 isButtonEnable.value = false
@@ -164,6 +193,13 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+    }
+
+    fun saveAllAnswers() {
+        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+            .forEach { questionUiModel ->
+                saveSingleAnswerIntoDb(questionUiModel)
+            }
     }
 
 }

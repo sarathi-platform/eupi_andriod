@@ -27,4 +27,7 @@
     <string name="reopen_activity_step_1">Step 1</string>
     <string name="reopen_activity_step_2">Step 2</string>
     <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="summary_text">Summary</string>
+    <string name="default_confirm_button_text">Confirm</string>
+    <string name="default_dismiss_button_text">Dismiss</string>
 </resources>

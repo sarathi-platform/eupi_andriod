@@ -47,13 +47,17 @@ import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -67,6 +71,7 @@ import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
@@ -90,6 +95,10 @@ fun BaseSurveyScreen(
     totalSubmittedAmount: Int,
     onSubmitButtonClick: () -> Unit,
     onSettingClick: () -> Unit,
+    onBackClicked: () -> Unit = {
+        navController.popBackStack()
+        navController.popBackStack()
+    },
     surveyQuestionContent: (LazyListScope.(maxHeight: Dp) -> Unit) = { maxHeight ->
         BaseSurveyQuestionContent(
             viewModel,
@@ -107,8 +116,7 @@ fun BaseSurveyScreen(
     val context = LocalContext.current
 
     BackHandler {
-        navController.popBackStack()
-        navController.popBackStack()
+        onBackClicked()
     }
 
     LaunchedEffect(key1 = true) {
@@ -230,12 +238,17 @@ fun QuestionUiContent(
     grantType: String,
     index: Int
 ) {
+    val showCardView = grantType.equals(
+        ActivityTypeEnum.SURVEY.name,
+        ignoreCase = true
+    )
     when (question.type) {
         QuestionType.InputNumber.name,
         QuestionType.TextField.name,
         QuestionType.NumericField.name,
         QuestionType.InputText.name -> {
             InputComponent(
+                questionIndex = index,
                 maxLength = 7,
                 isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                 sanctionedAmount = sanctionedAmount,
@@ -248,6 +261,7 @@ fun QuestionUiContent(
                     )
                 ),
                 isMandatory = question.isMandatory,
+                showCardView = showCardView,
                 isEditable = viewModel.isActivityNotCompleted.value,
                 defaultValue = question.options?.firstOrNull()?.selectedValue
                     ?: BLANK_STRING,
@@ -266,11 +280,13 @@ fun QuestionUiContent(
         QuestionType.DateType.name -> {
 
             DatePickerComponent(
+                questionIndex = index,
                 isMandatory = question.isMandatory,
                 defaultValue = question.options?.firstOrNull()?.selectedValue
                     ?: BLANK_STRING,
                 title = question.questionDisplay,
                 isEditable = viewModel.isActivityNotCompleted.value,
+                showCardView = showCardView,
                 hintText = question.options?.firstOrNull()?.description
                     ?: BLANK_STRING
             ) { selectedValue ->
@@ -307,15 +323,11 @@ fun QuestionUiContent(
         QuestionType.SingleSelectDropDown.name,
         QuestionType.DropDown.name -> {
             DropDownTypeComponent(
+                questionIndex = index,
                 isEditAllowed = viewModel.isActivityNotCompleted.value,
                 title = question.questionDisplay,
-                questionNumber = if (TextUtils.equals(
-                        grantType.toLowerCase(),
-                        ActivityTypeEnum.SURVEY.name.toLowerCase()
-                    )
-                ) getQuestionNumber(index) else BLANK_STRING,
                 isMandatory = question.isMandatory,
-                showQuestionInCard = grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase(),
+                showQuestionInCard = showCardView,
                 sources = getOptionsValueDto(question.options ?: listOf()),
                 onAnswerSelection = { selectedValue ->
                     question.options?.forEach { option ->
@@ -330,10 +342,13 @@ fun QuestionUiContent(
 
         QuestionType.MultiSelectDropDown.name -> {
             TypeMultiSelectedDropDownComponent(
+                questionIndex = index,
                 title = question.questionDisplay,
                 isMandatory = question.isMandatory,
                 sources = getOptionsValueDto(question.options ?: listOf()),
                 isEditAllowed = viewModel.isActivityNotCompleted.value,
+                maxCustomHeight = maxHeight,
+                showCardView = showCardView,
                 onAnswerSelection = { selectedItems ->
                     val selectedOptions =
                         selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
@@ -364,10 +379,7 @@ fun QuestionUiContent(
                 isRequiredField = question.isMandatory,
                 maxCustomHeight = maxHeight,
                 isQuestionTypeToggle = false,
-                showCardView = grantType.equals(
-                    ActivityTypeEnum.SURVEY.name,
-                    ignoreCase = true
-                ),
+                showCardView = showCardView,
                 optionUiModelList = question.options.value(),
                 onAnswerSelection = { questionIndex, optionItemIndex ->
                     question.options?.forEachIndexed { index, _ ->
@@ -388,6 +400,7 @@ fun QuestionUiContent(
                 isRequiredField = question.isMandatory,
                 maxCustomHeight = maxHeight,
                 optionUiModelList = question.options.value(),
+                showCardView = showCardView,
                 onAnswerSelection = { selectedOptionIndex, isSelected ->
 
                     question.options?.get(selectedOptionIndex)?.isSelected =
@@ -408,7 +421,7 @@ fun QuestionUiContent(
                 questionDisplay = question.questionDisplay,
                 isRequiredField = question.isMandatory,
                 maxCustomHeight = maxHeight,
-                showCardView = false,
+                showCardView = showCardView,
                 optionUiModelList = question.options.value(),
                 onAnswerSelection = { questionIndex, optionItemIndex ->
                     question.options?.forEachIndexed { index, _ ->
@@ -426,14 +439,13 @@ fun QuestionUiContent(
 @Composable
 fun FormQuestionUiContent(
     question: QuestionUiModel,
-    sanctionedAmount: Int,
-    totalSubmittedAmount: Int,
     viewModel: BaseSurveyScreenViewModel,
-    onAnswerSelect: (QuestionUiModel) -> Unit,
     maxHeight: Dp,
     grantType: String,
     index: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
+    onViewSummaryClicked: (QuestionUiModel) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimen_2_dp)
@@ -448,7 +460,7 @@ fun FormQuestionUiContent(
             ) {
                 Column {
                     QuestionComponent(
-                        title = question.questionDisplay,
+                        title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)?.value.value(),
                         questionNumber = getQuestionNumber(index),
                         isRequiredField = question.isMandatory
                     )
@@ -465,9 +477,36 @@ fun FormQuestionUiContent(
 
                     ) {
                         Text(
-                            text = question.questionSummary.value(),
+                            text = viewModel.surveyConfig[question.formId]?.get(
+                                SurveyConfigCardSlots.FORM_QUESTION_CARD_BUTTON.name
+                            )?.value.value(),
                             style = defaultTextStyle.copy(color = if (true) white else greyColor)
                         )
+                    }
+
+                    if (viewModel.showSummaryView.get(question.formId)
+                            .value() > NUMBER_ZERO
+                    ) {
+                        viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TOTAL_COUNT.name)
+                            ?.let {
+                                CustomVerticalSpacer()
+                                val updatedTotalCountText =
+                                    it.value + ": " + viewModel.showSummaryView[question.formId].value()
+                                val updatedModel = it.copy(value = updatedTotalCountText)
+                                SubContainerView(updatedModel, isNumberFormattingRequired = false)
+                                CustomVerticalSpacer()
+                                LinkTextButtonWithIcon(
+                                    modifier = Modifier
+                                        .align(Alignment.Start),
+                                    title = "View Summary",
+                                    isIconRequired = true,
+                                    textColor = summaryCardViewBlue,
+                                    iconTint = summaryCardViewBlue
+                                ) {
+                                    onViewSummaryClicked(question)
+                                }
+                            }
+
                     }
                 }
             }

@@ -57,6 +57,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_QUESTION_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
@@ -82,6 +83,7 @@ import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
 import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.FormQuestionScreen
+import com.sarathi.surveymanager.ui.screen.FormQuestionSummaryScreen
 import com.sarathi.surveymanager.ui.screen.GrantSurveyScreen
 import com.sarathi.surveymanager.ui.screen.LivelihoodPopSurveyScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
@@ -580,6 +582,16 @@ fun NavGraphBuilder.MatNavigation(
                         referenceId = referenceId,
                         subjectType = subjectType
                     )
+                },
+                onViewFormSummaryClicked = { taskId, surveyId, sectionId, formId, activityConfigId ->
+                    navigateToFormSummaryScreen(
+                        navController,
+                        taskId,
+                        surveyId,
+                        sectionId,
+                        formId,
+                        activityConfigId
+                    )
                 }
             )
         }
@@ -1055,7 +1067,51 @@ fun NavGraphBuilder.MatNavigation(
             activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
             missionId = it.arguments?.getInt(ARG_MISSION_ID).value(),
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
-            subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value()
+            subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
+            onNavigateBack = {
+                navController.popBackStack()
+            }
+        )
+    }
+
+    composable(route = MATHomeScreens.FormSummaryScreen.route, arguments = listOf(
+        navArgument(ARG_TASK_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_SURVEY_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_SECTION_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_FORM_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_ACTIVITY_CONFIG_ID) {
+            type = NavType.IntType
+        }
+    )) {
+        FormQuestionSummaryScreen(
+            navController = navController,
+            taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
+            surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
+            sectionId = it.arguments?.getInt(ARG_SECTION_ID).value(),
+            formId = it.arguments?.getInt(ARG_FORM_ID).value(),
+            activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
+            onFormTypeQuestionClicked = { sectionId, surveyId, formId, referenceId, taskId, activityId, activityConfigId, missionId, subjectType ->
+                navigateToFormQuestionScreen(
+                    navController = navController,
+                    taskId = taskId,
+                    sectionId = sectionId,
+                    surveyId = surveyId,
+                    formId = formId,
+                    activityId = activityId,
+                    activityConfigId = activityConfigId,
+                    missionId = missionId,
+                    referenceId = referenceId,
+                    subjectType = subjectType
+                )
+            }
         )
     }
 
@@ -1275,4 +1331,16 @@ fun navigateToFormQuestionScreen(
 ) {
     val refIdWithNull = if (TextUtils.isEmpty(referenceId)) null else referenceId
     navController.navigate("${FORM_QUESTION_SCREEN_ROUTE_NAME}/$sectionId/$surveyId/$formId/$taskId/$activityId/$activityConfigId/$missionId/$refIdWithNull/$subjectType")
+}
+
+
+fun navigateToFormSummaryScreen(
+    navController: NavController,
+    taskId: Int,
+    surveyId: Int,
+    sectionId: Int,
+    formId: Int,
+    activityConfigId: Int
+) {
+    navController.navigate("$FORM_SUMMARY_SCREEN_ROUTE_NAME/$taskId/$surveyId/$sectionId/$formId/$activityConfigId")
 }

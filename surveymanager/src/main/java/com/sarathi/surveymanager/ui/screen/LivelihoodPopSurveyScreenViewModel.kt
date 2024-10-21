@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -37,7 +38,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSectionListUseCase: GetSectionListUseCase,
-    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -51,7 +53,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     coreSharedPrefs,
     getActivityUiConfigUseCase,
     getSectionListUseCase,
-    getConditionQuestionMappingsUseCase
+    getConditionQuestionMappingsUseCase,
+    getSurveyConfigFromDbUseCase
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
