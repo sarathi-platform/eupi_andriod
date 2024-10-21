@@ -19,7 +19,7 @@ data class LivelihoodEntity(
     var name: String,
     var status: Int,
     //Todo Add column type for migration
-    var type: String = BLANK_STRING,
+    var type: String? = BLANK_STRING,
     var image: String?,
 
     //Todo Add column in migration
