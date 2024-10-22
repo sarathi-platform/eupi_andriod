@@ -14,6 +14,7 @@ import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
 import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
+import com.sarathi.dataloadingmangement.SURVEY_CONFIG_TABLE_NAME
 
 object MigrationQueries {
     val CREATE_MONEY_JOUNRAL_TABLE =
@@ -198,5 +199,23 @@ object MigrationQueries {
             "    type TEXT,\n" +
             "    image TEXT\n" +
             ")"
+
+    val CREATE_SURVEY_CONFIG_TABLE =
+        "CREATE TABLE IF NOT EXISTS $SURVEY_CONFIG_TABLE_NAME (\n" +
+                "                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "                key TEXT NOT NULL,\n" +
+                "                type TEXT NOT NULL,\n" +
+                "                tagId INTEGER NOT NULL,\n" +
+                "                value TEXT NOT NULL,\n" +
+                "                icon TEXT NOT NULL,\n" +
+                "                label TEXT NOT NULL,\n" +
+                "                componentType TEXT NOT NULL,\n" +
+                "                language TEXT NOT NULL,\n" +
+                "                activityId INTEGER NOT NULL,\n" +
+                "                missionId INTEGER NOT NULL,\n" +
+                "                formId INTEGER NOT NULL,\n" +
+                "                surveyId INTEGER NOT NULL,\n" +
+                "                userId TEXT NOT NULL\n" +
+                "            )"
 }
 

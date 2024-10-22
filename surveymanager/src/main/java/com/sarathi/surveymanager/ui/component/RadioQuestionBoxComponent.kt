@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -45,7 +46,6 @@ import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
-import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -124,7 +124,9 @@ fun RadioQuestionBoxComponent(
                             ) {
                                 QuestionComponent(
                                     title = questionDisplay,
-                                    questionNumber = getQuestionNumber(questionIndex),
+                                    questionNumber = if (showCardView) getQuestionNumber(
+                                        questionIndex
+                                    ) else BLANK_STRING,
                                     isRequiredField = isRequiredField
                                 )
                             }

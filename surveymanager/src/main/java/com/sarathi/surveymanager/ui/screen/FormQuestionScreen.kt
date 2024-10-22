@@ -1,7 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
 import android.text.TextUtils
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,15 +15,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
-import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
@@ -53,7 +51,8 @@ fun FormQuestionScreen(
     activityConfigId: Int,
     missionId: Int,
     referenceId: String,
-    subjectType: String
+    subjectType: String,
+    onNavigateBack: () -> Unit
 ) {
 
     LaunchedEffect(key1 = Unit) {
@@ -73,7 +72,7 @@ fun FormQuestionScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = "Form", // TODO change this to the value fetched in survey config.
+        title = viewModel.surveyConfig[SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name]?.value.value(),
         modifier = modifier,
         onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = {},
@@ -82,7 +81,8 @@ fun FormQuestionScreen(
                 isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                 buttonTitle = stringResource(R.string.submit),
                 onSubmitButtonClick = {
-
+                    viewModel.saveAllAnswers()
+                    onNavigateBack()
                 }
             )
         },
@@ -94,7 +94,7 @@ fun FormQuestionScreen(
                     .fillMaxHeight()
             ) {
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(dimen_10_dp), modifier = Modifier
+                    /*verticalArrangement = Arrangement.spacedBy(dimen_10_dp),*/ modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = dimen_16_dp)
                 ) {
@@ -109,13 +109,11 @@ fun FormQuestionScreen(
                             onAnswerSelect = {
                                 viewModel.updateQuestionResponseMap(question)
                                 viewModel.runConditionCheck(question)
-                            },
-
-                            )
+                            }
+                        )
                     }
 
                     customVerticalSpacer(size = dimen_56_dp)
-
                 }
             }
 
@@ -141,16 +139,14 @@ fun FormScreenQuestionUiContent(
             QuestionType.NumericField.name,
             QuestionType.InputText.name -> {
                 InputComponent(
+                    questionIndex = index,
                     maxLength = 7,
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = 0,
-                    remainingAmount = getSanctionedAmountMessage(
-                        question,
-                        sanctionedAmount = 0,
-                        remainingAmount = 0
-                    ),
+                    remainingAmount = 0,
                     isMandatory = question.isMandatory,
                     isEditable = viewModel.isActivityNotCompleted.value,
+                    showCardView = false,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
@@ -166,6 +162,7 @@ fun FormScreenQuestionUiContent(
             QuestionType.DateType.name -> {
 
                 DatePickerComponent(
+                    questionIndex = index,
                     isMandatory = question.isMandatory,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
@@ -207,9 +204,9 @@ fun FormScreenQuestionUiContent(
             QuestionType.SingleSelectDropDown.name,
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
+                    questionIndex = index,
                     isEditAllowed = viewModel.isActivityNotCompleted.value,
                     title = question.questionDisplay,
-                    questionNumber = getQuestionNumber(index),
                     isMandatory = question.isMandatory,
                     showQuestionInCard = false,
                     sources = getOptionsValueDto(question.options ?: listOf()),
@@ -226,10 +223,13 @@ fun FormScreenQuestionUiContent(
 
             QuestionType.MultiSelectDropDown.name -> {
                 TypeMultiSelectedDropDownComponent(
+                    questionIndex = index,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     sources = getOptionsValueDto(question.options ?: listOf()),
                     isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    showCardView = false,
+                    maxCustomHeight = maxHeight,
                     onAnswerSelection = { selectedItems ->
                         val selectedOptions =
                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)

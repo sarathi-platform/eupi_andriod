@@ -206,11 +206,26 @@ class SurveySaveRepositoryImpl @Inject constructor(
                         surveyAnswers[index].optionItems[optionIndex].description =
                             optionItem.description
                     }
+                    option.optionType = surveyAnswerData.questionType
                 }
             }
 
         }
         return surveyAnswers
+    }
+
+    override fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<String> {
+        return surveyAnswersDao.getTotalSavedFormResponsesCount(
+            surveyId = surveyId,
+            taskId = taskId,
+            sectionId = sectionId,
+            questionIds = questionIds
+        )
     }
 
     private fun getSurveySectionQuestionOptionsForLanguage(

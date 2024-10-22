@@ -29,7 +29,7 @@ data class SurveyAnswerFormSummaryUiModel(
     var taskId: Int,
     @SerializedName("tagId")
     @TypeConverters(TagConverter::class)
-    var tagId: List<Int>,
+    var tagId: List<Int> = emptyList(),
     @SerializedName("optionItems")
     @TypeConverters(QuestionsOptionsConverter::class)
     var optionItems: List<OptionsUiModel>,

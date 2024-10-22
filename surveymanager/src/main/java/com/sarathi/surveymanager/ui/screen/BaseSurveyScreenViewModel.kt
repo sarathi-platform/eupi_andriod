@@ -10,6 +10,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -17,12 +18,14 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -50,7 +53,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSectionListUseCase: GetSectionListUseCase,
-    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase
 ) : BaseViewModel() {
     var surveyId: Int = 0
     var sectionId: Int = 0
@@ -74,9 +78,13 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     var isNoSection = mutableStateOf(false)
 
+    var surveyConfig = mapOf<Int, MutableMap<String, SurveyCardModel>>()
+
     val conditionsUtils = ConditionsUtils()
 
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
+
+    val showSummaryView = mutableMapOf<Int, Int>()
 
 
     override fun <T> onEvent(event: T) {
@@ -123,6 +131,38 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             isNoSection.value = sectionList.size == 1
 
+            questionUiModel.value
+                .filter { it.formId != 0 }
+                .groupBy { it.formId }
+                .also { it ->
+                    val formQuestionMap = mutableMapOf<Int, List<Int>>()
+                    it.forEach { mapEntry ->
+                        val questionIds = mapEntry.value.map { it.questionId }
+                        formQuestionMap.put(mapEntry.key, questionIds)
+                    }
+                    val totalSavedFormResponseCount =
+                        saveSurveyAnswerUseCase.getTotalSavedFormResponsesCount(
+                            surveyId = surveyId,
+                            sectionId = sectionId,
+                            taskId = taskId,
+                            formQuestionMap = formQuestionMap
+                        )
+                    totalSavedFormResponseCount.forEach { mapEntry ->
+                        showSummaryView[mapEntry.key] = mapEntry.value
+                    }
+                }
+
+
+            activityConfig?.let {
+                getSurveyConfigFromDbUseCase.invoke(
+                    missionId = it.missionId,
+                    it.activityId,
+                    surveyId
+                )?.also { surveyConfigMap ->
+                    surveyConfig = getSurveyConfig(surveyConfigMap)
+                }
+            }
+
             val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
                 .invoke(
                     surveyId = surveyId,
@@ -140,6 +180,21 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun getSurveyConfig(surveyConfigMap: Map<Int, List<SurveyConfigEntity>>): MutableMap<Int, MutableMap<String, SurveyCardModel>> {
+        val mSurveyConfig = mutableMapOf<Int, MutableMap<String, SurveyCardModel>>()
+        surveyConfigMap.forEach { surveyConfigMapEntry ->
+            val surveyConfigForForm = mutableMapOf<String, SurveyCardModel>()
+            surveyConfigMapEntry.value.forEach { it ->
+                val model = SurveyCardModel.getSurveyCarModel(it)
+                surveyConfigForForm[it.key] = model
+            }
+            mSurveyConfig[surveyConfigMapEntry.key] = surveyConfigForForm
+        }
+
+        return mSurveyConfig
+
     }
 
 
