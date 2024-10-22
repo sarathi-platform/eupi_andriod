@@ -32,8 +32,4 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
             throw ex
         }
     }
-
-    suspend fun deleteEventsDataAfterMigration() {
-        apiConfigDatabaseRepository.deleteEventsDataAfterMigration()
-    }
 }

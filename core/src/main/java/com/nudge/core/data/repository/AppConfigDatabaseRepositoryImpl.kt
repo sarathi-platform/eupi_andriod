@@ -4,8 +4,6 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.database.dao.ApiConfigDao
-import com.nudge.core.database.dao.EventDependencyDao
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.AppConfigEntity
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
@@ -13,9 +11,7 @@ import javax.inject.Inject
 
 class AppConfigDatabaseRepositoryImpl @Inject constructor(
     val appConfigDao: ApiConfigDao,
-    val coreSharedPrefs: CoreSharedPrefs,
-    val eventsDao: EventsDao,
-    val eventDependencyDao: EventDependencyDao
+    val coreSharedPrefs: CoreSharedPrefs
 ) : AppConfigDatabaseRepository {
     override suspend fun saveAppConfig(data: HashMap<String, String>) {
         val userId = coreSharedPrefs.getUniqueUserIdentifier()
@@ -89,11 +85,4 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
     override fun getAppConfigFromPref(key: String): String {
         return coreSharedPrefs.getPref(key, BLANK_STRING)
     }
-
-    override suspend fun deleteEventsDataAfterMigration() {
-        eventsDao.deleteAllEvents()
-        eventDependencyDao.deleteAllDependentEvents()
-    }
-
-
 }

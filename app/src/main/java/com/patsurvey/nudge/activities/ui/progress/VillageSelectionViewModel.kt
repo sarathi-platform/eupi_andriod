@@ -13,8 +13,9 @@ import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.value
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.SyncMigrationUseCase
+import com.nudge.core.value
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -151,8 +152,8 @@ class VillageSelectionViewModel @Inject constructor(
     val lastSelectedTolaDao: LastSelectedTolaDao,
 
     val villageSelectionRepository: VillageSelectionRepository,
-    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
-
+    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val syncMigrationUseCase: SyncMigrationUseCase
 ) : BaseViewModel() {
     private var isNeedToCallVillageApi: Boolean = true
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -241,6 +242,8 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             }
         }
+        // To Delete events for version 1 to 2 sync migration
+        syncMigrationUseCase.deleteEventsAfter1To2Migration()
     }
 
 

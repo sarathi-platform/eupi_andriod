@@ -5,6 +5,8 @@ import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
+import com.nudge.core.data.repository.SyncMigrationRepository
+import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
@@ -34,13 +36,21 @@ class RepositoryModule {
     @Provides
     fun provideFetchAppConfigFromDatabase(
         appConfigDao: ApiConfigDao,
-        coreSharedPrefs: CoreSharedPrefs,
-        eventsDao: EventsDao,
-        eventDependencyDao: EventDependencyDao
+        coreSharedPrefs: CoreSharedPrefs
     ): AppConfigDatabaseRepository {
         return AppConfigDatabaseRepositoryImpl(
             appConfigDao = appConfigDao,
-            coreSharedPrefs = coreSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideSyncMigration(
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao
+    ): SyncMigrationRepository {
+        return SyncMigrationRepositoryImpl(
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao
         )

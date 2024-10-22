@@ -2,9 +2,7 @@ package com.patsurvey.nudge.activities.ui.splash
 
 
 import androidx.compose.runtime.mutableStateOf
-import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
-import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -127,19 +125,6 @@ class ConfigViewModel @Inject constructor(
     fun fetchAppConfigForProperties() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke()
-        }
-    }
-    fun deleteAllEventsAfterMigration() {
-        if (configRepository.isSyncDBMigrate()) {
-            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                fetchAppConfigFromNetworkUseCase.deleteEventsDataAfterMigration()
-                configRepository.setSyncDBMigrateToFalse()
-                CoreLogger.d(
-                    CoreAppDetails.getApplicationContext().applicationContext,
-                    "ConfigViewModel",
-                    "Delete Events Details after Migration"
-                )
-            }
         }
     }
 }
