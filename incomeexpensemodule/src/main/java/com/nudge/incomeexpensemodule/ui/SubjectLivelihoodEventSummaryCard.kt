@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.incomeexpensemodule.R
@@ -83,7 +84,7 @@ fun SubjectLivelihoodEventSummaryCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Last updated: $lastUpdated days ago",
+                        text = stringResource(R.string.last_updated_days_ago, lastUpdated),
                         style = getTextColor(textColor = smallerTextStyle),
                         modifier = Modifier.padding(vertical = dimen_2_dp, horizontal = dimen_10_dp)
                     )
