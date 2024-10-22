@@ -72,10 +72,6 @@ fun ExportImportScreen(
                     viewModel.showRestartAppDialog.value=true
                 }
 
-                SettingTagEnum.EXPORT_LOG_FILE.name -> {
-                    viewModel.exportOnlyLogFile(context)
-                }
-
                 SettingTagEnum.REGENERATE_EVENTS.name -> {
                     viewModel.regenerateEvents(context.getString(R.string.share_export_file))
                 }

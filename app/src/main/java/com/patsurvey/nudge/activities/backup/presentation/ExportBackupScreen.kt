@@ -14,12 +14,13 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.backup.viewmodel.ExportImportViewModel
+import com.patsurvey.nudge.activities.backup.viewmodel.ExportBackupScreenViewModel
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 
 @Composable
 fun ExportBackupScreen(
-    viewModel: ExportImportViewModel = hiltViewModel(),
+    viewModel: ExportBackupScreenViewModel = hiltViewModel(),
+
     navController: NavController) {
         val context=LocalContext.current
         val filePicker =
@@ -64,9 +65,12 @@ fun ExportBackupScreen(
                 SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.export_event_file))
                 }
+                SettingTagEnum.EXPORT_LOG_FILE.name -> {
+                    viewModel.exportOnlyLogFile(context)
+                }
 
                 SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name ->{
-                    viewModel.compressEventData(context.getString(R.string.share_export_file))
+                    viewModel.compressExportData(context.getString(R.string.share_export_file))
                 }
             }
         },

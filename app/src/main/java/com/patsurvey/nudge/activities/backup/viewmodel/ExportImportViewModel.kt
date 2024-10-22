@@ -98,9 +98,6 @@ class ExportImportViewModel @Inject constructor(
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
-    val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
-    val exportOptionList: State<List<SettingOptionModel>> get() = _exportOptionList
-
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
     private val userUniqueKey = mutableStateOf(BLANK_STRING)
@@ -114,8 +111,6 @@ class ExportImportViewModel @Inject constructor(
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         _optionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
-        _exportOptionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportDataOptionList()
-
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
     }
@@ -223,37 +218,6 @@ class ExportImportViewModel @Inject constructor(
         }catch (e:Exception){
             onEvent(LoaderEvent.UpdateLoaderState(false))
             BaselineLogger.e("ExportImportViewModel", "exportLocalImages :${e.message}", e)
-        }
-    }
-
-    fun exportOnlyLogFile(context: Context) {
-        BaselineLogger.d("ExportImportViewModel", "exportOnlyLogFile: ----")
-        try {
-            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
-                val logFile = BSLogWriter.buildLogFile(appContext = mAppContext) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                    onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
-                }
-                if (logFile != null) {
-                    exportLogFile(
-                        logFile,
-                        appContext = mAppContext,
-                        applicationID = applicationId.value,
-                        userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                        mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                        moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
-                    ) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                        openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
-                    }
-
-
-                }
-            }
-        } catch (e: Exception) {
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel", "exportOnlyLogFile :${e.message}", e)
         }
     }
 
@@ -567,6 +531,7 @@ class ExportImportViewModel @Inject constructor(
         }
         return list ?: emptyList()
     }
+
 
     fun markAllActivityInProgress(context: Context) {
         CoroutineScope(CoreDispatchers.ioDispatcher).launch {
