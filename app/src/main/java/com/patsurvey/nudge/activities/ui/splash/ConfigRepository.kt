@@ -76,4 +76,8 @@ class ConfigRepository @Inject constructor(
         return prefRepo.getLoggedInUserType()
     }
 
+    fun isSyncDBMigrate() = prefRepo.isSyncDBMigrate()
+    fun setSyncDBMigrateToFalse() {
+        prefRepo.setSyncDBMigrate(false)
+    }
 }

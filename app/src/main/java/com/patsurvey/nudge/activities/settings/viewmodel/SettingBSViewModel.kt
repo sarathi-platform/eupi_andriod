@@ -42,8 +42,8 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.utils.CoreLogger
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
@@ -683,7 +683,6 @@ class SettingBSViewModel @Inject constructor(
 
     private fun cancelSyncUploadWorker() {
         syncWorkerInfoState?.let {
-            if (it == WorkInfo.State.RUNNING || it == WorkInfo.State.ENQUEUED) {
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext(),
                     "SyncHomeViewModel",
@@ -695,7 +694,6 @@ class SettingBSViewModel @Inject constructor(
                     "SyncHomeViewModel",
                     "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
                 )
-            }
         }
     }
 

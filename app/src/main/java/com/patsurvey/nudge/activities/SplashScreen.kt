@@ -123,6 +123,7 @@ fun SplashScreen(
                 }
             }
         }
+        viewModel.deleteAllEventsAfterMigration()
     }
 
     ConstraintLayout(

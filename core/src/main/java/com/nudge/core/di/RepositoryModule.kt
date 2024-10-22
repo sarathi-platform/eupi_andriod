@@ -6,6 +6,8 @@ import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.Module
 import dagger.Provides
@@ -32,11 +34,15 @@ class RepositoryModule {
     @Provides
     fun provideFetchAppConfigFromDatabase(
         appConfigDao: ApiConfigDao,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao
     ): AppConfigDatabaseRepository {
         return AppConfigDatabaseRepositoryImpl(
             appConfigDao = appConfigDao,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao
         )
     }
 
