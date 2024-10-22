@@ -52,7 +52,8 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     ASSET_JOURNAL_EVENT(38, topicName = "ASSET_JOURNAL_TOPIC"),
     LIVELIHOOD_EVENT(39, topicName = "LIVELIHOOD_EVENT_TOPIC"),
     DELETE_RESPONSE_EVENT(40, topicName = "LIVELIHOOD_EVENT_TOPIC"),
-    RANKING_FLAG_EDIT_NEW(41, topicName = "RANKING_FLAG_EDIT_NEW_TOPIC");
+    RANKING_FLAG_EDIT_NEW(41, topicName = "RANKING_FLAG_EDIT_NEW_TOPIC"),
+    DIDI_FLAG_EDIT_EVENT(42, topicName = "DIDI_FLAG_EDIT_EVENT_TOPIC");
 
 }
 
