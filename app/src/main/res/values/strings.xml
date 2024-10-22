@@ -523,6 +523,7 @@
     <string name="network_not_available_message">Network not available, Please try again later!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
+    <string name="sync_running">Please wait sync Worker is running</string>
     <string name="warning">Warning!</string>
     <string name="data_lost_message">Another User ID detected. If you proceed, you will lose data for the previously logged in User ID.</string>
     <string name="proceed">Proceed</string>

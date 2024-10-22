@@ -699,6 +699,13 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
+    fun syncWorkerRunning(): Boolean {
+        val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
+            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
+           return  it.state==WorkInfo.State.RUNNING
+           }?:return false
+    }
+
     fun fetchhAppConfig() {
         showLoader.value = true
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
