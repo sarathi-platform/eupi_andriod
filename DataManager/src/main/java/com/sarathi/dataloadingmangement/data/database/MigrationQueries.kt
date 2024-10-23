@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAM
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SURVEY_CONFIG_TABLE_NAME
+import com.sarathi.dataloadingmangement.SURVEY_TABLE
 
 object MigrationQueries {
     val CREATE_MONEY_JOUNRAL_TABLE =
@@ -217,5 +218,8 @@ object MigrationQueries {
                 "                surveyId INTEGER NOT NULL,\n" +
                 "                userId TEXT NOT NULL\n" +
                 "            )"
+
+    val ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION =
+        "ALTER TABLE $SURVEY_TABLE ADD COLUMN validations TEXT"
 }
 
