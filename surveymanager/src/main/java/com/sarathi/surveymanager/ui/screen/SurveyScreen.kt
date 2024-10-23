@@ -29,7 +29,8 @@ fun SurveyScreen(
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit,
-    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit
+    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit,
+    onViewFormSummaryClicked: (taskId: Int, surveyId: Int, sectionId: Int, formId: Int, activityConfigId: Int) -> Unit
 ) {
     BaseSurveyScreen(
         viewModel = viewModel,
@@ -46,6 +47,14 @@ fun SurveyScreen(
         sanctionedAmount = sanctionedAmount,
         totalSubmittedAmount = totalSubmittedAmount,
         onSettingClick = onSettingClick,
+        onBackClicked = {
+            if (viewModel.isNoSection.value) {
+                navController.popBackStack()
+                navController.popBackStack()
+            } else {
+                navController.popBackStack()
+            }
+        },
         onAnswerSelect = { questionUiModel ->
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
             viewModel.updateTaskStatus(taskId)
@@ -80,12 +89,23 @@ fun SurveyScreen(
                 viewModel = viewModel,
                 sanctionedAmount = sanctionedAmount,
                 totalSubmittedAmount = totalSubmittedAmount,
+                grantType = activityType,
+                maxHeight = maxHeight,
                 onAnswerSelect = { questionUiModel ->
                     viewModel.updateQuestionResponseMap(questionUiModel)
                     viewModel.runConditionCheck(questionUiModel)
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
                     viewModel.updateTaskStatus(taskId)
+                },
+                onViewSummaryClicked = { questionUiModel ->
+                    onViewFormSummaryClicked(
+                        taskId,
+                        surveyId,
+                        sectionId,
+                        questionUiModel.formId,
+                        activityConfigId
+                    )
                 },
                 onFormTypeQuestionClicked = { sectionId, surveyId, formId, referenceId ->
                     onFormTypeQuestionClicked(
@@ -100,8 +120,6 @@ fun SurveyScreen(
                         referenceId
                     )
                 },
-                grantType = activityType,
-                maxHeight = maxHeight
             )
         }
     )
@@ -113,10 +131,11 @@ fun LazyListScope.SurveyScreenContent(
     viewModel: BaseSurveyScreenViewModel,
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
-    onAnswerSelect: (QuestionUiModel) -> Unit,
-    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, referenceId: String) -> Unit,
     grantType: String,
-    maxHeight: Dp
+    maxHeight: Dp,
+    onAnswerSelect: (QuestionUiModel) -> Unit,
+    onViewSummaryClicked: (QuestionUiModel) -> Unit,
+    onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, referenceId: String) -> Unit,
 ) {
 
     val formIdCountMap: MutableMap<Int, Int> = mutableMapOf()
@@ -142,22 +161,24 @@ fun LazyListScope.SurveyScreenContent(
             if (formIdCount == 0) {
                 item {
                     FormQuestionUiContent(
-                        question,
-                        sanctionedAmount,
-                        totalSubmittedAmount,
-                        viewModel,
-                        onAnswerSelect,
-                        maxHeight,
-                        grantType,
-                        index
-                    ) {
-                        onFormTypeQuestionClicked(
-                            question.sectionId,
-                            question.surveyId,
-                            question.formId,
-                            viewModel.referenceId
-                        )
-                    }
+                        question = question,
+                        viewModel = viewModel,
+                        maxHeight = maxHeight,
+                        grantType = grantType,
+                        index = index,
+                        onAnswerSelect = onAnswerSelect,
+                        onClick = {
+                            onFormTypeQuestionClicked(
+                                question.sectionId,
+                                question.surveyId,
+                                question.formId,
+                                viewModel.referenceId
+                            )
+                        },
+                        onViewSummaryClicked = { questionUiModel ->
+                            onViewSummaryClicked(questionUiModel)
+                        }
+                    )
                 }
             }
             formIdCountMap[question.formId] = formIdCount + 1

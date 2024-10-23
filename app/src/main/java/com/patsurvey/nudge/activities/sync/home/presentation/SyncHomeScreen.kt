@@ -295,8 +295,6 @@ fun SyncHomeContent(
                     contentColor = blueDark,
                 )
 
-
-
                 LazyColumn(
                     modifier = Modifier
                         .background(Color.White)
@@ -389,11 +387,30 @@ fun BottomContent(
                     }
                 }
             }
+            var isSyncAllDataActive=true
+            if (viewModel.dataProducerEventProgress.floatValue==1.0F)
+            {
+                if (viewModel.totalImageEventCount.intValue > 0 &&  viewModel.imageProducerEventProgress.floatValue==1.0F )
+                {
+
+                    isSyncAllDataActive=false
+                }
+                else{
+                    if (viewModel.totalImageEventCount.intValue == 0)
+                    {
+                        isSyncAllDataActive =false
+
+                    }
+                }
+            }
+            else{
+                isSyncAllDataActive =true
+            }
+
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.sync_all_data),
                 isArrowRequired = false,
-                isActive = if( viewModel.dataProducerEventProgress.floatValue==1.0F && viewModel.imageProducerEventProgress.floatValue==1.0F ) false else true
-
+                isActive = isSyncAllDataActive
             ) {
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
                 CoreLogger.d(
@@ -436,9 +453,6 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
                     style = mediumTextStyle,
                     color = textColorDark
                 )
-
-
-
         }
     }
 }
@@ -469,6 +483,7 @@ fun HandleWorkerState(
     when (uploadWorkerInfo?.state) {
         WorkInfo.State.RUNNING -> {
             if (viewModel.isSyncStarted.value) {
+
                 when (viewModel.selectedSyncType.intValue) {
                     SyncType.SYNC_ONLY_DATA.ordinal -> viewModel.isDataPBVisible.value = true
                     SyncType.SYNC_ONLY_IMAGES.ordinal -> viewModel.isImagePBVisible.value = true

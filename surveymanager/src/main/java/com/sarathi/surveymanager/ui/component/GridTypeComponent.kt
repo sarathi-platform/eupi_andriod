@@ -45,15 +45,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
-import com.nudge.core.ui.theme.NotoSans
-import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
@@ -139,7 +137,9 @@ fun GridTypeComponent(
                                 ) {
                                     QuestionComponent(
                                         title = questionDisplay,
-                                        questionNumber = getQuestionNumber(questionIndex),
+                                        questionNumber = if (showCardView) getQuestionNumber(
+                                            questionIndex
+                                        ) else BLANK_STRING,
                                         isRequiredField = isRequiredField
                                     )
                                 }
