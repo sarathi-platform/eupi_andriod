@@ -15,6 +15,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
@@ -71,6 +72,7 @@ class DataTabScreenViewModel @Inject constructor(
         mutableStateOf(Triple(false, -1, listOf()))
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitDataState -> {
                 loadAddDataForDataTab(isRefresh = false)
@@ -301,6 +303,10 @@ class DataTabScreenViewModel @Inject constructor(
         loadAddDataForDataTab(isRefresh = true)
 
 
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DataTabScreen
     }
 }
 

@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -98,13 +97,4 @@ abstract class BaseViewModel : ViewModel() {
     open fun getScreenName(): TranslationEnum {
         return TranslationEnum.NoScreen
     }
-
-    open fun getString(context: Context, resId: Int): String {
-        return translationHelper.getString(context = context, resId = resId)
-    }
-
-    open fun stringResource(context: Context, resId: Int): String {
-        return translationHelper.getString(context = context, resId = resId)
-    }
-
 }

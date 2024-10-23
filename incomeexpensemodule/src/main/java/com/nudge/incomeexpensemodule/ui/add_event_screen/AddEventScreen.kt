@@ -95,10 +95,10 @@ fun AddEventScreen(
     val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
 
     ToolBarWithMenuComponent(
-        title = if (showDeleteButton) viewModel.stringResource(
+        title = if (showDeleteButton) viewModel.translationHelper.stringResource(
             context,
             R.string.edit_event
-        ) else viewModel.stringResource(context, R.string.add_event),
+        ) else viewModel.translationHelper.stringResource(context, R.string.add_event),
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.navigateUp() },
@@ -117,7 +117,7 @@ fun AddEventScreen(
                     if (showDeleteButton) {
                         ButtonNegative(
                             modifier = Modifier.weight(0.5f),
-                            buttonTitle = viewModel.getString(
+                            buttonTitle = viewModel.translationHelper.getString(
                                 context,
                                 R.string.delete,
                             ),
@@ -134,7 +134,7 @@ fun AddEventScreen(
 
                     ButtonPositive(
                         modifier = Modifier.weight(0.5f),
-                        buttonTitle = viewModel.getString(
+                        buttonTitle = viewModel.translationHelper.getString(
                             context,
                             R.string.save_text,
                         ),
@@ -166,9 +166,12 @@ fun AddEventScreen(
                     CustomDatePickerTextFieldComponent(
                         isMandatory = true,
                         defaultValue = viewModel.selectedDate.value,
-                        title = viewModel.stringResource(context, R.string.date),
+                        title = viewModel.translationHelper.stringResource(context, R.string.date),
                         isEditable = true,
-                        hintText = viewModel.stringResource(context, R.string.select)
+                        hintText = viewModel.translationHelper.stringResource(
+                            context,
+                            R.string.select
+                        )
                             ?: BLANK_STRING,
                         datePickerState = datePickerState,
                         datePickerProperties = datePickerProperties,
@@ -190,7 +193,10 @@ fun AddEventScreen(
                 item {
                     TypeDropDownComponent(
                         isEditAllowed = !showDeleteButton,
-                        title = viewModel.stringResource(context, R.string.livelihood),
+                        title = viewModel.translationHelper.stringResource(
+                            context,
+                            R.string.livelihood
+                        ),
                         isMandatory = true,
                         sources = viewModel.livelihoodDropdownValue,
                         selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
@@ -267,7 +273,10 @@ fun AddEventScreen(
 
                     TypeDropDownComponent(
                         isEditAllowed = !showDeleteButton,
-                        title = viewModel.stringResource(context, R.string.events),
+                        title = viewModel.translationHelper.stringResource(
+                            context,
+                            R.string.events
+                        ),
                         isMandatory = true,
                         selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
                         sources = viewModel.livelihoodEventDropdownValue,
@@ -306,7 +315,10 @@ fun AddEventScreen(
 
                         TypeDropDownComponent(
                             isEditAllowed = true,
-                            title = viewModel.stringResource(context, R.string.type_of_asset),
+                            title = viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.type_of_asset
+                            ),
                             selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
@@ -339,7 +351,10 @@ fun AddEventScreen(
                     item {
                         TypeDropDownComponent(
                             isEditAllowed = true,
-                            title = viewModel.stringResource(context, R.string.products),
+                            title = viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.products
+                            ),
                             isMandatory = true,
                             sources = viewModel.livelihoodProductDropdownValue,
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
@@ -374,10 +389,13 @@ fun AddEventScreen(
                             if (getLivelihoodEventFromName(viewModel.eventType).assetJournalEntryFlowType?.name?.equals(
                                     INFLOW
                                 ) == true
-                            ) viewModel.stringResource(
+                            ) viewModel.translationHelper.stringResource(
                                 context,
                                 R.string.increase_in_number
-                            ) else viewModel.stringResource(context, R.string.decrease_in_number)
+                            ) else viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.decrease_in_number
+                            )
                         IncrementDecrementNumberComponent(
                             isMandatory = true,
                             title = str,
@@ -417,7 +435,10 @@ fun AddEventScreen(
                             isMandatory = true,
                             isEditable = true,
                             defaultValue = viewModel.amount.value,
-                            title = viewModel.stringResource(context, R.string.amount),
+                            title = viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.amount
+                            ),
                             isOnlyNumber = true,
                             hintText = BLANK_STRING
                         ) { selectedValue, remainingAmout ->
@@ -450,12 +471,18 @@ fun AddEventScreen(
 
             if (viewModel.showDeleteDialog.value) {
                 ShowCustomDialog(
-                    message = viewModel.stringResource(
+                    message = viewModel.translationHelper.stringResource(
                         context,
                         R.string.are_you_sure_you_want_to_delete
                     ),
-                    negativeButtonTitle = viewModel.stringResource(context, R.string.no),
-                    positiveButtonTitle = viewModel.stringResource(context, R.string.yes),
+                    negativeButtonTitle = viewModel.translationHelper.stringResource(
+                        context,
+                        R.string.no
+                    ),
+                    positiveButtonTitle = viewModel.translationHelper.stringResource(
+                        context,
+                        R.string.yes
+                    ),
                     onNegativeButtonClick = {
                         viewModel.showDeleteDialog.value = false
                     },
