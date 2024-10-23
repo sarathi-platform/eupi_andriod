@@ -81,4 +81,23 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
     ): List<SurveyAnswerEntity>? {
         return repository.getSurveyAnswerImageKeys(questionType = questionType)
     }
+
+    suspend fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        formQuestionMap: Map<Int, List<Int>>
+    ): Map<Int, Int> {
+        val map = mutableMapOf<Int, Int>()
+
+        formQuestionMap.forEach { mapEntry ->
+            repository.getTotalSavedFormResponsesCount(surveyId, taskId, sectionId, mapEntry.value)
+                .apply {
+                    map.put(mapEntry.key, this.size)
+                }
+
+        }
+
+        return map
+    }
 }

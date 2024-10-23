@@ -29,6 +29,7 @@ object MissionActivityConstants {
 
     const val LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME = "livelihood_dropdown_screen"
     const val FORM_QUESTION_SCREEN_ROUTE_NAME = "form_question_screen"
+    const val FORM_SUMMARY_SCREEN_ROUTE_NAME = "form_summary_screen"
 
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"

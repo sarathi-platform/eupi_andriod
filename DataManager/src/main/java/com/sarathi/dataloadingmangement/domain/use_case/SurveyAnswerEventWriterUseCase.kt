@@ -203,7 +203,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             }
     }
 
-    suspend fun deleteDisbursementOrReceiptOfFundEvent(
+    suspend fun deleteSavedAnswerEvent(
         surveyID: Int,
         surveyName: String,
         sectionId: Int,

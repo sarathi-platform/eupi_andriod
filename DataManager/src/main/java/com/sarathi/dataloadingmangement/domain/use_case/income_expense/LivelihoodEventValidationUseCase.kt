@@ -1,9 +1,11 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
 import android.text.TextUtils
+import com.nudge.core.extractSubstrings
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.utils.ExpressionEvaluator
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.enums.ValidationExpressionEnum
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.ProductAssetUiModel
 import com.sarathi.dataloadingmangement.repository.liveihood.IAssetJournalRepository
 import com.sarathi.dataloadingmangement.repository.liveihood.IAssetRepository
@@ -163,21 +165,4 @@ class LivelihoodEventValidationUseCase @Inject constructor(
         }
     }
 
-    enum class ValidationExpressionEnum(val originalValue: String) {
-
-        TOTAL_ASSET_COUNT(originalValue = "#TOTAL_ASSET_COUNT#"),
-        ASSET_TYPE(originalValue = "#ASSET_TYPE#"),
-        SELECTED_ASSET_COUNT(originalValue = "#SELECTED_ASSET_COUNT#"),
-        TOTAL_SELECTED_ASSET_COUNT(originalValue = "#TOTAL_SELECTED_ASSET_COUNT#"),
-        SELECTED_AMOUNT(originalValue = "#SELECTED_AMOUNT#"),
-
-    }
-
-    fun extractSubstrings(input: String): List<String> {
-        // Define the regex pattern
-        val pattern = "\\{[^%]+%[^}]+\\}".toRegex()
-
-        // Find all matches in the input string
-        return pattern.findAll(input).map { it.value }.toList()
-    }
 }

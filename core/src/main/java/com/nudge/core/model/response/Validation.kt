@@ -10,10 +10,10 @@ data class Validation(
     val condition: String,
     @SerializedName("expression")
     @Expose
-    val expression: String,
+    val expression: String?,
     @SerializedName("field")
     @Expose
-    val field: String,
+    val field: String?,
     @SerializedName("message")
     @Expose
     val message: String,
