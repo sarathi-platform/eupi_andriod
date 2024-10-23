@@ -72,7 +72,7 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
+import com.nudge.syncmanager.utils.SYNC_TAG
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
@@ -94,7 +94,7 @@ fun SyncHomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(PRODUCER_WORKER_TAG)
+    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(SYNC_TAG)
         .observeAsState().value
     val lifeCycleOwner = LocalLifecycleOwner.current
 
@@ -245,9 +245,8 @@ fun SyncHomeContent(
     }
     ToolbarWithMenuComponent(
         title = stringResource(
-            id = R.string.sync_all_data,
-            viewModel.syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserID()
-        ),
+            id = R.string.sync_all_data
+        ) + " - ${viewModel.syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserID()}",
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = true,
         actions = {

@@ -10,6 +10,7 @@ import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.Module
 import dagger.Provides
@@ -48,11 +49,13 @@ class RepositoryModule {
     @Provides
     fun provideSyncMigration(
         eventsDao: EventsDao,
-        eventDependencyDao: EventDependencyDao
+        eventDependencyDao: EventDependencyDao,
+        corePrefRepo: CorePrefRepo
     ): SyncMigrationRepository {
         return SyncMigrationRepositoryImpl(
             eventsDao = eventsDao,
-            eventDependencyDao = eventDependencyDao
+            eventDependencyDao = eventDependencyDao,
+            corePrefRepo = corePrefRepo
         )
     }
 

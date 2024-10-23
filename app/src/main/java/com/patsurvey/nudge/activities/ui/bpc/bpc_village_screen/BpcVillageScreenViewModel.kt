@@ -192,8 +192,6 @@ class BpcVillageScreenViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
-            syncManagerDatabase.eventsDao().deleteAllEvents()
-            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init()
             onDataClearComplete()

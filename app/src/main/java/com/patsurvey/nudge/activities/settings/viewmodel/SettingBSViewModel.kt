@@ -8,7 +8,6 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -116,8 +115,6 @@ class SettingBSViewModel @Inject constructor(
     val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
-    var syncWorkerInfoState: WorkInfo.State? = null
-
     val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
@@ -238,9 +235,6 @@ class SettingBSViewModel @Inject constructor(
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-            if (userType != UPCM_USER) {
-                exportLocalData(context)
-            }
             delay(2000)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
@@ -682,19 +676,12 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private fun cancelSyncUploadWorker() {
-        syncWorkerInfoState?.let {
-                CoreLogger.d(
-                    CoreAppDetails.getApplicationContext(),
-                    "SyncHomeViewModel",
-                    "CancelSyncUploadWorker :: Worker Status: $it"
-                )
                 workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext(),
-                    "SyncHomeViewModel",
+                    "SettingBSViewModel",
                     "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
                 )
-        }
     }
 
     fun fetchhAppConfig() {

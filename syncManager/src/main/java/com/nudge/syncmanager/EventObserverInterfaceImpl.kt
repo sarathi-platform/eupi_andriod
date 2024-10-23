@@ -19,7 +19,7 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
-import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
+import com.nudge.syncmanager.utils.SYNC_TAG
 import com.nudge.syncmanager.utils.WORKER_ARG_BATCH_COUNT
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import com.nudge.syncmanager.workers.SyncUploadWorker
@@ -96,7 +96,7 @@ class EventObserverInterfaceImpl @Inject constructor(
                 .build()
 
         workManager.enqueueUniquePeriodicWork(
-            PRODUCER_WORKER_TAG,
+            SYNC_TAG,
             ExistingPeriodicWorkPolicy.UPDATE, uploadWorkRequest
         )
     }
