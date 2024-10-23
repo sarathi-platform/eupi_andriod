@@ -255,7 +255,7 @@ fun QuestionUiContent(
             QuestionType.InputText.name -> {
                 InputComponent(
                     questionIndex = index,
-                    maxLength = 7,
+                    maxLength = 10,
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = sanctionedAmount,
                     remainingAmount = getSanctionedAmountMessage(

@@ -69,7 +69,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 
     var validations: List<SurveyValidations>? = mutableListOf()
-    var fieldValidationAndMessageMap = mutableStateMapOf<String, Pair<Boolean, String>>()
+    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -105,6 +105,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
                         getSurveyConfig(surveyConfigEntityList)
                     }
                 validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
+                questionUiModel.value.forEach {
+                    fieldValidationAndMessageMap[it.questionId] = Pair(true, BLANK_STRING)
+                }
             }
 
 
