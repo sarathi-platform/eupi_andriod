@@ -21,3 +21,18 @@ data class Validations(
     @Expose
     val validation: List<Validation>
 )
+
+data class SurveyValidations(
+    @SerializedName("sectionId")
+    @Expose
+    val sectionId: Int,
+    @SerializedName("questionId")
+    @Expose
+    val questionId: Int,
+    @SerializedName("optionId")
+    @Expose
+    val optionId: Int,
+    @SerializedName("validation")
+    @Expose
+    val validation: List<Validation>
+)

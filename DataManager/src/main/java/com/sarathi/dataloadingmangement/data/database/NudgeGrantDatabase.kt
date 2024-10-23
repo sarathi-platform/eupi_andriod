@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.SurveyValidationsConverter
 import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
@@ -41,6 +42,7 @@ import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEnti
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
@@ -62,6 +64,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACT
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
@@ -76,6 +79,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_PR
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SECTION_STATUS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SURVEY_CONFIG_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_PRODUCT_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_TABLE
@@ -104,6 +108,7 @@ import com.sarathi.dataloadingmangement.data.entities.SourceTargetQuestionMappin
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
@@ -164,7 +169,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
         SubjectLivelihoodEventMappingEntity::class,
         SectionStatusEntity::class,
         SourceTargetQuestionMappingEntity::class,
-        ConditionsEntity::class
+        ConditionsEntity::class,
+        SurveyConfigEntity::class
     ],
 
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -180,8 +186,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
     ValuesDtoConverter::class,
     DateConverter::class,
     TagConverter::class,
-    ValidationConverter::class
-
+    ValidationConverter::class,
+    SurveyValidationsConverter::class
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
@@ -234,6 +240,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun sourceTargetQuestionMappingEntityDao(): SourceTargetQuestionMappingEntityDao
 
     abstract fun conditionsEntityDao(): ConditionsEntityDao
+
+    abstract fun surveyConfigEntityDao(): SurveyConfigEntityDao
 
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
@@ -294,11 +302,11 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
                         ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE,
                         CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE,
-                        CREATE_CONDITIONS_TABLE
+                        CREATE_CONDITIONS_TABLE,
+                        CREATE_SURVEY_CONFIG_TABLE,
+                        ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
                     )
                 )
-
-
             }
         }
 

@@ -39,22 +39,33 @@ interface SurveyAnswersDao {
     ): Int
 
     @Query(
-        "select ques_answer_table.subjectId\n," +
-                "ques_answer_table.taskId,\n" +
-                "ques_answer_table.questionId,\n" +
-                "ques_answer_table.referenceId,\n" +
-                "ques_answer_table.sectionId,\n" +
-                "ques_answer_table.surveyId,\n" +
-                " group_concat(tag_reference_table.value,',') as tagId," +
-                "ques_answer_table.optionItems,\n" +
-                "ques_answer_table.questionSummary,\n" +
-                "ques_answer_table.questionType,\n" +
-                "form_table.isFormGenerated\n" +
-                " from ques_answer_table " +
-                "left join form_table on ques_answer_table.referenceId =form_table.localReferenceId" +
-                "  left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
-                "  where ques_answer_table.userId =:userId and ques_answer_table.taskId=:taskId and ques_answer_table.sectionId=:sectionId and ques_answer_table.surveyId=:surveyId " +
-                "and tag_reference_table.userId=:userId and tag_reference_table.referenceType=:referenceType group by ques_answer_table.id"
+        "SELECT \n" +
+                "    ques_answer_table.subjectId,\n" +
+                "    ques_answer_table.taskId,\n" +
+                "    ques_answer_table.questionId,\n" +
+                "    ques_answer_table.referenceId,\n" +
+                "    ques_answer_table.sectionId,\n" +
+                "    ques_answer_table.surveyId,\n" +
+                "    GROUP_CONCAT(tag_reference_table.value, ',') AS tagId, \n" +
+                "    ques_answer_table.optionItems,\n" +
+                "    ques_answer_table.questionSummary,\n" +
+                "    ques_answer_table.questionType,\n" +
+                "    form_table.isFormGenerated\n" +
+                "FROM \n" +
+                "    ques_answer_table  \n" +
+                "LEFT JOIN \n" +
+                "    form_table ON ques_answer_table.referenceId = form_table.localReferenceId \n" +
+                "LEFT JOIN \n" +
+                "    tag_reference_table ON ques_answer_table.questionId = tag_reference_table.referenceId \n" +
+                "                        AND tag_reference_table.userId = :userId \n" +
+                "                        AND tag_reference_table.referenceType = :referenceType \n" +
+                "WHERE \n" +
+                "    ques_answer_table.userId = :userId \n" +
+                "    AND ques_answer_table.taskId = :taskId \n" +
+                "    AND ques_answer_table.sectionId = :sectionId \n" +
+                "    AND ques_answer_table.surveyId = :surveyId \n" +
+                "GROUP BY \n" +
+                "    ques_answer_table.id;"
     )
     fun getSurveyAnswersForSummary(
         userId: String,
@@ -184,4 +195,13 @@ interface SurveyAnswersDao {
     fun deleteSurveyAnswerForUser(
         userId: String,
     ): Int
+
+    @Query("SELECT DISTINCT referenceId from ques_answer_table where surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
+    fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        grantId: Int = 0,
+        questionIds: List<Int>
+    ): List<String>
 }

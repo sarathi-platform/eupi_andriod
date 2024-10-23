@@ -15,5 +15,29 @@ enum class QuestionType {
     DropDown,
     TextField,
     NumericField,
-    InputText
+    InputText;
+
+    companion object {
+        val singleResponseQuestionTypeQuestions = listOf(
+            SingleSelectDropDown.name.toLowerCase(),
+            RadioButton.name.toLowerCase(),
+            Toggle.name.toLowerCase(),
+            DropDown.name.toLowerCase()
+        )
+
+        val multipleResponseQuestionTypeQuestions = listOf(
+            MultiSelectDropDown.name.toLowerCase(),
+            MultiSelect.name.toLowerCase(),
+            ToggleGrid.name.toLowerCase(),
+            Grid.name.toLowerCase(),
+        )
+
+        val userInputQuestionTypeList = listOf(
+            InputNumber.name.toLowerCase(),
+            DateType.name.toLowerCase(),
+            TextField.name.toLowerCase(),
+            NumericField.name.toLowerCase(),
+            InputText.name.toLowerCase()
+        )
+    }
 }
