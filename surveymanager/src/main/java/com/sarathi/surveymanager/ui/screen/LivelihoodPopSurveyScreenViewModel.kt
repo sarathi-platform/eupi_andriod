@@ -11,10 +11,13 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +40,10 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSectionListUseCase: GetSectionListUseCase,
-    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
+    private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
+    private val validationUseCase: SurveyValidationUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -51,7 +57,10 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     coreSharedPrefs,
     getActivityUiConfigUseCase,
     getSectionListUseCase,
-    getConditionQuestionMappingsUseCase
+    getConditionQuestionMappingsUseCase,
+    getSurveyConfigFromDbUseCase,
+    getSurveyValidationsFromDbUseCase,
+    validationUseCase
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {

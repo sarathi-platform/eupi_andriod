@@ -1,26 +1,36 @@
 package com.sarathi.surveymanager.ui.component
 
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
@@ -103,12 +113,26 @@ fun TypeDropDownWithCardComponent(
         verticalArrangement = Arrangement.spacedBy(dimen_2_dp)
     ) {
         BasicCardView(
+            cardElevation = CardDefaults.cardElevation(
+                defaultElevation = defaultCardElevation
+            ),
+            cardShape = RoundedCornerShape(roundedCornerRadiusDefault),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(white)
+                .clickable {
 
+                }
         ) {
 
             Box(
                 modifier = Modifier
                     .padding(dimen_16_dp)
+                    .background(
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(roundedCornerRadiusDefault)
+                    )
+                    .clip(RoundedCornerShape(roundedCornerRadiusDefault))
             ) {
                 TypeDropDownComponent(
                     title = title,
@@ -132,13 +156,13 @@ fun TypeDropDownWithCardComponent(
 
 @Composable
 fun DropDownTypeComponent(
+    questionIndex: Int,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     showQuestionInCard: Boolean = false,
     isEditAllowed: Boolean = true,
-    questionNumber: String = BLANK_STRING,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -149,23 +173,28 @@ fun DropDownTypeComponent(
             sources = sources,
             isMandatory = isMandatory,
             isEditAllowed = isEditAllowed,
-            questionNumber = questionNumber,
+            questionNumber = getQuestionNumber(questionIndex),
             onAnswerSelection = { selectedValuesDto ->
                 onAnswerSelection(selectedValuesDto)
             }
         )
     } else {
-        TypeDropDownComponent(
-            title = title,
-            hintText = hintText,
-            sources = sources,
-            isMandatory = isMandatory,
-            isEditAllowed = isEditAllowed,
-            questionNumber = questionNumber,
-            onAnswerSelection = { selectedValuesDto ->
-                onAnswerSelection(selectedValuesDto)
-            }
-        )
+        Box(
+            modifier = Modifier
+                .padding(dimen_16_dp)
+        ) {
+            TypeDropDownComponent(
+                title = title,
+                hintText = hintText,
+                sources = sources,
+                isMandatory = isMandatory,
+                isEditAllowed = isEditAllowed,
+                questionNumber = BLANK_STRING,
+                onAnswerSelection = { selectedValuesDto ->
+                    onAnswerSelection(selectedValuesDto)
+                }
+            )
+        }
     }
 
 }

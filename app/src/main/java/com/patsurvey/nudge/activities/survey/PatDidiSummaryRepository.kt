@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.survey
 
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
@@ -14,6 +15,7 @@ import com.nudge.core.toDate
 import com.nudge.core.value
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.SharedPrefs.Companion.PREF_KEY_TEMP_CRP_FILE_PATH
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -193,4 +195,12 @@ class PatDidiSummaryRepository @Inject constructor(
         return event
     }
 
+
+    fun saveTempImagePath(filePath: String) {
+        prefRepo.savePref(PREF_KEY_TEMP_CRP_FILE_PATH, filePath)
+    }
+
+    fun getTempImagePath(): String {
+        return prefRepo.getPref(PREF_KEY_TEMP_CRP_FILE_PATH, BLANK_STRING) ?: BLANK_STRING
+    }
 }

@@ -25,6 +25,24 @@ enum class TaskCardSlots(val type: String) {
     FILTER_BY(type = "text")
 }
 
+enum class SurveyConfigCardSlots {
+    FORM_QUESTION_CARD_TITLE,
+    FORM_QUESTION_CARD_BUTTON,
+    FORM_QUESTION_CARD_TOTAL_COUNT,
+    FORM_SUMMARY_CARD_SUBJECT_NAME,
+    FORM_SUMMARY_CARD_SUBJECT_RELATIONSHIP,
+    FORM_SUMMARY_CARD_SUBJECT_AGE,
+    FORM_SUMMARY_CARD_SUBJECT_HUSBAND_NAME,
+    FORM_SUMMARY_CARD_AADHAR,
+    FORM_SUMMARY_CARD_VOTER,
+    FORM_SUMMARY_CARD_PHONE_NUMBER,
+    FORM_SUMMARY_CARD_DIDI_IMAGE;
+
+    companion object {
+        const val CONFIG_SLOT_TYPE_TAG = "tag"
+    }
+}
+
 enum class GrantTaskSearchBarSlots(val type: String) {
     GRANT_TASK_SEARCH_TITLE(type = "text"),
 

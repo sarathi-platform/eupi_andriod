@@ -118,11 +118,14 @@ class PatDidiSummaryViewModel @Inject constructor(
         uri: Uri,
         photoPath: String,
         locationCoordinates: LocationCoordinates,
-        didiEntity: DidiEntity
+        didiEntity: DidiEntity,
+        isActivityRestart: Boolean
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
-
+            if (isActivityRestart) {
+                delay(400)
+            }
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
             val finalPathWithCoordinates =
                 "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
@@ -342,5 +345,13 @@ class PatDidiSummaryViewModel @Inject constructor(
         }
 
     }
+
+
+    fun saveTempCrpFilePath(filePath: String) {
+        patDidiSummaryRepository.saveTempImagePath(filePath)
+    }
+
+    fun getTempCrpFilePath() = patDidiSummaryRepository.getTempImagePath()
+
 
 }
