@@ -8,7 +8,7 @@
         <item quantity="one">Poor Didi Pending</item>
         <item quantity="other">Poor Didis Pending</item>
     </plurals>
-    <string name="sync_running">Please wait sync Worker is running</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
 
     <string name="search_village">Search Village</string>
 

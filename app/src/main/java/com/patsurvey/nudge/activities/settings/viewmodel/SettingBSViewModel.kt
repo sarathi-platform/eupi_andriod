@@ -8,6 +8,7 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -687,7 +688,7 @@ class SettingBSViewModel @Inject constructor(
     fun syncWorkerRunning(): Boolean {
         val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
             workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
-           return  it.state==WorkInfo.State.RUNNING
+                return it.state == WorkInfo.State.RUNNING
            }?:return false
     }
 
