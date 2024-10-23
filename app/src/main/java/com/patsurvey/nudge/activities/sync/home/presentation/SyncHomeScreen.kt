@@ -244,7 +244,10 @@ fun SyncHomeContent(
         )
     }
     ToolbarWithMenuComponent(
-        title = stringResource(id = R.string.sync_all_data),
+        title = stringResource(
+            id = R.string.sync_all_data,
+            viewModel.syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserID()
+        ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = true,
         actions = {
@@ -357,7 +360,8 @@ fun BottomContent(
     isNetworkAvailable: MutableState<Boolean>
 ) {
     Box(
-        modifier = Modifier.background(white)
+        modifier = Modifier
+            .background(white)
             .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
             .padding(vertical = dimensionResource(id = R.dimen.dp_15))
     ) {
@@ -430,7 +434,12 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
                     .clickable {
-                        viewModel.onLastSyncTimeClick { showCustomToast(context = context,msg= context.getString(it)) }
+                        viewModel.onLastSyncTimeClick {
+                            showCustomToast(
+                                context = context,
+                                msg = context.getString(it)
+                            )
+                        }
                     },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.sync.history.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.nudge.core.CoreDispatchers
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncHistoryViewModel @Inject constructor(
-        private val syncHistoryUseCase: SyncHistoryUseCase
+        val syncHistoryUseCase: SyncHistoryUseCase
 ):ViewModel() {
         private val _eventList = mutableStateOf<List<Events>>(emptyList())
         val eventList: State<List<Events>> get() = _eventList
@@ -27,12 +28,14 @@ class SyncHistoryViewModel @Inject constructor(
         val eventStatusDataUIList = arrayListOf<Pair<String, Int>>()
         val totalDataEventCount = mutableStateOf(0)
         val totalImageEventCount = mutableStateOf(0)
+        val lastSyncTime = mutableLongStateOf(0L)
 
         fun getAllEventStatusForUser(context: Context) {
                 CoroutineScope(CoreDispatchers.ioDispatcher).launch {
                         _eventList.value =
                                 syncHistoryUseCase.getSyncHistoryUseCase.getAllEventsForUser()
-
+                        lastSyncTime.longValue =
+                                syncHistoryUseCase.getSyncHistoryUseCase.getLastSyncTime()
                         val allDataEvents = eventList.value.filter { isDataEvent(it) }
                         val allImageEvents = eventList.value.filter { isImageEvent(it) }
                         totalDataEventCount.value = allDataEvents.size
