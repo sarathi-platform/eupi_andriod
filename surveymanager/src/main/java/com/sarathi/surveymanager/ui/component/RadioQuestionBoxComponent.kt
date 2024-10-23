@@ -40,10 +40,12 @@ import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_64_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -84,7 +86,10 @@ fun RadioQuestionBoxComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = if (isQuestionTypeToggle) 60.dp else 100.dp, maxCustomHeight)
+            .heightIn(
+                min = if (isQuestionTypeToggle) dimen_64_dp else dimen_100_dp,
+                maxCustomHeight
+            )
     ) {
         Card(
             elevation = CardDefaults.cardElevation(
