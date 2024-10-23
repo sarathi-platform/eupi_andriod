@@ -17,7 +17,6 @@ class SyncMigrationUseCase @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     repository.deleteEventsAfter1To2Migration()
-                    repository.setSyncDBMigrateToFalse()
                     CoreLogger.d(
                         CoreAppDetails.getApplicationContext().applicationContext,
                         "SyncMigrationUseCase",
@@ -29,7 +28,6 @@ class SyncMigrationUseCase @Inject constructor(
                         "SyncMigrationUseCase Exception: ",
                         e.message ?: SOMETHING_WENT_WRONG
                     )
-                    repository.setSyncDBMigrateToFalse()
                 } finally {
                     repository.setSyncDBMigrateToFalse()
                 }

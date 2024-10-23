@@ -72,7 +72,7 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.syncmanager.utils.SYNC_TAG
+import com.nudge.syncmanager.utils.SYNC_UNIQUE_NAME
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
@@ -94,7 +94,7 @@ fun SyncHomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(SYNC_TAG)
+    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(SYNC_UNIQUE_NAME)
         .observeAsState().value
     val lifeCycleOwner = LocalLifecycleOwner.current
 
