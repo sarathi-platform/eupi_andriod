@@ -1,18 +1,22 @@
 package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.model.response.SurveyValidations
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -32,7 +36,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
-    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
+    private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
+    private val validationUseCase: SurveyValidationUseCase
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -61,6 +67,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var surveyConfig = mutableMapOf<String, SurveyCardModel>()
 
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
+
+    var validations: List<SurveyValidations>? = mutableListOf()
+    var fieldValidationAndMessageMap = mutableStateMapOf<String, Pair<Boolean, String>>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -95,6 +104,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                     .also { surveyConfigEntityList ->
                         getSurveyConfig(surveyConfigEntityList)
                     }
+                validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
             }
 
 
@@ -174,17 +184,37 @@ open class FormQuestionScreenViewModel @Inject constructor(
         )
     }
 
-    fun checkButtonValidation() {
-        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
-            .forEach { questionUiModel ->
+    fun checkButtonValidation(): Boolean {
+        val filterQuestionUiModelList =
+            questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+
+        for (questionUiModel in filterQuestionUiModelList) {
             val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
             if (!result) {
-                isButtonEnable.value = false
-                return
+                return false
+            }
+        }
+        return true
+    }
+
+    fun runValidationCheck(questionId: Int, onValidationComplete: (Boolean, String) -> Unit) {
+
+        validationUseCase.validateExpressionEvaluator(
+            validations = validations,
+            questionUiModel = questionUiModel.value.find { it.questionId == questionId }
+        ) { isValid, message ->
+            var isQuestionValidationFromConfig = true
+
+            onValidationComplete(isValid, message)
+            fieldValidationAndMessageMap.forEach {
+                if (!it.value.first) {
+                    isQuestionValidationFromConfig = false
+                }
             }
 
+            isButtonEnable.value = isQuestionValidationFromConfig && checkButtonValidation()
         }
-        isButtonEnable.value = true
+
     }
 
     fun updateQuestionResponseMap(question: QuestionUiModel) {

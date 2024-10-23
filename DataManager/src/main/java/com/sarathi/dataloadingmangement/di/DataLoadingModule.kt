@@ -70,6 +70,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -77,6 +78,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJour
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
@@ -113,6 +115,8 @@ import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsR
 import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.GetSurveyConfigFromDbRepository
 import com.sarathi.dataloadingmangement.repository.GetSurveyConfigFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetSurveyValidationsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.GetSurveyValidationsFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
@@ -1530,5 +1534,35 @@ class DataLoadingModule {
             surveyConfigEntityDao = surveyConfigEntityDao
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun providesSurveyValidationUseCase(
+        coreSharedPrefs: CoreSharedPrefs
+    ): SurveyValidationUseCase {
+        return SurveyValidationUseCase(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSurveyValidationsFromDbUseCase(
+        getSurveyValidationsFromDbRepository: GetSurveyValidationsFromDbRepository
+    ): GetSurveyValidationsFromDbUseCase {
+        return GetSurveyValidationsFromDbUseCase(
+            getSurveyValidationsFromDbRepository = getSurveyValidationsFromDbRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSurveyValidationsFromDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyEntityDao: SurveyEntityDao
+    ): GetSurveyValidationsFromDbRepository {
+        return GetSurveyValidationsFromDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyEntityDao
+        )
     }
 }

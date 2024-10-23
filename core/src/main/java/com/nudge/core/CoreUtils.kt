@@ -1296,3 +1296,11 @@ fun String.parseStringToList(): List<Int?> {
         TypeToken<List<Int?>?>() {}.type
     return gson.fromJson<List<Int>>(this, type)
 }
+
+fun extractSubstrings(input: String): List<String> {
+    // Define the regex pattern
+    val pattern = "\\{[^%]+%[^}]+\\}".toRegex()
+
+    // Find all matches in the input string
+    return pattern.findAll(input).map { it.value }.toList()
+}

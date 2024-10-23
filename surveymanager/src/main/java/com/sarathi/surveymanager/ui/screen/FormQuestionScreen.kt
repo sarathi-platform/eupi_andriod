@@ -156,6 +156,9 @@ fun FormScreenQuestionUiContent(
                 ) { selectedValue, remainingAmout ->
                     saveInputTypeAnswer(selectedValue, question, viewModel)
                     onAnswerSelect(question)
+                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                    }
                 }
             }
 
@@ -173,7 +176,9 @@ fun FormScreenQuestionUiContent(
                 ) { selectedValue ->
                     saveInputTypeAnswer(selectedValue, question, viewModel)
                     onAnswerSelect(question)
+                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
 
+                    }
                 }
             }
 
@@ -196,7 +201,9 @@ fun FormScreenQuestionUiContent(
                         isDeleted
                     )
                     onAnswerSelect(question)
-                    viewModel.checkButtonValidation()
+                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                    }
 
                 }
             }
@@ -215,7 +222,9 @@ fun FormScreenQuestionUiContent(
                             option.isSelected = selectedValue.id == option.optionId
                         }
                         onAnswerSelect(question)
-                        viewModel.checkButtonValidation()
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                        }
 
                     }
                 )
@@ -241,7 +250,9 @@ fun FormScreenQuestionUiContent(
                             }
                         }
                         onAnswerSelect(question)
-                        viewModel.checkButtonValidation()
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                        }
 
                     }
                 )
@@ -268,7 +279,9 @@ fun FormScreenQuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-                        viewModel.checkButtonValidation()
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                        }
                     }
                 )
             }
@@ -285,7 +298,9 @@ fun FormScreenQuestionUiContent(
 
                         question.options?.get(selectedOptionIndex)?.isSelected = isSelected
                         onAnswerSelect(question)
-//                                    viewModel.checkButtonValidation()
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                        }
                     },
                     questionDetailExpanded = {
 
@@ -307,7 +322,9 @@ fun FormScreenQuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-//                                    viewModel.checkButtonValidation()
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+
+                        }
                     }
                 )
             }
@@ -327,5 +344,4 @@ fun saveInputTypeAnswer(
         question.options?.firstOrNull()?.isSelected = true
     }
     question.options?.firstOrNull()?.selectedValue = selectedValue
-    viewModel.checkButtonValidation()
 }

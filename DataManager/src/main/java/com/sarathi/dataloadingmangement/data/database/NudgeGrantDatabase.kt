@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.SurveyValidationsConverter
 import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
@@ -184,8 +185,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
     ValuesDtoConverter::class,
     DateConverter::class,
     TagConverter::class,
-    ValidationConverter::class
-
+    ValidationConverter::class,
+    SurveyValidationsConverter::class
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
