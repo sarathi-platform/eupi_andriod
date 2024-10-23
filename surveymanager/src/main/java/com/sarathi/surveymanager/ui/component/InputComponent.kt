@@ -35,6 +35,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
@@ -83,7 +84,7 @@ fun InputComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimen_16_dp)
+                .padding(horizontal = dimen_16_dp, vertical = dimen_10_dp)
                 .padding(bottom = 10.dp)
         ) {
             if (title?.isNotBlank() == true) {
