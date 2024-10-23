@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionRepository
@@ -55,7 +56,8 @@ class BpcVillageScreenViewModel @Inject constructor(
     val villageSelectionRepository: VillageSelectionRepository,
     private val syncManagerDatabase: SyncManagerDatabase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    val prefRepo:PrefRepo
+    val prefRepo: PrefRepo,
+    val syncMigrationUseCase: SyncMigrationUseCase
     ): BaseViewModel() {
 
     val showLoader = mutableStateOf(false)
@@ -73,6 +75,8 @@ class BpcVillageScreenViewModel @Inject constructor(
     fun init () {
         showLoader.value = true
         fetchUserAndVillageDetails()
+        // To Delete events for version 1 to 2 sync migration
+        syncMigrationUseCase.deleteEventsAfter1To2Migration()
     }
 
     fun compareWithPreviousUser(context: Context) {
@@ -188,8 +192,6 @@ class BpcVillageScreenViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
-            syncManagerDatabase.eventsDao().deleteAllEvents()
-            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init()
             onDataClearComplete()

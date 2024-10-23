@@ -75,5 +75,4 @@ class ConfigRepository @Inject constructor(
     fun getLoggedInUserType(): String {
         return prefRepo.getLoggedInUserType()
     }
-
 }

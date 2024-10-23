@@ -43,6 +43,12 @@ data class Events (
     @ColumnInfo("status")
     val status: String,
 
+    @ColumnInfo("result")
+    val result: String? = BLANK_STRING,
+
+    @ColumnInfo("consumer_status")
+    val consumer_status: String = BLANK_STRING,
+
     @ColumnInfo("retry_count")
     var retry_count: Int = 0,
 
@@ -59,7 +65,7 @@ data class Events (
     val requestId:String?= BLANK_STRING,
 
     @ColumnInfo("eventId")
-    val eventId:String?= BLANK_STRING,
+    val eventId: String? = BLANK_STRING
 ) {
     companion object {
         fun getEmptyEvent(): Events {
