@@ -45,7 +45,6 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -188,7 +187,6 @@ fun BaseSurveyScreen(
                     modifier = Modifier
                         .heightIn(maxHeight)
                         .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     if (!grantType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
                         item { CustomVerticalSpacer() }
@@ -255,7 +253,7 @@ fun QuestionUiContent(
             QuestionType.InputText.name -> {
                 InputComponent(
                     questionIndex = index,
-                    maxLength = 10,
+                    maxLength = 7,
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = sanctionedAmount,
                     remainingAmount = getSanctionedAmountMessage(
