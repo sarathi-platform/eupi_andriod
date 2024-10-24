@@ -101,7 +101,7 @@ class SyncHomeViewModel @Inject constructor(
         }
     }
 
-    init {
+    fun fetchConsumerBarStatus() {
         isConsumerBarVisible.value =
             corePrefRepo.getPref(AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name, false)
     }

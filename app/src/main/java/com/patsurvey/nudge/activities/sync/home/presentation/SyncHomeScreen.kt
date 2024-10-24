@@ -26,6 +26,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -100,6 +101,9 @@ fun SyncHomeScreen(
 
     val uploadWorkerInfo = rememberUploadWorkerInfo(context, workInfo, viewModel)
     val isNetworkAvailable = remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchConsumerBarStatus()
+    }
 
     ObserveNetworkState(viewModel, isNetworkAvailable, lifeCycleOwner)
     ObserveEventCounts(viewModel, lifeCycleOwner)
