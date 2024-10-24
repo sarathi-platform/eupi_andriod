@@ -584,6 +584,7 @@ private fun SyncDataCard(
         onCardClick = {
 
         },
+        isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
         onViewProcessClick = {
             onViewProcessClick()
         }
@@ -624,6 +625,7 @@ private fun SyncImageCard(
             isStatusVisible = viewModel.isImageStatusVisible.value,
             onCardClick = {
             },
+            isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
             onViewProcessClick = {
                 onViewProcessClick()
             }
