@@ -10,11 +10,12 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
 import com.nudge.core.PREF_DATA_TAB_VISIBILITY
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DATA_TAB_DATA_LOADED
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DIDI_TAB_DATA_LOADED
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_IS_SYNC_DB_MIGRATE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_BATCH_SIZE
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_ENABLED
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_SYNC_RETRY_COUNT
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DATA_TAB_DATA_LOADED
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DIDI_TAB_DATA_LOADED
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
@@ -49,6 +50,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
         const val PREF_KEY_FROM_OTP_SCREEN = "from_otp_screen"
+        const val PREF_KEY_TEMP_CRP_FILE_PATH = "temp_crp_file_path"
 
     }
 
@@ -322,5 +324,12 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun isDidiTabDataLoaded(): Boolean {
         return getPref(PREF_KEY_DIDI_TAB_DATA_LOADED + getMobileNumber(), false)
+    }
+    override fun setSyncDBMigrate(isSyncDbMigrate: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, isSyncDbMigrate).apply()
+    }
+
+    override fun isSyncDBMigrate(): Boolean {
+        return prefs.getBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, false)
     }
 }
