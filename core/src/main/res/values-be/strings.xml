@@ -38,4 +38,11 @@
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="all">"गासैबो "</string>
+    <string name="no_entry_this_month">"बे दानाव हाबनो मोना "</string>
+    <string name="no_entry_this_week">No entry this week</string>
+    <string name="last_week">Last week</string>
+    <string name="last_month">Last month</string>
+    <string name="last_3_months">Last 3 months</string>
+    <string name="custom_date">Custom Date</string>
 </resources>

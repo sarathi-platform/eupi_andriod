@@ -31,4 +31,11 @@
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="all">"सब "</string>
+    <string name="no_entry_this_month">"इस महीने एंट्री नहीं की गई  "</string>
+    <string name="no_entry_this_week">"इस सप्ताह कोई एंट्री नहीं हुई है  "</string>
+    <string name="last_week">"पिछला  सप्ताह  "</string>
+    <string name="last_month">"पिछला  महिना "</string>
+    <string name="last_3_months">"पिछले तीन महीने  "</string>
+    <string name="custom_date">"इच्छा अनुसार दिनांक "</string>
 </resources>
