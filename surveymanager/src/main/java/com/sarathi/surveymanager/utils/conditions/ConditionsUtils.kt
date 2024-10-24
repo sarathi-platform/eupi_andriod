@@ -8,6 +8,7 @@ import com.nudge.core.OPERAND_DELIMITER
 import com.nudge.core.ifNotEmpty
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.Conditions
 import com.sarathi.dataloadingmangement.model.uiModel.ConditionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -127,11 +128,24 @@ class ConditionsUtils {
             QuestionType.InputNumber.name,
             QuestionType.NumericField.name -> {
                 question.options?.firstOrNull()?.let { opt ->
-                    if (runValidResponseCheck(opt.selectedValue))
+                    if (runValidResponseCheck(opt.selectedValue)) {
+                        val responseValue = try {
+                            opt.selectedValue?.toInt().value()
+                        } catch (ex: Exception) {
+                            CoreLogger.e(
+                                tag = LOGGING_TAG,
+                                msg = "updateQuestionResponseMap -> Exception: ${ex.message}",
+                                ex = ex,
+                                stackTrace = true
+                            )
+                            NUMBER_ZERO
+                        }
+
                         updateResponseMap(
                             question.questionId,
-                            listOf(opt.selectedValue?.toInt().value())
+                            listOf(responseValue)
                         )
+                    }
                     else
                         updateResponseMap(question.questionId, listOf())
                 } ?: {

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -44,6 +45,7 @@ import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.newMediumTextStyle
@@ -105,6 +107,7 @@ fun DatePickerComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = if (showCardView) dimen_16_dp else dimen_0_dp)
         ) {
             if (title.isNotBlank()) {
                 QuestionComponent(

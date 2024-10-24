@@ -27,10 +27,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -38,6 +38,7 @@ import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.red
@@ -84,8 +85,10 @@ fun InputComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimen_16_dp, vertical = dimen_10_dp)
-                .padding(bottom = 10.dp)
+                .padding(
+                    horizontal = if (showCardView) dimen_16_dp else dimen_0_dp,
+                    vertical = if (showCardView) dimen_10_dp else dimen_0_dp
+                )
         ) {
             if (title?.isNotBlank() == true) {
                 QuestionComponent(
@@ -163,6 +166,9 @@ fun InputComponent(
                     color = red
                 )
             }
+        }
+        if (showCardView) {
+            CustomVerticalSpacer(size = dimen_6_dp)
         }
     }
 }

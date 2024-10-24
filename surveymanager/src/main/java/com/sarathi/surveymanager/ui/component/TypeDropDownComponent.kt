@@ -27,6 +27,7 @@ import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
@@ -127,7 +128,7 @@ fun TypeDropDownWithCardComponent(
 
             Box(
                 modifier = Modifier
-                    .padding(dimen_16_dp)
+                    .padding(horizontal = dimen_16_dp, vertical = dimen_10_dp)
                     .background(
                         color = Color.Transparent,
                         shape = RoundedCornerShape(roundedCornerRadiusDefault)
@@ -181,7 +182,6 @@ fun DropDownTypeComponent(
     } else {
         Box(
             modifier = Modifier
-                .padding(dimen_16_dp)
         ) {
             TypeDropDownComponent(
                 title = title,

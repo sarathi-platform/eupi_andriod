@@ -114,6 +114,7 @@ fun GridTypeComponent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(white)
+                .padding(horizontal = if (showCardView) dimen_16_dp else dimen_0_dp)
                 .clickable {
                 }
                 .then(modifier)

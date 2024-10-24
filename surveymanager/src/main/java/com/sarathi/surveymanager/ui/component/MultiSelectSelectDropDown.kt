@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -27,7 +28,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
@@ -47,12 +47,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
-import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_64_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
@@ -98,24 +100,23 @@ fun MultiSelectSelectDropDown(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = dimen_100_dp, maxCustomHeight)
+            .heightIn(min = dimen_64_dp, maxCustomHeight)
+            .background(white)
+            .padding(horizontal = if (showCardView) dimen_16_dp else dimen_0_dp)
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
+        BasicCardView(
+            cardElevation = CardDefaults.cardElevation(
                 defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
             ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            cardShape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minHeight, max = maxHeight)
-                .background(white)
-                .clickable {
-
-                }
                 .then(modifier)
         ) {
             Column(
-                modifier = modifier,
+                modifier = modifier
+                    .background(white),
                 horizontalAlignment = Alignment.Start
             ) {
 
@@ -149,6 +150,7 @@ fun MultiSelectSelectDropDown(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimen_60_dp)
+                        .background(white)
                         .clickable { onExpandedChange(expanded) }
                         .onGloballyPositioned { coordinates ->
                             onGlobalPositioned(coordinates)
