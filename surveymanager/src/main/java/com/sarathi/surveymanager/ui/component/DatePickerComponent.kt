@@ -68,6 +68,7 @@ fun DatePickerComponent(
     showCardView: Boolean = false,
     isMandatory: Boolean = false,
     isEditable: Boolean = true,
+    isFutureDateDisable: Boolean = false,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     var text by remember { mutableStateOf(defaultValue) }
@@ -81,7 +82,7 @@ fun DatePickerComponent(
     val datePickerProperties = rememberDatePickerProperties(
         state = datePickerState,
         dateValidator = { selectedDate ->
-            true
+            if (isFutureDateDisable) selectedDate <= System.currentTimeMillis() else true
         }
     )
     val scope = rememberCoroutineScope()

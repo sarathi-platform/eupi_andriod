@@ -295,7 +295,8 @@ fun QuestionUiContent(
                     isEditable = viewModel.isActivityNotCompleted.value,
                     showCardView = showCardView,
                     hintText = question.options?.firstOrNull()?.description
-                        ?: BLANK_STRING
+                        ?: BLANK_STRING,
+                    isFutureDateDisable = true
                 ) { selectedValue ->
                     saveInputTypeAnswer(selectedValue, question, viewModel)
                     onAnswerSelect(question)
