@@ -72,6 +72,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 coreSharedPrefs.savePref(AppConfigKeysEnum.USE_BASELINE_V1.name, it)
             }
         }
+        if (data.containsKey(AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name,
+                data[AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name].toBoolean()
+            )
+        }
 
     }
 

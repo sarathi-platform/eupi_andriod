@@ -58,6 +58,7 @@ fun EventTypeCard(
     isProgressBarVisible: Boolean,
     isStatusVisible: Boolean,
     isImageSyncCard: Boolean,
+    isConsumerBarVisible: Boolean,
     onCardClick: () -> Unit,
     onSyncButtonClick: () -> Unit,
     onViewProcessClick: () -> Unit
@@ -169,56 +170,58 @@ fun EventTypeCard(
                         start.linkTo(parent.start)
                     }
             )
+            if (isConsumerBarVisible) {
+                Text(
+                    text = stringResource(
+                        id = if (isImageSyncCard) R.string.images_processes_by_server
+                        else R.string.data_processes_by_server
+                    ),
+                    style = smallerTextStyleNormalWeight,
+                    color = blueDark,
+                    modifier = Modifier
+                        .padding(top = dimen_10_dp)
+                        .constrainAs(dataProcessedText) {
+                            top.linkTo(producerProgressBar.bottom)
+                            start.linkTo(parent.start)
+                        }
+                )
+                LinearProgressIndicator(
+                    progress = animateFloatAsState(
+                        targetValue = progress ?: 0f,
+                        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                        label = BLANK_STRING
+                    ).value,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_2_dp)
+                        .height(dimen_24_dp)
+                        .constrainAs(progressBar) {
+                            top.linkTo(dataProcessedText.bottom)
+                            start.linkTo(parent.start)
+                        },
+                    backgroundColor = syncProgressBg,
+                    color = greenDark,
+                )
 
-            Text(
-                text = stringResource(
-                    id = if (isImageSyncCard) R.string.images_processes_by_server
-                    else R.string.data_processes_by_server
-                ),
-                style = smallerTextStyleNormalWeight,
-                color = blueDark,
-                modifier = Modifier
-                    .padding(top = dimen_10_dp)
-                    .constrainAs(dataProcessedText) {
-                        top.linkTo(producerProgressBar.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-            LinearProgressIndicator(
-                progress = animateFloatAsState(
-                    targetValue = progress ?: 0f,
-                    animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = BLANK_STRING
-                ).value,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimen_2_dp)
-                    .height(dimen_24_dp)
-                    .constrainAs(progressBar) {
-                        top.linkTo(dataProcessedText.bottom)
-                        start.linkTo(parent.start)
-                    },
-                backgroundColor = syncProgressBg,
-                color = greenDark,
-            )
-
-            Text(
-                text = "${roundOffDecimalFloat((progress ?: 0f) * 100)}%",
-                style = syncItemCountStyle,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimen_5_dp)
-                    .constrainAs(countText) {
-                        top.linkTo(dataProcessedText.bottom)
-                        end.linkTo(progressBar.end)
-                        start.linkTo(parent.start)
-                    }
-            )
+                Text(
+                    text = "${roundOffDecimalFloat((progress ?: 0f) * 100)}%",
+                    style = syncItemCountStyle,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_5_dp)
+                        .constrainAs(countText) {
+                            top.linkTo(dataProcessedText.bottom)
+                            end.linkTo(progressBar.end)
+                            start.linkTo(parent.start)
+                        }
+                )
+            }
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimen_8_dp)
                 .constrainAs(descRow) {
-                    top.linkTo(progressBar.bottom)
+                    top.linkTo(if (isConsumerBarVisible) progressBar.bottom else producerProgressBar.bottom)
                     start.linkTo(parent.start)
                 }) {
 
@@ -266,7 +269,7 @@ fun EventTypeCard(
                             .padding(top = dimen_10_dp)
                             .constrainAs(syncButton) {
                                 end.linkTo(parent.end)
-                                top.linkTo(progressBar.bottom)
+                                top.linkTo(if (isConsumerBarVisible) progressBar.bottom else producerProgressBar.bottom)
                             }
                     ) {
                         Text(
@@ -298,6 +301,7 @@ fun CommonSyncScreenPreview() {
         isStatusVisible = true,
         onSyncButtonClick = {},
         onViewProcessClick = {},
-        isImageSyncCard = true
+        isImageSyncCard = true,
+        isConsumerBarVisible = false
     )
 }
