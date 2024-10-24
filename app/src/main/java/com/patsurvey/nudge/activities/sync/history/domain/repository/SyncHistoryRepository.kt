@@ -14,4 +14,5 @@ interface SyncHistoryRepository {
     ): List<EventStatusEntity>
 
     suspend fun getAllEventsForUser(): List<Events>
+    fun getLastSyncTime(): Long
 }

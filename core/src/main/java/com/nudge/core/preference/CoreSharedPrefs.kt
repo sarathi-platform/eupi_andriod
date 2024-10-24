@@ -52,6 +52,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_SYNC_BATCH_SIZE = "sync_batch_size"
         const val PREF_KEY_SYNC_RETRY_COUNT = "sync_retry_count"
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
+        const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
 
 
 
@@ -334,5 +335,13 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getHardEventLimitThreshold(): Int {
         return prefs.getInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, DEFAULT_HARD_EVENT_LIMIT_THRESHOLD)
 
+    }
+
+    override fun setSyncDBMigrate(isSyncDbMigrate: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, isSyncDbMigrate).apply()
+    }
+
+    override fun isSyncDBMigrate(): Boolean {
+        return prefs.getBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, false)
     }
 }

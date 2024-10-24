@@ -85,6 +85,4 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
     override fun getAppConfigFromPref(key: String): String {
         return coreSharedPrefs.getPref(key, BLANK_STRING)
     }
-
-
 }

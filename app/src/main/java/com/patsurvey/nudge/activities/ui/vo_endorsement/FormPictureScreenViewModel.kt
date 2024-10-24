@@ -828,7 +828,7 @@ class FormPictureScreenViewModel @Inject constructor(
                 )
 
             val didiList = repository.getAllDidisForVillage()
-                .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE }
+                .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE && it.voEndorsementEdit }
 
             val tolaDeviceIdMap: Map<Int, String> = repository.getTolaDeviceIdMap(
                 villageId = villageId,
@@ -849,6 +849,8 @@ class FormPictureScreenViewModel @Inject constructor(
             addRankingFlagEditEventList.forEach { rankingEditEvent ->
                 repository.saveEventToMultipleSources(rankingEditEvent, listOf())
             }
+            updateVoEndorsementEditFlag()
+
         }
     }
 }

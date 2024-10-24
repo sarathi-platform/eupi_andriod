@@ -107,4 +107,10 @@
     <string name="save_text">েভ করুন</string>
     <string name="proceed">এগিয়ে যান</string>
     <string name="cancel_text">বাতিল করুন</string>
+    <string name="edit_event">"ইভেন্ট এডিট করুন "</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"সম্পদ "</string>
+    <string name="last_updated_days_ago">"সর্বশেষ আপডেট করা হয়েছে: %1$s দিন আগে "</string>
+    <string name="last_1_month">"গত 1 মাস "</string>
 </resources>

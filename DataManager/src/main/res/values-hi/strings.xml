@@ -107,4 +107,10 @@
     <string name="search_by_small_groups">Search by small groups</string>
     <string name="total_didis">Total Didis - %1$s</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
+    <string name="edit_event">"पिछला संपादन (एडिट ) "</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"संपत्ति "</string>
+    <string name="last_updated_days_ago">"अंतिम अपडेट  %1$s दिन पहले किया गया  "</string>
+    <string name="last_1_month">"पिछला एक महिना "</string>
 </resources>

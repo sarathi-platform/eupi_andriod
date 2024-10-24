@@ -96,7 +96,7 @@ fun AddEventScreen(
     val datePickerDialogProperties = rememberCustomDatePickerDialogProperties()
 
     ToolBarWithMenuComponent(
-        title = if (showDeleteButton) "Edit Event" else "Add Event",
+        title = if (showDeleteButton) stringResource(R.string.edit_event) else stringResource(R.string.add_event),
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.navigateUp() },

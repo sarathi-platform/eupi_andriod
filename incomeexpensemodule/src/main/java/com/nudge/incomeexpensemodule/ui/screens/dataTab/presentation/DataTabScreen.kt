@@ -280,7 +280,7 @@ fun DataTabScreen(
                                         textProperties = TextProperties.getBasicTextProperties(
                                             text = buildAnnotatedString {
                                                 //TODO write function to get this string for the filter applied.
-                                                append("Showing ")
+                                                append(stringResource(R.string.showing))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
@@ -289,7 +289,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
                                                 }
-                                                append(" results for ")
+                                                append(stringResource(R.string.results_for))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,

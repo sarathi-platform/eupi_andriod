@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.sync.history.domain.repository
 
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventStatusEntity
@@ -31,6 +32,10 @@ class SyncHistoryRepositoryImpl @Inject constructor(
 
     override suspend fun getAllEventsForUser(): List<Events> {
         return eventsDao.getAllEventsForUser(prefRepo.getMobileNumber())
+    }
+
+    override fun getLastSyncTime(): Long {
+        return prefRepo.getPref(LAST_SYNC_TIME, 0L)
     }
 
 }
