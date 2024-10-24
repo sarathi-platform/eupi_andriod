@@ -523,6 +523,7 @@
     <string name="network_not_available_message">Network not available, Please try again later!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
     <string name="warning">Warning!</string>
     <string name="data_lost_message">Another User ID detected. If you proceed, you will lose data for the previously logged in User ID.</string>
     <string name="proceed">Proceed</string>
@@ -542,7 +543,7 @@
     <string name="sync_images">Images</string>
     <string name="sync_all_data" translatable="false">Sync All Data</string>
     <string name="export_failed_event" translatable="false">Export Failed Event</string>
-    <string name="sync_data_history" translatable="false">Sync Data History</string>
+    <string name="sync_data_history" translatable="false">Sync Data History - %1s</string>
     <string name="sync_image_history" translatable="false">Sync Image History</string>
     <string name="consumer_success_event_count" translatable="false">Consumer Success Event Count</string>
     <string name="producer_success_event_count" translatable="false">Producer Success Event Count</string>

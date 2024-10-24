@@ -72,17 +72,26 @@ class ConditionsUtils {
                 }.value()
             }
             .forEach {
-                if (it.type != QuestionType.TextField.name && it.type != QuestionType.InputNumber.name && it.type != QuestionType.NumericField.name) {
+                if (it.type != QuestionType.TextField.name && it.type != QuestionType.InputText.name && it.type != QuestionType.InputNumber.name && it.type != QuestionType.NumericField.name) {
                     it.options?.filter { option -> option.isSelected.value() }
                         ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
-                } else if (it.type != QuestionType.InputNumber.name || it.type != QuestionType.NumericField.name) {
+                }
+
+                if (it.type == QuestionType.InputNumber.name || it.type == QuestionType.NumericField.name) {
                     it.options?.filter { option -> option.isSelected.value() }
                         ?.map { opt -> opt.selectedValue?.toInt()!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
 
+                }
+
+                if (it.type == QuestionType.TextField.name || it.type == QuestionType.InputText.name) {
+                    it.options?.filter { option -> option.isSelected.value() }
+                        ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
+                            map[it.questionId] = optionIds
+                        }
                 }
 
             }

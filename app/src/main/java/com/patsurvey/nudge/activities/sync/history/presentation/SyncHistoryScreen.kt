@@ -1,11 +1,14 @@
 package com.patsurvey.nudge.activities.sync.history.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -30,10 +33,13 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nudge.core.SYNC_DATA
+import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import java.text.SimpleDateFormat
 
 @Composable
 fun SyncHistoryScreen(
@@ -48,7 +54,10 @@ fun SyncHistoryScreen(
         viewModel.getAllEventStatusForUser(context)
     }
     ToolbarWithMenuComponent(
-        title = stringResource(id = R.string.sync_data_history),
+        title = stringResource(
+            id = R.string.sync_data_history,
+            viewModel.syncHistoryUseCase.getSyncHistoryUseCase.getUserID()
+        ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = false,
         onBackIconClick = { navController.popBackStack() },
@@ -60,13 +69,37 @@ fun SyncHistoryScreen(
                 .fillMaxWidth()
 
         ) {
-
+            LastSyncTime(viewModel)
             CreateEventUIList(viewModel, screenHeight)
         }
     }
 
 }
 
+@Composable
+fun LastSyncTime(viewModel: SyncHistoryViewModel) {
+    val context = LocalContext.current
+    if (viewModel.lastSyncTime.longValue != 0L) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimen_10_dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(id = R.string.last_sync_date_time),
+                style = mediumTextStyle,
+                color = textColorDark
+            )
+
+            Text(
+                text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                style = mediumTextStyle,
+                color = textColorDark
+            )
+        }
+    }
+}
 @Composable
 private fun CreateEventUIList(
     viewModel: SyncHistoryViewModel,

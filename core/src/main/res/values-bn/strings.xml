@@ -45,4 +45,8 @@
     <string name="last_month">"গত মাসে "</string>
     <string name="last_3_months">"গত 3 মাস "</string>
     <string name="custom_date">"কাস্টম তারিখ "</string>
+    <string name="summary_text">Summary</string>
+    <string name="default_confirm_button_text">Confirm</string>
+    <string name="default_dismiss_button_text">Dismiss</string>
+    <string name="view_summary">View Summary</string>
 </resources>

@@ -8,6 +8,7 @@
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
     <string name="location_not_enable">Location not enabled.</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
 
     <plurals name="didis_added">
         <item quantity="one">I kong la dep pynrung</item>

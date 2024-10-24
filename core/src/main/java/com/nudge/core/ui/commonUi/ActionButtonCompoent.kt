@@ -389,6 +389,7 @@ fun SubmitButtonBottomUi(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
+            .background(white)
     ) {
         ButtonPositive(
             buttonTitle = buttonTitle,

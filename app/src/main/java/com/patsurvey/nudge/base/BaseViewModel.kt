@@ -89,7 +89,7 @@ abstract class BaseViewModel : ViewModel(){
             is JsonSyntaxException ->{
                 onServerError(ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA))
             }
-            else -> onServerError(ErrorModel(-1, e.message))
+            else -> onServerError(ErrorModel(-1, e.stackTraceToString()))
         }
     }
 

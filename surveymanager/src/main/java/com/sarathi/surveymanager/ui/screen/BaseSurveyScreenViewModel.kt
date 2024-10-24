@@ -2,14 +2,17 @@ package com.sarathi.surveymanager.ui.screen
 
 import android.text.TextUtils
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -17,12 +20,16 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -50,7 +57,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSectionListUseCase: GetSectionListUseCase,
-    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
+    private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
+    private val validationUseCase: SurveyValidationUseCase
 ) : BaseViewModel() {
     var surveyId: Int = 0
     var sectionId: Int = 0
@@ -74,10 +84,16 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     var isNoSection = mutableStateOf(false)
 
+    var surveyConfig = mapOf<Int, MutableMap<String, SurveyCardModel>>()
+
     val conditionsUtils = ConditionsUtils()
 
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 
+    val showSummaryView = mutableMapOf<Int, Int>()
+
+    var validations: List<SurveyValidations>? = mutableListOf()
+    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -123,6 +139,39 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             isNoSection.value = sectionList.size == 1
 
+            questionUiModel.value
+                .filter { it.formId != 0 }
+                .groupBy { it.formId }
+                .also { it ->
+                    val formQuestionMap = mutableMapOf<Int, List<Int>>()
+                    it.forEach { mapEntry ->
+                        val questionIds = mapEntry.value.map { it.questionId }
+                        formQuestionMap.put(mapEntry.key, questionIds)
+                    }
+                    val totalSavedFormResponseCount =
+                        saveSurveyAnswerUseCase.getTotalSavedFormResponsesCount(
+                            surveyId = surveyId,
+                            sectionId = sectionId,
+                            taskId = taskId,
+                            formQuestionMap = formQuestionMap
+                        )
+                    totalSavedFormResponseCount.forEach { mapEntry ->
+                        showSummaryView[mapEntry.key] = mapEntry.value
+                    }
+                }
+
+
+            activityConfig?.let {
+                getSurveyConfigFromDbUseCase.invoke(
+                    missionId = it.missionId,
+                    it.activityId,
+                    surveyId
+                )?.also { surveyConfigMap ->
+                    surveyConfig = getSurveyConfig(surveyConfigMap)
+                }
+                validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
+            }
+
             val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
                 .invoke(
                     surveyId = surveyId,
@@ -142,6 +191,21 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
+    private fun getSurveyConfig(surveyConfigMap: Map<Int, List<SurveyConfigEntity>>): MutableMap<Int, MutableMap<String, SurveyCardModel>> {
+        val mSurveyConfig = mutableMapOf<Int, MutableMap<String, SurveyCardModel>>()
+        surveyConfigMap.forEach { surveyConfigMapEntry ->
+            val surveyConfigForForm = mutableMapOf<String, SurveyCardModel>()
+            surveyConfigMapEntry.value.forEach { it ->
+                val model = SurveyCardModel.getSurveyCarModel(it)
+                surveyConfigForForm[it.key] = model
+            }
+            mSurveyConfig[surveyConfigMapEntry.key] = surveyConfigForForm
+        }
+
+        return mSurveyConfig
+
+    }
+
 
     protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
         saveSurveyAnswerUseCase.saveSurveyAnswer(
@@ -154,8 +218,29 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         )
     }
 
+    fun runValidationCheck(questionId: Int, onValidationComplete: (Boolean, String) -> Unit) {
 
-    fun checkButtonValidation() {
+        validationUseCase.validateExpressionEvaluator(
+            validations = validations,
+            questionUiModel = questionUiModel.value.find { it.questionId == questionId }
+        ) { isValid, message ->
+            var isQuestionValidationFromConfig = true
+
+            onValidationComplete(isValid, message)
+            fieldValidationAndMessageMap.forEach {
+                if (!it.value.first) {
+                    isQuestionValidationFromConfig = false
+                }
+            }
+
+            isButtonEnable.value = isQuestionValidationFromConfig && checkButtonValidation()
+        }
+
+    }
+
+    fun checkButtonValidation(): Boolean {
+
+
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
             if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                 val disbursedAmount =
@@ -163,19 +248,16 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 if (sanctionAmount != 0 && (disbursedAmount
                         ?: 0) + totalRemainingAmount > sanctionAmount
                 ) {
-                    isButtonEnable.value = false
-                    return
+                    return false
                 }
             }
             val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
             if (!result) {
-                isButtonEnable.value = false
-                return
+                return false
             }
 
         }
-        isButtonEnable.value = true
-
+        return true
 
     }
 
