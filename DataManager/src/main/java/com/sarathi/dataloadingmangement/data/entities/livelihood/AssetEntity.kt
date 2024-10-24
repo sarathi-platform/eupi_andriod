@@ -16,7 +16,7 @@ data class AssetEntity(
     var userId: String,
     var name: String,
     var status: Int,
-    var type: String = BLANK_STRING,
+    var type: String? = BLANK_STRING,
     var value: Double? = 0.0,
     var image: String?
 ) {

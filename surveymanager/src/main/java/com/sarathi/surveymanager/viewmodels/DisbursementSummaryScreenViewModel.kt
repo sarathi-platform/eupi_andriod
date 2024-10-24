@@ -207,7 +207,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 referenceId = referenceId,
             )
             if (deleteCount > 0) {
-                surveyAnswerEventWriterUseCase.deleteDisbursementOrReceiptOfFundEvent(
+                surveyAnswerEventWriterUseCase.deleteSavedAnswerEvent(
 
                     surveyID = surveyId,
                     sectionId = sectionId,
