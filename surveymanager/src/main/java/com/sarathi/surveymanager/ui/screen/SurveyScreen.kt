@@ -140,7 +140,7 @@ fun LazyListScope.SurveyScreenContent(
 
     val formIdCountMap: MutableMap<Int, Int> = mutableMapOf()
 
-    viewModel.questionUiModel.value.forEachIndexed { index, question ->
+    viewModel.questionUiModel.value.sortedBy { it.order }.forEachIndexed { index, question ->
         if (question.formId == 0) {
             item {
                 if (viewModel.visibilityMap[question.questionId].value()) {

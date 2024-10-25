@@ -110,7 +110,7 @@ fun FormQuestionScreen(
                         .padding(horizontal = dimen_16_dp)
                 ) {
 
-                    itemsIndexed(viewModel.questionUiModel.value) { index, question ->
+                    itemsIndexed(viewModel.questionUiModel.value.sortedBy { it.order }) { index, question ->
 
                         FormScreenQuestionUiContent(
                             index = index,
