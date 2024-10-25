@@ -130,9 +130,6 @@ object MigrationQueries {
         "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN 'isDataLoaded' INTEGER DEFAULT 1 NOT NULL"
 
 
-    val ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME =
-        "ALTER TABLE $LIVELIHOOD_LANGUAGE_TABLE_NAME RENAME COLUMN livelihoodId TO referenceId\n"
-
 
     val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID =
         "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceId' INTEGER"
@@ -221,5 +218,18 @@ object MigrationQueries {
 
     val ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION =
         "ALTER TABLE $SURVEY_TABLE ADD COLUMN validations TEXT"
+
+    val DROP_TABLE_LIVELIHOOD_LANGUAGE_REFERENCE =
+        "DROP TABLE $LIVELIHOOD_LANGUAGE_TABLE_NAME"
+
+    val CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE =
+        "CREATE TABLE $LIVELIHOOD_LANGUAGE_TABLE_NAME (\n" +
+                "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    referenceId INTEGER NOT NULL,\n" +
+                "    referenceType TEXT NOT NULL,\n" +
+                "    languageCode TEXT NOT NULL,\n" +
+                "    name TEXT NOT NULL,\n" +
+                "    userId TEXT NOT NULL\n" +
+                ");"
 }
 
