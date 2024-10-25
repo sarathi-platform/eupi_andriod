@@ -139,9 +139,6 @@ fun FormPictureScreen(
 ) {
 
     val localContext = LocalContext.current
-
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
