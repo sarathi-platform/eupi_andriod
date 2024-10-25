@@ -63,7 +63,6 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUM
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
@@ -73,6 +72,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LI
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MONEY_JOUNRAL_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_ASSET_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_PRODUCT_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_PRODUCT_CONFIG_TABLE
@@ -83,6 +83,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SU
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_PRODUCT_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_TABLE_LIVELIHOOD_LANGUAGE_REFERENCE
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
@@ -288,9 +289,11 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         DROP_LIVELIHOOD_TABLE,
                         DROP_LIVELIHOOD_ASSET_TABLE,
                         DROP_LIVELIHOOD_PRODUCT_TABLE,
+                        DROP_TABLE_LIVELIHOOD_LANGUAGE_REFERENCE,
                         CREATE_NEW_LIVELIHOOD_TABLE,
                         CREATE_NEW_LIVELIHOOD_ASSET_TABLE,
                         CREATE_NEW_LIVELIHOOD_PRODUCT_TABLE,
+                        CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE,
                         ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
                     )
                 )
@@ -299,7 +302,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                     listOf(
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID,
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE,
-                        ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
                         ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE,
                         CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE,
                         CREATE_CONDITIONS_TABLE,
