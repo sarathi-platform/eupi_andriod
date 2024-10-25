@@ -38,8 +38,13 @@ enum class QuestionType {
             InputNumber.name.toLowerCase(),
             DateType.name.toLowerCase(),
             TextField.name.toLowerCase(),
-            NumericField.name.toLowerCase(),
-            InputText.name.toLowerCase()
+            InputText.name.toLowerCase(),
+            NumericField.name.toLowerCase()
+        )
+
+        val numericUseInputQuestionTypeList = listOf(
+            InputNumber.name.toLowerCase(),
+            NumericField.name.toLowerCase()
         )
     }
 }
