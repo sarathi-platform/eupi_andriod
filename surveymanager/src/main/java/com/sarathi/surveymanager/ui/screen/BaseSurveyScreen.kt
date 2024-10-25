@@ -212,7 +212,7 @@ fun LazyListScope.BaseSurveyQuestionContent(
 ) {
 
     itemsIndexed(
-        items = viewModel.questionUiModel.value
+        items = viewModel.questionUiModel.value.sortedBy { it.order }
     ) { index, question ->
 
         QuestionUiContent(
