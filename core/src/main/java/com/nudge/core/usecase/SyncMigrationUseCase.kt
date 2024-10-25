@@ -13,8 +13,8 @@ class SyncMigrationUseCase @Inject constructor(
     val repository: SyncMigrationRepository
 ) {
     fun deleteEventsAfter1To2Migration() {
-        if (repository.isSyncDBMigrate()) {
-            CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (repository.isSyncDBMigrate()) {
                 try {
                     repository.deleteEventsAfter1To2Migration()
                     CoreLogger.d(
