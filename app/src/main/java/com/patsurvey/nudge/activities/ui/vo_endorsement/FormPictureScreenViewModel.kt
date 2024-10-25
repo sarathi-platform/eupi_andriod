@@ -133,6 +133,9 @@ class FormPictureScreenViewModel @Inject constructor(
                     repository.prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
                 if (imagePath != "") {
                     it.add(it.size + 1)
+                    formCImageList.value = formCImageList.value.also { imageList ->
+                        imageList["Page_$i"] = imagePath.toString()
+                    }
                 }
                 Log.d("FormPictureScreenViewModel", "init: FORM_C -> ${it}")
             }
@@ -142,8 +145,10 @@ class FormPictureScreenViewModel @Inject constructor(
                     repository.prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 if (imagePath != "") {
                     it.add(it.size + 1)
+                    formDImageList.value = formDImageList.value.also { imageList ->
+                        imageList["Page_$i"] = imagePath.toString()
+                    }
                 }
-                Log.d("FormPictureScreenViewModel", "init: FORM_D -> ${it}")
             }
         }
     }
