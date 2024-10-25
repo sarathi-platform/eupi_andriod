@@ -44,6 +44,7 @@ import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
+import com.sarathi.surveymanager.utils.getMaxInputLength
 
 @Composable
 fun FormQuestionScreen(
@@ -152,7 +153,12 @@ fun FormScreenQuestionUiContent(
                 QuestionType.InputText.name -> {
                     InputComponent(
                         questionIndex = index,
-                        maxLength = 10,
+                        maxLength = getMaxInputLength(
+                            questionId = question.questionId,
+                            viewModel.sectionId,
+                            type = question.type,
+                            validations = viewModel.validations.orEmpty()
+                        ),
                         isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                         sanctionedAmount = 0,
                         remainingAmount = 0,
