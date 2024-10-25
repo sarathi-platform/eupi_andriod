@@ -15,7 +15,8 @@ enum class QuestionType {
     DropDown,
     TextField,
     NumericField,
-    InputText;
+    InputText,
+    IncrementDecrementList;
 
     companion object {
         val singleResponseQuestionTypeQuestions = listOf(
@@ -30,6 +31,7 @@ enum class QuestionType {
             MultiSelect.name.toLowerCase(),
             ToggleGrid.name.toLowerCase(),
             Grid.name.toLowerCase(),
+            IncrementDecrementList.name.toLowerCase()
         )
 
         val userInputQuestionTypeList = listOf(
