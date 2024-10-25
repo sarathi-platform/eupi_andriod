@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
@@ -15,7 +17,6 @@ import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -25,7 +26,6 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -144,7 +144,6 @@ object RetryHelper {
         castListDao: CasteListDao,
         bpcSummaryDao: BpcSummaryDao,
         poorDidiListDao: PoorDidiListDao,
-        languageListDao: LanguageListDao
     ) {
         setPrefRepo(prefRepo)
         setApiServices(apiService)
@@ -194,7 +193,7 @@ object RetryHelper {
         questionDao = null
         castListDao = null
         poorDidiListDao = null
-        languageDao = null
+        //languageDao = null
     }
 
     private fun setPrefRepo(mPrefRepo: PrefRepo) {
@@ -241,9 +240,9 @@ object RetryHelper {
         bpcSummaryDao = mBpcSummaryDao
     }
 
-    private fun setLanuageDao(mLanguageListDao: LanguageListDao) {
-        languageDao = mLanguageListDao
-    }
+//    private fun setLanuageDao(mLanguageListDao: LanguageListDao) {
+//        languageDao = mLanguageListDao
+//    }
 
     private fun setPoorDidiListDao(mPoorDidiListDao: PoorDidiListDao) {
         poorDidiListDao = mPoorDidiListDao

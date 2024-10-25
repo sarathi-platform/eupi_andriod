@@ -26,10 +26,14 @@ class StorageModule {
 
     @Provides
     @Singleton
-    fun prodiveAppConfigDao(db: CoreDatabase) = db.appConfigDao()
+    fun provideAppConfigDao(db: CoreDatabase) = db.appConfigDao()
 
     @Provides
     @Singleton
-    fun prodivetranslationConfigDao(db: CoreDatabase) = db.translationConfigDao()
+    fun provideTranslationConfigDao(db: CoreDatabase) = db.translationConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideLanguageListDao(db: CoreDatabase) = db.languageListDao()
 
 }

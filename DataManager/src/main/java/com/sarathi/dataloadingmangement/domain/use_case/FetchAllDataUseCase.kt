@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
@@ -18,7 +19,6 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSurveyDataFromNetworkUseCase: FetchSurveyDataFromNetworkUseCase,
     val contentDownloaderUseCase: ContentDownloaderUseCase,
-    val fetchLanguageUseCase: FetchLanguageUseCase,
     val fetchUserDetailUseCase: FetchUserDetailUseCase,
     val fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
     val formUseCase: FormUseCase,
@@ -27,6 +27,7 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     val fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
+    val languageConfigUseCase: LanguageConfigUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -36,12 +37,12 @@ class FetchAllDataUseCase @Inject constructor(
         isRefresh: Boolean = true
     ) {
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            fetchLanguageUseCase.invoke()
             fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
             fetchContentDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
                 fetchAppConfigFromNetworkUseCase.invoke()
+                languageConfigUseCase.invoke()
             }
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)

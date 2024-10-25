@@ -22,7 +22,6 @@ import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -32,7 +31,6 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -75,7 +73,9 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate

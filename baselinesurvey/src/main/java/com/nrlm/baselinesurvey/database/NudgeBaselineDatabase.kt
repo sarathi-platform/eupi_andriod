@@ -21,7 +21,6 @@ import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.InputTypeQuestionAnswerDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -37,7 +36,6 @@ import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -56,7 +54,6 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 2
 @Database(
     entities = [
         VillageEntity::class,
-        LanguageEntity::class,
         SurveyeeEntity::class,
         SurveyEntity::class,
         SectionEntity::class,
@@ -90,7 +87,6 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun villageListDao(): VillageListDao
 
-    abstract fun languageListDao(): LanguageListDao
 
     abstract fun didiDao(): SurveyeeEntityDao
 

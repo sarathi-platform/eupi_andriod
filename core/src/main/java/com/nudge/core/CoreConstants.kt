@@ -21,6 +21,7 @@ const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
 const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
 const val TRANSLATION_CONFIG_TABLE_NAME = "translation_config_table"
+const val LANGUAGE_TABLE_NAME = "language_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"

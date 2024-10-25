@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication
@@ -21,7 +22,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
