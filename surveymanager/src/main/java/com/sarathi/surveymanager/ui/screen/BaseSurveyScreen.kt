@@ -70,6 +70,7 @@ import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
+import com.sarathi.surveymanager.ui.component.IncrementDecrementCounterList
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
@@ -454,6 +455,28 @@ fun QuestionUiContent(
                             question.options?.get(index)?.isSelected = false
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
+                        onAnswerSelect(question)
+                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
+                            viewModel.fieldValidationAndMessageMap[question.questionId] =
+                                Pair(isValid, message)
+                        }
+                    }
+                )
+            }
+
+            QuestionType.IncrementDecrementList.name -> {
+                IncrementDecrementCounterList(
+                    title = question.questionDisplay,
+                    optionList = question.options,
+                    isMandatory = question.isMandatory,
+                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    showCardView = showCardView,
+                    onAnswerSelection = { optionId, mSelectedValue ->
+
+                        question.options?.find { it.optionId == optionId }?.apply {
+                            selectedValue = mSelectedValue
+                            isSelected = true
+                        }
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
                             viewModel.fieldValidationAndMessageMap[question.questionId] =

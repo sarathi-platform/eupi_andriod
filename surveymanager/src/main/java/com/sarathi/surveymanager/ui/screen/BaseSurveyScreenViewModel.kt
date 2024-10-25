@@ -244,7 +244,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     fun checkButtonValidation(): Boolean {
 
 
-        questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
+        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+            .forEach { questionUiModel ->
             if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()

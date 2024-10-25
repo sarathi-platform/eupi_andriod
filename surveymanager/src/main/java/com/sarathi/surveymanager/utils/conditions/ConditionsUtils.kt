@@ -164,6 +164,7 @@ class ConditionsUtils {
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name,
             QuestionType.MultiSelectDropDown.name,
+            QuestionType.IncrementDecrementList.name
             -> {
                 val isSelectedOptions = question.options?.filter { it.isSelected == true }
                 isSelectedOptions?.map { it.optionId!! }?.let {
@@ -308,7 +309,8 @@ class ConditionsUtils {
             QuestionType.Grid.name,
             QuestionType.ToggleGrid.name,
             QuestionType.MultiSelectDropDown.name,
-            -> {
+            QuestionType.IncrementDecrementList.name
+                -> {
 
                 evaluateMultipleResponseConditions(response, conditions)
             }
