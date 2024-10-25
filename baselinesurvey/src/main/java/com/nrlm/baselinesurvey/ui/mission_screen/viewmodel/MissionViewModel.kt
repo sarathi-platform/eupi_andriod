@@ -16,7 +16,6 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCa
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nudge.core.usecase.SyncMigrationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +28,7 @@ import javax.inject.Inject
 class MissionViewModel @Inject constructor(
     private val missionScreenUseCase: MissionScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl,
-    private val syncMigrationUseCase: SyncMigrationUseCase
+    private val eventWriterHelperImpl: EventWriterHelperImpl
     ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
     private val missionList: State<List<MissionEntity>> get() = _missionList
@@ -76,8 +74,7 @@ class MissionViewModel @Inject constructor(
 
     fun init() {
         initMissionScreenList()
-        // To Delete events for version 1 to 2 sync migration
-        syncMigrationUseCase.deleteEventsAfter1To2Migration()
+
     }
 
     private fun initMissionScreenList() {
