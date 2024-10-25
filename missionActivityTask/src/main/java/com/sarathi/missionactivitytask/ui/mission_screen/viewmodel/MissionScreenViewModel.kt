@@ -10,6 +10,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.parseStringToList
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.SyncMigrationUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -33,7 +34,8 @@ class MissionScreenViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val syncMigrationUseCase: SyncMigrationUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList
@@ -97,6 +99,8 @@ class MissionScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            // To Delete events for version 1 to 2 sync migration
+            syncMigrationUseCase.deleteEventsAfter1To2Migration()
             fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
                 initMissionScreen()
             }
