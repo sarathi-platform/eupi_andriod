@@ -361,13 +361,13 @@ open class TaskScreenViewModel @Inject constructor(
 
         _filterByList.clear()
 
-        _filterByList.add(filterLabel + allOption)
-        _filterByList.add(filterLabel + NO_SG_FILTER_VALUE)
+        _filterByList.add(allOption)
+        _filterByList.add(NO_SG_FILTER_VALUE)
 
         _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.value }
             .filter { it != NO_SG_FILTER_VALUE }.let {
             it.distinct().forEach { filterByItem ->
-                _filterByList.add(filterLabel + filterByItem)
+                _filterByList.add(filterByItem)
             }
         }
     }
