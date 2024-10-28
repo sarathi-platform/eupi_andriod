@@ -3979,7 +3979,7 @@ class VillageSelectionRepository @Inject constructor(
                     withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: ""))
+                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: "", blockId = it.federationDetail?.blockId ?: 0, blockName = it.federationDetail?.blockName ?: BLANK_STRING, districtId = it.federationDetail?.districtId ?: 0, districtName = it.federationDetail?.districtName ?: BLANK_STRING, stateId = it.federationDetail?.stateId ?: 0, stateName = it.federationDetail?.stateName ?: BLANK_STRING))
                                 villageListDao.insertOnlyNewData(
                                     it.villageList ?: listOf(),
                                     prefRepo.isUserBPC()
@@ -4084,7 +4084,13 @@ class VillageSelectionRepository @Inject constructor(
             distinctId = prefRepo.getMobileNumber(),
             name = userDetailsModel.name,
             userType = userDetailsModel.typeName,
-            buildEnvironment = prefRepo.getBuildEnvironment()
+            buildEnvironment = prefRepo.getBuildEnvironment(),
+            blockId = userDetailsModel.blockId,
+            blockName = userDetailsModel.blockName,
+            districtId = userDetailsModel.districtId,
+            districtName = userDetailsModel.districtName,
+            stateId = userDetailsModel.stateId,
+            stateName = userDetailsModel.stateName,
         )
 
     }

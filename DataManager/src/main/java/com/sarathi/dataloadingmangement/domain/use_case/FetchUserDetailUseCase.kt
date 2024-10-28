@@ -24,7 +24,13 @@ class FetchUserDetailUseCase @Inject constructor(
                         name = userApiResponse.name ?: BLANK_STRING,
                         userType = userApiResponse.typeName ?: BLANK_STRING,
                         distinctId = repository.getUSerMobileNo(),
-                        buildEnvironment = repository.getBuildEnv()
+                        buildEnvironment = repository.getBuildEnv(),
+                        blockId = userApiResponse.federationDetail?.blockId ?: 0,
+                        blockName = userApiResponse.federationDetail?.blockName ?: BLANK_STRING,
+                        districtId = userApiResponse.federationDetail?.districtId ?: 0,
+                        districtName = userApiResponse.federationDetail?.districtName ?: BLANK_STRING,
+                        stateId = userApiResponse.federationDetail?.stateId ?: 0,
+                        stateName = userApiResponse.federationDetail?.stateName ?: BLANK_STRING,
                     )
                     repository.saveUserDetails(userApiResponse)
                 }

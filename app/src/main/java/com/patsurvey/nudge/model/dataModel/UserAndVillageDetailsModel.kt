@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.model.dataModel
 
 import com.patsurvey.nudge.database.VillageEntity
+import com.sarathi.dataloadingmangement.network.response.FederationDetailModel
 
 data class UserAndVillageDetailsModel(
     val success: Boolean,
@@ -19,5 +20,11 @@ data class UserDetailsModel(
     val identityNumber: String,
     val profileImage: String,
     val roleName: String,
-    val typeName: String
+    val typeName: String,
+    val blockId: Int,
+    val blockName: String,
+    val districtId: Int,
+    val districtName: String,
+    val stateId: Int,
+    val stateName: String,
 )

@@ -46,12 +46,24 @@ class MixPanelAnalyticsProvider @Inject constructor(
         distinctId: String,
         name: String,
         userType: String,
-        buildEnvironment: String
+        blockId: Int,
+        blockName: String,
+        districtId: Int,
+        districtName: String,
+        stateId: Int,
+        stateName: String,
+        buildEnvironment: String,
     ) {
         mixpanelAPI?.let {
             it.identify(distinctId)
             it.people?.set("name", name)
             it.people?.set("userType", userType)
+            it.people?.set("blockId", blockId)
+            it.people?.set("blockName", blockName)
+            it.people?.set("districtId", districtId)
+            it.people?.set("districtName", districtName)
+            it.people?.set("stateId", stateId)
+            it.people?.set("stateName", stateName)
             it.people?.set("build_environment", buildEnvironment)
         }
     }

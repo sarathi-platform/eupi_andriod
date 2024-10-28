@@ -1612,7 +1612,13 @@ class VillageSelectionViewModel @Inject constructor(
                                     distinctId = prefRepo.getMobileNumber(),
                                     name = it.name.value(),
                                     userType = it.typeName.value(),
-                                    buildEnvironment = prefRepo.getBuildEnvironment()
+                                    buildEnvironment = prefRepo.getBuildEnvironment(),
+                                    blockId = it.federationDetail?.blockId.value(),
+                                    blockName = it.federationDetail?.blockName.value(),
+                                    districtId = it.federationDetail?.districtId.value(),
+                                    districtName = it.federationDetail?.districtName.value(),
+                                    stateId = it.federationDetail?.stateId.value(),
+                                    stateName = it.federationDetail?.stateName.value(),
                                 )
 
                                 coreSharedPrefs.setBackupFileName(

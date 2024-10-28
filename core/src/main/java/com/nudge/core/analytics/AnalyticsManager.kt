@@ -22,12 +22,18 @@ class AnalyticsManager(private var analyticsProvider: IAnalyticsProvider) {
         distinctId: String,
         name: String,
         userType: String,
-        buildEnvironment: String
+        buildEnvironment: String,
+        blockId: Int,
+        blockName: String,
+        districtId: Int,
+        districtName: String,
+        stateId: Int,
+        stateName: String,
     ) {
         CoreLogger.d(
             tag = TAG,
-            msg = "setUserDetail: -> distinctId: $distinctId, name: $name, userType: $userType, buildEnvironment: $buildEnvironment"
+            msg = "setUserDetail: -> distinctId: $distinctId, name: $name, userType: $userType, blockId: $blockId, blockName: $blockName, districtId: $districtId, districtName: $districtName, stateId: $stateId, stateName: $stateName, buildEnvironment: $buildEnvironment"
         )
-        analyticsProvider.setUserDetail(distinctId, name, userType, buildEnvironment)
+        analyticsProvider.setUserDetail(distinctId, name, userType, blockId, blockName, districtId, districtName, stateId, stateName, buildEnvironment)
     }
 }
