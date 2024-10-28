@@ -37,5 +37,7 @@ data class ActivityConfig(
     @SerializedName("referenceId")
     val referenceId: Int?,
     @SerializedName("referenceType")
-    val referenceType: String?
+    val referenceType: String?,
+    @SerializedName("surveyConfig")
+    val surveyConfig: List<SurveyConfigAttributeResponse>? = emptyList()
 )

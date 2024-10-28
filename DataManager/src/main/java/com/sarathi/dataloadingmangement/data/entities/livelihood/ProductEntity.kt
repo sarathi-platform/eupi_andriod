@@ -17,7 +17,7 @@ data class ProductEntity(
     var name: String,
     var status: Int,
     //Todo Add migration for this column
-    var type: String = BLANK_STRING,
+    var type: String? = BLANK_STRING,
 
     ) {
     companion object {

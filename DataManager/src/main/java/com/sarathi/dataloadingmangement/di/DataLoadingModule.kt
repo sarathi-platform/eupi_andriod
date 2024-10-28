@@ -36,6 +36,7 @@ import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEnti
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
@@ -72,6 +73,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -79,6 +82,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJour
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
@@ -113,6 +117,10 @@ import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepository
 import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetSurveyConfigFromDbRepository
+import com.sarathi.dataloadingmangement.repository.GetSurveyConfigFromDbRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetSurveyValidationsFromDbRepository
+import com.sarathi.dataloadingmangement.repository.GetSurveyValidationsFromDbRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IActivitySelectSurveyRepository
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
@@ -376,6 +384,10 @@ class DataLoadingModule {
     @Singleton
     fun provideConditionsEntityDao(db: NudgeGrantDatabase) = db.conditionsEntityDao()
 
+    @Provides
+    @Singleton
+    fun provideSurveyConfigEntityDao(db: NudgeGrantDatabase) = db.surveyConfigEntityDao()
+
 
     @Provides
     @Singleton
@@ -454,7 +466,8 @@ class DataLoadingModule {
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
         grantConfigDao: GrantConfigDao,
-        formUiConfigDao: FormUiConfigDao
+        formUiConfigDao: FormUiConfigDao,
+        surveyConfigEntityDao: SurveyConfigEntityDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -471,7 +484,8 @@ class DataLoadingModule {
             missionLanguageAttributeDao = missionLanguageAttributeDao,
             sharedPrefs = sharedPrefs,
             grantConfigDao = grantConfigDao,
-            formUiConfigDao = formUiConfigDao
+            formUiConfigDao = formUiConfigDao,
+            surveyConfigEntityDao = surveyConfigEntityDao
         )
     }
 
@@ -1516,6 +1530,59 @@ class DataLoadingModule {
         return LivelihoodEventValidationUseCase(
             assetJournalRepository = assetJournalRepo,
             assetRepository = assetRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSurveyConfigFromDbUseCase(
+        getSurveyConfigFromDbRepository: GetSurveyConfigFromDbRepository
+    ): GetSurveyConfigFromDbUseCase {
+        return GetSurveyConfigFromDbUseCase(
+            getSurveyConfigFromDbRepository = getSurveyConfigFromDbRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSurveyConfigFromDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyConfigEntityDao: SurveyConfigEntityDao
+    ): GetSurveyConfigFromDbRepository {
+        return GetSurveyConfigFromDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            surveyConfigEntityDao = surveyConfigEntityDao
+        )
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesSurveyValidationUseCase(
+        coreSharedPrefs: CoreSharedPrefs
+    ): SurveyValidationUseCase {
+        return SurveyValidationUseCase(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSurveyValidationsFromDbUseCase(
+        getSurveyValidationsFromDbRepository: GetSurveyValidationsFromDbRepository
+    ): GetSurveyValidationsFromDbUseCase {
+        return GetSurveyValidationsFromDbUseCase(
+            getSurveyValidationsFromDbRepository = getSurveyValidationsFromDbRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSurveyValidationsFromDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyEntityDao: SurveyEntityDao
+    ): GetSurveyValidationsFromDbRepository {
+        return GetSurveyValidationsFromDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyEntityDao
         )
     }
 }

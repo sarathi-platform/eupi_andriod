@@ -8,6 +8,7 @@ import com.nudge.core.OPERAND_DELIMITER
 import com.nudge.core.ifNotEmpty
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.Conditions
 import com.sarathi.dataloadingmangement.model.uiModel.ConditionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -72,17 +73,26 @@ class ConditionsUtils {
                 }.value()
             }
             .forEach {
-                if (it.type != QuestionType.TextField.name && it.type != QuestionType.InputNumber.name && it.type != QuestionType.NumericField.name) {
+                if (it.type != QuestionType.TextField.name && it.type != QuestionType.InputText.name && it.type != QuestionType.InputNumber.name && it.type != QuestionType.NumericField.name) {
                     it.options?.filter { option -> option.isSelected.value() }
                         ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
-                } else if (it.type != QuestionType.InputNumber.name || it.type != QuestionType.NumericField.name) {
+                }
+
+                if (it.type == QuestionType.InputNumber.name || it.type == QuestionType.NumericField.name) {
                     it.options?.filter { option -> option.isSelected.value() }
                         ?.map { opt -> opt.selectedValue?.toInt()!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
 
+                }
+
+                if (it.type == QuestionType.TextField.name || it.type == QuestionType.InputText.name) {
+                    it.options?.filter { option -> option.isSelected.value() }
+                        ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
+                            map[it.questionId] = optionIds
+                        }
                 }
 
             }
@@ -118,11 +128,24 @@ class ConditionsUtils {
             QuestionType.InputNumber.name,
             QuestionType.NumericField.name -> {
                 question.options?.firstOrNull()?.let { opt ->
-                    if (runValidResponseCheck(opt.selectedValue))
+                    if (runValidResponseCheck(opt.selectedValue)) {
+                        val responseValue = try {
+                            opt.selectedValue?.toInt().value()
+                        } catch (ex: Exception) {
+                            CoreLogger.e(
+                                tag = LOGGING_TAG,
+                                msg = "updateQuestionResponseMap -> Exception: ${ex.message}",
+                                ex = ex,
+                                stackTrace = true
+                            )
+                            NUMBER_ZERO
+                        }
+
                         updateResponseMap(
                             question.questionId,
-                            listOf(opt.selectedValue?.toInt().value())
+                            listOf(responseValue)
                         )
+                    }
                     else
                         updateResponseMap(question.questionId, listOf())
                 } ?: {
@@ -141,6 +164,7 @@ class ConditionsUtils {
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name,
             QuestionType.MultiSelectDropDown.name,
+            QuestionType.IncrementDecrementList.name
             -> {
                 val isSelectedOptions = question.options?.filter { it.isSelected == true }
                 isSelectedOptions?.map { it.optionId!! }?.let {
@@ -285,7 +309,8 @@ class ConditionsUtils {
             QuestionType.Grid.name,
             QuestionType.ToggleGrid.name,
             QuestionType.MultiSelectDropDown.name,
-            -> {
+            QuestionType.IncrementDecrementList.name
+                -> {
 
                 evaluateMultipleResponseConditions(response, conditions)
             }

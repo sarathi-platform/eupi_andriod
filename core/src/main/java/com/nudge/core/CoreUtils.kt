@@ -901,6 +901,23 @@ fun String?.value(): String {
     return this ?: BLANK_STRING
 }
 
+fun String?.value(defaultValue: String): String {
+    return this ?: defaultValue
+}
+
+fun String?.toSafeInt(defaultValue: String = "0"): Int {
+    return try {
+        this.value(defaultValue).toInt()
+    } catch (ex: Exception) {
+        CoreLogger.e(
+            tag = "CoreUtils",
+            msg = "String?.toSafeInt -> Exception: ${ex.message}",
+            ex = ex
+        )
+        defaultValue.toInt()
+    }
+}
+
 fun Int?.value() = this ?: -1
 
 fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
@@ -1238,7 +1255,8 @@ fun onlyNumberField(value: String): Boolean {
 }
 
 fun getQuestionNumber(questionIndex: Int): String {
-    return "${questionIndex + 1}. "
+//    return "${questionIndex + 1}. "
+    return BLANK_STRING // TODO remove this line and uncomment the above once correct question number logic is figured out
 }
 
 fun String.stringToInt(): Int {
@@ -1353,4 +1371,12 @@ fun String.parseStringToList(): List<Int?> {
     val type = object :
         TypeToken<List<Int?>?>() {}.type
     return gson.fromJson<List<Int>>(this, type)
+}
+
+fun extractSubstrings(input: String): List<String> {
+    // Define the regex pattern
+    val pattern = "\\{[^%]+%[^}]+\\}".toRegex()
+
+    // Find all matches in the input string
+    return pattern.findAll(input).map { it.value }.toList()
 }

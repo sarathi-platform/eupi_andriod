@@ -6,6 +6,7 @@
     <string name="bangla" translatable="false">হিন্দি</string>
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
 
     <string name="mark_complete_text">Complete Para / Tola Addition</string>
     <string name="go_back_text">Go Back</string>

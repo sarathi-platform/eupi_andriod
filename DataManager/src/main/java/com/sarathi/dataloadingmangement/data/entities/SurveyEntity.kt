@@ -3,9 +3,12 @@ package com.sarathi.dataloadingmangement.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.database.converters.SurveyValidationsConverter
+import com.nudge.core.model.response.SurveyValidations
 import com.sarathi.dataloadingmangement.SURVEY_TABLE
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 
@@ -41,7 +44,13 @@ data class SurveyEntity(
     @SerializedName("referenceId")
     @Expose
     @ColumnInfo(name = "referenceId")
-    val referenceId: Int
+    val referenceId: Int,
+
+    @SerializedName("validations")
+    @Expose
+    @ColumnInfo(name = "validations")
+    @TypeConverters(SurveyValidationsConverter::class)
+    val validations: List<SurveyValidations>?
 ) {
 
     companion object {
@@ -56,7 +65,8 @@ data class SurveyEntity(
                 surveyName = surveyApiResponseModel.originalValue ?: BLANK_STRING,
                 surveyPassingMark = surveyApiResponseModel.surveyPassingMark,
                 thresholdScore = surveyApiResponseModel.thresholdScore,
-                referenceId = surveyApiResponseModel.referenceId
+                referenceId = surveyApiResponseModel.referenceId,
+                validations = surveyApiResponseModel.validations
             )
         }
     }

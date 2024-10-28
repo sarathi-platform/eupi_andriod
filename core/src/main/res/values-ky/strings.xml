@@ -27,4 +27,15 @@
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="all">"Bebak "</string>
+    <string name="no_entry_this_month">"O tal o mwngsa phano tisa jakya "</string>
+    <string name="no_entry_this_week">No entry this week</string>
+    <string name="last_week">Last week</string>
+    <string name="last_month">Last month</string>
+    <string name="last_3_months">Last 3 months</string>
+    <string name="custom_date">"Tongraida wngjora "</string>
+    <string name="summary_text">Summary</string>
+    <string name="default_confirm_button_text">Confirm</string>
+    <string name="default_dismiss_button_text">Dismiss</string>
+    <string name="view_summary">View Summary</string>
 </resources>

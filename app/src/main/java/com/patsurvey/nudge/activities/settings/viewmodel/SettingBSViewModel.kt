@@ -42,8 +42,8 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.utils.CoreLogger
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
@@ -116,8 +116,6 @@ class SettingBSViewModel @Inject constructor(
     val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
-    var syncWorkerInfoState: WorkInfo.State? = null
-
     val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
@@ -238,9 +236,6 @@ class SettingBSViewModel @Inject constructor(
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-            if (userType != UPCM_USER) {
-                exportLocalData(context)
-            }
             delay(2000)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
@@ -682,21 +677,19 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private fun cancelSyncUploadWorker() {
-        syncWorkerInfoState?.let {
-            if (it == WorkInfo.State.RUNNING || it == WorkInfo.State.ENQUEUED) {
-                CoreLogger.d(
-                    CoreAppDetails.getApplicationContext(),
-                    "SyncHomeViewModel",
-                    "CancelSyncUploadWorker :: Worker Status: $it"
-                )
                 workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext(),
-                    "SyncHomeViewModel",
+                    "SettingBSViewModel",
                     "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
                 )
-            }
-        }
+    }
+
+    fun syncWorkerRunning(): Boolean {
+        val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
+            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
+                return it.state == WorkInfo.State.RUNNING
+           }?:return false
     }
 
     fun fetchhAppConfig() {
