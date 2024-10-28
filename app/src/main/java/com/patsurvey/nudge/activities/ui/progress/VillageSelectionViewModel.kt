@@ -1919,9 +1919,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    fun fetchLanguageConfig() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            languageConfigUseCase.invoke()
-        }
+    suspend fun fetchLanguageConfig() {
+        languageConfigUseCase.invoke()
     }
 }

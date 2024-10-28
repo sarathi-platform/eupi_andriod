@@ -40,9 +40,9 @@ class FetchAllDataUseCase @Inject constructor(
             fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
             fetchContentDataFromNetworkUseCase.invoke()
+            languageConfigUseCase.invoke()
             if (!isRefresh) {
                 fetchAppConfigFromNetworkUseCase.invoke()
-                languageConfigUseCase.invoke()
             }
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)
