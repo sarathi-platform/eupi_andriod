@@ -1,5 +1,7 @@
 package com.nudge.core.ui.commonUi
 
+import android.content.Context
+import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -42,11 +44,14 @@ import com.nudge.core.R
 import com.nudge.core.onlyNumberField
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 
 @Composable
 fun IncrementDecrementNumberComponent(
@@ -54,11 +59,10 @@ fun IncrementDecrementNumberComponent(
     currentValue: String? = "0",
     isEditAllowed: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
+    maxValue: Int = MAXIMUM_RANGE,
+    editNotAllowedMsg: String = BLANK_STRING,
     isMandatory: Boolean = false,
 ) {
-    val currentCount: MutableState<String> = remember(currentValue) {
-        mutableStateOf(currentValue ?: "")
-    }
 
     val context = LocalContext.current
 
@@ -69,6 +73,38 @@ fun IncrementDecrementNumberComponent(
     ) {
         if (title?.isNotBlank() == true) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
+        }
+        IncrementDecrementCounter(
+            label = BLANK_STRING,
+            isEditAllowed = isEditAllowed,
+            currentCount = currentValue.value("0"),
+            maxValue = maxValue,
+            onAnswerSelection = onAnswerSelection,
+            editNotAllowedMsg = editNotAllowedMsg,
+        )
+
+    }
+}
+
+@Composable
+fun IncrementDecrementCounter(
+    label: String? = BLANK_STRING,
+    isEditAllowed: Boolean,
+    currentCount: String,
+    maxValue: Int,
+    onAnswerSelection: (selectValue: String) -> Unit,
+    editNotAllowedMsg: String,
+) {
+
+    val currentCountState: MutableState<String> = remember(currentCount) {
+        mutableStateOf(currentCount ?: "")
+    }
+
+    val context = LocalContext.current
+
+    Column {
+        if (!label.isNullOrEmpty()) {
+            Text(text = label, style = defaultTextStyle, color = textColorDark)
         }
         Box(
             modifier = Modifier
@@ -117,13 +153,13 @@ fun IncrementDecrementNumberComponent(
                                 )
                                 .clickable {
                                     if (isEditAllowed) {
-                                        currentCount.value = incDecValue(0, currentCount.value)
-                                        onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                        val incrementValue = incDecValue(0, currentCountState.value)
+                                        if (maxValue.toString() >= incrementValue) {
+                                            currentCountState.value = incrementValue
+                                            onAnswerSelection(if (currentCountState.value.isEmpty()) "0" else currentCountState.value)
+                                        }
                                     } else {
-                                        showCustomToast(
-                                            context,
-                                            context.getString(R.string.edit_disable_message)
-                                        )
+                                        editNotAllowedToastBar(editNotAllowedMsg, context)
                                     }
                                 }, contentAlignment = Alignment.Center
                         ) {
@@ -150,25 +186,19 @@ fun IncrementDecrementNumberComponent(
                         .weight(1f)
                 ) {
                     CustomOutlineTextField(
-                        value = currentCount.value,
+                        value = currentCountState.value,
                         readOnly = false,
                         onValueChange = {
                             if (isEditAllowed) {
                                 if (onlyNumberField(it)) {
-                                    var isValidCount = true
-                                    if (isValidCount) {
-                                        val currentIt = if (it.isEmpty()) 0 else it.toInt()
-                                        if (currentIt <= MAXIMUM_RANGE) {
-                                            currentCount.value = it.ifEmpty { "" }
-                                            onAnswerSelection(it)
-                                        }
+                                    val currentIt = if (it.isEmpty()) 0 else it.toInt()
+                                    if (currentIt <= maxValue) {
+                                        currentCountState.value = it.ifEmpty { "" }
+                                        onAnswerSelection(it)
                                     }
                                 }
                             } else {
-                                showCustomToast(
-                                    context,
-                                    context.getString(R.string.edit_disable_message)
-                                )
+                                editNotAllowedToastBar(editNotAllowedMsg, context)
                             }
                         },
                         placeholder = {
@@ -227,13 +257,13 @@ fun IncrementDecrementNumberComponent(
                         )
                         .clickable {
                             if (isEditAllowed) {
-                                currentCount.value = incDecValue(1, currentCount.value)
-                                onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                val incrementValue = incDecValue(1, currentCountState.value)
+                                if (maxValue.toString() >= incrementValue) {
+                                    currentCountState.value = incrementValue
+                                    onAnswerSelection(if (currentCountState.value.isEmpty()) "0" else currentCountState.value)
+                                }
                             } else {
-                                showCustomToast(
-                                    context,
-                                    context.getString(R.string.edit_disable_message)
-                                )
+                                editNotAllowedToastBar(editNotAllowedMsg, context)
                             }
                         }, contentAlignment = Alignment.Center
                 ) {
@@ -246,7 +276,17 @@ fun IncrementDecrementNumberComponent(
                 }
             }
         }
+        CustomVerticalSpacer(size = dimen_6_dp)
+    }
+}
 
+
+private fun editNotAllowedToastBar(editNotAllowedMsg: String, context: Context) {
+    if (!TextUtils.isEmpty(editNotAllowedMsg)) {
+        showCustomToast(
+            context,
+            editNotAllowedMsg
+        )
     }
 }
 

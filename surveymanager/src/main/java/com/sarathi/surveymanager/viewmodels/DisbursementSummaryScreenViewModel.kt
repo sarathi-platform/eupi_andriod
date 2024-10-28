@@ -207,7 +207,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 referenceId = referenceId,
             )
             if (deleteCount > 0) {
-                surveyAnswerEventWriterUseCase.deleteDisbursementOrReceiptOfFundEvent(
+                surveyAnswerEventWriterUseCase.deleteSavedAnswerEvent(
 
                     surveyID = surveyId,
                     sectionId = sectionId,
@@ -219,7 +219,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                     uriList = emptyList(),
                     taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                     subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                    subjectType = subjectType
+                    subjectType = subjectType,
+                    isFromRegenerate = false
 
                 )
                 saveTransactionMoneyJournalUseCase.deleteTransactionFromMoneyJournal(

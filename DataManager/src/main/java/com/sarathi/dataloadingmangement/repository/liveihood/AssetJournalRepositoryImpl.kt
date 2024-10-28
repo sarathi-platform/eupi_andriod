@@ -4,6 +4,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJournalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import javax.inject.Inject
@@ -15,7 +16,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
     IAssetJournalRepository {
     override suspend fun saveOrEditAssetJournal(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        createdDate: Long
     ) {
         val assetJournal = AssetJournalEntity.getAssetJournalEntity(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -29,7 +31,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
                 ?: BLANK_STRING,
             referenceType = "LivelihoodEvent",
             referenceId = eventData.livelihoodId,
-            assetId = eventData.assetType
+            assetId = eventData.assetType,
+            createdDate = createdDate
         )
 
         assetJournalDao.insetAssetJournalEntry(assetJournal)
@@ -66,11 +69,13 @@ class AssetJournalRepositoryImpl @Inject constructor(
 
     override suspend fun getSaveAssetJournalEventDto(
         particular: String,
-        eventData: LivelihoodEventScreenData
+        eventData: LivelihoodEventScreenData,
+        currentDateTime: Long,
+        modifiedDateTIme: Long
     ): SaveAssetJournalEventDto {
         return SaveAssetJournalEventDto(
             assetCount = eventData.assetCount,
-            createdDate = System.currentTimeMillis(),
+            createdDate = currentDateTime,
             particulars = particular,
             referenceId = eventData.livelihoodId,
             subjectId = eventData.subjectId,
@@ -82,9 +87,90 @@ class AssetJournalRepositoryImpl @Inject constructor(
             transactionDate = eventData.date,
             transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
                 ?: BLANK_STRING,
-            assetId = eventData.assetType
-
-
+            assetId = eventData.assetType,
+            modifiedDate = modifiedDateTIme
         )
     }
+
+    override suspend fun getAllAssetJournalForUser(): List<AssetJournalEntity> {
+        return assetJournalDao.getAssetJournalForUser(coreSharedPrefs.getUniqueUserIdentifier())
+    }
+
+    override suspend fun getTotalAssetCount(
+        livelihoodId: Int,
+        subjectId: Int,
+        transactionId: String
+    ): Int {
+        val inflowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+
+        ) ?: 0
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+        ) ?: 0
+        return inflowValue - outFlowValue
+    }
+
+
+    override suspend fun getTotalAssetCount(
+        livelihoodId: Int,
+        subjectId: Int,
+        assetId: Int,
+        transactionId: String
+    ): Int {
+        val inflowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            assetId = assetId,
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+        ) ?: 0
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihood(
+            livelihoodId = livelihoodId,
+            subjectId = subjectId,
+            assetId = assetId,
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId
+        ) ?: 0
+        return inflowValue - outFlowValue
+    }
+
+    override suspend fun getTotalAssetCountForParticularAssetType(
+        livelihoodId: Int,
+        subjectId: Int,
+        assetIds: List<Int>,
+        transactionId: String
+    ): Int {
+        val inflowValue = assetJournalDao.getAssetCountForLivelihoodAndAssetId(
+            subjectId = subjectId,
+            livelihoodId = livelihoodId,
+            assetIds = assetIds,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionFlow = EntryFlowTypeEnum.INFLOW.name,
+            transactionId = transactionId
+        ) ?: 0
+
+        val outFlowValue = assetJournalDao.getAssetCountForLivelihoodAndAssetId(
+            subjectId = subjectId,
+            livelihoodId = livelihoodId,
+            assetIds = assetIds,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            transactionId = transactionId
+        ) ?: 0
+
+        return inflowValue - outFlowValue
+
+    }
+
 }

@@ -7,8 +7,10 @@ sealed class InitDataEvent {
     data class InitDataSummaryScreenState(val subjectId: Int) : InitDataEvent()
     data class InitAddEventState(val subjectId: Int, val transactionId: String) : InitDataEvent()
     data class InitEditHistoryState(val transactionId: String) : InitDataEvent()
-
     data class InitDataStateWithCallBack(val callBack: () -> Unit) : InitDataEvent()
+
+    object InitFormQuestionScreenState : InitDataEvent()
+    data class InitActivityListState(val missionId: Int) : InitDataEvent()
 
     object InitChangeUserState : InitDataEvent()
 }

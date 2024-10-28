@@ -1062,21 +1062,33 @@ class SurveySummaryViewModel @Inject constructor(
 
     override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val villageId = repository.prefRepo.getSelectedVillage().id
             val stepEntity =
                 repository.getStepForVillage(
-                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    villageId = villageId,
                     stepId = stepId
                 )
 
-            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
-                stepEntity,
-                villageId = repository.prefRepo.getSelectedVillage().id,
+            val didiList = repository.getAllDidisForVillage(villageId)
+                .filter { it.wealth_ranking == WealthRank.POOR.rank }
+
+            val tolaDeviceIdMap: Map<Int, String> =
+                repository.getTolaDeviceIdMap(villageId = villageId, tolaDao = repository.tolaDao)
+
+            val addRankingFlagEditEventList = repository.createRankingFlagEditEvent(
+                eventItem = stepEntity,
+                villageId = villageId,
                 stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
-                repository.prefRepo.getUserId()
+                didiList = didiList,
+                tolaDeviceIdMap = tolaDeviceIdMap,
+                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                userID = repository.prefRepo.getUserId()
             )
 
-            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
+            addRankingFlagEditEventList.forEach { rankingEditEvent ->
+                repository.saveEventToMultipleSources(rankingEditEvent, listOf())
+            }
+
         }
     }
 

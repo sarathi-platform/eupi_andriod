@@ -76,6 +76,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
@@ -98,7 +99,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.POOR_STRING
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showDidiImageDialog

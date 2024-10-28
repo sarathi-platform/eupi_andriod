@@ -42,4 +42,11 @@ interface ISurveySaveRepository {
     suspend fun getSurveyAnswerImageKeys(
         questionType: String
     ): List<SurveyAnswerEntity>?
+
+    fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<String>
 }

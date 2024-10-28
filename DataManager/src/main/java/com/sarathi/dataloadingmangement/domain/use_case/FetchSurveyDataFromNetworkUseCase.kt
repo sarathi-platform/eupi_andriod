@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.STATE
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -16,9 +17,10 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     private val sharedPrefs: CoreSharedPrefs,
     private val activityConfigDao: ActivityConfigDao,
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(missionId: Int): Boolean {
         try {
-            activityConfigDao.getSurveyIds().forEach { surveyId ->
+            activityConfigDao.getSurveyIds(missionId, sharedPrefs.getUniqueUserIdentifier())
+                .forEach { surveyId ->
                 callSurveyApi(
                         SurveyRequest(
                             referenceId = getReferenceId(),
@@ -29,8 +31,20 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
             }
             return false
         } catch (apiException: ApiException) {
+            CoreLogger.e(
+                tag = "TAG",
+                msg = "invoke: ApiException -> ${apiException.message}",
+                ex = apiException,
+                stackTrace = true
+            )
             throw apiException
         } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = "TAG",
+                msg = "invoke: Exception -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
             throw ex
         }
     }

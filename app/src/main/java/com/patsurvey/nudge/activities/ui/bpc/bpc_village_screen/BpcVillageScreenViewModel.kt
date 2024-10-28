@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.bpc.bpc_village_screen
 import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionRepository
@@ -53,6 +54,7 @@ class BpcVillageScreenViewModel @Inject constructor(
     val lastSelectedTolaDao: LastSelectedTolaDao,
     val villageSelectionRepository: VillageSelectionRepository,
     private val syncManagerDatabase: SyncManagerDatabase,
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     val prefRepo:PrefRepo
     ): BaseViewModel() {
 
@@ -88,12 +90,18 @@ class BpcVillageScreenViewModel @Inject constructor(
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = false) {
             villageSelectionRepository.fetchCastList(isRefresh = false)
             villageSelectionRepository.fetchPatQuestionsFromNetwork(prefRepo.getPageOpenFromOTPScreen())
+            fetchAppConfig()
             _villagList.value = it.villageList
             _filterVillageList.value = villageList.value
             showLoader.value = false
         }
     }
 
+    fun fetchAppConfig() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+        }
+    }
 
     fun updateSelectedVillage(villageList: List<VillageEntity>) {
         NudgeLogger.d(

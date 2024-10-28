@@ -58,4 +58,22 @@ data class QuestionList(
     @Expose
     val originalValue: String = BLANK_STRING,
 
-    )
+    @SerializedName("conditions")
+    @Expose
+    val conditions: List<Conditions>? = listOf(),
+
+    @SerializedName("conditionsOpererator")
+    @Expose
+    val conditionsOpererator: String? = null
+
+)
+
+data class Conditions(
+    @SerializedName("expression")
+    @Expose
+    var expression: String? = null,
+
+    @SerializedName("sourceQuestion")
+    @Expose
+    var sourceQuestion: Int? = null
+)

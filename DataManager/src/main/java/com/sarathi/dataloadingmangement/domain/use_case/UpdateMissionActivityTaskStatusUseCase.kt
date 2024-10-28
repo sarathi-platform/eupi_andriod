@@ -35,6 +35,11 @@ class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val rep
 
     }
 
+    suspend fun markActivitiesInProgress(missionId: Int, activityIds: List<Int>) {
+        repository.markInProgressActivitiesStatus(missionId = missionId, activityIds = activityIds)
+
+    }
+
     suspend fun markMissionInProgress(missionId: Int) {
         repository.markInProgressMissionStatus(missionId)
     }
@@ -44,7 +49,7 @@ class UpdateMissionActivityTaskStatusUseCase @Inject constructor(private val rep
     }
 
     suspend fun reCheckActivityStatus(missionId: Int): List<ActivityEntity> {
-        return repository.reCheckActivityStatus(missionId)
+        return repository.reCheckActivityStatus(missionId =missionId)
     }
 
     suspend fun reCheckMissionStatus(): List<MissionEntity> {

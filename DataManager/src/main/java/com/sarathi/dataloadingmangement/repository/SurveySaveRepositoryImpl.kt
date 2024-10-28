@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.stringToInt
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.DELEGATE_COMM_WITH_SPACE
@@ -58,13 +59,13 @@ class SurveySaveRepositoryImpl @Inject constructor(
             taskId,
             subjectId,
             coreSharedPrefs.getUniqueUserIdentifier()
-        ).filter { it.tagId.contains(tagId.toInt()) }
+        ).filter { it.tagId.contains(tagId.stringToInt()) }
         if (tagId == DISBURSED_AMOUNT_TAG.toString() || tagId == RECEIVED_AMOUNT_TAG.toString() || tagId == NO_OF_POOR_DIDI_TAG.toString()) {
             var totalAmount = 0
             surveyAnswerEntities.forEach { surveyAnswerEntity ->
 
                 surveyAnswerEntity?.optionItems?.forEach {
-                    totalAmount += it.selectedValue?.toInt() ?: 0
+                    totalAmount += it.selectedValue?.stringToInt() ?: 0
                 }
 
             }
@@ -101,14 +102,14 @@ class SurveySaveRepositoryImpl @Inject constructor(
             subjectId = subjectId,
             referenceId = referenceId,
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
-        ).find { it.tagId.contains(tagId.toInt()) }
+        ).find { it.tagId.contains(tagId.stringToInt()) }
         if (surveyAnswerEntity?.tagId?.contains(DISBURSED_AMOUNT_TAG) == true || surveyAnswerEntity?.tagId?.contains(
                 NO_OF_POOR_DIDI_TAG
             ) == true || surveyAnswerEntity?.tagId?.contains(RECEIVED_AMOUNT_TAG) == true
         ) {
             var totalAmount = 0
             surveyAnswerEntity?.optionItems?.forEach {
-                totalAmount += it.selectedValue?.toInt() ?: 0
+                totalAmount += it.selectedValue?.stringToInt() ?: 0
             }
 
 
@@ -205,11 +206,26 @@ class SurveySaveRepositoryImpl @Inject constructor(
                         surveyAnswers[index].optionItems[optionIndex].description =
                             optionItem.description
                     }
+                    option.optionType = surveyAnswerData.questionType
                 }
             }
 
         }
         return surveyAnswers
+    }
+
+    override fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<String> {
+        return surveyAnswersDao.getTotalSavedFormResponsesCount(
+            surveyId = surveyId,
+            taskId = taskId,
+            sectionId = sectionId,
+            questionIds = questionIds
+        )
     }
 
     private fun getSurveySectionQuestionOptionsForLanguage(

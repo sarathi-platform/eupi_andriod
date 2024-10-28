@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.showCustomToast
@@ -19,9 +20,12 @@ import com.sarathi.surveymanager.R
 
 @Composable
 fun TypeMultiSelectedDropDownComponent(
+    questionIndex: Int,
     title: String = BLANK_STRING,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
+    showCardView: Boolean = false,
+    maxCustomHeight: Dp,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>,
     onAnswerSelection: (selectValue: String) -> Unit,
@@ -35,6 +39,7 @@ fun TypeMultiSelectedDropDownComponent(
     }
 
     MultiSelectSelectDropDown(
+        questionIndex = questionIndex,
         title = title,
         isMandatory = isMandatory,
         hint = hintText,
@@ -43,6 +48,8 @@ fun TypeMultiSelectedDropDownComponent(
         mTextFieldSize = textFieldSize,
         expanded = expanded,
         selectedItems = selectedItems,
+        maxCustomHeight = maxCustomHeight,
+        showCardView = showCardView,
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it

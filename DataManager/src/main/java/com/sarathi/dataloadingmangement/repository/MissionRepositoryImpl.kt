@@ -1,8 +1,10 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -15,6 +17,7 @@ import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -29,8 +32,9 @@ import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.domain.MissionRequest
+import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
@@ -40,6 +44,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.FormConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.GrantConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
+import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
@@ -62,14 +67,22 @@ class MissionRepositoryImpl @Inject constructor(
     val subjectAttributeDao: SubjectAttributeDao,
     val attributeValueReferenceDao: AttributeValueReferenceDao,
     val missionDao: MissionDao,
-    val grantConfigDao: GrantConfigDao
+    val grantConfigDao: GrantConfigDao,
+    val surveyConfigEntityDao: SurveyConfigEntityDao
 ) : IMissionRepository {
 
-    override suspend fun fetchMissionDataFromServer(
-    ): ApiResponseModel<List<ProgrameResponse>> {
-        val missionRequest = MissionRequest(stateId = sharedPrefs.getStateId())
+    override suspend fun fetchActivityDataFromServer(
+        programId: Int,
+        missionId: Int
+    ): ApiResponseModel<List<ActivityResponse>> {
+        val activityRequest =
+            ActivityRequest(programId = programId, missionId = missionId)
 
-        return apiInterface.getMissions(missionRequest)
+        return apiInterface.getActivityDetails(activityRequest)
+    }
+
+    override suspend fun fetchMissionListFromServer(): ApiResponseModel<List<ProgrameResponse>> {
+        return apiInterface.getMissionList()
     }
 
     override suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int) {
@@ -149,7 +162,8 @@ class MissionRepositoryImpl @Inject constructor(
             activities.forEach { missionActivityModel ->
                 val activityCount = missionActivityDao.getActivityCount(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    missionActivityModel.id
+                    missionId = missionId,
+                    activityId = missionActivityModel.id
                 )
                 if (activityCount == 0) {
                     missionActivityDao.insertMissionActivity(
@@ -171,59 +185,104 @@ class MissionRepositoryImpl @Inject constructor(
 
                 } else {
                     missionActivityDao.updateActivityActiveStatus(
-                        missionId,
-                        sharedPrefs.getUniqueUserIdentifier(),
-                        1,
-                        missionActivityModel.id
+                        missionId = missionId,
+                        userId = sharedPrefs.getUniqueUserIdentifier(),
+                        isActive = 1,
+                        activityId = missionActivityModel.id
                     )
                 }
-                deleteContentConfig(missionActivityModel.id, ContentCategoryEnum.ACTIVITY.ordinal)
-                saveContentConfig(
-                    missionActivityModel.id,
-                    missionActivityModel.activityConfig?.content ?: listOf(),
-                    ContentCategoryEnum.ACTIVITY.ordinal
-                )
-                deleteActivityConfig(missionActivityModel.id)
-
-
-                missionActivityModel.activityConfig?.let {
-                    val activityConfigId = saveActivityConfig(
-                        it,
-                        missionActivityModel.id,
-
-                        missionId
-                    )
-                    deleteGrantConfig(activityConfigId)
-                    it.grantConfig?.let { it1 ->
-                        saveGrantActivityConfig(
-                            it1,
-                            missionActivityModel.activityConfig.surveyId,
-                            activityConfigId
-                        )
-
-
-                    }
-                    it.formConfig?.let { it1 ->
-                        saveFormUiConfig(it1, missionId, missionActivityModel.id)
-                    }
-
-                }
-                deleteActivityUiConfig(activityId = missionActivityModel.id, missionId = missionId)
-                saveActivityUiConfig(
-                    missionActivityModel.id,
-                    missionId,
-                    missionActivityModel.activityConfig?.uiConfig ?: listOf()
-                )
 
             }
         } catch (exception: Exception) {
-            CoreLogger.e(
-                tag = "Exception",
-                msg = exception.message!!,
-                ex = exception,
-                stackTrace = true
+            CoreAppDetails.getContext()
+                ?.let {
+                    CoreLogger.e(
+                        context = it,
+                        "Exception",
+                        exception.localizedMessage ?: BLANK_STRING
+                    )
+                }
+        }
+    }
+
+
+    override suspend fun saveActivityConfig(
+        missionActivityModel: ActivityResponse,
+        missionId: Int,
+    ) {
+        missionActivityModel.activityConfig?.activityTitle?.let {
+            saveActivityLanguageAttributes(
+                missionId,
+                missionActivityModel.id,
+                it
             )
         }
+        deleteContentConfig(missionActivityModel.id, ContentCategoryEnum.ACTIVITY.ordinal)
+        saveContentConfig(
+            missionActivityModel.id,
+            missionActivityModel.activityConfig?.content ?: listOf(),
+            ContentCategoryEnum.ACTIVITY.ordinal
+        )
+        deleteActivityConfig(missionActivityModel.id)
+
+
+        missionActivityModel.activityConfig?.let {
+            val activityConfigId = saveActivityConfig(
+                it,
+                missionActivityModel.id,
+
+                missionId
+            )
+            deleteGrantConfig(activityConfigId)
+            it.grantConfig?.let { it1 ->
+                saveGrantActivityConfig(
+                    it1,
+                    missionActivityModel.activityConfig.surveyId,
+                    activityConfigId
+                )
+
+
+            }
+            it.formConfig?.let { it1 ->
+                saveFormUiConfig(it1, missionId, missionActivityModel.id)
+            }
+
+        }
+        deleteActivityUiConfig(activityId = missionActivityModel.id, missionId = missionId)
+        saveActivityUiConfig(
+            missionActivityModel.id,
+            missionId,
+            missionActivityModel.activityConfig?.uiConfig ?: listOf()
+        )
+
+        if (!missionActivityModel.activityConfig?.surveyConfig.isNullOrEmpty()) {
+            deleteSurveyConfig(activityId = missionActivityModel.id, missionId)
+            saveSurveyConfig(
+                activityId = missionActivityModel.id,
+                missionId = missionId,
+                surveyId = missionActivityModel.activityConfig?.surveyId.value(0),
+                surveyConfig = missionActivityModel.activityConfig?.surveyConfig ?: listOf()
+            )
+        }
+    }
+
+
+
+    override suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
+
+        return missionDao.isMissionDataLoaded(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            programId = programId
+        )
+    }
+
+    override suspend fun setMissionLoaded(missionId: Int, programId: Int) {
+        missionDao.updateMissionDataLoaded(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            programId = programId
+        )
     }
 
     private fun deleteActivityUiConfig(missionId: Int, activityId: Int) {
@@ -267,7 +326,7 @@ class MissionRepositoryImpl @Inject constructor(
             val taskCount =
                 taskDao.getTaskByIdCount(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    taskId = task.id
+                    taskId = task.id,
                 )
             if (taskCount == 0) {
                 taskDao.insertActivityTask(
@@ -379,6 +438,11 @@ class MissionRepositoryImpl @Inject constructor(
         id: Int,
         activityTitle: List<ActivityTitle>
     ) {
+        activityLanguageDao.deleteActivityLanguageAttributeForActivity(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = id
+        )
         activityTitle.forEach {
             activityLanguageDao.insertActivityLanguage(
                 ActivityLanguageAttributesEntity.getActivityLanguageAttributesEntity(
@@ -447,12 +511,12 @@ class MissionRepositoryImpl @Inject constructor(
         subject: String
     ) {
         subjectAttributeDao.updateSubjectAttribute(
-                userId = sharedPrefs.getUniqueUserIdentifier(),
-                missionId = missionId,
-                activityId = activityId,
-                taskId = id,
-                subjectId = subjectId,
-                subjectType = subject,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = activityId,
+            taskId = id,
+            subjectId = subjectId,
+            subjectType = subject,
         )
 
         val referenceId = subjectAttributeDao.getReferenceId(
@@ -463,13 +527,13 @@ class MissionRepositoryImpl @Inject constructor(
 
         taskData.forEach {
             val rowUpdated = attributeValueReferenceDao.updateAttributeValueReference(
-                    userId = sharedPrefs.getUniqueUserIdentifier(),
-                    parentReferenceId = referenceId.toLong(),
-                    key = it.key,
-                    value = it.value ?: BLANK_STRING,
-                )
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+                parentReferenceId = referenceId.toLong(),
+                key = it.key,
+                value = it.value ?: BLANK_STRING,
+            )
 
-            if(rowUpdated == 0) {
+            if (rowUpdated == 0) {
                 attributeValueReferenceDao.insertAttributesValueReferences(
                     AttributeValueReferenceEntity.getAttributeValueReferenceEntity(
                         userId = sharedPrefs.getUniqueUserIdentifier(),
@@ -481,11 +545,40 @@ class MissionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun isActivityAvailable(activityType: String): Int {
-        return activityConfigDao.isActivityAvailable(
-            activityType,
+
+    override suspend fun getActivityTypesForMission(missionId: Int): List<String> {
+        return activityConfigDao.getActivityType(
+            missionId = missionId,
             userId = sharedPrefs.getUniqueUserIdentifier()
         )
     }
 
+    private fun saveSurveyConfig(
+        activityId: Int,
+        missionId: Int,
+        surveyId: Int,
+        surveyConfig: List<SurveyConfigAttributeResponse>,
+    ) {
+
+        surveyConfig.forEach { attribute ->
+            surveyConfigEntityDao.insertUiConfig(
+                SurveyConfigEntity.getSurveyConfigEntity(
+                    missionId = missionId,
+                    activityId = activityId,
+                    surveyId = surveyId,
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    attributes = attribute
+                )
+            )
+        }
+
+    }
+
+    private fun deleteSurveyConfig(activityId: Int, missionId: Int) {
+        surveyConfigEntityDao.deleteSurveyConfig(
+            missionId = missionId,
+            activityId = activityId,
+            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
+        )
+    }
 }

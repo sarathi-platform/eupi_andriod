@@ -2,12 +2,17 @@ package com.sarathi.surveymanager.ui.screen
 
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -15,6 +20,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJour
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +45,12 @@ class SurveyScreenViewModel @Inject constructor(
     private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
-    private val getSectionListUseCase: GetSectionListUseCase
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
+    private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
+    private val validationUseCase: SurveyValidationUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -50,21 +61,19 @@ class SurveyScreenViewModel @Inject constructor(
     getActivityUseCase,
     fromEUseCase,
     formEventWriterUseCase,
-    coreSharedPrefs
+    coreSharedPrefs,
+    getActivityUiConfigUseCase,
+    getSectionListUseCase,
+    getConditionQuestionMappingsUseCase,
+    getSurveyConfigFromDbUseCase,
+    getSurveyValidationsFromDbUseCase,
+    validationUseCase
 ) {
-
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             saveQuestionAnswerIntoDb(currentQuestionUiModel)
-            saveTransactionMoneyJournalUseCase.saveMoneyJournalForGrant(
-                referenceId = referenceId,
-                grantId = grantID,
-                grantType = granType,
-                questionUiModels = questionUiModel.value,
-                subjectId = taskEntity?.subjectId ?: -1,
-                subjectType = subjectType
-            )
+
             surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
                 questionUiModel = currentQuestionUiModel,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
@@ -74,26 +83,12 @@ class SurveyScreenViewModel @Inject constructor(
                 grantId = grantID,
                 grantType = granType,
                 taskId = taskId,
-                uriList = ArrayList()
+                uriList = ArrayList(),
+                isFromRegenerate = false,
+                activityId = activityConfig?.activityId.value(),
+                activityReferenceId = activityConfig?.referenceId,
+                activityReferenceType = activityConfig?.referenceType
             )
-        }
-
-        }
-
-
-    fun updateTaskStatus(taskId: Int) {
-        ioViewModelScope {
-            val surveyEntity = getSectionListUseCase.getSurveyEntity(super.surveyId)
-            surveyEntity?.let { survey ->
-                taskStatusUseCase.markTaskCompleted(taskId)
-                super.taskEntity?.let { t ->
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        t,
-                        survey.surveyName,
-                        subjectType
-                    )
-                }
-            }
         }
     }
 
@@ -113,7 +108,7 @@ class SurveyScreenViewModel @Inject constructor(
                 taskId = taskId, status = status
             )
             sectionStatusEventWriterUserCase(
-                surveyId, sectionId, taskId, status
+                surveyId, sectionId, taskId, status, isFromRegenerate = false
             )
             withContext(mainDispatcher) {
                 callBack()

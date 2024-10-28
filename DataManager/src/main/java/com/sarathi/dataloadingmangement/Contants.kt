@@ -37,13 +37,18 @@ const val SECTION_TABLE = "section_table"
 const val QUESTION_TABLE = "question_table"
 const val OPTION_TABLE = "option_table"
 const val PROGRAMME_TABLE_NAME = "programme_table"
+const val SECTION_STATUS_TABLE_NAME = "section_status_table"
+const val SURVEY_CONFIG_TABLE_NAME = "survey_config_table"
+
 
 const val MONEY_JOURNAL_TABLE_NAME = "money_journal_table"
 const val ASSET_JOURNAL_TABLE_NAME = "asset_journal_table"
 const val SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME = "subject_livelihood_mapping_table"
 const val SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME = "subject_livelihood_event_mapping_table"
 
-const val SECTION_STATUS_TABLE_NAME = "section_status_table"
+const val SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME = "source_target_question_mapping_table"
+const val CONDITIONS_TABLE_NAME = "conditions_table"
+
 const val SUCCESS_CODE = "200"
 const val STATE = "STATE"
 const val SUCCESS = "SUCCESS"
@@ -71,6 +76,7 @@ const val SMALL_GROUP_DIDI_MAPPING_TABLE = "small_group_didi_mapping_table"
 const val MANUAL_TASK_COMPLETION = "Manual"
 const val SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED = "sanctioned = disbursed + form e"
 const val ZERO = '0'
+const val NUMBER_ZERO = 0
 const val FORM_E = "form"
 
 const val ALL = "All"

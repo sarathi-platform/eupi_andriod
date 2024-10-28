@@ -39,13 +39,14 @@ fun ShowCustomDialog(
     message: String,
     positiveButtonTitle: String? = BLANK_STRING,
     negativeButtonTitle: String? = BLANK_STRING,
+    dismissOnClickOutside: Boolean? = false,
     dismissOnBackPress: Boolean? = true,
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
 ) {
     Dialog(
         onDismissRequest = { }, properties = DialogProperties(
-            dismissOnClickOutside = false,
+            dismissOnClickOutside = dismissOnClickOutside ?: true,
             dismissOnBackPress = dismissOnBackPress ?: true
         )
     ) {

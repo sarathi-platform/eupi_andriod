@@ -46,7 +46,7 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                             asset = item,
                             livelihoodId = livelihoodId,
                             value = item.value,
-                            image = item.image
+                            image = item.image,
                         )
                     )
                     saveLivelihoodLanguageToDB(

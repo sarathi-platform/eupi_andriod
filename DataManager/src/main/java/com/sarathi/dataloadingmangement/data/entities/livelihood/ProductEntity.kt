@@ -16,7 +16,8 @@ data class ProductEntity(
     var userId: String,
     var name: String,
     var status: Int,
-    var type: Int? = 0,
+    //Todo Add migration for this column
+    var type: String? = BLANK_STRING,
 
     ) {
     companion object {
@@ -32,7 +33,8 @@ data class ProductEntity(
                 userId = userId,
                 name = product.name ?: BLANK_STRING,
                 status = product.status ?: 0,
-                livelihoodId = livelihoodId
+                livelihoodId = livelihoodId,
+                type = product.type ?: BLANK_STRING
             )
         }
 

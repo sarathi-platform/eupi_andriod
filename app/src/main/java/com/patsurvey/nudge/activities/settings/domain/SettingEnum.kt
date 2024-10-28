@@ -17,4 +17,5 @@ enum class SettingTagEnum {
     REGENERATE_EVENTS,
     EXPORT_BASELINE_QNA,
     MARK_ACTIVITY_IN_PROGRESS,
+    APP_CONFIG
 }

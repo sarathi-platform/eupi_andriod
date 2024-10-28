@@ -83,29 +83,26 @@ class TaskStatusRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun reCheckActivityStatus(missionId: Int): List<ActivityEntity> {
+    override suspend fun reCheckActivityStatus(missionId:Int): List<ActivityEntity> {
         val updatedActivities = mutableListOf<ActivityEntity>()
-        missionDao.getActiveMissions(
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            missionId
-        ).forEach { missionEntity ->
             activityDao
                 .getActiveActivities(
-                    missionId = missionEntity.missionId,
-                    userId = coreSharedPrefs.getUniqueUserIdentifier()
+                    missionId = missionId,
+                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+
                 )
                 .forEach { activity ->
                     val totalTaskActivityCount = taskDao.getTaskCountForActivity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
                         activityId = activity.activityId,
-                        missionId = missionEntity.missionId
+                        missionId = missionId
                     )
 
                     if (totalTaskActivityCount > 0) {
                         val pendingTaskCount = taskDao.countTasksByStatus(
                             userId = coreSharedPrefs.getUniqueUserIdentifier(),
                             activityId = activity.activityId,
-                            missionId = missionEntity.missionId,
+                            missionId = missionId,
                             statuses = listOf(
                                 SurveyStatusEnum.NOT_STARTED.name,
                                 SurveyStatusEnum.INPROGRESS.name
@@ -116,7 +113,7 @@ class TaskStatusRepositoryImpl @Inject constructor(
                             if (activity.status == SurveyStatusEnum.COMPLETED.name) {
                                 activityDao.updateActivityStatus(
                                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                    missionId = missionEntity.missionId,
+                                    missionId = missionId,
                                     activityId = activity.activityId,
                                     status = SurveyStatusEnum.INPROGRESS.name
                                 )
@@ -127,20 +124,7 @@ class TaskStatusRepositoryImpl @Inject constructor(
 
 
                         }
-                    } else {
-                        activityDao.updateActivityStatus(
-                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            activityId = activity.activityId,
-                            missionId = missionEntity.missionId,
-                            status = SurveyStatusEnum.COMPLETED.name
-                        )
-                        if (activity.status != SurveyStatusEnum.COMPLETED.name) {
-                            updatedActivities.add(
-                                activity.copy(status = SurveyStatusEnum.COMPLETED.name)
-                            )
-                        }
-                    }
-                }
+           }
         }
         return updatedActivities
     }
@@ -195,6 +179,13 @@ class TaskStatusRepositoryImpl @Inject constructor(
             }
         }
         return updatedMission
+    }
+
+    override suspend fun markInProgressActivitiesStatus(missionId: Int, activityIds: List<Int>) {
+        activityDao.markActivitiesInProgress(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(), missionId = missionId,
+            activityIds = activityIds
+        )
     }
 
 

@@ -13,16 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -34,8 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import com.nudge.core.getCurrentTimeInMillis
-import com.nudge.core.showCustomToast
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.nudge.core.ui.events.DialogEvents
@@ -56,7 +50,6 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_6_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_80_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.ui.theme.progressIndicatorColor
-import com.sarathi.smallgroupmodule.ui.theme.searchFieldBg
 import com.sarathi.smallgroupmodule.ui.theme.stepIconCompleted
 import com.sarathi.smallgroupmodule.ui.theme.uncheckedTrackColor
 import com.sarathi.smallgroupmodule.ui.theme.white
@@ -87,12 +80,10 @@ fun SmallGroupAttendanceEditScreen(
         smallGroupAttendanceEditScreenViewModel.smallGroupAttendanceEntityState
 
 
-    val showDatePickerDialog = remember {
+    val showAlertDialog = remember {
         mutableStateOf(false)
     }
 
-    val datePickerState =
-        rememberDatePickerState(initialSelectedDateMillis = getCurrentTimeInMillis())
 
     if (smallGroupAttendanceEditScreenViewModel.alertDialogState.value.isDialogVisible) {
 
@@ -167,30 +158,19 @@ fun SmallGroupAttendanceEditScreen(
                     )
                     .padding(horizontal = dimen_10_dp)
             ) {
-                if (showDatePickerDialog.value) {
+                if (showAlertDialog.value) {
+                    CustomDialogComponent(
+                        title = BLANK_STRING,
+                        message = stringResource(R.string.data_change_not_allow),
+                        positiveButtonTitle = stringResource(R.string.ok),
+                        onPositiveButtonClick = {
+                            showAlertDialog.value = false
+                        },
+                        onNegativeButtonClick = {
+                            showAlertDialog.value = false
+                        }
+                    )
 
-                    DatePickerDialog(
-                        colors = DatePickerDefaults.colors(
-                            containerColor = searchFieldBg
-                        ),
-                        onDismissRequest = { showDatePickerDialog.value = false },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    smallGroupAttendanceEditScreenViewModel.selectedDate.value =
-                                        datePickerState.selectedDateMillis!!
-                                    showDatePickerDialog.value = false
-                                },
-                                content = { Text(pluralStringResource(R.plurals.sg_ok,1)) }
-                            )
-                        }) {
-                        DatePicker(
-                            state = datePickerState,
-                            dateValidator = { selectedDate ->
-                                smallGroupAttendanceEditScreenViewModel.dateValidator(selectedDate)
-                            }
-                        )
-                    }
                 }
 
                 Row(
@@ -207,11 +187,7 @@ fun SmallGroupAttendanceEditScreen(
                             .background(white)
                             .weight(0.7f)
                             .clickable {
-                                showCustomToast(
-                                    context,
-                                    context.resources.getResourceName(R.string.data_change_not_allow)
-                                )
-//                                showDatePickerDialog.value = true
+                                showAlertDialog.value = true
                             }
                     ) {
                         TextWithIconComponent(

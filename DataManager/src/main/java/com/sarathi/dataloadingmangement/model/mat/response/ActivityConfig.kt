@@ -34,4 +34,10 @@ data class ActivityConfig(
     val taskCompletion: String?,
     @SerializedName("icon")
     val icon: String?,
+    @SerializedName("referenceId")
+    val referenceId: Int?,
+    @SerializedName("referenceType")
+    val referenceType: String?,
+    @SerializedName("surveyConfig")
+    val surveyConfig: List<SurveyConfigAttributeResponse>? = emptyList()
 )

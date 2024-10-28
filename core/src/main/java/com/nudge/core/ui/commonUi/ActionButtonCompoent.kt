@@ -380,6 +380,29 @@ fun ButtonComponentWithVisibility(
 }
 
 @Composable
+fun SubmitButtonBottomUi(
+    buttonTitle: String,
+    isButtonActive: Boolean = false,
+    onSubmitButtonClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .background(white)
+    ) {
+        ButtonPositive(
+            buttonTitle = buttonTitle,
+            isActive = isButtonActive,
+            isLeftArrow = false,
+            onClick = {
+                onSubmitButtonClick()
+            }
+        )
+    }
+}
+
+@Composable
 fun <T> CustomIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

@@ -80,6 +80,7 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper.stateId
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -99,7 +100,6 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import java.io.File
 
@@ -483,7 +483,10 @@ fun ExpandableDidiItemCardForBpc(
                             modifier = Modifier.layoutId("village")
                         )
 
-                        Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .layoutId("latestStatusCollapsed"))
 
                         CardArrow(
                             modifier = Modifier.layoutId("expendArrowImage"),

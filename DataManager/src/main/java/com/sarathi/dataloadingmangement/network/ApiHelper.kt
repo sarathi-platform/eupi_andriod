@@ -1,7 +1,8 @@
 package com.sarathi.dataloadingmangement.network
 
 const val SUB_PATH_CONTENT_MANAGER = "/content-manager/content/getV2Content"
-const val SUB_PATH_GET_MISSION = "/mission-service/mission/v2/view"
+const val SUB_PATH_GET_ACTIVITY_DETAILS = "/mission-service/activity/get/activity-details"
+const val SUB_PATH_GET_MISSION_DETAILS = "/mission-service/mission/get/mission-details"
 const val SUB_PATH_GET_MISSION_V2 = "/mission-service/mission/v2/view"
 const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/v1/getSurvey"
 
@@ -15,6 +16,7 @@ const val SUBPATH_GET_FORM_DETAILS = "/didi-service/form/getFormDetails"
 const val SUBPATH_GET_MONEY_JOURNAL_DETAILS = "/didi-service/moneyJournal/fetchAll/{doerId}"
 const val SUBPATH_GET_ASSETS_JOURNAL_DETAILS = "/didi-service/assetJournal/fetchAll/{doerId}"
 const val SUBPATH_GET_LIVELIHOOD_CONFIG = "/livelihood-service/livelihood/config/program"
+const val SUBPATH_GET_APP_CONFIG = "/registry-service/property"
 const val SUBPATH_FETCH_LIVELIHOOD_OPTION= "/didi-service/didi-livelihood/fetch"
 
 

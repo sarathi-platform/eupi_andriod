@@ -1,19 +1,23 @@
 package com.sarathi.missionactivitytask.navigation
 
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_QUESTION_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_SUMMARY_SCREEN_ROUTE_NAME
 
 sealed class MATHomeScreens(val route: String) {
     object MissionScreen :
         MATHomeScreens(route = MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME)
 
     object ActivityScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_MISSION_NAME}}/{${MissionActivityConstants.ARG_MISSION_COMPLETED}}")
+        MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_MISSION_NAME}}/{${MissionActivityConstants.ARG_MISSION_COMPLETED}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 
     object GrantTaskScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+        MATHomeScreens(route = "${MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 
     object SurveyTaskScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+        MATHomeScreens(route = "${MissionActivityConstants.SURVEY_TASK_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 
     object ContentDetailScreen :
         MATHomeScreens(route = "${MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MAT_ID}}/{${MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY}}")
@@ -48,7 +52,7 @@ sealed class MATHomeScreens(val route: String) {
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
     object LivelihoodTaskScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}")
+        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 
     object LivelihoodDropDownScreen :
         MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_DROPDOWN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}")
@@ -56,4 +60,16 @@ sealed class MATHomeScreens(val route: String) {
     object SectionScreen :
         MATHomeScreens(route = "${MissionActivityConstants.MAT_SECTION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_SUBJECT_NAME}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}")
 
+    object ActivitySelectTaskScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_SELECT_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
+
+    object LivelihoodPopSurveyScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_POP_SURVEY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SUBJECT_TYPE}}/{${MissionActivityConstants.ARG_TOOLBAR_TITLE}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_GRANT_ID}}/{${MissionActivityConstants.ARG_GRANT_TYPE}}/{${MissionActivityConstants.ARG_SANCTIONED_AMOUNT}}/{${MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}")
+
+
+    object FormQuestionScreen :
+        MATHomeScreens(route = "${FORM_QUESTION_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_FORM_ID}}/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{$ARG_REFERENCE_ID}/{$ARG_SUBJECT_TYPE}")
+
+    object FormSummaryScreen :
+        MATHomeScreens(route = "$FORM_SUMMARY_SCREEN_ROUTE_NAME/{${MissionActivityConstants.ARG_TASK_ID}}/{${MissionActivityConstants.ARG_SURVEY_ID}}/{${MissionActivityConstants.ARG_SECTION_ID}}/{${MissionActivityConstants.ARG_FORM_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID}}")
 }

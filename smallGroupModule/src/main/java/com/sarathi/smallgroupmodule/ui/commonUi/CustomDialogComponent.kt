@@ -32,6 +32,7 @@ import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.black100Percent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.greyBorder
+import com.nudge.core.value
 
 @Composable
 fun CustomDialogComponent(
@@ -48,8 +49,8 @@ fun CustomDialogComponent(
         onDismissRequest = {
             onNegativeButtonClick()
         }, properties = DialogProperties(
-            dismissOnClickOutside = false,
-            dismissOnBackPress = dismissOnBackPress ?: true
+            dismissOnClickOutside = dismissOnBackPress.value(),
+            dismissOnBackPress = dismissOnBackPress.value()
         )
     ) {
         Surface(
