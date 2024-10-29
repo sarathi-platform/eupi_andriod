@@ -894,6 +894,23 @@ fun String?.value(): String {
     return this ?: BLANK_STRING
 }
 
+fun String?.value(defaultValue: String): String {
+    return this ?: defaultValue
+}
+
+fun String?.toSafeInt(defaultValue: String = "0"): Int {
+    return try {
+        this.value(defaultValue).toInt()
+    } catch (ex: Exception) {
+        CoreLogger.e(
+            tag = "CoreUtils",
+            msg = "String?.toSafeInt -> Exception: ${ex.message}",
+            ex = ex
+        )
+        defaultValue.toInt()
+    }
+}
+
 fun Int?.value() = this ?: -1
 
 fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID

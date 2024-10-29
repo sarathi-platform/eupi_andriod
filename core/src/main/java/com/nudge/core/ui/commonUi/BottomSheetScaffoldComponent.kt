@@ -20,6 +20,7 @@ import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -33,18 +34,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.NO_SG_FILTER_VALUE
+import com.nudge.core.R
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.searchFieldBg
 import kotlinx.coroutines.launch
 
@@ -76,7 +81,9 @@ fun <T> BottomSheetScaffoldComponent(
                     .background(MaterialTheme.colors.surface)
             ) {
                 if (bottomSheetContentItemList.isNotEmpty()) {
+
                     SelectionSheetItemView(
+                        headerTitle = stringResource(R.string.small_group_filter_label),
                         items = bottomSheetContentItemList,
                         SelectionSheetItem = { index, item ->
                             when (item) {
@@ -171,6 +178,7 @@ fun <T> BottomSheetScaffoldComponent(
 
 @Composable
 fun <T> SelectionSheetItemView(
+    headerTitle: String? = BLANK_STRING,
     items: List<T>,
     SelectionSheetItem: @Composable (index: Int, item: T) -> Unit
 ) {
@@ -179,6 +187,10 @@ fun <T> SelectionSheetItemView(
             .fillMaxWidth()
             .padding(dimen_20_dp)
     ) {
+        if (headerTitle?.isNotEmpty() == true)
+            item {
+                Text(headerTitle, style = newBoldTextStyle, color = blueDark)
+            }
         itemsIndexed(items) { index, item ->
             Column {
                 CustomVerticalSpacer()

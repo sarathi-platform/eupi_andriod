@@ -114,6 +114,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
                 initQuestionVisibilityMap(questionUiModel.value)
+                questionUiModel.value.forEach {
+                    runConditionCheck(it)
+                }
             }
         }
     }
