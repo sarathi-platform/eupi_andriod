@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
@@ -50,7 +52,7 @@ class WealthRankingViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
-
+ val selectedSortIndex : MutableState<Int> = mutableStateOf(0)
     val shouldShowBottomButton = mutableStateOf(didiList.value.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
 
     private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
@@ -82,6 +84,14 @@ class WealthRankingViewModel @Inject constructor(
                 showLoader.value = false
             }
         }
+    }
+    fun didiSortedList(didiSortIndex: Int) {
+        if (didiSortIndex==0) { _filterDidiList.value=   _filterDidiList.value.sortedBy { it.createdDate } }
+        if (didiSortIndex==1) { _filterDidiList.value=   _filterDidiList.value.sortedByDescending { it.createdDate } }
+        if (didiSortIndex==2) { _filterDidiList.value=   _filterDidiList.value.sortedBy { it.modifiedDate } }
+        if (didiSortIndex==3) { _filterDidiList.value=   _filterDidiList.value.sortedByDescending { it.modifiedDate } }
+        if (didiSortIndex==4) { _filterDidiList.value=   _filterDidiList.value.sortedBy { it.name } }
+        if (didiSortIndex==5) { _filterDidiList.value=   _filterDidiList.value.sortedByDescending { it.name } }
     }
 
 
@@ -280,5 +290,5 @@ class WealthRankingViewModel @Inject constructor(
             list.clear()
         }
     }
-
 }
+

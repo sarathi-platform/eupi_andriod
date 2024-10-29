@@ -51,7 +51,8 @@ fun SearchWithFilterView(
     filterSelected: Boolean = false,
     showFilter: Boolean = true,
     onFilterSelected: (Boolean) -> Unit,
-    onSearchValueChange: (String) -> Unit
+    onSearchValueChange: (String) -> Unit,
+    onSortedSelected:() -> Unit,
 ) {
     var searchString by remember {
         mutableStateOf(BLANK_STRING)
@@ -145,19 +146,19 @@ fun SearchWithFilterView(
                         )
                     },
                     trailingIcon = {
-                        if (searchString.isNotEmpty()) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null,
-                                tint = textColorDark,
-                                modifier = Modifier
-                                    .absolutePadding(top = 2.dp)
-                                    .clickable {
-                                        searchString = ""
-                                        onSearchValueChange(searchString)
-                                    }
-                            )
-                        }
+                            if (searchString.isNotEmpty()) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint = textColorDark,
+                                    modifier = Modifier
+                                        .absolutePadding(top = 2.dp)
+                                        .clickable {
+                                            searchString = ""
+                                            onSearchValueChange(searchString)
+                                        }
+                                )
+                            }
                     }
                 )
                 if (showFilter) {
@@ -186,6 +187,17 @@ fun SearchWithFilterView(
 
                         )
                     }
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_new_sort_icon),
+                            contentDescription = null,
+                            tint = textColorDark,
+                            modifier = Modifier
+                                .height(55.dp)
+                                .padding(bottom = 10.dp)
+                                .clickable {
+                                    onSortedSelected()
+                                })
                 }
             }
         }
@@ -199,5 +211,6 @@ fun SearchWithFilterPreview() {
 
     }, onSearchValueChange = {
 
-    })
+    },
+        onSortedSelected = {})
 }

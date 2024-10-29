@@ -44,6 +44,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -95,6 +96,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
+import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
+import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -150,6 +153,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SocialMappingDidiListScreen(
@@ -200,6 +204,7 @@ fun SocialMappingDidiListScreen(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
+    val customBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties()
 
     val focusManager = LocalFocusManager.current
     val showLoadConfirmationDialog = remember {
@@ -238,119 +243,132 @@ fun SocialMappingDidiListScreen(
             }
         }
     }
+    BottomSheetScaffoldComponent(
+        bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
 
-
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .pointerInput(true) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            }
-            .then(modifier)
-    ) {
-        val (bottomActionBox, mainBox) = createRefs()
-        Box(modifier = Modifier
-            .constrainAs(mainBox) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-            }
-            .padding(top = 14.dp)
-        ) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                VOAndVillageBoxView(
-                    prefRepo = didiViewModel.addDidiRepository.prefRepo,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                val count = didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
-                if (showLoader.value) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(top = 30.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            color = blueDark,
-                            modifier = Modifier
-                                .size(28.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
+        bottomSheetContentItemList = context.resources.getStringArray(R.array.didi_sorted_array).toList(),
+        selectedIndex =didiViewModel.selectedSortIndex.value,
+        onBottomSheetItemSelected = {
+            didiViewModel. selectedSortIndex.value=it
+            didiViewModel.didiSortedList(it)
+        }
+    )
+    {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .pointerInput(true) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
                 }
-                else {
-                    ModuleAddedSuccessView(
-                        completeAdditionClicked = completeTolaAdditionClicked,
-                        message = stringResource(
-                            if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
-                            count
-                        ),
-                        modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
-                    )
-                    var listState = rememberLazyListState()
+                .then(modifier)
+        ) {
+            val (bottomActionBox, mainBox) = createRefs()
+            Box(modifier = Modifier
+                .constrainAs(mainBox) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                }
+                .padding(top = 14.dp)
+            ) {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                    if (didiViewModel.getFromPage()
-                            .equals(ARG_FROM_PAT_SURVEY, true)
-                    ) {
-                        listState = rememberForeverLazyListState(key = PAT_SURVEY)
-                    }
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = white)
-                            .weight(1f)
-                            .padding(
-                                bottom =
-                                if (!didiViewModel.addDidiRepository.prefRepo
-                                        .getFromPage()
-                                        .equals(ARG_FROM_HOME, true)
-                                ) {
-                                    0.dp
-                                } else {
-                                    50.dp
-                                }
-                            ),
-                        contentPadding = PaddingValues(bottom = 10.dp, start = 20.dp, end = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        state = listState
-                    ) {
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceAround,
+                    VOAndVillageBoxView(
+                        prefRepo = didiViewModel.addDidiRepository.prefRepo,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    val count =
+                        didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                    if (showLoader.value) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .padding(top = 30.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                color = blueDark,
                                 modifier = Modifier
-                            ) {
-                                val title = if (didiViewModel.getFromPage()
-                                        .equals(ARG_FROM_PAT_SURVEY, true)
-                                )
-                                    stringResource(R.string.pat_survey_title)
-                                else if (!didiViewModel.getFromPage()
-                                        .equals(ARG_FROM_HOME, true)
-                                )
-                                    stringResource(R.string.social_mapping)
-                                else
-                                    stringResource(R.string.didis_item_text_plural)
-                                MainTitle(title, Modifier.weight(1f))
-                                Spacer(modifier = Modifier.padding(14.dp))
-                                if (!didiViewModel.getFromPage()
-                                        .equals(ARG_FROM_HOME, true)
-                                    && !didiViewModel.getFromPage()
-                                        .equals(ARG_FROM_PAT_SURVEY, true)
+                                    .size(28.dp)
+                                    .align(Alignment.Center)
+                            )
+                        }
+                    } else {
+                        ModuleAddedSuccessView(
+                            completeAdditionClicked = completeTolaAdditionClicked,
+                            message = stringResource(
+                                if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
+                                count
+                            ),
+                            modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
+                        )
+                        var listState = rememberLazyListState()
+
+                        if (didiViewModel.getFromPage()
+                                .equals(ARG_FROM_PAT_SURVEY, true)
+                        ) {
+                            listState = rememberForeverLazyListState(key = PAT_SURVEY)
+                        }
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = white)
+                                .weight(1f)
+                                .padding(
+                                    bottom =
+                                    if (!didiViewModel.addDidiRepository.prefRepo
+                                            .getFromPage()
+                                            .equals(ARG_FROM_HOME, true)
+                                    ) {
+                                        0.dp
+                                    } else {
+                                        50.dp
+                                    }
+                                ),
+                            contentPadding = PaddingValues(
+                                bottom = 10.dp,
+                                start = 20.dp,
+                                end = 20.dp
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            state = listState
+                        ) {
+                            item {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceAround,
+                                    modifier = Modifier
                                 ) {
+                                    val title = if (didiViewModel.getFromPage()
+                                            .equals(ARG_FROM_PAT_SURVEY, true)
+                                    )
+                                        stringResource(R.string.pat_survey_title)
+                                    else if (!didiViewModel.getFromPage()
+                                            .equals(ARG_FROM_HOME, true)
+                                    )
+                                        stringResource(R.string.social_mapping)
+                                    else
+                                        stringResource(R.string.didis_item_text_plural)
+                                    MainTitle(title, Modifier.weight(1f))
+                                    Spacer(modifier = Modifier.padding(14.dp))
+                                    if (!didiViewModel.getFromPage()
+                                            .equals(ARG_FROM_HOME, true)
+                                        && !didiViewModel.getFromPage()
+                                            .equals(ARG_FROM_PAT_SURVEY, true)
+                                    ) {
 //                                    if (!didiViewModel.isVoEndorsementComplete.value) {
-                                    ButtonOutline(
-                                        modifier = Modifier
-                                            .weight(0.9f)
-                                            .height(45.dp),
-                                        buttonTitle = stringResource(id = R.string.add_didi),
+                                        ButtonOutline(
+                                            modifier = Modifier
+                                                .weight(0.9f)
+                                                .height(45.dp),
+                                            buttonTitle = stringResource(id = R.string.add_didi),
                                         ) {
                                             didiViewModel.resetAllFields()
                                             navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
@@ -369,219 +387,124 @@ fun SocialMappingDidiListScreen(
                                             }
                                         }*/
 //                                    }
+                                    }
                                 }
                             }
-                        }
-                        item {
-                            SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
-                                modifier = Modifier,
-                                filterSelected = filterSelected,
-                                onFilterSelected = {
-                                    if (didiList.value.isNotEmpty()) {
-                                        filterSelected = !it
+                            item {
+                                SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
+                                    modifier = Modifier,
+                                    filterSelected = filterSelected,
+                                    onFilterSelected = {
+                                        if (didiList.value.isNotEmpty()) {
+                                            filterSelected = !it
                                             (context as MainActivity).isFilterApplied.value = !it
-                                        didiViewModel.filterList()
-                                    }
-                                }, onSearchValueChange = {
-                                    didiViewModel.performQuery(it, filterSelected)
-
-                                })
-                        }
-
-                        item {
-                            AnimatedVisibility(
-                                visible = !filterSelected,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = buildAnnotatedString {
-                                        withStyle(
-                                            style = SpanStyle(
-                                                color = greenOnline,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontFamily = NotoSans
-                                            )
-                                        ) {
-                                            append(
-                                                if (!didiViewModel.getFromPage()
-                                                        .equals(ARG_FROM_PAT_SURVEY, true)
-                                                )
-                                                    "${newFilteredDidiList.size}"
-                                                else
-                                                    "${didiViewModel.pendingDidiCount.value}"
-                                            )
+                                            didiViewModel.filterList()
                                         }
-                                        append(
-                                            " ${
-                                                if (!didiViewModel.getFromPage()
-                                                        .equals(ARG_FROM_PAT_SURVEY, true)
-                                                )
-                                                    pluralStringResource(
-                                                        id = R.plurals.didis_added,
-                                                        newFilteredDidiList.size
-                                                    )
-                                                else {
-                                                    pluralStringResource(
-                                                        id = R.plurals.poor_didis_pending_text,
-                                                        count = didiViewModel.pendingDidiCount.value
-                                                    )
-                                                }
-                                            }"
-                                        )
+                                    }, onSearchValueChange = {
+                                        didiViewModel.performQuery(it, filterSelected)
+
                                     },
-                                    style = TextStyle(
-                                        color = textColorDark,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = NotoSans
-                                    ),
-                                    modifier = Modifier
-                                        .align(Alignment.Start)
+                                    onSortedSelected = {
+                                        coroutineScope.launch {
+                                            customBottomSheetScaffoldProperties.sheetState.show()
+                                        }
+
+                                    }
                                 )
                             }
-                        }
-                        if (filterSelected) {
-                            itemsIndexed(
-                                newFilteredTolaDidiList.keys.toList()
-                            ) { index, didiKey ->
-                                ShowDidisFromTola(navController = navController,
-                                    prefRepo = didiViewModel.addDidiRepository.prefRepo,
-                                    addDidiViewModel = didiViewModel,
-                                    didiTola = didiKey,
-                                    answerDao = didiViewModel.addDidiRepository.answerDao,
-                                    questionListDao = didiViewModel.addDidiRepository.questionListDao,
-                                    didiList = if (didiViewModel.getFromPage()
-                                            .equals(ARG_FROM_PAT_SURVEY, true)
-                                    )
-                                        newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
-                                            ?: emptyList()
-                                    else newFilteredTolaDidiList[didiKey] ?: emptyList(),
-                                    modifier = modifier,
-                                    expandedIds = expandedIds,
-                                    onExpendClick = { _, didiDetailModel ->
-                                        if (expandedIds.contains(didiDetailModel.id)) {
-                                            expandedIds.remove(didiDetailModel.id)
-                                        } else {
-                                            expandedIds.add(didiDetailModel.id)
-                                        }
-                                    },
-                                    onNavigate = {
-                                        if (!didiViewModel.getFromPage().equals(
-                                                ARG_FROM_PAT_SURVEY,
-                                                true
-                                            ) && !didiViewModel.isSocialMappingComplete.value
-                                        ) {
-                                            navController.navigate("add_didi_graph/${it.id}") {
-                                                launchSingleTop = true
-                                            }
-                                        } else if (didiViewModel.getFromPage().equals(
-                                                ARG_FROM_HOME, true
-                                            )
-                                        ) {
-                                            navController.navigate("add_didi_graph/${it.id}") {
-                                                launchSingleTop = true
-                                            }
-                                        }
-                                    },
-                                    onDeleteClicked = { didi ->
-                                        didiViewModel.deleteDidiOffline(
-                                            didi,
-                                            isFilterSelected = true,
-                                            isOnline = (context as MainActivity).isOnline.value
-                                                ?: false,
-                                            networkCallbackListener = object : NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                    showCustomToast(
-                                                        context,
-                                                        "Didi Deleted Successfully"
+
+                            item {
+                                AnimatedVisibility(
+                                    visible = !filterSelected,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = greenOnline,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontFamily = NotoSans
+                                                )
+                                            ) {
+                                                append(
+                                                    if (!didiViewModel.getFromPage()
+                                                            .equals(ARG_FROM_PAT_SURVEY, true)
                                                     )
-                                                }
-
-                                                override fun onFailed() {
-                                                    TODO("Not yet implemented")
-                                                }
-
+                                                        "${newFilteredDidiList.size}"
+                                                    else
+                                                        "${didiViewModel.pendingDidiCount.value}"
+                                                )
                                             }
+                                            append(
+                                                " ${
+                                                    if (!didiViewModel.getFromPage()
+                                                            .equals(ARG_FROM_PAT_SURVEY, true)
+                                                    )
+                                                        pluralStringResource(
+                                                            id = R.plurals.didis_added,
+                                                            newFilteredDidiList.size
+                                                        )
+                                                    else {
+                                                        pluralStringResource(
+                                                            id = R.plurals.poor_didis_pending_text,
+                                                            count = didiViewModel.pendingDidiCount.value
+                                                        )
+                                                    }
+                                                }"
                                             )
-                                    },
-                                    onCircularImageClick = { didiEntity ->
-                                        didiViewModel.dialogDidiEntity.value = didiEntity
-                                        didiViewModel.showDidiImageDialog.value = true
-                                    }
-                                )
-
-                                if (index < newFilteredTolaDidiList.keys.size - 1) {
-                                    Divider(
-                                        color = borderGreyLight,
-                                        thickness = 1.dp,
-                                        modifier = Modifier.padding(
-                                            top = 22.dp,
-                                            bottom = 1.dp
-                                        )
+                                        },
+                                        style = TextStyle(
+                                            color = textColorDark,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        ),
+                                        modifier = Modifier
+                                            .align(Alignment.Start)
                                     )
                                 }
                             }
-                            if (!didiViewModel.isSocialMappingComplete.value)
-                                item { Spacer(modifier = Modifier.height(bottomPadding)) }
-                        } else {
-                            itemsIndexed(
-                                if (didiViewModel.getFromPage()
-                                        .equals(ARG_FROM_PAT_SURVEY, true)
-                                ) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank } else newFilteredDidiList) { index, didi ->
-                                if (didiViewModel.getFromPage()
-                                        .equals(ARG_FROM_PAT_SURVEY, true)
-                                ) {
-                                    DidiItemCardForPat(
-                                        navController = navController,
+                            if (filterSelected) {
+                                itemsIndexed(
+                                    newFilteredTolaDidiList.keys.toList()
+                                ) { index, didiKey ->
+                                    ShowDidisFromTola(navController = navController,
                                         prefRepo = didiViewModel.addDidiRepository.prefRepo,
-                                        didi = didi,
+                                        addDidiViewModel = didiViewModel,
+                                        didiTola = didiKey,
                                         answerDao = didiViewModel.addDidiRepository.answerDao,
                                         questionListDao = didiViewModel.addDidiRepository.questionListDao,
-                                        expanded = expandedIds.contains(didi.id),
+                                        didiList = if (didiViewModel.getFromPage()
+                                                .equals(ARG_FROM_PAT_SURVEY, true)
+                                        )
+                                            newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
+                                                ?: emptyList()
+                                        else newFilteredTolaDidiList[didiKey] ?: emptyList(),
                                         modifier = modifier,
-                                        onExpendClick = { _, _ -> },
-                                        onNotAvailableClick = { didiEntity ->
-                                            didiViewModel.setDidiAsUnavailable(didiEntity.id)
-                                        },
-                                        onItemClick = {}
-                                        ,onCircularImageClick = { didi->
-                                            didiViewModel.dialogDidiEntity.value =didi
-                                            didiViewModel.showDidiImageDialog.value =true
-                                        }
-                                    )
-                                } else {
-                                    DidiItemCard(navController,
-                                        didiViewModel,
-                                        didi,
-                                        expandedIds.contains(didi.id),
-                                        modifier,
+                                        expandedIds = expandedIds,
                                         onExpendClick = { _, didiDetailModel ->
                                             if (expandedIds.contains(didiDetailModel.id)) {
                                                 expandedIds.remove(didiDetailModel.id)
                                             } else {
-                                                expendedDidiIndex = index
                                                 expandedIds.add(didiDetailModel.id)
-                                                coroutineScope.launch {
-                                                    delay(EXPANSTION_TRANSITION_DURATION.toLong() - 100)
-                                                    listState.animateScrollToItem(index + 3)
-                                                }
                                             }
                                         },
-                                        onItemClick = { didi ->
+                                        onNavigate = {
                                             if (!didiViewModel.getFromPage().equals(
                                                     ARG_FROM_PAT_SURVEY,
                                                     true
                                                 ) && !didiViewModel.isSocialMappingComplete.value
                                             ) {
-                                                navController.navigate("add_didi_graph/${didi.id}") {
+                                                navController.navigate("add_didi_graph/${it.id}") {
                                                     launchSingleTop = true
                                                 }
                                             } else if (didiViewModel.getFromPage().equals(
                                                     ARG_FROM_HOME, true
                                                 )
                                             ) {
-                                                navController.navigate("add_didi_graph/${didi.id}") {
+                                                navController.navigate("add_didi_graph/${it.id}") {
                                                     launchSingleTop = true
                                                 }
                                             }
@@ -589,9 +512,11 @@ fun SocialMappingDidiListScreen(
                                         onDeleteClicked = { didi ->
                                             didiViewModel.deleteDidiOffline(
                                                 didi,
+                                                isFilterSelected = true,
                                                 isOnline = (context as MainActivity).isOnline.value
                                                     ?: false,
-                                                networkCallbackListener = object : NetworkCallbackListener {
+                                                networkCallbackListener = object :
+                                                    NetworkCallbackListener {
                                                     override fun onSuccess() {
                                                         showCustomToast(
                                                             context,
@@ -603,89 +528,194 @@ fun SocialMappingDidiListScreen(
                                                         TODO("Not yet implemented")
                                                     }
 
-                                                })
+                                                }
+                                            )
                                         },
-                                        onCircularImageClick = { didi->
-                                            didiViewModel.dialogDidiEntity.value =didi
-                                            didiViewModel.showDidiImageDialog.value =true
+                                        onCircularImageClick = { didiEntity ->
+                                            didiViewModel.dialogDidiEntity.value = didiEntity
+                                            didiViewModel.showDidiImageDialog.value = true
                                         }
                                     )
+
+                                    if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                        Divider(
+                                            color = borderGreyLight,
+                                            thickness = 1.dp,
+                                            modifier = Modifier.padding(
+                                                top = 22.dp,
+                                                bottom = 1.dp
+                                            )
+                                        )
+                                    }
                                 }
+                                if (!didiViewModel.isSocialMappingComplete.value)
+                                    item { Spacer(modifier = Modifier.height(bottomPadding)) }
+                            } else {
+                                itemsIndexed(
+                                    if (didiViewModel.getFromPage()
+                                            .equals(ARG_FROM_PAT_SURVEY, true)
+                                    ) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank } else newFilteredDidiList) { index, didi ->
+                                    if (didiViewModel.getFromPage()
+                                            .equals(ARG_FROM_PAT_SURVEY, true)
+                                    ) {
+                                        DidiItemCardForPat(
+                                            navController = navController,
+                                            prefRepo = didiViewModel.addDidiRepository.prefRepo,
+                                            didi = didi,
+                                            answerDao = didiViewModel.addDidiRepository.answerDao,
+                                            questionListDao = didiViewModel.addDidiRepository.questionListDao,
+                                            expanded = expandedIds.contains(didi.id),
+                                            modifier = modifier,
+                                            onExpendClick = { _, _ -> },
+                                            onNotAvailableClick = { didiEntity ->
+                                                didiViewModel.setDidiAsUnavailable(didiEntity.id)
+                                            },
+                                            onItemClick = {}, onCircularImageClick = { didi ->
+                                                didiViewModel.dialogDidiEntity.value = didi
+                                                didiViewModel.showDidiImageDialog.value = true
+                                            }
+                                        )
+                                    } else {
+                                        DidiItemCard(navController,
+                                            didiViewModel,
+                                            didi,
+                                            expandedIds.contains(didi.id),
+                                            modifier,
+                                            onExpendClick = { _, didiDetailModel ->
+                                                if (expandedIds.contains(didiDetailModel.id)) {
+                                                    expandedIds.remove(didiDetailModel.id)
+                                                } else {
+                                                    expendedDidiIndex = index
+                                                    expandedIds.add(didiDetailModel.id)
+                                                    coroutineScope.launch {
+                                                        delay(EXPANSTION_TRANSITION_DURATION.toLong() - 100)
+                                                        listState.animateScrollToItem(index + 3)
+                                                    }
+                                                }
+                                            },
+                                            onItemClick = { didi ->
+                                                if (!didiViewModel.getFromPage().equals(
+                                                        ARG_FROM_PAT_SURVEY,
+                                                        true
+                                                    ) && !didiViewModel.isSocialMappingComplete.value
+                                                ) {
+                                                    navController.navigate("add_didi_graph/${didi.id}") {
+                                                        launchSingleTop = true
+                                                    }
+                                                } else if (didiViewModel.getFromPage().equals(
+                                                        ARG_FROM_HOME, true
+                                                    )
+                                                ) {
+                                                    navController.navigate("add_didi_graph/${didi.id}") {
+                                                        launchSingleTop = true
+                                                    }
+                                                }
+                                            },
+                                            onDeleteClicked = { didi ->
+                                                didiViewModel.deleteDidiOffline(
+                                                    didi,
+                                                    isOnline = (context as MainActivity).isOnline.value
+                                                        ?: false,
+                                                    networkCallbackListener = object :
+                                                        NetworkCallbackListener {
+                                                        override fun onSuccess() {
+                                                            showCustomToast(
+                                                                context,
+                                                                "Didi Deleted Successfully"
+                                                            )
+                                                        }
+
+                                                        override fun onFailed() {
+                                                            TODO("Not yet implemented")
+                                                        }
+
+                                                    })
+                                            },
+                                            onCircularImageClick = { didi ->
+                                                didiViewModel.dialogDidiEntity.value = didi
+                                                didiViewModel.showDidiImageDialog.value = true
+                                            }
+                                        )
+                                    }
+                                }
+                                if (!didiViewModel.isSocialMappingComplete.value)
+                                    item { Spacer(modifier = Modifier.height(bottomPadding)) }
                             }
-                            if (!didiViewModel.isSocialMappingComplete.value)
-                                item { Spacer(modifier = Modifier.height(bottomPadding)) }
                         }
                     }
                 }
             }
-        }
 
-       // Didi Add\Edit and Wealth Ranking
-        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
-            if (!didiViewModel.getFromPage().equals(ARG_FROM_HOME, true)
-                && !didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
-            ) {
-                DoubleButtonBox(
-                    modifier = Modifier
-                        .shadow(10.dp)
-                        .constrainAs(bottomActionBox) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                        }
-                        .onGloballyPositioned { coordinates ->
-                            bottomPadding = with(localDensity) {
-                                coordinates.size.height.toDp()
+            // Didi Add\Edit and Wealth Ranking
+            if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
+                if (!didiViewModel.getFromPage().equals(ARG_FROM_HOME, true)
+                    && !didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
+                ) {
+                    DoubleButtonBox(
+                        modifier = Modifier
+                            .shadow(10.dp)
+                            .constrainAs(bottomActionBox) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            }
+                            .onGloballyPositioned { coordinates ->
+                                bottomPadding = with(localDensity) {
+                                    coordinates.size.height.toDp()
+                                }
+                            },
+                        negativeButtonRequired = false,
+                        positiveButtonText = if (completeTolaAdditionClicked) stringResource(id = R.string.complete_social_walk_text) else stringResource(
+                            id = R.string.complete_didi_addition
+                        ),
+                        positiveButtonOnClick = {
+                            if (completeTolaAdditionClicked) {
+                                showLoadConfirmationDialog.value = true
+                            } else {
+                                completeTolaAdditionClicked = true
                             }
                         },
-                    negativeButtonRequired = false,
-                    positiveButtonText = if (completeTolaAdditionClicked) stringResource(id = R.string.complete_social_walk_text) else stringResource(
-                        id = R.string.complete_didi_addition
-                    ),
-                    positiveButtonOnClick = {
-                        if (completeTolaAdditionClicked) {
-                            showLoadConfirmationDialog.value = true
-                        } else {
-                            completeTolaAdditionClicked = true
-                        }
-                    },
-                    negativeButtonOnClick = {}
-                )
+                        negativeButtonOnClick = {}
+                    )
+                }
+
             }
 
-        }
+            // Didi PAT Survey
 
-        // Didi PAT Survey
-
-        if (didiList.value.isNotEmpty() && didiViewModel.pendingDidiCount.value == 0) {
-            if (didiViewModel.getFromPage()
-                    .equals(ARG_FROM_PAT_SURVEY, true) && didiViewModel.pendingDidiCount.value == 0
-            ) {
-                DoubleButtonBox(
-                    modifier = Modifier
-                        .shadow(10.dp)
-                        .constrainAs(bottomActionBox) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                        }
-                        .onGloballyPositioned { coordinates ->
-                            bottomPadding = with(localDensity) {
-                                coordinates.size.height.toDp()
+            if (didiList.value.isNotEmpty() && didiViewModel.pendingDidiCount.value == 0) {
+                if (didiViewModel.getFromPage()
+                        .equals(
+                            ARG_FROM_PAT_SURVEY,
+                            true
+                        ) && didiViewModel.pendingDidiCount.value == 0
+                ) {
+                    DoubleButtonBox(
+                        modifier = Modifier
+                            .shadow(10.dp)
+                            .constrainAs(bottomActionBox) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            }
+                            .onGloballyPositioned { coordinates ->
+                                bottomPadding = with(localDensity) {
+                                    coordinates.size.height.toDp()
+                                }
+                            },
+                        negativeButtonRequired = false,
+                        positiveButtonText = stringResource(
+                            id = R.string.complete
+                        ),
+                        positiveButtonOnClick = {
+                            didiViewModel.getPatStepStatus(stepId) {
+                                Log.d("SocialMappingDidiListScreen", "getPatStepStatus -> $it")
+                                navController.navigate("pat_survey_summary/$stepId/$it")
                             }
                         },
-                    negativeButtonRequired = false,
-                    positiveButtonText = stringResource(
-                        id = R.string.complete
-                    ),
-                    positiveButtonOnClick = {
-                        didiViewModel.getPatStepStatus(stepId) {
-                            Log.d("SocialMappingDidiListScreen", "getPatStepStatus -> $it")
-                            navController.navigate("pat_survey_summary/$stepId/$it")
-                        }
-                    },
-                    negativeButtonOnClick = {}
-                )
-            }
+                        negativeButtonOnClick = {}
+                    )
+                }
 
+            }
         }
     }
 }

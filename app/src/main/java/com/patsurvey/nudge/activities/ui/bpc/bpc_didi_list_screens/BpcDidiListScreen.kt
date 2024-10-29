@@ -257,7 +257,9 @@ fun BpcDidiListScreen(
                                     },
                                     onSearchValueChange = {
                                         bpcDidiListViewModel.performQuery(it, filterSelected)
-                                    }
+                                    },
+                                            onSortedSelected = {}
+
                                 )
                             }
 

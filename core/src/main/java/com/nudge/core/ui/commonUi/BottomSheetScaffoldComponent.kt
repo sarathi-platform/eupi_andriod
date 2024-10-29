@@ -120,7 +120,7 @@ fun <T> BottomSheetScaffoldComponent(
                                                 }
                                             CustomTextViewComponent(
                                                 textProperties = TextProperties
-                                                    .getBasicTextProperties(text = itemValue + itemValue)
+                                                    .getBasicTextProperties(text = itemValue)
                                                     .copy(
                                                         style = mediumTextStyle,
                                                         modifier = Modifier

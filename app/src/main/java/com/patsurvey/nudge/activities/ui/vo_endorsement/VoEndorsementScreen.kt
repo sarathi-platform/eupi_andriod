@@ -82,16 +82,18 @@ import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showDidiImageDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import android.content.Context
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.platform.LocalContext
+import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
+import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VoEndorsementScreen(
     modifier: Modifier = Modifier,
@@ -123,6 +125,8 @@ fun VoEndorsementScreen(
     var filterSelected by remember {
         mutableStateOf(false)
     }
+    val customBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties()
+
 
     LaunchedEffect(true) {
         viewModel.updateFilterDidiList()
@@ -143,192 +147,221 @@ fun VoEndorsementScreen(
         }
     }
 
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .then(modifier)
-    ) {
-        val (bottomActionBox, mainBox) = createRefs()
+    BottomSheetScaffoldComponent(
+        bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
 
-        Box(modifier = Modifier
-            .constrainAs(mainBox) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(bottomActionBox.top)
-                height = Dimension.fillToConstraints
-            }
-            .padding(top = 14.dp)
-            .padding(horizontal = 16.dp)
+        bottomSheetContentItemList = context.resources.getStringArray(R.array.didi_sorted_array).toList(),
+        selectedIndex =viewModel.selectedSortIndex.value,
+        onBottomSheetItemSelected = {
+            viewModel. selectedSortIndex.value=it
+            viewModel.didiSortedList(it)
+        }
+    )
+    {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .then(modifier)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
+            val (bottomActionBox, mainBox) = createRefs()
+
+            Box(modifier = Modifier
+                .constrainAs(mainBox) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(bottomActionBox.top)
+                    height = Dimension.fillToConstraints
+                }
+                .padding(top = 14.dp)
+                .padding(horizontal = 16.dp)
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
 
-                VOAndVillageBoxView(
-                    prefRepo = viewModel.repository.prefRepo,
-                    modifier = Modifier.fillMaxWidth(),
-                    startPadding = 0.dp
-                )
+                    VOAndVillageBoxView(
+                        prefRepo = viewModel.repository.prefRepo,
+                        modifier = Modifier.fillMaxWidth(),
+                        startPadding = 0.dp
+                    )
 
-                if (showLoader.value) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(top = 30.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            color = blueDark,
+                    if (showLoader.value) {
+                        Box(
                             modifier = Modifier
-                                .size(28.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = white)
-                            .weight(1f),
-                        contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp)
-                    ) {
-
-                        item {
-                            Text(getVoNameForState(context ,viewModel.getStateId(), R.plurals.vo_endorsement_screen_title),
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Start,
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .padding(top = 30.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                color = blueDark,
                                 modifier = Modifier
-                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                    .size(28.dp)
+                                    .align(Alignment.Center)
                             )
                         }
-                        item {
-                            SearchWithFilterView(
-                                placeholderString = stringResource(id = R.string.search_didis),
-                                filterSelected = filterSelected,
-                                onFilterSelected = {
-                                    if (newFilteredDidiList.value.isNotEmpty()) {
-                                        filterSelected = !it
-                                        viewModel.filterList()
-                                    }
-                                },
-                                onSearchValueChange = {
-                                    viewModel.performQuery(it, filterSelected)
-                                }
-                            )
-                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = white)
+                                .weight(1f),
+                            contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp)
+                        ) {
 
-                        item {
-                            val count =
-                                newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
-                            Text(
-                                text = if (count <= 1) stringResource(
-                                    id = R.string.count_didis_pending_singular,
-                                    count
+                            item {
+                                Text(
+                                    getVoNameForState(
+                                        context,
+                                        viewModel.getStateId(),
+                                        R.plurals.vo_endorsement_screen_title
+                                    ),
+                                    color = Color.Black,
+                                    fontSize = 16.sp,
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier
+                                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
                                 )
-                                else stringResource(
-                                    id = R.string.count_didis_pending_plural,
-                                    count
-                                ),
-                                color = Color.Black,
-                                fontSize = 12.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier
-                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                            )
-                        }
-
-                        if (filterSelected) {
-                            itemsIndexed(
-                                newFilteredTolaDidiList.keys.toList().reversed()
-                            ) { index, didiKey ->
-                                ShowDidisFromTolaForVo(
-                                    navController = navController,
-                                    viewModel = viewModel,
-                                    didiTola = didiKey,
-                                    didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
-                                        ?: emptyList(),
-                                    modifier = modifier,
-                                    onNavigate = {
-                                        viewModel.repository.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
-                                        navController.navigate(
-                                            "vo_endorsement_summary_screen/${
-                                                newFilteredTolaDidiList[didiKey]?.get(
-                                                    index
-                                                )?.id
-                                            }/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}"
-                                        )
-                                        viewModel.performQuery(BLANK_STRING, filterSelected)
-                                    },
-                                    onCircularImageClick = { didiEntity ->
-                                        viewModel.showDidiImageDialog.value=true
-                                        viewModel.dialogDidiEntity.value = didiEntity
-                                    }
-                                )
-                                if (index < newFilteredTolaDidiList.keys.size - 1) {
-                                    Divider(
-                                        color = borderGreyLight,
-                                        thickness = 1.dp,
-                                        modifier = Modifier.padding(
-                                            top = 22.dp,
-                                            bottom = 1.dp
-                                        )
-                                    )
-                                }
                             }
-                        } else {
-                            itemsIndexed(newFilteredDidiList.value) { index, didi ->
-                                DidiItemCardForVo(
-                                    navController = navController,
-                                    didi = didi,
-                                    modifier = modifier,
-                                    onItemClick = {
-                                        viewModel.repository.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
-                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
-                                        viewModel.performQuery(BLANK_STRING, filterSelected)
+                            item {
+                                SearchWithFilterView(
+                                    placeholderString = stringResource(id = R.string.search_didis),
+                                    filterSelected = filterSelected,
+                                    onFilterSelected = {
+                                        if (newFilteredDidiList.value.isNotEmpty()) {
+                                            filterSelected = !it
+                                            viewModel.filterList()
+                                        }
                                     },
-                                    onCircularImageClick = { didiEntity ->
-                                        viewModel.showDidiImageDialog.value=true
-                                        viewModel.dialogDidiEntity.value = didiEntity
+                                    onSearchValueChange = {
+                                        viewModel.performQuery(it, filterSelected)
+                                    },
+                                    onSortedSelected = {
+                                        coroutineScope.launch {
+                                            customBottomSheetScaffoldProperties.sheetState.show()
+                                        }
                                     }
+
                                 )
-                                Spacer(modifier = Modifier.height(10.dp))
+                            }
+
+                            item {
+                                val count =
+                                    newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
+                                Text(
+                                    text = if (count <= 1) stringResource(
+                                        id = R.string.count_didis_pending_singular,
+                                        count
+                                    )
+                                    else stringResource(
+                                        id = R.string.count_didis_pending_plural,
+                                        count
+                                    ),
+                                    color = Color.Black,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier
+                                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                )
+                            }
+
+                            if (filterSelected) {
+                                itemsIndexed(
+                                    newFilteredTolaDidiList.keys.toList().reversed()
+                                ) { index, didiKey ->
+                                    ShowDidisFromTolaForVo(
+                                        navController = navController,
+                                        viewModel = viewModel,
+                                        didiTola = didiKey,
+                                        didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
+                                            ?: emptyList(),
+                                        modifier = modifier,
+                                        onNavigate = {
+                                            viewModel.repository.prefRepo.savePref(
+                                                PREF_KEY_VO_SUMMARY_OPEN_FROM,
+                                                PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal
+                                            )
+                                            navController.navigate(
+                                                "vo_endorsement_summary_screen/${
+                                                    newFilteredTolaDidiList[didiKey]?.get(
+                                                        index
+                                                    )?.id
+                                                }/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}"
+                                            )
+                                            viewModel.performQuery(BLANK_STRING, filterSelected)
+                                        },
+                                        onCircularImageClick = { didiEntity ->
+                                            viewModel.showDidiImageDialog.value = true
+                                            viewModel.dialogDidiEntity.value = didiEntity
+                                        }
+                                    )
+                                    if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                        Divider(
+                                            color = borderGreyLight,
+                                            thickness = 1.dp,
+                                            modifier = Modifier.padding(
+                                                top = 22.dp,
+                                                bottom = 1.dp
+                                            )
+                                        )
+                                    }
+                                }
+                            } else {
+                                itemsIndexed(newFilteredDidiList.value) { index, didi ->
+                                    DidiItemCardForVo(
+                                        navController = navController,
+                                        didi = didi,
+                                        modifier = modifier,
+                                        onItemClick = {
+                                            viewModel.repository.prefRepo.savePref(
+                                                PREF_KEY_VO_SUMMARY_OPEN_FROM,
+                                                PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal
+                                            )
+                                            navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                            viewModel.performQuery(BLANK_STRING, filterSelected)
+                                        },
+                                        onCircularImageClick = { didiEntity ->
+                                            viewModel.showDidiImageDialog.value = true
+                                            viewModel.dialogDidiEntity.value = didiEntity
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }
-                .isEmpty()) {
-            DoubleButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
+            if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }
+                    .isEmpty()) {
+                DoubleButtonBox(
+                    modifier = Modifier
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
                         }
-                    },
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
 
-                positiveButtonText = stringResource(id = R.string.next),
-                negativeButtonRequired = false,
-                positiveButtonOnClick = {
-                    NudgeLogger.d("VoEndorsementScreen", "Next Button Clicked")
-                    viewModel.performQuery(BLANK_STRING, filterSelected)
-                    val stepStatus = false
-                    navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
-                },
-                negativeButtonOnClick = {/*Nothing to do here*/ }
-            )
+                    positiveButtonText = stringResource(id = R.string.next),
+                    negativeButtonRequired = false,
+                    positiveButtonOnClick = {
+                        NudgeLogger.d("VoEndorsementScreen", "Next Button Clicked")
+                        viewModel.performQuery(BLANK_STRING, filterSelected)
+                        val stepStatus = false
+                        navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
+                    },
+                    negativeButtonOnClick = {/*Nothing to do here*/ }
+                )
+            }
         }
     }
 }

@@ -103,5 +103,18 @@
     <string name="save_text">চেভ</string>
     <string name="proceed">আগবাঢ়ক</string>
     <string name="cancel_text">বাতিল কৰক</string>
-
+    <string name="created_date">Created Date : Ascending</string>
+    <string name="created_date_descending">Created Date : Descending</string>
+    <string name="modified_date">Modified Date : Ascending</string>
+    <string name="modified_date_decending">Modified Date : Descending</string>
+    <string name="name_ascending">Name: A to Z</string>
+    <string name="name_descending">Name: Z to A</string>
+    <string-array name="didi_sorted_array">
+        <item>@string/created_date</item>
+        <item>@string/created_date_descending</item>
+        <item>@string/modified_date</item>
+        <item>@string/modified_date_decending</item>
+        <item>@string/name_ascending</item>
+        <item>@string/name_descending</item>
+    </string-array>
 </resources>
