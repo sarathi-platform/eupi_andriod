@@ -8,5 +8,6 @@ interface SelectionVillageRepository {
     fun getSelectedVillage(): VillageEntity
 
     suspend fun getVillageListFromDb(): List<VillageEntity>
+    suspend fun getSelectedVillageFromDb(languageId: Int? = null): VillageEntity?
 
 }

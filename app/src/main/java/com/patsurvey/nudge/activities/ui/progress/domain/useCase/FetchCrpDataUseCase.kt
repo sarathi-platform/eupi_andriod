@@ -31,6 +31,7 @@ class FetchCrpDataUseCase @Inject constructor(
         if (isUserDetailsFetched) {
             fetchPatQuestionUseCase.invoke(isRefresh)
             fetchCasteListUseCase.invoke(isRefresh)
+            setUserDataLoaded(CRP_USER_TYPE)
             onComplete(true)
         } else {
             onComplete(false)

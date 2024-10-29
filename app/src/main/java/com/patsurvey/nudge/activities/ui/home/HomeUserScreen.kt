@@ -7,7 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
-import com.patsurvey.nudge.activities.ProgressScreen
+import com.patsurvey.nudge.activities.CrpProgressScreenV2
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.UPCM_USER
@@ -41,7 +41,23 @@ fun HomeUserScreen(
                 }
             )
         } else {
-            ProgressScreen(
+            CrpProgressScreenV2(
+                onNavigateToSetting = {
+                    navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
+                },
+                onBackClick = {
+                    navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
+                }
+            ) { villageId, stepId, index, isStepComplete ->
+                when (index) {
+                    0 -> navController.navigate("details_graph/$villageId/$stepId/$index")
+                    1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
+                    2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
+                    3 -> navController.navigate("pat_screens/$villageId/$stepId")
+                    4 -> navController.navigate("vo_endorsement_graph/$villageId/$stepId/$isStepComplete")
+                }
+            }
+            /*ProgressScreen(
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth(),
                 onNavigateToStep = { villageId, stepId, index, isStepComplete ->
@@ -58,7 +74,7 @@ fun HomeUserScreen(
                 }, onBackClick = {
                     navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
                 }
-            )
+            )*/
         }
     }
 

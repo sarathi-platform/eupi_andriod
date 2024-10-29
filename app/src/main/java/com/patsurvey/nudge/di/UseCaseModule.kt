@@ -39,14 +39,18 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.ChangeUserRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchCasteListRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchPatQuestionRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchProgressScreenDataRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchSelectionUserDataRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchVillageDataFromNetworkRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.LanguageListRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.PreferenceProviderRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.SelectionVillageRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.ChangeUserRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchCasteListRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchPatQuestionRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchProgressScreenDataRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchSelectionUserDataRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchVillageDataFromNetworkRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.LanguageListRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.PreferenceProviderRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.SelectionVillageRepository
@@ -54,6 +58,8 @@ import com.patsurvey.nudge.activities.ui.progress.domain.useCase.ChangeUserUseCa
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCasteListUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCrpDataUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchPatQuestionUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchProgressScreenDataUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchVillageDataFromNetworkUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.LanguageListUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.PreferenceProviderUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
@@ -77,9 +83,9 @@ import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
-import com.sarathi.dataloadingmangement.repository.UserPropertiesRepository
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.repository.UserPropertiesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -417,5 +423,67 @@ object UseCaseModule {
     ): LanguageListRepository {
         return LanguageListRepositoryImpl(languageListDao)
 
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchProgressScreenDataUseCase(fetchProgressScreenDataRepository: FetchProgressScreenDataRepository): FetchProgressScreenDataUseCase {
+        return FetchProgressScreenDataUseCase(fetchProgressScreenDataRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchProgressScreenDataRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        stepsListDao: StepsListDao,
+        tolaDao: TolaDao,
+        didiDao: DidiDao
+    ): FetchProgressScreenDataRepository {
+        return FetchProgressScreenDataRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            stepsListDao = stepsListDao,
+            didiDao = didiDao,
+            tolaDao = tolaDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchVillageDataFromNetworkUseCase(
+        fetchVillageDataFromNetworkRepository: FetchVillageDataFromNetworkRepository,
+        selectionVillageRepository: SelectionVillageRepository
+    ): FetchVillageDataFromNetworkUseCase {
+        return FetchVillageDataFromNetworkUseCase(
+            fetchVillageDataFromNetworkRepository,
+            selectionVillageRepository = selectionVillageRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchVillageDataFromNetworkRepository(
+        apiService: ApiService,
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao,
+        villageListDao: VillageListDao,
+        stepListDao: StepsListDao,
+        didiDao: DidiDao,
+        tolaDao: TolaDao,
+        questionListDao: QuestionListDao,
+        answerDao: AnswerDao,
+        numericAnswerDao: NumericAnswerDao
+    ): FetchVillageDataFromNetworkRepository {
+        return FetchVillageDataFromNetworkRepositoryImpl(
+            apiService = apiService,
+            coreSharedPrefs = coreSharedPrefs,
+            casteListDao = casteListDao,
+            villageListDao = villageListDao,
+            stepListDao = stepListDao,
+            didiDao = didiDao,
+            tolaDao = tolaDao,
+            questionListDao = questionListDao,
+            answerDao = answerDao,
+            numericAnswerDao = numericAnswerDao
+        )
     }
 }

@@ -42,5 +42,13 @@ class SelectionVillageRepositoryImpl @Inject constructor(
         return finalResult
     }
 
+    override suspend fun getSelectedVillageFromDb(languageId: Int?): VillageEntity? {
+        val selectedVillageId = getSelectedVillage().id
+        return villageListDao.getVillageFromId(
+            selectedVillageId,
+            languageId ?: selectionSharedPrefs.getAppLanguageId().value(DEFAULT_LANGUAGE_ID)
+        )
+    }
+
 
 }

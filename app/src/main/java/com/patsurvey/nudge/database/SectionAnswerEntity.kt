@@ -5,8 +5,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.patsurvey.nudge.model.response.AnswersItem
+import com.patsurvey.nudge.model.response.PATSummaryResponseItem
 import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DOUBLE_ZERO
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.formatRatio
+import com.patsurvey.nudge.utils.stringToDouble
 
 @Entity(tableName = ANSWER_TABLE)
 data class SectionAnswerEntity(
@@ -87,5 +95,93 @@ data class SectionAnswerEntity(
     var questionFlag: String? = BLANK_STRING
 
 
+) {
 
-)
+    companion object {
+        fun getSectionAnswerEntity(
+            patSummaryResponseItem: PATSummaryResponseItem,
+            answersItem: AnswersItem?,
+            quesDetails: QuestionEntity
+        ): SectionAnswerEntity {
+            val selectedAnswerEntity = SectionAnswerEntity(
+                id = 0,
+                optionId = 0,
+                didiId = patSummaryResponseItem.beneficiaryId
+                    ?: 0,
+                questionId = answersItem?.questionId
+                    ?: 0,
+                villageId = patSummaryResponseItem.villageId
+                    ?: 0,
+                actionType = answersItem?.section
+                    ?: TYPE_EXCLUSION,
+                weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                    0
+                )?.weight) else 0,
+                summary = answersItem?.summary,
+                optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                    0
+                )?.optionValue) else 0,
+                totalAssetAmount = if (quesDetails?.questionFlag.equals(
+                        QUESTION_FLAG_WEIGHT
+                    )
+                ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                    formatRatio(answersItem?.ratio ?: DOUBLE_ZERO)
+                ),
+                needsToPost = false,
+                answerValue = (if (quesDetails?.questionFlag.equals(
+                        QUESTION_FLAG_WEIGHT
+                    )
+                ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                    formatRatio(answersItem?.ratio ?: DOUBLE_ZERO)
+                )).toString(),
+                type = answersItem?.questionType
+                    ?: QuestionType.RadioButton.name,
+                assetAmount = answersItem?.assetAmount
+                    ?: "0",
+                questionFlag = quesDetails?.questionFlag
+                    ?: BLANK_STRING
+            )
+            return selectedAnswerEntity
+        }
+
+        fun getSectionAnswerEntity(
+            answersItem: AnswersItem?,
+            item: PATSummaryResponseItem,
+            quesDetails: QuestionEntity
+        ) = SectionAnswerEntity(
+            id = 0,
+            optionId = answersItem?.options?.get(
+                0
+            )?.optionId ?: 0,
+            didiId = item.beneficiaryId
+                ?: 0,
+            questionId = answersItem?.questionId
+                ?: 0,
+            villageId = item.villageId
+                ?: 0,
+            actionType = answersItem?.section
+                ?: TYPE_EXCLUSION,
+            weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                0
+            )?.weight) else 0,
+            summary = answersItem?.summary,
+            optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                0
+            )?.optionValue) else 0,
+            totalAssetAmount = if (quesDetails?.questionFlag.equals(
+                    QUESTION_FLAG_WEIGHT
+                )
+            ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                formatRatio(answersItem?.ratio ?: DOUBLE_ZERO)
+            ),
+            needsToPost = false,
+            answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                0
+            )?.display
+                ?: BLANK_STRING) else BLANK_STRING,
+            type = answersItem?.questionType
+                ?: QuestionType.RadioButton.name
+        )
+    }
+
+}

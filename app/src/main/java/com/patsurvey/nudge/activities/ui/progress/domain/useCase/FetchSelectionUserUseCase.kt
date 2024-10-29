@@ -20,6 +20,10 @@ abstract class FetchSelectionUserUseCase(
         return userPropertiesRepository.isUserDataLoaded(userType)
     }
 
+    fun setUserDataLoaded(userType: String) {
+        return userPropertiesRepository.setUserDataLoaded(userType)
+    }
+
     fun getStateId(): Int {
         return userPropertiesRepository.getStateId()
     }

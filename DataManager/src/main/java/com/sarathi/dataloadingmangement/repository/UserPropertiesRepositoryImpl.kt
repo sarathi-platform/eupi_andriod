@@ -16,7 +16,12 @@ class UserPropertiesRepositoryImpl @Inject constructor(
 
     override fun isUserDataLoaded(userType: String): Boolean {
         return if (userType == CRP_USER_TYPE) coreSharedPrefs.isCrpDataLoaded() else coreSharedPrefs.isBpcDataLoaded()
+    }
 
+    override fun setUserDataLoaded(userType: String) {
+        if (userType == CRP_USER_TYPE) coreSharedPrefs.setCrpDataLoaded(true) else coreSharedPrefs.setBpcDataLoaded(
+            true
+        )
     }
 
     override fun getStateId(): Int {

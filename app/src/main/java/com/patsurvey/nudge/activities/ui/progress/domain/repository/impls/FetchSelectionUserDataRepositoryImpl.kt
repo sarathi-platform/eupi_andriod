@@ -12,6 +12,11 @@ import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.UserDetailsResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiResponseFailException
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
 import javax.inject.Inject
@@ -43,6 +48,10 @@ class FetchSelectionUserDataRepositoryImpl @Inject constructor(
                             throw ApiResponseFailException("Village List is empty")
                         }
                     } ?: throw ApiResponseFailException("Village List is null")
+
+                }
+                if (!apiResponse.lastSyncTime.isNullOrEmpty()) {
+                    updateLastSyncTime(apiResponse.lastSyncTime)
                 }
                 return true
             } else {
@@ -85,8 +94,40 @@ class FetchSelectionUserDataRepositoryImpl @Inject constructor(
         userDetailsResponse.name?.let { sharedPrefs.setName(it) }
         userDetailsResponse.email?.let { sharedPrefs.setUserEmail(it) }
         userDetailsResponse.roleName?.let { sharedPrefs.setUserRole(it) }
-        userDetailsResponse.typeName?.let { sharedPrefs.setUserType(it) }
 
+        userDetailsResponse.typeName?.let {
+            sharedPrefs.setUserType(it)
+            if (it.equals(BPC_USER_TYPE, true)) {
+                sharedPrefs.setIsUserBPC(true)
+            } else {
+                sharedPrefs.setIsUserBPC(false)
+            }
+        }
+
+        userDetailsResponse.identityNumber?.let {
+            sharedPrefs.savePref(
+                PREF_KEY_IDENTITY_NUMBER,
+                it
+            )
+        }
+        userDetailsResponse.profileImage?.let { sharedPrefs.savePref(PREF_KEY_PROFILE_IMAGE, it) }
+        userDetailsResponse.villageList?.firstOrNull()?.let {
+            sharedPrefs.savePref(
+                PREF_KEY_TYPE_STATE_ID,
+                it.stateId
+            )
+        }
+    }
+
+    fun updateLastSyncTime(lastSyncTime: String) {
+        val saveSyncTime = sharedPrefs.getPref(LAST_SYNC_TIME, 0L)
+        if (saveSyncTime > 0) {
+            val compValue = lastSyncTime.toLong().compareTo(saveSyncTime)
+            if (compValue > 0) {
+                sharedPrefs.savePref(LAST_SYNC_TIME, lastSyncTime.toLong())
+            }
+
+        } else sharedPrefs.savePref(LAST_SYNC_TIME, lastSyncTime.toLong())
     }
 
 }

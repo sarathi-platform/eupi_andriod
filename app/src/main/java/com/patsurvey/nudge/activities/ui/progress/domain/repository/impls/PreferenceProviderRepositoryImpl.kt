@@ -18,5 +18,38 @@ class PreferenceProviderRepositoryImpl @Inject constructor(
         selectionSharedPrefs.savePageOpenFromOTPScreen(status)
     }
 
+    override fun savePref(key: String, value: Int) {
+        coreSharedPrefs.savePref(key, value)
+    }
+
+    override fun getPref(key: String, defaultValue: Int): Int {
+        return coreSharedPrefs.getPref(key, defaultValue)
+    }
+
+    override fun savePref(key: String, value: String) {
+        coreSharedPrefs.savePref(key, value)
+    }
+
+    override fun getPref(key: String, defaultValue: String): String {
+        return coreSharedPrefs.getPref(key, defaultValue)
+    }
+
+    override fun savePref(key: String, value: Long) {
+        coreSharedPrefs.savePref(key, value)
+    }
+
+    override fun getPref(key: String, defaultValue: Long): Long {
+        return coreSharedPrefs.getPref(key, defaultValue)
+    }
+
+    override fun savePref(key: String, value: Boolean) {
+        coreSharedPrefs.savePref(key, value)
+    }
+
+    override fun getPref(key: String, defaultValue: Boolean): Boolean {
+        return coreSharedPrefs.getPref(key, defaultValue)
+    }
+
+
 
 }

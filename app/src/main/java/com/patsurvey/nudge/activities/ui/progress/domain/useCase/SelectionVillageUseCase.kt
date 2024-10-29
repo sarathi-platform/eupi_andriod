@@ -20,4 +20,8 @@ class SelectionVillageUseCase @Inject constructor(
         return selectionVillageRepository.getVillageListFromDb()
     }
 
+    suspend fun getSelectedVillageFromDb(languageId: Int? = null): VillageEntity? {
+        return selectionVillageRepository.getSelectedVillageFromDb(languageId)
+    }
+
 }

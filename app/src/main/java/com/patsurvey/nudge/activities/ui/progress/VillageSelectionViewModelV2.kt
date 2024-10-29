@@ -27,7 +27,7 @@ class VillageSelectionViewModelV2 @Inject constructor(
     private val changeUserUseCase: ChangeUserUseCase,
     private val selectionVillageUseCase: SelectionVillageUseCase,
     val preferenceProviderUseCase: PreferenceProviderUseCase
-) : BaseViewModelV2(fetchCrpDataUseCase) {
+) : BaseViewModelV2(fetchSelectionUserUseCase = fetchCrpDataUseCase) {
 
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
