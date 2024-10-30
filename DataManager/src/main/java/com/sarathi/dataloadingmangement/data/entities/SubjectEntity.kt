@@ -100,7 +100,7 @@ data class SubjectEntity(
         fun getSubjectEntityFromResponse(
             didiDetailList: DidiDetailList,
             userId: String,
-            crpImageLocalPath: String = BLANK_STRING,
+            crpImageLocalPath: String? = BLANK_STRING,
         ): SubjectEntity {
 
             return SubjectEntity(
@@ -119,7 +119,7 @@ data class SubjectEntity(
                 voName = didiDetailList.voName.value(),
                 casteId = didiDetailList.casteId.value(),
                 ableBodied = didiDetailList.ableBodied.value(),
-                crpImageLocalPath = crpImageLocalPath
+                crpImageLocalPath = crpImageLocalPath ?: BLANK_STRING
             )
 
         }
