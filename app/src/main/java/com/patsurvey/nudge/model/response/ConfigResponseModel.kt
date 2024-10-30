@@ -2,7 +2,7 @@ package com.patsurvey.nudge.model.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.patsurvey.nudge.database.LanguageEntity
+import com.nudge.core.database.entities.language.LanguageEntity
 
 data class ConfigResponseModel(
     @SerializedName("languageList")

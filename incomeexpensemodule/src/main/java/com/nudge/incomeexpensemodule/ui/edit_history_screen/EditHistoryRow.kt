@@ -14,10 +14,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.incomeexpensemodule.R
 import com.google.gson.Gson
@@ -27,6 +28,8 @@ import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.DD_mmm_hh_mm_a_FORMAT
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getDate
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.darkBlueColor
@@ -49,11 +52,16 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEv
 
 @Composable
 fun EditHistoryRow(
+    translationHelper: TranslationHelper,
     currentHistoryData: SubjectLivelihoodEventMappingEntity,
     nextHistoryData: SubjectLivelihoodEventMappingEntity?,
     isDeleted: Boolean = false,
     isRecentData: Boolean = false
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+        translationHelper.initTranslationHelper(TranslationEnum.EditHistoryRow)
+    }
     Row(
         modifier = Modifier
             .background(Color.Transparent)
@@ -81,14 +89,14 @@ fun EditHistoryRow(
                         Spacer(modifier = Modifier.weight(1.0f))
                         Text(
                             modifier = Modifier.padding(horizontal = dimen_5_dp),
-                            text = stringResource(R.string.delete),
+                            text = translationHelper.stringResource(context, R.string.delete),
                             style = smallTextStyle.copy(redIconColor)
                         )
                     }
                 }
                 Column(modifier = Modifier.padding(dimen_10_dp)) {
                     TextDataRowView(
-                        data1 = stringResource(R.string.event),
+                        data1 = translationHelper.stringResource(context, R.string.event),
                         data2textColor = dataChangeTextColor(
                             data1 = getEventValue(savedEvent = currentSavedEvent),
                             data2 = getEventValue(savedEvent = nextSavedEvent),
@@ -99,7 +107,7 @@ fun EditHistoryRow(
                     Divider()
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = stringResource(R.string.asset_type),
+                        data1 = translationHelper.stringResource(context, R.string.asset_type),
                         data2 = if (!TextUtils.isEmpty(currentSavedEvent?.assetTypeValue)) " ${currentSavedEvent?.assetTypeValue}" else "NA",
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
@@ -115,7 +123,10 @@ fun EditHistoryRow(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = stringResource(R.string.increse_in_number),
+                        data1 = translationHelper.stringResource(
+                            context,
+                            R.string.increse_in_number
+                        ),
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetCount(currentSavedEvent),
                             data2 = getAssetCount(nextSavedEvent),
@@ -124,7 +135,7 @@ fun EditHistoryRow(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = stringResource(R.string.event_date),
+                        data1 = translationHelper.stringResource(context, R.string.event_date),
                         data2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
                         data2textColor = dataChangeTextColor(
                             data1 = getEventDate(currentHistoryData),

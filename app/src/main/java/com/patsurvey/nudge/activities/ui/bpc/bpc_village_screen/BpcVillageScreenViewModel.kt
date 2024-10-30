@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.R
@@ -15,7 +16,6 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -44,7 +44,6 @@ class BpcVillageScreenViewModel @Inject constructor(
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
     val casteListDao: CasteListDao,
-    val languageListDao: LanguageListDao,
     val questionListDao: QuestionListDao,
     val trainingVideoDao: TrainingVideoDao,
     val numericAnswerDao: NumericAnswerDao,
@@ -56,7 +55,8 @@ class BpcVillageScreenViewModel @Inject constructor(
     val villageSelectionRepository: VillageSelectionRepository,
     private val syncManagerDatabase: SyncManagerDatabase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    val prefRepo: PrefRepo,
+    private val languageConfigUseCase: LanguageConfigUseCase,
+    val prefRepo:PrefRepo,
     val syncMigrationUseCase: SyncMigrationUseCase
     ): BaseViewModel() {
 
@@ -104,6 +104,7 @@ class BpcVillageScreenViewModel @Inject constructor(
     fun fetchAppConfig() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke()
+            languageConfigUseCase.invoke()
         }
     }
 

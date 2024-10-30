@@ -54,6 +54,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
         const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
 
+        const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
 
 
         @Volatile

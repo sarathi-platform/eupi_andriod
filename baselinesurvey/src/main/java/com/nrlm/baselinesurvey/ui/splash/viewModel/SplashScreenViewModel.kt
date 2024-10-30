@@ -6,13 +6,13 @@ import com.nrlm.baselinesurvey.ROOM_INTEGRITY_EXCEPTION
 import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.database.entities.language.LanguageEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

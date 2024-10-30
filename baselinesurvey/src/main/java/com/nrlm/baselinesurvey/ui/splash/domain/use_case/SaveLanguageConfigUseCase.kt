@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.splash.domain.use_case
 
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
+import com.nudge.core.database.entities.language.LanguageEntity
 
 class SaveLanguageConfigUseCase(private val splashScreenRepository: SplashScreenRepository) {
 

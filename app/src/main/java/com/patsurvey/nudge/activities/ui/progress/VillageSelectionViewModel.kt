@@ -10,12 +10,14 @@ import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.core.value
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -30,7 +32,6 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -41,7 +42,6 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -139,7 +139,6 @@ class VillageSelectionViewModel @Inject constructor(
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
     val casteListDao: CasteListDao,
-    val languageListDao: LanguageListDao,
     val questionListDao: QuestionListDao,
     val trainingVideoDao: TrainingVideoDao,
     val numericAnswerDao: NumericAnswerDao,
@@ -154,6 +153,8 @@ class VillageSelectionViewModel @Inject constructor(
     val villageSelectionRepository: VillageSelectionRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     val syncMigrationUseCase: SyncMigrationUseCase
+    val languageConfigUseCase: LanguageConfigUseCase
+
 ) : BaseViewModel() {
     private var isNeedToCallVillageApi: Boolean = true
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -260,7 +261,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchQuestions(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localLanguageList = languageListDao.getAllLanguages()
+            val localLanguageList = languageConfigUseCase.getAllLanguage()
             stateId.value = getStateId()
             localLanguageList?.let {
                 localLanguageList.forEach { languageEntity ->
@@ -995,7 +996,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchCastList(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val languageList = languageListDao.getAllLanguages()
+            val languageList = languageConfigUseCase.getAllLanguage()
             languageList.forEach { language ->
                 var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
                 if (localCasteList.isEmpty() || isRefresh) {
@@ -1582,7 +1583,7 @@ class VillageSelectionViewModel @Inject constructor(
             try {
 
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                val localLanguageList = languageListDao.getAllLanguages()
+                val localLanguageList = languageConfigUseCase.getAllLanguage()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
                     _villagList.value = localVillageList.distinctBy {
@@ -1655,6 +1656,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 } else {
                                     prefRepo.setIsUserBPC(false)
                                 }
+                                fetchLanguageConfig()
                                 apiSuccess(true)
                             }
 
@@ -1915,5 +1917,9 @@ class VillageSelectionViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke()
         }
+    }
+
+    suspend fun fetchLanguageConfig() {
+        languageConfigUseCase.invoke()
     }
 }

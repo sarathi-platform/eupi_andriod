@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -104,10 +103,22 @@ fun DataTabScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message = stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
+            title = dataTabScreenViewModel.translationHelper.stringResource(
+                context,
+                id = R.string.are_you_sure
+            ),
+            message = dataTabScreenViewModel.translationHelper.stringResource(
+                context,
+                id = R.string.do_you_want_to_exit_the_app
+            ),
+            positiveButtonTitle = dataTabScreenViewModel.translationHelper.stringResource(
+                context,
+                id = R.string.exit
+            ),
+            negativeButtonTitle = dataTabScreenViewModel.translationHelper.stringResource(
+                context,
+                id = R.string.cancel
+            ),
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
             },
@@ -176,7 +187,10 @@ fun DataTabScreen(
             }
         ) {
             ToolBarWithMenuComponent(
-                title = stringResource(id = com.sarathi.dataloadingmangement.R.string.app_name),
+                title = dataTabScreenViewModel.translationHelper.stringResource(
+                    context,
+                    id = com.sarathi.dataloadingmangement.R.string.app_name
+                ),
                 modifier = modifier,
                 isSearch = true,
                 iconResId = R.drawable.ic_sarathi_logo,
@@ -250,7 +264,10 @@ fun DataTabScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(1f),
-                                        placeholderString = stringResource(DataRes.string.search_by_didis),
+                                        placeholderString = dataTabScreenViewModel.translationHelper.stringResource(
+                                            context,
+                                            DataRes.string.search_by_didis
+                                        ),
                                         searchFieldHeight = dimen_50_dp,
                                         onSearchValueChange = {
                                             dataTabScreenViewModel.onEvent(

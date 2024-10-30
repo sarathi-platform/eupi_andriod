@@ -115,4 +115,8 @@
     <string name="assets">"Rwbai "</string>
     <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
     <string name="last_1_month">Last 1 Month</string>
+    <string name="income">"Ajemung "</string>
+    <string name="expense">"Swbaimung "</string>
+    <string name="last_updated_days_ago">"Last update khlai jakmani thanai %1$s  sal rok o "</string>
+    <string name="edit_event">Edit Event</string>
 </resources>
