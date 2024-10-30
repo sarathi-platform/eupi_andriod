@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.SurveyValidationsConverter
 import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
@@ -41,6 +42,7 @@ import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEnti
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
@@ -60,14 +62,8 @@ import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappin
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_ASSET_COLUMN_ADD
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_ASSET_COLUMN_DROP
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_validation
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_COLUMN_ADD_TYPE
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_DROP
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_PRODUCT_COLUMN_ADD
-import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_PRODUCT_COLUMN_DROP
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
@@ -75,10 +71,19 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LI
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MONEY_JOUNRAL_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_ASSET_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_PRODUCT_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_PRODUCT_CONFIG_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SECTION_STATUS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SURVEY_CONFIG_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_ASSET_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_PRODUCT_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_TABLE_LIVELIHOOD_LANGUAGE_REFERENCE
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
@@ -104,6 +109,7 @@ import com.sarathi.dataloadingmangement.data.entities.SourceTargetQuestionMappin
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.TagReferenceEntity
@@ -164,7 +170,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
         SubjectLivelihoodEventMappingEntity::class,
         SectionStatusEntity::class,
         SourceTargetQuestionMappingEntity::class,
-        ConditionsEntity::class
+        ConditionsEntity::class,
+        SurveyConfigEntity::class
     ],
 
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -180,8 +187,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
     ValuesDtoConverter::class,
     DateConverter::class,
     TagConverter::class,
-    ValidationConverter::class
-
+    ValidationConverter::class,
+    SurveyValidationsConverter::class
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
@@ -235,6 +242,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun conditionsEntityDao(): ConditionsEntityDao
 
+    abstract fun surveyConfigEntityDao(): SurveyConfigEntityDao
+
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
@@ -270,23 +279,34 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
         val NUDGE_GRANT_DATABASE_MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_3_4")
+                /**
+                 * DROP OLD TABLES AND CREATE NEW ONES with correct data type for column AS SQLite Does not support drop column.
+                 * */
+
+                migration(
+                    db,
+                    listOf(
+                        DROP_LIVELIHOOD_TABLE,
+                        DROP_LIVELIHOOD_ASSET_TABLE,
+                        DROP_LIVELIHOOD_PRODUCT_TABLE,
+                        DROP_TABLE_LIVELIHOOD_LANGUAGE_REFERENCE,
+                        CREATE_NEW_LIVELIHOOD_TABLE,
+                        CREATE_NEW_LIVELIHOOD_ASSET_TABLE,
+                        CREATE_NEW_LIVELIHOOD_PRODUCT_TABLE,
+                        CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE,
+                        ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+                    )
+                )
                 migration(
                     db,
                     listOf(
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID,
                         ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE,
-                        ALTER_LIVELIHOOD_LANGUAGE_REFERENCE_COLUMN_NAME,
                         ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE,
                         CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE,
                         CREATE_CONDITIONS_TABLE,
-                        ALTER_LIVELIHOOD_ASSET_COLUMN_DROP,
-                        ALTER_LIVELIHOOD_ASSET_COLUMN_ADD,
-                        ALTER_LIVELIHOOD_PRODUCT_COLUMN_DROP,
-                        ALTER_LIVELIHOOD_PRODUCT_COLUMN_ADD,
-                        ALTER_LIVELIHOOD_COLUMN_DROP,
-                        ALTER_LIVELIHOOD_COLUMN_COLUMN_ADD_TYPE,
-                        ALTER_LIVELIHOOD_COLUMN_ADD_validation
-
+                        CREATE_SURVEY_CONFIG_TABLE,
+                        ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
                     )
                 )
             }
@@ -313,5 +333,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                 }
             }
         }
+
     }
 }

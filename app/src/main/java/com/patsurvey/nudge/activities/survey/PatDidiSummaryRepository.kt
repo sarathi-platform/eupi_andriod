@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
@@ -7,6 +8,7 @@ import com.nudge.core.enums.getDependsOnEventNameForEvent
 import com.nudge.core.getEventDependencyEntityListFromEvents
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.SharedPrefs.Companion.PREF_KEY_TEMP_CRP_FILE_PATH
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -106,5 +108,13 @@ class PatDidiSummaryRepository @Inject constructor(
             )
         }
         return eventDependencyList
+    }
+
+    fun saveTempImagePath(filePath: String) {
+        prefRepo.savePref(PREF_KEY_TEMP_CRP_FILE_PATH, filePath)
+    }
+
+    fun getTempImagePath(): String {
+        return prefRepo.getPref(PREF_KEY_TEMP_CRP_FILE_PATH, BLANK_STRING) ?: BLANK_STRING
     }
 }

@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -69,6 +70,8 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.model.CoreAppDetails
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -99,6 +102,8 @@ import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.updateStepStatus
 import com.patsurvey.nudge.utils.uriFromFile
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 import java.util.function.Consumer
 
 
@@ -556,14 +561,30 @@ fun PatDidiSummaryScreen(
                                     "rememberLauncherForActivityResult -> onResult = success: $success"
                                 )
                                 if (success) {
+                                    var isActivityRestart = false
+                                    if (patDidiSummaryViewModel.tempUri == Uri.EMPTY) {
+                                        patDidiSummaryViewModel.imagePath =
+                                            patDidiSummaryViewModel.getTempCrpFilePath()
+                                        val uri =
+                                            com.nudge.core.uriFromFile(
+                                                context = localContext,
+                                                file = File(patDidiSummaryViewModel.imagePath),
+                                                applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
+                                                    ?: BLANK_STRING
+                                            )
+                                        patDidiSummaryViewModel.photoUri = uri
+                                        isActivityRestart = true
+                                    }
                                     patDidiSummaryViewModel.photoUri =
                                         patDidiSummaryViewModel.tempUri
+
                                     handleImageCapture(
                                         uri = patDidiSummaryViewModel.photoUri,
                                         photoPath = patDidiSummaryViewModel.imagePath,
                                         context = (localContext as MainActivity),
                                         didi.value,
-                                        viewModal = patDidiSummaryViewModel
+                                        viewModal = patDidiSummaryViewModel,
+                                        isActivityRestart = isActivityRestart
                                     )
                                 } else {
                                     patDidiSummaryViewModel.shouldShowPhoto.value =
@@ -616,15 +637,11 @@ fun PatDidiSummaryScreen(
                                                         "Permission previously granted"
                                                     )
 
-                                                    val imageFile =
-                                                        patDidiSummaryViewModel.getFileName(
-                                                            localContext,
-                                                            didi.value
-                                                        )
-                                                    patDidiSummaryViewModel.imagePath =
-                                                        imageFile.absolutePath
-                                                    val uri = uriFromFile(localContext, imageFile)
-                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    val uri = saveTempImagePath(
+                                                        patDidiSummaryViewModel,
+                                                        localContext,
+                                                        didi
+                                                    )
                                                     cameraLauncher.launch(uri)
                                                 }
 
@@ -672,15 +689,11 @@ fun PatDidiSummaryScreen(
                                                         "Permission previously granted"
                                                     )
 
-                                                    val imageFile =
-                                                        patDidiSummaryViewModel.getFileName(
-                                                            localContext,
-                                                            didi.value
-                                                        )
-                                                    patDidiSummaryViewModel.imagePath =
-                                                        imageFile.absolutePath
-                                                    val uri = uriFromFile(localContext, imageFile)
-                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    val uri = saveTempImagePath(
+                                                        patDidiSummaryViewModel,
+                                                        localContext,
+                                                        didi
+                                                    )
                                                     cameraLauncher.launch(uri)
                                                 }
 
@@ -760,19 +773,16 @@ fun PatDidiSummaryScreen(
                                                 "Permission previously granted"
                                             )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(
+
+                                            val uri = saveTempImagePath(
+                                                patDidiSummaryViewModel,
                                                 localContext,
-                                                didi.value
+                                                didi
                                             )
-                                            patDidiSummaryViewModel.imagePath =
-                                                imageFile.absolutePath
-                                            val uri = uriFromFile(localContext, imageFile)
                                             NudgeLogger.d(
                                                 "PatDidiSummaryScreen",
                                                 "Retake Photo button Clicked: $uri"
                                             )
-                                            patDidiSummaryViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
                                             cameraLauncher.launch(uri)
                                             patDidiSummaryViewModel.shouldShowPhoto.value = false
                                         }
@@ -821,19 +831,15 @@ fun PatDidiSummaryScreen(
                                                 "Permission previously granted"
                                             )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(
+                                            val uri = saveTempImagePath(
+                                                patDidiSummaryViewModel,
                                                 localContext,
-                                                didi.value
+                                                didi
                                             )
-                                            patDidiSummaryViewModel.imagePath =
-                                                imageFile.absolutePath
-                                            val uri = uriFromFile(localContext, imageFile)
                                             NudgeLogger.d(
                                                 "PatDidiSummaryScreen",
                                                 "Retake Photo button Clicked: $uri"
                                             )
-                                            patDidiSummaryViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
                                             cameraLauncher.launch(uri)
                                             patDidiSummaryViewModel.shouldShowPhoto.value = false
                                         }
@@ -897,14 +903,11 @@ fun PatDidiSummaryScreen(
                                                 "Permission previously granted"
                                             )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(
+                                            val uri = saveTempImagePath(
+                                                patDidiSummaryViewModel,
                                                 localContext,
-                                                didi.value
+                                                didi
                                             )
-                                            patDidiSummaryViewModel.imagePath =
-                                                imageFile.absolutePath
-                                            val uri = uriFromFile(localContext, imageFile)
-                                            patDidiSummaryViewModel.tempUri = uri
                                             cameraLauncher.launch(uri)
                                         }
 
@@ -1068,12 +1071,30 @@ fun PatDidiSummaryScreen(
     }
 }
 
+private fun saveTempImagePath(
+    patDidiSummaryViewModel: PatDidiSummaryViewModel,
+    localContext: Context,
+    didi: StateFlow<DidiEntity>
+): Uri {
+    val imageFile = patDidiSummaryViewModel.getFileName(
+        localContext,
+        didi.value
+    )
+    patDidiSummaryViewModel.imagePath =
+        imageFile.absolutePath
+    val uri = uriFromFile(localContext, imageFile)
+    patDidiSummaryViewModel.tempUri = uri
+    patDidiSummaryViewModel.saveTempCrpFilePath(imageFile.absolutePath)
+    return uri
+}
+
 fun handleImageCapture(
     uri: Uri,
     photoPath: String,
     context: Activity,
     didiEntity: DidiEntity,
-    viewModal: PatDidiSummaryViewModel
+    viewModal: PatDidiSummaryViewModel,
+    isActivityRestart: Boolean
 ) {
 
     NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> called")
@@ -1169,8 +1190,7 @@ fun handleImageCapture(
 
     NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> viewModal.saveFilePathInDb called")
 
-
-    viewModal.saveFilePathInDb(uri, photoPath, location, didiEntity = didiEntity)
+    viewModal.saveFilePathInDb(uri, photoPath, location, didiEntity = didiEntity, isActivityRestart)
 
 }
 
