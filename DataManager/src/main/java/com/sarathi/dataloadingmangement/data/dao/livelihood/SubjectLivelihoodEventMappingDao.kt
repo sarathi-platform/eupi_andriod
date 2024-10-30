@@ -56,7 +56,8 @@ interface SubjectLivelihoodEventMappingDao {
         "select subject_livelihood_event_mapping_table.transactionId, subject_livelihood_event_mapping_table.subjectId, subject_livelihood_event_mapping_table.date, subject_livelihood_event_mapping_table.livelihoodId, subject_livelihood_event_mapping_table.livelihoodEventId, subject_livelihood_event_mapping_table.livelihoodEventType, \n" +
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
-                "subject_livelihood_event_mapping_table.status " +
+                "subject_livelihood_event_mapping_table.status, " +
+                "subject_livelihood_event_mapping_table.createdDate " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=1 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=1 \n" +
@@ -71,7 +72,8 @@ interface SubjectLivelihoodEventMappingDao {
         "select subject_livelihood_event_mapping_table.transactionId, subject_livelihood_event_mapping_table.subjectId, subject_livelihood_event_mapping_table.date, subject_livelihood_event_mapping_table.livelihoodId, subject_livelihood_event_mapping_table.livelihoodEventId, subject_livelihood_event_mapping_table.livelihoodEventType, \n" +
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
-                "subject_livelihood_event_mapping_table.status ,\n" + "Max(subject_livelihood_event_mapping_table.modifiedDate) ,\n" + "Max(asset_journal_table.modifiedDate) ,\n" + "Max(money_journal_table.modifiedDate)" +
+                "subject_livelihood_event_mapping_table.status ,\n" + "Max(subject_livelihood_event_mapping_table.modifiedDate) ,\n" + "Max(asset_journal_table.modifiedDate) ,\n" + "Max(money_journal_table.modifiedDate), " +
+                "subject_livelihood_event_mapping_table.createdDate " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=2 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=2 \n" +
