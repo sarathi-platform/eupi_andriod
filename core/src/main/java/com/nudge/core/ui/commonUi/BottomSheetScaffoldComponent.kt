@@ -58,10 +58,12 @@ import kotlinx.coroutines.launch
 fun <T> BottomSheetScaffoldComponent(
     bottomSheetScaffoldProperties: CustomBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties(),
     defaultValue: String = BLANK_STRING,
+    headerTitle: String?=BLANK_STRING,
     bottomSheetContentItemList: List<T>,
     selectedIndex: Int = 0,
     onBottomSheetItemSelected: (selectedItemIndex: Int) -> Unit,
     content: @Composable () -> Unit
+
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -83,7 +85,7 @@ fun <T> BottomSheetScaffoldComponent(
                 if (bottomSheetContentItemList.isNotEmpty()) {
 
                     SelectionSheetItemView(
-                        headerTitle = stringResource(R.string.small_group_filter_label),
+                        headerTitle = headerTitle,
                         items = bottomSheetContentItemList,
                         SelectionSheetItem = { index, item ->
                             when (item) {
