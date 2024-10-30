@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -94,6 +95,7 @@ class AddDidiViewModel @Inject constructor(
 
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
+    val selectedSortIndex : MutableState<Int> = mutableStateOf(0)
 
     private lateinit var castList : List<CasteEntity>
 
@@ -161,6 +163,70 @@ class AddDidiViewModel @Inject constructor(
             isTolaSynced.value = it
         }
 
+    }
+    fun didiSortedList(didiSortIndex: Int,tolaFilterSelected:Boolean) {
+        var fMapList = mutableMapOf<String, List<DidiEntity>>()
+
+        if (tolaFilterSelected) {
+            if (didiSortIndex == 0) {
+                tolaMapList.forEach() { mapEntry ->
+                    fMapList.put(mapEntry.key, mapEntry.value.sortedBy { it.createdDate })
+                }
+                filterTolaMapList = fMapList
+            }
+            if (didiSortIndex == 1) {
+                tolaMapList.forEach() { mapEntry ->
+                    fMapList.put(mapEntry.key, mapEntry.value.sortedByDescending { it.createdDate })
+                }
+                filterTolaMapList = fMapList
+            }
+            if (didiSortIndex == 2) {
+                tolaMapList.forEach() { mapEntry ->
+                    fMapList.put(mapEntry.key, mapEntry.value.sortedBy { it.modifiedDate })
+                }
+                filterTolaMapList = fMapList
+            }
+            if (didiSortIndex == 3) {
+                tolaMapList.forEach() { mapEntry ->
+                    fMapList.put(
+                        mapEntry.key,
+                        mapEntry.value.sortedByDescending { it.modifiedDate })
+                }
+                filterTolaMapList = fMapList
+            }
+            if (didiSortIndex == 4) {
+                tolaMapList.forEach() { mapEntry ->
+                    fMapList.put(mapEntry.key, mapEntry.value.sortedBy { it.name })
+                }
+                filterTolaMapList = fMapList
+            }
+            if (didiSortIndex == 5) {
+                tolaMapList.forEach() { mapEntry ->
+                    fMapList.put(mapEntry.key, mapEntry.value.sortedByDescending { it.name })
+                }
+                filterTolaMapList = fMapList
+            }
+
+        } else {
+            if (didiSortIndex == 0) {
+                filterDidiList = filterDidiList.sortedBy { it.createdDate }
+            }
+            if (didiSortIndex == 1) {
+                filterDidiList = filterDidiList.sortedByDescending { it.createdDate }
+            }
+            if (didiSortIndex == 2) {
+                filterDidiList = filterDidiList.sortedBy { it.modifiedDate }
+            }
+            if (didiSortIndex == 3) {
+                filterDidiList = filterDidiList.sortedByDescending { it.modifiedDate }
+            }
+            if (didiSortIndex == 4) {
+                filterDidiList = filterDidiList.sortedBy { it.name }
+            }
+            if (didiSortIndex == 5) {
+                filterDidiList = filterDidiList.sortedByDescending { it.name }
+            }
+        }
     }
 
     fun getValidDidisFromDB(isComingFromSocialPage: Boolean = false) {
