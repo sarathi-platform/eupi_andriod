@@ -25,33 +25,32 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
     DataSummaryScreen(
         "DataSummaryScreen",
         listOf(
-            "From - To",
-            "All Events:",
-            "Last %1\$s events:",
-            "Show Less",
-            "Show more",
-            "View edit history",
-            "Event:",
-            "Amount:",
-            "Assets:",
-            "Add Event"
+            "date_range_picker_label_text",
+            "all_events",
+            "last_events",
+            "show_less",
+            "show_more",
+            "view_edit_history",
+            "event",
+            "amount",
+            "asset",
+            "add_event"
         )
     ),
     DataTabScreen(
         "DataTabScreen", listOf(
-            "Are you sure?", "Do you want to exit the app?" +
-                    "Exit", "Cancel", "SARATHI", "Search by didis"
+            "are_you_sure", "do_you_want_to_exit_the_app" +
+                    "exit", "cancel", "app_name", "search_by_didis"
         )
     ),
     EditHistoryScreen(
         "EditHistoryScreen", listOf(
-            "Edit history", "From - To" +
-                    ""
+            "edit_history", "date_range_picker_label_text"
         )
     ),
     EditHistoryRow(
         "EditHistoryRow",
-        listOf("Delete", "Event:", "Asset Type:", "Increase in Number:", "Event Date:")
+        listOf("delete", "event", "asset_type", "increse_in_number", "event_date")
     ),
     NoScreen("NoScreen", emptyList())
 
