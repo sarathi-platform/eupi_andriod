@@ -20,6 +20,7 @@ import com.nudge.navigationmanager.routes.BPC_PROGRESS_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.BUG_LOGGING_ROUTE_NAME
 import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.DIDI_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.FORM_A_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.FORM_B_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.FORM_C_SCREEN_ROUTE_NAME
@@ -216,7 +217,7 @@ sealed class SettingScreens(val route: String) {
     object FORM_C_SCREEN : SettingScreens(route = FORM_C_SCREEN_ROUTE_NAME)
     object PDF_VIEWER : SettingScreens(route = "$PDF_VIEWER_ROUTE_NAME/{${NavigationParams.ARG_FORM_PATH.value}}")
     object IMAGE_VIEWER : SettingScreens(route = "$IMAGE_VIEWER_ROUTE_NAME/{${NavigationParams.ARG_IMAGE_PATH.value}}")
-
+    object EXPORT_BACKUP_FILE_SCREEN : SettingScreens(route = EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME)
     object BACKUP_RECOVERY_SCREEN : SettingScreens(route = BACKUP_RECOVERY_SCREEN_ROUTE_NAME)
     object ACTIVITY_REOPENING_SCREEN : SettingScreens(route = ACTIVITY_REOPENING_SCREEN_ROUTE_NAME)
     object SYNC_DATA_NOW_SCREEN : SettingScreens(route = SYNC_HOME_ROUTE_NAME)

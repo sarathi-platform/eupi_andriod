@@ -127,6 +127,4 @@
     <string name="last_1_month">Last 1 Month</string>
     <string name="income">Income</string>
     <string name="expense">Expense</string>
-    <string name="last_updated_days_ago">Last updated: %1$s days ago</string>
-    <string name="edit_event">Edit Event</string>
 </resources>
