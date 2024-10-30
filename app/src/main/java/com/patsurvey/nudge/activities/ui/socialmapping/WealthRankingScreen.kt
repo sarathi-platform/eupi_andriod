@@ -169,7 +169,7 @@ fun WealthRankingScreen(
     selectedIndex =viewModel.selectedSortIndex.value,
     onBottomSheetItemSelected = {
         viewModel. selectedSortIndex.value=it
-        viewModel.didiSortedList(it)
+        viewModel.didiSortedList(it,filterSelected)
     }
     )
     {

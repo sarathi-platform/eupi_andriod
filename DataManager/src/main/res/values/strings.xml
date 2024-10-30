@@ -91,7 +91,7 @@
         <item>@string/name_descending</item>
     </string-array>
 
-
+    <string name="sort_by">Sort By</string>
 
     <string name="all_filter_text">All</string>
     <string name="present">Present</string>

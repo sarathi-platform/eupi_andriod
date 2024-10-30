@@ -250,7 +250,7 @@ fun SocialMappingDidiListScreen(
         selectedIndex =didiViewModel.selectedSortIndex.value,
         onBottomSheetItemSelected = {
             didiViewModel. selectedSortIndex.value=it
-            didiViewModel.didiSortedList(it)
+            didiViewModel.didiSortedList(it,filterSelected)
         }
     )
     {

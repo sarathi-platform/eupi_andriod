@@ -188,7 +188,7 @@ fun SearchWithFilterView(
                         )
                     }
 
-                        Icon(
+                    Icon(
                             painter = painterResource(id = R.drawable.ic_new_sort_icon),
                             contentDescription = null,
                             tint = textColorDark,

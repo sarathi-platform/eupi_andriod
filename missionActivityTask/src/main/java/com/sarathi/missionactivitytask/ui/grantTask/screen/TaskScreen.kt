@@ -144,6 +144,7 @@ fun TaskScreen(
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
         defaultValue = stringResource(R.string.no_small_group_assgned_label),
+        headerTitle = stringResource(com.nudge.core.R.string.small_group_filter_label),
         bottomSheetContentItemList = viewModel.filterByList,
         selectedIndex = FilterCore.getFilterValueForActivity(activityId),
         onBottomSheetItemSelected = {
