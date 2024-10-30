@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -522,6 +523,7 @@ fun TaskScreen(
 
 
     }
+}
 
 @Composable
 private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewModel): String {

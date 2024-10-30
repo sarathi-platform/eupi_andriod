@@ -115,6 +115,4 @@
     <string name="last_1_month">"গত 1 মাস "</string>
     <string name="income">"আয় "</string>
     <string name="expense">"ব্যয় "</string>
-    <string name="last_updated_days_ago">"সর্বশেষ আপডেট করা হয়েছে: %1$s দিনের আগে "</string>
-    <string name="edit_event">Edit Event</string>
 </resources>

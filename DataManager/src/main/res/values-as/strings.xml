@@ -111,11 +111,9 @@
     <string name="showing">showing</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"সম্পদ "</string>
-    <string name="last_updated_days_ago">"অন্তিম আপডেট:  %1$s দিন আগতে "</string>
     <string name="last_1_month">Last 1 Month</string>
     <string name="income">"উপাৰ্জন "</string>
     <string name="expense">"খৰচ "</string>
     <string name="last_updated_days_ago">"অন্তিম আপডেট: %1$s দিন আগতে "</string>
-    <string name="edit_event">Edit Event</string>
 
 </resources>

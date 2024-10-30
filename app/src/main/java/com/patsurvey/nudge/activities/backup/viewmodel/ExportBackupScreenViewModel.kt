@@ -48,16 +48,18 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.LogWriter
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeCore
-import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
@@ -80,8 +82,9 @@ class ExportBackupScreenViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
+    val selectionVillageUseCase: SelectionVillageUseCase,
 
-) : BaseViewModel() {
+    ) : BaseViewModel() {
     var mAppContext: Context
     val showRestartAppDialog = mutableStateOf(false)
     val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -213,11 +216,12 @@ class ExportBackupScreenViewModel @Inject constructor(
         stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+        villageEntity: VillageEntity
     ) = PdfUtils.getFormAPdf(
         mAppContext,
         stateId,
-        villageEntity = prefRepo.getSelectedVillage(),
+        villageEntity = villageEntity,
         casteList = casteList,
         didiDetailList = didiList,
         completionDate = changeMilliDateToDate(
@@ -232,12 +236,13 @@ class ExportBackupScreenViewModel @Inject constructor(
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
 
         ) =
         PdfUtils.getFormBPdf(
             mAppContext,
             stateId,
-            villageEntity = prefRepo.getSelectedVillage(),
+            villageEntity = villageEntity,
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -252,12 +257,13 @@ class ExportBackupScreenViewModel @Inject constructor(
         stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+        villageEntity: VillageEntity
     ) =
         PdfUtils.getFormCPdf(
             mAppContext,
             stateId,
-            villageEntity = prefRepo.getSelectedVillage(),
+            villageEntity = villageEntity,
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -318,24 +324,44 @@ class ExportBackupScreenViewModel @Inject constructor(
     }
 
     private suspend fun processCRPForms(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        val selectedVillageId = prefRepo.getSelectedVillage().id
-        val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
+        selectionVillageUseCase.getVillageListFromDb().distinctBy { it.id }
+            .forEach { villageEntity ->
+                val selectedVillageId = villageEntity.id
+                val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
             prefRepo.getAppLanguageId() ?: 2
         )
         val didiList =
             settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(selectedVillageId)
         val formAFilePath =
-            generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormA(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formAFilePath, fileAndDbZipList)
 
         val formBFilePath =
-            generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormB(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formBFilePath, fileAndDbZipList)
 
         val formCFilePath =
-            generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormc(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formCFilePath, fileAndDbZipList)
-
+            }
     }
 
     private fun addFormToUriList(
