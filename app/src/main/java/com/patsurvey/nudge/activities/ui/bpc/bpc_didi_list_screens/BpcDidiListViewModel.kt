@@ -18,12 +18,15 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.getPatScoreEventName
+import com.patsurvey.nudge.utils.getSortedList
+import com.patsurvey.nudge.utils.getSortedMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -75,61 +78,14 @@ class BpcDidiListViewModel @Inject constructor(
         }
     }
     fun didiSortedList(didiSortIndex: Int,tolaFilterSelected:Boolean) {
-        var fMapList= mutableMapOf<String,List<DidiEntity>>()
-
-        if (tolaFilterSelected) {
-            if (didiSortIndex == 0) {
-                tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key,mapEntry.value.sortedBy { it.createdDate })
-                }
-                filterTolaMapList =fMapList
-            }
-            if (didiSortIndex == 1) {
-                tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key,mapEntry.value.sortedByDescending { it.createdDate })
-                }
-                filterTolaMapList =fMapList
-            }
-            if (didiSortIndex == 2) {
-                tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key,mapEntry.value.sortedBy { it.modifiedDate })
-                }
-                filterTolaMapList =fMapList
-            }
-            if (didiSortIndex == 3) {
-                tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key,mapEntry.value.sortedByDescending { it.modifiedDate })
-                }
-                filterTolaMapList =fMapList
-            }
-            if (didiSortIndex == 4) {
-                tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key,mapEntry.value.sortedBy { it.name })
-                }
-                filterTolaMapList =fMapList
-            }
-            if (didiSortIndex == 5) {
-                tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key,mapEntry.value.sortedByDescending { it.name })
-                }
-                filterTolaMapList =fMapList
-            }
-
-        } else {
-            if (didiSortIndex == 0) {
-                _filterDidiList.value = selectedDidiList.value.sortedBy { it.createdDate }
-            }
-            if (didiSortIndex == 1) {
-                _filterDidiList.value = selectedDidiList.value.sortedByDescending { it.createdDate }
-            }
-            if (didiSortIndex == 2) {
-                _filterDidiList.value = selectedDidiList.value.sortedBy { it.modifiedDate }
-            }
-            if (didiSortIndex == 3) {
-                _filterDidiList.value =
-                    selectedDidiList.value.sortedByDescending { it.modifiedDate }
-            }
-            if (didiSortIndex == 4) {
-                _filterDidiList.value = selectedDidiList.value.sortedBy { it.name }
-            }
-            if (didiSortIndex == 5) {
-                _filterDidiList.value = selectedDidiList.value.sortedByDescending { it.name }
-            }
+        if (tolaFilterSelected)
+        {
+            filterTolaMapList= getSortedMap(didiSortIndex,tolaMapList)
         }
+        else{
+            _filterDidiList.value=getSortedList(didiSortIndex,selectedDidiList.value)
+        }
+
     }
     fun fetchDidiListForBPC(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
