@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -78,6 +79,7 @@ import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
+import com.sarathi.surveymanager.utils.getMaxInputLength
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
 
@@ -254,7 +256,12 @@ fun QuestionUiContent(
             QuestionType.InputText.name -> {
                 InputComponent(
                     questionIndex = index,
-                    maxLength = 7,
+                    maxLength = getMaxInputLength(
+                        questionId = question.questionId,
+                        viewModel.sectionId,
+                        question.type,
+                        validations = viewModel.validations.orEmpty()
+                    ),
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = sanctionedAmount,
                     remainingAmount = getSanctionedAmountMessage(
@@ -507,6 +514,9 @@ fun FormQuestionUiContent(
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
 ) {
+
+    val context = LocalContext.current
+
     Column(
         verticalArrangement = Arrangement.spacedBy(dimen_2_dp)
     ) {
@@ -527,7 +537,14 @@ fun FormQuestionUiContent(
 
                     Row(modifier = Modifier
                         .clickable(enabled = true) {
-                            onClick()
+                            if (viewModel.isActivityNotCompleted.value) { // TODO: change this check to use isFormEntryAllowed Method and test it to limit number of form responses.
+                                onClick()
+                            } else {
+                                showCustomToast(
+                                    context = context,
+                                    context.getString(R.string.edit_disable_message)
+                                )
+                            }
                         }
                         .fillMaxWidth()
                         .background(if (true) blueDark else languageItemActiveBg)

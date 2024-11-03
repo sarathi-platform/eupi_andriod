@@ -36,7 +36,8 @@ enum class SurveyConfigCardSlots {
     FORM_SUMMARY_CARD_AADHAR,
     FORM_SUMMARY_CARD_VOTER,
     FORM_SUMMARY_CARD_PHONE_NUMBER,
-    FORM_SUMMARY_CARD_DIDI_IMAGE;
+    FORM_SUMMARY_CARD_DIDI_IMAGE,
+    FORM_MAX_RESPONSE_COUNT;
 
     companion object {
         const val CONFIG_SLOT_TYPE_TAG = "tag"
