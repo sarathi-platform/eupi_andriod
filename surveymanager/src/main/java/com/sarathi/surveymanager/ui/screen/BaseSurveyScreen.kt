@@ -36,6 +36,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
+import com.nudge.core.toSafeInt
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -59,7 +60,9 @@ import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -567,25 +570,39 @@ fun FormQuestionUiContent(
                     if (viewModel.showSummaryView.get(question.formId)
                             .value() > NUMBER_ZERO
                     ) {
-                        viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TOTAL_COUNT.name)
-                            ?.let {
-                                CustomVerticalSpacer()
-                                val updatedTotalCountText =
-                                    it.value + "${viewModel.showSummaryView[question.formId].value()}"
-                                val updatedModel = it.copy(value = updatedTotalCountText)
-                                SubContainerView(updatedModel, isNumberFormattingRequired = false)
-                                CustomVerticalSpacer()
-                                LinkTextButtonWithIcon(
-                                    modifier = Modifier
-                                        .align(Alignment.Start),
-                                    title = stringResource(CoreRes.string.view_summary),
-                                    isIconRequired = true,
-                                    textColor = summaryCardViewBlue,
-                                    iconTint = summaryCardViewBlue
-                                ) {
-                                    onViewSummaryClicked(question)
+                        val surveyConfigForForm = viewModel.surveyConfig[question.formId]
+                        surveyConfigForForm?.filter {
+                            it.value.componentType.equals(
+                                CONFIG_SLOT_TYPE_QUESTION_CARD,
+                                true
+                            )
+                        }
+                            ?.let { mapEntry ->
+                                mapEntry.forEach {
+                                    CustomVerticalSpacer()
+                                    val updatedModel = getSurveyModelWithValue(
+                                        it,
+                                        viewModel,
+                                        question,
+                                        surveyConfigForForm
+                                    )
+                                    SubContainerView(
+                                        updatedModel,
+                                        isNumberFormattingRequired = false
+                                    )
                                 }
                             }
+                        CustomVerticalSpacer()
+                        LinkTextButtonWithIcon(
+                            modifier = Modifier
+                                .align(Alignment.Start),
+                            title = stringResource(CoreRes.string.view_summary),
+                            isIconRequired = true,
+                            textColor = summaryCardViewBlue,
+                            iconTint = summaryCardViewBlue
+                        ) {
+                            onViewSummaryClicked(question)
+                        }
 
                     }
                 }
@@ -594,6 +611,38 @@ fun FormQuestionUiContent(
         }
         CustomVerticalSpacer()
     }
+}
+
+@Composable
+private fun getSurveyModelWithValue(
+    it: Map.Entry<String, SurveyCardModel>,
+    viewModel: BaseSurveyScreenViewModel,
+    question: QuestionUiModel,
+    surveyConfigForForm: MutableMap<String, SurveyCardModel>
+): SurveyCardModel {
+    var updatedModel = it.value
+    if (it.key.equals(SurveyConfigCardSlots.FORM_QUESTION_CARD_TOTAL_COUNT.name, true)) {
+        val updatedTotalCountText =
+            it.value.value + "${viewModel.showSummaryView[question.formId].value()}"
+        updatedModel = it.value.copy(value = updatedTotalCountText)
+    }
+
+    if (it.key.equals(SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_LABLE.name, true)) {
+
+        surveyConfigForForm.filter {
+            it.key.equals(
+                SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_VALUE.name,
+                true
+            )
+        }.values.apply {
+            var sum = 0
+            this.forEach {
+                sum += it.value.toSafeInt()
+            }
+            updatedModel = it.value.copy(value = sum.toString())
+        }
+    }
+    return updatedModel
 }
 
 @Composable

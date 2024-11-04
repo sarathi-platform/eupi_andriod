@@ -163,26 +163,28 @@ fun LazyListScope.SurveyScreenContent(
         } else {
             val formIdCount = formIdCountMap.get(question.formId).value(0)
             if (formIdCount == 0) {
-                item {
-                    FormQuestionUiContent(
-                        question = question,
-                        viewModel = viewModel,
-                        maxHeight = maxHeight,
-                        grantType = grantType,
-                        index = index,
-                        onAnswerSelect = onAnswerSelect,
-                        onClick = {
-                            onFormTypeQuestionClicked(
-                                question.sectionId,
-                                question.surveyId,
-                                question.formId,
-                                viewModel.referenceId
-                            )
-                        },
-                        onViewSummaryClicked = { questionUiModel ->
-                            onViewSummaryClicked(questionUiModel)
-                        }
-                    )
+                if (viewModel.visibilityMap[question.questionId] == true) {
+                    item {
+                        FormQuestionUiContent(
+                            question = question,
+                            viewModel = viewModel,
+                            maxHeight = maxHeight,
+                            grantType = grantType,
+                            index = index,
+                            onAnswerSelect = onAnswerSelect,
+                            onClick = {
+                                onFormTypeQuestionClicked(
+                                    question.sectionId,
+                                    question.surveyId,
+                                    question.formId,
+                                    viewModel.referenceId
+                                )
+                            },
+                            onViewSummaryClicked = { questionUiModel ->
+                                onViewSummaryClicked(questionUiModel)
+                            }
+                        )
+                    }
                 }
             }
             formIdCountMap[question.formId] = formIdCount + 1

@@ -205,9 +205,10 @@ private fun getSavedAnswerValueForSummaryField(
     mapEntry: Map.Entry<String, SurveyCardModel>
 ): String {
     var response = BLANK_STRING
+    val question = surveyAnswerFormSummaryUiModelList
+        .find { it.tagId.contains(mapEntry.value.tagId) }
     val optionsUiModelList =
-        surveyAnswerFormSummaryUiModelList
-            .find { it.tagId.contains(mapEntry.value.tagId) }?.optionItems
+        question?.optionItems
             ?.filter { it.isSelected == true }
 
     if (optionsUiModelList.isNullOrEmpty()) {
@@ -217,24 +218,23 @@ private fun getSavedAnswerValueForSummaryField(
     if (optionsUiModelList.size == 1) {
         val firstItem = optionsUiModelList.firstOrNull()
         if (QuestionType.singleResponseQuestionTypeQuestions.contains(
-                firstItem?.optionType.value().toLowerCase()
+                question.questionType.value().toLowerCase()
             ) && !QuestionType.userInputQuestionTypeList.contains(
-                firstItem?.optionType.value().toLowerCase()
+                question.questionType.value().toLowerCase()
             )
         ) {
             response = firstItem?.description.value()
         }
 
         if (QuestionType.userInputQuestionTypeList.contains(
-                firstItem?.optionType.value().toLowerCase()
+                question.questionType.value().toLowerCase()
             ) && QuestionType.userInputQuestionTypeList.contains(
-                firstItem?.optionType.value().toLowerCase()
+                question.questionType.value().toLowerCase()
             )
         ) {
             response = firstItem?.selectedValue.value()
         }
     } else {
-
         response = optionsUiModelList.map { it.description }.value().joinToString(PIPE_DELIMITER)
 
     }
