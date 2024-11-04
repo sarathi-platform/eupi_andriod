@@ -199,9 +199,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     runValidationCheck(it.questionId) { isValid, message ->
                         fieldValidationAndMessageMap[it.questionId] =
                             Pair(isValid, message)
+
                     }
                 }
+
             }
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -258,7 +261,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 }
             }
 
-            isButtonEnable.value = isQuestionValidationFromConfig && checkButtonValidation()
+            isButtonEnable.value =
+                isQuestionValidationFromConfig && checkButtonValidation() || (showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 })
         }
 
     }
@@ -268,21 +272,22 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
         questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
             .forEach { questionUiModel ->
-            if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
-                val disbursedAmount =
-                    if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (sanctionAmount != 0 && (disbursedAmount
-                        ?: 0) + totalRemainingAmount > sanctionAmount
-                ) {
+                if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
+                    val disbursedAmount =
+                        if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
+                    if (sanctionAmount != 0 && (disbursedAmount
+                            ?: 0) + totalRemainingAmount > sanctionAmount
+                    ) {
+                        return false
+                    }
+                }
+                val result =
+                    (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
+                if (!result) {
                     return false
                 }
-            }
-            val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
-            if (!result) {
-                return false
-            }
 
-        }
+            }
         return true
 
     }
@@ -312,17 +317,16 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         this.totalSubmittedAmount = totalSubmittedAmount
     }
 
-    private fun isTaskStatusCompleted() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityNotCompleted.value = !getActivityUseCase.isAllActivityCompleted(
-                missionId = taskEntity?.missionId ?: 0,
-                activityId = taskEntity?.activityId ?: 0
-            )
-        }
+    private suspend fun isTaskStatusCompleted() {
+        isActivityNotCompleted.value = !getActivityUseCase.isAllActivityCompleted(
+            missionId = taskEntity?.missionId ?: 0,
+            activityId = taskEntity?.activityId ?: 0
+        )
+
         checkButtonValidation()
 
-
     }
+
 
     fun getPrefixFileName(question: QuestionUiModel): String {
         return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"

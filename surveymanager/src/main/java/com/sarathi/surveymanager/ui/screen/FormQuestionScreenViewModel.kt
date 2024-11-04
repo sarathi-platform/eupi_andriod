@@ -177,28 +177,27 @@ open class FormQuestionScreenViewModel @Inject constructor(
         this.subjectType = subjectType
     }
 
-    fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveQuestionAnswerIntoDb(currentQuestionUiModel)
+    private suspend fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
+        saveQuestionAnswerIntoDb(currentQuestionUiModel)
 
-            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
-                questionUiModel = currentQuestionUiModel,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId
-                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                referenceId = referenceId,
-                grantId = 0,
-                grantType = BLANK_STRING,
-                taskId = taskId,
-                uriList = ArrayList(),
-                activityId = activityId,
-                activityReferenceId = 0,
-                activityReferenceType = BLANK_STRING,
-                isFromRegenerate = false
-            )
-        }
+        surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
+            questionUiModel = currentQuestionUiModel,
+            subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+            subjectType = subjectType,
+            taskLocalId = taskEntity?.localTaskId
+                ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+            referenceId = referenceId,
+            grantId = 0,
+            grantType = BLANK_STRING,
+            taskId = taskId,
+            uriList = ArrayList(),
+            activityId = activityId,
+            activityReferenceId = 0,
+            activityReferenceType = BLANK_STRING,
+            isFromRegenerate = false
+        )
     }
+
 
     protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
         saveSurveyAnswerUseCase.saveSurveyAnswer(
@@ -265,10 +264,29 @@ open class FormQuestionScreenViewModel @Inject constructor(
     }
 
     fun saveAllAnswers() {
-        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
-            .forEach { questionUiModel ->
-                saveSingleAnswerIntoDb(questionUiModel)
-            }
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+                .forEach { questionUiModel ->
+                    saveSingleAnswerIntoDb(questionUiModel)
+                }
+            surveyAnswerEventWriterUseCase.writeFormResponseEvent(
+                questionUiModels = questionUiModel.value.filter {
+                    it.isMandatory && visibilityMap.get(
+                        it.questionId
+                    ) == true
+                },
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = subjectType,
+                taskLocalId = taskEntity?.localTaskId
+                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                referenceId = referenceId,
+                grantId = 0,
+                grantType = BLANK_STRING,
+                taskId = taskId,
+                isFromRegenerate = false
+            )
+        }
     }
 
 }

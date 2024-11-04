@@ -80,8 +80,12 @@ fun SurveyScreen(
                 taskId,
                 SurveyStatusEnum.COMPLETED.name
             ) {
+                if (viewModel.isNoSection.value) {
                 navController.popBackStack()
-                navController.popBackStack()
+                    navController.popBackStack()
+                } else {
+                    navController.popBackStack()
+                }
             }
         },
         surveyQuestionContent = { maxHeight ->
