@@ -50,18 +50,7 @@ class SyncAPIUseCase(
             requestIdList.chunked(getBatchSize(connectionQuality).maxClientIdsForStatus)
         chunkedRequestIDs.forEach {
             try {
-                val eventConsumerRequest = EventConsumerRequest(
-                    requestId = listOf(),
-                    mobile = BLANK_STRING,
-                    endDate = BLANK_STRING,
-                    startDate = BLANK_STRING,
-                    clientIds = it
-                )
-                CoreLogger.d(
-                    context = CoreAppDetails.getApplicationContext().applicationContext,
-                    "SyncAPIUseCase",
-                    "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
-                )
+                val eventConsumerRequest = eventConsumerRequest(it)
 
                 val consumerAPIResponse =
                     syncAPiRepository.fetchConsumerEventStatus(eventConsumerRequest)
@@ -106,11 +95,19 @@ class SyncAPIUseCase(
         }
     }
 
-    fun getSyncBatchSize() = syncAPiRepository.getSyncBatchSize()
-    fun getSyncRetryCount() = syncAPiRepository.getSyncRetryCount()
-
-    fun getMaxSyncPayloadSize() {
-
+    private fun eventConsumerRequest(it: List<String>): EventConsumerRequest {
+        val eventConsumerRequest = EventConsumerRequest(
+            requestId = listOf(),
+            mobile = BLANK_STRING,
+            endDate = BLANK_STRING,
+            startDate = BLANK_STRING,
+            clientIds = it
+        )
+        CoreLogger.d(
+            context = CoreAppDetails.getApplicationContext().applicationContext,
+            "SyncAPIUseCase",
+            "fetchConsumerStatus Consumer Request: ${eventConsumerRequest.json()}"
+        )
+        return eventConsumerRequest
     }
-
 }
