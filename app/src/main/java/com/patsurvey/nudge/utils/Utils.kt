@@ -1580,8 +1580,8 @@ fun getSortedList(index:Int, didiList:List<DidiEntity>):List<DidiEntity>{
         1->didiList.sortedByDescending { it.createdDate }
         2->didiList.sortedBy { it.modifiedDate }
         3->didiList.sortedByDescending { it.modifiedDate }
-        4->didiList.sortedBy { it.name }
-        5->didiList.sortedByDescending { it.name }
+        4->didiList.sortedBy { it.name.lowercase() }
+        5->didiList.sortedByDescending { it.name.lowercase() }
         else -> {
             didiList
         }
