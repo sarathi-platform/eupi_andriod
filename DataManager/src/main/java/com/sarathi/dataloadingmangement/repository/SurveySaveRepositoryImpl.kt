@@ -321,6 +321,6 @@ class SurveySaveRepositoryImpl @Inject constructor(
             surveyAnswerEntity.sectionId,
             surveyAnswerEntity.questionId,
             surveyAnswerEntity.referenceId
-        ) == 0
+        ) > 0
     }
 }
