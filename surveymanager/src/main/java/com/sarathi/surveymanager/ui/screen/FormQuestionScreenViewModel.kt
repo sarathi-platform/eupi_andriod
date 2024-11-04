@@ -7,6 +7,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
@@ -18,7 +19,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
@@ -71,6 +75,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var validations: List<SurveyValidations>? = mutableListOf()
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
+    val formTitle = mutableStateOf(BLANK_STRING)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
@@ -102,7 +108,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
             taskEntity?.let {
                 getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                     .also { surveyConfigEntityList ->
-                        getSurveyConfig(surveyConfigEntityList)
+                        val taskAttributes = getTaskUseCase.getSubjectAttributes(it.taskId)
+                        getSurveyConfig(surveyConfigEntityList, taskAttributes)
                     }
                 validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
                 questionUiModel.value.forEach {
@@ -116,20 +123,34 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 initQuestionVisibilityMap(questionUiModel.value)
                 questionUiModel.value.forEach {
                     runConditionCheck(it)
+                    runValidationCheck(questionId = it.questionId) { isValid, message ->
+                        fieldValidationAndMessageMap[it.questionId] =
+                            Pair(isValid, message)
+                    }
                 }
             }
         }
     }
 
-    private fun getSurveyConfig(surveyConfigEntityList: List<SurveyConfigEntity>) {
+    private fun getSurveyConfig(
+        surveyConfigEntityList: List<SurveyConfigEntity>,
+        taskAttributes: List<SubjectAttributes>
+    ) {
         val mSurveyConfig = mutableMapOf<String, SurveyCardModel>()
-        surveyConfigEntityList.forEach { surveyConfigEntity ->
+        surveyConfigEntityList.forEach { it ->
+            var surveyConfigEntity = it
+            if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
+                surveyConfigEntity =
+                    surveyConfigEntity.copy(value = taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value())
+            }
             mSurveyConfig.put(
                 surveyConfigEntity.key,
                 SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
             )
         }
         surveyConfig = mSurveyConfig
+        formTitle.value =
+            surveyConfig[SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name]?.value.value()
     }
 
     fun setPreviousScreenData(
@@ -229,6 +250,18 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+        ioViewModelScope {
+            val notVisibleQuestion = visibilityMap.filter { !it.value }
+            questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
+                .forEach { it ->
+                    it.options = it.options?.map {
+                        it.copy(
+                            isSelected = false,
+                            selectedValue = BLANK_STRING
+                        )
+                    }
+                }
+        }
     }
 
     fun saveAllAnswers() {

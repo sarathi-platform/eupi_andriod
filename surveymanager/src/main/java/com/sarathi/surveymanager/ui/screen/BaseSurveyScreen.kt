@@ -537,7 +537,10 @@ fun FormQuestionUiContent(
 
                     Row(modifier = Modifier
                         .clickable(enabled = true) {
-                            if (viewModel.isActivityNotCompleted.value) { // TODO: change this check to use isFormEntryAllowed Method and test it to limit number of form responses.
+                            if (viewModel.isActivityNotCompleted.value && viewModel.isFormEntryAllowed(
+                                    question.formId
+                                )
+                            ) { // TODO: change this check to use isFormEntryAllowed Method and test it to limit number of form responses.
                                 onClick()
                             } else {
                                 showCustomToast(
@@ -568,7 +571,7 @@ fun FormQuestionUiContent(
                             ?.let {
                                 CustomVerticalSpacer()
                                 val updatedTotalCountText =
-                                    it.value + ": " + viewModel.showSummaryView[question.formId].value()
+                                    it.value + "${viewModel.showSummaryView[question.formId].value()}"
                                 val updatedModel = it.copy(value = updatedTotalCountText)
                                 SubContainerView(updatedModel, isNumberFormattingRequired = false)
                                 CustomVerticalSpacer()
@@ -687,7 +690,8 @@ fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
 }
 
 fun getSelectedValueInInt(selectedValue: String, sanctionedAmount: Int): Int {
-    return if (selectedValue.isNotBlank()) selectedValue.toInt() else sanctionedAmount
+    return if (selectedValue.isNotBlank()) selectedValue.toIntOrNull()
+        .value(NUMBER_ZERO) else sanctionedAmount
 }
 
 

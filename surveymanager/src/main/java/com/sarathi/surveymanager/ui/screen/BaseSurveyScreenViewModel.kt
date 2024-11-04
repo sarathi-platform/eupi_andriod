@@ -9,6 +9,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -30,8 +31,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -169,7 +172,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     it.activityId,
                     surveyId
                 )?.also { surveyConfigMap ->
-                    surveyConfig = getSurveyConfig(surveyConfigMap)
+                    val taskAttributes = getTaskUseCase.getSubjectAttributes(taskId)
+                    surveyConfig = getSurveyConfig(surveyConfigMap, taskAttributes)
                 }
                 validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
             }
@@ -190,19 +194,35 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
 
             isTaskStatusCompleted()
+            questionUiModel.value.filter { visibilityMap[it.questionId].value() }.apply {
+                this.forEach {
+                    runValidationCheck(it.questionId) { isValid, message ->
+                        fieldValidationAndMessageMap[it.questionId] =
+                            Pair(isValid, message)
+                    }
+                }
+            }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    private fun getSurveyConfig(surveyConfigMap: Map<Int, List<SurveyConfigEntity>>): MutableMap<Int, MutableMap<String, SurveyCardModel>> {
+    private fun getSurveyConfig(
+        surveyConfigMap: Map<Int, List<SurveyConfigEntity>>,
+        taskAttributes: List<SubjectAttributes>
+    ): MutableMap<Int, MutableMap<String, SurveyCardModel>> {
         val mSurveyConfig = mutableMapOf<Int, MutableMap<String, SurveyCardModel>>()
         surveyConfigMap.forEach { surveyConfigMapEntry ->
             val surveyConfigForForm = mutableMapOf<String, SurveyCardModel>()
             surveyConfigMapEntry.value.forEach { it ->
-                val model = SurveyCardModel.getSurveyCarModel(it)
-                surveyConfigForForm[it.key] = model
+                var surveyConfigEntity = it
+                if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
+                    surveyConfigEntity =
+                        surveyConfigEntity.copy(value = taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value())
+                }
+                val model = SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
+                surveyConfigForForm[surveyConfigEntity.key] = model
             }
             mSurveyConfig[surveyConfigMapEntry.key] = surveyConfigForForm
         }
@@ -340,6 +360,19 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+        ioViewModelScope {
+            val notVisibleQuestion = visibilityMap.filter { !it.value }
+            questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
+                .forEach { it ->
+                    it.options = it.options?.map {
+                        it.copy(
+                            isSelected = false,
+                            selectedValue = BLANK_STRING
+                        )
+                    }
+                    saveQuestionAnswerIntoDb(it)
+                }
+        }
     }
 
     fun isFormEntryAllowed(formId: Int): Boolean {

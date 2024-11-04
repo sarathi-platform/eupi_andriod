@@ -26,6 +26,7 @@ class ConditionsUtils {
     private var questionConditionMap: Map<Int, List<Conditions>> = mapOf()
 
     private var responseMap: HashMap<Int, List<Int>> = hashMapOf()
+        get() = field
 
     private var conditionsUiModelList: List<ConditionsUiModel> = listOf()
 
@@ -82,7 +83,8 @@ class ConditionsUtils {
 
                 if (it.type == QuestionType.InputNumber.name || it.type == QuestionType.NumericField.name) {
                     it.options?.filter { option -> option.isSelected.value() }
-                        ?.map { opt -> opt.selectedValue?.toInt()!! }?.ifNotEmpty { optionIds ->
+                        ?.map { opt -> opt.selectedValue?.toIntOrNull().value(NUMBER_ZERO) }
+                        ?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
 
@@ -226,15 +228,19 @@ class ConditionsUtils {
                 break
 
             if (condition.size == 1) {
+                val result = evaluateSingleCondition(
+                    sourceQuestion = sourceQuestion,
+                    response = response,
+                    conditions = condition.first(),
+                    sourceQuestionType = sourceQuestionType
+                )
                 questionVisibilityMap.put(
                     targetQuestionId,
-                    evaluateSingleCondition(
-                        sourceQuestion = sourceQuestion,
-                        response = response,
-                        conditions = condition.first(),
-                        sourceQuestionType = sourceQuestionType
-                    )
+                    result
                 )
+                if (!result) {
+                    responseMap.remove(targetQuestionId)
+                }
 
                 val targetQuestionUiModel =
                     questionUiModel.find { it.questionId == targetQuestionId } ?: continue
@@ -562,6 +568,14 @@ class ConditionsUtils {
                 operands.first > operands.second
             }
 
+            Operator.GREATER_THAN_EQUAL -> {
+                operands.first >= operands.second
+            }
+
+            Operator.LESS_THAN_EQUAL -> {
+                operands.first <= operands.second
+            }
+
             else -> false
         }
     }
@@ -606,6 +620,8 @@ enum class Operator {
     LESS_THAN,
     MORE_THAN,
     IN_BETWEEN,
+    GREATER_THAN_EQUAL,
+    LESS_THAN_EQUAL,
     NOT_EQUAL_TO,
     NO_OPERATOR,
     AND,
@@ -627,6 +643,8 @@ enum class Operator {
             ">" -> MORE_THAN
             "><" -> IN_BETWEEN
             "<>" -> NOT_EQUAL_TO
+            ">=" -> GREATER_THAN_EQUAL
+            "<=" -> LESS_THAN_EQUAL
             "&&" -> AND
             "||" -> OR
             else -> NO_OPERATOR

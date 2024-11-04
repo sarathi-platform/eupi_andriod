@@ -29,7 +29,8 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
-import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_PREPOPULATED
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
@@ -41,6 +42,7 @@ import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
@@ -80,7 +82,7 @@ fun FormQuestionScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = viewModel.surveyConfig[SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name]?.value.value(),
+        title = viewModel.formTitle.value,
         modifier = modifier,
         onBackIconClick = { navController.navigateUp() },
         onSearchValueChange = {},
@@ -110,6 +112,23 @@ fun FormQuestionScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_16_dp)
                 ) {
+
+
+                    viewModel.surveyConfig
+                        .filter {
+                            it.value.type.equals(UiConfigAttributeType.DYNAMIC.name, true)
+                                    && it.value.componentType.equals(
+                                CONFIG_SLOT_TYPE_PREPOPULATED,
+                                true
+                            )
+                        }.forEach { mapEntry ->
+                            item {
+                                SubContainerView(
+                                    mapEntry.value,
+                                    isNumberFormattingRequired = false
+                                )
+                            }
+                        }
 
                     itemsIndexed(viewModel.questionUiModel.value.sortedBy { it.order }) { index, question ->
 
@@ -202,7 +221,8 @@ fun FormScreenQuestionUiContent(
                     }
                 }
 
-                QuestionType.MultiImage.name -> {
+                QuestionType.MultiImage.name,
+                QuestionType.SingleImage.name -> {
                     AddImageComponent(
                         fileNamePrefix = /*viewModel.getPrefixFileName(question)*/ BLANK_STRING,
                         filePaths = commaSeparatedStringToList(
@@ -213,7 +233,11 @@ fun FormScreenQuestionUiContent(
                         title = question.questionDisplay,
                         isEditable = viewModel.isActivityNotCompleted.value,
                         maxCustomHeight = maxHeight,
-                        subtitle = question.display
+                        subtitle = question.display,
+                        areMultipleImagesAllowed = question.type.equals(
+                            QuestionType.MultiImage.name,
+                            true
+                        )
                     ) { selectedValue, isDeleted ->
                         saveMultiImageTypeAnswer(
                             selectedValue,

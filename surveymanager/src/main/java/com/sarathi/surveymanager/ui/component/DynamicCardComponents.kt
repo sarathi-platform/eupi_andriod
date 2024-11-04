@@ -31,7 +31,7 @@ fun SubContainerView(
 
         if (!TextUtils.isEmpty(surveyCard?.label)) {
             Text(
-                text = surveyCard?.label!!,
+                text = surveyCard?.label!! + ": ",
                 color = blueDark,
                 style = newMediumTextStyle
             )

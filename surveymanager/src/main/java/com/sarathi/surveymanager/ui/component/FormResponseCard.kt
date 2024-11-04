@@ -46,6 +46,7 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_TAG
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
@@ -135,59 +136,63 @@ fun FormResponseCard(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                TextButton(
-                    onClick = {
-                        if (isEditAllowed) {
-                            onUpdate(referenceId)
-                        } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.edit_disable_message)
-                            )
-                        }
-                    }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = blueDark
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit Button",
-                        tint = blueDark
-                    )
+                if (surveyConfig.containsKey(SurveyConfigCardSlots.FORM_SUMMARY_CARD_EDIT_BUTTON.name)) {
+                    TextButton(
+                        onClick = {
+                            if (isEditAllowed) {
+                                onUpdate(referenceId)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    context.getString(R.string.edit_disable_message)
+                                )
+                            }
+                        }, modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = blueDark
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = "Edit Button",
+                            tint = blueDark
+                        )
+                    }
                 }
-                Divider(
-                    color = borderGreyLight,
-                    modifier = Modifier
-                        .fillMaxHeight()  //fill the max height
-                        .width(1.dp)
-                )
-                TextButton(
-                    onClick = {
-                        if (isEditAllowed) {
-                            onDelete(referenceId)
-                        } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.edit_disable_message)
-                            )
-                        }
-                    }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = blueDark
+                if (surveyConfig.containsKey(SurveyConfigCardSlots.FORM_SUMMARY_CARD_DELETE_BUTTON.name)) {
+                    Divider(
+                        color = borderGreyLight,
+                        modifier = Modifier
+                            .fillMaxHeight()  //fill the max height
+                            .width(1.dp)
                     )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Delete Button",
-                        tint = blueDark
-                    )
+                    TextButton(
+                        onClick = {
+                            if (isEditAllowed) {
+                                onDelete(referenceId)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    context.getString(R.string.edit_disable_message)
+                                )
+                            }
+                        }, modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = blueDark
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete Button",
+                            tint = blueDark
+                        )
+                    }
                 }
             }
         }
