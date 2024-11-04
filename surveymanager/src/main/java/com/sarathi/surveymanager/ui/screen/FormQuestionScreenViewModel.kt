@@ -88,15 +88,15 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private fun loadFormQuestionData() {
         ioViewModelScope {
             taskEntity = getTaskUseCase.getTask(taskId)
-            _questionUiModel.value = fetchDataUseCase.invokeFormQuestions(
+            val question = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = referenceId,
-                grantId = 0,
-                formId = formId
+                grantId = 0
             )
+            _questionUiModel.value = question.filter { it.formId != 0 }
 
             val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
                 .invoke(
@@ -120,8 +120,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
-                initQuestionVisibilityMap(questionUiModel.value)
-                questionUiModel.value.forEach {
+                initQuestionVisibilityMap(question)
+                question.forEach {
                     runConditionCheck(it)
                     runValidationCheck(questionId = it.questionId) { isValid, message ->
                         fieldValidationAndMessageMap[it.questionId] =

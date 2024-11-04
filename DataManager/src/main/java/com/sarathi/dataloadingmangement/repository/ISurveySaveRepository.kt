@@ -49,4 +49,13 @@ interface ISurveySaveRepository {
         sectionId: Int,
         questionIds: List<Int>
     ): List<String>
+
+    fun isAnswerAvailableInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean
 }

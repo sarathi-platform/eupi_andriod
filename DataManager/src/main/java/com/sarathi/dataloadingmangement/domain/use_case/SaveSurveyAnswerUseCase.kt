@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
@@ -99,5 +101,64 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         }
 
         return map
+    }
+
+    suspend fun isAnswerAvailableInDb(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean {
+        return repository.isAnswerAvailableInDb(
+            questionUiModel,
+            subjectId,
+            referenceId,
+            taskId,
+            grantId,
+            grantType
+        )
+    }
+
+    suspend fun updateNonVisibleQuestionsResponse(
+        visibilityMap: SnapshotStateMap<Int, Boolean>,
+        questionUiModel: List<QuestionUiModel>,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String,
+        grantID: Int,
+        granType: String,
+        isFromFormQuestionScreen: Boolean = false
+    ) {
+        val notVisibleQuestion = visibilityMap.filter { !it.value }
+        questionUiModel.filter { notVisibleQuestion.containsKey(it.questionId) }
+            .forEach { it ->
+                it.options = it.options?.map {
+                    it.copy(
+                        isSelected = false,
+                        selectedValue = BLANK_STRING
+                    )
+                }
+                if (
+                    isAnswerAvailableInDb(
+                        it,
+                        subjectId,
+                        taskId = taskId,
+                        referenceId = referenceId,
+                        grantId = grantID,
+                        grantType = granType
+                    ) && isFromFormQuestionScreen
+                ) {
+                    saveSurveyAnswer(
+                        it,
+                        subjectId = subjectId,
+                        taskId,
+                        referenceId,
+                        grantID,
+                        granType
+                    )
+                }
+            }
     }
 }

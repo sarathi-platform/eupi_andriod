@@ -258,6 +258,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 }
             }
 
+
             isButtonEnable.value = isQuestionValidationFromConfig && checkButtonValidation()
         }
 
@@ -361,18 +362,33 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
         ioViewModelScope {
-            val notVisibleQuestion = visibilityMap.filter { !it.value }
-            questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
-                .forEach { it ->
-                    it.options = it.options?.map {
-                        it.copy(
-                            isSelected = false,
-                            selectedValue = BLANK_STRING
-                        )
-                    }
+            updateNonVisibleQuestionsResponse()
+        }
+    }
+
+    private suspend fun updateNonVisibleQuestionsResponse() {
+        val notVisibleQuestion = visibilityMap.filter { !it.value }
+        questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
+            .forEach { it ->
+                it.options = it.options?.map {
+                    it.copy(
+                        isSelected = false,
+                        selectedValue = BLANK_STRING
+                    )
+                }
+                if (
+                    saveSurveyAnswerUseCase.isAnswerAvailableInDb(
+                        it,
+                        taskEntity?.subjectId ?: DEFAULT_ID,
+                        taskId = taskId,
+                        referenceId = referenceId,
+                        grantId = grantID,
+                        grantType = granType
+                    )
+                ) {
                     saveQuestionAnswerIntoDb(it)
                 }
-        }
+            }
     }
 
     fun isFormEntryAllowed(formId: Int): Boolean {
