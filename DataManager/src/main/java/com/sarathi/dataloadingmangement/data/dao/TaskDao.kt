@@ -124,4 +124,6 @@ interface TaskDao {
         statuses: List<String>
     ): Int
 
+    @Query("select taskId from task_table where localTaskId=:localTaskId and userId=:userId")
+    suspend fun getTaskIdFromLocalTaskId(localTaskId: String, userId: String): Int
 }
