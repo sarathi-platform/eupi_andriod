@@ -24,7 +24,7 @@ class SectionStatusEventWriterRepositoryImpl @Inject constructor(
         return SectionStatusUpdateEventDto(
             surveyId = surveyId,
             sectionId = sectionId,
-            didiId = taskId,
+            didiId = task.subjectId,
             sectionStatus = status,
             localTaskId = task.localTaskId
         )
