@@ -11,6 +11,7 @@ import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.datamodel.FederationDetailModel
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -3979,7 +3980,7 @@ class VillageSelectionRepository @Inject constructor(
                     withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: "", blockId = it.federationDetail?.blockId ?: 0, blockName = it.federationDetail?.blockName ?: BLANK_STRING, districtId = it.federationDetail?.districtId ?: 0, districtName = it.federationDetail?.districtName ?: BLANK_STRING, stateId = it.federationDetail?.stateId ?: 0, stateName = it.federationDetail?.stateName ?: BLANK_STRING))
+                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: "", federationDetailModel = it.federationDetail ?: FederationDetailModel(blockId = 0, blockName = BLANK_STRING, stateId = 0, stateName = BLANK_STRING, districtId = 0, districtName = BLANK_STRING)))
                                 villageListDao.insertOnlyNewData(
                                     it.villageList ?: listOf(),
                                     prefRepo.isUserBPC()
@@ -4085,12 +4086,7 @@ class VillageSelectionRepository @Inject constructor(
             name = userDetailsModel.name,
             userType = userDetailsModel.typeName,
             buildEnvironment = prefRepo.getBuildEnvironment(),
-            blockId = userDetailsModel.blockId,
-            blockName = userDetailsModel.blockName,
-            districtId = userDetailsModel.districtId,
-            districtName = userDetailsModel.districtName,
-            stateId = userDetailsModel.stateId,
-            stateName = userDetailsModel.stateName,
+            federationDetailModel = userDetailsModel.federationDetailModel,
         )
 
     }

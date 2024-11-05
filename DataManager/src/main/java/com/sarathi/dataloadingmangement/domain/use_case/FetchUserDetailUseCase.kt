@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.datamodel.FederationDetailModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
@@ -25,12 +26,7 @@ class FetchUserDetailUseCase @Inject constructor(
                         userType = userApiResponse.typeName ?: BLANK_STRING,
                         distinctId = repository.getUSerMobileNo(),
                         buildEnvironment = repository.getBuildEnv(),
-                        blockId = userApiResponse.federationDetail?.blockId ?: 0,
-                        blockName = userApiResponse.federationDetail?.blockName ?: BLANK_STRING,
-                        districtId = userApiResponse.federationDetail?.districtId ?: 0,
-                        districtName = userApiResponse.federationDetail?.districtName ?: BLANK_STRING,
-                        stateId = userApiResponse.federationDetail?.stateId ?: 0,
-                        stateName = userApiResponse.federationDetail?.stateName ?: BLANK_STRING,
+                       federationDetailModel = userApiResponse.federationDetail ?: FederationDetailModel(blockId = 0, blockName = BLANK_STRING, stateId = 0, stateName = BLANK_STRING, districtId = 0, districtName = BLANK_STRING)
                     )
                     repository.saveUserDetails(userApiResponse)
                 }

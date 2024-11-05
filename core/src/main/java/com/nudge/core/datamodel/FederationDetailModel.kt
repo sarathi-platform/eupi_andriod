@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.network.response
+package com.nudge.core.datamodel
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

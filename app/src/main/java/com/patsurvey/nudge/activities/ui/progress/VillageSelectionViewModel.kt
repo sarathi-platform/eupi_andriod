@@ -10,6 +10,7 @@ import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.datamodel.FederationDetailModel
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
@@ -1614,12 +1615,7 @@ class VillageSelectionViewModel @Inject constructor(
                                     name = it.name.value(),
                                     userType = it.typeName.value(),
                                     buildEnvironment = prefRepo.getBuildEnvironment(),
-                                    blockId = it.federationDetail?.blockId.value(),
-                                    blockName = it.federationDetail?.blockName.value(),
-                                    districtId = it.federationDetail?.districtId.value(),
-                                    districtName = it.federationDetail?.districtName.value(),
-                                    stateId = it.federationDetail?.stateId.value(),
-                                    stateName = it.federationDetail?.stateName.value(),
+                                    federationDetailModel = it.federationDetail ?: FederationDetailModel(blockId = 0, blockName = BLANK_STRING, stateId = 0, stateName = BLANK_STRING, districtId = 0, districtName = BLANK_STRING)
                                 )
 
                                 coreSharedPrefs.setBackupFileName(
