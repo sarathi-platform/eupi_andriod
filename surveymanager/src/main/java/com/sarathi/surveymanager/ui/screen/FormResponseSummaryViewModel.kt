@@ -65,7 +65,8 @@ class FormResponseSummaryViewModel @Inject constructor(
 
     val referenceIdsList = mutableStateListOf<String>()
 
-    var surveyConfig = mutableMapOf<String, SurveyCardModel>()
+    var surveyConfig =
+        mutableMapOf<String, List<SurveyCardModel>>()
 
 
     fun init(
@@ -124,6 +125,15 @@ class FormResponseSummaryViewModel @Inject constructor(
             activityConfig =
                 getActivityUiConfigUseCase.getActivityConfig(it.activityId, it.missionId)
 
+            val formQuestionIdList = fetchDataUseCase.invoke(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                activityConfigId = activityConfigId,
+                referenceId = BLANK_STRING,
+                grantId = NUMBER_ZERO
+            ).filter { it.formId != NUMBER_ZERO }.map { it.questionId }
+
             val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
                 activityConfigId = activityConfigId,
                 surveyId = surveyId,
@@ -133,7 +143,11 @@ class FormResponseSummaryViewModel @Inject constructor(
             )
 
             _formQuestionResponseMap.clear()
-            _formQuestionResponseMap.putAll(savedAnswers.groupBy { it.referenceId })
+            _formQuestionResponseMap.putAll(savedAnswers.filter { savedAnswer ->
+                savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
+                    savedAnswer.questionId
+                )
+            }.groupBy { savedAnswer -> savedAnswer.referenceId })
 
             referenceIdsList.clear()
             referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
@@ -151,13 +165,21 @@ class FormResponseSummaryViewModel @Inject constructor(
     }
 
     private fun getSurveyConfig(surveyConfigEntityList: List<SurveyConfigEntity>) {
-        val mSurveyConfig = mutableMapOf<String, SurveyCardModel>()
-        surveyConfigEntityList.forEach { surveyConfigEntity ->
+        val mSurveyConfig = mutableMapOf<String, List<SurveyCardModel>>()
+        /*surveyConfigEntityList.forEach { surveyConfigEntity ->
             mSurveyConfig.put(
                 surveyConfigEntity.key,
                 SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
             )
-        }
+        }*/
+        surveyConfigEntityList
+            .groupBy { it.key }
+            .mapValues { (key, entities) ->
+                mSurveyConfig.put(key, entities.map { entity ->
+                    SurveyCardModel.getSurveyCarModel(entity)
+                })
+
+            }
         surveyConfig = mSurveyConfig
     }
 

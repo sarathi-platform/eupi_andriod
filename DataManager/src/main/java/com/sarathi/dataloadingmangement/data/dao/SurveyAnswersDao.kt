@@ -204,4 +204,14 @@ interface SurveyAnswersDao {
         grantId: Int = 0,
         questionIds: List<Int>
     ): List<String>
+
+
+    @Query("SELECT * from ques_answer_table where surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
+    fun getSurveyAnswersForQuestionIds(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        grantId: Int = 0,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity>
 }

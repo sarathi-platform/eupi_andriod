@@ -36,7 +36,6 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
-import com.nudge.core.toSafeInt
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -60,8 +59,8 @@ import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
-import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
@@ -533,7 +532,8 @@ fun FormQuestionUiContent(
             ) {
                 Column {
                     QuestionComponent(
-                        title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)?.value.value(),
+                        title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)
+                            ?.firstOrNull()?.value.value(),
                         questionNumber = getQuestionNumber(index),
                         isRequiredField = question.isMandatory
                     )
@@ -543,7 +543,7 @@ fun FormQuestionUiContent(
                             if (viewModel.isActivityNotCompleted.value && viewModel.isFormEntryAllowed(
                                     question.formId
                                 )
-                            ) { // TODO: change this check to use isFormEntryAllowed Method and test it to limit number of form responses.
+                            ) {
                                 onClick()
                             } else {
                                 showCustomToast(
@@ -562,7 +562,7 @@ fun FormQuestionUiContent(
                         Text(
                             text = viewModel.surveyConfig[question.formId]?.get(
                                 SurveyConfigCardSlots.FORM_QUESTION_CARD_BUTTON.name
-                            )?.value.value(),
+                            )?.firstOrNull()?.value.value(),
                             style = defaultTextStyle.copy(color = if (true) white else greyColor)
                         )
                     }
@@ -571,27 +571,30 @@ fun FormQuestionUiContent(
                             .value() > NUMBER_ZERO
                     ) {
                         val surveyConfigForForm = viewModel.surveyConfig[question.formId]
-                        surveyConfigForForm?.filter {
-                            it.value.componentType.equals(
-                                CONFIG_SLOT_TYPE_QUESTION_CARD,
-                                true
-                            )
-                        }
-                            ?.let { mapEntry ->
-                                mapEntry.forEach {
+                        surveyConfigForForm?.forEach { mapEntry ->
+                            mapEntry.value.filter {
+                                it.componentType.equals(
+                                    CONFIG_SLOT_TYPE_QUESTION_CARD,
+                                    true
+                                )
+                            }.forEach {
+                                val mMapEntry = mapOf(mapEntry.key to it)
+                                val updatedModel = viewModel.getSurveyModelWithValue(
+                                    mMapEntry.entries.firstOrNull()!!,
+                                    question,
+                                    surveyConfigForForm
+                                )
+
+                                if (!it.type.equals(CALCULATION_TYPE, true)) {
                                     CustomVerticalSpacer()
-                                    val updatedModel = getSurveyModelWithValue(
-                                        it,
-                                        viewModel,
-                                        question,
-                                        surveyConfigForForm
-                                    )
+
                                     SubContainerView(
                                         updatedModel,
                                         isNumberFormattingRequired = false
                                     )
                                 }
                             }
+                        }
                         CustomVerticalSpacer()
                         LinkTextButtonWithIcon(
                             modifier = Modifier
@@ -611,38 +614,6 @@ fun FormQuestionUiContent(
         }
         CustomVerticalSpacer()
     }
-}
-
-@Composable
-private fun getSurveyModelWithValue(
-    it: Map.Entry<String, SurveyCardModel>,
-    viewModel: BaseSurveyScreenViewModel,
-    question: QuestionUiModel,
-    surveyConfigForForm: MutableMap<String, SurveyCardModel>
-): SurveyCardModel {
-    var updatedModel = it.value
-    if (it.key.equals(SurveyConfigCardSlots.FORM_QUESTION_CARD_TOTAL_COUNT.name, true)) {
-        val updatedTotalCountText =
-            it.value.value + "${viewModel.showSummaryView[question.formId].value()}"
-        updatedModel = it.value.copy(value = updatedTotalCountText)
-    }
-
-    if (it.key.equals(SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_LABLE.name, true)) {
-
-        surveyConfigForForm.filter {
-            it.key.equals(
-                SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_VALUE.name,
-                true
-            )
-        }.values.apply {
-            var sum = 0
-            this.forEach {
-                sum += it.value.toSafeInt()
-            }
-            updatedModel = it.value.copy(value = sum.toString())
-        }
-    }
-    return updatedModel
 }
 
 @Composable

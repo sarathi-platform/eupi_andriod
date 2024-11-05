@@ -323,4 +323,19 @@ class SurveySaveRepositoryImpl @Inject constructor(
             surveyAnswerEntity.referenceId
         ) > 0
     }
+
+    override fun getFormResponseMap(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity> {
+        return surveyAnswersDao.getSurveyAnswersForQuestionIds(
+            surveyId = surveyId,
+            taskId = taskId,
+            sectionId = sectionId,
+            questionIds = questionIds
+        )
+
+    }
 }

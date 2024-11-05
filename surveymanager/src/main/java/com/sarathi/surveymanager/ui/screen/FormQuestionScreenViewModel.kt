@@ -102,7 +102,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 .invoke(
                     surveyId = surveyId,
                     sectionId = sectionId,
-                    questionIdList = questionUiModel.value.map { it.questionId }
+                    questionIdList = question.map { it.questionId }
                 )
 
             taskEntity?.let {
@@ -120,13 +120,20 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
-                initQuestionVisibilityMap(question)
-                question.forEach {
+                initQuestionVisibilityMap(questionUiModel.value)
+                questionUiModel.value.forEach {
                     runConditionCheck(it)
                     runValidationCheck(questionId = it.questionId) { isValid, message ->
                         fieldValidationAndMessageMap[it.questionId] =
                             Pair(isValid, message)
                     }
+                }
+                val nonFormParentQuestion = sourceTargetQuestionMapping.filter {
+                    !questionUiModel.value.map { it.questionId }.contains(it.sourceQuestionId)
+                }
+                nonFormParentQuestion.forEach {
+                    conditionsUtils.questionVisibilityMap[it.targetQuestionId] = true
+
                 }
             }
         }

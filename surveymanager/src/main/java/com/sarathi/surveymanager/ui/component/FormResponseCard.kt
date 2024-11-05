@@ -57,7 +57,7 @@ fun FormResponseCard(
     modifier: Modifier = Modifier,
     referenceId: String,
     surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>,
-    surveyConfig: Map<String, SurveyCardModel>,
+    surveyConfig: Map<String, List<SurveyCardModel>>,
     isPictureRequired: Boolean = true,
     isEditAllowed: Boolean = true,
     onDelete: (referenceId: String) -> Unit,
@@ -111,19 +111,23 @@ fun FormResponseCard(
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
-                    surveyConfig
-                        .filter { it.value.type.equals(CONFIG_SLOT_TYPE_TAG, true) }
-                        .forEach { mapEntry ->
+                    surveyConfig.forEach {
+                        it.value.filter { it.type.equals(CONFIG_SLOT_TYPE_TAG, true) }
+                            .forEach { surveyCardModel ->
+                                val map = mapOf(it.key to surveyCardModel)
                             val response =
                                 getSavedAnswerValueForSummaryField(
                                     surveyAnswerFormSummaryUiModelList,
-                                    mapEntry
+                                    map.entries.firstOrNull()!!
                                 )
-                            SubContainerView(
-                                mapEntry.value.copy(value = response),
-                                isNumberFormattingRequired = false
-                            )
+                                if (response != BLANK_STRING) {
+                                    SubContainerView(
+                                        surveyCardModel.copy(value = response),
+                                        isNumberFormattingRequired = false
+                                    )
+                                }
                         }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(dimen_16_dp))

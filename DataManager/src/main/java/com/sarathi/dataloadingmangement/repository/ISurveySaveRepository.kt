@@ -58,4 +58,11 @@ interface ISurveySaveRepository {
         grantId: Int,
         grantType: String
     ): Boolean
+
+    fun getFormResponseMap(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity>
 }

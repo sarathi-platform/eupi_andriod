@@ -26,7 +26,6 @@ class ConditionsUtils {
     private var questionConditionMap: Map<Int, List<Conditions>> = mapOf()
 
     private var responseMap: HashMap<Int, List<Int>> = hashMapOf()
-        get() = field
 
     private var conditionsUiModelList: List<ConditionsUiModel> = listOf()
 

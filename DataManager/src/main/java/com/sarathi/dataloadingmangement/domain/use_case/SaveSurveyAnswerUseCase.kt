@@ -1,7 +1,5 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import androidx.compose.runtime.snapshots.SnapshotStateMap
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
@@ -103,6 +101,7 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         return map
     }
 
+
     suspend fun isAnswerAvailableInDb(
         questionUiModel: QuestionUiModel,
         subjectId: Int,
@@ -121,44 +120,20 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         )
     }
 
-    suspend fun updateNonVisibleQuestionsResponse(
-        visibilityMap: SnapshotStateMap<Int, Boolean>,
-        questionUiModel: List<QuestionUiModel>,
-        subjectId: Int,
+    fun getFormResponseMap(
+        surveyId: Int,
+        sectionId: Int,
         taskId: Int,
-        referenceId: String,
-        grantID: Int,
-        granType: String,
-        isFromFormQuestionScreen: Boolean = false
-    ) {
-        val notVisibleQuestion = visibilityMap.filter { !it.value }
-        questionUiModel.filter { notVisibleQuestion.containsKey(it.questionId) }
-            .forEach { it ->
-                it.options = it.options?.map {
-                    it.copy(
-                        isSelected = false,
-                        selectedValue = BLANK_STRING
-                    )
-                }
-                if (
-                    isAnswerAvailableInDb(
-                        it,
-                        subjectId,
-                        taskId = taskId,
-                        referenceId = referenceId,
-                        grantId = grantID,
-                        grantType = granType
-                    ) && isFromFormQuestionScreen
-                ) {
-                    saveSurveyAnswer(
-                        it,
-                        subjectId = subjectId,
-                        taskId,
-                        referenceId,
-                        grantID,
-                        granType
-                    )
-                }
+        formQuestionMap: MutableMap<Int, List<Int>>
+    ): Map<Int, List<SurveyAnswerEntity>> {
+        val map = mutableMapOf<Int, List<SurveyAnswerEntity>>()
+
+        formQuestionMap.forEach { mapEntry ->
+            repository.getFormResponseMap(surveyId, taskId, sectionId, mapEntry.value).let {
+                map[mapEntry.key] = it
             }
+        }
+        return map
     }
+
 }
