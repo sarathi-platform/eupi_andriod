@@ -6,5 +6,6 @@ data class SectionStatusResponseModel(
     @SerializedName("surveyId") val surveyId: Int?,
     @SerializedName("didiId") val didiId: Int?,
     @SerializedName("status") val status: String?,
-    @SerializedName("sectionId") val sectionId: String?
+    @SerializedName("sectionId") val sectionId: String?,
+    @SerializedName("localTaskId") val localTaskId: String?
 )

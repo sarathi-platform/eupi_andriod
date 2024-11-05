@@ -14,6 +14,7 @@ import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
@@ -40,7 +41,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         activityReferenceType: String?
     ) {
         val uriList = ArrayList<Uri>()
-        val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
+        val saveAnswerMoneyJournalEventDto = saveAnswerMoneyJorunalEventDto(
             questionUiModels,
             subjectId,
             subjectType,
@@ -48,10 +49,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             taskLocalId,
             grantId,
             grantType,
-            taskId,
-            repository.getTagIdForSection(
-                sectionId = questionUiModels.firstOrNull()?.sectionId ?: -1
-            )
+            taskId
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,
@@ -60,14 +58,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             listOf(),
             isFromRegenerate = isFromRegenerate
         )
-        writeEventInFile(
-            saveAnswerMoneyJournalEventDto,
-            EventName.FORM_RESPONSE_EVENT,
-            questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            listOf(),
-            isFromRegenerate = isFromRegenerate
-
-        )
+        saveFormResponseEvent(saveAnswerMoneyJournalEventDto, questionUiModels, isFromRegenerate)
         questionUiModels.forEach { questionUiModel ->
             saveSurveyAnswerEvent(
                 questionUiModel,
@@ -86,6 +77,75 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
 
             )
         }
+    }
+
+    private suspend fun saveAnswerMoneyJorunalEventDto(
+        questionUiModels: List<QuestionUiModel>,
+        subjectId: Int,
+        subjectType: String,
+        referenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String,
+        taskId: Int
+    ): SaveAnswerMoneyJorunalEventDto {
+        val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
+            questionUiModels,
+            subjectId,
+            subjectType,
+            referenceId,
+            taskLocalId,
+            grantId,
+            grantType,
+            taskId,
+            repository.getTagIdForSection(
+                sectionId = questionUiModels.firstOrNull()?.sectionId ?: -1
+            )
+        )
+        return saveAnswerMoneyJournalEventDto
+    }
+
+    suspend fun writeFormResponseEvent(
+        questionUiModels: List<QuestionUiModel>,
+        subjectId: Int,
+        subjectType: String,
+        referenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String,
+        taskId: Int,
+        isFromRegenerate: Boolean,
+    ) {
+        val saveAnswerMoneyJournalEventDto = saveAnswerMoneyJorunalEventDto(
+            questionUiModels,
+            subjectId,
+            subjectType,
+            referenceId,
+            taskLocalId,
+            grantId,
+            grantType,
+            taskId
+        )
+        saveFormResponseEvent(
+            saveAnswerMoneyJournalEventDto,
+            questionUiModels = questionUiModels,
+            isFromRegenerate = isFromRegenerate
+        )
+    }
+
+    private suspend fun SurveyAnswerEventWriterUseCase.saveFormResponseEvent(
+        saveAnswerMoneyJournalEventDto: SaveAnswerMoneyJorunalEventDto,
+        questionUiModels: List<QuestionUiModel>,
+        isFromRegenerate: Boolean
+    ) {
+        writeEventInFile(
+            saveAnswerMoneyJournalEventDto,
+            EventName.FORM_RESPONSE_EVENT,
+            questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
+            listOf(),
+            isFromRegenerate = isFromRegenerate
+
+        )
     }
 
     suspend fun saveSurveyAnswerEvent(

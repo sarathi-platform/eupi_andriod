@@ -100,4 +100,40 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
 
         return map
     }
+
+
+    suspend fun isAnswerAvailableInDb(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean {
+        return repository.isAnswerAvailableInDb(
+            questionUiModel,
+            subjectId,
+            referenceId,
+            taskId,
+            grantId,
+            grantType
+        )
+    }
+
+    fun getFormResponseMap(
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        formQuestionMap: MutableMap<Int, List<Int>>
+    ): Map<Int, List<SurveyAnswerEntity>> {
+        val map = mutableMapOf<Int, List<SurveyAnswerEntity>>()
+
+        formQuestionMap.forEach { mapEntry ->
+            repository.getFormResponseMap(surveyId, taskId, sectionId, mapEntry.value).let {
+                map[mapEntry.key] = it
+            }
+        }
+        return map
+    }
+
 }

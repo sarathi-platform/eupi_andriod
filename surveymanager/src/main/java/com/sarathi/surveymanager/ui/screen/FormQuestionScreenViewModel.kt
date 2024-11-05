@@ -6,7 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
+import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toSafeInt
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
@@ -18,7 +23,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
@@ -38,7 +46,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase
+    private val validationUseCase: SurveyValidationUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -71,6 +80,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var validations: List<SurveyValidations>? = mutableListOf()
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
+    val formTitle = mutableStateOf(BLANK_STRING)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
@@ -82,27 +93,28 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private fun loadFormQuestionData() {
         ioViewModelScope {
             taskEntity = getTaskUseCase.getTask(taskId)
-            _questionUiModel.value = fetchDataUseCase.invokeFormQuestions(
+            val question = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = referenceId,
-                grantId = 0,
-                formId = formId
+                grantId = 0
             )
+            _questionUiModel.value = question.filter { it.formId != 0 }
 
             val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
                 .invoke(
                     surveyId = surveyId,
                     sectionId = sectionId,
-                    questionIdList = questionUiModel.value.map { it.questionId }
+                    questionIdList = question.map { it.questionId }
                 )
 
             taskEntity?.let {
                 getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                     .also { surveyConfigEntityList ->
-                        getSurveyConfig(surveyConfigEntityList)
+                        val taskAttributes = getTaskUseCase.getSubjectAttributes(it.taskId)
+                        getSurveyConfig(surveyConfigEntityList, taskAttributes)
                     }
                 validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
                 questionUiModel.value.forEach {
@@ -116,20 +128,53 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 initQuestionVisibilityMap(questionUiModel.value)
                 questionUiModel.value.forEach {
                     runConditionCheck(it)
+                    runValidationCheck(questionId = it.questionId) { isValid, message ->
+                        fieldValidationAndMessageMap[it.questionId] =
+                            Pair(isValid, message)
+                    }
+                }
+                val nonFormParentQuestion = sourceTargetQuestionMapping.filter {
+                    !questionUiModel.value.map { it.questionId }.contains(it.sourceQuestionId)
+                }
+                nonFormParentQuestion.forEach {
+                    conditionsUtils.questionVisibilityMap[it.targetQuestionId] = true
+
                 }
             }
         }
     }
 
-    private fun getSurveyConfig(surveyConfigEntityList: List<SurveyConfigEntity>) {
+    private fun getSurveyConfig(
+        surveyConfigEntityList: List<SurveyConfigEntity>,
+        taskAttributes: List<SubjectAttributes>
+    ) {
         val mSurveyConfig = mutableMapOf<String, SurveyCardModel>()
-        surveyConfigEntityList.forEach { surveyConfigEntity ->
+        surveyConfigEntityList.forEach { it ->
+            var surveyConfigEntity = it
+            if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
+                // TEMP Code remove after moving caste table to code.
+                if (surveyConfigEntity.label.equals("Caste", true)) {
+                    val casteId =
+                        taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value()
+                            .toSafeInt()
+                    surveyConfigEntity = surveyConfigEntity.copy(
+                        value = casteMap.get(coreSharedPrefs.getAppLanguage())?.get(casteId)
+                            ?: casteMap.get(DEFAULT_LANGUAGE_CODE)?.get(casteId).value()
+                    )
+                } else {
+                    surveyConfigEntity =
+                        surveyConfigEntity.copy(value = taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value())
+                }
+
+            }
             mSurveyConfig.put(
                 surveyConfigEntity.key,
                 SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
             )
         }
         surveyConfig = mSurveyConfig
+        formTitle.value =
+            surveyConfig[SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name]?.value.value()
     }
 
     fun setPreviousScreenData(
@@ -156,28 +201,27 @@ open class FormQuestionScreenViewModel @Inject constructor(
         this.subjectType = subjectType
     }
 
-    fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveQuestionAnswerIntoDb(currentQuestionUiModel)
+    private suspend fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
+        saveQuestionAnswerIntoDb(currentQuestionUiModel)
 
-            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
-                questionUiModel = currentQuestionUiModel,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId
-                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                referenceId = referenceId,
-                grantId = 0,
-                grantType = BLANK_STRING,
-                taskId = taskId,
-                uriList = ArrayList(),
-                activityId = activityId,
-                activityReferenceId = 0,
-                activityReferenceType = BLANK_STRING,
-                isFromRegenerate = false
-            )
-        }
+        surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
+            questionUiModel = currentQuestionUiModel,
+            subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+            subjectType = subjectType,
+            taskLocalId = taskEntity?.localTaskId
+                ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+            referenceId = referenceId,
+            grantId = 0,
+            grantType = BLANK_STRING,
+            taskId = taskId,
+            uriList = ArrayList(),
+            activityId = activityId,
+            activityReferenceId = 0,
+            activityReferenceType = BLANK_STRING,
+            isFromRegenerate = false
+        )
     }
+
 
     protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
         saveSurveyAnswerUseCase.saveSurveyAnswer(
@@ -229,13 +273,48 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+        ioViewModelScope {
+            val notVisibleQuestion = visibilityMap.filter { !it.value }
+            questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
+                .forEach { it ->
+                    it.options = it.options?.map {
+                        it.copy(
+                            isSelected = false,
+                            selectedValue = BLANK_STRING
+                        )
+                    }
+                }
+        }
     }
 
     fun saveAllAnswers() {
-        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
-            .forEach { questionUiModel ->
-                saveSingleAnswerIntoDb(questionUiModel)
-            }
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+                .forEach { questionUiModel ->
+                    saveSingleAnswerIntoDb(questionUiModel)
+                }
+            surveyAnswerEventWriterUseCase.writeFormResponseEvent(
+                questionUiModels = questionUiModel.value.filter {
+                    it.isMandatory && visibilityMap.get(
+                        it.questionId
+                    ) == true
+                },
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = subjectType,
+                taskLocalId = taskEntity?.localTaskId
+                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                referenceId = referenceId,
+                grantId = 0,
+                grantType = BLANK_STRING,
+                taskId = taskId,
+                isFromRegenerate = false
+            )
+        }
+    }
+
+    fun getPrefixFileName(question: QuestionUiModel): String {
+        return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
     }
 
 }
