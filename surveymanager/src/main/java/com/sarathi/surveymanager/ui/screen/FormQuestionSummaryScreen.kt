@@ -141,7 +141,7 @@ fun FormQuestionSummaryScreen(
                     isEditAllowed = !formResponseSummaryScreenViewModel.isActivityCompleted,
                     surveyConfig = formResponseSummaryScreenViewModel.surveyConfig,
                     isPictureRequired = formResponseSummaryScreenViewModel.surveyConfig.containsKey(
-                        SurveyConfigCardSlots.FORM_SUMMARY_CARD_DIDI_IMAGE.name
+                        SurveyConfigCardSlots.FORM_SUMMARY_CARD_IMAGE.name
                     ),
                     onDelete = { mReferenceId ->
                         openAlertDialog.value = Pair(true, mReferenceId)
