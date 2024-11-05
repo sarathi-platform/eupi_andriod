@@ -153,7 +153,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
             var surveyConfigEntity = it
             if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
                 // TEMP Code remove after moving caste table to code.
-                if (surveyConfigEntity.label.equals("Caste", true)) {
+                if (surveyConfigEntity.value.equals("casteId", true)) {
                     val casteId =
                         taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value()
                             .toSafeInt()
