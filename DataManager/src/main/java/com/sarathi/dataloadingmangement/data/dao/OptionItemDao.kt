@@ -48,6 +48,7 @@ interface OptionItemDao {
                 "    option_table.contentEntities,\n" +
                 "    option_table.conditions,\n" +
                 "    option_table.selectedValue,\n" +
+                "    option_table.originalValue,\n" +
                 "    option_table.selectedValueId,\n" +
                 "    COALESCE(survey_language_attribute_table.description, option_table.originalValue) AS description,\n" +
                 "    COALESCE(survey_language_attribute_table.paraphrase, option_table.originalValue) AS paraphrase\n" +
