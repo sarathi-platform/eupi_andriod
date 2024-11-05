@@ -925,12 +925,14 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        downloaderManager: DownloaderManager
     ): FetchDidiDetailsFromNetworkRepository {
         return FetchDidiDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs, dataLoadingApiService,
             subjectEntityDao,
-            apiStatusDao = apiStatusDao
+            apiStatusDao = apiStatusDao,
+            downloaderManager = downloaderManager
         )
     }
 
