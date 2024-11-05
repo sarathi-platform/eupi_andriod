@@ -26,12 +26,12 @@ interface OptionItemDao {
                 " option_table.sectionId,\n" +
                 " option_table.surveyId,\n" +
                 " option_table.questionId,\n" +
-                " option_table.selectedValue,\n" +
                 " option_table.optionType,\n" +
                 " option_table.`order`,\n" +
                 " option_table.contentEntities,\n" +
                 " option_table.conditions,\n" +
                 " option_table.selectedValue,\n" +
+                " option_table.originalValue,\n" +
                 " option_table.selectedValueId,\n" +
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase\n" +
