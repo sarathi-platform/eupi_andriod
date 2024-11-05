@@ -48,4 +48,8 @@ interface SurveyConfigEntityDao {
         uniqueUserIdentifier: String
     )
 
+    @Query("Delete from survey_config_table where userId=:uniqueUserIdentifier")
+    fun deleteSurveyConfigForUser(
+        uniqueUserIdentifier: String
+    )
 }
