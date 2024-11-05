@@ -25,6 +25,7 @@ class FetchAllDataUseCase @Inject constructor(
     val livelihoodUseCase: LivelihoodUseCase,
     val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -78,6 +79,8 @@ class FetchAllDataUseCase @Inject constructor(
                     moneyJournalUseCase.invoke()
                 }
             }
+            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
+
             if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
                 livelihoodUseCase.invoke()
