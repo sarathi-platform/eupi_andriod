@@ -7,6 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.casteMap
+import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toSafeInt
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -22,8 +26,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -44,7 +50,8 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
-    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -154,7 +161,8 @@ class FormResponseSummaryViewModel @Inject constructor(
 
             getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                 .also { surveyConfigEntityList ->
-                    getSurveyConfig(surveyConfigEntityList)
+                    val taskAttributes = getTaskUseCase.getSubjectAttributes(it.taskId)
+                    getSurveyConfig(surveyConfigEntityList, taskAttributes)
                 }
 
             isActivityCompleted = getActivityUseCase.isAllActivityCompleted(
@@ -164,7 +172,10 @@ class FormResponseSummaryViewModel @Inject constructor(
         }
     }
 
-    private fun getSurveyConfig(surveyConfigEntityList: List<SurveyConfigEntity>) {
+    private fun getSurveyConfig(
+        surveyConfigEntityList: List<SurveyConfigEntity>,
+        taskAttributes: List<SubjectAttributes>
+    ) {
         val mSurveyConfig = mutableMapOf<String, List<SurveyCardModel>>()
         /*surveyConfigEntityList.forEach { surveyConfigEntity ->
             mSurveyConfig.put(
@@ -176,7 +187,23 @@ class FormResponseSummaryViewModel @Inject constructor(
             .groupBy { it.key }
             .mapValues { (key, entities) ->
                 mSurveyConfig.put(key, entities.map { entity ->
-                    SurveyCardModel.getSurveyCarModel(entity)
+                    val model = if (entity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
+                        // TEMP Code remove after moving caste table to code.
+                        if (entity.label.equals("Caste", true)) {
+                            val casteId =
+                                taskAttributes.find { it.key == entity.value }?.value.value()
+                                    .toSafeInt()
+                            entity.copy(
+                                value = casteMap.get(coreSharedPrefs.getAppLanguage())?.get(casteId)
+                                    ?: casteMap.get(DEFAULT_LANGUAGE_CODE)?.get(casteId).value()
+                            )
+                        } else {
+                            entity.copy(value = taskAttributes.find { it.key == entity.value }?.value.value())
+                        }
+                    } else {
+                        entity
+                    }
+                    SurveyCardModel.getSurveyCarModel(model)
                 })
 
             }

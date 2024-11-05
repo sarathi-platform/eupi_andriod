@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.component
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_PREPOPULATED
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_TAG
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
@@ -99,19 +101,37 @@ fun FormResponseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(dimen_14_dp))
-                if (isPictureRequired) {
-                    Box(modifier = Modifier.padding(start = 16.dp)) {
-                        CircularImageViewComponent(
-                            modifier = Modifier
-                                .height(45.dp)
-                                .width(45.dp),
-                            imagePath = Uri.EMPTY
-                        )
+                if (surveyConfig.containsKey(SurveyConfigCardSlots.FORM_SUMMARY_CARD_IMAGE.name)) {
+                    val imagePath = getFormSummaryCardImageUri(
+                        context,
+                        surveyConfig[SurveyConfigCardSlots.FORM_SUMMARY_CARD_IMAGE.name],
+                        surveyAnswerFormSummaryUiModelList
+                    )
+                    if (imagePath != Uri.EMPTY) {
+                        Box(modifier = Modifier.padding(start = 16.dp)) {
+                            CircularImageViewComponent(
+                                modifier = Modifier
+                                    .height(45.dp)
+                                    .width(45.dp),
+                                imagePath = imagePath
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
                     surveyConfig.forEach {
+                        it.value.filter {
+                            it.componentType.equals(
+                                CONFIG_SLOT_TYPE_PREPOPULATED,
+                                true
+                            )
+                        }.forEach { surveyCardModel ->
+                            SubContainerView(
+                                surveyCardModel,
+                                isNumberFormattingRequired = false
+                            )
+                        }
                         it.value.filter { it.type.equals(CONFIG_SLOT_TYPE_TAG, true) }
                             .forEach { surveyCardModel ->
                                 val map = mapOf(it.key to surveyCardModel)
@@ -201,6 +221,23 @@ fun FormResponseCard(
             }
         }
     }
+}
+
+fun getFormSummaryCardImageUri(
+    context: Context,
+    surveyCardModels: List<SurveyCardModel>?,
+    surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>
+): Uri {
+    val surveyCardModel = surveyCardModels?.firstOrNull()
+    return surveyCardModel?.let {
+        val filePath =
+            surveyAnswerFormSummaryUiModelList.find { it.tagId.contains(surveyCardModel.tagId) }?.optionItems?.firstOrNull()?.selectedValue
+                ?: BLANK_STRING
+
+        getSavedImageUri(context, listOf(filePath)).firstOrNull() ?: Uri.EMPTY
+
+    } ?: Uri.EMPTY
+
 }
 
 @Composable

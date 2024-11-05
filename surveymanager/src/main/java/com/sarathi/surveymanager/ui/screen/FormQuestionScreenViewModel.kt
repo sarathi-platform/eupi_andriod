@@ -6,7 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
+import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toSafeInt
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
@@ -42,7 +46,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase
+    private val validationUseCase: SurveyValidationUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -147,8 +152,20 @@ open class FormQuestionScreenViewModel @Inject constructor(
         surveyConfigEntityList.forEach { it ->
             var surveyConfigEntity = it
             if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
-                surveyConfigEntity =
-                    surveyConfigEntity.copy(value = taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value())
+                // TEMP Code remove after moving caste table to code.
+                if (surveyConfigEntity.label.equals("Caste", true)) {
+                    val casteId =
+                        taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value()
+                            .toSafeInt()
+                    surveyConfigEntity = surveyConfigEntity.copy(
+                        value = casteMap.get(coreSharedPrefs.getAppLanguage())?.get(casteId)
+                            ?: casteMap.get(DEFAULT_LANGUAGE_CODE)?.get(casteId).value()
+                    )
+                } else {
+                    surveyConfigEntity =
+                        surveyConfigEntity.copy(value = taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value())
+                }
+
             }
             mSurveyConfig.put(
                 surveyConfigEntity.key,
@@ -294,6 +311,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 isFromRegenerate = false
             )
         }
+    }
+
+    fun getPrefixFileName(question: QuestionUiModel): String {
+        return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
     }
 
 }

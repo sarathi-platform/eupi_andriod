@@ -112,8 +112,6 @@ fun FormQuestionScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_16_dp)
                 ) {
-
-
                     viewModel.surveyConfig
                         .filter {
                             it.value.type.equals(UiConfigAttributeType.DYNAMIC.name, true)
@@ -224,7 +222,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
                     AddImageComponent(
-                        fileNamePrefix = /*viewModel.getPrefixFileName(question)*/ BLANK_STRING,
+                        fileNamePrefix = viewModel.getPrefixFileName(question),
                         filePaths = commaSeparatedStringToList(
                             question.options?.firstOrNull()?.selectedValue
                                 ?: BLANK_STRING
