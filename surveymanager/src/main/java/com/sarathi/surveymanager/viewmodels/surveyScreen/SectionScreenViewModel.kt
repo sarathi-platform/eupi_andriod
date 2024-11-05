@@ -107,10 +107,10 @@ class SectionScreenViewModel @Inject constructor(
 
     fun updateTaskStatus(taskId: Int) {
         ioViewModelScope {
-            val task = eventWriterUseCase.getTaskEntity(taskId)
             val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
             surveyEntity?.let { survey ->
                 taskStatusUseCase.markTaskCompleted(taskId)
+                val task = eventWriterUseCase.getTaskEntity(taskId)
                 eventWriterUseCase.updateTaskStatus(task, survey.surveyName, subjectType)
             }
 
