@@ -189,7 +189,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                 mSurveyConfig.put(key, entities.map { entity ->
                     val model = if (entity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
                         // TEMP Code remove after moving caste table to code.
-                        if (entity.label.equals("Caste", true)) {
+                        if (entity.value.equals("casteId", true)) {
                             val casteId =
                                 taskAttributes.find { it.key == entity.value }?.value.value()
                                     .toSafeInt()

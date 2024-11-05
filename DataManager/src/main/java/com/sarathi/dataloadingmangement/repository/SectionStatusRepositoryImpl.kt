@@ -39,19 +39,21 @@ class SectionStatusRepositoryImpl @Inject constructor(
         sectionStatus: List<SectionStatusResponseModel>,
         missionId: Int
     ) {
-        sectionStatus.forEach {
-
-            sectionStatusDao.addSectionStatus(
-                SectionStatusEntity.geSectionStatusEntity(
-                    missionId = missionId,
-                    sectionStatus = it,
-                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                    taskId = taskDao.getTaskIdFromLocalTaskId(
-                        localTaskId = it.localTaskId ?: BLANK_STRING,
-                        userId = coreSharedPrefs.getUniqueUserIdentifier()
+        sectionStatus.forEach { sectionStatus ->
+            val taskId = taskDao.getTaskIdFromLocalTaskId(
+                localTaskId = sectionStatus.localTaskId ?: BLANK_STRING,
+                userId = coreSharedPrefs.getUniqueUserIdentifier()
+            )
+            taskId?.let {
+                sectionStatusDao.addSectionStatus(
+                    SectionStatusEntity.geSectionStatusEntity(
+                        missionId = missionId,
+                        sectionStatus = sectionStatus,
+                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                        taskId = it
                     )
                 )
-            )
+            }
         }
 
     }

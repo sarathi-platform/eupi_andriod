@@ -171,7 +171,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             activityReferenceId = activityReferenceId,
             activityReferenceType = activityReferenceType
         )
-        if (questionUiModel.type == QuestionType.MultiImage.name) {
+        if (questionUiModel.type == QuestionType.MultiImage.name || questionUiModel.type == QuestionType.SingleImage.name) {
             questionUiModel.options?.firstOrNull()?.selectedValue?.split(",")?.forEach {
 
                 if (!TextUtils.isEmpty(it)) {

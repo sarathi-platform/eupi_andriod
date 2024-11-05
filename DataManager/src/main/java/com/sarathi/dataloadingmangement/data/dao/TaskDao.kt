@@ -125,5 +125,5 @@ interface TaskDao {
     ): Int
 
     @Query("select taskId from task_table where localTaskId=:localTaskId and userId=:userId")
-    suspend fun getTaskIdFromLocalTaskId(localTaskId: String, userId: String): Int
+    suspend fun getTaskIdFromLocalTaskId(localTaskId: String, userId: String): Int?
 }
