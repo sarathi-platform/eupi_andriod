@@ -46,10 +46,11 @@ import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_BASELINE_DATABASE_VERSION = 2
+const val NUDGE_BASELINE_DATABASE_VERSION = 3
 
 @Database(
     entities = [
@@ -122,6 +123,13 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
             override fun migrate(database: SupportSQLiteDatabase) {
                 Log.d("NudgeDatabase", "MIGRATION_42_43")
                 migration(database, listOf(ALTER_FORM_RESPONSE_TABLE))
+            }
+        }
+        const val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                Log.d("NudgeDatabase", "MIGRATION_2_3")
+                migration(db, listOf(DROP_LANGUAGE_TABLE))
             }
         }
 

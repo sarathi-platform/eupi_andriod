@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.nudge.core.NUDGE_DATABASE_VERSION
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
@@ -66,6 +67,9 @@ abstract class NudgeDatabase : RoomDatabase() {
         private const val ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN =
             "ALTER TABLE 'village_table' ADD COLUMN 'isActive' INTEGER DEFAULT 1 NOT NULL"
 
+        const val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
+
+
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -77,6 +81,12 @@ abstract class NudgeDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 NudgeLogger.d("NudgeDatabase", "MIGRATION_2_3")
                 migration(db, listOf(ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN))
+            }
+        }
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                NudgeLogger.d("NudgeDatabase", "MIGRATION_3_4")
+                migration(db, listOf(DROP_LANGUAGE_TABLE))
             }
         }
 

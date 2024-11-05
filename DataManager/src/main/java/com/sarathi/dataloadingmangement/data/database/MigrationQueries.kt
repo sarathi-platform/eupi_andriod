@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.data.database
 
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
@@ -231,5 +232,6 @@ object MigrationQueries {
                 "    name TEXT NOT NULL,\n" +
                 "    userId TEXT NOT NULL\n" +
                 ");"
+    val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
 }
 
