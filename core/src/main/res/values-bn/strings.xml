@@ -38,15 +38,17 @@
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="small_group_filter_label">"Filter by Small group: "</string>
-    <string name="all">"সব "</string>
-    <string name="no_entry_this_month">"এই মাসে কোন ডেটা এন্ট্রি নেই "</string>
-    <string name="no_entry_this_week">"এই সপ্তাহে কোনো ডাটা এন্ট্রি নেই "</string>
-    <string name="last_week">"গত সপ্তাহে "</string>
-    <string name="last_month">"গত মাসে "</string>
-    <string name="last_3_months">"গত 3 মাস "</string>
-    <string name="custom_date">"কাস্টম তারিখ "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="view_summary">View Summary</string>
+    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">যেহেতু আপনি সমস্ত কাজ সম্পন্ন করেছেন, অনুগ্রহ করে কার্যকলাপটি সম্পূর্ণ করুন।</string>
+    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*কার্যকলাপ সম্পূর্ণ করার পরে, আপনি ডাটা এডিট করতে করতে পারবেন না।</string>
+    <string name="all">"সব "</string>
+    <string name="no_entry_this_month">"এই মাসে কোন ডেটা এন্ট্রি নেই "</string>
+    <string name="no_entry_this_week">No entry this week</string>
+    <string name="last_week">Last week</string>
+    <string name="last_month">Last month</string>
+    <string name="last_3_months">Last 3 months</string>
+    <string name="custom_date">"কাস্টম তারিখ "</string>
 </resources>

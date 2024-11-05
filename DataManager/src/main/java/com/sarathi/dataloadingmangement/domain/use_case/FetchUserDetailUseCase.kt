@@ -2,9 +2,9 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.datamodel.FederationDetailModel
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
-import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import javax.inject.Inject

@@ -38,4 +38,7 @@
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="view_summary">View Summary</string>
+    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Nini thangthai samung paikha ba, tangmung pai ridi.</string>
+    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*Tangmung paimani yagulo, nwng tai kisisa phano swlai wi manya.</string>
+
 </resources>

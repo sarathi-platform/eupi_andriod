@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
@@ -38,6 +39,7 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
     val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitEditHistoryState -> {
                 loadEditHistoryData(transactionId = event.transactionId)
@@ -93,5 +95,9 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
         _filterSubjectLivelihoodEventSummaryUiModelList.addAll(result.filter {
             (it.date.value() >= dateRangeFilter.value.first) && (it.date.value() <= dateRangeFilter.value.second)
         })
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.EditHistoryScreen
     }
 }

@@ -12,6 +12,8 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
+import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -24,7 +26,6 @@ import com.sarathi.dataloadingmangement.data.dao.DocumentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
-import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -61,7 +62,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
@@ -127,7 +127,6 @@ import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.IFormEventRepository
-import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
@@ -136,8 +135,6 @@ import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
-import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
-import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
@@ -295,9 +292,6 @@ class DataLoadingModule {
     @Singleton
     fun provideTaskAttributeDao(db: NudgeGrantDatabase) = db.taskAttributeDao()
 
-    @Provides
-    @Singleton
-    fun provideLanguageDao(db: NudgeGrantDatabase) = db.languageDao()
 
     @Provides
     @Singleton
@@ -513,30 +507,7 @@ class DataLoadingModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideLanguageRepository(
-        languageDao: LanguageDao,
-        apiService: DataLoadingApiService,
-    ): ILanguageRepository {
-        return LanguageRepositoryImpl(
-            apiInterface = apiService, languageDao = languageDao
-        )
-    }
 
-    @Provides
-    @Singleton
-    fun provideUserDetailRepository(
-        languageDao: LanguageDao,
-        sharedPrefs: CoreSharedPrefs,
-        apiService: DataLoadingApiService,
-    ): IUserDetailRepository {
-        return UserDetailRepository(
-            sharedPrefs = sharedPrefs,
-            apiInterface = apiService,
-            languageDao = languageDao
-        )
-    }
 
     @Provides
     @Singleton
@@ -637,7 +608,6 @@ class DataLoadingModule {
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
         downloaderManager: DownloaderManager,
-        languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
@@ -648,6 +618,8 @@ class DataLoadingModule {
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         analyticsManager: AnalyticsManager,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+        fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
+        languageConfigUseCase: LanguageConfigUseCase
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -663,7 +635,6 @@ class DataLoadingModule {
                 sharedPrefs = coreSharedPrefs
             ),
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
-            fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository, analyticsManager),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
@@ -671,8 +642,9 @@ class DataLoadingModule {
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
-            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase
-
+            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
+            fetchTranslationConfigUseCase = fetchTranslationConfigUseCase,
+            languageConfigUseCase = languageConfigUseCase
         )
     }
 

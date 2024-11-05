@@ -11,6 +11,8 @@ import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.datamodel.FederationDetailModel
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
@@ -26,7 +28,6 @@ import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -38,7 +39,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao

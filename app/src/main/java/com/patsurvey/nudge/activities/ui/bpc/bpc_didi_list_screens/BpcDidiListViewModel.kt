@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,12 +18,15 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.getPatScoreEventName
+import com.patsurvey.nudge.utils.getSortedList
+import com.patsurvey.nudge.utils.getSortedMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -38,7 +43,8 @@ class BpcDidiListViewModel @Inject constructor(
     private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
     val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
 
-    var filterDidiList by mutableStateOf(listOf<DidiEntity>())
+    var _filterDidiList = mutableStateOf(listOf<DidiEntity>())
+    val filterDidiList :State<List<DidiEntity>> get()= _filterDidiList
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val inclusiveQueList: StateFlow<List<SectionAnswerEntity>> get() = _inclusiveQueList
@@ -56,6 +62,7 @@ class BpcDidiListViewModel @Inject constructor(
     val isStepComplete = mutableStateOf(false)
 
     val showLoader = mutableStateOf(false)
+    val selectedSortIndex : MutableState<Int> = mutableStateOf(0)
 
     init {
         villageId = repository.prefRepo.getSelectedVillage().id
@@ -70,14 +77,23 @@ class BpcDidiListViewModel @Inject constructor(
 
         }
     }
+    fun didiSortedList(didiSortIndex: Int,tolaFilterSelected:Boolean) {
+        if (tolaFilterSelected)
+        {
+            filterTolaMapList= getSortedMap(didiSortIndex,tolaMapList)
+        }
+        else{
+            _filterDidiList.value=getSortedList(didiSortIndex,selectedDidiList.value)
+        }
 
+    }
     fun fetchDidiListForBPC(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localDidiList = repository.getAllDidisForVillage()
             _selectedDidiList.value = localDidiList
             _tolaList.emit(repository.getAllTolasForVillage())
-            filterDidiList = selectedDidiList.value
-            pendingDidiCount.value = filterDidiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
+            _filterDidiList.value = selectedDidiList.value
+            pendingDidiCount.value = filterDidiList.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
             if (pendingDidiCount.value < selectedDidiList.value.size) {
                 repository.markBPCStepInProgress()
             }
@@ -101,7 +117,7 @@ class BpcDidiListViewModel @Inject constructor(
     fun performQuery(query: String, isTolaFilterSelected: Boolean) {
         try {
             if (!isTolaFilterSelected) {
-                filterDidiList = if (query.isNotEmpty()) {
+                _filterDidiList.value = if (query.isNotEmpty()) {
                     val filteredList = ArrayList<DidiEntity>()
                     selectedDidiList.value.forEach { didi ->
                         if (didi.name.lowercase().contains(query.lowercase())) {

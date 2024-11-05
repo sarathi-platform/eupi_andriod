@@ -30,7 +30,6 @@ import com.sarathi.dataloadingmangement.data.dao.DocumentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
-import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -97,7 +96,6 @@ import com.sarathi.dataloadingmangement.data.entities.DocumentEntity
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
-import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
@@ -148,7 +146,6 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
         SectionEntity::class,
         QuestionEntity::class,
         OptionItemEntity::class,
-        LanguageEntity::class,
         ProgrammeEntity::class,
         SurveyAnswerEntity::class,
         GrantConfigEntity::class,
@@ -196,7 +193,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun activityDao(): ActivityDao
     abstract fun taskDao(): TaskDao
     abstract fun contentDao(): ContentDao
-    abstract fun languageDao(): LanguageDao
     abstract fun activityConfigDao(): ActivityConfigDao
     abstract fun formEDao(): FormDao
     abstract fun documentDao(): DocumentDao

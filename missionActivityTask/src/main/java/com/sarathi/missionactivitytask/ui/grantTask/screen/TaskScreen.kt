@@ -19,12 +19,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,6 +72,8 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
@@ -90,13 +98,17 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
+import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
-import com.nudge.core.R as CoreRes
 
 const val TAG = "TaskScreen"
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun TaskScreen(
     navController: NavController,
@@ -115,6 +127,9 @@ fun TaskScreen(
     taskScreenContentForGroup: LazyListScope.(groupKey: String, viewModel: TaskScreenViewModel, navController: NavController) -> Unit
 ) {
     val context = LocalContext.current
+    val scaffoldState =
+        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
+    val scope = rememberCoroutineScope()
     val pullRefreshState = rememberPullRefreshState(
         viewModel.loaderState.value.isLoaderVisible,
         {
@@ -141,147 +156,232 @@ fun TaskScreen(
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
 
+    LaunchedEffect(viewModel.isButtonEnable.value) {
+        if (viewModel.isButtonEnable.value) {
+            scaffoldState.show()
+        }
+    }
+
+
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
         defaultValue = stringResource(R.string.no_small_group_assgned_label),
+        headerTitle = stringResource(com.nudge.core.R.string.small_group_filter_label),
         bottomSheetContentItemList = viewModel.filterByList,
         selectedIndex = FilterCore.getFilterValueForActivity(activityId),
         onBottomSheetItemSelected = {
             viewModel.onEvent(TaskScreenEvent.OnFilterSelected(it))
         }
     ) {
-        ToolBarWithMenuComponent(
-            title = activityName,
-            modifier = Modifier.fillMaxSize(),
-            navController = navController,
-            onBackIconClick = { navController.popBackStack() },
-            isSearch = true,
-            onSearchValueChange = { queryTerm ->
-
-            },
-            onRetry = {},
-            onBottomUI = {
-                BottomAppBar(
-                    modifier = Modifier.height(dimen_72_dp),
-                    backgroundColor = white
+        ModelBottomSheetDescriptionContentComponent(
+            modifier = Modifier
+                .fillMaxSize(),
+            sheetContent = {
+                Column(
+                    modifier = Modifier.padding(dimen_10_dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .weight(1f),
+                            text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
+                            style = newMediumTextStyle.copy(color = blueDark)
+                        )
+                        IconButton(onClick = {
+                            scope.launch {
+                                scaffoldState.hide()
+                            }
+                        }, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_close),
+                                contentDescription = "Close",
+                                tint = blueDark
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
+                        style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = dimen_10_dp),
                     ) {
-
-                    ButtonPositive(
-                        modifier = Modifier.weight(0.5f),
-                        buttonTitle = stringResource(R.string.complete_activity),
-                        isActive = viewModel.isButtonEnable.value,
-                        isArrowRequired = false,
-                        onClick = {
-                            viewModel.showDialog.value = true
-                        })
-
-                        if (isSecondaryButtonVisible) {
-                            Spacer(modifier = Modifier.width(10.dp))
-                            ButtonPositive(
-                                modifier = Modifier.weight(0.5f),
-                                buttonTitle = secondaryButtonText,
-                                isActive = isSecondaryButtonEnable,
-                                isArrowRequired = false,
-                                onClick = onSecondaryButtonClick
-                            )
-                        }
+                        ButtonPositive(
+                            modifier = Modifier.weight(0.5f),
+                            buttonTitle = stringResource(R.string.complete_activity),
+                            isActive = viewModel.isButtonEnable.value,
+                            isArrowRequired = false,
+                            onClick = {
+                                scope.launch {
+                                    scaffoldState.hide()
+                                }
+                                viewModel.markActivityCompleteStatus()
+                                navigateToActivityCompletionScreen(
+                                    isFromActivity = true,
+                                    navController = navController,
+                                    activityMsg = context.getString(
+                                        R.string.activity_completion_message,
+                                        activityName
+                                    ),
+                                    activityRoutePath = activityName
+                                )
+                            }
+                        )
                     }
                 }
             },
-            onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+            sheetState = scaffoldState,
+            sheetElevation = 20.dp,
+            sheetBackgroundColor = Color.White,
+            sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+        ) {
+            ToolBarWithMenuComponent(
+                title = activityName,
+                modifier = Modifier.fillMaxSize(),
+                navController = navController,
+                onBackIconClick = { navController.popBackStack() },
+                isSearch = true,
+                onSearchValueChange = { queryTerm ->
 
-                Column {
-                    BaseContentScreen(
-                        matId = viewModel.matId.value,
-                        contentScreenCategory = viewModel.contentCategory.value
-                    ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
-                        if (!isLimitContentData) {
-                            navigateToMediaPlayerScreen(
-                                navController = navController,
-                                contentKey = contentKey,
-                                contentType = contentType,
-                                contentTitle = contentTitle,
-                            )
-                        } else {
-                            navigateToContentDetailScreen(
-                                navController,
-                                matId = viewModel.matId.value,
-                                contentScreenCategory = viewModel.contentCategory.value
-                            )
-                        }
-                    }
-                    if (isSearch) {
-
-                        Column(
-                            Modifier
+                },
+                onRetry = {},
+                onBottomUI = {
+                    BottomAppBar(
+                        modifier = Modifier.height(dimen_72_dp),
+                        backgroundColor = white
+                    ) {
+                        Row(
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = dimen_8_dp, end = dimen_8_dp, bottom = dimen_10_dp)
+                                .padding(horizontal = dimen_10_dp),
                         ) {
+                            ButtonPositive(
+                                modifier = Modifier.weight(0.5f),
+                                buttonTitle = stringResource(R.string.complete_activity),
+                                isActive = viewModel.isButtonEnable.value,
+                                isArrowRequired = false,
+                                onClick = {
+                                    viewModel.showDialog.value = true
+                                })
 
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
-                            ) {
-
-                                SimpleSearchComponent(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    placeholderString = viewModel.searchLabel.value,
-                                    searchFieldHeight = dimen_50_dp,
-                                    onSearchValueChange = { queryTerm ->
-                                        viewModel.onEvent(
-                                            SearchEvent.PerformSearch(
-                                                queryTerm,
-                                                viewModel.isGroupingApplied.value,
-                                                viewModel.isFilterApplied.value
-                                            )
-                                        )
-                                    }
+                            if (isSecondaryButtonVisible) {
+                                Spacer(modifier = Modifier.width(10.dp))
+                                ButtonPositive(
+                                    modifier = Modifier.weight(0.5f),
+                                    buttonTitle = secondaryButtonText,
+                                    isActive = isSecondaryButtonEnable,
+                                    isArrowRequired = false,
+                                    onClick = onSecondaryButtonClick
                                 )
-
-                                if (viewModel.isFilterEnabled.value) {
-                                    CustomIconButton(
-                                        onClick = {
-                                            coroutineScope.launch {
-                                                customBottomSheetScaffoldProperties.sheetState.show()
-                                            }
-                                        },
-                                        icon = painterResource(id = if (viewModel.isFilterApplied.value) CoreRes.drawable.filter_active_icon else CoreRes.drawable.filter_icon),
-                                        iconTintColor = if (viewModel.isFilterApplied.value) white else blueDark,
-                                        contentDescription = "filter_list",
-                                        buttonContainerColor = if (viewModel.isFilterApplied.value) blueDark else Color.Transparent,
-                                        colors = IconButtonDefaults.iconButtonColors(
-                                            containerColor = if (viewModel.isFilterApplied.value) blueDark else Color.Transparent,
-                                            contentColor = if (viewModel.isFilterApplied.value) white else blueDark
-                                        )
-                                    )
-                                }
-
-                                if (viewModel.isGroupByEnable.value) {
-                                    CustomIconButton(
-                                        onClick = {
-                                            if (viewModel.filterList.value.isNotEmpty()) {
-                                                viewModel.onEvent(TaskScreenEvent.OnGroupBySelected)
-                                            }
-                                        },
-                                        icon = painterResource(id = if (viewModel.isGroupingApplied.value) CoreRes.drawable.ic_group_by_active_icon else CoreRes.drawable.ic_group_by_icon),
-                                        iconTintColor = if (viewModel.isGroupingApplied.value) white else blueDark,
-                                        contentDescription = "filter_list",
-                                        buttonContainerColor = if (viewModel.isGroupingApplied.value) blueDark else Color.Transparent,
-                                        colors = IconButtonDefaults.iconButtonColors(
-                                            containerColor = if (viewModel.isGroupingApplied.value) blueDark else Color.Transparent,
-                                            contentColor = if (viewModel.isGroupingApplied.value) white else blueDark
-                                        )
-                                    )
-                                }
                             }
                         }
                     }
+                },
+                onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+                    Column {
+                        BaseContentScreen(
+                            matId = viewModel.matId.value,
+                            contentScreenCategory = viewModel.contentCategory.value
+                        ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
+                            if (!isLimitContentData) {
+                                navigateToMediaPlayerScreen(
+                                    navController = navController,
+                                    contentKey = contentKey,
+                                    contentType = contentType,
+                                    contentTitle = contentTitle,
+                                )
+                            } else {
+                                navigateToContentDetailScreen(
+                                    navController,
+                                    matId = viewModel.matId.value,
+                                    contentScreenCategory = viewModel.contentCategory.value
+                                )
+                            }
+                        }
+                        if (isSearch) {
+
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        start = dimen_8_dp,
+                                        end = dimen_8_dp,
+                                        bottom = dimen_10_dp
+                                    )
+                            ) {
+
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                                ) {
+
+                                    SimpleSearchComponent(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(1f),
+                                        placeholderString = viewModel.searchLabel.value,
+                                        searchFieldHeight = dimen_50_dp,
+                                        onSearchValueChange = { queryTerm ->
+                                            viewModel.onEvent(
+                                                SearchEvent.PerformSearch(
+                                                    queryTerm,
+                                                    viewModel.isGroupingApplied.value,
+                                                    viewModel.isFilterApplied.value
+                                                )
+                                            )
+                                        }
+                                    )
+
+                                    if (viewModel.isFilterEnabled.value) {
+                                        CustomIconButton(
+                                            onClick = {
+                                                coroutineScope.launch {
+                                                    customBottomSheetScaffoldProperties.sheetState.show()
+                                                }
+                                            },
+                                            icon = painterResource(id = if (viewModel.isFilterApplied.value) com.nudge.core.R.drawable.filter_active_icon else com.nudge.core.R.drawable.filter_icon),
+                                            iconTintColor = if (viewModel.isFilterApplied.value) white else blueDark,
+                                            contentDescription = "filter_list",
+                                            buttonContainerColor = if (viewModel.isFilterApplied.value) blueDark else Color.Transparent,
+                                            colors = IconButtonDefaults.iconButtonColors(
+                                                containerColor = if (viewModel.isFilterApplied.value) blueDark else Color.Transparent,
+                                                contentColor = if (viewModel.isFilterApplied.value) white else blueDark
+                                            )
+                                        )
+                                    }
+
+                                    if (viewModel.isGroupByEnable.value) {
+                                        CustomIconButton(
+                                            onClick = {
+                                                if (viewModel.filterList.value.isNotEmpty()) {
+                                                    viewModel.onEvent(TaskScreenEvent.OnGroupBySelected)
+                                                }
+                                            },
+                                            icon = painterResource(id = if (viewModel.isGroupingApplied.value) com.nudge.core.R.drawable.ic_group_by_active_icon else com.nudge.core.R.drawable.ic_group_by_icon),
+                                            iconTintColor = if (viewModel.isGroupingApplied.value) white else blueDark,
+                                            contentDescription = "filter_list",
+                                            buttonContainerColor = if (viewModel.isGroupingApplied.value) blueDark else Color.Transparent,
+                                            colors = IconButtonDefaults.iconButtonColors(
+                                                containerColor = if (viewModel.isGroupingApplied.value) blueDark else Color.Transparent,
+                                                contentColor = if (viewModel.isGroupingApplied.value) white else blueDark
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
 
                     Box(
                         modifier = Modifier
@@ -346,84 +446,84 @@ fun TaskScreen(
                                 customVerticalSpacer()
                             }
 
-                            if (viewModel.isGroupingApplied.value && viewModel.isGroupByEnable.value) {
-                                viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
-                                    item {
-                                        Row(
-                                            horizontalArrangement = Arrangement.Start,
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = dimen_6_dp)
-                                        ) {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.ic_vo_name_icon),
-                                                contentDescription = null,
+                                if (viewModel.isGroupingApplied.value && viewModel.isGroupByEnable.value) {
+                                    viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
+                                        item {
+                                            Row(
+                                                horizontalArrangement = Arrangement.Start,
+                                                verticalAlignment = Alignment.CenterVertically,
                                                 modifier = Modifier
-                                                    .padding(horizontal = dimen_10_dp)
-                                                    .size(25.dp),
-                                                colorFilter = ColorFilter.tint(blueDark)
-                                            )
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = dimen_6_dp)
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.ic_vo_name_icon),
+                                                    contentDescription = null,
+                                                    modifier = Modifier
+                                                        .padding(horizontal = dimen_10_dp)
+                                                        .size(25.dp),
+                                                    colorFilter = ColorFilter.tint(blueDark)
+                                                )
 
-                                            Text(
-                                                text = category ?: BLANK_STRING,
-                                                style = defaultTextStyle.copy(color = blueDark)
+                                                Text(
+                                                    text = category ?: BLANK_STRING,
+                                                    style = defaultTextStyle.copy(color = blueDark)
+                                                )
+                                            }
+                                        }
+                                        item {
+                                            CustomVerticalSpacer()
+                                        }
+
+                                        if (category != null) {
+                                            taskScreenContentForGroup(
+                                                category,
+                                                viewModel,
+                                                navController
                                             )
                                         }
                                     }
-                                    item {
-                                        CustomVerticalSpacer()
-                                    }
 
-                                    if (category != null) {
-                                        taskScreenContentForGroup(
-                                            category,
-                                            viewModel,
-                                            navController
-                                        )
+                                } else {
+                                    if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
+                                        taskScreenContent(viewModel, navController)
+
                                     }
                                 }
-
-                            } else {
-                                if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-
-                                    taskScreenContent(viewModel, navController)
-
                             }
                         }
                     }
-                }
-            }
-            if (viewModel.showDialog.value) {
-                ShowCustomDialog(
-                    message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_activity),
-                    negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
-                    positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
-                    onNegativeButtonClick = {
-                        viewModel.showDialog.value = false
-                    },
-                    onPositiveButtonClick = {
-                        viewModel.markActivityCompleteStatus()
+                    if (viewModel.showDialog.value) {
+                        ShowCustomDialog(
+                            message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_activity),
+                            negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
+                            positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                            onNegativeButtonClick = {
+                                viewModel.showDialog.value = false
+                            },
+                            onPositiveButtonClick = {
+                                viewModel.markActivityCompleteStatus()
 
-                        navigateToActivityCompletionScreen(
-                            isFromActivity = true,
-                            navController = navController,
-                            activityMsg = context.getString(
-                                R.string.activity_completion_message,
-                                activityName
-                            ),
-                            activityRoutePath = activityName
+                                navigateToActivityCompletionScreen(
+                                    isFromActivity = true,
+                                    navController = navController,
+                                    activityMsg = context.getString(
+                                        R.string.activity_completion_message,
+                                        activityName
+                                    ),
+                                    activityRoutePath = activityName
+                                )
+                                viewModel.showDialog.value = false
+                            }
                         )
-                        viewModel.showDialog.value = false
                     }
-                )
-            }
-        },
-        onSettingClick = onSettingClick
-    )
-}
+                },
+                onSettingClick = onSettingClick
+            )
+        }
 
 
+    }
 }
 
 @Composable

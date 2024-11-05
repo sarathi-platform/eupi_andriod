@@ -21,7 +21,6 @@ import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseMode
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
-import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import com.sarathi.dataloadingmangement.network.response.FormDetailResponseModel
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
@@ -47,9 +46,6 @@ interface DataLoadingApiService {
 
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
     suspend fun getSurveyFromNetwork(@Body request: SurveyRequest): ApiResponseModel<SurveyResponseModel>
-
-    @GET(SUBPATH_CONFIG_GET_LANGUAGE)
-    suspend fun fetchLanguageConfigDetailsFromNetwork(): ApiResponseModel<ConfigResponseModel?>
 
     @GET(SUBPATH_USER_VIEW)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

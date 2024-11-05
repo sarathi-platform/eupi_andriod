@@ -247,7 +247,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             castListDao = mViewModel.casteListDao,
             bpcSummaryDao = mViewModel.bpcSummaryDao,
             poorDidiListDao = mViewModel.poorDidiListDao,
-            languageListDao = mViewModel.languageListDao
         )
 
         AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)

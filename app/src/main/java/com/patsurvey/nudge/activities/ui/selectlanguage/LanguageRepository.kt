@@ -1,11 +1,11 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import javax.inject.Inject
 

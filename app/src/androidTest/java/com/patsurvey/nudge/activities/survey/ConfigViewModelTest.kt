@@ -1,37 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.content.Context
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Lifecycle
-import androidx.test.core.app.launchActivity
-import androidx.test.filters.LargeTest
-import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.splash.ConfigRepository
-import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.LanguageEntity
-import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
-import com.patsurvey.nudge.model.response.ApiResponseModel
-import com.patsurvey.nudge.model.response.BpcScorePercentageResponse
-import com.patsurvey.nudge.model.response.ConfigResponseModel
-import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.FAIL
-import com.patsurvey.nudge.utils.SUCCESS
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
-
 /*@OptIn(ExperimentalCoroutinesApi::class)
 @LargeTest
 @RunWith(androidx.test.runner.AndroidJUnit4::class)

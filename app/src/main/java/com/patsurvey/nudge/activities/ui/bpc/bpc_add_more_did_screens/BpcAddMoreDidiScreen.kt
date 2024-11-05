@@ -220,7 +220,9 @@ fun BpcAddMoreDidiScreen(
                             },
                             onSearchValueChange = {
                                 bpcAddMoreDidiViewModel.performQuery(it, filterSelected)
-                            }
+                            },
+                            onSortedSelected = {}
+
                         )
                     }
 

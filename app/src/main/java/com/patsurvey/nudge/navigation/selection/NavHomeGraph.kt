@@ -37,6 +37,7 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
@@ -795,14 +796,16 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
             )
         }
 
+        composable(route = SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route){
+            ExportBackupScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
         composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
             ActivityReopeningScreen(navController = navController)
         }
 
     }
 }
-
-
 
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
     navigation(route = NudgeNavigationGraph.VO_ENDORSEMENT_GRAPH,

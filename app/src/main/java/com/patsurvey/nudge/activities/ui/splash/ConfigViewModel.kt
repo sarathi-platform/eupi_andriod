@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.splash
 
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -11,7 +12,6 @@ import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.addDefaultLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
-    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
+    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val languageConfigUseCase: LanguageConfigUseCase
 ) : BaseViewModel() {
 
     fun isLoggedIn(): Boolean {
@@ -43,13 +44,13 @@ class ConfigViewModel @Inject constructor(
                     "ConfigViewModel",
                     "fetchLanguageDetails -> apiInterface.configDetails()"
                 )
-                    val response = configRepository.fetchLanguageFromAPI()
+                val response = languageConfigUseCase.fetchLanguageAPI()
                     NudgeLogger.d(
                         "ConfigViewModel",
-                        "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                        "fetchLanguageDetails -> response status = ${response?.status}, message = ${response?.message}, data = ${response?.data.toString()}"
                     )
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let {
+                if (response?.status.equals(SUCCESS, true)) {
+                    response?.data?.let {
                             it.languageList.forEach { language ->
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }
@@ -67,7 +68,7 @@ class ConfigViewModel @Inject constructor(
                                 callBack(it.image_profile_link)
                             }
                         }
-                    } else if (response.status.equals(FAIL, true)) {
+                } else if (response?.status.equals(FAIL, true)) {
                         configRepository.addDefaultLanguage()
                         withContext(Dispatchers.Main) {
                             callBack(listOf())
@@ -76,7 +77,7 @@ class ConfigViewModel @Inject constructor(
 
             } catch (ex: Exception) {
                 onCatchError(ex, ApiType.LANGUAGE_API)
-                configRepository.addDefaultLanguage()
+                languageConfigUseCase.addDefaultLanguage()
                 withContext(Dispatchers.Main) {
                     callBack(listOf())
                 }
@@ -112,10 +113,7 @@ class ConfigViewModel @Inject constructor(
                 "checkAndAddLanguage -> localLanguages: $localLanguages"
             )
             if (localLanguages.isEmpty())
-                addDefaultLanguage(
-                    configRepository.languageListDao,
-                    configRepository.baselineLanguageDao
-                )
+                languageConfigUseCase.addDefaultLanguage()
         }
     }
 

@@ -102,14 +102,12 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -140,6 +138,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 import java.util.regex.Pattern
+import javax.annotation.meta.When
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
@@ -196,6 +195,8 @@ fun getStepStatusFromOrdinal(status: Int): String {
         }
     }
 }
+
+
 
 fun Context.findActivity(): ComponentActivity? = when (this) {
     is ComponentActivity -> this
@@ -1281,90 +1282,90 @@ fun updateStepStatus(
     }
 }
 
-fun addDefaultLanguage(
-    languageListDao: LanguageListDao,
-    baselineLanguageDao: com.nrlm.baselinesurvey.database.dao.LanguageListDao
-) {
-    languageListDao.insertAll(
-        listOf(
-            LanguageEntity(
-                id = 2,
-                language = "English",
-                langCode = "en",
-                orderNumber = 1,
-                localName = "English"
-            ),
-            LanguageEntity(
-                1,
-                language = "Hindi",
-                langCode = "hi",
-                orderNumber = 2,
-                localName = "हिंदी"
-            ),
-            LanguageEntity(
-                3,
-                language = "Bengali",
-                langCode = "bn",
-                orderNumber = 3,
-                localName = "বাংলা"
-            ),
-            LanguageEntity(
-                4,
-                language = "Assamese",
-                langCode = "as",
-                orderNumber = 4,
-                localName = "অসমীয়া"
-            ),
-            LanguageEntity(
-                5,
-                language = "Bodo",
-                langCode = "be",
-                orderNumber = 5,
-                localName = "बर'"
-            )
-        )
-    )
-
-    baselineLanguageDao.insertAll(
-        listOf(
-            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-                id = 2,
-                language = "English",
-                langCode = "en",
-                orderNumber = 1,
-                localName = "English"
-            ),
-            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-                1,
-                language = "Hindi",
-                langCode = "hi",
-                orderNumber = 2,
-                localName = "हिंदी"
-            ),
-            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-                3,
-                language = "Bengali",
-                langCode = "bn",
-                orderNumber = 3,
-                localName = "বাংলা"
-            ),
-            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-                4,
-                language = "Assamese",
-                langCode = "as",
-                orderNumber = 4,
-                localName = "অসমীয়া"
-            ),
-            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-                5,
-                language = "Bodo",
-                langCode = "be",
-                orderNumber = 5,
-                localName = "बर'"
-            )
-        )
-    )
-}
+//fun addDefaultLanguage(
+//    languageListDao: LanguageListDao,
+//    baselineLanguageDao: com.nrlm.baselinesurvey.database.dao.LanguageListDao
+//) {
+//    languageListDao.insertAll(
+//        listOf(
+//            LanguageEntity(
+//                id = 2,
+//                language = "English",
+//                langCode = "en",
+//                orderNumber = 1,
+//                localName = "English"
+//            ),
+//            LanguageEntity(
+//                1,
+//                language = "Hindi",
+//                langCode = "hi",
+//                orderNumber = 2,
+//                localName = "हिंदी"
+//            ),
+//            LanguageEntity(
+//                3,
+//                language = "Bengali",
+//                langCode = "bn",
+//                orderNumber = 3,
+//                localName = "বাংলা"
+//            ),
+//            LanguageEntity(
+//                4,
+//                language = "Assamese",
+//                langCode = "as",
+//                orderNumber = 4,
+//                localName = "অসমীয়া"
+//            ),
+//            LanguageEntity(
+//                5,
+//                language = "Bodo",
+//                langCode = "be",
+//                orderNumber = 5,
+//                localName = "बर'"
+//            )
+//        )
+//    )
+//
+//    baselineLanguageDao.insertAll(
+//        listOf(
+//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+//                id = 2,
+//                language = "English",
+//                langCode = "en",
+//                orderNumber = 1,
+//                localName = "English"
+//            ),
+//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+//                1,
+//                language = "Hindi",
+//                langCode = "hi",
+//                orderNumber = 2,
+//                localName = "हिंदी"
+//            ),
+//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+//                3,
+//                language = "Bengali",
+//                langCode = "bn",
+//                orderNumber = 3,
+//                localName = "বাংলা"
+//            ),
+//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+//                4,
+//                language = "Assamese",
+//                langCode = "as",
+//                orderNumber = 4,
+//                localName = "অসমীয়া"
+//            ),
+//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+//                5,
+//                language = "Bodo",
+//                langCode = "be",
+//                orderNumber = 5,
+//                localName = "बर'"
+//            )
+//        )
+//    )
+//}
 
 fun getFormSubPath(formName: String, pageNumber: Int): String {
     return "${formName}_page_$pageNumber"
@@ -1573,6 +1574,27 @@ fun isFilePathExists(context: Context, filePath: String): Boolean {
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
 }
 
+fun getSortedList(index:Int, didiList:List<DidiEntity>):List<DidiEntity>{
+    return  when(index) {
+        0->didiList.sortedBy { it.createdDate }
+        1->didiList.sortedByDescending { it.createdDate }
+        2->didiList.sortedBy { it.modifiedDate }
+        3->didiList.sortedByDescending { it.modifiedDate }
+        4->didiList.sortedBy { it.name.lowercase() }
+        5->didiList.sortedByDescending { it.name.lowercase() }
+        else -> {
+            didiList
+        }
+    }
+}
+
+fun getSortedMap(didiSortedIndex:Int,tolaMapList:Map<String,List<DidiEntity>>):Map<String,List<DidiEntity>>{
+    var fMapList= mutableMapOf<String,List<DidiEntity>>()
+
+    tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key, getSortedList(didiSortedIndex,mapEntry.value))
+    }
+   return fMapList
+}
 
 
 

@@ -18,5 +18,6 @@ enum class SettingTagEnum {
     MARK_ACTIVITY_IN_PROGRESS,
     SYNC_DATA_NOW,
     SYNC_STOP,
-    APP_CONFIG
+    APP_CONFIG,
+    EXPORT_DATA_BACKUP_FILE,
 }
