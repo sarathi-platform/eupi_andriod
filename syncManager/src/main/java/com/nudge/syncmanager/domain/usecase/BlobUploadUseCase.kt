@@ -3,42 +3,30 @@ package com.nudge.syncmanager.domain.usecase
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.domain.repository.SyncBlobRepository
+import com.nudge.syncmanager.model.BlobUploadConfig
+import com.nudge.syncmanager.model.ImageBlobStatusConfig
 
 class BlobUploadUseCase(
     private val syncBlobRepository: SyncBlobRepository
 ) {
     suspend fun uploadImageOnBlob(
-        filePath: String,
-        fileName: String,
-        postSelectionContainerName: String,
-        selectionContainerName: String,
-        blobConnectionUrl: String,
+        blobUploadConfig: BlobUploadConfig,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
         CoreLogger.d(
             context = CoreAppDetails.getApplicationContext().applicationContext,
             "BlobUploadUseCase",
-            "uploadImageOnBlob : FilePath: $filePath :: FileName: $fileName"
+            "uploadImageOnBlob : FilePath: ${blobUploadConfig.filePath} :: FileName: ${blobUploadConfig.fileName}"
         )
         syncBlobRepository.uploadImageOnBlob(
-            filePath,
-            fileName,
-            postSelectionContainerName = postSelectionContainerName,
-            selectionContainerName = selectionContainerName,
-            blobConnectionUrl = blobConnectionUrl
+            blobUploadConfig = blobUploadConfig
         ) { message, isExceptionOccur ->
             onUploadImageResponse(message, isExceptionOccur)
         }
     }
 
     suspend fun updateImageBlobStatus(
-        blobUrl: String,
-        isBlobUploaded: Boolean,
-        imageStatusId: String,
-        errorMessage: String,
-        status: String,
-        eventId: String,
-        requestId: String
+        imageBlobStatusConfig: ImageBlobStatusConfig
     ) {
         CoreLogger.d(
             context = CoreAppDetails.getApplicationContext().applicationContext,
@@ -46,13 +34,7 @@ class BlobUploadUseCase(
             "updateImageBlobStatus : "
         )
         syncBlobRepository.updateBlobStatus(
-            isBlobUploaded = isBlobUploaded,
-            imageStatusId = imageStatusId,
-            blobUrl = blobUrl,
-            errorMessage = errorMessage,
-            status = status,
-            eventId = eventId,
-            requestId = requestId
+            imageBlobStatusConfig = imageBlobStatusConfig
         )
     }
     fun isSyncImageBlobUploadEnable(): Boolean {

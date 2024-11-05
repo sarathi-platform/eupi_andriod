@@ -2,11 +2,13 @@ package com.nudge.syncmanager.domain.usecase
 
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.syncmanager.domain.repository.SyncAddUpdateEventRepository
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import javax.inject.Inject
 
 class FetchEventsFromDBUseCase @Inject constructor(
-    private val repository: SyncRepository
+    private val repository: SyncRepository,
+    private val syncAddUpdateEventRepository: SyncAddUpdateEventRepository
 ) {
     suspend fun fetchAllImageEventDetails(eventIds: List<String>) =
         repository.fetchAllImageEventDetails(eventIds)
@@ -26,6 +28,6 @@ class FetchEventsFromDBUseCase @Inject constructor(
     suspend fun getPendingEventCount(syncType: Int) = repository.getPendingEventCount(syncType)
 
     suspend fun findRequestEvents(eventList: List<SyncEventResponse>, tag: String) =
-        repository.findRequestEvents(eventList = eventList, tag)
+        syncAddUpdateEventRepository.findRequestEvents(eventList = eventList, tag)
 
 }

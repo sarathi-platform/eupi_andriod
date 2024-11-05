@@ -15,6 +15,7 @@ import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
+import com.nudge.syncmanager.domain.repository.SyncAddUpdateEventRepository
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import com.nudge.syncmanager.utils.SUCCESS
@@ -23,7 +24,8 @@ import okhttp3.RequestBody
 
 class SyncAPIUseCase(
     private val repository: SyncRepository,
-    private val syncAPiRepository: SyncApiRepository
+    private val syncAPiRepository: SyncApiRepository,
+    private val syncAddUpdateEventRepository: SyncAddUpdateEventRepository
 ) {
     suspend fun syncProducerEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
         val eventRequest: List<EventRequest> = events.map {
@@ -42,7 +44,13 @@ class SyncAPIUseCase(
         )
     }
 
-    suspend fun fetchConsumerEventStatus(response: (success: Boolean, message: String, requestIdCount: Int, ex: Throwable?) -> Unit) {
+    suspend fun fetchConsumerEventStatus(
+        response: (
+            success: Boolean, message: String,
+            requestIdCount: Int,
+            ex: Throwable?
+        ) -> Unit
+    ) {
         val requestIdList = repository.getEventListForConsumer()
         val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
         DeviceBandwidthSampler.getInstance().startSampling()
@@ -62,7 +70,7 @@ class SyncAPIUseCase(
                 if (consumerAPIResponse.status == SUCCESS) {
                     consumerAPIResponse.data?.let {
                         if (it.isNotEmpty()) {
-                            repository.updateEventConsumerStatus(eventList = it)
+                            syncAddUpdateEventRepository.updateEventConsumerStatus(eventList = it)
                             if (it.all { it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus }) {
                                 response(true, consumerAPIResponse.message, it.size, null)
                             } else if (it.any { it.status == EventSyncStatus.CONSUMER_FAILED.eventSyncStatus }) {

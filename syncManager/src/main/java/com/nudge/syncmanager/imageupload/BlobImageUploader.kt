@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 
 class BlobImageUploader @Inject constructor() : ImageUploader {
-    val TAG = "BLOB Image Upload"
+    val blobImageUploadTag = "BLOB Image Upload"
 
     override suspend fun uploadImage(
         filePath: String,
@@ -38,6 +38,7 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         blobConnectionUrl: String,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
+        var exceptionToThrow: Exception? = null
         try {
 
 
@@ -55,35 +56,36 @@ class BlobImageUploader @Inject constructor() : ImageUploader {
         blob.uploadFromFile(photoPath)
         CoreLogger.d(
             CoreAppDetails.getApplicationContext().applicationContext,
-            TAG,
+            blobImageUploadTag,
             "Image uploaded successfully ${blob.storageUri.primaryUri.toString()}"
         )
             onUploadImageResponse(blob.storageUri.primaryUri.toString(), false)
         } catch (storageException: StorageException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
-                TAG,
+                blobImageUploadTag,
                 "StorageException: ${storageException.message}",
                 ex = storageException
             )
-            throw storageException
+            exceptionToThrow = storageException
         } catch (fileNotEx: FileNotFoundException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
-                TAG,
+                blobImageUploadTag,
                 "FileNotFoundException: ${fileNotEx.message}",
                 ex = fileNotEx
             )
-            throw fileNotEx
+            exceptionToThrow = fileNotEx
         } catch (ioException: IOException) {
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext().applicationContext,
-                TAG,
+                blobImageUploadTag,
                 "IOException: ${ioException.message}",
                 ex = ioException
             )
-            throw ioException
+            exceptionToThrow = ioException
         }
+        exceptionToThrow?.let { throw it }
 
     }
 

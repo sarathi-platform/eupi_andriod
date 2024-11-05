@@ -1,10 +1,10 @@
 package com.nudge.syncmanager.domain.usecase
 
-import com.nudge.syncmanager.domain.repository.SyncRepository
+import com.nudge.syncmanager.domain.repository.SyncUserDetailsRepository
 
 
 class GetUserDetailsSyncRepoUseCase(
-    private val repository: SyncRepository
+    private val repository: SyncUserDetailsRepository
 ) {
 
     fun getUserMobileNumber(): String {

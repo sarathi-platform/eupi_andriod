@@ -2,10 +2,10 @@ package com.nudge.syncmanager.domain.usecase
 
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.response.SyncEventResponse
-import com.nudge.syncmanager.domain.repository.SyncRepository
+import com.nudge.syncmanager.domain.repository.SyncAddUpdateEventRepository
 
 class AddUpdateEventUseCase(
-    private val repository: SyncRepository
+    private val repository: SyncAddUpdateEventRepository
 ) {
     suspend fun updateSuccessEventStatus(eventList: List<SyncEventResponse>) {
         repository.updateSuccessEventStatus(eventList)

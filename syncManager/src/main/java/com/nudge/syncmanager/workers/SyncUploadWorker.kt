@@ -11,7 +11,9 @@ import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.BLOB_URL
+import com.nudge.core.CONST_1000
 import com.nudge.core.CONTENT_TYPE
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.DRIVE_TYPE
 import com.nudge.core.EMPTY_EVENT_LIST_FAILURE
 import com.nudge.core.EventSyncStatus
@@ -55,11 +57,13 @@ import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.core.value
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
+import com.nudge.syncmanager.model.BlobUploadConfig
+import com.nudge.syncmanager.model.ConsumerEventMetaDataModel
+import com.nudge.syncmanager.model.ImageBlobStatusConfig
 import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -75,7 +79,7 @@ class SyncUploadWorker @AssistedInject constructor(
     @Assisted val workerParams: WorkerParameters,
     private val syncManagerUseCase: SyncManagerUseCase,
 ) : CoroutineWorker(appContext, workerParams) {
-    private val TAG = SyncUploadWorker::class.java.simpleName
+    private val syncUploadWorkerTAG = SyncUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
     private var retryCount = RETRY_DEFAULT_COUNT
     private var connectionQuality = ConnectionQuality.UNKNOWN
@@ -90,27 +94,33 @@ class SyncUploadWorker @AssistedInject constructor(
         return try {
             connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             batchLimit =
-                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_BATCH_SIZE.name)
+                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase
+                    .invoke(AppConfigKeysEnum.SYNC_BATCH_SIZE.name)
                     .toIntOrNull().value(BATCH_DEFAULT_LIMIT)
             retryCount =
-                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_RETRY_COUNT.name)
+                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase
+                    .invoke(AppConfigKeysEnum.SYNC_RETRY_COUNT.name)
                     .toIntOrNull().value(RETRY_DEFAULT_COUNT)
             isBlobImageUploadEnable =
-                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.BLOB_IMAGE_UPLOAD_ENABLED.name)
+                syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase
+                    .invoke(AppConfigKeysEnum.BLOB_IMAGE_UPLOAD_ENABLED.name)
                     .toBoolean()
 
             if (isBlobImageUploadEnable) {
                 azureConnectionString =
-                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.ENCODED_KEY.name)
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase
+                        .invoke(AppConfigKeysEnum.ENCODED_KEY.name)
                 preSelectionContainerName =
-                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SELECTION_CONTAINER_NAME.name)
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase
+                        .invoke(AppConfigKeysEnum.SELECTION_CONTAINER_NAME.name)
                 postSelectionContainerName =
-                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.POST_SELECTION_CONTAINER_NAME.name)
+                    syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase
+                        .invoke(AppConfigKeysEnum.POST_SELECTION_CONTAINER_NAME.name)
 
             }
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork Started: batchLimit: $batchLimit  retryCount: $retryCount"
             )
             if (runAttemptCount > 0) {
@@ -119,7 +129,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount"
             )
 
@@ -127,7 +137,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(syncType = selectedSyncType)
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork: totalPendingEventCount: $totalPendingEventCount"
             )
             syncManagerUseCase.syncAnalyticsEventUseCase.sendSyncStartedAnalyticEvent(
@@ -144,10 +154,14 @@ class SyncUploadWorker @AssistedInject constructor(
 
             if (totalPendingEventCount > 0) {
 
-                if (selectedSyncType == SyncType.SYNC_ALL.ordinal || selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal)
+                if (selectedSyncType == SyncType.SYNC_ALL.ordinal
+                    || selectedSyncType == SyncType.SYNC_ONLY_DATA.ordinal
+                )
                     syncDataEvent(selectedSyncType)
 
-                if (selectedSyncType == SyncType.SYNC_ALL.ordinal || selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal)
+                if (selectedSyncType == SyncType.SYNC_ALL.ordinal
+                    || selectedSyncType == SyncType.SYNC_ONLY_IMAGES.ordinal
+                )
                     syncImageEvents(selectedSyncType)
 
             }
@@ -155,7 +169,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork: success totalPendingEventCount: $totalPendingEventCount"
             )
 
@@ -202,7 +216,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 }
 
                 CoreLogger.d(
-                    tag = TAG,
+                    tag = syncUploadWorkerTAG,
                     msg = "syncDataEvent: pendingEvents List: ${mPendingEventList.json()}"
                 )
 
@@ -229,13 +243,22 @@ class SyncUploadWorker @AssistedInject constructor(
 
         }
 
-        syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+        syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean,
+                                                                     message: String,
+                                                                     requestIdCount: Int,
+                                                                     ex: Throwable? ->
             syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
-                selectedSyncType,
-                CommonEventParams(batchLimit, retryCount, connectionQuality.name),
-                success,
-                message,
-                requestIds,
+                consumerEventMetaDataModel = ConsumerEventMetaDataModel(
+                    selectedSyncType = selectedSyncType,
+                    message = message,
+                    commonEventParams = CommonEventParams(
+                        batchLimit,
+                        retryCount,
+                        connectionQuality.name
+                    ),
+                    success = success
+                ),
+                requestIdCount,
                 ex
             )
         }
@@ -243,33 +266,40 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private fun handleSyncException(ex: Exception) {
+        var exceptionToThrow: Exception?
         when (ex) {
             is SocketTimeoutException -> {
                 val exception = TimeoutException(ex.message.value())
-                logException("syncDataEvent: TimeoutException", exception, ex)
-                throw exception
+                logException("syncDataEvent: TimeoutException", exception)
+                exceptionToThrow = exception
             }
 
             is UnknownHostException -> {
                 val exception = HostNotFoundException(ex.message.value())
-                logException("syncDataEvent: HostNotFoundException", exception, ex)
-                throw exception
+                logException("syncDataEvent: HostNotFoundException", exception)
+                exceptionToThrow = exception
             }
 
             is ApiException -> {
-                logException("syncDataEvent: ApiException", ex, ex)
-                throw ex
+                logException("syncDataEvent: ApiException", ex)
+                exceptionToThrow = ex
             }
 
             else -> {
-                logException("syncDataEvent: Exception", ex, ex)
-                throw ex
+                logException("syncDataEvent: Exception", ex)
+                exceptionToThrow = ex
             }
         }
+        exceptionToThrow?.let { throw it }
     }
 
-    private fun logException(msg: String, exception: Throwable, originalException: Exception) {
-        CoreLogger.e(tag = TAG, msg = msg, ex = originalException, stackTrace = true)
+    private fun logException(msg: String, originalException: Exception) {
+        CoreLogger.e(
+            tag = syncUploadWorkerTAG,
+            msg = msg,
+            ex = originalException,
+            stackTrace = true
+        )
     }
 
     private suspend fun syncImageEvents(selectedSyncType: Int) {
@@ -290,7 +320,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 val mImageEventIdsList = mPendingEventList.map { it.id }
 
                 CoreLogger.d(
-                    tag = TAG,
+                    tag = syncUploadWorkerTAG,
                     msg = "doWork: imageEventIdsList List: ${mImageEventIdsList.json()}"
                 )
 
@@ -338,12 +368,21 @@ class SyncUploadWorker @AssistedInject constructor(
 
         }
 
-        syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean, message: String, requestIds: Int, ex: Throwable? ->
+        syncManagerUseCase.syncAPIUseCase.fetchConsumerEventStatus { success: Boolean,
+                                                                     message: String,
+                                                                     requestIds: Int,
+                                                                     ex: Throwable? ->
             syncManagerUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
-                selectedSyncType,
-                CommonEventParams(batchLimit, retryCount, connectionQuality.name),
-                success,
-                message,
+                consumerEventMetaDataModel = ConsumerEventMetaDataModel(
+                    selectedSyncType = selectedSyncType,
+                    message = message,
+                    commonEventParams = CommonEventParams(
+                        batchLimit,
+                        retryCount,
+                        connectionQuality.name
+                    ),
+                    success = success
+                ),
                 requestIds,
                 ex
             )
@@ -355,21 +394,23 @@ class SyncUploadWorker @AssistedInject constructor(
         dataEventList: List<Events>,
         connectionQuality: ConnectionQuality
     ): List<Events> {
-        var eventPayloadSize = dataEventList.json().getSizeInLong() / 1000
+        var eventPayloadSize = dataEventList.json().getSizeInLong() / CONST_1000
 
         CoreLogger.d(
             applicationContext,
-            TAG,
+            syncUploadWorkerTAG,
             "doWork: Event Payload size: ${dataEventList.json().getSizeInLong()}"
         )
         var eventListAccordingToPayload: List<Events> = dataEventList
-        while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSizeInkb && eventListAccordingToPayload.size > 1) {
+        while (eventPayloadSize > getBatchSize(connectionQuality).maxPayloadSizeInkb
+            && eventListAccordingToPayload.size > 1
+        ) {
             eventListAccordingToPayload =
                 eventListAccordingToPayload.subList(0, (eventListAccordingToPayload.size / 2))
-            eventPayloadSize = eventListAccordingToPayload.json().getSizeInLong() / 1000
+            eventPayloadSize = eventListAccordingToPayload.json().getSizeInLong() / CONST_1000
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork: Event Payload size in loop: ${
                     eventListAccordingToPayload.json().getSizeInLong()
                 }"
@@ -386,6 +427,7 @@ class SyncUploadWorker @AssistedInject constructor(
         mPendingEventList: List<Events>
     ): Int {
         var mTotalPendingEventCount = totalPendingEventCount
+        var exceptionToThrow: Exception? = null
         if (apiResponse.status == SUCCESS) {
             apiResponse.data?.let { eventList ->
                 if (eventList.isNotEmpty()) {
@@ -396,7 +438,7 @@ class SyncUploadWorker @AssistedInject constructor(
                         )
                     CoreLogger.d(
                         applicationContext,
-                        TAG,
+                        syncUploadWorkerTAG,
                         "doWork: After totalPendingEventCount: $mTotalPendingEventCount"
                     )
                 } else {
@@ -405,16 +447,16 @@ class SyncUploadWorker @AssistedInject constructor(
                         EMPTY_EVENT_LIST_FAILURE,
                         selectedSyncType = selectedSyncType
                     )
-                    throw EmptyResponse()
+                    exceptionToThrow = EmptyResponse()
                 }
-            } ?: withContext(Dispatchers.IO) {
+            } ?: withContext(CoreDispatchers.ioDispatcher) {
                 handleAPIResponseFailure(
                     mPendingEventList,
                     NULL_RESPONSE_FAILURE,
                     apiResponse.message,
                     selectedSyncType = selectedSyncType
                 )
-                throw NullResponse()
+                exceptionToThrow = NullResponse()
             }
         } else {
             handleAPIResponseFailure(
@@ -423,12 +465,13 @@ class SyncUploadWorker @AssistedInject constructor(
                 apiResponse.message,
                 selectedSyncType
             )
-            throw ApiException.HttpError(
+            exceptionToThrow = ApiException.HttpError(
                 statusCode = apiResponse.status,
                 message = apiResponse.message
             )
         }
         DeviceBandwidthSampler.getInstance().stopSampling()
+        exceptionToThrow?.let { throw it }
         return mTotalPendingEventCount
     }
 
@@ -441,7 +484,7 @@ class SyncUploadWorker @AssistedInject constructor(
         if (eventSuccessList.isNotEmpty()) {
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork: eventSuccessList List: ${eventSuccessList.json()}"
             )
             syncManagerUseCase.addUpdateEventUseCase.updateSuccessEventStatus(
@@ -452,7 +495,7 @@ class SyncUploadWorker @AssistedInject constructor(
         if (eventFailedList.isNotEmpty()) {
             CoreLogger.d(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "doWork: eventFailedList List: ${eventFailedList.json()}"
             )
             syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
@@ -489,7 +532,11 @@ class SyncUploadWorker @AssistedInject constructor(
 
 
     private suspend fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
-        CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
+        CoreLogger.d(
+            applicationContext,
+            syncUploadWorkerTAG,
+            "doWork: Producer Response list Empty error"
+        )
         syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
             eventList = createEventResponseList(
                 mPendingEventList,
@@ -499,7 +546,7 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private suspend fun handleNullApiResponse(mPendingEventList: List<Events>) {
-        CoreLogger.d(applicationContext, TAG, "doWork: Getting API response Null")
+        CoreLogger.d(applicationContext, syncUploadWorkerTAG, "doWork: Getting API response Null")
         syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
             eventList = createEventResponseList(
                 mPendingEventList,
@@ -509,7 +556,7 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private suspend fun handleFailedApiResponse(mPendingEventList: List<Events>) {
-        CoreLogger.d(applicationContext, TAG, "doWork: Getting API Failed")
+        CoreLogger.d(applicationContext, syncUploadWorkerTAG, "doWork: Getting API Failed")
         syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
             eventList = createEventResponseList(
                 mPendingEventList,
@@ -532,7 +579,7 @@ class SyncUploadWorker @AssistedInject constructor(
 
         CoreLogger.e(
             applicationContext,
-            TAG,
+            syncUploadWorkerTAG,
             "doWork: Exception: ${ex.message} :: ${mPendingEventList.json()}",
             ex,
             true
@@ -550,7 +597,8 @@ class SyncUploadWorker @AssistedInject constructor(
                 syncManagerUseCase.addUpdateEventUseCase.updateFailedEventStatus(
                     eventList = createEventResponseList(
                         mPendingEventList,
-                        "${SyncException.PRODUCER_RETRY_COUNT_EXCEEDED_EXCEPTION} :: ${ex.message ?: SOMETHING_WENT_WRONG}"
+                        "${SyncException.PRODUCER_RETRY_COUNT_EXCEEDED_EXCEPTION}" +
+                                " :: ${ex.message ?: SOMETHING_WENT_WRONG}"
                     )
                 )
             }
@@ -575,13 +623,15 @@ class SyncUploadWorker @AssistedInject constructor(
                 imageEvent.filePath?.let {
                     val file = File(it)
 
-                    var metaDataMap = hashMapOf<String, Any>(
+                    val metaDataMap = hashMapOf<String, Any>(
                         FILE_PATH to file.path,
                         FILE_NAME to (imageEvent.fileName ?: BLANK_STRING),
                         CONTENT_TYPE to getFileMimeType(file).toString(),
                         IS_ONLY_DATA to false,
                         BLOB_URL to BLANK_STRING,
-                        DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                        DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase
+                                .getLoggedInUserType() == UPCM_USER
+                        )
                             SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
                     )
                     imageEvent.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
@@ -600,7 +650,9 @@ class SyncUploadWorker @AssistedInject constructor(
                             eventName = imageEvent.name,
                             mobileNo = imageEvent.mobile_number,
                             payload = imageEvent.request_payload ?: BLANK_STRING,
-                            driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                            driveType = if (syncManagerUseCase.getUserDetailsSyncUseCase
+                                    .getLoggedInUserType() == UPCM_USER
+                            )
                                 SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE,
                             metadata = SyncImageMetadataRequest(
                                 data = metaDataMap,
@@ -617,7 +669,7 @@ class SyncUploadWorker @AssistedInject constructor(
                 imagePayloadRequest.json().toRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
             CoreLogger.d(
                 context = applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "syncImageToServerAPI: SyncImageAPI Request: ${imagePayloadRequest.json()}",
             )
             val response = syncManagerUseCase.syncAPIUseCase.syncImageWithEventToServer(
@@ -628,7 +680,7 @@ class SyncUploadWorker @AssistedInject constructor(
         } catch (ex: Exception) {
             CoreLogger.e(
                 applicationContext,
-                TAG,
+                syncUploadWorkerTAG,
                 "syncImageToServerAPI: Exception: ${ex.message} :: ${imageStatusEventList.json()}",
                 ex,
                 true
@@ -644,7 +696,7 @@ class SyncUploadWorker @AssistedInject constructor(
     ) {
         CoreLogger.d(
             applicationContext,
-            TAG,
+            syncUploadWorkerTAG,
             "handleFailedImageStatus: ${imageEventDetail.json()} ::Message: $errorMessage"
         )
         syncManagerUseCase.addUpdateEventUseCase.updateImageDetailsEventStatus(
@@ -664,7 +716,7 @@ class SyncUploadWorker @AssistedInject constructor(
     ) {
         CoreLogger.d(
             applicationContext,
-            TAG,
+            syncUploadWorkerTAG,
             "findImageEventAndImageList: ${imageEventList.json()}"
         )
 
@@ -731,22 +783,26 @@ class SyncUploadWorker @AssistedInject constructor(
     ): String {
         var uploadedBlobUrl = BLANK_STRING
         syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
-            filePath = picturePath,
-            fileName = imageDetail.fileName ?: BLANK_STRING,
-            postSelectionContainerName = postSelectionContainerName,
-            selectionContainerName = selectionContainerName,
-            blobConnectionUrl = blobConnectionUrl
+            blobUploadConfig = BlobUploadConfig(
+                filePath = picturePath,
+                fileName = imageDetail.fileName ?: BLANK_STRING,
+                postSelectionContainerName = postSelectionContainerName,
+                selectionContainerName = selectionContainerName,
+                blobConnectionUrl = blobConnectionUrl
+            ),
         ) { message, isExceptionOccur ->
             uploadedBlobUrl = if (!isExceptionOccur) message else BLANK_STRING
             syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
-                imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
-                isBlobUploaded = isExceptionOccur,
-                blobUrl = if (isExceptionOccur) BLANK_STRING else message,
-                errorMessage = if (isExceptionOccur) message else BLANK_STRING,
-                eventId = imageDetail.eventId ?: BLANK_STRING,
-                requestId = BLANK_STRING,
-                status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
-                else EventSyncStatus.OPEN.eventSyncStatus
+                ImageBlobStatusConfig(
+                    imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
+                    isBlobUploaded = isExceptionOccur,
+                    blobUrl = if (isExceptionOccur) BLANK_STRING else message,
+                    errorMessage = if (isExceptionOccur) message else BLANK_STRING,
+                    eventId = imageDetail.eventId ?: BLANK_STRING,
+                    requestId = BLANK_STRING,
+                    status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
+                    else EventSyncStatus.OPEN.eventSyncStatus
+                )
             )
         }
         return uploadedBlobUrl
@@ -805,7 +861,7 @@ class SyncUploadWorker @AssistedInject constructor(
             if (imageEventList.isNotEmpty()) {
                 CoreLogger.d(
                     applicationContext,
-                    TAG,
+                    syncUploadWorkerTAG,
                     "findImageEventAndImageList: ${imageEventList.json()} "
                 )
                 imageEventList.forEach { imageDetail ->
