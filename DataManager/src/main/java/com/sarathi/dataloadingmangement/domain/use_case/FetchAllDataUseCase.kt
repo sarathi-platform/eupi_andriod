@@ -67,6 +67,7 @@ class FetchAllDataUseCase @Inject constructor(
 
             fetchMissionDataUseCase.invoke(missionId, programId)
             fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
             val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
@@ -79,7 +80,6 @@ class FetchAllDataUseCase @Inject constructor(
                     moneyJournalUseCase.invoke()
                 }
             }
-            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
 
             if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
