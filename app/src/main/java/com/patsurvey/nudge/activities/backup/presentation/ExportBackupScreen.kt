@@ -62,15 +62,11 @@ fun ExportBackupScreen(
                     viewModel.exportLocalImages()
                 }
 
-                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
+                SettingTagEnum.EXPORT_EVENT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.export_event_file))
                 }
                 SettingTagEnum.EXPORT_LOG_FILE.name -> {
                     viewModel.exportOnlyLogFile(context)
-                }
-
-                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name ->{
-                    viewModel.compressExportData(context.getString(R.string.share_export_file))
                 }
             }
         },

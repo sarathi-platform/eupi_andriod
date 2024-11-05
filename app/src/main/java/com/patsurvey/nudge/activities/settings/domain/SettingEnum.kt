@@ -20,4 +20,5 @@ enum class SettingTagEnum {
     SYNC_STOP,
     APP_CONFIG,
     EXPORT_DATA_BACKUP_FILE,
+    EXPORT_EVENT_FILE,
 }

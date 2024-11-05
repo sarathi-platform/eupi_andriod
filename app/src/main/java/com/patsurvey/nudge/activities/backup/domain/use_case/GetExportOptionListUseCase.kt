@@ -80,7 +80,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 2,
                 context.getString(R.string.export_event_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_EVENT_FILE.name
             )
         )
         list.add(
@@ -97,14 +97,6 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.export_log_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_LOG_FILE.name
-            )
-        )
-        list.add(
-            SettingOptionModel(
-                5,
-                context.getString(R.string.export_backup_file),
-                BLANK_STRING,
-                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
             )
         )
         return list.ifEmpty { arrayListOf() }
