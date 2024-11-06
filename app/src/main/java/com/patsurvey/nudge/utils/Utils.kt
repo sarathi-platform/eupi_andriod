@@ -1444,8 +1444,8 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
         }
 
         EventName.ADD_DIDI,
-        EventName.DIDI_SHG_FLAG_EDIT_EVENT,
-        EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT -> {
+        EventName.SHG_FLAG_EVENT,
+        EventName.ABLE_BODIED_FLAG_EVENT -> {
             val didiEntity = (eventItem as DidiEntity)
             mapOf(
                 KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName,

@@ -134,8 +134,8 @@ class PatDidiSummaryRepository @Inject constructor(
         ).json()
 
         val event = Events(
-            name = EventName.DIDI_SHG_FLAG_EDIT_EVENT.name,
-            type = EventName.DIDI_SHG_FLAG_EDIT_EVENT.topicName,
+            name = EventName.SHG_FLAG_EVENT.name,
+            type = EventName.SHG_FLAG_EVENT.topicName,
             createdBy = userID,
             mobile_number = mobileNumber,
             request_payload = payload,
@@ -150,7 +150,7 @@ class PatDidiSummaryRepository @Inject constructor(
                 request_payload_size = payload.getSizeInLong(),
                 parentEntity = getParentEntityMapForEvent(
                     didiEntity,
-                    EventName.DIDI_SHG_FLAG_EDIT_EVENT
+                    EventName.SHG_FLAG_EVENT
                 )
             ).json()
         )
@@ -171,8 +171,8 @@ class PatDidiSummaryRepository @Inject constructor(
         ).json()
 
         val event = Events(
-            name = EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT.name,
-            type = EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT.topicName,
+            name = EventName.ABLE_BODIED_FLAG_EVENT.name,
+            type = EventName.ABLE_BODIED_FLAG_EVENT.topicName,
             createdBy = userID,
             mobile_number = mobileNumber,
             request_payload = payload,
@@ -187,7 +187,7 @@ class PatDidiSummaryRepository @Inject constructor(
                 request_payload_size = payload.getSizeInLong(),
                 parentEntity = getParentEntityMapForEvent(
                     didiEntity,
-                    EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT
+                    EventName.ABLE_BODIED_FLAG_EVENT
                 )
             ).json()
         )
