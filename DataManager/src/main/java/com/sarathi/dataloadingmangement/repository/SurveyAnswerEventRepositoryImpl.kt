@@ -17,8 +17,7 @@ import javax.inject.Inject
 class SurveyAnswerEventRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
     private val tagReferenceEntityDao: TagReferenceEntityDao
-) :
-    ISurveyAnswerEventRepository {
+) : ISurveyAnswerEventRepository {
 
     override suspend fun writeMoneyJournalSaveAnswerEvent(
         questionUiModels: List<QuestionUiModel>,
@@ -45,7 +44,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             grantId = grantId,
             grantType = grantType,
             taskId = taskId,
-            tagId = sectionTagId
+            tagId = sectionTagId,
+            sectionName = questionUiModels.first().sectionName
         )
 
 
@@ -81,7 +81,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 taskId = taskId,
                 activityId = activityId,
                 activityReferenceId = activityReferenceId,
-                activityReferenceType = activityReferenceType
+                activityReferenceType = activityReferenceType,
+                sectionName = questionUiModel.sectionName
             )
         } else {
             SaveAnswerEventDto(
@@ -97,7 +98,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 grantId = grantId,
                 grantType = grantType,
                 taskId = taskId,
-                activityId = activityId
+                activityId = activityId,
+                sectionName = questionUiModel.sectionName
             )
         }
     }

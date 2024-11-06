@@ -21,7 +21,8 @@ class QuestionUiModel(
     var order: Int,
     var subjectType: String = BLANK_STRING,
     var isConditional: Boolean = false,
-    var showQuestion: Boolean = false
+    var showQuestion: Boolean = false,
+    var sectionName: String
 ) {
 
 

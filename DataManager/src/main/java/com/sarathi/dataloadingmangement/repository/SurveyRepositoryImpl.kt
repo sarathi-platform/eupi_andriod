@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.NATURE_TAG
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
@@ -26,6 +27,7 @@ class SurveyRepositoryImpl @Inject constructor(
     private val optionItemDao: OptionItemDao,
     private val surveyEntityDao: SurveyEntityDao,
     private val grantConfigDao: GrantConfigDao,
+    private val sectionEntityDao: SectionEntityDao,
     val coreSharedPrefs: CoreSharedPrefs
 ) : ISurveyRepository {
     override suspend fun getQuestion(
@@ -56,6 +58,11 @@ class SurveyRepositoryImpl @Inject constructor(
             referenceId = referenceId,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
+        val sectionEntity = sectionEntityDao.getSurveySectionForLanguage(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
 
         questionDao.getSurveySectionQuestionForLanguage(
             languageId = coreSharedPrefs.getAppLanguage(),
@@ -82,7 +89,8 @@ class SurveyRepositoryImpl @Inject constructor(
                 surveyName = surveyName ?: BLANK_STRING,
                 formId = it.formId ?: DEFAULT_ID,
                 order = it.order.value(0),
-                isConditional = it.isConditional
+                isConditional = it.isConditional,
+                sectionName = sectionEntity.sectionName
             )
             questionUiList.add(questionUiModel)
 
