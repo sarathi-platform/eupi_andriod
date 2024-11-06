@@ -1,8 +1,8 @@
 package com.patsurvey.nudge.activities.survey
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
@@ -27,7 +27,6 @@ import com.patsurvey.nudge.model.dataModel.AbleBodiedFlagEventModel
 import com.patsurvey.nudge.model.dataModel.ShgFlagEventModel
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -135,8 +134,8 @@ class PatDidiSummaryRepository @Inject constructor(
         ).json()
 
         val event = Events(
-            name = EventName.DIDI_SHG_FLAG_EDIT_EVENT.name,
-            type = EventName.DIDI_SHG_FLAG_EDIT_EVENT.topicName,
+            name = EventName.SHG_FLAG_EVENT.name,
+            type = EventName.SHG_FLAG_EVENT.topicName,
             createdBy = userID,
             mobile_number = mobileNumber,
             request_payload = payload,
@@ -151,7 +150,7 @@ class PatDidiSummaryRepository @Inject constructor(
                 request_payload_size = payload.getSizeInLong(),
                 parentEntity = getParentEntityMapForEvent(
                     didiEntity,
-                    EventName.DIDI_SHG_FLAG_EDIT_EVENT
+                    EventName.SHG_FLAG_EVENT
                 )
             ).json()
         )
@@ -172,8 +171,8 @@ class PatDidiSummaryRepository @Inject constructor(
         ).json()
 
         val event = Events(
-            name = EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT.name,
-            type = EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT.topicName,
+            name = EventName.ABLE_BODIED_FLAG_EVENT.name,
+            type = EventName.ABLE_BODIED_FLAG_EVENT.topicName,
             createdBy = userID,
             mobile_number = mobileNumber,
             request_payload = payload,
@@ -188,7 +187,7 @@ class PatDidiSummaryRepository @Inject constructor(
                 request_payload_size = payload.getSizeInLong(),
                 parentEntity = getParentEntityMapForEvent(
                     didiEntity,
-                    EventName.DIDI_ABLE_BODIED_FLAG_EDIT_EVENT
+                    EventName.ABLE_BODIED_FLAG_EVENT
                 )
             ).json()
         )
