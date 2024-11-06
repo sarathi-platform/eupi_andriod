@@ -18,6 +18,8 @@ enum class QuestionType {
     InputText,
     IncrementDecrementList,
     SingleImageComponent;
+    InputHrsMinutes,
+    SingleImage;
 
     companion object {
         val singleResponseQuestionTypeQuestions = listOf(
@@ -40,12 +42,13 @@ enum class QuestionType {
             DateType.name.toLowerCase(),
             TextField.name.toLowerCase(),
             InputText.name.toLowerCase(),
-            NumericField.name.toLowerCase()
+            NumericField.name.toLowerCase(),
+            InputHrsMinutes.name.toLowerCase()
         )
 
         val numericUseInputQuestionTypeList = listOf(
             InputNumber.name.toLowerCase(),
-            NumericField.name.toLowerCase()
+            NumericField.name.toLowerCase(),
         )
     }
 }

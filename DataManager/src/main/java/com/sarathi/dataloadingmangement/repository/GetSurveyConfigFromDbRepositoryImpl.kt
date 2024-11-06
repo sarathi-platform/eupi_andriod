@@ -19,7 +19,8 @@ class GetSurveyConfigFromDbRepositoryImpl @Inject constructor(
             missionId = missionId,
             activityId = activityId,
             surveyId = surveyId,
-            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            language = coreSharedPrefs.getAppLanguage()
         )
     }
 
@@ -34,7 +35,8 @@ class GetSurveyConfigFromDbRepositoryImpl @Inject constructor(
             activityId = activityId,
             surveyId = surveyId,
             formId = formId,
-            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            language = coreSharedPrefs.getAppLanguage()
         )
     }
 

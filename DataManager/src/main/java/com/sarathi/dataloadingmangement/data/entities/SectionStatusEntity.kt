@@ -4,7 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.toSafeInt
 import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.survey.response.SectionStatusResponseModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 
 @Entity(tableName = SECTION_STATUS_TABLE_NAME)
 data class SectionStatusEntity(
@@ -29,4 +32,27 @@ data class SectionStatusEntity(
 
     @ColumnInfo(name = "sectionStatus")
     val sectionStatus: String?,
-)
+) {
+    companion object {
+
+        fun geSectionStatusEntity(
+            sectionStatus: SectionStatusResponseModel,
+            userId: String,
+            missionId: Int,
+            taskId: Int
+        ): SectionStatusEntity {
+            return SectionStatusEntity(
+                id = 0,
+                userId = userId,
+                missionId = missionId,
+                surveyId = sectionStatus.surveyId ?: 0,
+                taskId = taskId,
+                sectionStatus = sectionStatus.status ?: SurveyStatusEnum.NOT_STARTED.name,
+                sectionId = sectionStatus.sectionId.toSafeInt("-1")
+
+            )
+        }
+
+    }
+}
+
