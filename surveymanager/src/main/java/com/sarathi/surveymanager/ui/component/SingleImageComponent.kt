@@ -14,21 +14,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,10 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,11 +47,10 @@ import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_150_dp
-import com.nudge.core.ui.theme.dimen_200_dp
 import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_300_dp
 import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -82,14 +71,15 @@ fun SingleImageComponent(
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
     isEditable: Boolean = true,
-    filePaths: List<String> = listOf(),
+    filePaths: String,
     fileNamePrefix: String,
     subtitle: String? = null,
+    areMultipleImagesAllowed: Boolean = true,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
-    val innerState: LazyGridState = rememberLazyGridState()
-    var imageList by remember { mutableStateOf(getSingleSavedImageUri(context, filePaths)) }
+    var image by remember { mutableStateOf(getImageUri(context = context, getFileNameFromURL(filePaths), false)) }
+
     var currentImageUri by remember { mutableStateOf<Uri?>(null) }
     val shouldRequestPermission = remember {
         mutableStateOf(false)
@@ -98,26 +88,22 @@ fun SingleImageComponent(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-                imageList = (imageList + currentImageUri)
+                image =  currentImageUri
                 onImageSelection(currentImageUri?.path ?: BLANK_STRING, false)
             }
         }
     )
     LaunchedEffect(key1 = context) {
-        requestSingleImageCameraPermission(context as Activity) {
+        requestCameraPermission(context as Activity) {
             shouldRequestPermission.value = it
         }
     }
 
-    val boxModifier = if (imageList.isNotEmpty()) {
-        Modifier
-            .size(dimen_150_dp)
-            .padding(dimen_5_dp)
-    } else {
+    val boxModifier =
         Modifier
             .fillMaxSize()
-            .height(dimen_200_dp)
-    }
+            .height(dimen_300_dp)
+
     Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
             QuestionComponent(
@@ -128,27 +114,21 @@ fun SingleImageComponent(
         }
 
         BoxWithConstraints(
-            modifier = Modifier
-                .heightIn(min = dimen_100_dp, maxCustomHeight)
+            modifier = Modifier.fillMaxSize()
+                .height(dimen_300_dp)
         ) {
-            LazyVerticalGrid(
-                state = innerState,
-                columns = GridCells.Fixed(if (imageList.isEmpty()) 1 else 2),
-                modifier = Modifier
-                    .heightIn(min = 110.dp, max = maxCustomHeight),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                item {
-                    Box(
-                        modifier =
+            Box(
+                modifier =
                         boxModifier
-                            .clickable(enabled = isEditable) {
+                            .clickable(
+                                enabled = isEditable
+                            ) {
 
                                 requestCameraPermission(context as Activity) {
                                     shouldRequestPermission.value = it
 
                                     if (!it) {
-                                        currentImageUri = getImageUri(
+                                        currentImageUri = getSingleImageUri(
                                             context, "${fileNamePrefix}${
                                                 System.currentTimeMillis()
                                             }.png",
@@ -171,23 +151,47 @@ fun SingleImageComponent(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            stringResource(R.string.add_image),
-                            style = largeTextStyle.copy(blueDark),
-                        )
-                    }
-                }
-                itemsIndexed(imageList) { _, image ->
-                    image?.let {
-                        SingleImageView(it, isEditable) { uri ->
-                            imageList = (imageList - uri)
 
-                            onImageSelection(uri.path ?: BLANK_STRING, true)
+                        if (image?.path==null || image?.path=="/external_files/Pictures")
+                        {
+                            Text(
+                                stringResource(R.string.add_image),
+                                style = largeTextStyle.copy(blueDark),
+                            )
+                        }else
+                        {
+                            Box(
+                                modifier = Modifier.fillMaxSize()
+                                    .height(dimen_150_dp)
+                                    .padding(dimen_5_dp)
+                            ) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(image),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(dimen_6_dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_delete_icon),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(dimen_10_dp)
+                                        .align(Alignment.BottomEnd)
+                                        .clickable(enabled = isEditable) {
+                                            image=null
+                                            onImageSelection(image?.path ?: BLANK_STRING, true)
+                                        }
+                                        .size(dimen_24_dp),
+                                    colorFilter = ColorFilter.tint(redDark)
+                                )
+                            }
+
                         }
                     }
                 }
-            }
-        }
     }
     if (shouldRequestPermission.value) {
         ShowCustomDialog(
@@ -205,10 +209,8 @@ fun SingleImageComponent(
             }
         )
     }
-
 }
-
-fun requestSingleImageCameraPermission(
+fun requestCameraPermissionn(
     context: Activity,
     requestPermission: (Boolean) -> Unit
 ) {
@@ -255,6 +257,7 @@ fun getSingleImageUri(context: Context, fileName: String, isNewImage: Boolean): 
         file =
             File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
     }
+
     return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
         uriFromFile(
             context, file,
@@ -263,49 +266,6 @@ fun getSingleImageUri(context: Context, fileName: String, isNewImage: Boolean): 
     }
 }
 
-fun getSingleSavedImageUri(
-    context: Context, filePaths: List<String> = listOf(),
-): List<Uri?> {
-    val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
-    filePaths.forEach {
-        if (it.isNotEmpty()) {
-            uriList.add(getSingleImageUri(context = context, getFileNameFromURL(it), false))
-        }
-    }
-    return uriList
-}
-
-@Composable
-fun SingleImageView(uri: Uri, isEditable: Boolean, onDelete: (fileUri: Uri) -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(dimen_150_dp)
-            .padding(dimen_5_dp)
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(uri),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(dimen_6_dp))
-                .background(Color.Gray),
-            contentScale = ContentScale.Crop
-        )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_delete_icon),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(dimen_10_dp)
-                .align(Alignment.BottomEnd)
-                .clickable(enabled = isEditable) {
-                    onDelete(uri)
-                }
-                .size(dimen_24_dp),
-            colorFilter = ColorFilter.tint(redDark)
-        )
-    }
-}
 
 
 

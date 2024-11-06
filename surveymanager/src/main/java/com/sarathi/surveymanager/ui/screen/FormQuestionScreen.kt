@@ -222,12 +222,12 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
-                    AddImageComponent(
+                    SingleImageComponent(
                         fileNamePrefix = viewModel.getPrefixFileName(question),
-                        filePaths = commaSeparatedStringToList(
+                        filePaths =
                             question.options?.firstOrNull()?.selectedValue
                                 ?: BLANK_STRING
-                        ),
+                        ,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditable = viewModel.isActivityNotCompleted.value,
@@ -251,33 +251,6 @@ fun FormScreenQuestionUiContent(
 
                     }
                 }
-                QuestionType.SingleImageComponent.name ->{
-                    SingleImageComponent(
-                        fileNamePrefix = /*viewModel.getPrefixFileName(question)*/ BLANK_STRING,
-                        filePaths = commaSeparatedStringToList(
-                            question.options?.firstOrNull()?.selectedValue
-                                ?: BLANK_STRING
-                        ),
-                        isMandatory = question.isMandatory,
-                        title = question.questionDisplay,
-                        isEditable = viewModel.isActivityNotCompleted.value,
-                        maxCustomHeight = maxHeight,
-                        subtitle = question.display
-                    ) { selectedValue, isDeleted ->
-                        saveMultiImageTypeAnswer(
-                            selectedValue,
-                            question.options,
-                            isDeleted
-                        )
-                        onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
-
-                    }
-                }
-
                 QuestionType.SingleSelectDropDown.name,
                 QuestionType.DropDown.name -> {
                     DropDownTypeComponent(

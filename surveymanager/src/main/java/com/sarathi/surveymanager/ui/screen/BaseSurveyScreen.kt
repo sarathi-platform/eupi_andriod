@@ -344,34 +344,36 @@ fun QuestionUiContent(
 
                 }
             }
-            QuestionType.SingleImageComponent.name ->
-            {
+            QuestionType.SingleImage.name -> {
                 SingleImageComponent(
                     fileNamePrefix = viewModel.getPrefixFileName(question),
-                    filePaths = commaSeparatedStringToList(
-                        question.options?.firstOrNull()?.selectedValue
-                            ?: BLANK_STRING
-                    ),
+                    filePaths =
+                    question.options?.firstOrNull()?.selectedValue
+                        ?: com.nudge.core.BLANK_STRING
+                    ,
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
                     isEditable = viewModel.isActivityNotCompleted.value,
                     maxCustomHeight = maxHeight,
-                    subtitle = question.display
+                    subtitle = question.display,
+                    areMultipleImagesAllowed = question.type.equals(
+                        QuestionType.MultiImage.name,
+                        true
+                    )
                 ) { selectedValue, isDeleted ->
                     saveMultiImageTypeAnswer(
                         selectedValue,
                         question.options,
                         isDeleted
                     )
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
+                    onAnswerSelect(question)
+                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
                         viewModel.fieldValidationAndMessageMap[question.questionId] =
                             Pair(isValid, message)
                     }
-                    onAnswerSelect(question)
 
                 }
             }
-
             QuestionType.SingleSelectDropDown.name,
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(

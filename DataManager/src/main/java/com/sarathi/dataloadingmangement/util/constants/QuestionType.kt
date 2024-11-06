@@ -17,7 +17,6 @@ enum class QuestionType {
     NumericField,
     InputText,
     IncrementDecrementList,
-    SingleImageComponent;
     InputHrsMinutes,
     SingleImage;
 
