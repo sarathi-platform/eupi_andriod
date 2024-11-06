@@ -31,6 +31,7 @@ interface BaseSaveAnswerEventDto {
     val localTaskId: String
 
     val activityId: Int
+    val sectionName: String
 }
 
 data class SaveAnswerEventDto(
@@ -73,6 +74,9 @@ data class SaveAnswerEventDto(
     @SerializedName("activityId")
     @Expose
     override val activityId: Int,
+    @SerializedName("sectionName")
+    @Expose
+    override val sectionName: String,
 ) : BaseSaveAnswerEventDto
 
 data class TrainingTypeActivitySaveAnswerEventDto(
@@ -120,5 +124,8 @@ data class TrainingTypeActivitySaveAnswerEventDto(
     val activityReferenceId: Int?,
     @SerializedName("activityReferenceType")
     @Expose
-    val activityReferenceType: String?
+    val activityReferenceType: String?,
+    @SerializedName("sectionName")
+    @Expose
+    override val sectionName: String
 ) : BaseSaveAnswerEventDto
