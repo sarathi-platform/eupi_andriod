@@ -39,4 +39,7 @@ interface SourceTargetQuestionMappingEntityDao {
     @Query("DELETE FROM source_target_question_mapping_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId")
     fun clearAllSourceTargetQuestionMappingForUser(userId: String, surveyId: Int, sectionId: Int)
 
+    @Query("DELETE FROM source_target_question_mapping_table where userId = :userId")
+    fun deleteSourceTargetQuestionMappingForUser(userId: String)
+
 }

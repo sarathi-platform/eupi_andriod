@@ -13,7 +13,8 @@ data class SurveyCardModel(
     val label: String,
     var value: String,
     var type: String,
-    var tagId: Int
+    var tagId: Int,
+    var componentType: String
 ) {
 
     companion object {
@@ -25,7 +26,8 @@ data class SurveyCardModel(
                 label = surveyConfigEntity.label,
                 value = surveyConfigEntity.value,
                 type = surveyConfigEntity.type,
-                tagId = surveyConfigEntity.tagId
+                tagId = surveyConfigEntity.tagId,
+                componentType = surveyConfigEntity.componentType
             )
 
         }

@@ -305,11 +305,12 @@ class DataSummaryScreenViewModel @Inject constructor(
                     _subjectLivelihoodEventSummaryUiModelList.clear()
                     _subjectLivelihoodEventSummaryUiModelList.addAll(
                         fetchSubjectLivelihoodEventMappingUseCase.invoke(subjectId)
+                            .sortedByDescending { it.createdDate }
                     )
                     _subjectLivelihoodEventSummaryUiModelList.addAll(
                         fetchSubjectLivelihoodEventMappingUseCase.getLivelihoodEventsWithAssetAndMoneyEntryForDeletedSubject(
                             subjectId
-                        )
+                        ).sortedByDescending { it.createdDate }
                     )
 
                     _livelihoodModel.clear()

@@ -17,8 +17,7 @@ import javax.inject.Inject
 class SurveyAnswerEventRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
     private val tagReferenceEntityDao: TagReferenceEntityDao
-) :
-    ISurveyAnswerEventRepository {
+) : ISurveyAnswerEventRepository {
 
     override suspend fun writeMoneyJournalSaveAnswerEvent(
         questionUiModels: List<QuestionUiModel>,
@@ -45,7 +44,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             grantId = grantId,
             grantType = grantType,
             taskId = taskId,
-            tagId = sectionTagId
+            tagId = sectionTagId,
+            sectionName = questionUiModels.first().sectionName
         )
 
 
@@ -81,7 +81,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 taskId = taskId,
                 activityId = activityId,
                 activityReferenceId = activityReferenceId,
-                activityReferenceType = activityReferenceType
+                activityReferenceType = activityReferenceType,
+                sectionName = questionUiModel.sectionName
             )
         } else {
             SaveAnswerEventDto(
@@ -97,7 +98,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 grantId = grantId,
                 grantType = grantType,
                 taskId = taskId,
-                activityId = activityId
+                activityId = activityId,
+                sectionName = questionUiModel.sectionName
             )
         }
     }
@@ -178,11 +180,14 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 if (questionUiModel.type == QuestionType.MultiSelectDropDown.name
                     || questionUiModel.type == QuestionType.SingleSelectDropDown.name
                     || questionUiModel.type == QuestionType.MultiSelect.name
+                    || questionUiModel.type == QuestionType.DropDown.name
+                    || questionUiModel.type == QuestionType.RadioButton.name
+                    || questionUiModel.type == QuestionType.Toggle.name
                 ) {
                     result.add(
                     SaveAnswerEventOptionItemDto(
                         optionId = optionItem.optionId ?: 0,
-                        selectedValue = optionItem.description,
+                        selectedValue = optionItem.originalValue,
                         optionDesc = optionItem.originalValue ?: BLANK_STRING,
                         referenceId = referenceId
 
@@ -193,7 +198,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                         SaveAnswerEventOptionItemDto(
                             optionId = optionItem.optionId ?: 0,
                             selectedValue = optionItem.selectedValue,
-                            optionDesc = optionItem.description ?: BLANK_STRING,
+                            optionDesc = optionItem.originalValue ?: BLANK_STRING,
                             referenceId = referenceId
 
                         )

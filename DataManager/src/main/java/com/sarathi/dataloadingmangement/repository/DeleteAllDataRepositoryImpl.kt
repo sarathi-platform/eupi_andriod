@@ -95,6 +95,10 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
             productDao().deleteProductForUser(userId)
             subjectLivelihoodEventMappingDao().deleteSubjectLivelihoodEventMappingForUser(userId)
             subjectLivelihoodMappingDao().deleteSubjectLivelihoodMappingForUser(userId)
+            sectionEntityDao().deleteSurveySectionsForUser(userId)
+            sectionStatusEntityDao().deleteSectionStatusForUser(userId)
+            sourceTargetQuestionMappingEntityDao().deleteSourceTargetQuestionMappingForUser(userId)
+            surveyConfigEntityDao().deleteSurveyConfigForUser(userId)
         }
     }
 }

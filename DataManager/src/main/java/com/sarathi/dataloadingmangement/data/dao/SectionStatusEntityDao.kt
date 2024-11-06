@@ -48,4 +48,7 @@ interface SectionStatusEntityDao {
         userId: String
     ): Int
 
+    @Query("Delete from section_status_table where userId=:userId")
+    suspend fun deleteSectionStatusForUser(userId: String)
+
 }
