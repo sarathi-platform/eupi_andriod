@@ -28,7 +28,11 @@ data class MetadataDto(
     val parentEntity: Map<String, String> = emptyMap(),
 
     @SerializedName("isRegenerateFile")
-    val isRegenerateFile: Boolean = false
+    val isRegenerateFile: Boolean = false,
+
+    @Expose
+    @SerializedName("data")
+    var data: Map<String, Any> = emptyMap()
 )
 
 fun String.getMetaDataDtoFromString(): MetadataDto? {

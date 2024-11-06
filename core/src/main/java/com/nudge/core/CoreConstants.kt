@@ -57,6 +57,7 @@ const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
 const val CRP_USER_TYPE = "Community Resource Person"
+const val BPC_USER_TYPE = "Project Coordinator"
 const val SUFFIX_IMAGE_ZIP_FILE = "Image"
 const val SUFFIX_EVENT_ZIP_FILE = "file"
 const val BASELINE = "BASELINE_GRANT"
@@ -201,3 +202,8 @@ const val THRESHOLD_TYPE_HARD = "HARD_THRESHOLD"
 
 const val DEFAULT_NUMERIC_INPUT_MAX_LENGTH = 7
 const val DEFAULT_TEXT_INPUT_MAX_LENGTH = 150
+const val STATE_ID = "stateId"
+const val USER_TYPE = "userType"
+const val CRP = "CRP"
+const val BPC = "BPC"
+const val UPCM = "UPCM"

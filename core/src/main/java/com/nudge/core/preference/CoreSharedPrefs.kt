@@ -40,7 +40,8 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_PROFILE_IMAGE = "profile_image"
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
-        const val PREF_STATE_ID = "stateId"
+        const val PREF_STATE_ID = "type_state_id"
+        const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_USER_NAME = "key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
@@ -335,5 +336,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getHardEventLimitThreshold(): Int {
         return prefs.getInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, DEFAULT_HARD_EVENT_LIMIT_THRESHOLD)
 
+    }
+
+    override fun isUserBPC(): Boolean {
+        return prefs.getBoolean(PREF_KEY_USER_BPC, false)
     }
 }

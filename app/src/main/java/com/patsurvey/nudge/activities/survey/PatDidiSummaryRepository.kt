@@ -1,8 +1,8 @@
 package com.patsurvey.nudge.activities.survey
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
@@ -27,7 +27,6 @@ import com.patsurvey.nudge.model.dataModel.AbleBodiedFlagEventModel
 import com.patsurvey.nudge.model.dataModel.ShgFlagEventModel
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

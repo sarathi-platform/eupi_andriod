@@ -1321,3 +1321,14 @@ fun extractSubstrings(input: String): List<String> {
     // Find all matches in the input string
     return pattern.findAll(input).map { it.value }.toList()
 }
+
+fun findUserTypeForMetadata(userType: String): String {
+    return when (userType) {
+        UPCM_USER -> UPCM
+        CRP_USER_TYPE -> CRP
+        BPC_USER_TYPE -> BPC
+        else -> {
+            UPCM
+        }
+    }
+}

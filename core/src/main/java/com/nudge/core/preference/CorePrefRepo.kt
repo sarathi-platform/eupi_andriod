@@ -84,5 +84,6 @@ interface CorePrefRepo {
     fun getSoftEventLimitThreshold(): Int
     fun setHardEventLimitThreshold(threshold: Int)
     fun getHardEventLimitThreshold(): Int
+    fun isUserBPC(): Boolean
 
 }
