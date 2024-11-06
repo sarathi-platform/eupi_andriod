@@ -63,4 +63,7 @@ interface PrefBSRepo {
     fun setPreviousUserMobile(mobileNumber: String)
     fun getPreviousUserMobile(): String
     fun getUniqueUserIdentifier(): String
+    fun getStateId(): Int
+    fun getUserType(): String
+
 }
