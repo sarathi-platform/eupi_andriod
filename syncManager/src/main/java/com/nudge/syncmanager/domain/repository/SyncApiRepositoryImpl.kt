@@ -18,7 +18,9 @@ class SyncApiRepositoryImpl(
     val imageStatusDao: ImageStatusDao
 ) : SyncApiRepository {
 
-    override suspend fun syncProducerEventToServer(eventRequest: List<EventRequest>): ApiResponseModel<List<SyncEventResponse>> {
+    override suspend fun syncProducerEventToServer(
+        eventRequest: List<EventRequest>
+    ): ApiResponseModel<List<SyncEventResponse>> {
         return apiService.syncEvent(eventRequest)
     }
 
@@ -29,7 +31,9 @@ class SyncApiRepositoryImpl(
         return apiService.syncImageWithEvent(imageFileList = imageList, imagePayload = imagePayload)
     }
 
-    override suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest): ApiResponseModel<List<SyncEventResponse>> {
+    override suspend fun fetchConsumerEventStatus(
+        eventConsumerRequest: EventConsumerRequest
+    ): ApiResponseModel<List<SyncEventResponse>> {
         return apiService.syncConsumerStatusApi(eventConsumerRequest)
     }
 

@@ -1,24 +1,17 @@
 package com.nudge.syncmanager.domain.repository
 
+import com.nudge.syncmanager.model.BlobUploadConfig
+import com.nudge.syncmanager.model.ImageBlobStatusConfig
+
 interface SyncBlobRepository {
 
     suspend fun uploadImageOnBlob(
-        filePath: String,
-        fileName: String,
-        postSelectionContainerName: String,
-        selectionContainerName: String,
-        blobConnectionUrl: String,
+        blobUploadConfig: BlobUploadConfig,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     )
 
     suspend fun updateBlobStatus(
-        blobUrl: String,
-        isBlobUploaded: Boolean,
-        imageStatusId: String,
-        errorMessage: String,
-        status: String,
-        eventId: String,
-        requestId: String
+        imageBlobStatusConfig: ImageBlobStatusConfig
     )
     fun isSyncImageBlobUploadEnable(): Boolean
 

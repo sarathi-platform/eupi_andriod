@@ -19,12 +19,16 @@ import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.nudge.syncmanager.domain.repository.SyncAddUpdateEventRepository
+import com.nudge.syncmanager.domain.repository.SyncAddUpdateEventRepositoryImpl
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
 import com.nudge.syncmanager.domain.repository.SyncBlobRepository
 import com.nudge.syncmanager.domain.repository.SyncBlobRepositoryImpl
 import com.nudge.syncmanager.domain.repository.SyncRepository
 import com.nudge.syncmanager.domain.repository.SyncRepositoryImpl
+import com.nudge.syncmanager.domain.repository.SyncUserDetailsRepository
+import com.nudge.syncmanager.domain.repository.SyncUserDetailsRepositoryImpl
 import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
 import com.nudge.syncmanager.domain.usecase.BlobUploadUseCase
 import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
@@ -199,14 +203,19 @@ object UseCaseModule {
         eventsWriterRepository: EventsWriterRepository,
         syncRepository: SyncRepository,
         syncAPiRepository: SyncApiRepository,
-        syncAnalyticsEventUseCase: SyncAnalyticsEventUseCase
+        syncAnalyticsEventUseCase: SyncAnalyticsEventUseCase,
+        syncAddUpdateEventRepository: SyncAddUpdateEventRepository
     ): SyncEventDetailUseCase {
         return SyncEventDetailUseCase(
             getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
             getSyncEventsUseCase = GetSyncEventsUseCase(repository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
             fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository),
-            syncAPIUseCase = SyncAPIUseCase(syncRepository, syncAPiRepository),
+            syncAPIUseCase = SyncAPIUseCase(
+                syncRepository,
+                syncAPiRepository,
+                syncAddUpdateEventRepository
+            ),
             syncAnalyticsEventUseCase = syncAnalyticsEventUseCase
         )
     }
@@ -243,8 +252,7 @@ object UseCaseModule {
         eventStatusDao: EventStatusDao,
         imageStatusDao: ImageStatusDao,
         apiService: SyncApiService,
-        eventsDao: EventsDao,
-        blobImageUploader: BlobImageUploader
+        eventsDao: EventsDao
     ): SyncRepository {
         return SyncRepositoryImpl(
             corePrefRepo = corePrefRepo,
@@ -252,8 +260,7 @@ object UseCaseModule {
             eventStatusDao = eventStatusDao,
             imageStatusDao = imageStatusDao,
             apiService = apiService,
-            eventDao = eventsDao,
-            imageUploader = blobImageUploader
+            eventDao = eventsDao
         )
     }
 
@@ -280,13 +287,22 @@ object UseCaseModule {
         syncAPiRepository: SyncApiRepository,
         syncBlobRepository: SyncBlobRepository,
         analyticsManager: AnalyticsManager,
-        fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+        fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+        syncUserDetailsRepository: SyncUserDetailsRepository,
+        syncAddUpdateEventRepository: SyncAddUpdateEventRepository
     ): SyncManagerUseCase {
         return SyncManagerUseCase(
-            addUpdateEventUseCase = AddUpdateEventUseCase(repository),
-            syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
-            getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
-            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
+            addUpdateEventUseCase = AddUpdateEventUseCase(syncAddUpdateEventRepository),
+            syncAPIUseCase = SyncAPIUseCase(
+                repository,
+                syncAPiRepository,
+                syncAddUpdateEventRepository
+            ),
+            getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(syncUserDetailsRepository),
+            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(
+                repository,
+                syncAddUpdateEventRepository
+            ),
             syncBlobUploadUseCase = BlobUploadUseCase(syncBlobRepository),
             syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
                 analyticsManager = analyticsManager
@@ -373,8 +389,14 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesFetchEventsFromDBUseCase(repository: SyncRepository): FetchEventsFromDBUseCase {
-        return FetchEventsFromDBUseCase(repository)
+    fun providesFetchEventsFromDBUseCase(
+        repository: SyncRepository,
+        syncAddUpdateEventRepository: SyncAddUpdateEventRepository
+    ): FetchEventsFromDBUseCase {
+        return FetchEventsFromDBUseCase(
+            repository = repository,
+            syncAddUpdateEventRepository = syncAddUpdateEventRepository
+        )
     }
 
     @Provides
@@ -400,6 +422,36 @@ object UseCaseModule {
             coreSharedPrefs = coreSharedPrefs,
             eventsDao = eventsDao,
             eventStatusDao = eventStatusDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncAddUpdateEventRepository(
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+        requestStatusDao: RequestStatusDao,
+        apiService: SyncApiService
+    ): SyncAddUpdateEventRepository {
+        return SyncAddUpdateEventRepositoryImpl(
+            eventDao = eventsDao,
+            eventStatusDao = eventStatusDao,
+            corePrefRepo = corePrefRepo,
+            imageStatusDao = imageStatusDao,
+            requestStatusDao = requestStatusDao,
+            apiService = apiService
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncUserDetailsRepository(
+        corePrefRepo: CorePrefRepo
+    ): SyncUserDetailsRepository {
+        return SyncUserDetailsRepositoryImpl(
+            corePrefRepo = corePrefRepo
         )
     }
 

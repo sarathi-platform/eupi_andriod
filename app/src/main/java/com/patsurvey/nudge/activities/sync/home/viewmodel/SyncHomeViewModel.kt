@@ -42,6 +42,7 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
+import com.nudge.syncmanager.model.ConsumerEventMetaDataModel
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -362,10 +363,12 @@ class SyncHomeViewModel @Inject constructor(
                     connectionQuality.name
                 )
                 syncEventDetailUseCase.syncAnalyticsEventUseCase.sendConsumerEvents(
-                    selectedSyncType.intValue,
-                    commonEventParams,
-                    success,
-                    message,
+                    consumerEventMetaDataModel = ConsumerEventMetaDataModel(
+                        selectedSyncType = selectedSyncType.intValue,
+                        message = message,
+                        commonEventParams = commonEventParams,
+                        success = success
+                    ),
                     requestIdCount,
                     ex
                 )

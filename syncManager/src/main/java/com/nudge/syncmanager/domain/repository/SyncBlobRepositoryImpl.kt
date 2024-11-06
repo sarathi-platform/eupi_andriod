@@ -12,6 +12,8 @@ import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.imageupload.BlobImageUploader
+import com.nudge.syncmanager.model.BlobUploadConfig
+import com.nudge.syncmanager.model.ImageBlobStatusConfig
 import com.nudge.syncmanager.network.SyncApiService
 
 class SyncBlobRepositoryImpl(
@@ -23,24 +25,21 @@ class SyncBlobRepositoryImpl(
     val blobImageUploader: BlobImageUploader
 ) : SyncBlobRepository {
     override suspend fun uploadImageOnBlob(
-        filePath: String,
-        fileName: String,
-        postSelectionContainerName: String,
-        selectionContainerName: String,
-        blobConnectionUrl: String,
+        blobUploadConfig: BlobUploadConfig,
         onUploadImageResponse: suspend (String, Boolean) -> Unit
     ) {
 
         CoreLogger.d(
             CoreAppDetails.getApplicationContext().applicationContext,
             "uploadImageOnBlob",
-            "uploadImageOnBlob: FilePath: $filePath :: FileName: $fileName"
+            "uploadImageOnBlob: FilePath: ${blobUploadConfig.filePath} :: FileName: ${blobUploadConfig.fileName}"
         )
         blobImageUploader.uploadImage(
-            filePath = filePath,
-            fileName = fileName,
-            containerName = if (corePrefRepo.getUserType() == UPCM_USER) postSelectionContainerName else selectionContainerName,
-            blobConnectionUrl = blobConnectionUrl,
+            filePath = blobUploadConfig.filePath,
+            fileName = blobUploadConfig.fileName,
+            containerName = if (corePrefRepo.getUserType() == UPCM_USER) blobUploadConfig.postSelectionContainerName
+            else blobUploadConfig.selectionContainerName,
+            blobConnectionUrl = blobUploadConfig.blobConnectionUrl,
             onUploadImageResponse = { message, isExceptionOccur ->
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext().applicationContext,
@@ -52,41 +51,35 @@ class SyncBlobRepositoryImpl(
     }
 
     override suspend fun updateBlobStatus(
-        blobUrl: String,
-        isBlobUploaded: Boolean,
-        imageStatusId: String,
-        errorMessage: String,
-        status: String,
-        eventId: String,
-        requestId: String
+        imageBlobStatusConfig: ImageBlobStatusConfig
     ) {
         var retryCount = 0
-        if (status == EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus) {
-            retryCount = eventsDao.fetchRetryCountForEvent(eventId) + 1
+        if (imageBlobStatusConfig.status == EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus) {
+            retryCount = eventsDao.fetchRetryCountForEvent(imageBlobStatusConfig.eventId) + 1
         }
         imageStatusDao.updateBlobUrl(
-            blobUrl = blobUrl,
-            imageStatusId = imageStatusId,
+            blobUrl = imageBlobStatusConfig.blobUrl,
+            imageStatusId = imageBlobStatusConfig.imageStatusId,
             mobileNumber = corePrefRepo.getMobileNo(),
-            errorMessage = errorMessage
+            errorMessage = imageBlobStatusConfig.errorMessage
         )
-        if (!isBlobUploaded) {
+        if (!imageBlobStatusConfig.isBlobUploaded) {
             eventsDao.updateEventStatus(
                 retryCount = retryCount,
-                clientId = eventId,
-                errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
+                clientId = imageBlobStatusConfig.eventId,
+                errorMessage = imageBlobStatusConfig.errorMessage ?: SOMETHING_WENT_WRONG,
                 modifiedDate = System.currentTimeMillis().toDate(),
-                newStatus = status,
-                requestId = requestId
+                newStatus = imageBlobStatusConfig.status,
+                requestId = imageBlobStatusConfig.requestId
             )
         }
 
 
         eventStatusDao.insert(
             EventStatusEntity(
-                clientId = eventId,
-                errorMessage = errorMessage ?: SOMETHING_WENT_WRONG,
-                status = status,
+                clientId = imageBlobStatusConfig.eventId,
+                errorMessage = imageBlobStatusConfig.errorMessage ?: SOMETHING_WENT_WRONG,
+                status = imageBlobStatusConfig.status,
                 mobileNumber = corePrefRepo.getMobileNo(),
                 createdBy = corePrefRepo.getUserId(),
                 eventStatusId = 0

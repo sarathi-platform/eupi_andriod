@@ -8,6 +8,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.core.value
+import com.nudge.syncmanager.model.ConsumerEventMetaDataModel
 import javax.inject.Inject
 
 class SyncAnalyticsEventUseCase @Inject constructor(
@@ -102,35 +103,32 @@ class SyncAnalyticsEventUseCase @Inject constructor(
     }
 
     fun sendConsumerEvents(
-        selectedSyncType: Int,
-        commonEventParams: CommonEventParams,
-        success: Boolean,
-        message: String,
+        consumerEventMetaDataModel: ConsumerEventMetaDataModel,
         requestIdCount: Int,
         ex: Throwable?
     ) {
-        if (success) {
+        if (consumerEventMetaDataModel.success) {
             sendSyncConsumerSuccessEvent(
-                selectedSyncType,
+                consumerEventMetaDataModel.selectedSyncType,
                 requestIdCount
             )
         }
 
 
-        if (!success && ex == null) {
+        if (!consumerEventMetaDataModel.success && ex == null) {
             sendSyncConsumerApiFailEvent(
-                selectedSyncType,
-                message,
-                commonEventParams,
+                consumerEventMetaDataModel.selectedSyncType,
+                consumerEventMetaDataModel.message,
+                consumerEventMetaDataModel.commonEventParams,
                 requestIdCount
             )
         }
 
-        if (!success && ex != null) {
+        if (!consumerEventMetaDataModel.success && ex != null) {
             sendSyncConsumerFailureDueToExceptionAnalyticsEvent(
                 ex,
-                selectedSyncType,
-                commonEventParams,
+                consumerEventMetaDataModel.selectedSyncType,
+                consumerEventMetaDataModel.commonEventParams,
                 requestIdCount
             )
         }
