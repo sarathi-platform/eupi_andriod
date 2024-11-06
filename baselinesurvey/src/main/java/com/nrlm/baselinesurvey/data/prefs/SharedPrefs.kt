@@ -19,6 +19,9 @@ import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.data.prefs.StrictModePermitter.permitDiskReads
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_USER_TYPE
+import com.nudge.core.value
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -179,4 +182,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return "${userType}_${userMobile}"
     }
 
+    override fun getStateId(): Int {
+        return getPref(PREF_STATE_ID, -1)
+    }
+
+    override fun getUserType(): String {
+        return prefs.getString(
+            PREF_USER_TYPE,
+            BLANK_STRING
+        ).value() ?: BLANK_STRING
+    }
 }

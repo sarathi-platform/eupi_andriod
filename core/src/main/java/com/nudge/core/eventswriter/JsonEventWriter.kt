@@ -2,6 +2,8 @@ package com.nudge.core.eventswriter
 
 import android.content.Context
 import android.net.Uri
+import com.nudge.core.STATE_ID
+import com.nudge.core.USER_TYPE
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -10,6 +12,10 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventWriters
+import com.nudge.core.findUserTypeForMetadata
+import com.nudge.core.json
+import com.nudge.core.model.getMetaDataDtoFromString
+import com.nudge.core.preference.CoreSharedPrefs
 
 class JsonEventWriter(
     val context: Context,
@@ -18,8 +24,7 @@ class JsonEventWriter(
     val eventDependencyDao: EventDependencyDao,
     val imageStatusDao: ImageStatusDao
 ) : IEventFormatter {
-
-
+    val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
     override suspend fun saveAndFormatEvent(
         event: Events,
         dependencyEntity: List<EventDependencyEntity>,
@@ -34,11 +39,20 @@ class JsonEventWriter(
             }
 
             if (event.request_payload?.isNotEmpty() == true) {
+                val metadata = event.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(
+                    data = mapOf(
+                        STATE_ID to coreSharedPrefs.getStateId().toString(),
+                        USER_TYPE to findUserTypeForMetadata(coreSharedPrefs.getUserType())
+                    )
+                )
+                val updatedEvent = event.copy(metadata = updatedMetaData?.json())
+
             eventWriter.firstOrNull()
                 ?.addEvent(
                     context = context,
-                    event = event,
-                    event.mobile_number,
+                    event = updatedEvent,
+                    updatedEvent.mobile_number,
                     uri,
                     eventsDao = eventsDao,
                     eventDependencyDao = eventDependencyDao,

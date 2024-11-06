@@ -1402,3 +1402,14 @@ val casteMap = mapOf(
         4 to "ST- তফসিলি উপজাতি"
     ),
 )
+
+fun findUserTypeForMetadata(userType: String): String {
+    return when (userType) {
+        UPCM_USER -> UPCM
+        CRP_USER_TYPE -> CRP
+        BPC_USER_TYPE -> BPC
+        else -> {
+            UPCM
+        }
+    }
+}

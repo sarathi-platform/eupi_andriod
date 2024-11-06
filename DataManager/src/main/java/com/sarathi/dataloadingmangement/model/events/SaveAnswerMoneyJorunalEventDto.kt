@@ -46,4 +46,7 @@ data class SaveAnswerMoneyJorunalEventDto(
     @Expose
     val tagId: List<Int>,
 
+    @SerializedName("sectionName")
+    @Expose
+    val sectionName: String,
     )
