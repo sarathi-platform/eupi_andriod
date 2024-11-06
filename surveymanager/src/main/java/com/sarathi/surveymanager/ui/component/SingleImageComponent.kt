@@ -210,45 +210,6 @@ fun SingleImageComponent(
         )
     }
 }
-fun requestCameraPermissionn(
-    context: Activity,
-    requestPermission: (Boolean) -> Unit
-) {
-    val permissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-    } else {
-        arrayOf(Manifest.permission.CAMERA)
-    }
-
-    val allPermissionsGranted = permissions.all { permission ->
-        ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
-    }
-
-    val shouldShowRationale = permissions.any { permission ->
-        ActivityCompat.shouldShowRequestPermissionRationale(context, permission)
-    }
-
-    when {
-        allPermissionsGranted -> {
-            Log.i("PatImagePreviewScreen", "Permission previously granted")
-            requestPermission(false)
-        }
-
-        shouldShowRationale -> {
-            Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
-            ActivityCompat.requestPermissions(context, permissions, 1)
-        }
-
-        else -> {
-            Log.d("requestCameraPermission", "Permission not granted")
-            requestPermission(true)
-        }
-    }
-}
 
 fun getSingleImageUri(context: Context, fileName: String, isNewImage: Boolean): Uri? {
     var file =
