@@ -16,7 +16,8 @@ enum class QuestionType {
     TextField,
     NumericField,
     InputText,
-    IncrementDecrementList;
+    IncrementDecrementList,
+    SingleImageComponent;
 
     companion object {
         val singleResponseQuestionTypeQuestions = listOf(

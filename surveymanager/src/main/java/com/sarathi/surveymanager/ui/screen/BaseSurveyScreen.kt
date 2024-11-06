@@ -75,6 +75,7 @@ import com.sarathi.surveymanager.ui.component.IncrementDecrementCounterList
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SingleImageComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -317,6 +318,33 @@ fun QuestionUiContent(
 
             QuestionType.MultiImage.name -> {
                 AddImageComponent(
+                    fileNamePrefix = viewModel.getPrefixFileName(question),
+                    filePaths = commaSeparatedStringToList(
+                        question.options?.firstOrNull()?.selectedValue
+                            ?: BLANK_STRING
+                    ),
+                    isMandatory = question.isMandatory,
+                    title = question.questionDisplay,
+                    isEditable = viewModel.isActivityNotCompleted.value,
+                    maxCustomHeight = maxHeight,
+                    subtitle = question.display
+                ) { selectedValue, isDeleted ->
+                    saveMultiImageTypeAnswer(
+                        selectedValue,
+                        question.options,
+                        isDeleted
+                    )
+                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                            Pair(isValid, message)
+                    }
+                    onAnswerSelect(question)
+
+                }
+            }
+            QuestionType.SingleImageComponent.name ->
+            {
+                SingleImageComponent(
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths = commaSeparatedStringToList(
                         question.options?.firstOrNull()?.selectedValue

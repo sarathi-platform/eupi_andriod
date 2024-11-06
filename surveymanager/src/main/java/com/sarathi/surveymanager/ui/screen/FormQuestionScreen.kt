@@ -41,6 +41,7 @@ import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SingleImageComponent
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
@@ -204,6 +205,32 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiImage.name -> {
                     AddImageComponent(
+                        fileNamePrefix = /*viewModel.getPrefixFileName(question)*/ BLANK_STRING,
+                        filePaths = commaSeparatedStringToList(
+                            question.options?.firstOrNull()?.selectedValue
+                                ?: BLANK_STRING
+                        ),
+                        isMandatory = question.isMandatory,
+                        title = question.questionDisplay,
+                        isEditable = viewModel.isActivityNotCompleted.value,
+                        maxCustomHeight = maxHeight,
+                        subtitle = question.display
+                    ) { selectedValue, isDeleted ->
+                        saveMultiImageTypeAnswer(
+                            selectedValue,
+                            question.options,
+                            isDeleted
+                        )
+                        onAnswerSelect(question)
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+                            viewModel.fieldValidationAndMessageMap[question.questionId] =
+                                Pair(isValid, message)
+                        }
+
+                    }
+                }
+                QuestionType.SingleImageComponent.name ->{
+                    SingleImageComponent(
                         fileNamePrefix = /*viewModel.getPrefixFileName(question)*/ BLANK_STRING,
                         filePaths = commaSeparatedStringToList(
                             question.options?.firstOrNull()?.selectedValue
