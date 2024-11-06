@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -342,6 +341,7 @@ fun ExpandableTaskCard(
                 taskStatus = taskStatus,
                 onNotAvailableClick = onNotAvailableClick,
                 context = context,
+                viewModel = viewModel,
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
         }
@@ -421,6 +421,7 @@ fun CardHeader(
 
 @Composable
 fun CardContent(
+    viewModel: ActivitySelectTaskViewModel,
     expanded: Boolean,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -444,20 +445,26 @@ fun CardContent(
                 taskStatus = taskStatus,
                 onNotAvailableClick = onNotAvailableClick,
                 context = context,
+                viewModel = viewModel,
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
         } else {
-            DisplaySelectedOption(questionUiModel, taskStatus.value)
+            DisplaySelectedOption(viewModel = viewModel, questionUiModel, taskStatus.value)
         }
     }
 }
 
 @Composable
-fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?) {
+fun DisplaySelectedOption(
+    viewModel: ActivitySelectTaskViewModel,
+    questionUiModel: QuestionUiModel?,
+    taskStatus: String?
+) {
     var options = BLANK_STRING
+    val context = LocalContext.current
 
     options = if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
-        stringResource(id = R.string.not_available)
+        viewModel.translationHelper.stringResource(context = context, id = R.string.not_available)
     } else {
         questionUiModel?.options?.filter { it.isSelected == true }?.map { it.selectedValue }
             ?.joinToString(",").toString()
@@ -500,6 +507,7 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
 
 @Composable
 private fun OptionsUI(
+    viewModel: ActivitySelectTaskViewModel,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
     onAnswerSelection: (optionValue: String, optionId: Int) -> Unit,
@@ -576,7 +584,8 @@ private fun OptionsUI(
         isActivityCompleted = isActivityCompleted,
         taskStatus = taskStatus,
         onNotAvailableClick = onNotAvailableClick,
-        context = context
+        context = context,
+        viewModel = viewModel
     )
 
     CustomVerticalSpacer()
@@ -584,6 +593,7 @@ private fun OptionsUI(
 
 @Composable
 private fun NotAvailableUI(
+    viewModel: ActivitySelectTaskViewModel,
     isNotAvailableButtonEnable: Boolean,
     taskMarkedNotAvailable: MutableState<Boolean>,
     isActivityCompleted: Boolean,
@@ -605,7 +615,10 @@ private fun NotAvailableUI(
                 ) white else blueDark,
                 borderColor = if (!taskMarkedNotAvailable.value
                 ) languageItemInActiveBorderBg else blueDark,
-                optionText = stringResource(id = R.string.not_available)
+                optionText = viewModel.translationHelper.stringResource(
+                    context,
+                    id = R.string.not_available
+                )
             ) {
                 if (!isActivityCompleted) {
                     taskMarkedNotAvailable.value = true
@@ -614,7 +627,10 @@ private fun NotAvailableUI(
                 } else {
                     showCustomToast(
                         context,
-                        context.getString(R.string.activity_completed_unable_to_edit)
+                        viewModel.translationHelper.getString(
+                            context,
+                            R.string.activity_completed_unable_to_edit
+                        )
                     )
                 }
             }

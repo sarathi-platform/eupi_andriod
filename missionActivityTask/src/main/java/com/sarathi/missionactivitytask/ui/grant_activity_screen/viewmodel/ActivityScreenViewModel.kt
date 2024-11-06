@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.helper.TranslationEnum
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -42,6 +43,7 @@ class ActivityScreenViewModel @Inject constructor(
     var showDialog = mutableStateOf<Boolean>(false)
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitDataState -> {
                 loadMissionRelatedData(isRefresh = false)
@@ -145,5 +147,9 @@ class ActivityScreenViewModel @Inject constructor(
 
         loadMissionRelatedData(isRefresh = true)
 
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.ActivityScreen
     }
 }

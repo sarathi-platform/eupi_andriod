@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
 import com.nudge.core.valueAsMinusTwo
@@ -105,6 +106,10 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
                         subjectLivelihoodMappingMap.putAll(it)
                     }
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.LivelihoodTaskScreen
     }
     }
 

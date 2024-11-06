@@ -110,6 +110,7 @@ fun LivelihoodTaskRowView(
 ) {
     val context = LocalContext.current
     LivelihoodTaskCard(
+        translationHelper = viewModel.translationHelper,
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
                 when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {

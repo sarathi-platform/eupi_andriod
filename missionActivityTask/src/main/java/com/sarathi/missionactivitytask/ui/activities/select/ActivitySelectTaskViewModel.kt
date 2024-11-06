@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -268,5 +269,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
-
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.ActivitySelectTaskScreen
+    }
 }

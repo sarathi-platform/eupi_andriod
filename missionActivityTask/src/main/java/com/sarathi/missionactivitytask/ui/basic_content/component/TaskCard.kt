@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,12 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
@@ -70,6 +72,7 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun TaskCard(
+    translationHelper: TranslationHelper,
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -91,6 +94,10 @@ fun TaskCard(
     secondaryStatusIcon: Int = R.drawable.ic_green_file,
     onNotAvailable: () -> Unit,
 ) {
+    LaunchedEffect(key1 = true) {
+        translationHelper.initTranslationHelper(TranslationEnum.TaskCard)
+    }
+    val context = LocalContext.current
     val taskMarkedNotAvailable = remember(status?.value) {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
     }
@@ -161,7 +168,10 @@ fun TaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = stringResource(id = R.string.not_available),
+                        text = translationHelper.stringResource(
+                            context,
+                            id = R.string.not_available
+                        ),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -177,7 +187,10 @@ fun TaskCard(
                         )
                     } else {
                         Text(
-                            text = stringResource(id = R.string.in_progress),
+                            text = translationHelper.stringResource(
+                                context,
+                                id = R.string.in_progress
+                            ),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -276,7 +289,10 @@ fun TaskCard(
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
                             Text(
-                                text = stringResource(R.string.task_view),
+                                text = translationHelper.stringResource(
+                                    context,
+                                    R.string.task_view
+                                ),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -297,7 +313,10 @@ fun TaskCard(
                             secondaryButtonText?.value ?: BLANK_STRING,
                             taskMarkedNotAvailable,
                             onNotAvailable,
-                            primaryButtonText = stringResource(R.string.continue_text),
+                            primaryButtonText = translationHelper.stringResource(
+                                context,
+                                R.string.continue_text
+                            ),
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,

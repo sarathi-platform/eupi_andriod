@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -165,8 +164,14 @@ fun TaskScreen(
 
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-        defaultValue = stringResource(R.string.no_small_group_assgned_label),
-        headerTitle = stringResource(com.nudge.core.R.string.small_group_filter_label),
+        defaultValue = viewModel.translationHelper.stringResource(
+            context,
+            R.string.no_small_group_assgned_label
+        ),
+        headerTitle = viewModel.translationHelper.stringResource(
+            context,
+            com.nudge.core.R.string.small_group_filter_label
+        ),
         bottomSheetContentItemList = viewModel.filterByList,
         selectedIndex = FilterCore.getFilterValueForActivity(activityId),
         onBottomSheetItemSelected = {
@@ -189,7 +194,10 @@ fun TaskScreen(
                         Text(
                             modifier = Modifier
                                 .weight(1f),
-                            text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
+                            text = viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity
+                            ),
                             style = newMediumTextStyle.copy(color = blueDark)
                         )
                         IconButton(onClick = {
@@ -208,7 +216,10 @@ fun TaskScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
+                        text = viewModel.translationHelper.stringResource(
+                            context,
+                            R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details
+                        ),
                         style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
                     )
 
@@ -221,7 +232,10 @@ fun TaskScreen(
                     ) {
                         ButtonPositive(
                             modifier = Modifier.weight(0.5f),
-                            buttonTitle = stringResource(R.string.complete_activity),
+                            buttonTitle = viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.complete_activity
+                            ),
                             isActive = viewModel.isButtonEnable.value,
                             isArrowRequired = false,
                             onClick = {
@@ -270,7 +284,10 @@ fun TaskScreen(
                         ) {
                             ButtonPositive(
                                 modifier = Modifier.weight(0.5f),
-                                buttonTitle = stringResource(R.string.complete_activity),
+                                buttonTitle = viewModel.translationHelper.stringResource(
+                                    context,
+                                    R.string.complete_activity
+                                ),
                                 isActive = viewModel.isButtonEnable.value,
                                 isArrowRequired = false,
                                 onClick = {
@@ -495,9 +512,18 @@ fun TaskScreen(
                     }
                     if (viewModel.showDialog.value) {
                         ShowCustomDialog(
-                            message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_activity),
-                            negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
-                            positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                            message = viewModel.translationHelper.stringResource(
+                                context,
+                                R.string.not_be_able_to_make_changes_after_completing_this_activity
+                            ),
+                            negativeButtonTitle = viewModel.translationHelper.stringResource(
+                                context,
+                                com.sarathi.surveymanager.R.string.cancel
+                            ),
+                            positiveButtonTitle = viewModel.translationHelper.stringResource(
+                                context,
+                                com.sarathi.surveymanager.R.string.ok
+                            ),
                             onNegativeButtonClick = {
                                 viewModel.showDialog.value = false
                             },
@@ -528,7 +554,7 @@ fun TaskScreen(
 
 @Composable
 private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewModel): String {
-
+    val _context = LocalContext.current
     val count = if (viewModel.isGroupingApplied.value) {
         var size = 0
         viewModel.filterTaskMap.forEach {
@@ -545,8 +571,12 @@ private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewMod
         )
     ) NO_SG_FILTER_LABEL else filterByKey
 
-
-    return stringResource(id = R.string.filter_item_count_label, count, filterValue)
+    return viewModel.translationHelper.stringResource(
+        context = _context,
+        resId = R.string.filter_item_count_label,
+        count,
+        filterValue
+    )
 }
 
 fun LazyListScope.TaskScreenContent(
@@ -593,6 +623,7 @@ fun TaskRowView(
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
     TaskCard(
+        translationHelper = viewModel.translationHelper,
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
 

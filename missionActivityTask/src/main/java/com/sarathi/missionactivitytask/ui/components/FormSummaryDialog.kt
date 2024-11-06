@@ -16,15 +16,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -39,6 +42,7 @@ import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.TextRow
 
 @Composable
 fun FormSummaryDialog(
+    translationHelper: TranslationHelper,
     imageUri: Uri?,
     disbursementFormSummaryUiModel: DisbursementFormSummaryUiModel,
     positiveButtonTitle: String? = BLANK_STRING,
@@ -47,6 +51,10 @@ fun FormSummaryDialog(
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
 ) {
+    LaunchedEffect(key1 = true) {
+        translationHelper.initTranslationHelper(TranslationEnum.FormSummaryDialog)
+    }
+    val context = LocalContext.current
     Dialog(
         onDismissRequest = { }, properties = DialogProperties(
             dismissOnClickOutside = false,
@@ -90,15 +98,18 @@ fun FormSummaryDialog(
                     }
                     Column(modifier = Modifier.padding(start = dimen_16_dp, end = dimen_16_dp)) {
                         TextRow(
-                            text1 = stringResource(R.string.mode),
+                            text1 = translationHelper.stringResource(
+                                context = context,
+                                R.string.mode
+                            ),
                             text2 = disbursementFormSummaryUiModel.mode
                         )
                         TextRow(
-                            text1 = stringResource(R.string.nature),
+                            text1 = translationHelper.stringResource(context, R.string.nature),
                             text2 = disbursementFormSummaryUiModel.nature,
                         )
                         TextRow(
-                            text1 = stringResource(R.string.amount),
+                            text1 = translationHelper.stringResource(context, R.string.amount),
                             text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
                         )
                         Spacer(modifier = Modifier.height(4.dp))

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.parseStringToList
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.SyncMigrationUseCase
@@ -47,6 +48,7 @@ class MissionScreenViewModel @Inject constructor(
     private var TOTAL_API_CALL = 0
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitDataState -> {
                 loadAllData(false)
@@ -167,5 +169,9 @@ class MissionScreenViewModel @Inject constructor(
             BASELINE_MISSION_NAME,
             true
         )
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.MissionScreen
     }
 }

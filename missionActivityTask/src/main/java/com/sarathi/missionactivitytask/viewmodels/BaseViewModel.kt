@@ -4,9 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.CoreAppDetails
-import androidx.lifecycle.viewModelScope
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.missionactivitytask.utils.LoaderState
@@ -17,10 +17,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class BaseViewModel : ViewModel() {
+    @Inject
+    lateinit var translationHelper: TranslationHelper
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
 
@@ -30,7 +33,9 @@ abstract class BaseViewModel : ViewModel() {
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-    abstract fun <T> onEvent(event: T)
+    open fun <T> onEvent(event: T) {
+        setTranslationConfig()
+    }
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         CoreLogger.e(
@@ -78,5 +83,13 @@ abstract class BaseViewModel : ViewModel() {
             block()
         }
     }
+    private fun setTranslationConfig() {
+        ioViewModelScope {
+            translationHelper.initTranslationHelper(getScreenName())
+        }
+    }
 
+    open fun getScreenName(): TranslationEnum {
+        return TranslationEnum.NoScreen
+    }
 }

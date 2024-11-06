@@ -30,6 +30,7 @@ import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityCompletionScreen
+import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonNegative
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -48,7 +49,7 @@ fun SubmitPhysicalFormScreen(
     val outerState = rememberLazyListState()
     val context = LocalContext.current
     LaunchedEffect(key1 = true) {
-
+        viewModel.onEvent(InitDataEvent.InitDataState)
         viewModel.setTotalDidi(activityId = activityId, missionId)
     }
     Scaffold(modifier = Modifier.fillMaxWidth(),

@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import android.net.Uri
-import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,18 +19,21 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
@@ -58,6 +60,7 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun LivelihoodTaskCard(
+    translationHelper: TranslationHelper,
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -79,6 +82,10 @@ fun LivelihoodTaskCard(
     secondaryStatusIcon: Int = R.drawable.ic_green_file,
     onNotAvailable: () -> Unit,
 ) {
+    LaunchedEffect(key1 = true) {
+        translationHelper.initTranslationHelper(TranslationEnum.LivelihoodTaskCard)
+    }
+    val context = LocalContext.current
     val taskMarkedNotAvailable = remember(status?.value) {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
     }
@@ -151,7 +158,10 @@ fun LivelihoodTaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = stringResource(id = R.string.not_available),
+                        text = translationHelper.stringResource(
+                            context = context,
+                            id = R.string.not_available
+                        ),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -167,7 +177,10 @@ fun LivelihoodTaskCard(
                         )
                     } else {
                         Text(
-                            text = stringResource(id = R.string.in_progress),
+                            text = translationHelper.stringResource(
+                                context = context,
+                                id = R.string.in_progress
+                            ),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -267,7 +280,10 @@ fun LivelihoodTaskCard(
                         }) {
 
                             Text(
-                                text = if (isActivityCompleted) stringResource(R.string.task_view) else stringResource(R.string.edit),
+                                text = if (isActivityCompleted) translationHelper.stringResource(
+                                    context = context,
+                                    R.string.task_view
+                                ) else stringResource(R.string.edit),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -290,7 +306,10 @@ fun LivelihoodTaskCard(
                             secondaryButtonText?.value ?: BLANK_STRING,
                             taskMarkedNotAvailable,
                             onNotAvailable,
-                            primaryButtonText = stringResource(R.string.continue_text),
+                            primaryButtonText = translationHelper.stringResource(
+                                context,
+                                R.string.continue_text
+                            ),
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,

@@ -57,6 +57,21 @@ class TranslationHelper @Inject constructor(
         }
     }
 
+    fun getString(context: Context, resId: Int, formatArg1: Any, formatArg2: Any): String {
+        // Get the resource key from the resource ID
+        val resourceKey = context.resources?.getResourceEntryName(resId)
+
+        // Fetch the translated string from the map using the resource key
+        val dbString = translationMap[resourceKey]
+
+        // If dbString is not empty, format it with formatArgs; otherwise, fallback to the default string resource
+        return if (!TextUtils.isEmpty(dbString)) {
+            String.format(dbString ?: BLANK_STRING, formatArg1, formatArg2)
+        } else {
+            context.getString(resId, formatArg1, formatArg2)
+        }
+    }
+
     /**
      * Wrapper around getString for easier access to string resources.
      */
@@ -66,6 +81,15 @@ class TranslationHelper @Inject constructor(
 
     fun stringResource(context: Context, resId: Int, formatArgs: Any): String {
         return getString(context = context, resId = resId, formatArgs = formatArgs)
+    }
+
+    fun stringResource(context: Context, resId: Int, formatArg1: Any, formatArg2: Any): String {
+        return getString(
+            context = context,
+            resId = resId,
+            formatArg1 = formatArg1,
+            formatArg2 = formatArg2
+        )
     }
 
     /**
@@ -83,4 +107,5 @@ class TranslationHelper @Inject constructor(
         // Convert the list of TranslationConfig into a Map<String, String> (key -> value)
         return configList.associate { it.key to it.value }
     }
+
 }

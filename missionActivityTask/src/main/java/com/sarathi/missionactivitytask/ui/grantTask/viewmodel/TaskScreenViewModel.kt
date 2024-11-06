@@ -15,6 +15,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_SG_FILTER_VALUE
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
@@ -144,6 +145,7 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     override fun <T> onEvent(event: T) {
+        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitTaskScreenState -> {
                 initTaskScreen(event.taskList)
@@ -640,6 +642,10 @@ open class TaskScreenViewModel @Inject constructor(
         CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
             onSuccess(it)
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.TaskScreen
     }
 
 }
