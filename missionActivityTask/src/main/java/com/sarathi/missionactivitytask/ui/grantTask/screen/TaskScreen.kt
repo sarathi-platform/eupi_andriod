@@ -412,7 +412,7 @@ fun TaskScreen(
                                 R.string.activity_completion_message,
                                 activityName
                             ),
-                            activityRoutePath = activityName
+                            activityRoutePath = viewModel.activityConfigUiModelWithoutSurvey?.activityType.value()
                         )
                         viewModel.showDialog.value = false
                     }
