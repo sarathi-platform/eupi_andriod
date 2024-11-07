@@ -41,6 +41,7 @@ fun CalculationResultComponent(
     defaultValue: String = BLANK_STRING,
     isOnlyNumber: Boolean = true,
     maxLength: Int = 150,
+    showCardView: Boolean = true
 ) {
 
     val txt =mutableStateOf(defaultValue)

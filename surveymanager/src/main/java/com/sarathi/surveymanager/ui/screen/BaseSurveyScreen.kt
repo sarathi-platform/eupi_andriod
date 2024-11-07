@@ -399,6 +399,8 @@ fun QuestionUiContent(
             QuestionType.AutoCalculation.name -> {
                 CalculationResultComponent(
                     title = question.questionDisplay,
+                    defaultValue = viewModel.autoCalculateQuestionResultMap[question.questionId].value(),
+                    showCardView = showCardView
                 )
             }
 

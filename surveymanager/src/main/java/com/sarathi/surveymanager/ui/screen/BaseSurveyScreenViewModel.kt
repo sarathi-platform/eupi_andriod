@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
@@ -104,6 +105,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
 
+    var autoCalculateQuestionResultMap: SnapshotStateMap<Int, String> =
+        mutableStateMapOf<Int, String>()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -202,6 +206,11 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 questionUiModel.value.forEach {
                     runConditionCheck(it)
                 }
+                updateAutoCalculateQuestionValue(
+                    questionUiModel.value,
+                    surveyConfig,
+                    autoCalculateQuestionResultMap
+                )
             }
 
             isTaskStatusCompleted()
@@ -404,6 +413,11 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+        conditionsUtils.updateAutoCalculateQuestionValue(
+            questionUiModel.value,
+            surveyConfig[DEFAULT_FORM_ID],
+            autoCalculateQuestionResultMap
+        )
         ioViewModelScope {
             updateNonVisibleQuestionsResponse()
         }

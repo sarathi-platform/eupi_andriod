@@ -49,5 +49,9 @@ enum class QuestionType {
             InputNumber.name.toLowerCase(),
             NumericField.name.toLowerCase(),
         )
+
+        val autoCalculateQuestionType = listOf(
+            AutoCalculation.name.toLowerCase()
+        )
     }
 }

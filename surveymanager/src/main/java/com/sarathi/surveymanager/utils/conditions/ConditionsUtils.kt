@@ -6,13 +6,17 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_OPERAND_FOR_EXPRESSION_VALUE
 import com.nudge.core.OPERAND_DELIMITER
 import com.nudge.core.ifNotEmpty
+import com.nudge.core.toSafeInt
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.Conditions
 import com.sarathi.dataloadingmangement.model.uiModel.ConditionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 class ConditionsUtils {
@@ -607,6 +611,28 @@ class ConditionsUtils {
 
         return isResponseValid
 
+    }
+
+    fun updateAutoCalculateQuestionValue(
+        questionUiModel: List<QuestionUiModel>,
+        surveyConfig: MutableMap<String, List<SurveyCardModel>>?,
+        autoCalculateQuestionResultMap: SnapshotStateMap<Int, String>
+    ) {
+        questionUiModel.filter { QuestionType.autoCalculateQuestionType.contains(it.type.toLowerCase()) }
+            .forEach { question ->
+                val config = surveyConfig?.get(SurveyConfigCardSlots.CONFIG_AUTO_CALCULATE.name)
+                    ?.find { question.tagId.contains(it.tagId) }
+                questionUiModel.find { it.questionId == config?.value.toSafeInt() }?.apply {
+                    val resultMap = this.options?.map { it.selectedValue }
+                    val result =
+                        if (QuestionType.numericUseInputQuestionTypeList.contains(this.type.toLowerCase())) {
+                            resultMap?.sumOf { it.toSafeInt() }.toString()
+                        } else {
+                            resultMap?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                        }
+                    autoCalculateQuestionResultMap.put(question.questionId, result.value())
+                }
+            }
     }
 
 }
