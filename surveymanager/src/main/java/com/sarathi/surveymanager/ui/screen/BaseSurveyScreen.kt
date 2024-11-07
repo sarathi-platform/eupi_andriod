@@ -540,11 +540,13 @@ fun FormQuestionUiContent(
 
                     Row(modifier = Modifier
                         .clickable(enabled = true) {
-                            if (viewModel.isActivityNotCompleted.value && viewModel.isFormEntryAllowed(
-                                    question.formId
-                                )
-                            ) {
-                                onClick()
+                            if (viewModel.isActivityNotCompleted.value) {
+                                if (viewModel.isFormEntryAllowed(
+                                        question.formId
+                                    )
+                                ) {
+                                    onClick()
+                                }
                             } else {
                                 showCustomToast(
                                     context = context,
@@ -553,7 +555,7 @@ fun FormQuestionUiContent(
                             }
                         }
                         .fillMaxWidth()
-                        .background(if (true) blueDark else languageItemActiveBg)
+                        .background(if (viewModel.isFormEntryAllowed(question.formId)) blueDark else languageItemActiveBg)
                         .padding(dimen_10_dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -563,7 +565,12 @@ fun FormQuestionUiContent(
                             text = viewModel.surveyConfig[question.formId]?.get(
                                 SurveyConfigCardSlots.FORM_QUESTION_CARD_BUTTON.name
                             )?.firstOrNull()?.value.value(),
-                            style = defaultTextStyle.copy(color = if (true) white else greyColor)
+                            style = defaultTextStyle.copy(
+                                color = if (viewModel.isFormEntryAllowed(
+                                        question.formId
+                                    )
+                                ) white else greyColor
+                            )
                         )
                     }
 

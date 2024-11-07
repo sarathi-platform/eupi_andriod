@@ -15,12 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.eventTextColor
@@ -123,7 +125,9 @@ fun FormQuestionScreen(
                             item {
                                 SubContainerView(
                                     mapEntry.value,
-                                    isNumberFormattingRequired = false
+                                    isNumberFormattingRequired = false,
+                                    labelStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
+                                    valueStyle = defaultTextStyle
                                 )
                             }
                         }
@@ -134,6 +138,7 @@ fun FormQuestionScreen(
                             index = index,
                             question = question,
                             viewModel = viewModel,
+
                             maxHeight,
                             onAnswerSelect = {
                                 viewModel.updateQuestionResponseMap(question)
