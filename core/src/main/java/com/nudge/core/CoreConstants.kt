@@ -207,3 +207,6 @@ const val USER_TYPE = "userType"
 const val CRP = "CRP"
 const val BPC = "BPC"
 const val UPCM = "UPCM"
+
+const val CLEAN_ROUTE_DELIMITER = "~@"
+const val FORWARD_SLASH_DELIMITER = "/"
