@@ -5,6 +5,7 @@ import android.content.Context
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.analytics.IAnalyticsProvider
+import com.nudge.core.datamodel.FederationDetailModel
 import com.nudge.core.preference.CoreSharedPrefs
 import org.json.JSONObject
 import javax.inject.Inject
@@ -46,12 +47,19 @@ class MixPanelAnalyticsProvider @Inject constructor(
         distinctId: String,
         name: String,
         userType: String,
-        buildEnvironment: String
+        federationDetailModel: FederationDetailModel?,
+        buildEnvironment: String,
     ) {
         mixpanelAPI?.let {
             it.identify(distinctId)
             it.people?.set("name", name)
             it.people?.set("userType", userType)
+            it.people?.set("blockId", federationDetailModel?.blockId ?: 0)
+            it.people?.set("blockName", federationDetailModel?.blockName ?: BLANK_STRING)
+            it.people?.set("districtId", federationDetailModel?.districtId ?: 0)
+            it.people?.set("districtName", federationDetailModel?.districtName ?: BLANK_STRING)
+            it.people?.set("stateId", federationDetailModel?.stateId ?: 0)
+            it.people?.set("stateName", federationDetailModel?.stateName ?: BLANK_STRING)
             it.people?.set("build_environment", buildEnvironment)
         }
     }

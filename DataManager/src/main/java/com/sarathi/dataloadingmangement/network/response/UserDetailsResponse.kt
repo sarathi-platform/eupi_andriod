@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.network.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.datamodel.FederationDetailModel
 
 data class UserDetailsResponse(
     @SerializedName("username")
@@ -34,5 +35,9 @@ data class UserDetailsResponse(
 
     @SerializedName("referenceId")
     @Expose
-    val referenceId: List<ReferenceIdModel>
+    val referenceId: List<ReferenceIdModel>,
+
+    @SerializedName("federationDetail")
+    @Expose
+    val federationDetail: FederationDetailModel?
 )

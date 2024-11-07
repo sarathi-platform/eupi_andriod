@@ -13,6 +13,7 @@ import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.entities.language.LanguageEntity
+import com.nudge.core.datamodel.FederationDetailModel
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -3979,7 +3980,7 @@ class VillageSelectionRepository @Inject constructor(
                     withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: ""))
+                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: "", federationDetailModel = it.federationDetail ?: FederationDetailModel(blockId = 0, blockName = BLANK_STRING, stateId = 0, stateName = BLANK_STRING, districtId = 0, districtName = BLANK_STRING)))
                                 villageListDao.insertOnlyNewData(
                                     it.villageList ?: listOf(),
                                     prefRepo.isUserBPC()
@@ -4084,7 +4085,8 @@ class VillageSelectionRepository @Inject constructor(
             distinctId = prefRepo.getMobileNumber(),
             name = userDetailsModel.name,
             userType = userDetailsModel.typeName,
-            buildEnvironment = prefRepo.getBuildEnvironment()
+            buildEnvironment = prefRepo.getBuildEnvironment(),
+            federationDetailModel = userDetailsModel.federationDetailModel,
         )
 
     }
