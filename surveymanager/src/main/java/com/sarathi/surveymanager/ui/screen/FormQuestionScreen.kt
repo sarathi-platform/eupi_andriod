@@ -35,7 +35,6 @@ import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
-import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
@@ -235,11 +234,7 @@ fun FormScreenQuestionUiContent(
                         subtitle = question.display,
 
                     ) { selectedValue, isDeleted ->
-                        saveMultiImageTypeAnswer(
-                            selectedValue,
-                            question.options,
-                            isDeleted
-                        )
+                        saveSingleImage(isDeleted, question.options, selectedValue)
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(question.questionId) { isValid, message ->
                             viewModel.fieldValidationAndMessageMap[question.questionId] =

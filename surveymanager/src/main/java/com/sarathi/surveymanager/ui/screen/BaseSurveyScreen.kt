@@ -357,11 +357,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     subtitle = question.display,
                 ) { selectedValue, isDeleted ->
-                    saveMultiImageTypeAnswer(
-                        selectedValue,
-                        question.options,
-                        isDeleted
-                    )
+                    saveSingleImage(isDeleted, question.options, selectedValue)
                     onAnswerSelect(question)
                     viewModel.runValidationCheck(question.questionId) { isValid, message ->
                         viewModel.fieldValidationAndMessageMap[question.questionId] =
@@ -705,6 +701,18 @@ fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, i
 
 }
 
+fun saveSingleImage(isDeleted:Boolean, options: List<OptionsUiModel>?,filePath: String)
+{
+    if (isDeleted)
+    {
+        options?.firstOrNull()?.isSelected = false
+        options?.firstOrNull()?.selectedValue =BLANK_STRING
+
+    }else {
+        options?.firstOrNull()?.isSelected = true
+        options?.firstOrNull()?.selectedValue = filePath
+    }
+}
 
 fun listToCommaSeparatedString(list: List<String>): String {
     return list.joinToString(",")

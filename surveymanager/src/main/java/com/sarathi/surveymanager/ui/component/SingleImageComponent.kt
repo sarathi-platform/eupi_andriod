@@ -176,7 +176,7 @@ fun SingleImageComponent(
                                         .align(Alignment.BottomEnd)
                                         .clickable(enabled = isEditable) {
                                             image=null
-                                            onImageSelection(image?.path ?: BLANK_STRING, true)
+                                            onImageSelection(currentImageUri?.path ?: BLANK_STRING, true)
                                         }
                                         .size(dimen_24_dp),
                                     colorFilter = ColorFilter.tint(redDark)
