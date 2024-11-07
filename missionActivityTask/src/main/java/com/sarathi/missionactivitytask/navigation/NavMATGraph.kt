@@ -12,6 +12,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
@@ -694,12 +695,15 @@ fun NavGraphBuilder.MatNavigation(
                             MATHomeScreens.LivelihoodTaskScreen.route,
                             inclusive = isFromActivity
                         )
-                    }
-                    else{
+                    } else if (activityRoutePath.toLowerCase()
+                            .contains(ActivityTypeEnum.GRANT.name.toLowerCase())
+                    ) {
                         navController.popBackStack(
                             MATHomeScreens.GrantTaskScreen.route,
                             inclusive = isFromActivity
                         )
+                    } else {
+                        navController.popBackStack()
                     }
                 },
                 navController = navController, message = it.arguments?.getString(
@@ -763,6 +767,11 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.StringType
                 defaultValue = BLANK_STRING
                 nullable = true
+            },
+            navArgument(ARG_ACTIVITY_TYPE) {
+                type = NavType.StringType
+                defaultValue = BLANK_STRING
+                nullable = true
             }
         )) {
             SubmitPhysicalFormScreen(
@@ -770,7 +779,8 @@ fun NavGraphBuilder.MatNavigation(
                 navController = navController,
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
-                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
+                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING,
+                activityType = it.arguments?.getString(ARG_ACTIVITY_TYPE).value()
             )
         }
 
@@ -1271,11 +1281,12 @@ fun navigateToAddImageScreen(
     navController: NavController,
     activityId: Int,
     taskIdList: String,
-    missionId: Int
+    missionId: Int,
+    activityType: String
 ) {
     var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
-
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
+    var activityTypeWithNullable = if (!TextUtils.isEmpty(activityType)) activityType else null
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable/$activityTypeWithNullable")
 }
 
 fun navigateToGrantTaskScreen(
