@@ -103,4 +103,8 @@
     <string name="save_text">सेभ</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">दानगारनाय</string>
+    <string name="hours">घन्टाफोर</string>
+    <string name="years">बोसोरफोर</string>
+    <string name="minute">मिनिट</string>
+    <string name="month">दान</string>
 </resources>

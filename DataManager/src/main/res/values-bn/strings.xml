@@ -103,4 +103,8 @@
     <string name="save_text">েভ করুন</string>
     <string name="proceed">এগিয়ে যান</string>
     <string name="cancel_text">বাতিল করুন</string>
+    <string name="hours">ঘন্টার</string>
+    <string name="years">বছর</string>
+    <string name="minute">মিনিটের</string>
+    <string name="month">মাস</string>
 </resources>
