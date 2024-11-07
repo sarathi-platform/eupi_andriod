@@ -378,12 +378,12 @@ fun FormScreenQuestionUiContent(
                     )
                 }
 
-                QuestionType.InputHrsMinutes.name -> {
+                QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                     HrsMinRangePickerComponent(
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
-                        typePicker = QuestionType.HrsMinPicker.name,
+                        typePicker = question.type,
                         defaultValue = question.options?.firstOrNull()?.selectedValue
                             ?: com.sarathi.dataloadingmangement.BLANK_STRING
                     ) { selectValue, selectedValueId ->
