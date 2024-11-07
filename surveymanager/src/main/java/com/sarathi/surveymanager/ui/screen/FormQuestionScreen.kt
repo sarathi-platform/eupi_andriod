@@ -388,6 +388,8 @@ fun FormScreenQuestionUiContent(
                             ?: com.sarathi.dataloadingmangement.BLANK_STRING
                     ) { selectValue, selectedValueId ->
                         question.options?.firstOrNull()?.selectedValue = selectValue
+                        question.options?.firstOrNull()?.isSelected = true
+
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(question.questionId) { isValid, message ->
                             viewModel.fieldValidationAndMessageMap[question.questionId] =

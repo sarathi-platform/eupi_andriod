@@ -506,6 +506,7 @@ fun QuestionUiContent(
                         ?: BLANK_STRING
                 ) { selectValue, selectedValueId ->
                     question.options?.firstOrNull()?.selectedValue = selectValue
+                    question.options?.firstOrNull()?.isSelected = true
                     onAnswerSelect(question)
                     viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
                         viewModel.fieldValidationAndMessageMap[question.questionId] =
