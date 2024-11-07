@@ -40,6 +40,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
+import com.nudge.core.ui.commonUi.componet_.component.dottedBorder
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_150_dp
@@ -68,7 +69,6 @@ fun SingleImageComponent(
     filePaths: String,
     fileNamePrefix: String,
     subtitle: String? = null,
-    areMultipleImagesAllowed: Boolean = true,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current

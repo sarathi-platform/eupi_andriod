@@ -233,10 +233,7 @@ fun FormScreenQuestionUiContent(
                         isEditable = viewModel.isActivityNotCompleted.value,
                         maxCustomHeight = maxHeight,
                         subtitle = question.display,
-                        areMultipleImagesAllowed = question.type.equals(
-                            QuestionType.MultiImage.name,
-                            true
-                        )
+
                     ) { selectedValue, isDeleted ->
                         saveMultiImageTypeAnswer(
                             selectedValue,
