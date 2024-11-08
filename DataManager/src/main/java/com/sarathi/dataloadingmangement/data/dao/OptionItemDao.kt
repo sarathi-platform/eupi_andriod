@@ -22,21 +22,50 @@ interface OptionItemDao {
     )
 
     @Query(
-        "select option_table.optionId, \n" +
+        /*"select option_table.optionId, \n" +
                 " option_table.sectionId,\n" +
                 " option_table.surveyId,\n" +
                 " option_table.questionId,\n" +
-                " option_table.selectedValue,\n" +
                 " option_table.optionType,\n" +
                 " option_table.`order`,\n" +
                 " option_table.contentEntities,\n" +
                 " option_table.conditions,\n" +
                 " option_table.selectedValue,\n" +
+                " option_table.originalValue,\n" +
                 " option_table.selectedValueId,\n" +
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase\n" +
                 "  from option_table inner join survey_language_attribute_table on option_table.optionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =:referenceType \n" +
-                "and survey_language_attribute_table.languageCode=:languageId and option_table.surveyId=:surveyId and option_table.sectionId=:sectionId and option_table.userId=:userId  order by option_table.`order` asc  "
+                "and survey_language_attribute_table.languageCode=:languageId and option_table.surveyId=:surveyId and option_table.sectionId=:sectionId and option_table.userId=:userId  order by option_table.`order` asc  "*/
+        "SELECT \n" +
+                "    option_table.optionId,\n" +
+                "    option_table.sectionId,\n" +
+                "    option_table.surveyId,\n" +
+                "    option_table.questionId,\n" +
+                "    option_table.selectedValue,\n" +
+                "    option_table.optionType,\n" +
+                "    option_table.`order`,\n" +
+                "    option_table.contentEntities,\n" +
+                "    option_table.conditions,\n" +
+                "    option_table.selectedValue,\n" +
+                "    option_table.originalValue,\n" +
+                "    option_table.selectedValueId,\n" +
+                "    COALESCE(survey_language_attribute_table.description, option_table.originalValue) AS description,\n" +
+                "    COALESCE(survey_language_attribute_table.paraphrase, option_table.originalValue) AS paraphrase\n" +
+                "FROM \n" +
+                "    option_table\n" +
+                "LEFT JOIN \n" +
+                "    survey_language_attribute_table \n" +
+                "ON \n" +
+                "    option_table.optionId = survey_language_attribute_table.referenceId \n" +
+                "    AND survey_language_attribute_table.referenceType = :referenceType \n" +
+                "    AND survey_language_attribute_table.languageCode = :languageId\n" +
+                "WHERE \n" +
+                "    option_table.surveyId = :surveyId \n" +
+                "    AND option_table.sectionId = :sectionId \n" +
+                "    AND option_table.userId = :userId\n" +
+                "ORDER BY \n" +
+                "    option_table.`order` ASC;"
     )
     fun getSurveySectionQuestionOptionsForLanguage(
         userId: String,

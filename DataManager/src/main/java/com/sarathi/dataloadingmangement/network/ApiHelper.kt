@@ -19,6 +19,7 @@ const val SUBPATH_GET_LIVELIHOOD_CONFIG = "/livelihood-service/livelihood/config
 const val SUBPATH_GET_APP_CONFIG = "/registry-service/property"
 const val SUBPATH_FETCH_LIVELIHOOD_OPTION= "/didi-service/didi-livelihood/fetch"
 
+const val GET_SECTION_STATUS = "/survey-service/getSectionStatus"
 
 const val SUBPATH_GET_LIVELIHOOD_SAVE_EVENT =
     "/livelihood-service/livelihood/livelihood-event/{doerId}"

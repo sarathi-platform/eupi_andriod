@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.95"
+def version = "2.0.101"
 def prodVersion = version
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 34
-        versionCode 98
+        versionCode 104
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -26,7 +26,6 @@ android {
             useSupportLibrary true
         }
     }
-
 
     bundle {
         language {
@@ -304,4 +303,8 @@ dependencies {
     //FCM
     implementation 'com.google.firebase:firebase-messaging:23.4.0'
     implementation 'de.charlex.compose.material:material-html-text:2.0.0-beta01'
+    implementation 'androidx.compose.material3:material3'
+    implementation "androidx.compose.material:material:1.6.8"
+    implementation("androidx.compose.material3:material3:1.1.2")
+
 }

@@ -75,7 +75,7 @@ import com.sarathi.surveymanager.R
 import java.io.File
 
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "UnusedBoxWithConstraintsScope")
 @Composable
 fun AddImageComponent(
     isMandatory: Boolean = false,
@@ -85,6 +85,7 @@ fun AddImageComponent(
     filePaths: List<String> = listOf(),
     fileNamePrefix: String,
     subtitle: String? = null,
+    areMultipleImagesAllowed: Boolean = true,
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -142,7 +143,12 @@ fun AddImageComponent(
                     Box(
                         modifier =
                         boxModifier
-                            .clickable(enabled = isEditable) {
+                            .clickable(
+                                enabled = isEditable && isClickEnabled(
+                                    areMultipleImagesAllowed,
+                                    imageList.size
+                                )
+                            ) {
 
                                 requestCameraPermission(context as Activity) {
                                     shouldRequestPermission.value = it
@@ -204,6 +210,15 @@ fun AddImageComponent(
 
             }
         )
+    }
+
+}
+
+fun isClickEnabled(areMultipleImagesAllowed: Boolean, imageListSize: Int): Boolean {
+    return if (areMultipleImagesAllowed)
+        true
+    else {
+        imageListSize < 1
     }
 
 }

@@ -60,6 +60,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetw
 import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
@@ -126,6 +127,7 @@ import com.sarathi.dataloadingmangement.repository.IFormEventRepository
 import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
+import com.sarathi.dataloadingmangement.repository.ISectionStatusRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
@@ -143,6 +145,7 @@ import com.sarathi.dataloadingmangement.repository.SectionListRepository
 import com.sarathi.dataloadingmangement.repository.SectionListRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SelectActivitySurveyRepositoryImpl
@@ -645,6 +648,7 @@ class DataLoadingModule {
         livelihoodUseCase: LivelihoodUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+        fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -668,7 +672,8 @@ class DataLoadingModule {
             moneyJournalUseCase = fetchMoneyJournalUseCase,
             livelihoodUseCase = livelihoodUseCase,
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
-            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase
+            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
+            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase
 
         )
     }
@@ -826,7 +831,8 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         coreSharedPrefs: CoreSharedPrefs,
         surveyDao: SurveyEntityDao,
-        grantConfigDao: GrantConfigDao
+        grantConfigDao: GrantConfigDao,
+        sectionEntityDao: SectionEntityDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao,
@@ -834,7 +840,8 @@ class DataLoadingModule {
             optionItemDao = optionItemDao,
             coreSharedPrefs = coreSharedPrefs,
             surveyEntityDao = surveyDao,
-            grantConfigDao = grantConfigDao
+            grantConfigDao = grantConfigDao,
+            sectionEntityDao = sectionEntityDao
 
         )
     }
@@ -856,7 +863,6 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             surveyEntityDao = surveyDao,
             grantConfigDao = grantConfigDao
-
         )
     }
 
@@ -1574,5 +1580,33 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs
     ): UserPropertiesRepository {
         return UserPropertiesRepositoryImpl(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchSectionStatusFromNetworkUsecase(
+        sectionRepository: ISectionStatusRepository
+    ): FetchSectionStatusFromNetworkUsecase {
+        return FetchSectionStatusFromNetworkUsecase(
+            sectionRepository = sectionRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSectionStatusRepository(
+        sectionStatusDao: SectionStatusEntityDao,
+        dataLoadingApiService: DataLoadingApiService,
+        activityConfigDao: ActivityConfigDao,
+        taskDao: TaskDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): ISectionStatusRepository {
+        return SectionStatusRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            sectionStatusDao = sectionStatusDao,
+            dataLoadingApiService = dataLoadingApiService,
+            activityConfigDao = activityConfigDao,
+            taskDao = taskDao
+        )
     }
 }
