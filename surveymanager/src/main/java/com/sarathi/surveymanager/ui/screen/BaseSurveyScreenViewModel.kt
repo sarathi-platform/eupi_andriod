@@ -387,6 +387,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     open fun updateTaskStatus(taskId: Int, isTaskCompleted: Boolean = false) {
         ioViewModelScope {
+            val oldTaskStatus = getTaskUseCase.getTask(taskId).status ?: BLANK_STRING
+            val newTaskStatus =
+                if (isTaskCompleted) SurveyStatusEnum.COMPLETED.name else SurveyStatusEnum.INPROGRESS.name
+
             val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
             surveyEntity?.let { survey ->
                 if (isTaskCompleted) {
@@ -396,6 +400,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     taskEntity = taskEntity?.copy(status = SurveyStatusEnum.INPROGRESS.name)
                     taskStatusUseCase.markTaskInProgress(taskId)
                 }
+                if (oldTaskStatus != newTaskStatus)
                 taskEntity?.let { task ->
                     matStatusEventWriterUseCase.updateTaskStatus(
                         task,

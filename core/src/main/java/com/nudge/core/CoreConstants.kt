@@ -208,4 +208,11 @@ const val CRP = "CRP"
 const val BPC = "BPC"
 const val UPCM = "UPCM"
 
+const val DELIMITER_TIME = ":"
+const val DELIMITER_YEAR = "/"
+const val YEAR = "Years"
+const val MONTHS = "Months"
+const val HOURS = "Hours"
+const val MINUTE = "Minutes"
+
 const val DEFAULT_FORM_ID = -1
