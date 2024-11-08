@@ -399,6 +399,7 @@ fun QuestionUiContent(
                     isEditAllowed = viewModel.isActivityNotCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    optionStateMap = viewModel.optionStateMap,
                     onAnswerSelection = { selectedItems ->
                         val selectedOptions =
                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
@@ -459,10 +460,22 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
+                    optionStateMap = viewModel.optionStateMap,
                     onAnswerSelection = { selectedOptionIndex, isSelected ->
-
                         question.options?.get(selectedOptionIndex)?.isSelected =
                             isSelected
+
+                        val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                        if (noneOptionCheckResult) {
+                            question.options?.forEach {
+                                it.isSelected = false
+                                it.selectedValue = BLANK_STRING
+                            }
+
+                            question.options?.get(selectedOptionIndex)?.isSelected =
+                                isSelected
+                        }
+
 
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->

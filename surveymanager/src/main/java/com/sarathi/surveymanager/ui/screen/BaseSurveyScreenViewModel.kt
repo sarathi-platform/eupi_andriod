@@ -103,10 +103,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var validations: List<SurveyValidations>? = mutableListOf()
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
-    var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
+    private var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
 
     var autoCalculateQuestionResultMap: SnapshotStateMap<Int, String> =
         mutableStateMapOf<Int, String>()
+
+    val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> get() = conditionsUtils.optionStateMap
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -203,6 +205,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
                 initQuestionVisibilityMap(questionUiModel.value)
+                initOptionsStateMap(questionUiModel.value)
                 questionUiModel.value.forEach {
                     runConditionCheck(it)
                 }
@@ -414,6 +417,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun updateQuestionResponseMap(question: QuestionUiModel) {
         conditionsUtils.updateQuestionResponseMap(question)
+    }
+
+    fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
+        return conditionsUtils.runNoneOptionCheck(sourceQuestion)
     }
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {

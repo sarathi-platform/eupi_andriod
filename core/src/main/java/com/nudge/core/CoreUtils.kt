@@ -921,6 +921,8 @@ fun Long?.value() = this ?: -1
 
 fun Boolean?.value() = this ?: false
 
+fun Boolean?.value(defaultValue: Boolean) = this ?: defaultValue
+
 fun Double?.value() = this ?: 0.0
 
 fun <T> List<T>?.value(): List<T> {
