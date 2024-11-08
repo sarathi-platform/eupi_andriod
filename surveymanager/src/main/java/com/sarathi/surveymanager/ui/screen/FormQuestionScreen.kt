@@ -35,13 +35,13 @@ import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
-import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SingleImageComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -221,27 +221,20 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
-                    AddImageComponent(
+                    SingleImageComponent(
                         fileNamePrefix = viewModel.getPrefixFileName(question),
-                        filePaths = commaSeparatedStringToList(
+                        filePaths =
                             question.options?.firstOrNull()?.selectedValue
                                 ?: BLANK_STRING
-                        ),
+                        ,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditable = viewModel.isActivityNotCompleted.value,
                         maxCustomHeight = maxHeight,
                         subtitle = question.display,
-                        areMultipleImagesAllowed = question.type.equals(
-                            QuestionType.MultiImage.name,
-                            true
-                        )
+
                     ) { selectedValue, isDeleted ->
-                        saveMultiImageTypeAnswer(
-                            selectedValue,
-                            question.options,
-                            isDeleted
-                        )
+                        saveSingleImage(isDeleted, question.options, selectedValue)
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(question.questionId) { isValid, message ->
                             viewModel.fieldValidationAndMessageMap[question.questionId] =
@@ -250,7 +243,6 @@ fun FormScreenQuestionUiContent(
 
                     }
                 }
-
                 QuestionType.SingleSelectDropDown.name,
                 QuestionType.DropDown.name -> {
                     DropDownTypeComponent(
