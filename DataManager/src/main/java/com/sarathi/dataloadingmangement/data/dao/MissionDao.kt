@@ -119,6 +119,9 @@ interface MissionDao {
     @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId and isActive=1")
     suspend fun getActiveMissions(userId: String): List<MissionEntity>
 
+    @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId and missionId = :missionId and isActive=1")
+    suspend fun getActiveMissions(userId: String, missionId: Int): List<MissionEntity>
+
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME WHERE userId = :userId AND missionId=:missionId AND status IN (:statuses)")
     suspend fun countMissionByStatus(
         userId: String,

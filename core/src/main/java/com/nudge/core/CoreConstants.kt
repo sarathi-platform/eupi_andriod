@@ -202,6 +202,14 @@ const val THRESHOLD_TYPE_HARD = "HARD_THRESHOLD"
 
 const val DEFAULT_NUMERIC_INPUT_MAX_LENGTH = 7
 const val DEFAULT_TEXT_INPUT_MAX_LENGTH = 150
+
+const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+const val ACCESS_TOKEN = "ACCESS_TOKEN"
+const val PREF_KEY_CRP_DATA_LOADED = "is_crp_data_loaded"
+const val PREF_KEY_BPC_DATA_LOADED = "is_bpc_data_loaded"
+const val PREF_KEY_USER_BPC = "is_user_bpc"
+
+const val DEFAULT_STATE_ID = -1
 const val STATE_ID = "stateId"
 const val USER_TYPE = "userType"
 const val CRP = "CRP"

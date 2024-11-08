@@ -8,10 +8,15 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
+import com.patsurvey.nudge.model.response.DidiDetailList
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getStepStatusForDidi
 
 
 @Entity(tableName = DIDI_TABLE)
@@ -256,6 +261,60 @@ data class DidiEntity(
 ){
     companion object{
         fun getDidiId(didiEntity: DidiEntity)=if(didiEntity.serverId  == 0) didiEntity.id else didiEntity.serverId
+
+        fun getDidiEntity(
+            didi: DidiDetailList,
+            casteName: String,
+            villageId: Int,
+            tolaName: String
+        ): DidiEntity {
+            val (wealthRanking, patSurveyAcceptedRejected, voEndorsementStatus) = getStepStatusForDidi(
+                didi
+            )
+
+            val didiEntity = DidiEntity(
+                id = didi.id,
+                serverId = didi.id,
+                name = didi.name,
+                address = didi.address,
+                guardianName = didi.guardianName,
+                relationship = didi.relationship,
+                castId = didi.castId,
+                castName = casteName,
+                cohortId = didi.cohortId,
+                villageId = villageId,
+                cohortName = tolaName,
+                needsToPost = false,
+                wealth_ranking = wealthRanking,
+                forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                        COMPLETED_STRING, true
+                    )
+                ) 1 else 0,
+                voEndorsementStatus = voEndorsementStatus,
+                needsToPostRanking = false,
+                createdDate = didi.createdDate,
+                modifiedDate = didi.modifiedDate,
+                beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
+                transactionId = "",
+                localCreatedDate = didi.localCreatedDate,
+                localModifiedDate = didi.localModifiedDate,
+                score = didi.crpScore,
+                crpScore = didi.crpScore,
+                crpComment = didi.crpComment,
+                comment = didi.comment,
+                crpUploadedImage = didi.crpUploadedImage,
+                needsToPostImage = false,
+                rankingEdit = didi.rankingEdit,
+                patEdit = didi.patEdit,
+                voEndorsementEdit = didi.voEndorsementEdit,
+                ableBodiedFlag = AbleBodiedFlag.fromSting(
+                    didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name
+                ).value
+            )
+            return didiEntity
+        }
+
     }
 }
 

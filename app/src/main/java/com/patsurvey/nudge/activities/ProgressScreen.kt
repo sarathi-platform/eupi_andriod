@@ -105,6 +105,7 @@ import com.patsurvey.nudge.utils.setKeyboardToPan
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@Deprecated(message = "This Composable is deprecated and is Replaced by CrpProgressScreenV2")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProgressScreen(

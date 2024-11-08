@@ -127,6 +127,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+@Deprecated(message = "This ViewModel is deprecated and is Replaced by VillageSelectionViewModelV2")
 @HiltViewModel
 class VillageSelectionViewModel @Inject constructor(
     val prefRepo: PrefRepo,

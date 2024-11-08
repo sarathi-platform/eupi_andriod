@@ -117,6 +117,7 @@ import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.model.response.DidiDetailList
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1578,5 +1579,25 @@ fun isFilePathExists(context: Context, filePath: String): Boolean {
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
 }
 
+fun getStepStatusForDidi(didi: DidiDetailList): Triple<String, String, Int> {
+
+    val wealthRanking =
+        if (didi.beneficiaryProcessStatus.map { it.name }
+                .contains(StepType.WEALTH_RANKING.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+            .indexOf(StepType.WEALTH_RANKING.name)].status
+        else WealthRank.NOT_RANKED.rank
+    val patSurveyAcceptedRejected =
+        if (didi.beneficiaryProcessStatus.map { it.name }
+                .contains(StepType.PAT_SURVEY.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+            .indexOf(StepType.PAT_SURVEY.name)].status
+        else DIDI_REJECTED
+    val voEndorsementStatus =
+        if (didi.beneficiaryProcessStatus.map { it.name }
+                .contains(StepType.VO_ENDROSEMENT.name)) DidiEndorsementStatus.toInt(
+            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                .indexOf(StepType.VO_ENDROSEMENT.name)].status)
+        else DidiEndorsementStatus.NOT_STARTED.ordinal
+    return Triple(wealthRanking, patSurveyAcceptedRejected, voEndorsementStatus)
+}
 
 

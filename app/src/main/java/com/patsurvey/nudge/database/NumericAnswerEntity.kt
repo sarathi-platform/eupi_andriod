@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.patsurvey.nudge.model.response.AnswersItem
+import com.patsurvey.nudge.model.response.PATSummaryResponseItem
+import com.patsurvey.nudge.model.response.SummaryOptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
 
@@ -49,6 +52,34 @@ data class NumericAnswerEntity(
     @SerializedName("optionValue")
     @Expose
     @ColumnInfo(name = "optionValue")
-    var optionValue: Int =0,
+    var optionValue: Int = 0
 
-    )
+) {
+
+    companion object {
+
+        fun getNumericAnswerEntity(
+            optionItem: SummaryOptionsItem?,
+            answersItem: AnswersItem?,
+            patSummaryResponseItem: PATSummaryResponseItem
+        ): NumericAnswerEntity {
+            val numericAnswerEntity = NumericAnswerEntity(
+                id = 0,
+                optionId = optionItem?.optionId
+                    ?: 0,
+                questionId = answersItem?.questionId
+                    ?: 0,
+                weight = optionItem?.weight
+                    ?: 0,
+                didiId = patSummaryResponseItem.beneficiaryId
+                    ?: 0,
+                count = optionItem?.count
+                    ?: 0,
+                optionValue = optionItem?.optionValue ?: 0
+            )
+            return numericAnswerEntity
+        }
+
+    }
+
+}

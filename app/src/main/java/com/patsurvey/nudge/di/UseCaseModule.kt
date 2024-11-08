@@ -36,17 +36,56 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUse
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.ChangeUserRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchCasteListRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchPatQuestionRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchProgressScreenDataRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchSelectionUserDataRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.FetchVillageDataFromNetworkRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.LanguageListRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.PreferenceProviderRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.SelectionVillageRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.ChangeUserRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchCasteListRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchPatQuestionRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchProgressScreenDataRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchSelectionUserDataRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.FetchVillageDataFromNetworkRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.LanguageListRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.PreferenceProviderRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.SelectionVillageRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.ChangeUserUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCasteListUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchCrpDataUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchPatQuestionUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchProgressScreenDataUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.FetchVillageDataFromNetworkUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.LanguageListUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.PreferenceProviderUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.PoorDidiListDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.UserDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.repository.UserPropertiesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -185,5 +224,266 @@ object UseCaseModule {
             eventWriterHelperImpl = eventWriterHelperImpl
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchCrpDataUseCase(
+        fetchSelectionUserDataRepository: FetchSelectionUserDataRepository,
+        fetchPatQuestionUseCase: FetchPatQuestionUseCase,
+        fetchCasteListUseCase: FetchCasteListUseCase,
+        userPropertiesRepository: UserPropertiesRepository
+    ): FetchCrpDataUseCase {
+        return FetchCrpDataUseCase(
+            fetchSelectionUserDataRepository = fetchSelectionUserDataRepository,
+            fetchPatQuestionUseCase = fetchPatQuestionUseCase,
+            fetchCasteListUseCase = fetchCasteListUseCase,
+            userPropertiesRepository = userPropertiesRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchPatQuestionUseCase(
+        fetchPatQuestionRepository: FetchPatQuestionRepository,
+        languageListUseCase: LanguageListUseCase
+    ): FetchPatQuestionUseCase {
+        return FetchPatQuestionUseCase(
+            fetchPatQuestionRepository = fetchPatQuestionRepository,
+            languageListUseCase = languageListUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchPatQuestionRepository(
+        languageListDao: LanguageListDao,
+        questionListDao: QuestionListDao,
+        apiService: ApiService,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchPatQuestionRepository {
+        return FetchPatQuestionRepositoryImpl(
+            languageListDao,
+            questionListDao,
+            apiService,
+            coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchCasteListUseCase(
+        fetchCasteListRepository: FetchCasteListRepository,
+        languageListUseCase: LanguageListUseCase
+    ): FetchCasteListUseCase {
+
+        return FetchCasteListUseCase(
+            fetchCasteListRepository = fetchCasteListRepository,
+            languageListUseCase = languageListUseCase
+        )
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchCasteListRepository(
+        casteListDao: CasteListDao,
+        apiService: ApiService,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchCasteListRepository {
+        return FetchCasteListRepositoryImpl(
+            casteListDao = casteListDao,
+            apiService = apiService,
+            corePrefRepo = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideChangeUserUseCase(
+        changeUserRepository: ChangeUserRepository
+    ): ChangeUserUseCase {
+        return ChangeUserUseCase(changeUserRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChangeUserRepository(
+        selectionSharedPrefs: SharedPrefs,
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao,
+        didiDao: DidiDao,
+        stepsListDao: StepsListDao,
+        tolaDao: TolaDao,
+        lastSelectedTolaDao: LastSelectedTolaDao,
+        numericAnswerDao: NumericAnswerDao,
+        answerDao: AnswerDao,
+        questionListDao: QuestionListDao,
+        userDao: UserDao,
+        villageListDao: VillageListDao,
+        bpcSummaryDao: BpcSummaryDao,
+        poorDidiListDao: PoorDidiListDao,
+        syncManagerDatabase: SyncManagerDatabase,
+    ): ChangeUserRepository {
+        return ChangeUserRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs,
+            casteListDao = casteListDao,
+            didiDao = didiDao,
+            stepsListDao = stepsListDao,
+            tolaDao = tolaDao,
+            lastSelectedTolaDao = lastSelectedTolaDao,
+            numericAnswerDao = numericAnswerDao,
+            answerDao = answerDao,
+            questionListDao = questionListDao,
+            userDao = userDao,
+            villageListDao = villageListDao,
+            bpcSummaryDao = bpcSummaryDao,
+            poorDidiListDao = poorDidiListDao,
+            syncManagerDatabase = syncManagerDatabase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSelectionVillageUseCase(
+        selectionVillageRepository: SelectionVillageRepository
+    ): SelectionVillageUseCase {
+        return SelectionVillageUseCase(
+            selectionVillageRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSelectionVillageRepository(
+        selectionSharedPrefs: SharedPrefs,
+        coreSharedPrefs: CoreSharedPrefs,
+        villageListDao: VillageListDao
+    ): SelectionVillageRepository {
+        return SelectionVillageRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs,
+            villageListDao = villageListDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesPreferenceProviderUseCase(
+        preferenceProviderRepository: PreferenceProviderRepository
+    ): PreferenceProviderUseCase {
+        return PreferenceProviderUseCase(preferenceProviderRepository)
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesPreferenceProviderRepository(
+        selectionSharedPrefs: SharedPrefs,
+        coreSharedPrefs: CoreSharedPrefs
+    ): PreferenceProviderRepository {
+        return PreferenceProviderRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchSelectionUserDataRepository(
+        sharedPrefs: CoreSharedPrefs,
+        apiService: ApiService,
+        languageListDao: LanguageListDao,
+        villageListDao: VillageListDao
+    ): FetchSelectionUserDataRepository {
+        return FetchSelectionUserDataRepositoryImpl(
+            sharedPrefs = sharedPrefs,
+            apiService = apiService,
+            languageDao = languageListDao,
+            villageListDao = villageListDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesLanguageListUseCase(
+        languageListRepository: LanguageListRepository
+    ): LanguageListUseCase {
+        return LanguageListUseCase(
+            languageListRepository = languageListRepository
+        )
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesLanguageListRepository(
+        languageListDao: LanguageListDao
+    ): LanguageListRepository {
+        return LanguageListRepositoryImpl(languageListDao)
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchProgressScreenDataUseCase(fetchProgressScreenDataRepository: FetchProgressScreenDataRepository): FetchProgressScreenDataUseCase {
+        return FetchProgressScreenDataUseCase(fetchProgressScreenDataRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchProgressScreenDataRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        stepsListDao: StepsListDao,
+        tolaDao: TolaDao,
+        didiDao: DidiDao
+    ): FetchProgressScreenDataRepository {
+        return FetchProgressScreenDataRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            stepsListDao = stepsListDao,
+            didiDao = didiDao,
+            tolaDao = tolaDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchVillageDataFromNetworkUseCase(
+        fetchVillageDataFromNetworkRepository: FetchVillageDataFromNetworkRepository,
+        selectionVillageRepository: SelectionVillageRepository
+    ): FetchVillageDataFromNetworkUseCase {
+        return FetchVillageDataFromNetworkUseCase(
+            fetchVillageDataFromNetworkRepository,
+            selectionVillageRepository = selectionVillageRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchVillageDataFromNetworkRepository(
+        apiService: ApiService,
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao,
+        villageListDao: VillageListDao,
+        stepListDao: StepsListDao,
+        didiDao: DidiDao,
+        tolaDao: TolaDao,
+        questionListDao: QuestionListDao,
+        answerDao: AnswerDao,
+        numericAnswerDao: NumericAnswerDao
+    ): FetchVillageDataFromNetworkRepository {
+        return FetchVillageDataFromNetworkRepositoryImpl(
+            apiService = apiService,
+            coreSharedPrefs = coreSharedPrefs,
+            casteListDao = casteListDao,
+            villageListDao = villageListDao,
+            stepListDao = stepListDao,
+            didiDao = didiDao,
+            tolaDao = tolaDao,
+            questionListDao = questionListDao,
+            answerDao = answerDao,
+            numericAnswerDao = numericAnswerDao
+        )
     }
 }

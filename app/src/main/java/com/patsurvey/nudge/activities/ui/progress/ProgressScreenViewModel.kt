@@ -21,7 +21,6 @@ import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -36,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@Deprecated("This ViewModel is deprecated and is Replaced by ProgressScreenViewModelV2")
 @HiltViewModel
 class ProgressScreenViewModel @Inject constructor(
     private val progressScreenRepository: ProgressScreenRepository,
