@@ -73,6 +73,7 @@ import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
+import com.sarathi.surveymanager.ui.component.HrsMinRangePickerComponent
 import com.sarathi.surveymanager.ui.component.IncrementDecrementCounterList
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
@@ -515,6 +516,25 @@ fun QuestionUiContent(
                         }
                     }
                 )
+            }
+
+            QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
+                HrsMinRangePickerComponent(
+                    isMandatory = question.isMandatory,
+                    title = question.questionDisplay,
+                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    typePicker = question.type,
+                    defaultValue = question.options?.firstOrNull()?.selectedValue
+                        ?: BLANK_STRING
+                ) { selectValue, selectedValueId ->
+                    question.options?.firstOrNull()?.selectedValue = selectValue
+                    question.options?.firstOrNull()?.isSelected = true
+                    onAnswerSelect(question)
+                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                            Pair(isValid, message)
+                    }
+                }
             }
 
         }

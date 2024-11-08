@@ -18,6 +18,7 @@ enum class QuestionType {
     InputText,
     IncrementDecrementList,
     InputHrsMinutes,
+    InputYrsMonths,
     SingleImage;
 
     companion object {
