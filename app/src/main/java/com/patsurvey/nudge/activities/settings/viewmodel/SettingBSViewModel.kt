@@ -177,14 +177,12 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.LANGUAGE.name
             )
         )
-
-
         list.add(
             SettingOptionModel(
                 5,
-                context.getString(R.string.export_backup_file),
+                context.getString(R.string.export_data),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
             )
         )
         list.add(
@@ -198,6 +196,14 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 7,
+                context.getString(R.string.export_backup_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_BACKUP_FILE.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                8,
                 context.getString(appRes.string.refresh_config),
                 BLANK_STRING,
                 SettingTagEnum.APP_CONFIG.name

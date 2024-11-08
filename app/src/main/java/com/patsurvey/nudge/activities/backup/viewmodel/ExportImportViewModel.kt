@@ -17,7 +17,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
-import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
@@ -30,12 +29,10 @@ import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.utils.BSLogWriter
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
@@ -44,10 +41,7 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
-import com.nudge.core.enums.EventType
-import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDatabase
-import com.nudge.core.exportLogFile
 import com.nudge.core.exportOldData
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
@@ -59,7 +53,6 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.patsurvey.nudge.BuildConfig
@@ -68,7 +61,6 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
-import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -88,8 +80,6 @@ class ExportImportViewModel @Inject constructor(
     val prefBSRepo: PrefBSRepo,
     private val optionItemDao: OptionItemDao,
     private val questionEntityDao: QuestionEntityDao,
-    private val missionActivityDao: MissionActivityDao,
-    private val activityDao: ActivityDao,
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase
@@ -194,62 +184,6 @@ class ExportImportViewModel @Inject constructor(
             openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
         } else {
             onExportSuccess(it)
-        }
-    }
-
-
-    fun exportLocalImages() {
-        BaselineLogger.d("ExportImportViewModel", "exportLocalImages ----")
-        try {
-            CoroutineScope(CoreDispatchers.ioDispatcher).launch {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
-                val imageZipUri = exportAllOldImages(
-                    appContext = mAppContext,
-                    applicationID = applicationId.value,
-                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value),
-                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
-            )
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            if(imageZipUri != null){
-                BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
-                openShareSheet(convertURIAccToOS(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
-            }
-        }
-        }catch (e:Exception){
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel", "exportLocalImages :${e.message}", e)
-        }
-    }
-
-    fun exportOnlyLogFile(context: Context) {
-        BaselineLogger.d("ExportImportViewModel", "exportOnlyLogFile: ----")
-        try {
-            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
-                val logFile = BSLogWriter.buildLogFile(appContext = mAppContext) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                    onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
-                }
-                if (logFile != null) {
-                    exportLogFile(
-                        logFile,
-                        appContext = mAppContext,
-                        applicationID = applicationId.value,
-                        userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                        mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                        moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
-                    ) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                        openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
-                    }
-
-
-                }
-            }
-        } catch (e: Exception) {
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel", "exportOnlyLogFile :${e.message}", e)
         }
     }
 
@@ -564,49 +498,4 @@ class ExportImportViewModel @Inject constructor(
         return list ?: emptyList()
     }
 
-    fun markAllActivityInProgress(context: Context) {
-        CoroutineScope(CoreDispatchers.ioDispatcher).launch {
-
-            val userId = prefBSRepo.getUniqueUserIdentifier()
-
-            val activities = missionActivityDao.getAllActivities(userId)
-
-            activities.forEach { activity ->
-
-                missionActivityDao.markActivityStart(
-                    userId,
-                    activity.missionId,
-                    activity.activityId,
-                    SectionStatus.INPROGRESS.name,
-                    System.currentTimeMillis().toDate().toString()
-                )
-
-                // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
-                activityDao.updateActivityStatus(
-                    userId = userId,
-                    activityId = activity.activityId,
-                    missionId = activity.missionId,
-                    status = SectionStatus.INPROGRESS.name
-                )
-
-                val updateTaskStatusEvent =
-                    eventWriterHelperImpl.createActivityStatusUpdateEvent(
-                        missionId = activity.missionId,
-                        activityId = activity.activityId,
-                        status = SectionStatus.INPROGRESS
-                    )
-                exportImportUseCase.eventsWriterUseCase.invoke(
-                    events = updateTaskStatusEvent,
-                    eventType = EventType.STATEFUL
-                )
-            }
-
-            withContext(CoreDispatchers.mainDispatcher) {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.all_activities_marked_as_in_progress)
-                )
-            }
-        }
-    }
 }
