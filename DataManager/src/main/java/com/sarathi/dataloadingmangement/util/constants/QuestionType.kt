@@ -56,3 +56,7 @@ enum class QuestionType {
         )
     }
 }
+
+enum class OptionType {
+    None;
+}

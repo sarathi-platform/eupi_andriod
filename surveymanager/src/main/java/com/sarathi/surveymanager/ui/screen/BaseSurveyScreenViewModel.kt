@@ -208,7 +208,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 }
                 updateAutoCalculateQuestionValue(
                     questionUiModel.value,
-                    surveyConfig,
+                    surveyConfig[DEFAULT_FORM_ID],
                     autoCalculateQuestionResultMap
                 )
             }
