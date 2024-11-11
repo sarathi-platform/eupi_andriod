@@ -113,4 +113,5 @@
     <string name="assets">"सम्फथिफोर "</string>
     <string name="last_updated_days_ago">"जोबथा आपदेटेद:  %1$s सानसे सिगां "</string>
     <string name="last_1_month">Last 1 Month</string>
+    <string name="auto_sync">Auto Sync -  %s</string>
 </resources>
