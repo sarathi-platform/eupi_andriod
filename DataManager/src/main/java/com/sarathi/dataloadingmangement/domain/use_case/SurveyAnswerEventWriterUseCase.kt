@@ -2,12 +2,10 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
-import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
@@ -91,7 +89,6 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         activityReferenceType: String?
     ): BaseSaveAnswerEventDto {
         var surveyAnswerModel: BaseSaveAnswerEventDto? = null
-        Log.d("TAG", "fetchQuestionAnswerEventList Deets: ${questionUiModel.json()} ")
         surveyAnswerModel = getSurveyAnswerEvent(
             questionUiModel,
             subjectId,

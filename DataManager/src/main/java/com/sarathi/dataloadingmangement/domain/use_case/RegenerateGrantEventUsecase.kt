@@ -4,7 +4,6 @@ import android.util.Log
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
-import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -182,7 +181,6 @@ class RegenerateGrantEventUsecase @Inject constructor(
                                 activityReferenceType = activityConfig?.referenceType
                             )
                             eventList.add(event)
-                            Log.d("TAG", "fetchSurveyAnswerEvents: ${eventList.json()}")
                         }
 
                     if (eventList.isNotEmpty()) {
@@ -194,7 +192,6 @@ class RegenerateGrantEventUsecase @Inject constructor(
             return surveyList
         } catch (exception: Exception) {
             exception.printStackTrace()
-            Log.e("Regenerate", "Regenerate Exceptions: ${exception.message.toString()}")
         }
         return null
     }
