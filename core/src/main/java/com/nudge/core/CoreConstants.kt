@@ -210,3 +210,10 @@ const val UPCM = "UPCM"
 
 const val CLEAN_ROUTE_DELIMITER = "~@"
 const val FORWARD_SLASH_DELIMITER = "/"
+
+const val DELIMITER_TIME = ":"
+const val DELIMITER_YEAR = "/"
+const val YEAR = "Years"
+const val MONTHS = "Months"
+const val HOURS = "Hours"
+const val MINUTE = "Minutes"

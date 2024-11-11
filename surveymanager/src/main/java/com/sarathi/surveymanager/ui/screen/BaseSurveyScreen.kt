@@ -73,10 +73,12 @@ import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
+import com.sarathi.surveymanager.ui.component.HrsMinRangePickerComponent
 import com.sarathi.surveymanager.ui.component.IncrementDecrementCounterList
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SingleImageComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -343,7 +345,28 @@ fun QuestionUiContent(
 
                 }
             }
+            QuestionType.SingleImage.name -> {
+                SingleImageComponent(
+                    fileNamePrefix = viewModel.getPrefixFileName(question),
+                    filePaths =
+                    question.options?.firstOrNull()?.selectedValue
+                        ?: com.nudge.core.BLANK_STRING
+                    ,
+                    isMandatory = question.isMandatory,
+                    title = question.questionDisplay,
+                    isEditable = viewModel.isActivityNotCompleted.value,
+                    maxCustomHeight = maxHeight,
+                    subtitle = question.display,
+                ) { selectedValue, isDeleted ->
+                    saveSingleImage(isDeleted, question.options, selectedValue)
+                    onAnswerSelect(question)
+                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                            Pair(isValid, message)
+                    }
 
+                }
+            }
             QuestionType.SingleSelectDropDown.name,
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
@@ -493,6 +516,25 @@ fun QuestionUiContent(
                         }
                     }
                 )
+            }
+
+            QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
+                HrsMinRangePickerComponent(
+                    isMandatory = question.isMandatory,
+                    title = question.questionDisplay,
+                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    typePicker = question.type,
+                    defaultValue = question.options?.firstOrNull()?.selectedValue
+                        ?: BLANK_STRING
+                ) { selectValue, selectedValueId ->
+                    question.options?.firstOrNull()?.selectedValue = selectValue
+                    question.options?.firstOrNull()?.isSelected = true
+                    onAnswerSelect(question)
+                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                            Pair(isValid, message)
+                    }
+                }
             }
 
         }
@@ -679,6 +721,18 @@ fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, i
 
 }
 
+fun saveSingleImage(isDeleted:Boolean, options: List<OptionsUiModel>?,filePath: String)
+{
+    if (isDeleted)
+    {
+        options?.firstOrNull()?.isSelected = false
+        options?.firstOrNull()?.selectedValue =BLANK_STRING
+
+    }else {
+        options?.firstOrNull()?.isSelected = true
+        options?.firstOrNull()?.selectedValue = filePath
+    }
+}
 
 fun listToCommaSeparatedString(list: List<String>): String {
     return list.joinToString(",")
