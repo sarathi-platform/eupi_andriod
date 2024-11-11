@@ -87,6 +87,8 @@ class SyncHomeViewModel @Inject constructor(
     private val _loaderState = mutableStateOf(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
     val isSyncImageActive = mutableStateOf(false)
+    val workerState = mutableStateOf(BLANK_STRING)
+
     val isSyncDataFirstDialog = mutableStateOf(false)
     var isPullToRefreshVisible= mutableStateOf(false)
     var clickCount =   0

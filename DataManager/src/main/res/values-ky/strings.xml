@@ -115,4 +115,5 @@
     <string name="assets">"Rwbai "</string>
     <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
     <string name="last_1_month">Last 1 Month</string>
+    <string name="auto_sync">Auto Sync - </string>
 </resources>

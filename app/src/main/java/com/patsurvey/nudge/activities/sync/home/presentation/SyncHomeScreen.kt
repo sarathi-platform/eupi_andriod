@@ -72,6 +72,7 @@ import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
+import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.nudge.syncmanager.utils.SYNC_UNIQUE_NAME
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
@@ -484,8 +485,10 @@ fun HandleWorkerState(
     uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context,
     scope: CoroutineScope
 ) {
+    viewModel.workerState.value= uploadWorkerInfo?.state?.name.value()
     when (uploadWorkerInfo?.state) {
         WorkInfo.State.RUNNING -> {
+
             if (viewModel.isSyncStarted.value) {
 
                 when (viewModel.selectedSyncType.intValue) {
@@ -584,11 +587,11 @@ private fun SyncDataCard(
             )
             startSyncProcess(context, viewModel, isNetworkAvailable.value)
         },
-        isStatusVisible = viewModel.isDataStatusVisible.value,
         onCardClick = {
 
         },
         isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
+        isWorkerInfoState = viewModel.workerState.value,
         onViewProcessClick = {
             onViewProcessClick()
         }
@@ -626,7 +629,7 @@ private fun SyncImageCard(
                 }
             },
             syncButtonTitle = stringResource(id = R.string.sync_only_images),
-            isStatusVisible = viewModel.isImageStatusVisible.value,
+            isWorkerInfoState =viewModel.workerState.value ,
             onCardClick = {
             },
             isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
