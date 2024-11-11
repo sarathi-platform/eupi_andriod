@@ -49,6 +49,7 @@ enum class QuestionType {
         val numericUseInputQuestionTypeList = listOf(
             InputNumber.name.toLowerCase(),
             NumericField.name.toLowerCase(),
+            IncrementDecrementList.name.toLowerCase()
         )
 
         val autoCalculateQuestionType = listOf(

@@ -642,7 +642,8 @@ class ConditionsUtils {
                 val config = surveyConfig?.get(SurveyConfigCardSlots.CONFIG_AUTO_CALCULATE.name)
                     ?.find { question.tagId.contains(it.tagId) }
                 questionUiModel.find { it.questionId == config?.value.toSafeInt() }?.apply {
-                    val resultMap = this.options?.map { it.selectedValue }
+                    var resultMap = this.options?.map { it.selectedValue }
+                    resultMap = resultMap?.filter { it != BLANK_STRING }
                     val result =
                         if (QuestionType.numericUseInputQuestionTypeList.contains(this.type.toLowerCase())) {
                             resultMap?.sumOf { it.toSafeInt() }.toString()

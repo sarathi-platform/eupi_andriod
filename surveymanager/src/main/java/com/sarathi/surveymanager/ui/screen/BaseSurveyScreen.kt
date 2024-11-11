@@ -371,7 +371,7 @@ fun QuestionUiContent(
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
                     questionIndex = index,
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityNotCompleted.value,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
@@ -396,7 +396,7 @@ fun QuestionUiContent(
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     sources = getOptionsValueDto(question.options ?: listOf()),
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityNotCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
                     optionStateMap = viewModel.optionStateMap,
