@@ -101,7 +101,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 grantId = 0
             )
-            _questionUiModel.value = question.filter { it.formId != 0 }
+            _questionUiModel.value = question.filter { it.formId == formId }
 
             val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
                 .invoke(
