@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CLEAN_ROUTE_DELIMITER
+import com.nudge.core.FORWARD_SLASH_DELIMITER
 import com.nudge.core.LIVELIHOOD
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
@@ -551,9 +553,9 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
-                toolbarTitle = it.arguments?.getString(
+                toolbarTitle = (it.arguments?.getString(
                     ARG_TOOLBAR_TITLE
-                ) ?: BLANK_STRING,
+                ) ?: BLANK_STRING).replace(CLEAN_ROUTE_DELIMITER, FORWARD_SLASH_DELIMITER),
 
                 activityConfigId = it.arguments?.getInt(
                     ARG_ACTIVITY_CONFIG_ID
@@ -1163,7 +1165,8 @@ fun navigateToSurveyScreen(
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
+    val cleanToolbarName = toolbarName.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$cleanToolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
 }
 
 fun navigateToGrantSurveyScreen(
