@@ -40,6 +40,11 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.SUBJECT_ADDRESS
+import com.nudge.core.SUBJECT_COHORT_NAME
+import com.nudge.core.SUBJECT_DADA_NAME
+import com.nudge.core.SUBJECT_NAME
+import com.nudge.core.VILLAGE_NAME
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
@@ -62,6 +67,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -69,7 +75,9 @@ import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
+import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
@@ -78,6 +86,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
+import com.sarathi.dataloadingmangement.util.constants.QuestionType as QuestionTypeNew
 
 @HiltViewModel
 class ExportImportViewModel @Inject constructor(
@@ -92,7 +101,8 @@ class ExportImportViewModel @Inject constructor(
     private val activityDao: ActivityDao,
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase
+    private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
+    private val getTaskUseCase: GetTaskUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -379,7 +389,70 @@ class ExportImportViewModel @Inject constructor(
             }
         }
     }
+    fun exportBaseLineQnAForSurveyTypeActivity(context: Context) {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            try {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                val baseLineQnATableCSV: ArrayList<BaseLineQnATableCSV> = arrayListOf()
 
+                val quesAnswerList = regenerateGrantEventUsecase.fetchSurveyAnswerEvents()
+
+                quesAnswerList?.let { quesList ->
+                    quesList.forEach { survey ->
+                        val task = getTaskUseCase.getSubjectAttributes(survey.taskId)
+                        val responsePair = findResponseAndSubQuestion(survey.question)
+
+                        baseLineQnATableCSV.add(
+                            BaseLineQnATableCSV(
+                                id = survey.question.questionId.toString(),
+                                surveyId = survey.surveyId,
+                                sectionId = survey.sectionId,
+                                subjectId = survey.subjectId,
+                                house = task.find { it.key == SUBJECT_ADDRESS }?.value.value(),
+                                orderId = survey.question.order,
+                                section = survey.sectionName,
+                                dadaName = task.find { it.key == SUBJECT_DADA_NAME }?.value.value(),
+                                didiName = task.find { it.key == SUBJECT_NAME }?.value.value(),
+                                question = survey.question.questionDesc,
+                                response = responsePair.first,
+                                cohoretName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
+                                subQuestion = responsePair.second,
+                                villageName = task.find { it.key == VILLAGE_NAME }?.value.value(),
+                                referenceId = survey.referenceId
+                            )
+                        )
+                    }
+                }
+
+                val baseLineListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 1)
+                val hamletListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 2)
+                val title = generateTitle()
+                val listPath = generateCsvFiles(baseLineListQna, hamletListQna, title, context)
+
+                openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
+
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            } catch (exception: Exception) {
+                handleError(exception, context)
+            }
+        }
+    }
+
+    private suspend fun findResponseAndSubQuestion(question: SaveAnswerEventQuestionItemDto): Pair<String, String> {
+        var response = BLANK_STRING
+        var optionDesc = BLANK_STRING
+        val optionDescList = arrayListOf<String>()
+        val responseList = arrayListOf<String>()
+        question.options.forEach { option ->
+            if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase()))
+                optionDescList.add(option.optionDesc)
+            responseList.add(option.selectedValue ?: BLANK_STRING)
+
+        }
+        optionDesc = optionDescList.joinToString("\n")
+        response = responseList.joinToString("\n")
+        return Pair(response, optionDesc)
+    }
     private suspend fun getSaveAnswerEvents(): List<SaveAnswerEventDto> {
         val eventsList = eventWriterHelperImpl.generateResponseEvent()
         val payloadList = eventsList.map { it.request_payload }
@@ -452,9 +525,9 @@ class ExportImportViewModel @Inject constructor(
     ): List<BaseLineQnATableCSV> {
         val filteredList = baseLineQnATableCSV.filter { it.surveyId == surveyId }
         val groupedAndSorted = filteredList
-            .groupBy { it.sectionId }
+            .groupBy { Pair(it.referenceId, it.sectionId) }
             .toList()
-            .sortedBy { it.first }
+            .sortedBy { it.first.second }
             .flatMap { it.second.sortedBy { it.orderId } }
         return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }
     }

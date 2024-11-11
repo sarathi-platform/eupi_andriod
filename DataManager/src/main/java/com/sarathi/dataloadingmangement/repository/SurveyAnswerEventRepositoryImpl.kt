@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Log
+import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
@@ -155,7 +157,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     ): SaveAnswerEventQuestionItemDto? {
         var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
         val options = getOption(questionUiModel, "")
-
+        Log.d("TAG", "getSaveAnswerEventQuestionItemDto: ${questionUiModel.json()} ")
             saveAnswerEventQuestionItemDto1 = SaveAnswerEventQuestionItemDto(
                 questionId = questionUiModel.questionId,
                 questionType = questionUiModel.type,
@@ -163,7 +165,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 showQuestion = true,
                 questionDesc = questionUiModel.questionSummary ?: BLANK_STRING,
                 options = options,
-                formId = questionUiModel.formId
+                formId = questionUiModel.formId,
+                order = questionUiModel.order
             )
 
         return saveAnswerEventQuestionItemDto1

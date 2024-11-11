@@ -49,5 +49,8 @@ enum class QuestionType {
             InputNumber.name.toLowerCase(),
             NumericField.name.toLowerCase(),
         )
+        val optionDescriptionAllowInExport = listOf(
+            IncrementDecrementList.name.toLowerCase()
+        )
     }
 }

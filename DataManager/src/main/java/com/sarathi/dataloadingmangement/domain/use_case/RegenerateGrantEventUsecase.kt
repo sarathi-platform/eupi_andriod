@@ -4,12 +4,14 @@ import android.util.Log
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
+import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import javax.inject.Inject
 
@@ -137,6 +139,64 @@ class RegenerateGrantEventUsecase @Inject constructor(
             Log.e("Regenerate", exception.localizedMessage)
         }
 
+    }
+    suspend fun fetchSurveyAnswerEvents(): ArrayList<BaseSaveAnswerEventDto>? {
+        try {
+            val surveyList = arrayListOf<BaseSaveAnswerEventDto>()
+            val surveyAnswers = regenerateGrantEventRepositoryImpl.getAllSurveyAnswerForUSer()
+            surveyAnswers.forEach { surveyAnswer ->
+                val taskEntity =
+                    regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
+                taskEntity?.let { task ->
+                    val questionUiModel = fetchDataUseCase.invoke(
+                        surveyId = surveyAnswer.surveyId,
+                        sectionId = surveyAnswer.sectionId,
+                        subjectId = surveyAnswer.subjectId,
+                        referenceId = surveyAnswer.referenceId,
+                        activityConfigId = task.activityId.value(),
+                        grantId = surveyAnswer.grantId
+                    )
+                    val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
+                        activityId = task.activityId ?: -1,
+                        missionId = task.missionId ?: -1
+                    )
+                    val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
+                        task.activityId,
+                        task.missionId
+                    )
+
+                    val eventList = arrayListOf<BaseSaveAnswerEventDto>()
+                    questionUiModel.find { it.questionId == surveyAnswer.questionId && it.sectionId == surveyAnswer.sectionId && it.surveyId == surveyAnswer.surveyId }
+                        ?.let {
+                            val event = surveyAnswerEventWriterUseCase.fetchQuestionAnswerEventList(
+                                questionUiModel = it,
+                                taskId = surveyAnswer.taskId,
+                                subjectId = surveyAnswer.subjectId,
+                                referenceId = surveyAnswer.referenceId,
+                                grantId = surveyAnswer.grantId,
+                                grantType = surveyAnswer.grantType,
+                                taskLocalId = task.localTaskId ?: BLANK_STRING,
+                                subjectType = subjectType,
+                                activityId = activityConfig?.activityId.value(),
+                                activityReferenceId = activityConfig?.referenceId,
+                                activityReferenceType = activityConfig?.referenceType
+                            )
+                            eventList.add(event)
+                            Log.d("TAG", "fetchSurveyAnswerEvents: ${eventList.json()}")
+                        }
+
+                    if (eventList.isNotEmpty()) {
+                        surveyList.addAll(eventList)
+                    }
+
+                }
+            }
+            return surveyList
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            Log.e("Regenerate", "Regenerate Exceptions: ${exception.message.toString()}")
+        }
+        return null
     }
 
     private suspend fun writeFormUpdateEvent() {

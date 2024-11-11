@@ -2,14 +2,17 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import com.nudge.core.compressImage
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.FileUtils.getImageUri
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
@@ -72,6 +75,39 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
 
             )
         }
+    }
+
+    suspend fun fetchQuestionAnswerEventList(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        subjectType: String,
+        referenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String,
+        taskId: Int,
+        activityId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
+    ): BaseSaveAnswerEventDto {
+        var surveyAnswerModel: BaseSaveAnswerEventDto? = null
+        Log.d("TAG", "fetchQuestionAnswerEventList Deets: ${questionUiModel.json()} ")
+        surveyAnswerModel = getSurveyAnswerEvent(
+            questionUiModel,
+            subjectId,
+            subjectType,
+            referenceId,
+            taskLocalId,
+            grantId,
+            grantType,
+            taskId,
+            activityId = activityId,
+            activityReferenceId = activityReferenceId,
+            activityReferenceType = activityReferenceType
+
+        )
+
+        return surveyAnswerModel
     }
 
     private suspend fun saveAnswerMoneyJorunalEventDto(
@@ -143,6 +179,33 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         )
     }
 
+    suspend fun getSurveyAnswerEvent(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        subjectType: String,
+        referenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String,
+        taskId: Int,
+        activityId: Int,
+        activityReferenceId: Int?,
+        activityReferenceType: String?
+    ): BaseSaveAnswerEventDto {
+        return repository.writeSaveAnswerEvent(
+            questionUiModel = questionUiModel,
+            subjectId = subjectId,
+            subjectType = subjectType,
+            refrenceId = referenceId,
+            taskLocalId = taskLocalId,
+            grantId = grantId,
+            grantType = grantType,
+            taskId = taskId,
+            activityId = activityId,
+            activityReferenceId = activityReferenceId,
+            activityReferenceType = activityReferenceType
+        )
+    }
     suspend fun saveSurveyAnswerEvent(
         questionUiModel: QuestionUiModel,
         subjectId: Int,
