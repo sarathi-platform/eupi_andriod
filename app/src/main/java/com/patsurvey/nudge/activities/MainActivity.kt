@@ -97,7 +97,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             CoreAppDetails.ApplicationDetails(
                 packageName = packageName,
                 applicationID = BuildConfig.APPLICATION_ID,
-                activity = this
+                activity = this,
+                buildVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
             )
         )
         CoreObserverManager.addObserver(this)

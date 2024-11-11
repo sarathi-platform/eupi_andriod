@@ -2,6 +2,7 @@ package com.nudge.core.eventswriter
 
 import android.content.Context
 import android.net.Uri
+import com.nudge.core.APP_VERSION
 import com.nudge.core.STATE_ID
 import com.nudge.core.USER_TYPE
 import com.nudge.core.database.dao.EventDependencyDao
@@ -14,8 +15,10 @@ import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventWriters
 import com.nudge.core.findUserTypeForMetadata
 import com.nudge.core.json
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.value
 
 class JsonEventWriter(
     val context: Context,
@@ -40,11 +43,17 @@ class JsonEventWriter(
 
             if (event.request_payload?.isNotEmpty() == true) {
                 val metadata = event.metadata?.getMetaDataDtoFromString()
-                val updatedMetaData = metadata?.copy(
-                    data = mapOf(
+                val data = metadata?.data?.toMutableMap()
+                data?.putAll(
+                    mapOf(
                         STATE_ID to coreSharedPrefs.getStateId().toString(),
-                        USER_TYPE to findUserTypeForMetadata(coreSharedPrefs.getUserType())
+                        USER_TYPE to findUserTypeForMetadata(coreSharedPrefs.getUserType()),
+                        APP_VERSION to CoreAppDetails.getApplicationDetails()?.buildVersion.value()
                     )
+                )
+
+                val updatedMetaData = metadata?.copy(
+                    data = data?.toMap() ?: emptyMap()
                 )
                 val updatedEvent = event.copy(metadata = updatedMetaData?.json())
 
