@@ -37,8 +37,14 @@ class ConditionsUtils {
 
     private var questionUiModel: List<QuestionUiModel> = listOf()
 
+    /**
+     * Variable to handle question visibility state. To check whether the questions are visible or not.
+     * */
     val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
 
+    /**
+     * Variable to handle option state. To check whether the options are enable or disabled.
+     * */
     val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf()
 
     private fun setConditionsUiModelList(conditionsUiModelList: List<ConditionsUiModel>) {
