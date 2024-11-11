@@ -116,7 +116,7 @@ fun EventTypeCard(
 
             if (isStatusVisible) {
                 Text(
-                    text =stringResource(R.string.auto_sync)+ isWorkerInfoState  ,
+                    text =stringResource(R.string.auto_sync, isWorkerInfoState) ,
                     style = smallerTextStyleNormalWeight,
                     color = grayColor,
                     modifier = Modifier.constrainAs(statusText) {

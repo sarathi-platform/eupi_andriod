@@ -10,7 +10,7 @@
     <string name="complete_activity">কার্যকলাপ সম্পন্ন করুন</string>
     <string name="complete_mission">মিশন সম্পন্ন করুন</string>
     <string name="task_view">দেখুন</string>
-    <string name="auto_sync">Auto Sync - </string>
+    <string name="auto_sync">Auto Sync -  %s</string>
     <string name="continue_text">চালিয়ে যান</string>
     <string name="not_available">পাওয়া যায় না</string>
     <string name="share">"শেয়ার করুন "</string>

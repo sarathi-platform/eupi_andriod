@@ -110,8 +110,7 @@
     <string name="decrease_in_number">decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
     <string name="data_send_to_server">Data sent to Server</string>
-    <string name="auto_sync">Auto Sync - </string>
-
+    <string name="auto_sync">Auto Sync -  %s</string>
     <string name="images_send_to_server">Images sent to Server</string>
     <string name="data_processes_by_server">Data processed by Server</string>
     <string name="images_processes_by_server">Images processed by Server</string>
