@@ -208,6 +208,9 @@ const val CRP = "CRP"
 const val BPC = "BPC"
 const val UPCM = "UPCM"
 
+const val CLEAN_ROUTE_DELIMITER = "~@"
+const val FORWARD_SLASH_DELIMITER = "/"
+
 const val DELIMITER_TIME = ":"
 const val DELIMITER_YEAR = "/"
 const val YEAR = "Years"
