@@ -197,8 +197,9 @@ interface SurveyAnswersDao {
         userId: String,
     ): Int
 
-    @Query("SELECT DISTINCT referenceId from ques_answer_table where surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds) and formId = :formId")
+    @Query("SELECT DISTINCT referenceId from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds) and formId = :formId")
     fun getTotalSavedFormResponsesCount(
+        userId: String,
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
@@ -208,8 +209,9 @@ interface SurveyAnswersDao {
     ): List<String>
 
 
-    @Query("SELECT * from ques_answer_table where surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
+    @Query("SELECT * from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
     fun getSurveyAnswersForQuestionIds(
+        userId: String,
         surveyId: Int,
         taskId: Int,
         sectionId: Int,

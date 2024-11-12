@@ -222,6 +222,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         formId: Int
     ): List<String> {
         return surveyAnswersDao.getTotalSavedFormResponsesCount(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,
             taskId = taskId,
             sectionId = sectionId,
@@ -333,6 +334,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         questionIds: List<Int>
     ): List<SurveyAnswerEntity> {
         return surveyAnswersDao.getSurveyAnswersForQuestionIds(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,
             taskId = taskId,
             sectionId = sectionId,
