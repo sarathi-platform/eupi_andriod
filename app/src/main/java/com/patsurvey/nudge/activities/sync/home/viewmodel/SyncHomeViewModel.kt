@@ -376,4 +376,6 @@ class SyncHomeViewModel @Inject constructor(
             }
         }
     }
+    fun getUserPhoneNumber() =
+        syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()
 }

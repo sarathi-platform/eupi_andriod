@@ -78,7 +78,7 @@ import com.nudge.syncmanager.utils.SYNC_UNIQUE_NAME
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
-import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.syncMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -251,7 +251,7 @@ fun SyncHomeContent(
     ToolbarWithMenuComponent(
         title = stringResource(
             id = R.string.sync_all_data
-        ) + " - ${viewModel.syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserID()}",
+        ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = true,
         actions = {
@@ -433,6 +433,7 @@ fun BottomContent(
 fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
     val context = LocalContext.current
     if (viewModel.lastSyncTime.longValue != 0L) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -449,15 +450,42 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
             ) {
                 Text(
                     text = stringResource(id = R.string.last_sync_date_time),
-                    style = mediumTextStyle,
+                    style = syncMediumTextStyle,
                     color = textColorDark
                 )
 
                 Text(
                     text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
-                    style = mediumTextStyle,
+                    style = syncMediumTextStyle,
                     color = textColorDark
                 )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
+                    .clickable {
+                        viewModel.onLastSyncTimeClick {
+                            showCustomToast(
+                                context = context,
+                                msg = context.getString(it)
+                            )
+                        }
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.profile_phone),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+
+                Text(
+                    text = viewModel.getUserPhoneNumber(),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+            }
         }
     }
 }

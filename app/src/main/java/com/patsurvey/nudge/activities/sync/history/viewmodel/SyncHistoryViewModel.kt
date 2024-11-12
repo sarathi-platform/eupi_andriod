@@ -121,4 +121,5 @@ class SyncHistoryViewModel @Inject constructor(
                         _countDataList.value = eventStatusDataUIList
                 }
         }
+        fun getUserMobileNumber() = syncHistoryUseCase.getSyncHistoryUseCase.getUserMobileNumber()
 }
