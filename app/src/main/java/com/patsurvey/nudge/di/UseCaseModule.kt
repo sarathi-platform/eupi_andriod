@@ -71,14 +71,20 @@ import com.patsurvey.nudge.activities.sync.home.domain.use_case.FetchLastSyncDat
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetSyncEventsUseCase
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetUserDetailsSyncUseCase
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.SelectionVillageRepositoryImpl
+import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.SelectionVillageRepository
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -142,14 +148,16 @@ object UseCaseModule {
         prefRepo: PrefBSRepo,
         nudgeDatabase: NudgeDatabase,
         coreSharedPrefs: CoreSharedPrefs,
-        syncManagerDatabase: SyncManagerDatabase
+        syncManagerDatabase: SyncManagerDatabase,
+        missionDao: MissionDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
             prefBSRepo = prefRepo,
             nudgeDatabase = nudgeDatabase,
             coreSharedPrefs = coreSharedPrefs,
-            syncManagerDatabase = syncManagerDatabase
+            syncManagerDatabase = syncManagerDatabase,
+            missionDao = missionDao
         )
     }
 
@@ -369,6 +377,30 @@ object UseCaseModule {
             eventWriterHelperImpl = eventWriterHelperImpl
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun providesSelectionVillageUseCase(
+        selectionVillageRepository: SelectionVillageRepository
+    ): SelectionVillageUseCase {
+        return SelectionVillageUseCase(
+            selectionVillageRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSelectionVillageRepository(
+        selectionSharedPrefs: SharedPrefs,
+        coreSharedPrefs: CoreSharedPrefs,
+        villageListDao: VillageListDao
+    ): SelectionVillageRepository {
+        return SelectionVillageRepositoryImpl(
+            selectionSharedPrefs = selectionSharedPrefs,
+            coreSharedPrefs = coreSharedPrefs,
+            villageListDao = villageListDao
+        )
     }
 
     @Provides

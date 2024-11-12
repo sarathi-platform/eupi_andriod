@@ -107,10 +107,17 @@
     <string name="save_text">सेभ</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">दानगारनाय</string>
+    <string name="hours">घन्टाफोर</string>
+    <string name="years">बोसोरफोर</string>
+    <string name="minute">मिनिट</string>
+    <string name="month">दान</string>
     <string name="edit_event">Edit Event</string>
     <string name="showing">showing</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"सम्फथिफोर "</string>
     <string name="last_updated_days_ago">"जोबथा आपदेटेद:  %1$s सानसे सिगां "</string>
     <string name="last_1_month">Last 1 Month</string>
+    <string name="auto_sync">Auto Sync -  %s</string>
+    <string name="sync_on">Auto Sync - On</string>
+    <string name="sync_off">Auto Sync - Off</string>
 </resources>

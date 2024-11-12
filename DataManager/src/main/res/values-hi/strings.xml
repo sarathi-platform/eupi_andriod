@@ -113,4 +113,11 @@
     <string name="assets">"संपत्ति "</string>
     <string name="last_updated_days_ago">"अंतिम अपडेट  %1$s दिन पहले किया गया  "</string>
     <string name="last_1_month">"पिछला एक महिना "</string>
+    <string name="auto_sync">Auto Sync -  %s</string>
+    <string name="sync_on">Auto Sync - On</string>
+    <string name="sync_off">Auto Sync - Off</string>
+    <string name="hours">घंटे</string>
+    <string name="years">साल</string>
+    <string name="minute">मिनट</string>
+    <string name="month">महीना</string>
 </resources>

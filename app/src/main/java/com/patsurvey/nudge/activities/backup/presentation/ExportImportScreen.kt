@@ -68,27 +68,8 @@ fun ExportImportScreen(
                 SettingTagEnum.LOAD_SERVER_DATA.name -> {
                     viewModel.showLoadConfirmationDialog.value=true
                 }
-
-                SettingTagEnum.EXPORT_DATABASE.name -> {
-                    viewModel.exportLocalDatabase(true) {
-                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
-                }
-
-                SettingTagEnum.EXPORT_IMAGES.name -> {
-                    viewModel.exportLocalImages()
-                }
-
-                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
-                    viewModel.compressEventData(context.getString(R.string.export_event_file))
-                }
-
                 SettingTagEnum.IMPORT_DATA.name ->{
                     viewModel.showRestartAppDialog.value=true
-                }
-
-                SettingTagEnum.EXPORT_LOG_FILE.name -> {
-                    viewModel.exportOnlyLogFile(context)
                 }
 
                 SettingTagEnum.REGENERATE_EVENTS.name -> {
@@ -96,12 +77,11 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
-                    viewModel.exportBaseLineQnA(context)
+                    viewModel.exportOldAndNewBaselineQnA(context)
                 }
 
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
-//                    viewModel.markAllActivityInProgress(context)
                 }
             }
         },
