@@ -218,13 +218,15 @@ class SurveySaveRepositoryImpl @Inject constructor(
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
-        questionIds: List<Int>
+        questionIds: List<Int>,
+        formId: Int
     ): List<String> {
         return surveyAnswersDao.getTotalSavedFormResponsesCount(
             surveyId = surveyId,
             taskId = taskId,
             sectionId = sectionId,
-            questionIds = questionIds
+            questionIds = questionIds,
+            formId = formId
         )
     }
 

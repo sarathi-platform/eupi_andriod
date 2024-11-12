@@ -491,7 +491,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     surveyConfigForForm[SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_VALUE.name]?.sumOf { surveyCardModel ->
                         val quest =
                             questionUiModel.value.find { it.tagId.contains(surveyCardModel.tagId) }
-                        formResponses?.filter { it.questionId == quest?.questionId.value() }
+                        formResponses?.filter { it.questionId == quest?.questionId.value() && it.formId == quest?.formId.value() }
                             ?.flatMap { it.optionItems }
                             ?.filter { it.isSelected == true }
                             ?.sumOf { it.selectedValue.toSafeInt() } ?: 0
