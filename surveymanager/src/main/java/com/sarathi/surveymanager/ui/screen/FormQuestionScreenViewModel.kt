@@ -127,7 +127,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 init(questionUiModel.value, sourceTargetQuestionMapping)
                 initQuestionVisibilityMap(questionUiModel.value)
                 questionUiModel.value.forEach {
-                    runConditionCheck(it)
+                    runConditionCheck(it, true)
                     runValidationCheck(questionId = it.questionId) { isValid, message ->
                         fieldValidationAndMessageMap[it.questionId] =
                             Pair(isValid, message)
@@ -272,7 +272,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     }
 
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
-        conditionsUtils.runConditionCheck(sourceQuestion)
+        conditionsUtils.runConditionCheck(sourceQuestion, true)
         ioViewModelScope {
             val notVisibleQuestion = visibilityMap.filter { !it.value }
             questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }

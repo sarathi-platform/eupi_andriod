@@ -226,29 +226,42 @@ class ConditionsUtils {
         responseMap[questionId] = responseList
     }
 
-    fun runConditionCheck(sourceQuestion: QuestionUiModel): Map<Int, Boolean> {
+    fun runConditionCheck(
+        sourceQuestion: QuestionUiModel,
+        isFromForm: Boolean = false
+    ): Map<Int, Boolean> {
 
-        return evaluateConditions(sourceQuestion)
+        return evaluateConditions(sourceQuestion, isFromForm)
 
     }
 
     /**
      * Evaluates the condition for a given source question
      * */
-    private fun evaluateConditions(sourceQuestion: QuestionUiModel): Map<Int, Boolean> {
+    private fun evaluateConditions(
+        sourceQuestion: QuestionUiModel,
+        isFromForm: Boolean = false
+    ): Map<Int, Boolean> {
 
         val questionsToShow = mutableMapOf<Int, Boolean>()
 
         val sourceQuestionType = sourceQuestion.type
 
-        val targetQuestionsIdList = sourceTargetMap[sourceQuestion.questionId]
+        var targetQuestionsIdList = sourceTargetMap[sourceQuestion.questionId]
+
+        if (isFromForm)
+            targetQuestionsIdList = targetQuestionsIdList?.distinct()
+
 
         if (targetQuestionsIdList.isNullOrEmpty())
             return questionsToShow
 
         for (targetQuestionId in targetQuestionsIdList) {
 
-            val condition = questionConditionMap.findConditionForQuestion(targetQuestionId)
+            var condition = questionConditionMap.findConditionForQuestion(targetQuestionId)
+
+            if (isFromForm)
+                condition = condition?.distinctBy { it.sourceQuestion }
 
             val response = responseMap[sourceQuestion.questionId]
 
