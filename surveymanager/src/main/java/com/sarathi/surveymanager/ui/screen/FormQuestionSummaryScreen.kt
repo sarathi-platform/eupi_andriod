@@ -36,7 +36,7 @@ import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.FormResponseCard
 import com.nudge.core.R as CoreRes
 
-val DEFAULT_OPEN_DIALOG_VALUE = Pair<Boolean, String?>(false, null)
+val DEFAULT_OPEN_DIALOG_VALUE = Pair<Boolean, Pair<String?, Int>?>(false, null)
 
 @Composable
 fun FormQuestionSummaryScreen(
@@ -134,10 +134,10 @@ fun FormQuestionSummaryScreen(
                 )
             }
 
-            itemsIndexed(formResponseSummaryScreenViewModel.referenceIdsList) { index: Int, referenceId: String ->
+            itemsIndexed(formResponseSummaryScreenViewModel.referenceIdsList) { index: Int, key: Pair<String, Int> ->
                 FormResponseCard(
-                    referenceId = referenceId,
-                    surveyAnswerFormSummaryUiModelList = formResponseSummaryScreenViewModel.formQuestionResponseMap[referenceId].value(),
+                    referenceId = key,
+                    surveyAnswerFormSummaryUiModelList = formResponseSummaryScreenViewModel.formQuestionResponseMap[key].value(),
                     isEditAllowed = !formResponseSummaryScreenViewModel.isActivityCompleted,
                     surveyConfig = formResponseSummaryScreenViewModel.surveyConfig,
                     isPictureRequired = formResponseSummaryScreenViewModel.surveyConfig.containsKey(
@@ -152,7 +152,7 @@ fun FormQuestionSummaryScreen(
                             formResponseSummaryScreenViewModel.sectionId,
                             formResponseSummaryScreenViewModel.surveyId,
                             formResponseSummaryScreenViewModel.formId,
-                            mReferenceId,
+                            mReferenceId.first,
                             formResponseSummaryScreenViewModel.taskId,
                             activityConfig?.activityId.value(),
                             formResponseSummaryScreenViewModel.activityConfigId,

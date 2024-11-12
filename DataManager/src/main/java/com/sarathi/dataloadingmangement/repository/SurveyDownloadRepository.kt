@@ -218,7 +218,7 @@ class SurveyDownloadRepository @Inject constructor(
                     section.sectionId,
                     surveyResponseModel.surveyId,
                 )
-                if (existingQuestion != null) {
+                if (existingQuestion != null && question.formId == existingQuestion.formId) {
                     questionEntityDao.deleteSurveySectionQuestionFroLanguage(
                         userid = coreSharedPrefs.getUniqueUserIdentifier(),
                         question.questionId!!,

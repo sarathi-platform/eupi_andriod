@@ -207,3 +207,20 @@ const val USER_TYPE = "userType"
 const val CRP = "CRP"
 const val BPC = "BPC"
 const val UPCM = "UPCM"
+
+const val CLEAN_ROUTE_DELIMITER = "~@"
+const val FORWARD_SLASH_DELIMITER = "/"
+
+const val DELIMITER_TIME = ":"
+const val DELIMITER_YEAR = "/"
+const val YEAR = "Years"
+const val MONTHS = "Months"
+const val HOURS = "Hours"
+const val MINUTE = "Minutes"
+
+const val DEFAULT_FORM_ID = -1
+const val SUBJECT_NAME = "subjectName"
+const val SUBJECT_DADA_NAME = "dadaName"
+const val SUBJECT_ADDRESS = "address"
+const val SUBJECT_COHORT_NAME = "cohortName"
+const val VILLAGE_NAME = "villageName"

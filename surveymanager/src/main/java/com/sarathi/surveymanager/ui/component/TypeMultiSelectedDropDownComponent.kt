@@ -28,6 +28,7 @@ fun TypeMultiSelectedDropDownComponent(
     maxCustomHeight: Dp,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>,
+    optionStateMap: Map<Pair<Int, Int>, Boolean> = emptyMap(),
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val context = LocalContext.current

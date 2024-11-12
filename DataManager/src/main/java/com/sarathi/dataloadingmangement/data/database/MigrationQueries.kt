@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.data.database
 
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
+import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.CONDITIONS_TABLE_NAME
@@ -130,7 +131,6 @@ object MigrationQueries {
         "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN 'isDataLoaded' INTEGER DEFAULT 1 NOT NULL"
 
 
-
     val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID =
         "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceId' INTEGER"
 
@@ -231,5 +231,8 @@ object MigrationQueries {
                 "    name TEXT NOT NULL,\n" +
                 "    userId TEXT NOT NULL\n" +
                 ");"
+
+    val ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID =
+        "ALTER TABLE $ANSWER_TABLE ADD COLUMN formId INTEGER NOT NULL"
 }
 
