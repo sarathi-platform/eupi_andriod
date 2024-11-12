@@ -57,13 +57,13 @@ import com.sarathi.surveymanager.constants.PIPE_DELIMITER
 @Composable
 fun FormResponseCard(
     modifier: Modifier = Modifier,
-    referenceId: String,
+    referenceId: Pair<String, Int>,
     surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>,
     surveyConfig: Map<String, List<SurveyCardModel>>,
     isPictureRequired: Boolean = true,
     isEditAllowed: Boolean = true,
-    onDelete: (referenceId: String) -> Unit,
-    onUpdate: (referenceId: String) -> Unit
+    onDelete: (referenceId: Pair<String, Int>) -> Unit,
+    onUpdate: (referenceId: Pair<String, Int>) -> Unit
 ) {
 
 
