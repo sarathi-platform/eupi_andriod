@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
+import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
@@ -36,7 +37,39 @@ class FetchSubjectIncomeExpenseSummaryUseCase @Inject constructor(
     ): IncomeExpenseSummaryUiModel {
         val assets = assetRepositoryImpl.getAssetsEntityForLivelihood(
             subjectLivelihoodMappingEntity.map { it.livelihoodId }
-        )
+        ) as ArrayList<AssetEntity>
+
+        // We are handling if livelihoods does not have any assets then we are adding dummy asset to show count 0 to maintain ui consistency
+
+        // livelihoodIds is list of ids have assets
+        val livelihoodIds = assets.map {
+            it.livelihoodId
+        }.distinct()
+        val subjectLivelihood =
+            subjectLivelihoodMappingEntity.map { it.livelihoodId } // selected livelihood bey subject
+
+        //We finding livelihoodIds tha have not any assets
+        if (livelihoodIds.size != subjectLivelihood.size && subjectLivelihood.size > livelihoodIds.size || subjectLivelihood.size == 1) {
+            subjectLivelihood.toSet().minus(livelihoodIds).forEach {
+                assets.add(
+                    AssetEntity.getDefaultAssetEntity(
+                        userId = getUserId(),
+                        livelihoodId = it
+                    )
+                )
+
+            }
+            //Here handling if user selected not decided for any subject
+            if (subjectLivelihood.size == 1) {
+                assets.add(
+                    AssetEntity.getDefaultAssetEntity(
+                        userId = getUserId(),
+                        livelihoodId = -1
+                    )
+                )
+
+            }
+        }
         return fetchSubjectIncomeExpenseSummaryRepository.getIncomeExpenseSummaryForSubjectForDuration(
             subjectId = subjectId,
             assets = assets,

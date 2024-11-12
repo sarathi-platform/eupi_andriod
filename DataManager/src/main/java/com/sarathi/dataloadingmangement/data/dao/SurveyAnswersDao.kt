@@ -50,7 +50,8 @@ interface SurveyAnswersDao {
                 "    ques_answer_table.optionItems,\n" +
                 "    ques_answer_table.questionSummary,\n" +
                 "    ques_answer_table.questionType,\n" +
-                "    form_table.isFormGenerated\n" +
+                "    form_table.isFormGenerated,\n" +
+                "    ques_answer_table.formId\n" +
                 "FROM \n" +
                 "    ques_answer_table  \n" +
                 "LEFT JOIN \n" +
@@ -196,18 +197,21 @@ interface SurveyAnswersDao {
         userId: String,
     ): Int
 
-    @Query("SELECT DISTINCT referenceId from ques_answer_table where surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
+    @Query("SELECT DISTINCT referenceId from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds) and formId = :formId")
     fun getTotalSavedFormResponsesCount(
+        userId: String,
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
         grantId: Int = 0,
-        questionIds: List<Int>
+        questionIds: List<Int>,
+        formId: Int
     ): List<String>
 
 
-    @Query("SELECT * from ques_answer_table where surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
+    @Query("SELECT * from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
     fun getSurveyAnswersForQuestionIds(
+        userId: String,
         surveyId: Int,
         taskId: Int,
         sectionId: Int,

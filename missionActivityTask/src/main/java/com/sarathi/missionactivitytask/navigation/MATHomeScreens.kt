@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.navigation
 
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_QUESTION_SCREEN_ROUTE_NAME
@@ -47,7 +48,7 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "${MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_TASK_ID_LIST}}/{${MissionActivityConstants.ARG_IS_FROM_SETTING_SCREEN}}")
 
     object AddImageScreen :
-        MATHomeScreens(route = "${MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_TASK_ID_LIST}}")
+        MATHomeScreens(route = "${MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_TASK_ID_LIST}}/{$ARG_ACTIVITY_TYPE}")
 
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")

@@ -6,13 +6,19 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_OPERAND_FOR_EXPRESSION_VALUE
 import com.nudge.core.OPERAND_DELIMITER
 import com.nudge.core.ifNotEmpty
+import com.nudge.core.toSafeInt
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.Conditions
 import com.sarathi.dataloadingmangement.model.uiModel.ConditionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.util.constants.OptionType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 class ConditionsUtils {
@@ -31,7 +37,15 @@ class ConditionsUtils {
 
     private var questionUiModel: List<QuestionUiModel> = listOf()
 
+    /**
+     * Variable to handle question visibility state. To check whether the questions are visible or not.
+     * */
     val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
+
+    /**
+     * Variable to handle option state. To check whether the options are enable or disabled.
+     * */
+    val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf()
 
     private fun setConditionsUiModelList(conditionsUiModelList: List<ConditionsUiModel>) {
         this.conditionsUiModelList = conditionsUiModelList
@@ -120,6 +134,21 @@ class ConditionsUtils {
             questionVisibilityMap.put(it.questionId, !it.isConditional)
             if (it.options?.any { optionsUiModel -> optionsUiModel.isSelected == true } == true) {
                 questionVisibilityMap.put(it.questionId, true)
+            }
+        }
+    }
+
+    fun initOptionsStateMap(questionUiModel: List<QuestionUiModel>) {
+        for (question in questionUiModel) {
+            if (updateOptionStateMapIfNoneOptionIsPresentAndSelected(question)) {
+                updateResponseMap(
+                    question.questionId,
+                    listOf(findNoneOption(question)?.optionId.value())
+                )
+                continue
+            }
+            question.options?.map { Pair(question.questionId, it.optionId.value()) }?.forEach {
+                optionStateMap[it] = true
             }
         }
     }
@@ -609,6 +638,62 @@ class ConditionsUtils {
 
     }
 
+    fun updateAutoCalculateQuestionValue(
+        questionUiModel: List<QuestionUiModel>,
+        surveyConfig: MutableMap<String, List<SurveyCardModel>>?,
+        autoCalculateQuestionResultMap: SnapshotStateMap<Int, String>
+    ) {
+        questionUiModel.filter { QuestionType.autoCalculateQuestionType.contains(it.type.toLowerCase()) }
+            .forEach { question ->
+                val config = surveyConfig?.get(SurveyConfigCardSlots.CONFIG_AUTO_CALCULATE.name)
+                    ?.find { question.tagId.contains(it.tagId) }
+                questionUiModel.find { it.questionId == config?.value.toSafeInt() }?.apply {
+                    var resultMap = this.options?.map { it.selectedValue }
+                    resultMap = resultMap?.filter { it != BLANK_STRING }
+                    val result =
+                        if (QuestionType.numericUseInputQuestionTypeList.contains(this.type.toLowerCase())) {
+                            resultMap?.sumOf { it.toSafeInt() }.toString()
+                        } else {
+                            resultMap?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                        }
+                    autoCalculateQuestionResultMap.put(question.questionId, result.value())
+                }
+            }
+    }
+
+    fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
+        return updateOptionStateMapIfNoneOptionIsPresentAndSelected(sourceQuestion)
+    }
+
+    private fun updateOptionStateMapIfNoneOptionIsPresentAndSelected(sourceQuestion: QuestionUiModel): Boolean {
+        val noneOption = findNoneOption(sourceQuestion)
+
+        return if (noneOption != null && noneOption.isSelected.value()) {
+            optionStateMap[Pair(sourceQuestion.questionId, noneOption.optionId.value())] = true
+            sourceQuestion.options?.filter { it.optionId != noneOption.optionId }
+                ?.map { Pair(sourceQuestion.questionId, it.optionId.value()) }?.forEach {
+                    optionStateMap[it] = false
+                }
+            true
+        } else {
+            sourceQuestion.options
+                ?.map { Pair(sourceQuestion.questionId, it.optionId.value()) }?.forEach {
+                    optionStateMap[it] = true
+                }
+            false
+        }
+    }
+
+}
+
+fun findNoneOption(sourceQuestion: QuestionUiModel): OptionsUiModel? {
+    val noneOption = sourceQuestion.options?.find {
+        it.optionType?.equals(
+            OptionType.None.name,
+            true
+        ) == true
+    }
+    return noneOption
 }
 
 /**

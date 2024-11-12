@@ -25,5 +25,6 @@ class GetUserDetailsExportUseCase(
     fun getLoggedInUserType():String{
         return repository.getLoggedInUserType()
     }
+    fun getStateId() = repository.getStateId()
 
 }

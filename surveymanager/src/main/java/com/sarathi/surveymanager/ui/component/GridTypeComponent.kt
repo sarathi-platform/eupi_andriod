@@ -30,9 +30,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -79,8 +81,9 @@ fun GridTypeComponent(
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
+    optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf(),
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
-    questionDetailExpanded: (index: Int) -> Unit
+    questionDetailExpanded: (index: Int) -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()
@@ -170,7 +173,12 @@ fun GridTypeComponent(
                                     ) { _index, optionItem ->
                                         GridOptionCard(
                                             optionItem = optionItem,
-                                            isEnabled = areOptionsEnabled,
+                                            isEnabled = optionStateMap.filter {
+                                                it.key == Pair(
+                                                    optionItem.questionId,
+                                                    optionItem.optionId
+                                                )
+                                            }.entries.firstOrNull(),
                                             isOptionSelected = optionItem.isSelected.value(),
                                             isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
                                         ) { selectedOptionId, isSelected ->
@@ -231,13 +239,17 @@ fun GridOptionCard(
     modifier: Modifier = Modifier,
     optionItem: OptionsUiModel,
     isTaskMarkedNotAvailable: MutableState<Boolean>,
-    isEnabled: Boolean = true,
+    isEnabled: Map.Entry<Pair<Int, Int>, Boolean>?,
     isOptionSelected: Boolean = false,
     onOptionSelected: (Int, isSelected: Boolean) -> Unit
 ) {
 
-    val isSelected = remember(optionItem.description) {
+    val isSelected = remember(optionItem.description, isEnabled?.key, isEnabled?.value) {
         mutableStateOf(isOptionSelected)
+    }
+
+    val isOptionEnabled = remember(isEnabled?.key, isEnabled?.value) {
+        mutableStateOf(isEnabled?.value.value(defaultValue = true))
     }
 
     Column(
@@ -252,7 +264,7 @@ fun GridOptionCard(
                 )
             )
             .clickable {
-                if (isEnabled) {
+                if (isOptionEnabled.value) {
                     isSelected.value = !isSelected.value
                     onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
                 }
@@ -277,7 +289,7 @@ fun GridOptionCard(
                     color = selectTextColor(
                         selectedValueState = isSelected.value,
                         isTaskMarkedNotAvailable = isTaskMarkedNotAvailable,
-                        isEnabled = isEnabled
+                        isEnabled = isOptionEnabled.value
                     )
                 )
             }

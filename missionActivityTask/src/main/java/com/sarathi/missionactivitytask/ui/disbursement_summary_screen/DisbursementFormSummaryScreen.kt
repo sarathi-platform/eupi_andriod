@@ -77,6 +77,7 @@ import com.nudge.core.ui.theme.lightBg
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
@@ -228,7 +229,8 @@ fun DisbursementFormSummaryScreen(
                                             navController = navController,
                                             activityId = activityId,
                                             taskIdList = taskList,
-                                            missionId = missionId
+                                            missionId = missionId,
+                                            activityType = viewModel.activityConfigUiModelWithoutSurvey?.activityType.value()
                                         )
                                     }
                                 )

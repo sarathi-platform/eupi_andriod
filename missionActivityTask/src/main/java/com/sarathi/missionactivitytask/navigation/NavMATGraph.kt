@@ -11,7 +11,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CLEAN_ROUTE_DELIMITER
+import com.nudge.core.FORWARD_SLASH_DELIMITER
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
@@ -550,9 +553,9 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
-                toolbarTitle = it.arguments?.getString(
+                toolbarTitle = (it.arguments?.getString(
                     ARG_TOOLBAR_TITLE
-                ) ?: BLANK_STRING,
+                ) ?: BLANK_STRING).replace(CLEAN_ROUTE_DELIMITER, FORWARD_SLASH_DELIMITER),
 
                 activityConfigId = it.arguments?.getInt(
                     ARG_ACTIVITY_CONFIG_ID
@@ -694,12 +697,15 @@ fun NavGraphBuilder.MatNavigation(
                             MATHomeScreens.LivelihoodTaskScreen.route,
                             inclusive = isFromActivity
                         )
-                    }
-                    else{
+                    } else if (activityRoutePath.toLowerCase()
+                            .contains(ActivityTypeEnum.GRANT.name.toLowerCase())
+                    ) {
                         navController.popBackStack(
                             MATHomeScreens.GrantTaskScreen.route,
                             inclusive = isFromActivity
                         )
+                    } else {
+                        navController.popBackStack()
                     }
                 },
                 navController = navController, message = it.arguments?.getString(
@@ -763,6 +769,11 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.StringType
                 defaultValue = BLANK_STRING
                 nullable = true
+            },
+            navArgument(ARG_ACTIVITY_TYPE) {
+                type = NavType.StringType
+                defaultValue = BLANK_STRING
+                nullable = true
             }
         )) {
             SubmitPhysicalFormScreen(
@@ -770,7 +781,8 @@ fun NavGraphBuilder.MatNavigation(
                 navController = navController,
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
-                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
+                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING,
+                activityType = it.arguments?.getString(ARG_ACTIVITY_TYPE).value()
             )
         }
 
@@ -1153,7 +1165,8 @@ fun navigateToSurveyScreen(
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
+    val cleanToolbarName = toolbarName.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$cleanToolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
 }
 
 fun navigateToGrantSurveyScreen(
@@ -1271,11 +1284,12 @@ fun navigateToAddImageScreen(
     navController: NavController,
     activityId: Int,
     taskIdList: String,
-    missionId: Int
+    missionId: Int,
+    activityType: String
 ) {
     var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
-
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
+    var activityTypeWithNullable = if (!TextUtils.isEmpty(activityType)) activityType else null
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable/$activityTypeWithNullable")
 }
 
 fun navigateToGrantTaskScreen(

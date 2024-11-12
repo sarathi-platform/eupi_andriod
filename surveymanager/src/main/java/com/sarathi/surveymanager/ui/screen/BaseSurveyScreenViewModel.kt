@@ -5,10 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -69,6 +71,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase
 ) : BaseViewModel() {
+
+    private val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
+
     var surveyId: Int = 0
     var sectionId: Int = 0
     var taskId: Int = 0
@@ -83,7 +88,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    val isActivityNotCompleted = mutableStateOf<Boolean>(false)
+    val isActivityNotCompleted = mutableStateOf<Boolean>(true)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
@@ -102,7 +107,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var validations: List<SurveyValidations>? = mutableListOf()
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
-    var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
+    private var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
+
+    var autoCalculateQuestionResultMap: SnapshotStateMap<Int, String> =
+        mutableStateMapOf<Int, String>()
+
+    val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> get() = conditionsUtils.optionStateMap
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -199,18 +209,31 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
                 initQuestionVisibilityMap(questionUiModel.value)
+                initOptionsStateMap(questionUiModel.value)
                 questionUiModel.value.forEach {
                     runConditionCheck(it)
                 }
+                updateAutoCalculateQuestionValue(
+                    questionUiModel.value,
+                    surveyConfig[DEFAULT_FORM_ID],
+                    autoCalculateQuestionResultMap
+                )
             }
 
             isTaskStatusCompleted()
             questionUiModel.value.filter { visibilityMap[it.questionId].value() }.apply {
                 this.forEach {
                     runValidationCheck(it.questionId) { isValid, message ->
-                        fieldValidationAndMessageMap[it.questionId] =
-                            Pair(isValid, message)
-
+                        try {
+                            fieldValidationAndMessageMap[it.questionId] =
+                                Pair(isValid, message)
+                        } catch (ex: Exception) {
+                            CoreLogger.e(
+                                tag = LOGGER_TAG,
+                                msg = "Exception: intiQuestions -> runValidationCheck@lambda: ${ex.message}",
+                                ex = ex
+                            )
+                        }
                     }
                 }
 
@@ -358,7 +381,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private suspend fun isTaskStatusCompleted() {
-        isActivityNotCompleted.value = !getActivityUseCase.isAllActivityCompleted(
+        isActivityNotCompleted.value = getActivityUseCase.isAllActivityCompleted(
             missionId = taskEntity?.missionId ?: 0,
             activityId = taskEntity?.activityId ?: 0
         )
@@ -378,6 +401,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     open fun updateTaskStatus(taskId: Int, isTaskCompleted: Boolean = false) {
         ioViewModelScope {
+            val oldTaskStatus = getTaskUseCase.getTask(taskId).status ?: BLANK_STRING
+            val newTaskStatus =
+                if (isTaskCompleted) SurveyStatusEnum.COMPLETED.name else SurveyStatusEnum.INPROGRESS.name
+
             val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
             surveyEntity?.let { survey ->
                 if (isTaskCompleted) {
@@ -387,6 +414,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     taskEntity = taskEntity?.copy(status = SurveyStatusEnum.INPROGRESS.name)
                     taskStatusUseCase.markTaskInProgress(taskId)
                 }
+                if (oldTaskStatus != newTaskStatus)
                 taskEntity?.let { task ->
                     matStatusEventWriterUseCase.updateTaskStatus(
                         task,
@@ -402,8 +430,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         conditionsUtils.updateQuestionResponseMap(question)
     }
 
+    fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
+        return conditionsUtils.runNoneOptionCheck(sourceQuestion)
+    }
+
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+        conditionsUtils.updateAutoCalculateQuestionValue(
+            questionUiModel.value,
+            surveyConfig[DEFAULT_FORM_ID],
+            autoCalculateQuestionResultMap
+        )
         ioViewModelScope {
             updateNonVisibleQuestionsResponse()
         }
@@ -465,7 +502,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     surveyConfigForForm[SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_VALUE.name]?.sumOf { surveyCardModel ->
                         val quest =
                             questionUiModel.value.find { it.tagId.contains(surveyCardModel.tagId) }
-                        formResponses?.filter { it.questionId == quest?.questionId.value() }
+                        formResponses?.filter { it.questionId == quest?.questionId.value() && it.formId == quest?.formId.value() }
                             ?.flatMap { it.optionItems }
                             ?.filter { it.isSelected == true }
                             ?.sumOf { it.selectedValue.toSafeInt() } ?: 0
