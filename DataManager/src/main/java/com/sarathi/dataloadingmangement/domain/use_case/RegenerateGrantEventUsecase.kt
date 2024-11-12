@@ -139,6 +139,11 @@ class RegenerateGrantEventUsecase @Inject constructor(
         }
 
     }
+
+    /**
+     * Fetch all survey answers for Survey Type Activity
+     * Create QuestionUiModel using Activity and Question details
+     */
     suspend fun fetchSurveyAnswerEvents(): ArrayList<BaseSaveAnswerEventDto>? {
         try {
             val surveyList = arrayListOf<BaseSaveAnswerEventDto>()

@@ -75,6 +75,10 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         }
     }
 
+    /**
+     * Fetch Survey Question and Answers using QuestionUiModel
+     * Task,Activity details
+     */
     suspend fun fetchQuestionAnswerEventList(
         questionUiModel: QuestionUiModel,
         subjectId: Int,
@@ -88,8 +92,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         activityReferenceId: Int?,
         activityReferenceType: String?
     ): BaseSaveAnswerEventDto {
-        var surveyAnswerModel: BaseSaveAnswerEventDto? = null
-        surveyAnswerModel = getSurveyAnswerEvent(
+
+        return getSurveyAnswerEvent(
             questionUiModel,
             subjectId,
             subjectType,
@@ -104,7 +108,6 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
 
         )
 
-        return surveyAnswerModel
     }
 
     private suspend fun saveAnswerMoneyJorunalEventDto(

@@ -48,7 +48,6 @@ import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
 import com.nudge.core.enums.AppConfigKeysEnum
-import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDatabase
 import com.nudge.core.exportOldData
 import com.nudge.core.exportcsv.CsvConfig
@@ -72,7 +71,6 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
-import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
@@ -330,6 +328,11 @@ class ExportImportViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * To export Survey Type Activity or New Baseline Questions Answers
+     * Create and share CSV file
+     */
     fun exportBaseLineQnAForSurveyTypeActivity(context: Context) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
@@ -577,6 +580,10 @@ class ExportImportViewModel @Inject constructor(
         }
         return list ?: emptyList()
     }
+
+    /**
+     * To validate Baseline V1 or V2 for Export Baseline Questions and Answers
+     */
 
     fun exportOldAndNewBaselineQnA(context: Context) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
