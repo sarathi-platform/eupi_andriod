@@ -20,7 +20,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
-import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.CohortType
@@ -30,7 +29,6 @@ import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -39,7 +37,6 @@ import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
-import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,10 +65,6 @@ class TransectWalkViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
     private var isPending = 0
 
-    init {
-//        fetchTolaList(villageId)
-
-    }
 
     fun addTola(tola: Tola, dbListener: LocalDbListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -1026,86 +1019,6 @@ class TransectWalkViewModel @Inject constructor(
                     }
                 }
             }
-            try {
-                if (isOnline && isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
-                    val apiRequest = mutableListOf<EditWorkFlowRequest>()
-                    apiRequest.add(
-                        EditWorkFlowRequest(
-                            stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId,
-                            StepStatus.INPROGRESS.name,
-
-                            villageId = villageId,
-                            programsProcessId = stepList[stepList.map { it.orderNumber }
-                                .indexOf(1)].id
-                        )
-                    )
-                    completeStepList.let { it ->
-                        it.forEach { newStep ->
-                            if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }
-                                    .indexOf(1)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
-                                if (newStep.workFlowId > 0) {
-                                    apiRequest.add(
-                                        EditWorkFlowRequest(
-                                            newStep.workFlowId,
-                                            StepStatus.INPROGRESS.name,
-                                            villageId = villageId,
-                                            programsProcessId = newStep.id
-
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        if (apiRequest.isNotEmpty()) {
-                            NudgeLogger.d(
-                                "TransectWalkViewModel",
-                                "markTransectWalkIncomplete -> apiRequest: $apiRequest"
-                            )
-                            val response = transectWalkRepository.editWorkFlow(apiRequest)
-                            NudgeLogger.d(
-                                "TransectWalkViewModel",
-                                "markTransectWalkIncomplete -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
-                            )
-                            if (response.status.equals(SUCCESS)) {
-                                response.data?.let { response ->
-                                    response.forEach { it ->
-                                        transectWalkRepository.updateWorkflowId(
-                                            stepId = it.programsProcessId,
-                                            workflowId = it.id,
-                                            villageId = villageId,
-                                            status = it.status
-                                        )
-                                        transectWalkRepository.updateNeedToPost(
-                                            it.programsProcessId,
-                                            villageId,
-                                            false
-                                        )
-                                    }
-                                    NudgeLogger.d(
-                                        "TransectWalkViewModel",
-                                        "markTransectWalkIncomplete -> onSuccess"
-                                    )
-                                    networkCallbackListener.onSuccess()
-                                }
-                            } else {
-                                NudgeLogger.d(
-                                    "TransectWalkViewModel",
-                                    "markTransectWalkIncomplete -> onFailed"
-                                )
-                                networkCallbackListener.onFailed()
-                            }
-
-                            if (!response.lastSyncTime.isNullOrEmpty()) {
-                                transectWalkRepository.updateLastSyncTime(response.lastSyncTime)
-                            }
-                        }
-                    }
-                }
-            } catch (ex: Exception) {
-                NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onFailed")
-                networkCallbackListener.onFailed()
-                onCatchError(ex, ApiType.WORK_FLOW_API)
-            }
         }
     }
 
@@ -1121,14 +1034,6 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun isVoEndorsementCompleteForVillage(villageId: Int) {
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val stepList =
-                transectWalkRepository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-            val isComplete = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
-            isVoEndorsementComplete.value = isComplete == StepStatus.COMPLETED.ordinal
-        }
-    }
 
     fun saveTransectWalkCompletionDate() {
         val currentTime = System.currentTimeMillis()
@@ -1138,120 +1043,7 @@ class TransectWalkViewModel @Inject constructor(
         )
     }
 
-    fun callWorkFlowAPI(
-        villageId: Int,
-        stepId: Int,
-        networkCallbackListener: NetworkCallbackListener
-    ) {
-        if (!isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
-            return
-        }
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> called")
-            try {
-                val dbResponse = transectWalkRepository.getStepForVillage(villageId, stepId)
-                NudgeLogger.d(
-                    "TransectWalkViewModel",
-                    "callWorkFlowAPI -> dbResponse = $dbResponse"
-                )
-                val stepList = transectWalkRepository.getAllStepsForVillage(villageId)
-                    .sortedBy { it.orderNumber }
-                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> stepList = $stepList")
-                if (dbResponse.workFlowId > 0) {
-                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId
-                        , StepStatus.COMPLETED.name, longToString(transectWalkRepository.getPref(
-                            PREF_TRANSECT_WALK_COMPLETION_DATE_ + transectWalkRepository.getSelectedVillage().id,
-                            System.currentTimeMillis()
-                        )
-                        ),
-                        villageId,
-                        programsProcessId = stepList[stepList.map { it.orderNumber }
-                            .indexOf(1)].workFlowId
-                    ))
-                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
-                    val response = transectWalkRepository.editWorkFlow(primaryWorkFlowRequest)
-                    NudgeLogger.d(
-                        "TransectWalkViewModel",
-                        "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
-                    )
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let {
-                            transectWalkRepository.updateWorkflowId(
-                                stepId = stepList[stepList.map { it.orderNumber }.indexOf(1)].id,
-                                workflowId = stepList[stepList.map { it.orderNumber }
-                                    .indexOf(1)].workFlowId,
-                                villageId = villageId,
-                                status = it[0].status
-                            )
-                        }
-                        transectWalkRepository.updateNeedToPost(stepList[stepList.map { it.orderNumber }
-                            .indexOf(1)].id, villageId, false)
-                    } else {
-                        networkCallbackListener.onFailed()
-                        onError(tag = "TransectWalkViewModel", "Error : ${response.message}")
-                    }
-                    if (!response.lastSyncTime.isNullOrEmpty()) {
-                        transectWalkRepository.updateLastSyncTime(response.lastSyncTime)
-                    }
-                }
-                try {
-                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> second try = called")
-                    stepList.forEach { step ->
-                        NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> step = $step" +
-                                "step.orderNumber > 1 && step.workFlowId > 0: " +
-                                "${step.orderNumber > 1} && ${step.workFlowId > 0}")
-                        if (step.orderNumber > 1 &&  step.workFlowId > 0) {
-                            val inProgressStepRequest = listOf(
-                                EditWorkFlowRequest(
-                                    step.workFlowId, StepStatus.INPROGRESS.name,
-                                    villageId = villageId, programsProcessId = step.id
-                                )
-                            )
-                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
-                            val inProgressStepResponse = transectWalkRepository.editWorkFlow(inProgressStepRequest)
-                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")
-                            if (inProgressStepResponse.status.equals(SUCCESS, true)) {
-                                inProgressStepResponse.data?.let {
-                                    transectWalkRepository.updateWorkflowId(
-                                        stepId = it[0].programsProcessId,
-                                        workflowId = it[0].id,
-                                        villageId = villageId,
-                                        status = it[0].status
-                                    )
-                                }
-                                transectWalkRepository.updateNeedToPost(step.id, villageId, false)
-                            } else {
-                                NudgeLogger.d(
-                                    "TransectWalkViewModel",
-                                    "callWorkFlowAPI -> inProgressStepResponse = FAIL"
-                                )
-                                networkCallbackListener.onFailed()
-                            }
 
-                            if (!inProgressStepResponse.lastSyncTime.isNullOrEmpty()) {
-                                transectWalkRepository.updateLastSyncTime(inProgressStepResponse.lastSyncTime)
-                            }
-                        }
-                    }
-                } catch (ex: Exception) {
-                    NudgeLogger.d(
-                        "TransectWalkViewModel",
-                        "callWorkFlowAPI -> second try- onFailed()"
-                    )
-                    networkCallbackListener.onFailed()
-                    onCatchError(ex, ApiType.WORK_FLOW_API)
-                }
-            } catch (ex: Exception) {
-                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> onFailed()")
-                networkCallbackListener.onFailed()
-                onError(
-                    tag = "TransectWalkViewModel",
-                    "callWorkFlowAPI -> Error : ${ex.localizedMessage}"
-                )
-                onCatchError(ex, ApiType.WORK_FLOW_API)
-            }
-        }
-    }
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
