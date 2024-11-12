@@ -35,7 +35,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
@@ -49,7 +49,7 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
-import com.nudge.core.enums.EventType
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDatabase
 import com.nudge.core.exportLogFile
@@ -63,10 +63,11 @@ import com.nudge.core.importDbFile
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
+import com.nudge.core.parseStringToList
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
@@ -102,7 +103,8 @@ class ExportImportViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
-    private val getTaskUseCase: GetTaskUseCase
+    private val getTaskUseCase: GetTaskUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -637,48 +639,21 @@ class ExportImportViewModel @Inject constructor(
         return list ?: emptyList()
     }
 
-    fun markAllActivityInProgress(context: Context) {
-        CoroutineScope(CoreDispatchers.ioDispatcher).launch {
+    fun exportOldAndNewBaselineQnA(context: Context) {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            val baselineV1Ids =
+                fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
+                    .parseStringToList()
+            val missionList = exportImportUseCase.getExportOptionListUseCase.fetchMissionsForUser()
+            if (baselineV1Ids.contains(exportImportUseCase.getUserDetailsExportUseCase.getStateId())
+                && missionList.any { it.description == BASELINE_MISSION_NAME }
+            ) {
+                BaselineLogger.d("ExportImportViewModel", "Old Baseline Export")
+                exportBaseLineQnA(context)
+            } else {
+                exportBaseLineQnAForSurveyTypeActivity(context)
+                BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
-            val userId = prefBSRepo.getUniqueUserIdentifier()
-
-            val activities = missionActivityDao.getAllActivities(userId)
-
-            activities.forEach { activity ->
-
-                missionActivityDao.markActivityStart(
-                    userId,
-                    activity.missionId,
-                    activity.activityId,
-                    SectionStatus.INPROGRESS.name,
-                    System.currentTimeMillis().toDate().toString()
-                )
-
-                // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
-                activityDao.updateActivityStatus(
-                    userId = userId,
-                    activityId = activity.activityId,
-                    missionId = activity.missionId,
-                    status = SectionStatus.INPROGRESS.name
-                )
-
-                val updateTaskStatusEvent =
-                    eventWriterHelperImpl.createActivityStatusUpdateEvent(
-                        missionId = activity.missionId,
-                        activityId = activity.activityId,
-                        status = SectionStatus.INPROGRESS
-                    )
-                exportImportUseCase.eventsWriterUseCase.invoke(
-                    events = updateTaskStatusEvent,
-                    eventType = EventType.STATEFUL
-                )
-            }
-
-            withContext(CoreDispatchers.mainDispatcher) {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.all_activities_marked_as_in_progress)
-                )
             }
         }
     }

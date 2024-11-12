@@ -96,13 +96,11 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
-//                    viewModel.exportBaseLineQnA(context)
-                    viewModel.exportBaseLineQnAForSurveyTypeActivity(context)
+                    viewModel.exportOldAndNewBaselineQnA(context)
                 }
 
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
-//                    viewModel.markAllActivityInProgress(context)
                 }
             }
         },
