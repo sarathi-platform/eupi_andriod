@@ -556,7 +556,7 @@ class ConditionsUtils {
             if (opVar.equals(OPERAND_DELIMITER)) {
                 first = response
             } else {
-                second = opVar.toInt()
+                second = opVar.toIntOrNull() ?: 0
             }
         }
         operands = Pair(first, second)
