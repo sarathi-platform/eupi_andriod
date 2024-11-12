@@ -301,27 +301,35 @@ class ExportImportViewModel @Inject constructor(
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-
                 val dtoList = getSaveAnswerEvents()
                 val dtoSaveFormList = generateDtoSaveFormList()
                 val sectionList = sectionEntityDao.getSectionsT(
                     prefBSRepo.getUniqueUserIdentifier(),
                     DEFAULT_LANGUAGE_ID
                 )
-                val surveeList =
+                val surveeyList =
                     surveyeeEntityDao.getAllDidiForQNA(prefBSRepo.getUniqueUserIdentifier())
 
                 val baseLineQnATableCSV =
-                    buildBaseLineQnATableCSV(dtoList, dtoSaveFormList, sectionList, surveeList)
+                    buildBaseLineQnATableCSV(dtoList, dtoSaveFormList, sectionList, surveeyList)
 
                 val baseLineListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 1)
+                if (baseLineListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "Old BaseLineListQnaList : ${baseLineListQna.size}"
+                    )
+                }
                 val hamletListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 2)
-
+                if (hamletListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "Old HamletListQnaList : ${hamletListQna.size}"
+                    )
+                }
                 val title = generateTitle()
                 val listPath = generateCsvFiles(baseLineListQna, hamletListQna, title, context)
-
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
-
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 handleError(exception, context)
@@ -359,7 +367,7 @@ class ExportImportViewModel @Inject constructor(
                                 didiName = task.find { it.key == SUBJECT_NAME }?.value.value(),
                                 question = survey.question.questionDesc,
                                 response = responsePair.first,
-                                cohoretName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
+                                cohortName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
                                 subQuestion = responsePair.second,
                                 villageName = task.find { it.key == VILLAGE_NAME }?.value.value(),
                                 referenceId = survey.referenceId
@@ -369,12 +377,22 @@ class ExportImportViewModel @Inject constructor(
                 }
 
                 val baseLineListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 1)
+                if (baseLineListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "BaseLineListQnaList : ${baseLineListQna.size}"
+                    )
+                }
                 val hamletListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 2)
+                if (hamletListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "HamletListQnaList : ${hamletListQna.size}"
+                    )
+                }
                 val title = generateTitle()
                 val listPath = generateCsvFiles(baseLineListQna, hamletListQna, title, context)
-
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
-
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 handleError(exception, context)
@@ -592,7 +610,12 @@ class ExportImportViewModel @Inject constructor(
                     .parseStringToList()
             val missionList = exportImportUseCase.getExportOptionListUseCase.fetchMissionsForUser()
             if (baselineV1Ids.contains(exportImportUseCase.getUserDetailsExportUseCase.getStateId())
-                && missionList.any { it.description == BASELINE_MISSION_NAME }
+                && missionList.any {
+                    it.description.equals(
+                        BASELINE_MISSION_NAME,
+                        ignoreCase = true
+                    )
+                }
             ) {
                 BaselineLogger.d("ExportImportViewModel", "Old Baseline Export")
                 exportBaseLineQnA(context)

@@ -32,7 +32,7 @@ var section : String? = BLANK_STRING,
 var villageName : String? = BLANK_STRING,
 
 @CsvBindByName(column = "Tola Name")
-var cohoretName : String? = BLANK_STRING,
+var cohortName: String? = BLANK_STRING,
 
 var surveyId: Int? = 0,
 
