@@ -41,5 +41,22 @@ data class AssetEntity(
             )
         }
 
+        fun getDefaultAssetEntity(
+            userId: String,
+            livelihoodId: Int,
+        ): AssetEntity {
+            return AssetEntity(
+                id = 0,
+                assetId = -1,
+                userId = userId,
+                name = BLANK_STRING,
+                status = 1,
+                livelihoodId = livelihoodId,
+                value = 0.0,
+                image = BLANK_STRING,
+                type = BLANK_STRING
+            )
+        }
+
     }
 }

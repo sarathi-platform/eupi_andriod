@@ -64,13 +64,14 @@ class SurveyRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
 
-        questionDao.getSurveySectionQuestionForLanguage(
+        val questionList = questionDao.getSurveySectionQuestionForLanguage(
             languageId = coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             referenceType = LanguageAttributeReferenceType.QUESTION.name
-        ).forEach {
+        )
+        questionList.forEach {
 
             val questionUiModel = QuestionUiModel(
                 questionId = it.questionId ?: DEFAULT_ID,

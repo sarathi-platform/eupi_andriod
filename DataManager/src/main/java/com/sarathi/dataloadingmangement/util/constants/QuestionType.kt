@@ -18,6 +18,7 @@ enum class QuestionType {
     InputText,
     IncrementDecrementList,
     InputHrsMinutes,
+    InputYrsMonths,
     SingleImage;
 
     companion object {
@@ -48,9 +49,18 @@ enum class QuestionType {
         val numericUseInputQuestionTypeList = listOf(
             InputNumber.name.toLowerCase(),
             NumericField.name.toLowerCase(),
+            IncrementDecrementList.name.toLowerCase()
+        )
+
+        val autoCalculateQuestionType = listOf(
+            AutoCalculation.name.toLowerCase()
         )
         val optionDescriptionAllowInExport = listOf(
             IncrementDecrementList.name.toLowerCase()
         )
     }
+}
+
+enum class OptionType {
+    None;
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
@@ -102,7 +103,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var validations: List<SurveyValidations>? = mutableListOf()
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
-    var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
+    private var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
+
+    var autoCalculateQuestionResultMap: SnapshotStateMap<Int, String> =
+        mutableStateMapOf<Int, String>()
+
+    val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> get() = conditionsUtils.optionStateMap
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -199,9 +205,15 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             conditionsUtils.apply {
                 init(questionUiModel.value, sourceTargetQuestionMapping)
                 initQuestionVisibilityMap(questionUiModel.value)
+                initOptionsStateMap(questionUiModel.value)
                 questionUiModel.value.forEach {
                     runConditionCheck(it)
                 }
+                updateAutoCalculateQuestionValue(
+                    questionUiModel.value,
+                    surveyConfig[DEFAULT_FORM_ID],
+                    autoCalculateQuestionResultMap
+                )
             }
 
             isTaskStatusCompleted()
@@ -378,6 +390,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     open fun updateTaskStatus(taskId: Int, isTaskCompleted: Boolean = false) {
         ioViewModelScope {
+            val oldTaskStatus = getTaskUseCase.getTask(taskId).status ?: BLANK_STRING
+            val newTaskStatus =
+                if (isTaskCompleted) SurveyStatusEnum.COMPLETED.name else SurveyStatusEnum.INPROGRESS.name
+
             val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
             surveyEntity?.let { survey ->
                 if (isTaskCompleted) {
@@ -387,6 +403,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     taskEntity = taskEntity?.copy(status = SurveyStatusEnum.INPROGRESS.name)
                     taskStatusUseCase.markTaskInProgress(taskId)
                 }
+                if (oldTaskStatus != newTaskStatus)
                 taskEntity?.let { task ->
                     matStatusEventWriterUseCase.updateTaskStatus(
                         task,
@@ -402,8 +419,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         conditionsUtils.updateQuestionResponseMap(question)
     }
 
+    fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
+        return conditionsUtils.runNoneOptionCheck(sourceQuestion)
+    }
+
     fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
+        conditionsUtils.updateAutoCalculateQuestionValue(
+            questionUiModel.value,
+            surveyConfig[DEFAULT_FORM_ID],
+            autoCalculateQuestionResultMap
+        )
         ioViewModelScope {
             updateNonVisibleQuestionsResponse()
         }
