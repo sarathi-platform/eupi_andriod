@@ -37,7 +37,7 @@ import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.syncMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import java.text.SimpleDateFormat
 
@@ -55,8 +55,7 @@ fun SyncHistoryScreen(
     }
     ToolbarWithMenuComponent(
         title = stringResource(
-            id = R.string.sync_data_history,
-            viewModel.syncHistoryUseCase.getSyncHistoryUseCase.getUserID()
+            id = R.string.sync_data_history
         ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = false,
@@ -78,26 +77,47 @@ fun SyncHistoryScreen(
 
 @Composable
 fun LastSyncTime(viewModel: SyncHistoryViewModel) {
-    val context = LocalContext.current
     if (viewModel.lastSyncTime.longValue != 0L) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimen_10_dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(id = R.string.last_sync_date_time),
-                style = mediumTextStyle,
-                color = textColorDark
-            )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.last_sync_date_time),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
 
-            Text(
-                text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
-                style = mediumTextStyle,
-                color = textColorDark
-            )
+                Text(
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.profile_phone),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+
+                Text(
+                    text = viewModel.getUserMobileNumber(),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+            }
         }
+
     }
 }
 @Composable

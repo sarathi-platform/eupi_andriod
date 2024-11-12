@@ -26,8 +26,7 @@ data class SaveAnswerEventQuestionItemDto(
     @Expose
     val questionDesc: String,
 
-    @SerializedName("order")
-    @Expose
+    @Transient
     val order: Int? = 0
 
 )
