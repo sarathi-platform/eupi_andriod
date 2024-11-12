@@ -88,7 +88,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    val isActivityNotCompleted = mutableStateOf<Boolean>(true)
+    val isActivityCompleted = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
@@ -381,7 +381,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private suspend fun isTaskStatusCompleted() {
-        isActivityNotCompleted.value = getActivityUseCase.isAllActivityCompleted(
+        isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
             missionId = taskEntity?.missionId ?: 0,
             activityId = taskEntity?.activityId ?: 0
         )
@@ -479,7 +479,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
         }
 
-        return isActivityNotCompleted.value && isFormEntryAllowed
+        return !isActivityCompleted.value && isFormEntryAllowed
     }
 
     fun getSurveyModelWithValue(

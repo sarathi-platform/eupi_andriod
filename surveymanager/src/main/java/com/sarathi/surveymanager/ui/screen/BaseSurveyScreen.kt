@@ -163,7 +163,7 @@ fun BaseSurveyScreen(
         },
         onBottomUI = {
             SubmitButtonBottomUi(
-                isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                isButtonActive = viewModel.isButtonEnable.value && !viewModel.isActivityCompleted.value,
                 buttonTitle = stringResource(R.string.submit),
                 onSubmitButtonClick = onSubmitButtonClick
             )
@@ -278,7 +278,7 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
@@ -304,7 +304,7 @@ fun QuestionUiContent(
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING,
@@ -328,7 +328,7 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     subtitle = question.display
                 ) { selectedValue, isDeleted ->
@@ -350,11 +350,10 @@ fun QuestionUiContent(
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths =
                     question.options?.firstOrNull()?.selectedValue
-                        ?: com.nudge.core.BLANK_STRING
-                    ,
+                        ?: com.nudge.core.BLANK_STRING,
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     subtitle = question.display,
                 ) { selectedValue, isDeleted ->
@@ -371,7 +370,7 @@ fun QuestionUiContent(
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
                     questionIndex = index,
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
@@ -396,7 +395,7 @@ fun QuestionUiContent(
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     sources = getOptionsValueDto(question.options ?: listOf()),
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
                     optionStateMap = viewModel.optionStateMap,
@@ -516,7 +515,7 @@ fun QuestionUiContent(
                     title = question.questionDisplay,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
                     onAnswerSelection = { optionId, mSelectedValue ->
 
@@ -537,7 +536,7 @@ fun QuestionUiContent(
                 HrsMinRangePickerComponent(
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     typePicker = question.type,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING
@@ -597,7 +596,7 @@ fun FormQuestionUiContent(
 
                     Row(modifier = Modifier
                         .clickable(enabled = true) {
-                            if (viewModel.isActivityNotCompleted.value && viewModel.isFormEntryAllowed(
+                            if (viewModel.isFormEntryAllowed(
                                     question.formId
                                 )
                             ) {
