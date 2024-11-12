@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +40,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.smallTextStyleWithUnderline
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenDark
@@ -65,6 +67,7 @@ fun EventTypeCard(
     onViewProcessClick: () ->Unit,
     isWorkerInfoState:String,
 ) {
+    var context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,7 +119,7 @@ fun EventTypeCard(
 
             if (isStatusVisible) {
                 Text(
-                    text =stringResource(R.string.auto_sync, isWorkerInfoState) ,
+                    text = if(isWorkerInfoState==WorkInfo.State.RUNNING.name ||isWorkerInfoState==WorkInfo.State.ENQUEUED.name) stringResource(R.string.sync_on)  else stringResource(R.string.sync_off),
                     style = smallerTextStyleNormalWeight,
                     color = grayColor,
                     modifier = Modifier.constrainAs(statusText) {
@@ -125,6 +128,7 @@ fun EventTypeCard(
                         bottom.linkTo(circularProgressBar.bottom)
                     }
                 )
+                CoreLogger.d(context, "SyncHomeScreen", "Sync Worker Info: ${isWorkerInfoState}")
             }
 
             Text(
