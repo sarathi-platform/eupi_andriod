@@ -91,7 +91,13 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         val map = mutableMapOf<Int, Int>()
 
         formQuestionMap.forEach { mapEntry ->
-            repository.getTotalSavedFormResponsesCount(surveyId, taskId, sectionId, mapEntry.value)
+            repository.getTotalSavedFormResponsesCount(
+                surveyId,
+                taskId,
+                sectionId,
+                mapEntry.value,
+                mapEntry.key
+            )
                 .apply {
                     map.put(mapEntry.key, this.size)
                 }

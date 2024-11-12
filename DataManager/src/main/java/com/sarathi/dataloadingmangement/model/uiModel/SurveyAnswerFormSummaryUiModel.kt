@@ -40,5 +40,8 @@ data class SurveyAnswerFormSummaryUiModel(
 
     var isFormGenerated: Boolean,
 
+    @SerializedName("formId")
+    @Expose
+    var formId: Int = 0
 
     )

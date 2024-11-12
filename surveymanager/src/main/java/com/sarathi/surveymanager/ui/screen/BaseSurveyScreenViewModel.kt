@@ -10,6 +10,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -70,6 +71,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase
 ) : BaseViewModel() {
+
+    private val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
+
     var surveyId: Int = 0
     var sectionId: Int = 0
     var taskId: Int = 0
@@ -84,7 +88,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    val isActivityNotCompleted = mutableStateOf<Boolean>(false)
+    val isActivityNotCompleted = mutableStateOf<Boolean>(true)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
@@ -220,9 +224,16 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             questionUiModel.value.filter { visibilityMap[it.questionId].value() }.apply {
                 this.forEach {
                     runValidationCheck(it.questionId) { isValid, message ->
-                        fieldValidationAndMessageMap[it.questionId] =
-                            Pair(isValid, message)
-
+                        try {
+                            fieldValidationAndMessageMap[it.questionId] =
+                                Pair(isValid, message)
+                        } catch (ex: Exception) {
+                            CoreLogger.e(
+                                tag = LOGGER_TAG,
+                                msg = "Exception: intiQuestions -> runValidationCheck@lambda: ${ex.message}",
+                                ex = ex
+                            )
+                        }
                     }
                 }
 
@@ -370,7 +381,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private suspend fun isTaskStatusCompleted() {
-        isActivityNotCompleted.value = !getActivityUseCase.isAllActivityCompleted(
+        isActivityNotCompleted.value = getActivityUseCase.isAllActivityCompleted(
             missionId = taskEntity?.missionId ?: 0,
             activityId = taskEntity?.activityId ?: 0
         )
@@ -491,7 +502,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     surveyConfigForForm[SurveyConfigCardSlots.FORM_QUESTION_CARD_SUBTITLE_VALUE.name]?.sumOf { surveyCardModel ->
                         val quest =
                             questionUiModel.value.find { it.tagId.contains(surveyCardModel.tagId) }
-                        formResponses?.filter { it.questionId == quest?.questionId.value() }
+                        formResponses?.filter { it.questionId == quest?.questionId.value() && it.formId == quest?.formId.value() }
                             ?.flatMap { it.optionItems }
                             ?.filter { it.isSelected == true }
                             ?.sumOf { it.selectedValue.toSafeInt() } ?: 0

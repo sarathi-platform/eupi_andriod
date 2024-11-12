@@ -67,10 +67,10 @@ class FormResponseSummaryViewModel @Inject constructor(
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
     private val _formQuestionResponseMap =
-        mutableStateMapOf<String, List<SurveyAnswerFormSummaryUiModel>>()
-    val formQuestionResponseMap: SnapshotStateMap<String, List<SurveyAnswerFormSummaryUiModel>> get() = _formQuestionResponseMap
+        mutableStateMapOf<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>>()
+    val formQuestionResponseMap: SnapshotStateMap<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>> get() = _formQuestionResponseMap
 
-    val referenceIdsList = mutableStateListOf<String>()
+    val referenceIdsList = mutableStateListOf<Pair<String, Int>>()
 
     var surveyConfig =
         mutableMapOf<String, List<SurveyCardModel>>()
@@ -154,7 +154,8 @@ class FormResponseSummaryViewModel @Inject constructor(
                 savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
                     savedAnswer.questionId
                 )
-            }.groupBy { savedAnswer -> savedAnswer.referenceId })
+            }.groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
+                .filter { it.key.second == formId })
 
             referenceIdsList.clear()
             referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
@@ -210,7 +211,7 @@ class FormResponseSummaryViewModel @Inject constructor(
         surveyConfig = mSurveyConfig
     }
 
-    fun deleteAnswer(referenceId: String?) {
+    fun deleteAnswer(referenceId: Pair<String?, Int>?) {
         ioViewModelScope {
             referenceIdsList.remove(referenceId)
 
@@ -218,7 +219,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 taskId = taskId,
-                referenceId = referenceId.value(),
+                referenceId = referenceId?.first.value(),
             )
 
             if (deleteCount > 0) {
@@ -228,7 +229,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                     surveyName = BLANK_STRING,
                     grantId = NUMBER_ZERO,
                     grantType = BLANK_STRING,
-                    referenceId = referenceId.value(),
+                    referenceId = referenceId?.first.value(),
                     taskId = taskEntity?.taskId ?: DEFAULT_ID,
                     uriList = emptyList(),
                     taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
