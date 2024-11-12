@@ -55,6 +55,9 @@ enum class QuestionType {
         val autoCalculateQuestionType = listOf(
             AutoCalculation.name.toLowerCase()
         )
+        val optionDescriptionAllowInExport = listOf(
+            IncrementDecrementList.name.toLowerCase()
+        )
     }
 }
 

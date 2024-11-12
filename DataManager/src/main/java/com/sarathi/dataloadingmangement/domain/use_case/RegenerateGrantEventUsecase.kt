@@ -8,8 +8,13 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEventWriterUseCase
+import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
 import javax.inject.Inject
 
@@ -101,21 +106,9 @@ class RegenerateGrantEventUsecase @Inject constructor(
             surveyAnswers.forEach { surveyAnswer ->
                 val taskEntity =
                     regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
-                val questionUiModel = fetchDataUseCase.invoke(
-                    surveyId = surveyAnswer.surveyId,
-                    sectionId = surveyAnswer.sectionId,
-                    subjectId = surveyAnswer.subjectId,
-                    referenceId = surveyAnswer.referenceId,
-                    activityConfigId = taskEntity?.activityId ?: -1,
-                    grantId = surveyAnswer.grantId
-                )
-                val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
-                    activityId = taskEntity?.activityId ?: -1,
-                    missionId = taskEntity?.missionId ?: -1
-                )
-                val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
-                    taskEntity!!.activityId,
-                    taskEntity.missionId
+                val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
+                    surveyAnswer,
+                    taskEntity
                 )
                 surveyAnswerEventWriterUseCase.invoke(
                     questionUiModels = questionUiModel,
@@ -137,6 +130,78 @@ class RegenerateGrantEventUsecase @Inject constructor(
             Log.e("Regenerate", exception.localizedMessage)
         }
 
+    }
+
+    private suspend fun findQuestionUiListAndActivityConfig(
+        surveyAnswer: SurveyAnswerEntity,
+        taskEntity: ActivityTaskEntity?
+    ): Triple<List<QuestionUiModel>, String, ActivityConfigEntity?> {
+        val questionUiModel = fetchDataUseCase.invoke(
+            surveyId = surveyAnswer.surveyId,
+            sectionId = surveyAnswer.sectionId,
+            subjectId = surveyAnswer.subjectId,
+            referenceId = surveyAnswer.referenceId,
+            activityConfigId = taskEntity?.activityId ?: -1,
+            grantId = surveyAnswer.grantId
+        )
+        val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
+            activityId = taskEntity?.activityId ?: -1,
+            missionId = taskEntity?.missionId ?: -1
+        )
+        val activityConfig = getActivityUiConfigUseCase.getActivityConfig(
+            taskEntity!!.activityId,
+            taskEntity.missionId
+        )
+        return Triple(questionUiModel, subjectType, activityConfig)
+    }
+
+    /**
+     * Fetch all survey answers for Survey Type Activity
+     * Create QuestionUiModel using Activity and Question details
+     */
+    suspend fun fetchSurveyAnswerEvents(): ArrayList<BaseSaveAnswerEventDto>? {
+        try {
+            val surveyList = arrayListOf<BaseSaveAnswerEventDto>()
+            val surveyAnswers = regenerateGrantEventRepositoryImpl.getAllSurveyAnswerForUSer()
+            surveyAnswers.forEach { surveyAnswer ->
+                val taskEntity =
+                    regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
+                taskEntity?.let { task ->
+                    val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
+                        surveyAnswer,
+                        taskEntity
+                    )
+
+                    val eventList = arrayListOf<BaseSaveAnswerEventDto>()
+                    questionUiModel.find { it.questionId == surveyAnswer.questionId && it.sectionId == surveyAnswer.sectionId && it.surveyId == surveyAnswer.surveyId }
+                        ?.let {
+                            val event = surveyAnswerEventWriterUseCase.fetchQuestionAnswerEventList(
+                                questionUiModel = it,
+                                taskId = surveyAnswer.taskId,
+                                subjectId = surveyAnswer.subjectId,
+                                referenceId = surveyAnswer.referenceId,
+                                grantId = surveyAnswer.grantId,
+                                grantType = surveyAnswer.grantType,
+                                taskLocalId = task.localTaskId ?: BLANK_STRING,
+                                subjectType = subjectType,
+                                activityId = activityConfig?.activityId.value(),
+                                activityReferenceId = activityConfig?.referenceId,
+                                activityReferenceType = activityConfig?.referenceType
+                            )
+                            eventList.add(event)
+                        }
+
+                    if (eventList.isNotEmpty()) {
+                        surveyList.addAll(eventList)
+                    }
+
+                }
+            }
+            return surveyList
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
+        return null
     }
 
     private suspend fun writeFormUpdateEvent() {

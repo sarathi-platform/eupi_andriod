@@ -219,3 +219,8 @@ const val HOURS = "Hours"
 const val MINUTE = "Minutes"
 
 const val DEFAULT_FORM_ID = -1
+const val SUBJECT_NAME = "subjectName"
+const val SUBJECT_DADA_NAME = "dadaName"
+const val SUBJECT_ADDRESS = "address"
+const val SUBJECT_COHORT_NAME = "cohortName"
+const val VILLAGE_NAME = "villageName"

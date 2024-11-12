@@ -7,6 +7,7 @@ import com.nudge.core.model.SettingOptionModel
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.utils.UPCM_USER
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 
 class GetExportOptionListUseCase(private val repository: ExportImportRepository) {
 
@@ -102,4 +103,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         return list.ifEmpty { arrayListOf() }
     }
 
+    suspend fun fetchMissionsForUser(): List<MissionUiModel> {
+        return repository.fetchMissionsForUser()
+    }
 }
