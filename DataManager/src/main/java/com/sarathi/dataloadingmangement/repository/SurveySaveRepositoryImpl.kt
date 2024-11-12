@@ -197,7 +197,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
                 val questionOptions = getSurveySectionQuestionOptionsForLanguage(
                     sectionId = sectionId,
                     surveyId = surveyId,
-                    referenceType = surveyAnswerData.referenceId
+                    referenceType = LanguageAttributeReferenceType.OPTION.name
                 )
                 surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
                     val optionItem =
