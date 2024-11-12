@@ -261,7 +261,7 @@ class ConditionsUtils {
             var condition = questionConditionMap.findConditionForQuestion(targetQuestionId)
 
             if (isFromForm)
-                condition = condition?.distinctBy { it.sourceQuestion }
+                condition = condition?.distinctBy { Pair(it.sourceQuestion, it.expression) }
 
             val response = responseMap[sourceQuestion.questionId]
 
