@@ -261,18 +261,17 @@ open class TaskScreenViewModel @Inject constructor(
                     componentType = ComponentEnum.Card.name,
                     activityConfig
                 )
-
+                val searchUiComponent = getUiComponentValues(
+                    taskId = it.taskId,
+                    taskStatus = it.status.toString(),
+                    isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
+                    isNAButtonEnable = it.isNotAvailableButton,
+                    subjectId = it.subjectId,
+                    componentType = ComponentEnum.Search.name,
+                    activityConfig
+                )
                 if (index == 0) {
-                    val searchUiComponent = getUiComponentValues(
-                        taskId = it.taskId,
-                        taskStatus = it.status.toString(),
-                        isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
-                        isNAButtonEnable = it.isNotAvailableButton,
-                        subjectId = it.subjectId,
-                        componentType = ComponentEnum.Search.name,
-                        activityConfig
 
-                    )
                     searchLabel.value =
                         searchUiComponent[TaskCardSlots.SEARCH_LABEL.name]?.value
                             ?: BLANK_STRING
@@ -304,8 +303,18 @@ open class TaskScreenViewModel @Inject constructor(
                         progressUiComponent[TaskCardSlots.TASK_PROGRESS.name]?.value != null
                 }
 
-                if (uiComponent[TaskCardSlots.TASK_TITLE.name]?.value?.isNotEmpty() == true)
+                if (uiComponent[TaskCardSlots.TASK_TITLE.name]?.value?.isNotEmpty() == true) {
                     _taskList.value[it.taskId] = uiComponent
+                    if (this@TaskScreenViewModel.taskList.value[it.taskId]?.containsKey(
+                            TaskCardSlots.SEARCH_ON.name
+                        ) != true
+                    ) {
+                        val existingTaskComponents =
+                            this@TaskScreenViewModel.taskList.value[it.taskId]
+                        existingTaskComponents?.putAll(searchUiComponent)
+                        _taskList.value[it.taskId] = existingTaskComponents ?: uiComponent
+                    }
+                }
 
             }
 
