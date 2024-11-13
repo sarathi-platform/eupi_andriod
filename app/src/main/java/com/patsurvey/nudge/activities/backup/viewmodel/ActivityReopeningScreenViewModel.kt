@@ -8,6 +8,8 @@ import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.parseStringToList
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -27,6 +29,7 @@ class ActivityReopeningScreenViewModel @Inject constructor(
     private val fetchAllDataUseCase: FetchAllDataUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val missionSummaryScreenUseCase: MissionSummaryScreenUseCase,
+    private val fetchAppConfigFromCacheOrDbUseCase: FetchAppConfigFromCacheOrDbUsecase,
 ) : BaseViewModel() {
 
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -82,11 +85,12 @@ class ActivityReopeningScreenViewModel @Inject constructor(
     private fun initActivityTab(missionId: Int) {
         ioViewModelScope {
 
-
-            if (missionList.value.find { it.missionId == missionId }?.description.value().contains(
+            val missionName =
+                missionList.value.find { it.missionId == missionId }?.description.value()
+            if (missionName.contains(
                     BASELINE_MISSION_NAME,
                     true
-                )
+                ) && isBaselineV1Mission(missionName)
             ) {
                 missionSummaryScreenUseCase.getMissionActivitiesFromDBUseCase.invoke(missionId)
                     ?.let {
@@ -177,6 +181,16 @@ class ActivityReopeningScreenViewModel @Inject constructor(
 
     fun isActivitySelected(activityId: Int): Boolean {
         return selectedActivityIdList.contains(activityId)
+    }
+
+    fun isBaselineV1Mission(missionName: String): Boolean {
+        var baseline_v1_ids = fetchAppConfigFromCacheOrDbUseCase.getBaselineV1Ids()
+
+        return baseline_v1_ids.parseStringToList()
+            .contains(fetchAllDataUseCase.getStateId()) && missionName.contains(
+            BASELINE_MISSION_NAME,
+            true
+        )
     }
 
 }

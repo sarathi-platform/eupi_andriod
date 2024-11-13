@@ -221,7 +221,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
 
             isTaskStatusCompleted()
-            questionUiModel.value.filter { visibilityMap[it.questionId].value() }.apply {
+            questionUiModel.value.filterForValidations(visibilityMap).apply {
                 this.forEach {
                     runValidationCheck(it.questionId) { isValid, message ->
                         try {
@@ -324,16 +324,26 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 }
             }
 
-            isButtonEnable.value =
-                isQuestionValidationFromConfig && checkButtonValidation() || (showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 })
+            isButtonEnable.value = isButtonEnabled(isQuestionValidationFromConfig)
+            // (isQuestionValidationFromConfig && checkButtonValidation()) || (showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 })
         }
 
+    }
+
+    private fun isButtonEnabled(isQuestionValidationFromConfig: Boolean): Boolean {
+        var result = (isQuestionValidationFromConfig && checkButtonValidation())
+
+        if (questionUiModel.value.any { it.formId != NUMBER_ZERO })
+            result =
+                result && (showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 })
+
+        return result
     }
 
     fun checkButtonValidation(): Boolean {
 
 
-        questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+        questionUiModel.value.filterForValidations(visibilityMap)
             .forEach { questionUiModel ->
                 if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                     val disbursedAmount =
@@ -515,4 +525,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     }
 
+}
+
+fun List<QuestionUiModel>.filterForValidations(visibilityMap: Map<Int, Boolean>): List<QuestionUiModel> {
+    return this.filter { it.isMandatory && it.formId == NUMBER_ZERO && visibilityMap.get(it.questionId) == true }
 }
