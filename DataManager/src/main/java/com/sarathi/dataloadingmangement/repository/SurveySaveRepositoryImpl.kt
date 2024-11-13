@@ -218,13 +218,16 @@ class SurveySaveRepositoryImpl @Inject constructor(
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
-        questionIds: List<Int>
+        questionIds: List<Int>,
+        formId: Int
     ): List<String> {
         return surveyAnswersDao.getTotalSavedFormResponsesCount(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,
             taskId = taskId,
             sectionId = sectionId,
-            questionIds = questionIds
+            questionIds = questionIds,
+            formId = formId
         )
     }
 
@@ -331,6 +334,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         questionIds: List<Int>
     ): List<SurveyAnswerEntity> {
         return surveyAnswersDao.getSurveyAnswersForQuestionIds(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,
             taskId = taskId,
             sectionId = sectionId,

@@ -45,9 +45,11 @@ import com.nudge.core.utils.LogWriter
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
@@ -93,7 +95,8 @@ class SettingBSViewModel @Inject constructor(
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
-    val formUiConfigUseCase: GetFormUiConfigUseCase
+    val formUiConfigUseCase: GetFormUiConfigUseCase,
+    val selectionVillageUseCase: SelectionVillageUseCase,
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     var showLogoutDialog = mutableStateOf(false)
@@ -174,8 +177,6 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.LANGUAGE.name
             )
         )
-
-
         list.add(
             SettingOptionModel(
                 5,
@@ -187,14 +188,23 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 6,
-                context.getString(R.string.backup_recovery),
+                context.getString(R.string.export_data),
                 BLANK_STRING,
-                SettingTagEnum.BACKUP_RECOVERY.name
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
             )
         )
         list.add(
             SettingOptionModel(
                 7,
+                context.getString(R.string.backup_recovery),
+                BLANK_STRING,
+                SettingTagEnum.BACKUP_RECOVERY.name
+            )
+        )
+
+        list.add(
+            SettingOptionModel(
+                8,
                 context.getString(appRes.string.refresh_config),
                 BLANK_STRING,
                 SettingTagEnum.APP_CONFIG.name
@@ -378,24 +388,45 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private suspend fun processCRPForms(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        val selectedVillageId = prefRepo.getSelectedVillage().id
+        selectionVillageUseCase.getVillageListFromDb().distinctBy { it.id }
+            .forEach { villageEntity ->
+                val selectedVillageId = villageEntity.id
         val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
             prefRepo.getAppLanguageId() ?: 2
         )
         val didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(selectedVillageId)
+            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageEntity.id)
         val formAFilePath =
-            generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormA(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity = villageEntity
+            )
         addFormToUriList(formAFilePath, fileAndDbZipList)
 
         val formBFilePath =
-            generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormB(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formBFilePath, fileAndDbZipList)
 
         val formCFilePath =
-            generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormc(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formCFilePath, fileAndDbZipList)
 
+    }
     }
 
     private fun generateZipFileName(): String {
@@ -548,11 +579,12 @@ class SettingBSViewModel @Inject constructor(
         stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
     ) = PdfUtils.getFormAPdf(
         mAppContext,
         stateId,
-        villageEntity = prefRepo.getSelectedVillage(),
+        villageEntity = villageEntity,
         casteList = casteList,
         didiDetailList = didiList,
         completionDate = changeMilliDateToDate(
@@ -567,12 +599,13 @@ class SettingBSViewModel @Inject constructor(
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
 
         ) =
         PdfUtils.getFormBPdf(
             mAppContext,
             stateId,
-            villageEntity = prefRepo.getSelectedVillage(),
+            villageEntity = villageEntity,
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -587,12 +620,13 @@ class SettingBSViewModel @Inject constructor(
         stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
     ) =
         PdfUtils.getFormCPdf(
             mAppContext,
             stateId,
-            villageEntity = prefRepo.getSelectedVillage(),
+            villageEntity = villageEntity,
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
             completionDate = changeMilliDateToDate(

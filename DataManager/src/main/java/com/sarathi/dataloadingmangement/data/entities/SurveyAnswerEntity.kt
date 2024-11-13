@@ -7,8 +7,10 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -85,6 +87,10 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true,
+
+    @SerializedName("formId")
+    @Expose
+    var formId: Int = 0
 ) {
     companion object {
 
@@ -111,7 +117,8 @@ data class SurveyAnswerEntity(
                 optionItems = question.options ?: listOf(),
                 subjectId = subjectId,
                 grantId = grantId,
-                grantType = grantType
+                grantType = grantType,
+                formId = question.formId
             )
         }
 
@@ -136,7 +143,8 @@ data class SurveyAnswerEntity(
                 optionItems = optionsUiModel,
                 subjectId = questionAnswerResponse.subjectId,
                 grantId = questionAnswerResponse.grantId ?: DEFAULT_ID,
-                grantType = questionAnswerResponse.grantType ?: BLANK_STRING
+                grantType = questionAnswerResponse.grantType ?: BLANK_STRING,
+                formId = questionAnswerResponse.question?.formId.value(NUMBER_ZERO)
             )
         }
     }

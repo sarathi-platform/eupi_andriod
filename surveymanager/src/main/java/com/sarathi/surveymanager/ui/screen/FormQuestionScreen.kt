@@ -15,12 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.eventTextColor
@@ -35,13 +37,14 @@ import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
-import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
+import com.sarathi.surveymanager.ui.component.HrsMinRangePickerComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SingleImageComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -123,7 +126,9 @@ fun FormQuestionScreen(
                             item {
                                 SubContainerView(
                                     mapEntry.value,
-                                    isNumberFormattingRequired = false
+                                    isNumberFormattingRequired = false,
+                                    labelStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
+                                    valueStyle = defaultTextStyle
                                 )
                             }
                         }
@@ -134,6 +139,7 @@ fun FormQuestionScreen(
                             index = index,
                             question = question,
                             viewModel = viewModel,
+
                             maxHeight,
                             onAnswerSelect = {
                                 viewModel.updateQuestionResponseMap(question)
@@ -221,27 +227,20 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
-                    AddImageComponent(
+                    SingleImageComponent(
                         fileNamePrefix = viewModel.getPrefixFileName(question),
-                        filePaths = commaSeparatedStringToList(
+                        filePaths =
                             question.options?.firstOrNull()?.selectedValue
                                 ?: BLANK_STRING
-                        ),
+                        ,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditable = viewModel.isActivityNotCompleted.value,
                         maxCustomHeight = maxHeight,
                         subtitle = question.display,
-                        areMultipleImagesAllowed = question.type.equals(
-                            QuestionType.MultiImage.name,
-                            true
-                        )
+
                     ) { selectedValue, isDeleted ->
-                        saveMultiImageTypeAnswer(
-                            selectedValue,
-                            question.options,
-                            isDeleted
-                        )
+                        saveSingleImage(isDeleted, question.options, selectedValue)
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(question.questionId) { isValid, message ->
                             viewModel.fieldValidationAndMessageMap[question.questionId] =
@@ -250,7 +249,6 @@ fun FormScreenQuestionUiContent(
 
                     }
                 }
-
                 QuestionType.SingleSelectDropDown.name,
                 QuestionType.DropDown.name -> {
                     DropDownTypeComponent(
@@ -375,6 +373,28 @@ fun FormScreenQuestionUiContent(
                             }
                         }
                     )
+                }
+
+                QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
+                    HrsMinRangePickerComponent(
+                        isMandatory = question.isMandatory,
+                        title = question.questionDisplay,
+                        isEditAllowed = viewModel.isActivityNotCompleted.value,
+                        typePicker = question.type,
+                        defaultValue = question.options?.firstOrNull()?.selectedValue
+                            ?: com.sarathi.dataloadingmangement.BLANK_STRING
+                    ) { selectValue, selectedValueId ->
+                        question.options?.firstOrNull()?.selectedValue = selectValue
+                        question.options?.firstOrNull()?.isSelected = true
+
+                        onAnswerSelect(question)
+                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
+                            viewModel.fieldValidationAndMessageMap[question.questionId] =
+                                Pair(isValid, message)
+                        }
+
+
+                    }
                 }
             }
             Text(

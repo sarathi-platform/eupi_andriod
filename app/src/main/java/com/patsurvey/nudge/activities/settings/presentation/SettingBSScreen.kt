@@ -108,8 +108,11 @@ fun SettingBSScreen(
                     }
 
 
-                    SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
-                        viewModel.compressEventData(context.getString(R.string.share_export_file))
+
+                    SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name -> {
+                        navController.navigate(SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route)
+
+//                        viewModel.compressEventData(context.getString(R.string.share_export_file))
                     }
 
                     SettingTagEnum.TRAINING_VIDEOS.name -> {
@@ -118,6 +121,9 @@ fun SettingBSScreen(
 
                     SettingTagEnum.BACKUP_RECOVERY.name -> {
                         navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
+                    }
+                    SettingTagEnum.EXPORT_BACKUP_FILE.name ->{
+                        viewModel.compressEventData(context.getString(R.string.share_export_file))
                     }
 
                     SettingTagEnum.SHARE_LOGS.name -> {

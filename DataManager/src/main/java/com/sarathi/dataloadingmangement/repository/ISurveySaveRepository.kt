@@ -47,7 +47,8 @@ interface ISurveySaveRepository {
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
-        questionIds: List<Int>
+        questionIds: List<Int>,
+        formId: Int
     ): List<String>
 
     fun isAnswerAvailableInDb(
