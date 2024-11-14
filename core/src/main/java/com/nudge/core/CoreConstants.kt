@@ -224,3 +224,5 @@ const val SUBJECT_DADA_NAME = "dadaName"
 const val SUBJECT_ADDRESS = "address"
 const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
+
+const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
