@@ -10,6 +10,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposito
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMissionStatusUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
@@ -42,7 +43,6 @@ import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillag
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao

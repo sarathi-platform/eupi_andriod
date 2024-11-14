@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.bpc.bpc_village_screen
 import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.R
@@ -12,7 +13,6 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao

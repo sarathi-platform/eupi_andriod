@@ -9,8 +9,8 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.nudge.core.database.entities.CasteEntity
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel

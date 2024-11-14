@@ -16,6 +16,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCa
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class MissionViewModel @Inject constructor(
     private val missionScreenUseCase: MissionScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 
     ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
@@ -131,7 +133,10 @@ class MissionViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        refreshData(fetchDataUseCase)
+        refreshData(
+            fetchDataUseCase,
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
+        )
     }
 
 }

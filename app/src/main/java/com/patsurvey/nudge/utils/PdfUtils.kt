@@ -7,9 +7,9 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.toDateInMMDDYYFormat
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.VillageEntity

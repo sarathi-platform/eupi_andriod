@@ -30,6 +30,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.enums.EventType
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,8 @@ import javax.inject.Inject
 class SurveyeeScreenViewModel @Inject constructor(
     private val surveyeeScreenUseCase: SurveyeeScreenUseCase,
     private val eventWriterHelperImpl: EventWriterHelperImpl,
-    private val fetchDataUseCase: FetchDataUseCase
+    private val fetchDataUseCase: FetchDataUseCase,
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -513,7 +515,10 @@ class SurveyeeScreenViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        refreshData(fetchDataUseCase)
+        refreshData(
+            fetchDataUseCase,
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
+        )
     }
 
     fun getPendingDidiCountLive(activityId: Int): LiveData<Int> {

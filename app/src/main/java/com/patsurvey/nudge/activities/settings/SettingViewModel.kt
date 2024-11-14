@@ -13,7 +13,9 @@ import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.exportOldData
 import com.nudge.core.getDefaultBackUpFileName
@@ -28,11 +30,9 @@ import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao

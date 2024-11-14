@@ -17,6 +17,7 @@ const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
 const val APP_CONFIG_TABLE = "app_config"
+const val CASTE_TABLE = "caste_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -224,3 +225,5 @@ const val SUBJECT_DADA_NAME = "dadaName"
 const val SUBJECT_ADDRESS = "address"
 const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
+const val SUBPATH_GET_CASTE_LIST = "/read-api/config/caste/get"
+

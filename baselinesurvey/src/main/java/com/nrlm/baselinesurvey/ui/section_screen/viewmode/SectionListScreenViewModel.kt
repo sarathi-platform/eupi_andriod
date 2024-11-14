@@ -22,6 +22,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.enums.EventType
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,8 @@ import javax.inject.Inject
 class SectionListScreenViewModel @Inject constructor(
     val sectionScreenUseCase: SectionListScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -223,7 +225,10 @@ class SectionListScreenViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        refreshData(fetchDataUseCase)
+        refreshData(
+            fetchDataUseCase,
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
+        )
     }
 
     fun close() {

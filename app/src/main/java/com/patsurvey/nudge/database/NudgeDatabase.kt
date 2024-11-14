@@ -13,7 +13,6 @@ import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
@@ -30,7 +29,7 @@ import java.sql.SQLException
 
 
 @Database(
-    entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
+    entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class,
         TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class, QuestionEntity::class, SectionAnswerEntity::class, NumericAnswerEntity::class, TrainingVideoEntity::class,
         BpcSummaryEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class],
     version = NUDGE_DATABASE_VERSION,
@@ -48,7 +47,6 @@ abstract class NudgeDatabase : RoomDatabase() {
     abstract fun languageListDao(): LanguageListDao
     abstract fun stepsListDao(): StepsListDao
     abstract fun tolaDao(): TolaDao
-    abstract fun casteListDao(): CasteListDao
     abstract fun didiDao(): DidiDao
     abstract fun lastSelectedTola(): LastSelectedTolaDao
     abstract fun questionListDao(): QuestionListDao

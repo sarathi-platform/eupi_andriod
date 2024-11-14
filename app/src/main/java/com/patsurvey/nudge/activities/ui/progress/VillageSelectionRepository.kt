@@ -9,6 +9,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -34,7 +35,6 @@ import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao

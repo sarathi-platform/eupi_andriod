@@ -3,10 +3,10 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.database.entities.CasteEntity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest

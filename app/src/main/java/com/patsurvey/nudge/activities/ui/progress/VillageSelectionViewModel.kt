@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
@@ -36,7 +37,6 @@ import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao

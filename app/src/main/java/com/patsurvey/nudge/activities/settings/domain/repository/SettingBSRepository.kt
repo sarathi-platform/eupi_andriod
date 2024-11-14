@@ -1,7 +1,7 @@
 package com.patsurvey.nudge.activities.settings.domain.repository
 
 import android.content.Context
-import com.patsurvey.nudge.database.CasteEntity
+import com.nudge.core.database.entities.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.model.response.ApiResponseModel

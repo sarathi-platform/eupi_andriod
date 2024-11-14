@@ -28,4 +28,8 @@ class StorageModule {
     @Singleton
     fun prodiveAppConfigDao(db: CoreDatabase) = db.appConfigDao()
 
+    @Provides
+    @Singleton
+    fun prodiveCasteListDao(db: CoreDatabase) = db.casteListDao()
+
 }
