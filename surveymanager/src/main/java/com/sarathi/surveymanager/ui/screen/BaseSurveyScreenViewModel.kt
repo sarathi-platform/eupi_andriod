@@ -325,7 +325,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
 
             isButtonEnable.value = isButtonEnabled(isQuestionValidationFromConfig)
-            // (isQuestionValidationFromConfig && checkButtonValidation()) || (showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 })
         }
 
     }

@@ -8,7 +8,7 @@ import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.enums.ActivityTypeEnum
-import com.nudge.core.parseStringToList
+import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
@@ -30,6 +30,7 @@ class ActivityReopeningScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val missionSummaryScreenUseCase: MissionSummaryScreenUseCase,
     private val fetchAppConfigFromCacheOrDbUseCase: FetchAppConfigFromCacheOrDbUsecase,
+    private val baselineV1CheckUseCase: BaselineV1CheckUseCase
 ) : BaseViewModel() {
 
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -90,7 +91,7 @@ class ActivityReopeningScreenViewModel @Inject constructor(
             if (missionName.contains(
                     BASELINE_MISSION_NAME,
                     true
-                ) && isBaselineV1Mission(missionName)
+                ) && baselineV1CheckUseCase.invoke(missionName)
             ) {
                 missionSummaryScreenUseCase.getMissionActivitiesFromDBUseCase.invoke(missionId)
                     ?.let {
@@ -181,16 +182,6 @@ class ActivityReopeningScreenViewModel @Inject constructor(
 
     fun isActivitySelected(activityId: Int): Boolean {
         return selectedActivityIdList.contains(activityId)
-    }
-
-    fun isBaselineV1Mission(missionName: String): Boolean {
-        var baseline_v1_ids = fetchAppConfigFromCacheOrDbUseCase.getBaselineV1Ids()
-
-        return baseline_v1_ids.parseStringToList()
-            .contains(fetchAllDataUseCase.getStateId()) && missionName.contains(
-            BASELINE_MISSION_NAME,
-            true
-        )
     }
 
 }
