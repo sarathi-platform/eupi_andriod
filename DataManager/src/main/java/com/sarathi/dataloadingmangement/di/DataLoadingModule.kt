@@ -5,12 +5,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
+import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -1620,5 +1623,21 @@ class DataLoadingModule {
             activityConfigDao = activityConfigDao,
             taskDao = taskDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesBaselineV1CheckUseCase(
+        baselineV1CheckRepository: BaselineV1CheckRepository
+    ): BaselineV1CheckUseCase {
+        return BaselineV1CheckUseCase(baselineV1CheckRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesBaselineV1CheckRepository(
+        coreSharedPrefs: CoreSharedPrefs
+    ): BaselineV1CheckRepository {
+        return BaselineV1CheckRepositoryImpl(coreSharedPrefs)
     }
 }

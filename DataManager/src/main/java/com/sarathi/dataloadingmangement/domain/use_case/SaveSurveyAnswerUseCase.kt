@@ -142,4 +142,21 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         return map
     }
 
+    suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int, referenceId: String,
+        grantId: Int,
+        grantType: String
+    ) {
+        repository.checkAndUpdateNonVisibleQuestionResponseInDb(
+            question,
+            subjectId,
+            taskId,
+            referenceId,
+            grantId,
+            grantType
+        )
+    }
+
 }

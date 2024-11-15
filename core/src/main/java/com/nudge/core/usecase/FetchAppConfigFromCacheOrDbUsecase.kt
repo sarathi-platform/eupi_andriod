@@ -14,4 +14,5 @@ class FetchAppConfigFromCacheOrDbUsecase @Inject constructor(
     fun invokeFromPref(key: String): String {
         return apiConfigDatabaseRepository.getAppConfigFromPref(key)
     }
+
 }
