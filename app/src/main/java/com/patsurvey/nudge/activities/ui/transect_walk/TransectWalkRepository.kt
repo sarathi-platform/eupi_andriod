@@ -36,6 +36,7 @@ import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
@@ -460,10 +461,7 @@ class TransectWalkRepository @Inject constructor(
         this.didiDao.deleteDidisForTola(tolaId, activeStatus, needsToPostDeleteStatus)
     }
 
-    fun updateTolaNameAndLocation(id: Int, newName: String,tolaList: TolaEntity) {
-        this.didiDao.updateTolaName(id, newName)
-        this.tolaDao.updateTolaNameAndLocation(id, newName,tolaList.latitude.toString(),tolaList.longitude.toString())
-    }
+
     fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int): VillageEntity {
         return this.villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
     }
@@ -503,6 +501,29 @@ class TransectWalkRepository @Inject constructor(
     suspend fun editWorkFlow(addWorkFlowRequest: List<EditWorkFlowRequest>): ApiResponseModel<List<WorkFlowResponse>> {
         NudgeLogger.d("TransectWalkRepository","addWorkFlowRequest Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return this.apiInterface.editWorkFlow(addWorkFlowRequest)
+    }
+
+    suspend fun insertNewTola(tola: Tola, villageId: Int): Boolean {
+        if (isTolaNotExist(tolaName = tola.name, villageId)) {
+            tolaDao.insert(TolaEntity.getTolaEntity(tolaUiModel = tola, villageId))
+            return true
+        }
+        return false
+    }
+
+    suspend fun isTolaNotExist(tolaName: String, villageId: Int): Boolean {
+        return tolaDao.getTolaExist(name = tolaName, villageId = villageId) == 0
+    }
+
+    fun updateTola(id: Int, name: String, lat: Double, longitude: Double, villageId: Int) {
+        tolaDao.updateTolaNameAndLocation(
+            id = id,
+            name = name,
+            latitude = lat.toString(),
+            longitude = longitude.toString(),
+            villageId = villageId,
+            modifiedDate = System.currentTimeMillis()
+        )
     }
 
 

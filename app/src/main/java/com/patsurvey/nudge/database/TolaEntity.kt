@@ -11,6 +11,7 @@ import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.TOLA_TABLE
+import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
 
 
@@ -112,6 +113,23 @@ data class TolaEntity(
                 transactionId = "",
                 localUniqueId = getUniqueIdForEntity()
             )
+        }
+
+        fun getTolaEntity(tolaUiModel: Tola, villageId: Int): TolaEntity {
+            return TolaEntity(
+                id = 0,
+                name = tolaUiModel.name,
+                type = CohortType.TOLA.type,
+                latitude = tolaUiModel.location.lat ?: 0.0,
+                longitude = tolaUiModel.location.long ?: 0.0,
+                villageId = villageId,
+                status = 1,
+                localCreatedDate = System.currentTimeMillis(),
+                localModifiedDate = System.currentTimeMillis(),
+                transactionId = "",
+                localUniqueId = getUniqueIdForEntity()
+            )
+        }
         }
 
         fun same(l1: List<TolaEntity>, l2: List<GetCohortResponseModel>, ignoreIds: Boolean = false): Boolean {

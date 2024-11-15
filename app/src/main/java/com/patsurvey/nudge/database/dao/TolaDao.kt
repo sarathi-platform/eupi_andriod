@@ -24,7 +24,7 @@ interface TolaDao {
     fun insertAll(tolas: List<TolaEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(tola: TolaEntity)
+    fun insert(tola: TolaEntity): Int
 
     @Query("DELETE from $TOLA_TABLE where id = :id")
     fun removeTola(id: Int)
@@ -37,8 +37,15 @@ interface TolaDao {
     @Query("UPDATE $TOLA_TABLE SET needsToPost = :needsToPost WHERE id =:id")
     fun updateNeedToPost(id:Int, needsToPost: Boolean)
 
-    @Query("UPDATE $TOLA_TABLE SET name = :name , latitude = :latitude ,longitude = :longitude WHERE id =:id")
-    fun updateTolaNameAndLocation(id: Int, name: String, latitude: String,longitude:String)
+    @Query("UPDATE $TOLA_TABLE SET name = :name , latitude = :latitude ,longitude = :longitude, modifiedDate=:modifiedDate WHERE id =:id and villageId =:villageId")
+    fun updateTolaNameAndLocation(
+        id: Int,
+        name: String,
+        latitude: String,
+        longitude: String,
+        modifiedDate: Long,
+        villageId: Int
+    )
     @Query("DELETE from $TOLA_TABLE where villageId = :villageId")
     fun deleteTolaTable(villageId: Int)
 
