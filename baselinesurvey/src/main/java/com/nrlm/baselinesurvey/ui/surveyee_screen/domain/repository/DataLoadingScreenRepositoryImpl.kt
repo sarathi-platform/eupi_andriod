@@ -584,8 +584,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
-        return baseLineApiService.getCasteList(languageId)
+    override suspend fun getCasteListFromNetwork(): ApiResponseModel<List<CasteModel>> {
+        return baseLineApiService.getCasteList()
     }
 
     override fun saveCasteList(castes: String) {

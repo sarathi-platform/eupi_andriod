@@ -41,9 +41,7 @@ class CasteConfigRepositoryImpl @Inject constructor(
         casteListDao.deleteCasteTableForLanguage(coreSharedPrefs.getSelectedLanguageId())
     }
 
-    override suspend fun getCasteConfigFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
-        return coreApiService.getCasteList(
-            languageId = languageId
-        )
+    override suspend fun getCasteConfigFromNetwork(): ApiResponseModel<List<CasteModel>> {
+        return coreApiService.getCasteList()
     }
 }

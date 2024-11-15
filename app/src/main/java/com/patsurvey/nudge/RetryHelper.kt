@@ -7,12 +7,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
-import com.patsurvey.nudge.analytics.AnalyticsHelper
-import com.patsurvey.nudge.analytics.EventParams
-import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
@@ -899,18 +897,14 @@ object RetryHelper {
                     }
                     ApiType.CAST_LIST_API -> {
                             try {
-                                val casteResponse = apiService?.getCasteList(0)
+                                val casteEntityList = arrayListOf<CasteEntity>()
+                                val casteResponse = apiService?.getCasteList()
                                 if (casteResponse?.status.equals(SUCCESS, true)) {
-                                    casteResponse?.data?.let { casteList ->
-                                        castListDao?.insertAll(casteList)
-                                        AnalyticsHelper.logEvent(
-                                            Events.CASTE_LIST_WRITE,
-                                            mapOf(
-                                                EventParams.CASTE_LIST to "$casteList",
-                                                EventParams.FROM_SCREEN to "RetryHelper"
-                                            )
-                                        )
+                                    castListDao?.deleteCasteTable()
+                                    casteResponse?.data?.forEach { casteModel ->
+                                        casteEntityList.add(CasteEntity.getCasteEntity(casteModel))
                                     }
+                                    castListDao?.insertAll(casteEntityList)
                                 } else {
                                     val ex = ApiResponseFailException(casteResponse?.message!!)
 

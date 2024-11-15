@@ -6,7 +6,6 @@ import com.nudge.core.model.request.AppConfigApiRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface CoreApiService {
     @POST("/registry-service/property")
@@ -14,7 +13,7 @@ interface CoreApiService {
 
     // Get CasteList
     @GET("/read-api/config/caste/get")
-    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
+    suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
 
 
 }

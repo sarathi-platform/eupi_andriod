@@ -56,7 +56,7 @@ interface DataLoadingScreenRepository {
     suspend fun deleteMissionActivitiesFromDB()
     suspend fun deleteActivityTasksFromDB()
 
-    suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>>
+    suspend fun getCasteListFromNetwork(): ApiResponseModel<List<CasteModel>>
     fun saveCasteList(castes: String)
     fun getCasteList(): List<CasteModel>
 

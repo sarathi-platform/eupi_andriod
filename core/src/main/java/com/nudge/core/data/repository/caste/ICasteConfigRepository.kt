@@ -5,7 +5,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CasteModel
 
 interface ICasteConfigRepository {
-    suspend fun getCasteConfigFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>>
+    suspend fun getCasteConfigFromNetwork(): ApiResponseModel<List<CasteModel>>
     suspend fun getAllCaste(): List<CasteEntity>
     suspend fun getAllCasteForLanguage(): List<CasteEntity>
     suspend fun getCaste(id: Int): CasteEntity

@@ -15,5 +15,7 @@ data class CasteModel(
     var casteName: String,
 
     @SerializedName("languageId")
-    var languageId: Int
+    var languageId: Int,
+    @SerializedName("languageCode")
+    var languageCode: String
 )

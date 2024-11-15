@@ -191,7 +191,7 @@ class AddDidiViewModel @Inject constructor(
     fun getCastName(castId : Int) : String{
         var castName = ""
         for(cast in castList){
-            if(castId == cast.id)
+            if (castId == cast.casteId)
                 castName = cast.casteName
         }
         return castName

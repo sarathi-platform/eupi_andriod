@@ -85,7 +85,7 @@ interface BaseLineApiService {
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
 
     @GET(SUBPATH_GET_CASTE_LIST)
-    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
+    suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
 
     @POST(GET_SECTION_STATUS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

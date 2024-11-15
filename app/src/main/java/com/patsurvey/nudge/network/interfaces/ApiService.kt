@@ -3,7 +3,7 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.nudge.core.database.entities.CasteEntity
+import com.nudge.core.model.CasteModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
@@ -105,7 +105,7 @@ interface ApiService {
 
     // Get CasteList
     @GET("/read-api/config/caste/get")
-    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteEntity>>
+    suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
 
     // Add WorkFlow
     @POST("/write-api/workflow/add")

@@ -28,42 +28,39 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
             if (!isNeedToCallApi(SUBPATH_GET_CASTE_LIST)) {
                 return
             }
-            var localLanguageList = casteConfigRepositoryImpl.getAllCasteForLanguage()
             val casteList = arrayListOf<CasteModel>()
-            if (localLanguageList.isNotEmpty()) {
-                insertApiStatus(SUBPATH_GET_CASTE_LIST)
-                val casteApiResponse =
-                    casteConfigRepositoryImpl.getCasteConfigFromNetwork(languageId = 0)
-
-                if (casteApiResponse.status.equals(SUCCESS, true)) {
-                    if (casteApiResponse.data != null) {
-                        updateApiStatus(
-                            SUBPATH_GET_CASTE_LIST,
-                            status = ApiStatus.SUCCESS.ordinal,
-                            BLANK_STRING,
-                            DEFAULT_SUCCESS_CODE
-                        )
-                        casteApiResponse.data?.forEach { casteModel ->
-                            casteConfigRepositoryImpl.insertCaste(
-                                CasteEntity.getCasteEntity(
-                                    casteModel
-                                )
-                            )
-                        }
-                        casteApiResponse.data?.let { remoteCasteList ->
-                            casteList.addAll(casteApiResponse.data)
-                        }
-                    }
-                } else {
+            val casteEntityList = arrayListOf<CasteEntity>()
+            insertApiStatus(SUBPATH_GET_CASTE_LIST)
+            val casteApiResponse =
+                casteConfigRepositoryImpl.getCasteConfigFromNetwork()
+            if (casteApiResponse.status.equals(SUCCESS, true)) {
+                if (casteApiResponse.data != null) {
+                    casteConfigRepositoryImpl.deleteCasteTable()
                     updateApiStatus(
                         SUBPATH_GET_CASTE_LIST,
-                        status = ApiStatus.FAILED.ordinal,
-                        casteApiResponse.message,
-                        DEFAULT_ERROR_CODE
+                        status = ApiStatus.SUCCESS.ordinal,
+                        BLANK_STRING,
+                        DEFAULT_SUCCESS_CODE
                     )
+                    casteApiResponse.data?.forEach { casteModel ->
+                        casteEntityList.add(CasteEntity.getCasteEntity(casteModel))
+                    }
+                    casteConfigRepositoryImpl.insertAll(
+                        casteEntityList
+                    )
+                    casteApiResponse.data?.let { remoteCasteList ->
+                        casteList.addAll(casteApiResponse.data)
+                    }
                 }
-                coreSharedPrefs.savePref("caste_list", casteList.json())
+            } else {
+                updateApiStatus(
+                    SUBPATH_GET_CASTE_LIST,
+                    status = ApiStatus.FAILED.ordinal,
+                    casteApiResponse.message,
+                    DEFAULT_ERROR_CODE
+                )
             }
+            coreSharedPrefs.savePref("caste_list", casteList.json())
 
         } catch (apiException: ApiException) {
             updateApiStatus(
