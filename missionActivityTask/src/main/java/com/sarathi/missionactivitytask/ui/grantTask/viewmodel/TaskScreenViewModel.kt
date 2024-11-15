@@ -19,6 +19,7 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.ALL
@@ -259,7 +260,9 @@ open class TaskScreenViewModel @Inject constructor(
                     isNAButtonEnable = it.isNotAvailableButton,
                     subjectId = it.subjectId,
                     componentType = ComponentEnum.Card.name,
-                    activityConfig
+                    activityConfig = activityConfig,
+                    taskActiveStatus = it.isActiveStatus
+
                 )
 
                 if (index == 0) {
@@ -270,8 +273,8 @@ open class TaskScreenViewModel @Inject constructor(
                         isNAButtonEnable = it.isNotAvailableButton,
                         subjectId = it.subjectId,
                         componentType = ComponentEnum.Search.name,
-                        activityConfig
-
+                        activityConfig = activityConfig,
+                        taskActiveStatus = it.isActiveStatus
                     )
                     searchLabel.value =
                         searchUiComponent[TaskCardSlots.SEARCH_LABEL.name]?.value
@@ -293,6 +296,8 @@ open class TaskScreenViewModel @Inject constructor(
                     val progressUiComponent = getUiComponentValues(
                         taskId = it.taskId,
                         taskStatus = it.status.toString(),
+                        taskActiveStatus = it.isActiveStatus
+                            ?: SubjectStatus.SUBJECT_ACTIVE.ordinal,
                         isTaskSecondaryStatusEnable = it.isTaskSecondaryStatusEnable,
                         isNAButtonEnable = it.isNotAvailableButton,
                         subjectId = it.subjectId,
@@ -402,12 +407,15 @@ open class TaskScreenViewModel @Inject constructor(
         isTaskSecondaryStatusEnable: Boolean?,
         isNAButtonEnable: Boolean?,
         subjectId: Int,
+        taskActiveStatus: Int,
         componentType: String,
         activityConfig: List<UiConfigModel>
     ): HashMap<String, TaskCardModel> {
         val cardAttributesWithValue = HashMap<String, TaskCardModel>()
         cardAttributesWithValue[TaskCardSlots.TASK_STATUS.name] =
             TaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
+        cardAttributesWithValue[TaskCardSlots.TASK_ACTIVE_STATUS.name] =
+            TaskCardModel(value = taskActiveStatus.toString(), label = BLANK_STRING, icon = null)
         cardAttributesWithValue[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name] =
             TaskCardModel(
                 value = isTaskSecondaryStatusEnable.toString(),

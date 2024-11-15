@@ -42,4 +42,5 @@
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="view_summary">View Summary</string>
+    <string name="beneficiary_is_reassigned_to_another_upcm" translatable="false">Beneficiary reassigned to another UPCM</string>
 </resources>

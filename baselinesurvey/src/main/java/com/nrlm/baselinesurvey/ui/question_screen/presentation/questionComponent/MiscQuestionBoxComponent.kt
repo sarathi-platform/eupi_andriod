@@ -61,7 +61,8 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
-import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 const val DEFAULT_SELECTED_ID = 0
@@ -76,7 +77,7 @@ fun MiscQuestionBoxComponent(
     selectedOptionMapForNumericInputTypeQuestions: Map<Int, InputTypeQuestionAnswerEntity>,
     selectedOption: OptionItemEntity?,
     maxCustomHeight: Dp,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (questionIndex: Int, optionItemEntity: OptionItemEntity, selectedValue: String, selectedId: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
@@ -186,7 +187,7 @@ fun MiscQuestionBoxComponent(
                                                     onInfoButtonClicked = {},
                                                     additionalValidation = { text, question -> true }
                                                 ) { inputValue ->
-                                                    if (isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem.optionItemEntity,
@@ -194,9 +195,8 @@ fun MiscQuestionBoxComponent(
                                                             DEFAULT_SELECTED_ID
                                                         )
                                                     } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
+                                                        context.activityCompleteOrDidiReassignedToast(
+                                                            questionStatusModel
                                                         )
                                                     }
                                                 }
@@ -208,11 +208,11 @@ fun MiscQuestionBoxComponent(
                                                     title = optionsItem.optionItemEntity.display
                                                         ?: BLANK_STRING,
                                                     showQuestion = optionsItem,
-                                                    isEditAllowed = isEditAllowed,
+                                                    isEditAllowed = questionStatusModel.isEditAllowed,
                                                     currentValue = selectedOptionMapForNumericInputTypeQuestions[optionsItem.optionId]?.inputValue,
                                                     onInfoButtonClicked = {},
                                                     onAnswerSelection = { inputValue ->
-                                                        if (isEditAllowed) {
+                                                        if (questionStatusModel.isEditAllowed) {
                                                             onAnswerSelection(
                                                                 questionIndex,
                                                                 optionsItem.optionItemEntity,
@@ -220,9 +220,8 @@ fun MiscQuestionBoxComponent(
                                                                 DEFAULT_SELECTED_ID
                                                             )
                                                         } else {
-                                                            showCustomToast(
-                                                                context,
-                                                                context.getString(R.string.edit_disable_message)
+                                                            context.activityCompleteOrDidiReassignedToast(
+                                                                questionStatusModel
                                                             )
                                                         }
                                                     }
@@ -244,7 +243,7 @@ fun MiscQuestionBoxComponent(
                                                     selectOptionText = selectedOption?.selectedValueId!!,
                                                     onInfoButtonClicked = {}
                                                 ) { selectedValue ->
-                                                    if (isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem.optionItemEntity,
@@ -254,9 +253,8 @@ fun MiscQuestionBoxComponent(
                                                             selectedValue
                                                         )
                                                     } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
+                                                        context.activityCompleteOrDidiReassignedToast(
+                                                            questionStatusModel
                                                         )
                                                     }
                                                 }
@@ -275,7 +273,7 @@ fun MiscQuestionBoxComponent(
                                                     showQuestionState = optionsItem,
                                                     onInfoButtonClicked = {},
                                                     onAnswerSelection = { value, id ->
-                                                        if (isEditAllowed) {
+                                                        if (questionStatusModel.isEditAllowed) {
                                                             onAnswerSelection(
                                                                 questionIndex,
                                                                 optionsItem.optionItemEntity,
@@ -283,9 +281,8 @@ fun MiscQuestionBoxComponent(
                                                                 id
                                                             )
                                                         } else {
-                                                            showCustomToast(
-                                                                context,
-                                                                context.getString(R.string.edit_disable_message)
+                                                            context.activityCompleteOrDidiReassignedToast(
+                                                                questionStatusModel
                                                             )
                                                         }
                                                     }

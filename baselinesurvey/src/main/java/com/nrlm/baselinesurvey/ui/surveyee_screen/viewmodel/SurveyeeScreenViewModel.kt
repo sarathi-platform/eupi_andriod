@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.enums.EventType
+import com.nudge.core.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +104,10 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _surveyeeListState.value.clear()
             }
             surveyeeListFromDb.forEach { surveyeeEntity ->
+                Log.d(
+                    "TAG",
+                    "init: surveyeeListFromDb: ${surveyeeEntity.didiId} :: ${surveyeeEntity.didiName} :: ${surveyeeEntity.dadaName}"
+                )
                 var surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,
                     imagePath = BLANK_STRING,
@@ -109,7 +115,8 @@ class SurveyeeScreenViewModel @Inject constructor(
                     address = getSurveyeeAddress(surveyeeEntity),
                     activityName = activityName,
                     isCohortName = (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true)),
-                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus),
+                    isActive = surveyeeEntity.isActive
                 )
                 if (surveyeeEntity.crpImageLocalPath.isNotEmpty()) {
                     val imagePath = surveyeeEntity.crpImageLocalPath.split("|").first()

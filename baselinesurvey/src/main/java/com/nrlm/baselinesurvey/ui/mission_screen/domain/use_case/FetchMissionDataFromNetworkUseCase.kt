@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case
 
+import android.util.Log
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ERROR_CODE
 import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
@@ -9,6 +10,7 @@ import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.json
 
 class FetchMissionDataFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
@@ -43,7 +45,7 @@ class FetchMissionDataFromNetworkUseCase(
                             activities = mission.activities
                         )
                         mission.activities.forEach { activity ->
-
+                            Log.d("TAG", "invokeActivity: ${activity.json()}")
                             repository.saveMissionsActivityTaskToDB(
                                 missionId = mission.missionId,
                                 activityId = activity.activityId,

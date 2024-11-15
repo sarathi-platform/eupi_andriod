@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.formatProgressNumber
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.progressIndicatorColor
 import com.nudge.core.ui.theme.smallTextStyle
@@ -61,7 +62,7 @@ fun CustomLinearProgressIndicator(
                 .clip(RoundedCornerShape(14.dp)),
             color = color,
             trackColor = progressTrackColor,
-            progress = progress.value,
+            progress = formatProgressNumber(progress.value),
             strokeCap = strokeCap
         )
         if (showProgressText) {

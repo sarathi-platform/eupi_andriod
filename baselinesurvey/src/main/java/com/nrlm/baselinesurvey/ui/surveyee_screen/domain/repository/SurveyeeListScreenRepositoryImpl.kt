@@ -28,6 +28,7 @@ import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
+import com.nudge.core.utils.SubjectStatus
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import javax.inject.Inject
 
@@ -104,7 +105,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                                 houseNo = it.houseNo ?: BLANK_STRING,
                                 villageId = it.villageId ?: -1,
                                 villageName = it.villageName ?: BLANK_STRING,
-                                ableBodied = it.ableBodied ?: BLANK_STRING
+                                ableBodied = it.ableBodied ?: BLANK_STRING,
+                                isActive = it.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                             )
                             surveyeeEntityDao.insertDidi(surveyeeEntity)
                         }

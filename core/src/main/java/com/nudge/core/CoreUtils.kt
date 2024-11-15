@@ -39,6 +39,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.enums.SyncBatchEnum
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.utils.CoreLogger
@@ -1143,7 +1144,7 @@ fun formatToIndianRupee(amount: String): String {
         }
     } catch (ex: Exception) {
         CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1413,5 +1414,29 @@ fun findUserTypeForMetadata(userType: String): String {
         else -> {
             UPCM
         }
+    }
+}
+
+fun formatProgressNumber(value: Float): Float {
+    try {
+        return value
+    } catch (ex: Exception) {
+        CoreAppDetails.getContext()
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatProgressNumber:${ex.message}", ex, false) }
+        return 0F
+
+    }
+}
+
+fun Context.activityCompleteOrDidiReassignedToast(questionStatusModel: QuestionStatusModel?) {
+    questionStatusModel?.let {
+        showCustomToast(
+            this,
+            this.getString(
+                if (it.isDidiReassigned)
+                    R.string.beneficiary_is_reassigned_to_another_upcm
+                else R.string.edit_disable_message
+            )
+        )
     }
 }

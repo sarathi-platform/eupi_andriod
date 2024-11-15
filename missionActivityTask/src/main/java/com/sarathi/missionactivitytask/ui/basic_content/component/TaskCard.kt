@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -61,6 +62,7 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.SubjectStatus
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
@@ -82,6 +84,7 @@ fun TaskCard(
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     secondaryButtonText: TaskCardModel?,
     status: TaskCardModel?,
+    taskActiveStatus: TaskCardModel?,
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isActivityCompleted: Boolean,
@@ -97,6 +100,10 @@ fun TaskCard(
     val taskStatus = remember(status?.value) {
         mutableStateOf(status?.value)
     }
+    var activeStatus = SubjectStatus.SUBJECT_ACTIVE.ordinal
+    taskActiveStatus?.let {
+        activeStatus = it.value.toInt() ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
+    }
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,6 +112,10 @@ fun TaskCard(
                 width = dimen_1_dp,
                 color = if (taskStatus?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
                 shape = RoundedCornerShape(dimen_6_dp)
+            )
+            .alpha(
+                if (activeStatus == SubjectStatus.SUBJECT_REASSIGN.ordinal)
+                    .4f else 1f
             )
             .background(Color.Transparent)
     ) {

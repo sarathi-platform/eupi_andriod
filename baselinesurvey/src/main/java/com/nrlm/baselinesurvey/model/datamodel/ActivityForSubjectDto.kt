@@ -11,5 +11,6 @@ data class ActivityForSubjectDto(
     var taskId: Int,
     var didiId: Int,
     var actualStartDate: String,
-    var actualCompletedDate: String
+    var actualCompletedDate: String,
+    var isActive: Int
 )

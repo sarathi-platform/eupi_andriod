@@ -27,6 +27,7 @@ fun TypeDropDownComponent(
     isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     selectOptionText: Int = 0,
+    isDidiReassigned: Boolean = false,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: Int) -> Unit
 ) {
@@ -76,7 +77,11 @@ fun TypeDropDownComponent(
                 } else {
                     showCustomToast(
                         context,
-                        context.getString(R.string.edit_disable_message)
+                        context.getString(
+                            if (isDidiReassigned)
+                                R.string.beneficiary_is_reassigned_to_another_upcm
+                            else R.string.edit_disable_message
+                        )
                     )
                 }
             },

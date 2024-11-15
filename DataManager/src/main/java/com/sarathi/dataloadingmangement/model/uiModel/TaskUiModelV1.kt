@@ -5,5 +5,6 @@ data class TaskUiModel(
     val status: String?,
     val subjectId: Int,
     val isTaskSecondaryStatusEnable: Boolean,
-    val isNotAvailableButton: Boolean
+    val isNotAvailableButton: Boolean,
+    val isActiveStatus: Int
 )

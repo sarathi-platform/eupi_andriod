@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import com.nudge.core.formatProgressNumber
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.trackLinearColor
 
@@ -20,7 +21,7 @@ fun LinearProgressBarComponent(
     trackColor: Color = trackLinearColor
 ) {
     LinearProgressIndicator(
-        progress = progress,
+        progress = formatProgressNumber(progress),
         modifier = modifier
             .fillMaxWidth()
             .height(7.dp),

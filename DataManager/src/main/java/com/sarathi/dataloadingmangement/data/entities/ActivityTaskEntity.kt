@@ -6,6 +6,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.utils.SubjectStatus
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
@@ -30,7 +32,7 @@ data class ActivityTaskEntity(
     var localTaskId: String,
     var startOffset: Int,
     var endOffset: Int,
-    var isActive: Int = 1,
+    var isActive: Int = SubjectStatus.SUBJECT_ACTIVE.ordinal,
 ) {
     companion object {
         fun getActivityTaskEntity(
@@ -51,7 +53,8 @@ data class ActivityTaskEntity(
                 localTaskId = if (!TextUtils.isEmpty(task.localTaskId)) task.localTaskId
                     ?: BLANK_STRING else UUID.randomUUID().toString(),
                 actualStartDate = task.actualStartDate ?: BLANK_STRING,
-                actualCompletedDate = task.actualEndDate ?: BLANK_STRING
+                actualCompletedDate = task.actualEndDate ?: BLANK_STRING,
+                isActive = task.subjectStatus.value(SubjectStatus.SUBJECT_ACTIVE.ordinal)
             )
         }
 

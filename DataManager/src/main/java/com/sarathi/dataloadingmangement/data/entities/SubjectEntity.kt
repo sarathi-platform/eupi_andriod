@@ -1,11 +1,13 @@
 package com.sarathi.dataloadingmangement.data.entities
 
+import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.SUBJECT_TABLE
 import com.sarathi.dataloadingmangement.model.response.DidiDetailList
@@ -91,7 +93,12 @@ data class SubjectEntity(
     @SerializedName("voName")
     @Expose
     @ColumnInfo(name = "voName")
-    var voName: String = BLANK_STRING
+    var voName: String = BLANK_STRING,
+
+    @SerializedName("isActive")
+    @Expose
+    @ColumnInfo(name = "isActive")
+    var isActive: Int = SubjectStatus.SUBJECT_ACTIVE.ordinal
 
 ) {
 
@@ -119,7 +126,8 @@ data class SubjectEntity(
                 voName = didiDetailList.voName.value(),
                 casteId = didiDetailList.casteId.value(),
                 ableBodied = didiDetailList.ableBodied.value(),
-                crpImageLocalPath = crpImageLocalPath ?: BLANK_STRING
+                crpImageLocalPath = crpImageLocalPath ?: BLANK_STRING,
+                isActive = didiDetailList.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
             )
 
         }

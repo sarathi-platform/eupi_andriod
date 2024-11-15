@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nudge.core.utils.SubjectStatus
 
 data class SurveyeeCardState(
 //    val surveyee: Surveyee
@@ -14,5 +15,6 @@ data class SurveyeeCardState(
     val surveyState: SurveyState,
     val activityName: String,
     val isCohortName: Boolean = false,
-    var isChecked: MutableState<Boolean> = mutableStateOf(false)
+    var isChecked: MutableState<Boolean> = mutableStateOf(false),
+    val isActive: Int = SubjectStatus.SUBJECT_ACTIVE.ordinal
 )

@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,6 +70,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nrlm.baselinesurvey.utils.toCamelCase
+import com.nudge.core.utils.SubjectStatus
 
 @Composable
 fun SurveyeeCardComponent(
@@ -93,6 +95,10 @@ fun SurveyeeCardComponent(
         shape = RoundedCornerShape(roundedCornerRadiusDefault),
         modifier = Modifier
             .fillMaxWidth()
+            .alpha(
+                if (surveyeeState.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal)
+                    .4f else 1f
+            )
             .clickable {
                 //Handle Click if any
             }

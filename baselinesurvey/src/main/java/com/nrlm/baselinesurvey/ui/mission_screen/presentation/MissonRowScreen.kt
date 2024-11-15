@@ -49,6 +49,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.formatProgressNumber
 
 
 @Composable
@@ -146,7 +147,7 @@ fun MissionRowScreen(
                     .padding(start = 16.dp)
             )
             LinearProgressIndicator(
-                progress = curPercentage.value,
+                progress = formatProgressNumber(curPercentage.value),
                 color = greenOnline,
                 trackColor = trackColor,
                 strokeCap = StrokeCap.Round,

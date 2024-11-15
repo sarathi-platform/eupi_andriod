@@ -38,6 +38,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.core.formatProgressNumber
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.smallTextStyleWithUnderline
 import com.nudge.core.utils.CoreLogger
@@ -147,7 +148,7 @@ fun EventTypeCard(
             )
             LinearProgressIndicator(
                 progress = animateFloatAsState(
-                    targetValue = producerProgress ?: 0f,
+                    targetValue = formatProgressNumber(producerProgress ?: 0f),
                     animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                     label = BLANK_STRING
                 ).value,
@@ -193,7 +194,7 @@ fun EventTypeCard(
                 )
                 LinearProgressIndicator(
                     progress = animateFloatAsState(
-                        targetValue = progress ?: 0f,
+                        targetValue = formatProgressNumber(progress ?: 0f),
                         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
                         label = BLANK_STRING
                     ).value,

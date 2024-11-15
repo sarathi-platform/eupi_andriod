@@ -22,7 +22,10 @@ object DatabaseModule {
         Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
             // Add Migrations for each migration object created.
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
-            .addMigrations(NudgeBaselineDatabase.MIGRATION_1_2)
+            .addMigrations(
+                NudgeBaselineDatabase.MIGRATION_1_2,
+                NudgeBaselineDatabase.MIGRATION_2_3
+            )
             .addCallback(NudgeBaselineDatabase.NudgeDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()

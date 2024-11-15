@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -63,7 +62,8 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
-import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -77,7 +77,7 @@ fun RadioQuestionBoxComponent(
     optionItemEntityList: List<OptionItemEntity>,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit
@@ -185,16 +185,15 @@ fun RadioQuestionBoxComponent(
                                                     optionsItem = optionsItem,
                                                     selectedIndex = selectedIndex
                                                 ) {
-                                                    if (isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed) {
                                                         selectedIndex = _index
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem
                                                         )
                                                     } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
+                                                        context.activityCompleteOrDidiReassignedToast(
+                                                            questionStatusModel
                                                         )
                                                     }
                                                 }

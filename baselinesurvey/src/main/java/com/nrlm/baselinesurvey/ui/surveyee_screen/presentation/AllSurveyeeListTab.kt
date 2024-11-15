@@ -65,6 +65,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
+import com.nudge.core.formatProgressNumber
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -210,7 +211,7 @@ fun AllSurveyeeListTab(
                                         .clip(RoundedCornerShape(14.dp)),
                                     color = progressIndicatorColor,
                                     trackColor = trackColor,
-                                    progress = linearProgress.value
+                                    progress = formatProgressNumber(linearProgress.value)
                                 )
                                 Spacer(modifier = Modifier.width(dimen_8_dp))
                                 Text(

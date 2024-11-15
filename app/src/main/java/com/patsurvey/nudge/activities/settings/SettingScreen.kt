@@ -80,6 +80,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.formatProgressNumber
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -1178,39 +1179,8 @@ fun showSyncDialog(
                                     .clip(RoundedCornerShape(14.dp)),
                                 color = progressIndicatorColor,
                                 backgroundColor = backgroundIndicatorColor,
-                                progress = animateNumber.value
+                                progress = formatProgressNumber(animateNumber.value)
                             )
-                            /*Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(24.dp)
-                                    .padding(start = indicatorPadding, end = indicatorPadding)
-                            ) {
-
-                                // Background indicator
-                                drawLine(
-                                    color = backgroundIndicatorColor,
-                                    cap = StrokeCap.Round,
-                                    strokeWidth = size.height,
-                                    start = Offset(x = 0f, y = 0f),
-                                    end = Offset(x = size.width, y = 0f)
-                                )
-
-                                // Convert the downloaded percentage into progress (width of foreground indicator)
-                                val progress =
-                                    (animateNumber.value / 100) * size.width // size.width returns the width of the canvas
-
-                                // Foreground indicator
-                                drawLine(
-                                    brush = Brush.linearGradient(
-                                        colors = gradientColors
-                                    ),
-                                    cap = StrokeCap.Round,
-                                    strokeWidth = size.height,
-                                    start = Offset(x = 0f, y = 0f),
-                                    end = Offset(x = progress, y = 0f)
-                                )
-                            }*/
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.Top,
@@ -1495,7 +1465,7 @@ fun showBPCSyncDialog(
                                     .clip(RoundedCornerShape(14.dp)),
                                 color = progressIndicatorColor,
                                 backgroundColor = backgroundIndicatorColor,
-                                progress = animateNumber.value
+                                progress = formatProgressNumber(animateNumber.value)
                             )
 
                             Row(

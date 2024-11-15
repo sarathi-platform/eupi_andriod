@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.SubjectStatus
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
@@ -38,7 +39,9 @@ class GetTaskRepositoryImpl @Inject constructor(
                         subjectId = taskUiModelV1.subjectId,
                         status = taskUiModelV1.status,
                         isTaskSecondaryStatusEnable = false,
-                        isNotAvailableButton = true
+                        isNotAvailableButton = true,
+                        isActiveStatus = taskUiModelV1.isActive
+                            ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                     )
                 )
             } else {
@@ -49,7 +52,9 @@ class GetTaskRepositoryImpl @Inject constructor(
                         subjectId = taskUiModelV1.subjectId,
                         status = taskUiModelV1.status,
                         isTaskSecondaryStatusEnable = isTaskSecondaryStatusEnable,
-                        isNotAvailableButton = isTaskSecondaryStatusEnable
+                        isNotAvailableButton = isTaskSecondaryStatusEnable,
+                        isActiveStatus = taskUiModelV1.isActive
+                            ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                     )
                 )
 

@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import android.util.Log
+import com.nudge.core.json
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
@@ -22,6 +24,7 @@ class FetchMissionDataUseCase @Inject constructor(
                             missionId = missionId,
                             missionActivityModel = activity,
                         )
+                        Log.d("TAG", "invokeActivytDatails: ${activity.json()} ")
                         repository.saveMissionsActivityTaskToDB(
                             missionId = missionId,
                             activityId = activity.id,

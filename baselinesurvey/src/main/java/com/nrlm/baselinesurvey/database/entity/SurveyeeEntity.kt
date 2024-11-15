@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SURVEYEE_TABLE
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.utils.SubjectStatus
 
 
 @Entity(tableName = SURVEYEE_TABLE)
@@ -110,7 +111,12 @@ data class SurveyeeEntity(
     @SerializedName("voName")
     @Expose
     @ColumnInfo(name = "voName")
-    var voName: String = BLANK_STRING
+    var voName: String = BLANK_STRING,
+
+    @SerializedName("isActive")
+    @Expose
+    @ColumnInfo(name = "isActive")
+    var isActive: Int = SubjectStatus.SUBJECT_ACTIVE.ordinal,
 
 ) {
     companion object {

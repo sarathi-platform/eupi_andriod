@@ -79,9 +79,10 @@ import com.nrlm.baselinesurvey.ui.theme.weight_60_percent
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.findTagForId
-import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -95,7 +96,7 @@ fun FormWithNoneTypeQuestionComponent(
     contests: List<ContentEntity?>? = listOf(),
     itemCount: Int = 0,
     summaryValue: String = BLANK_STRING,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (questionIndex: Int, isNoneMarkedForForm: Boolean, isFormOpened: Boolean) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
@@ -252,7 +253,7 @@ fun FormWithNoneTypeQuestionComponent(
                                                         ),
                                                     onOptionSelected = {
 
-                                                        if (isEditAllowed) {
+                                                        if (questionStatusModel.isEditAllowed) {
                                                             if (it.display?.equals(optionList.last().value) == true) { //when marked NO
                                                                 isNoneMarked.value = true
                                                                 isNoneQuestionAnswered.value =
@@ -272,9 +273,8 @@ fun FormWithNoneTypeQuestionComponent(
                                                             )
 
                                                         } else {
-                                                            showCustomToast(
-                                                                context,
-                                                                context.getString(R.string.edit_disable_message)
+                                                            context.activityCompleteOrDidiReassignedToast(
+                                                                questionStatusModel
                                                             )
                                                         }
                                                     }
@@ -412,21 +412,20 @@ fun FormWithNoneTypeQuestionComponent(
                                                 )
                                                 OutlinedCTAButtonComponent(
                                                     tittle = question?.questionSummary,
-                                                    isActive = isEditAllowed,
+                                                    isActive = questionStatusModel.isEditAllowed,
                                                     modifier = Modifier
                                                         .fillMaxWidth()
                                                         .weight(weight_60_percent)
                                                 ) {
-                                                    if (isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             false,
                                                             true
                                                         )
                                                     } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
+                                                        context.activityCompleteOrDidiReassignedToast(
+                                                            questionStatusModel
                                                         )
                                                     }
                                                 }

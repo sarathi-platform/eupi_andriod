@@ -230,3 +230,5 @@ const val SUBJECT_DADA_NAME = "dadaName"
 const val SUBJECT_ADDRESS = "address"
 const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
+const val SUBJECT_ACTIVE_STATUS = 1
+const val SUBJECT_REASSIGN_STATUS = 4

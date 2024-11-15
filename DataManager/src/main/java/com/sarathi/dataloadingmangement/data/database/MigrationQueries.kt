@@ -15,6 +15,7 @@ import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
 import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
+import com.sarathi.dataloadingmangement.SUBJECT_TABLE
 import com.sarathi.dataloadingmangement.SURVEY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.SURVEY_TABLE
 
@@ -234,5 +235,8 @@ object MigrationQueries {
 
     val ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID =
         "ALTER TABLE $ANSWER_TABLE ADD COLUMN formId INTEGER NOT NULL"
+
+    val ALTER_SUBJECT_ENTITY_ADD_IS_ACTIVE =
+        "ALTER TABLE $SUBJECT_TABLE ADD COLUMN isActive INTEGER DEFAULT 1"
 }
 

@@ -11,6 +11,7 @@ import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -89,6 +90,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
     val isActivityCompleted = mutableStateOf<Boolean>(false)
+    val isTaskActive = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
@@ -152,6 +154,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             taskEntity?.let { task ->
                 activityConfig =
                     getActivityUiConfigUseCase.getActivityConfig(task.activityId, task.missionId)
+                isTaskActive.value = task.isActive != SubjectStatus.SUBJECT_REASSIGN.ordinal
             }
 
             val sectionList = getSectionListUseCase.invoke(surveyId = surveyId)
@@ -479,7 +482,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
         }
 
-        return !isActivityCompleted.value && isFormEntryAllowed
+        return !isActivityCompleted.value && isFormEntryAllowed && isTaskActive.value
     }
 
     fun getSurveyModelWithValue(
@@ -513,6 +516,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
         return updatedModel
 
+    }
+    fun isQuestionEditable(): Boolean {
+        return (!isActivityCompleted.value && isTaskActive.value)
     }
 
 }

@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
@@ -278,7 +279,10 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
-                    isEditable = !viewModel.isActivityCompleted.value,
+                    questionStatusModel = QuestionStatusModel(
+                        isEditAllowed = !viewModel.isActivityCompleted.value,
+                        isDidiReassigned = viewModel.isTaskActive.value
+                    ),
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
@@ -304,7 +308,7 @@ fun QuestionUiContent(
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
-                    isEditable = !viewModel.isActivityCompleted.value,
+                    isEditable = viewModel.isQuestionEditable(),
                     showCardView = showCardView,
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING,
@@ -328,7 +332,7 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditable = !viewModel.isActivityCompleted.value,
+                    isEditable = viewModel.isQuestionEditable(),
                     maxCustomHeight = maxHeight,
                     subtitle = question.display
                 ) { selectedValue, isDeleted ->
@@ -353,7 +357,7 @@ fun QuestionUiContent(
                         ?: com.nudge.core.BLANK_STRING,
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditable = !viewModel.isActivityCompleted.value,
+                    isEditable = viewModel.isQuestionEditable(),
                     maxCustomHeight = maxHeight,
                     subtitle = question.display,
                 ) { selectedValue, isDeleted ->
@@ -370,7 +374,7 @@ fun QuestionUiContent(
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
                     questionIndex = index,
-                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
@@ -395,7 +399,7 @@ fun QuestionUiContent(
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     sources = getOptionsValueDto(question.options ?: listOf()),
-                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
                     optionStateMap = viewModel.optionStateMap,
@@ -435,6 +439,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     optionUiModelList = question.options.value(),
                     onAnswerSelection = { questionIndex, optionItemIndex ->
                         question.options?.forEachIndexed { index, _ ->
@@ -459,6 +464,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     optionStateMap = viewModel.optionStateMap,
                     onAnswerSelection = { selectedOptionIndex, isSelected ->
                         question.options?.get(selectedOptionIndex)?.isSelected =
@@ -495,6 +501,7 @@ fun QuestionUiContent(
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     optionUiModelList = question.options.value(),
                     onAnswerSelection = { questionIndex, optionItemIndex ->
                         question.options?.forEachIndexed { index, _ ->
@@ -515,7 +522,7 @@ fun QuestionUiContent(
                     title = question.questionDisplay,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
-                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     showCardView = showCardView,
                     onAnswerSelection = { optionId, mSelectedValue ->
 
@@ -536,7 +543,7 @@ fun QuestionUiContent(
                 HrsMinRangePickerComponent(
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    isEditAllowed = viewModel.isQuestionEditable(),
                     typePicker = question.type,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING

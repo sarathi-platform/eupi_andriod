@@ -13,6 +13,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.toCamelCase
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.utils.SubjectStatus
 
 class FetchSurveyeeListFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
@@ -57,7 +58,8 @@ class FetchSurveyeeListFromNetworkUseCase(
                             voName = it.voName ?: BLANK_STRING,
                             surveyStatus = SurveyState.toInt(
                                 taskForSubject?.status ?: SurveyState.NOT_STARTED.name
-                            )
+                            ),
+                            isActive = it.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                         )
                         repository.saveSurveyeeList(surveyeeEntity)
                     }
@@ -88,7 +90,8 @@ class FetchSurveyeeListFromNetworkUseCase(
                             ableBodied = BLANK_STRING,
                             surveyStatus = SurveyState.toInt(
                                 taskForSubject?.status ?: SurveyState.NOT_STARTED.name
-                            )
+                            ),
+                            isActive = it.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                         )
                         repository.saveSurveyeeList(hamletSurveyEntity)
                     }

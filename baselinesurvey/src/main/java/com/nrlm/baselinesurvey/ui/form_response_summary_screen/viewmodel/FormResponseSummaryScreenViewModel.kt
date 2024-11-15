@@ -23,6 +23,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.enums.EventType
+import com.nudge.core.utils.SubjectStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +49,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
     var questionEntity: QuestionEntity? = null
 
     val isEditAllowed = mutableStateOf(true)
+    val isDidiReassigned = mutableStateOf(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -171,6 +173,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                     task?.missionId!!,
                     task.activityId
                 )
+            isDidiReassigned.value = task.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal
         }
     }
 

@@ -1,9 +1,12 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Log
+import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -323,6 +326,7 @@ class MissionRepositoryImpl @Inject constructor(
     ) {
         taskDao.softDeleteActivityTask(sharedPrefs.getUniqueUserIdentifier(), activityId, missionId)
         tasks.forEach { task ->
+            Log.d("TAG", "saveMissionsActivityTaskToDB: ${task.json()}")
             val taskCount =
                 taskDao.getTaskByIdCount(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
@@ -338,16 +342,17 @@ class MissionRepositoryImpl @Inject constructor(
                     )
                 )
                 saveTaskAttributes(
-                    missionId,
-                    activityId,
-                    task.id,
-                    task.taskData ?: listOf(),
-                    task.subjectId,
-                    subject
+                    missionId = missionId,
+                    activityId = activityId,
+                    id = task.id,
+                    taskData = task.taskData ?: listOf(),
+                    subjectId = task.subjectId,
+                    subject = subject,
+                    isActive = task.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                 )
             } else {
                 taskDao.updateActiveTaskStatus(
-                    1,
+                    isActive = task.subjectStatus.value(SubjectStatus.SUBJECT_ACTIVE.ordinal),
                     task.id,
                     sharedPrefs.getUniqueUserIdentifier()
                 )
@@ -461,7 +466,8 @@ class MissionRepositoryImpl @Inject constructor(
         id: Int,
         taskData: List<TaskData>,
         subjectId: Int,
-        subject: String
+        subject: String,
+        isActive: Int
     ) {
         val refrenceId = subjectAttributeDao.insertSubjectAttribute(
             SubjectAttributeEntity.getSubjectAttributeEntity(
@@ -472,6 +478,7 @@ class MissionRepositoryImpl @Inject constructor(
                 subjectId = subjectId,
                 subjectType = subject,
                 attribute = "",
+                isActive = isActive
             )
         )
         taskData.forEach {

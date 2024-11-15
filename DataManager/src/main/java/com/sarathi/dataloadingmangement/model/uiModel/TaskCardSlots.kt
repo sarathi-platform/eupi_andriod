@@ -17,6 +17,7 @@ enum class TaskCardSlots(val type: String) {
     SEARCH_ON(type = "text"),
     GROUP_BY(type = "text"),
     TASK_STATUS(type = "text"),
+    TASK_ACTIVE_STATUS(type = "text"),
     TASK_SECOND_STATUS_AVAILABLE(type = "text"),
     TASK_NOT_AVAILABLE_ENABLE(type = "text"),
     SEARCH_LABEL(type = "text"),

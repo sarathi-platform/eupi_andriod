@@ -91,6 +91,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.formatProgressNumber
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.navigateToQuestionScreen
 import com.nudge.navigationmanager.graphs.navigateToSearchScreen
@@ -410,7 +411,7 @@ fun SectionListScreen(
                                         .clip(RoundedCornerShape(14.dp)),
                                     color = progressIndicatorColor,
                                     trackColor = trackColor,
-                                    progress = linearProgress.value
+                                    progress = formatProgressNumber(linearProgress.value)
                                 )
                                 Spacer(modifier = Modifier.width(dimen_8_dp))
                                 androidx.compose.material3.Text(

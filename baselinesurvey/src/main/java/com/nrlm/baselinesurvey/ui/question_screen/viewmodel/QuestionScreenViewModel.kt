@@ -57,6 +57,7 @@ import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionB
 import com.nrlm.baselinesurvey.utils.updateOptionsForNoneCondition
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
+import com.nudge.core.utils.SubjectStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -121,6 +122,7 @@ class QuestionScreenViewModel @Inject constructor(
     val didiInfoState: MutableState<DidiInfoEntity?> = mutableStateOf(null)
 
     var isEditAllowed: Boolean = true
+    var isDidiReassigned = mutableStateOf(false)
 
     var isNoneMarkedForFormQuestion: MutableState<MutableMap<Int, Boolean>> =
         mutableStateOf(mutableMapOf())
@@ -153,6 +155,7 @@ class QuestionScreenViewModel @Inject constructor(
                     task.missionId,
                     task.activityId
                 )
+                isDidiReassigned.value = task.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal
             }
         }
     }

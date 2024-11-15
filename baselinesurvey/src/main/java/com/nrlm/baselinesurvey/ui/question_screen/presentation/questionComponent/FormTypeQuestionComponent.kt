@@ -66,6 +66,8 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -78,7 +80,7 @@ fun FormTypeQuestionComponent(
     contests: List<ContentEntity?>? = listOf(),
     itemCount: Int = 0,
     summaryValue: String = BLANK_STRING,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
@@ -170,7 +172,7 @@ fun FormTypeQuestionComponent(
                                     )
                                     OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
-                                        isActive = isEditAllowed,
+                                        isActive = questionStatusModel.isEditAllowed,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(weight_60_percent)
@@ -179,18 +181,17 @@ fun FormTypeQuestionComponent(
                                                 sectionId = question?.sectionId ?: 0,
                                                 surveyId = question?.surveyId ?: 0,
                                                 questionId = question?.questionId ?: 0
-                                            )) && isEditAllowed
+                                            )) && questionStatusModel.isEditAllowed
                                         ) {
                                             showCustomToast(
                                                 context,
                                                 context.getString(R.string.only_one_entry_can_be_added)
                                             )
-                                        } else if (isEditAllowed) {
+                                        } else if (questionStatusModel.isEditAllowed) {
                                             onAnswerSelection(questionIndex)
                                         } else {
-                                            showCustomToast(
-                                                context,
-                                                context.getString(R.string.edit_disable_message)
+                                            context.activityCompleteOrDidiReassignedToast(
+                                                questionStatusModel
                                             )
                                         }
                                     }

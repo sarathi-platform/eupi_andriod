@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.utils.SubjectStatus
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUBJECT_ATTRIBUTE_TABLE_NAME
 
@@ -25,7 +26,7 @@ data class SubjectAttributeEntity(
     var missionId: Int,
     var taskId: Int,
     var activityId: Int,
-    var isActive: Int = 1
+    var isActive: Int = SubjectStatus.SUBJECT_ACTIVE.ordinal
 ) {
     companion object {
 
@@ -39,7 +40,8 @@ data class SubjectAttributeEntity(
             date: String = System.currentTimeMillis().toString(),
             taskId: Int,
             tagId: Int = 0,
-            tagType: String = BLANK_STRING
+            tagType: String = BLANK_STRING,
+            isActive: Int
         ): SubjectAttributeEntity {
 
             return SubjectAttributeEntity(
@@ -53,7 +55,8 @@ data class SubjectAttributeEntity(
                 taskId = taskId,
                 tagId = tagId,
                 tagType = tagType,
-                date = date
+                date = date,
+                isActive = isActive
             )
         }
     }

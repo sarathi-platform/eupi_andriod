@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.utils.getUniqueIdForEntity
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.toStringList
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.utils.SubjectStatus
 
 @Entity(tableName = TASK_TABLE_NAME)
 data class ActivityTaskEntity(
@@ -35,7 +36,7 @@ data class ActivityTaskEntity(
     var subjectId: Int,
     var language: String?,
     var localTaskId: String,
-    var isActive: Int = 1,
+    var isActive: Int = SubjectStatus.SUBJECT_ACTIVE.ordinal,
     ) {
     companion object {
         fun getActivityTaskEntity(
@@ -58,7 +59,7 @@ data class ActivityTaskEntity(
                 activityState = 0,
                 subjectId = task.subjectId ?: -1,
                 language = task.language ?: DEFAULT_LANGUAGE_CODE,
-                localTaskId = task.localTaskId ?: getUniqueIdForEntity()
+                localTaskId = task.localTaskId ?: getUniqueIdForEntity(),
             )
         }
 

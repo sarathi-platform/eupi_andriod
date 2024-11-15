@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.nudge.core.SUBJECT_ACTIVE_STATUS
+import com.nudge.core.SUBJECT_REASSIGN_STATUS
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModelV1
@@ -18,10 +20,10 @@ interface TaskDao {
     @Query("DELETE FROM $TASK_TABLE_NAME where userId=:userId ")
     fun deleteActivityTaskForUser(userId: String)
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and isActive=1")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     suspend fun getAllActivityTask(userId: String): List<ActivityTaskEntity>
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and isActive=1")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskById(userId: String, taskId: Int): ActivityTaskEntity
 
     @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
@@ -34,9 +36,9 @@ interface TaskDao {
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
     @Query(
-        "SELECT task_table.taskId,task_table.subjectId, task_table.status\n" +
+        "SELECT task_table.taskId,task_table.subjectId, task_table.status,task_table.isActive" +
                 " FROM task_table " +
-                " where task_table.missionId=:missionId  and task_table.activityId = :activityId and task_table.userId=:userId and isActive=1 group by task_table.taskId"
+                " where task_table.missionId=:missionId  and task_table.activityId = :activityId and task_table.userId=:userId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS) group by task_table.taskId"
     )
     suspend fun getActiveTask(
         userId: String,
@@ -44,7 +46,7 @@ interface TaskDao {
         activityId: Int
     ): List<TaskUiModelV1>
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive=1 ")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS) ")
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
 
 
@@ -99,14 +101,14 @@ interface TaskDao {
     }
 
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and isActive=1")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskCountForMission(userId: String, missionId: Int): Int
 
 
     @Query("UPDATE $TASK_TABLE_NAME SET isActive = :isActive where userId=:userId and  taskId = :taskId")
     fun updateActiveTaskStatus(isActive: Int, taskId: Int, userId: String)
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
 
     @Query("SELECT status from $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and subjectId=:subjectId")

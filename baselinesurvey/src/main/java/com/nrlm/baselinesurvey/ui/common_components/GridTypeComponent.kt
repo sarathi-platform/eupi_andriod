@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -73,7 +72,8 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.getIndexById
-import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -87,7 +87,7 @@ fun GridTypeComponent(
     contests: List<ContentEntity?>? = listOf(),
     selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (questionIndex: Int, optionItems: List<OptionItemEntity>, selectedIndeciesCount: List<Int>) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
@@ -222,7 +222,7 @@ fun GridTypeComponent(
                                                     isEnabled = areOptionsEnabled,
                                                     selectedIndex = selectedIndices.value.toList()
                                                 ) { selectedOptionId ->
-                                                    if (isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed) {
                                                         if (areOptionsEnabled) {
                                                             try {
                                                                 if (optionItemEntityList.find { it.optionId == selectedOptionId }
@@ -362,9 +362,8 @@ fun GridTypeComponent(
                                                             }
                                                         }
                                                     } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
+                                                        context.activityCompleteOrDidiReassignedToast(
+                                                            questionStatusModel
                                                         )
                                                     }
                                                 }
@@ -405,7 +404,7 @@ fun GridTypeComponent(
                                                 onInfoButtonClicked = {},
                                                 additionalValidation = { _, _ -> true }
                                             ) { value ->
-                                                if (isEditAllowed) {
+                                                if (questionStatusModel.isEditAllowed) {
                                                     val updatedOptionItem =
                                                         optionItem.copy(selectedValue = value)
                                                     try {
@@ -460,9 +459,8 @@ fun GridTypeComponent(
                                                         )
                                                     }
                                                 } else {
-                                                    showCustomToast(
-                                                        context,
-                                                        context.getString(R.string.edit_disable_message)
+                                                    context.activityCompleteOrDidiReassignedToast(
+                                                        questionStatusModel
                                                     )
                                                 }
                                             }
@@ -678,6 +676,10 @@ fun GridTypeQuestionPreview() {
             questionIndex = 1,
             maxCustomHeight = maxHeight,
             selectedOptionIndices = listOf(),
+            questionStatusModel = QuestionStatusModel(
+                isDidiReassigned = true,
+                isEditAllowed = false
+            ),
             onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
             }
         )

@@ -10,6 +10,8 @@ import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.model.datamodel.SummaryFileDto
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.SUBJECT_ACTIVE_STATUS
+import com.nudge.core.SUBJECT_REASSIGN_STATUS
 
 @Dao
 interface ActivityTaskDao {
@@ -19,10 +21,10 @@ interface ActivityTaskDao {
     @Query("DELETE FROM $TASK_TABLE_NAME where userId=:userId ")
     fun deleteActivityTask(userId: String)
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and isActive=1")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     suspend fun getAllActivityTask(userId: String): List<ActivityTaskEntity>
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and isActive=1")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskById(userId: String, taskId: Int): ActivityTaskEntity
 
     @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
@@ -34,20 +36,20 @@ interface ActivityTaskDao {
     @Query("UPDATE $TASK_TABLE_NAME set isActive = 0 where userId=:userId and activityId=:activityId and missionId = :missionId ")
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     suspend fun getActivityTask(
         userId: String,
         missionId: Int,
         activityId: Int
     ): List<ActivityTaskEntity>
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive=1 ")
+    @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS) ")
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
 
-    @Query("Select * FROM $TASK_TABLE_NAME where  userId=:userId and  isActive=1 and missionId in(:missionId) and activityName in(:activityName)")
+    @Query("Select * FROM $TASK_TABLE_NAME where  userId=:userId and  isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS) and missionId in(:missionId) and activityName in(:activityName)")
     fun isTaskExist(userId: String, missionId: Int, activityName: String): Boolean
 
-    @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId and isActive=1")
+    @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskFromSubjectId(userId: String, subjectId: Int): ActivityTaskEntity?
 
     @Query("UPDATE $TASK_TABLE_NAME set activityState = :surveyStatus where userId=:userId and didiId = :subjectId")
@@ -97,23 +99,24 @@ interface ActivityTaskDao {
         updateTaskCompletedDate(userId, taskId, actualCompletedDate)
     }
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where userId=:userId and activityId = :activityId AND status NOT in (:status) and isActive=1")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where userId=:userId and activityId = :activityId AND status NOT in (:status) and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getPendingTaskCountLive(
         userId: String,
         activityId: Int,
         status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
     ): LiveData<Int>
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where userId=:userId and activityId = :activityId AND status NOT in (:status) and isActive=1")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where userId=:userId and activityId = :activityId AND status NOT in (:status) and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getPendingTaskCount(
         userId: String,
         activityId: Int,
         status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
     ): Int
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and isActive=1")
+
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskCountForMission(userId: String, missionId: Int): Int
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId AND status != :status and isActive=1")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId AND status != :status and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getPendingTaskCountLiveForMission(
         userId: String,
         missionId: Int,
@@ -123,10 +126,10 @@ interface ActivityTaskDao {
     @Query("UPDATE $TASK_TABLE_NAME SET isActive = :isActive where userId=:userId and  taskId = :taskId")
     fun updateActiveTaskStatus(isActive: Int, taskId: Int, userId: String)
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
 
-    @Query("SELECT status as summaryKey, count(*) as summaryCount from $TASK_TABLE_NAME where userId = :userId and missionId = :missionId and activityId = :activityId and isActive = 1 group by status")
+    @Query("SELECT status as summaryKey, count(*) as summaryCount from $TASK_TABLE_NAME where userId = :userId and missionId = :missionId and activityId = :activityId and isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS) group by status")
     fun getTaskSummaryByStatus(
         userId: String,
         missionId: Int,

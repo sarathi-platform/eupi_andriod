@@ -4,6 +4,7 @@ import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.enums.AttributesType
 import com.nudge.core.enums.SubjectType
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.SubjectStatus
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
@@ -54,7 +55,8 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
             date = finalAttendanceState.date.toString(),
             missionId = 0,
             activityId = 0,
-            taskId = 0
+            taskId = 0,
+            isActive = SubjectStatus.SUBJECT_ACTIVE.ordinal //TODO Need to update isActive for didi assignment
         )
         return subjectAttributeDao.insertSubjectAttribute(subjectAttributeEntity)
     }

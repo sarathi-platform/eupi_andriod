@@ -11,11 +11,13 @@ import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.SUBJECT_ACTIVE_STATUS
+import com.nudge.core.SUBJECT_REASSIGN_STATUS
 
 const val activityForSubject =
     "$ACTIVITY_TABLE_NAME.missionId missionId, $ACTIVITY_TABLE_NAME.activityId, $ACTIVITY_TABLE_NAME.activityName, $ACTIVITY_TABLE_NAME.activityType, " +
             "$ACTIVITY_TABLE_NAME.activityTypeId, $ACTIVITY_TABLE_NAME.doer, $ACTIVITY_TABLE_NAME.subject, $ACTIVITY_TABLE_NAME.reviewer, $TASK_TABLE_NAME.taskId, $TASK_TABLE_NAME.didiId, " +
-            "$TASK_TABLE_NAME.actualStartDate, $TASK_TABLE_NAME.actualCompletedDate"
+            "$TASK_TABLE_NAME.actualStartDate, $TASK_TABLE_NAME.actualCompletedDate, $TASK_TABLE_NAME.isActive"
 @Dao
 interface MissionActivityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -56,7 +58,7 @@ interface MissionActivityDao {
     @Query("Select * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId in(:missionId) and isActive=1")
     fun isActivityExist(userId: String, missionId: Int): Boolean
 
-    @Query("SELECT $activityForSubject FROM $ACTIVITY_TABLE_NAME LEFT JOIN $TASK_TABLE_NAME on $ACTIVITY_TABLE_NAME.activityId = $TASK_TABLE_NAME.activityId where $TASK_TABLE_NAME.userId=:userId and $TASK_TABLE_NAME.didiId = :subjectId and $TASK_TABLE_NAME.isActive=1")
+    @Query("SELECT $activityForSubject FROM $ACTIVITY_TABLE_NAME LEFT JOIN $TASK_TABLE_NAME on $ACTIVITY_TABLE_NAME.activityId = $TASK_TABLE_NAME.activityId where $TASK_TABLE_NAME.userId=:userId and $TASK_TABLE_NAME.didiId = :subjectId and $TASK_TABLE_NAME.isActive in ($SUBJECT_ACTIVE_STATUS,$SUBJECT_REASSIGN_STATUS)")
     fun getActivityFromSubjectId(userId: String, subjectId: Int): ActivityForSubjectDto
 
     @Query("SELECT * from $ACTIVITY_TABLE_NAME where userId=:userId and  missionId = :missionId and activityId = :activityId and isActive=1")

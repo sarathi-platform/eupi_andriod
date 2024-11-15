@@ -57,8 +57,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.nudge.core.json
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 import java.util.Locale
 
 @Composable
@@ -493,9 +493,11 @@ fun FormResponseCard(
                         if (formResponseSummaryScreenViewModel.isEditAllowed.value) {
                             onUpdate(formResponseObjectDto.referenceId)
                         } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.edit_disable_message)
+                            context.activityCompleteOrDidiReassignedToast(
+                                QuestionStatusModel(
+                                    isDidiReassigned = formResponseSummaryScreenViewModel.isDidiReassigned.value,
+                                    isEditAllowed = formResponseSummaryScreenViewModel.isEditAllowed.value
+                                )
                             )
                         }
                     }, modifier = Modifier
@@ -523,9 +525,11 @@ fun FormResponseCard(
                         if (formResponseSummaryScreenViewModel.isEditAllowed.value) {
                             onDelete(formResponseObjectDto.referenceId)
                         } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.edit_disable_message)
+                            context.activityCompleteOrDidiReassignedToast(
+                                QuestionStatusModel(
+                                    isDidiReassigned = formResponseSummaryScreenViewModel.isDidiReassigned.value,
+                                    isEditAllowed = formResponseSummaryScreenViewModel.isEditAllowed.value
+                                )
                             )
                         }
                     }, modifier = Modifier
@@ -552,7 +556,7 @@ fun DidiInfoCard(
     modifier: Modifier = Modifier,
     didiInfoEntity: DidiInfoEntity,
     didiDetails: SurveyeeEntity?,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onUpdate: (didiId: Int) -> Unit
 ) {
 
@@ -654,7 +658,7 @@ fun DidiInfoCard(
                     }
                 }
                 Spacer(modifier = Modifier.height(dimen_16_dp))
-                if (isEditAllowed) {
+                if (questionStatusModel.isEditAllowed) {
                     Divider(
                         thickness = dimen_1_dp,
                         modifier = Modifier.fillMaxWidth(),
@@ -685,16 +689,9 @@ fun DidiInfoCard(
                         Divider(
                             color = borderGreyLight,
                             modifier = Modifier
-                                .fillMaxHeight()  //fill the max height
+                                .fillMaxHeight()
                                 .width(1.dp)
                         )
-                        /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
-                        ) {
-                            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
-                        }*/
                     }
                 }
             }
@@ -702,10 +699,3 @@ fun DidiInfoCard(
     }
 
 }
-
-/*
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun FormResponseCardPreview() {
-
-}*/

@@ -15,6 +15,7 @@ import com.nudge.core.enums.ValueTypes.Companion.convertToDataType
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
@@ -119,7 +120,8 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
             date = date.toString(),
             missionId = 0,
             activityId = 0,
-            taskId = 0
+            taskId = 0,
+            isActive = SubjectStatus.SUBJECT_ACTIVE.ordinal //TODO Need to update isActive for didi assignment
         )
         return subjectAttributeDao.insertSubjectAttribute(subjectAttributeEntity)
     }

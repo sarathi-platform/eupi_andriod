@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.model.datamodel
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.utils.SubjectStatus
 
 data class DidiDetailList(
     @SerializedName("comment")
@@ -34,5 +35,7 @@ data class DidiDetailList(
     @SerializedName("relationship")
     var relationship: String? = null,
     @SerializedName("voName")
-    var voName: String? = null
+    var voName: String? = null,
+    @SerializedName("subjectStatus")
+    var subjectStatus: Int? = SubjectStatus.SUBJECT_ACTIVE.ordinal
 )
