@@ -112,8 +112,8 @@ class ConditionsUtils {
                             map[it.questionId] = optionIds
                         }
                 }
-                if (QuestionType.userInputQuestionTypeList.contains(it.type) || QuestionType.numericUseInputQuestionTypeList.contains(
-                        it.type
+                if (QuestionType.userInputQuestionTypeList.contains(it.type.toLowerCase()) || QuestionType.numericUseInputQuestionTypeList.contains(
+                        it.type.toLowerCase()
                     )
                 ) {
                     inputTypeQuestionResponses[it.questionId] =
