@@ -66,4 +66,12 @@ interface ISurveySaveRepository {
         sectionId: Int,
         questionIds: List<Int>
     ): List<SurveyAnswerEntity>
+
+    suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int, referenceId: String,
+        grantId: Int,
+        grantType: String
+    )
 }
