@@ -496,6 +496,9 @@
     <string name="village_is_not_vo_endorsed_right_now">Da.o VO songko rachakuja!</string>
     <string name="refresh_failed_please_try_again">Refresh ka.ani chusokjaha, jotton ka.taibo</string>
 
+    <string name="no_history_available_right_now">No History Available Right Now</string>
+    <string name="sync_data">Data</string>
+    <string name="sync_images">Images</string>
     <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="this_week_tab_title">Ia anti</string>
     <string name="all_tab_title">Gimik</string>
@@ -523,6 +526,7 @@
     <string name="select_activity_for">"Select Activity for "</string>
     <string name="select_all">Select All</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
+    <string name="sync_all_data">Sync All Data</string>
 
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->
@@ -550,4 +554,11 @@
     <!--    <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>-->
     <!--    <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>-->
     <!--    <string name="change_language">भाषा बदलें</string>-->
+    <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
+    <string name="sync_only_data">Sync Only Data</string>
+    <string name="sync_data_first_message">Data sync is required before image sync</string>
+    <string name="sync_only_images">Sync Only Images</string>
+    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_data_history">Sync Data History</string>
+
 </resources>

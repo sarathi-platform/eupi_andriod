@@ -519,8 +519,8 @@
     <string name="change_language">ভাষা পরিবর্তন করুন</string>
     <string name="no_history_available_right_now">কোন ইতিহাস এই মুহূর্তে উপলব্ধ</string>
     <string name="sync_data">ডেটা</string>
-    <string name="sync_images">ছবি</string>
-    <string name="last_sync_date_time">Last Sync Time:</string>
+    <string name="sync_images">ফটো</string>
+    <string name="last_sync_date_time">আগের সিঙ্ক সময়:</string>
     <string name="shg_member_text">1. এসএইচজি (SHG) সদস্য</string>
     <string name="able_bodied_women_text">2. কর্মক্ষম নারী</string>
     <string name="mark_activity_in_progress">একটিভিটি কে আবার খুলে ফেলুন</string>
@@ -528,6 +528,13 @@
     <string name="select_activity_for">এর জন্য কার্যকলাপ নির্বাচন করুন </string>
     <string name="select_all">সব নির্বাচন করুন</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">সিঙ্কের জন্য ডেটা উপলব্ধ নয়৷ অনুগ্রহ করে সিঙ্ক করার আগে কিছু ক্রিয়া সম্পাদন করুন৷</string>
+    <string name="sync_all_data">সমস্ত ডেটা সিঙ্ক করুন</string>
+    <string name="sync_failed_message">কিছু ডেটা বা ফটো সিঙ্ক করা হয়নি। অনুগ্রহ করে \'ব্যর্থ ইভেন্টস\' ফাইল এক্সপোর্ট  করুন কিংবা বিপিসি সাথে যোগাযোগ করুন।.</string>
+    <string name="sync_only_data">শুধুমাত্র ডেটা সিঙ্ক করুন</string>
+    <string name="sync_data_first_message">Data sync is required before image sync</string>
+    <string name="sync_only_images">শুধুমাত্র ফটো সিঙ্ক করুন</string>
+    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_data_history">ডেটা সিঙ্ক ইতিহাস দেখুন</string>
 
 
 </resources>

@@ -401,6 +401,7 @@
     <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
     <string name="export_data_test">डेटा निर्यात करें</string>
     <string name="network_not_available_message">नेटवर्क उपलब्ध नहीं है, कृपया बाद में पुनः प्रयास करें!</string>
+    <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="export_file">एक्सपोर्ट फ़ाइल</string>
 
     <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
@@ -531,5 +532,12 @@
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">"Select Activity for "</string>
     <string name="select_all">Select All</string>
+    <string name="sync_all_data">Sync All Data</string>
+    <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
+    <string name="sync_only_data">Sync Only Data</string>
+    <string name="sync_data_first_message">Data sync is required before image sync</string>
+    <string name="sync_only_images">Sync Only Images</string>
+    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_data_history">Sync Data History</string>
 
 </resources>
