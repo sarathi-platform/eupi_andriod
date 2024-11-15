@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -60,7 +61,7 @@ fun InputComponent(
     maxLength: Int = 150,
     hintText: String = BLANK_STRING,
     isMandatory: Boolean = true,
-    isEditable: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     sanctionedAmount: Int = 0,
     remainingAmount: Int = 0,
     isZeroNotAllowed: Boolean = false,
@@ -103,7 +104,7 @@ fun InputComponent(
                     .height(dimen_60_dp),
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
-                enabled = isEditable,
+                enabled = questionStatusModel.isEditAllowed,
                 onValueChange = { value ->
                     if (value.length <= maxLength) {
                         if (isOnlyNumber && onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
@@ -182,5 +183,5 @@ private fun getRemainingValue(remainValue: Int, sanctionedAmount: Int, existValu
 @Composable
 fun NumberTextComponentPreview() {
     InputComponent(onAnswerSelection = { _, _ ->
-    }, isOnlyNumber = true, questionIndex = 0)
+    }, isOnlyNumber = true, questionIndex = 0, questionStatusModel = QuestionStatusModel())
 }

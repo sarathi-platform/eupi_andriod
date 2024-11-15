@@ -22,6 +22,7 @@ import com.nudge.core.HOURS
 import com.nudge.core.MINUTE
 import com.nudge.core.MONTHS
 import com.nudge.core.YEAR
+import com.nudge.core.model.QuestionStatusModel
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
@@ -69,7 +70,7 @@ fun HrsMinRangePickerComponent(
                     isMandatory = false,
                     maxLength = 3,
                     title = getFirstTitle(typePicker),
-                    isEditable = isEditAllowed,
+                    questionStatusModel = QuestionStatusModel()
                 ) { selectedValue, remainingAmout ->
                     firstInputValue.value = selectedValue
                     val secondValue =
