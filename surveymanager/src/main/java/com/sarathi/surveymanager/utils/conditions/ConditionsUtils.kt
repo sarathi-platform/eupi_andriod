@@ -286,7 +286,7 @@ class ConditionsUtils {
                 val targetQuestionUiModel =
                     questionUiModel.find { it.questionId == targetQuestionId } ?: continue
 
-                evaluateConditions(targetQuestionUiModel)
+                evaluateConditions(targetQuestionUiModel, isFromForm)
 
             }
 
@@ -299,21 +299,26 @@ class ConditionsUtils {
                     conditionsUiModelList.find { it.targetQuestionId == targetQuestionId }?.conditionOperator
                         ?: continue
 
+                val result = evaluateMultipleCondition(
+                    sourceQuestion = sourceQuestion,
+                    response = response,
+                    conditions = condition,
+                    conditionOperator = conditionOperator,
+                    sourceQuestionType = sourceQuestionType
+                )
                 questionVisibilityMap.put(
                     targetQuestionId,
-                    evaluateMultipleCondition(
-                        sourceQuestion = sourceQuestion,
-                        response = response,
-                        conditions = condition,
-                        conditionOperator = conditionOperator,
-                        sourceQuestionType = sourceQuestionType
-                    )
+                    result
                 )
+
+                if (!result) {
+                    responseMap.remove(targetQuestionId)
+                }
 
                 /**
                  * Evaluate conditions for child questions of current targetQuestion if their responses are present
                  * */
-                evaluateConditions(targetQuestionUiModel)
+                evaluateConditions(targetQuestionUiModel, isFromForm)
 
             }
 

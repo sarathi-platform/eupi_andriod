@@ -106,13 +106,15 @@ fun InputComponent(
                 enabled = isEditable,
                 onValueChange = { value ->
                     if (value.length <= maxLength) {
-                        if (isOnlyNumber && onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
-                            if (isZeroNotAllowed) {
-                                if (!value.all { it == '0' }) {
+                        if (isOnlyNumber) {
+                            if (onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
+                                if (isZeroNotAllowed) {
+                                    if (!value.all { it == '0' }) {
+                                        txt.value = value
+                                    }
+                                } else {
                                     txt.value = value
                                 }
-                            } else {
-                                txt.value = value
                             }
                         } else {
                             txt.value = value
