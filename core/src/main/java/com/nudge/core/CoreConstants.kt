@@ -227,3 +227,5 @@ const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
 const val SUBPATH_GET_CASTE_LIST = "/read-api/config/caste/get"
 
+
+const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
