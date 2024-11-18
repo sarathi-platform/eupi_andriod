@@ -88,6 +88,7 @@ class FetchAllDataUseCase @Inject constructor(
             }
 
             CoroutineScope(Dispatchers.IO).launch {
+                contentDownloaderUseCase.contentDownloader()
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
             }
             fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
