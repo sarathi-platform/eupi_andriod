@@ -218,4 +218,31 @@ interface SurveyAnswersDao {
         grantId: Int = 0,
         questionIds: List<Int>
     ): List<SurveyAnswerEntity>
+
+    @Transaction
+    fun checkAndUpdateNonVisibleQuestionResponseInDb(surveyAnswerEntity: SurveyAnswerEntity) {
+
+        if (getSurveyAnswers(
+                surveyAnswerEntity.userId ?: BLANK_STRING,
+                surveyAnswerEntity.subjectId,
+                surveyAnswerEntity.sectionId,
+                surveyAnswerEntity.questionId,
+                surveyAnswerEntity.referenceId
+            ) != 0
+        ) {
+            updateAnswer(
+                userId = surveyAnswerEntity.userId ?: BLANK_STRING,
+                surveyId = surveyAnswerEntity.surveyId,
+                questionId = surveyAnswerEntity.questionId,
+                questionType = surveyAnswerEntity.questionType,
+                questionSummary = surveyAnswerEntity.questionSummary ?: BLANK_STRING,
+                sectionId = surveyAnswerEntity.sectionId,
+                subjectId = surveyAnswerEntity.subjectId,
+                optionItems = surveyAnswerEntity.optionItems,
+                answerValue = surveyAnswerEntity.answerValue,
+                referenceId = surveyAnswerEntity.referenceId
+            )
+        }
+
+    }
 }
