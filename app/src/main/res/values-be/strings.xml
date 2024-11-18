@@ -499,7 +499,7 @@
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
     <string name="change_language">भाषा बदलें</string>
-    <string name="no_history_available_right_now">No History Available Right Now</string>
+    <string name="no_history_available_right_now">दानो जेबो जारिमिन गैया</string>
     <string name="sync_data">Data</string>
     <string name="sync_images">सावगारिफोर</string>
     <string name="last_sync_date_time">जोबथा sync time:</string>
@@ -514,9 +514,9 @@
     <string name="sync_all_data">Sync गासैबो data</string>
     <string name="sync_failed_message">माखासे data एबा सावगारि फोरा synced जायाखै। अन्नानै \'Failed Events' फाइलखौ एक्सपर्ट खालाम / admin जों सोमोन्दो लाखि।</string>
     <string name="sync_only_data">Sync खालि खारिखौल</string>
-    <string name="sync_data_first_message">Data sync is required before image sync</string>
+    <string name="sync_data_first_message">सावगारि sync नि सिगां Data sync नि गोनांथि जायो</string>
     <string name="sync_only_images">Sync सावगारिफोरखौल'</string>
-    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_started">Sync आ जागायबाय। अननानै नेथ'....</string>
     <string name="sync_data_history">Sync Data History</string>
 
 </resources>

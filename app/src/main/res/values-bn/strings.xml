@@ -531,9 +531,9 @@
     <string name="sync_all_data">সমস্ত ডেটা সিঙ্ক করুন</string>
     <string name="sync_failed_message">কিছু ডেটা বা ফটো সিঙ্ক করা হয়নি। অনুগ্রহ করে \'ব্যর্থ ইভেন্টস\' ফাইল এক্সপোর্ট  করুন কিংবা বিপিসি সাথে যোগাযোগ করুন।.</string>
     <string name="sync_only_data">শুধুমাত্র ডেটা সিঙ্ক করুন</string>
-    <string name="sync_data_first_message">Data sync is required before image sync</string>
+    <string name="sync_data_first_message">ফটো সিঙ্ক করার আগে ডেটা সিঙ্ক করতে হবে</string>
     <string name="sync_only_images">শুধুমাত্র ফটো সিঙ্ক করুন</string>
-    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_started">সিঙ্ক শুরু হয়েছে। অনুগ্রহ করে অপেক্ষা করুন।...</string>
     <string name="sync_data_history">ডেটা সিঙ্ক ইতিহাস দেখুন</string>
 
 

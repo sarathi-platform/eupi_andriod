@@ -10,7 +10,7 @@
     <string name="complete_activity">কার্যকলাপ সম্পন্ন করুন</string>
     <string name="complete_mission">মিশন সম্পন্ন করুন</string>
     <string name="task_view">দেখুন</string>
-    <string name="auto_sync">Auto Sync -  %s</string>
+    <string name="auto_sync">অটো-সিঙ্ক -  %s</string>
     <string name="continue_text">চালিয়ে যান</string>
     <string name="not_available">পাওয়া যায় না</string>
     <string name="share">"শেয়ার করুন "</string>
@@ -114,10 +114,15 @@
     <string name="assets">"সম্পদ "</string>
     <string name="last_updated_days_ago">"সর্বশেষ আপডেট করা হয়েছে: %1$s দিন আগে "</string>
     <string name="last_1_month">"গত 1 মাস "</string>
-    <string name="sync_on">Auto Sync - On</string>
-    <string name="sync_off">Auto Sync - Off</string>
+    <string name="sync_on">অটো-সিঙ্ক: শুরু</string>
+    <string name="sync_off">অটো-সিঙ্ক: বন্ধ</string>
     <string name="hours">ঘন্টার</string>
     <string name="years">বছর</string>
     <string name="minute">মিনিটের</string>
     <string name="month">মাস</string>
+    <string name="synced">সিঙ্ক করা হয়েছে</string>
+    <string name="sync_view_progress">প্রগ্রেস দেখুন</string>
+    <string name="sync_worker_cancelled">Sync worker cancelled</string>
+    <string name="sync_already_cancelled">Sync is already Cancelled</string>
+
 </resources>

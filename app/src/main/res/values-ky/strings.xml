@@ -555,7 +555,7 @@
     <string name="sync_only_data">Data no simi Sync khlai di</string>
     <string name="sync_data_first_message">Data sync is required before image sync</string>
     <string name="sync_only_images">Mangphili no simi Sync khlai di</string>
-    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_started">Sync chenkha. Kisi sa naising di...</string>
     <string name="sync_data_history">Sync data ni Laibuma</string>
 
 </resources>
