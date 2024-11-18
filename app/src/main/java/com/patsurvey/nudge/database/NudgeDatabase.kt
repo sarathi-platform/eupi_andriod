@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.nudge.core.CASTE_TABLE
 import com.nudge.core.NUDGE_DATABASE_VERSION
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
@@ -77,6 +78,16 @@ abstract class NudgeDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 NudgeLogger.d("NudgeDatabase", "MIGRATION_2_3")
                 migration(db, listOf(ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN))
+            }
+        }
+
+        val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
+
+        // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                Log.d("NudgeDatabase", "MIGRATION_3_4")
+                migration(database, listOf(DROP_CASTE_TABLE))
             }
         }
 

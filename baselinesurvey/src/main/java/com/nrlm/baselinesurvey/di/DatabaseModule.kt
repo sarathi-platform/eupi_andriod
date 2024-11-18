@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase.Companion.MIGRATION_2_3
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import dagger.Module
 import dagger.Provides
@@ -23,7 +24,7 @@ object DatabaseModule {
         Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
             // Add Migrations for each migration object created.
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
-            .addMigrations(NudgeBaselineDatabase.MIGRATION_1_2)
+            .addMigrations(NudgeBaselineDatabase.MIGRATION_1_2, MIGRATION_2_3)
             .addCallback(NudgeBaselineDatabase.NudgeDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
