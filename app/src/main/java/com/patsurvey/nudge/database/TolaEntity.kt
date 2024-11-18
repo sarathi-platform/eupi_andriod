@@ -130,7 +130,7 @@ data class TolaEntity(
                 localUniqueId = getUniqueIdForEntity()
             )
         }
-        }
+
 
         fun same(l1: List<TolaEntity>, l2: List<GetCohortResponseModel>, ignoreIds: Boolean = false): Boolean {
             try {

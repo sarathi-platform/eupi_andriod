@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMi
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.patsurvey.nudge.activities.AddDidiRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.repository.ReopenActivityEventHelperRepository
@@ -37,11 +38,15 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.repository.impl.StepListRepositoryImpl
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
+import com.patsurvey.nudge.domain.usecases.didiDetails.DeleteDidiUseCase
+import com.patsurvey.nudge.domain.usecases.steps.GetStepListUseCase
+import com.patsurvey.nudge.domain.usecases.steps.UpdateStepListUseCase
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
@@ -185,5 +190,23 @@ object UseCaseModule {
             eventWriterHelperImpl = eventWriterHelperImpl
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeleteDidiUseCase(addDidiRepository: AddDidiRepository): DeleteDidiUseCase {
+        return DeleteDidiUseCase(addDidiRepository = addDidiRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetStepListUseCase(stepListRepository: StepListRepositoryImpl): GetStepListUseCase {
+        return GetStepListUseCase(stepListRepository = stepListRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateStepListUseCase(stepListRepository: StepListRepositoryImpl): UpdateStepListUseCase {
+        return UpdateStepListUseCase(stepListRepository = stepListRepository)
     }
 }

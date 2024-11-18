@@ -24,7 +24,7 @@ interface TolaDao {
     fun insertAll(tolas: List<TolaEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(tola: TolaEntity): Int
+    fun insert(tola: TolaEntity)
 
     @Query("DELETE from $TOLA_TABLE where id = :id")
     fun removeTola(id: Int)

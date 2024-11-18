@@ -95,142 +95,57 @@ class TransectWalkRepository @Inject constructor(
         eventName: EventName,
         eventType: EventType
     ): Events? {
-        if (eventType != EventType.STATEFUL)
+        if (eventType != EventType.STATEFUL || eventItem !is TolaEntity) {
             return super.createEvent(eventItem, eventName, eventType)
+        }
 
-        if (eventItem !is TolaEntity)
-            return super.createEvent(eventItem, eventName, eventType)
+        val requestPayload = when (eventName) {
+            EventName.ADD_TOLA, EventName.UPDATE_TOLA ->
 
-        when (eventName) {
-            EventName.ADD_TOLA -> {
+                AddCohortRequest.getRequestObjectForTola(eventItem).json()
 
-                val requestPayload =
-                    AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
-                val addTolaEvent = Events(
-                    name = eventName.name,
-                    type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber(),
-                    modified_date = System.currentTimeMillis().toDate(),
-                    request_payload = requestPayload,
-                    payloadLocalId = (eventItem as TolaEntity).localUniqueId,
-                    status = EventSyncStatus.OPEN.name,
-                    metadata = MetadataDto(
-                        mission = SELECTION_MISSION,
-                        depends_on = emptyList(),
-                        request_payload_size = requestPayload.getSizeInLong(),
-                    ).json(),
-                    consumer_status = BLANK_STRING,
-                    result = null
-                )
-                return addTolaEvent
-            }
-
-            EventName.UPDATE_TOLA -> {
-                val requestPayload =
-                    AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
-                var updateTolaEvent = Events(
-                    name = eventName.name,
-                    type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber(),
-                    modified_date = System.currentTimeMillis().toDate(),
-                    request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
-                    payloadLocalId = (eventItem as TolaEntity).localUniqueId,
-                    metadata = MetadataDto(
-                        mission = SELECTION_MISSION,
-                        depends_on = emptyList(),
-                        request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = getParentEntityMapForEvent(eventItem, EventName.UPDATE_TOLA)
-                    ).json(),
-                    consumer_status = BLANK_STRING,
-                    result = null
-                )
-                val dependsOn = createEventDependency(eventItem, eventName, updateTolaEvent)
-                val metadata = updateTolaEvent.metadata?.getMetaDataDtoFromString()
-                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
-                updateTolaEvent = updateTolaEvent.copy(
-                    metadata = updatedMetaData?.json()
-                )
-                return updateTolaEvent
-            }
-
-            EventName.DELETE_TOLA -> {
-
-                val requestPayload =
-                    DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem as TolaEntity).json()
-                var deleteTolaEvent = Events(
-                    name = eventName.name,
-                    type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber(),
-                    modified_date = System.currentTimeMillis().toDate(),
-                    request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
-                    payloadLocalId = (eventItem as TolaEntity).localUniqueId,
-
-                    metadata = MetadataDto(
-                        mission = SELECTION_MISSION,
-                        depends_on = emptyList(),
-                        request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
-                    ).json(),
-                    consumer_status = BLANK_STRING,
-                    result = null
-                )
-                val dependsOn = createEventDependency(eventItem, eventName, deleteTolaEvent)
-                val metadata = deleteTolaEvent.metadata?.getMetaDataDtoFromString()
-                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
-                deleteTolaEvent = deleteTolaEvent.copy(
-                    metadata = updatedMetaData?.json()
-                )
-
-                return deleteTolaEvent
-            }
+            EventName.DELETE_TOLA ->
+                DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem).json()
 
             EventName.DELETE_DIDI -> {
-
-                var tola = tolaDao.fetchSingleTola((eventItem as DidiEntity).cohortId)
-                val requestPayload =
-                    AddDidiRequest.getRequestObjectForDidi(
-                        eventItem as DidiEntity,
-                        tola?.serverId ?: 0,
-                        tola?.localUniqueId
-                    ).json()
-
-                var deleteDidiRequest = Events(
-                    name = eventName.name,
-                    type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber(),
-                    request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
-                    modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
-                    payloadLocalId = (eventItem as DidiEntity).localUniqueId,
-                    metadata = MetadataDto(
-                        mission = SELECTION_MISSION,
-                        depends_on = listOf(),
-                        request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
-                    ).json()
-                )
-                val dependsOn = createEventDependency(eventItem, eventName, deleteDidiRequest)
-                val metadata = deleteDidiRequest.metadata?.getMetaDataDtoFromString()
-                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
-                deleteDidiRequest = deleteDidiRequest.copy(
-                    metadata = updatedMetaData?.json()
-                )
-
-                return deleteDidiRequest
+                val tola = tolaDao.fetchSingleTola((eventItem as DidiEntity).cohortId)
+                AddDidiRequest.getRequestObjectForDidi(
+                    eventItem,
+                    tola?.serverId ?: 0,
+                    tola?.localUniqueId
+                ).json()
             }
 
-            else -> {
-                return null
-            }
+            else -> return null
         }
+
+        val baseEvent = Events(
+            name = eventName.name,
+            type = eventName.topicName,
+            createdBy = prefRepo.getUserId(),
+            mobile_number = prefRepo.getMobileNumber(),
+            modified_date = System.currentTimeMillis().toDate(),
+            request_payload = requestPayload,
+            payloadLocalId = (eventItem as? TolaEntity)?.localUniqueId,
+            status = EventSyncStatus.OPEN.name,
+            consumer_status = BLANK_STRING,
+            result = null,
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = emptyList(),
+                request_payload_size = requestPayload.getSizeInLong(),
+                parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+            ).json()
+        )
+
+        val dependsOn = createEventDependency(eventItem, eventName, baseEvent)
+        val updatedMetaData = baseEvent.metadata?.getMetaDataDtoFromString()?.copy(
+            depends_on = dependsOn.getDependentEventsId()
+        )
+
+        return baseEvent.copy(
+            metadata = updatedMetaData?.json()
+        )
     }
 
     override suspend fun <T> createEventDependency(
@@ -503,12 +418,14 @@ class TransectWalkRepository @Inject constructor(
         return this.apiInterface.editWorkFlow(addWorkFlowRequest)
     }
 
-    suspend fun insertNewTola(tola: Tola, villageId: Int): Boolean {
+    suspend fun insertNewTola(tola: Tola, villageId: Int): TolaEntity? {
         if (isTolaNotExist(tolaName = tola.name, villageId)) {
-            tolaDao.insert(TolaEntity.getTolaEntity(tolaUiModel = tola, villageId))
-            return true
+            val tolaEntity = TolaEntity.getTolaEntity(tolaUiModel = tola, villageId)
+
+            tolaDao.insert(tolaEntity)
+            return tolaEntity
         }
-        return false
+        return null
     }
 
     suspend fun isTolaNotExist(tolaName: String, villageId: Int): Boolean {

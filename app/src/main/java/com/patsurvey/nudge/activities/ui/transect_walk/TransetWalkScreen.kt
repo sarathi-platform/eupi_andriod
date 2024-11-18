@@ -74,7 +74,6 @@ import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
-import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
@@ -305,6 +304,7 @@ fun TransectWalkScreen(
                                                             context.getString(R.string.tola_successfully_added)
                                                                 .replace("{TOLA_NAME}", name)
                                                         )
+                                                        viewModel.fetchTolaList(villageId = villageId)
                                                         viewModel.markTransectWalkIncomplete(
                                                             stepId,
                                                             villageId,
@@ -425,6 +425,7 @@ fun TransectWalkScreen(
                                                 override fun onSuccess() {
                                                     showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                                     showAddTolaBox = false
+                                                    viewModel.fetchTolaList(villageId)
                                                 }
 
                                                 override fun onFailed() {
@@ -505,34 +506,6 @@ private fun completeTransetWalk(
     navController: NavController
 ) {
     viewModel.saveTransectWalkCompletionDate()
-    //TODO Integrate Api when backend fixes the response.
-    if ((context as MainActivity).isOnline.value ?: false) {
-        NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
-        viewModel.addTolasToNetwork(object : NetworkCallbackListener {
-            override fun onSuccess() {
-                NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onSuccess")
-                viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener {
-                    override fun onSuccess() {
-
-                    }
-
-                    override fun onFailed() {
-                        NudgeLogger.d(
-                            "TransectWalkScreen",
-                            "completeTolaAdditionClicked callWorkFlowAPI -> onFailed"
-                        )
-                    }
-                })
-            }
-
-            override fun onFailed() {
-                NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onFailed")
-            }
-
-        })
-
-//                            viewModel.updateTolaNeedTOPostList(villageId)
-    }
     viewModel.markTransectWalkComplete(villageId, stepId)
     viewModel.updateWorkflowStatusInEvent(
         stepStatus = StepStatus.COMPLETED,

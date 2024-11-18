@@ -2,8 +2,10 @@ package com.patsurvey.nudge.di
 
 import com.patsurvey.nudge.activities.ui.splash.ConfigRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.data.prefs.repository.impl.StepListRepositoryImpl
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
 import dagger.Module
 import dagger.Provides
@@ -33,5 +35,10 @@ object RepositoryModule {
         )
     }
 
+    @Singleton
+    @Provides
+    fun provideStepListRepositoryImpl(stepsListDao: StepsListDao): StepListRepositoryImpl {
+        return StepListRepositoryImpl(stepsListDao)
+    }
 
 }
