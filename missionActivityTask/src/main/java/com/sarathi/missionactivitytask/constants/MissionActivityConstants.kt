@@ -31,6 +31,8 @@ object MissionActivityConstants {
     const val FORM_QUESTION_SCREEN_ROUTE_NAME = "form_question_screen"
     const val FORM_SUMMARY_SCREEN_ROUTE_NAME = "form_summary_screen"
 
+    const val COMPLEX_SEARCH_SCREEN_ROUTE_NAME = "complex_search_screen"
+
     const val ARG_ACTIVITY_ID = "activity_id"
     const val ARG_MISSION_ID = "mission_id"
     const val ARG_PROGRAM_ID = "program_id"
@@ -63,5 +65,7 @@ object MissionActivityConstants {
     const val ARG_CONTENT_SCREEN_CATEGORY = "content_screen_category"
     const val ARG_QUESTION_ID = "question_id"
     const val ARG_FORM_ID = "form_id"
+
+    const val ARG_FROM_SCREEN = "from_screen"
 
 }

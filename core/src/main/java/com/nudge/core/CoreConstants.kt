@@ -226,3 +226,10 @@ const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
 
 const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
+
+const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
+const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
+
+const val ALL_TAB = "All"
+const val QUESTION_DATA_TAB = "Questions"
+const val SECTION_INFORMATION_TAB = "Sections"
