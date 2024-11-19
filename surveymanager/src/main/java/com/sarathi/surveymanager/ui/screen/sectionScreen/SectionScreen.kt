@@ -43,8 +43,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.nudge.core.ARG_FROM_SECTION_SCREEN
 import com.nudge.core.enums.SurveyFlow
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -57,6 +57,7 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.smallerTextStyle
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -102,7 +103,8 @@ fun SectionScreen(
         contentType: String,
         contentTitle: String
     ) -> Unit,
-    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String, surveyFlow: SurveyFlow) -> Unit
+    onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String, surveyFlow: SurveyFlow) -> Unit,
+    onNavigateToComplexSearchScreen: (surveyId: Int, sectionId: Int, taskId: Int, activityConfigIs: Int, fromScreen: String, subjectType: String, activityType: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -311,7 +313,15 @@ fun SectionScreen(
 
                                 item {
                                     ComplexSearchComponent {
-//                                navController.navigateToSearchScreen(surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
+                                        onNavigateToComplexSearchScreen(
+                                            surveyId,
+                                            NUMBER_ZERO,
+                                            taskId,
+                                            activityConfigId,
+                                            ARG_FROM_SECTION_SCREEN,
+                                            subjectType,
+                                            activityType
+                                        )
                                     }
                                 }
 
