@@ -222,6 +222,13 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             isTaskStatusCompleted()
             questionUiModel.value.filterForValidations(visibilityMap).apply {
+
+                //If the filtered list is empty run button check to enable or disable submit button.
+                if (this.isEmpty()) {
+                    isButtonEnable.value = isButtonEnabled(true)
+                    return@apply
+                }
+
                 this.forEach {
                     runValidationCheck(it.questionId) { isValid, message ->
                         try {
@@ -244,34 +251,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
         }
     }
-
-    /*private fun getSurveyConfig(
-        surveyConfigMap: Map<Int, List<SurveyConfigEntity>>,
-        taskAttributes: List<SubjectAttributes>
-    ): MutableMap<Int, MutableMap<String, List<SurveyCardModel>>> {
-        val mSurveyConfig = mutableMapOf<Int, MutableMap<String, List<SurveyCardModel>>>()
-        surveyConfigMap.forEach { surveyConfigMapEntry ->
-            val surveyConfigForForm = mutableMapOf<String, List<SurveyCardModel>>()
-            surveyConfigMapEntry.value.groupBy { it.key }.forEach { it ->
-                val modelList = ArrayList<SurveyCardModel>()
-                it.value.forEach {
-                    var surveyConfigEntity = it
-                    if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
-                        surveyConfigEntity =
-                            surveyConfigEntity.copy(value = taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value())
-                    }
-                    val model = SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
-                    modelList.add(model)
-                }
-
-                surveyConfigForForm[it.key] = modelList
-            }
-            mSurveyConfig[surveyConfigMapEntry.key] = surveyConfigForForm
-        }
-
-        return mSurveyConfig
-
-    }*/
 
     private fun getSurveyConfig(
         surveyConfigMap: Map<Int, List<SurveyConfigEntity>>,
@@ -330,17 +309,38 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private fun isButtonEnabled(isQuestionValidationFromConfig: Boolean): Boolean {
-        var result = (isQuestionValidationFromConfig && checkButtonValidation())
+        // Start with the base result based on question validation
+        var result = isQuestionValidationFromConfig && checkButtonValidation()
 
-        if (questionUiModel.value.any { it.formId != NUMBER_ZERO })
-            result =
-                result && (showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 })
+        // Proceed only if there is at least one non-zero formId in questionUiModel
+        if (questionUiModel.value.any { it.formId != NUMBER_ZERO }) {
+
+            // Get the list of valid formIds from showSummaryView
+            val formIdsInSummary = showSummaryView.keys.toList()
+
+            // If there is only one item in showSummaryView, handle the specific logic
+            if (showSummaryView.size == 1) {
+                val firstFormQuestion = questionUiModel.value.firstOrNull {
+                    formIdsInSummary.contains(it.formId)
+                }
+
+                // If there's a corresponding question and its visibility is true, check the values
+                firstFormQuestion?.let {
+                    if (visibilityMap[it.questionId] == true) {
+                        result = result && showSummaryView.all { it.value != 0 }
+                    }
+                }
+
+            } else {
+                // For cases where showSummaryView has multiple items
+                result = showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
+            }
+        }
 
         return result
     }
 
     fun checkButtonValidation(): Boolean {
-
 
         questionUiModel.value.filterForValidations(visibilityMap)
             .forEach { questionUiModel ->
