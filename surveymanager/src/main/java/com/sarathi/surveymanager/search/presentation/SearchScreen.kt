@@ -35,12 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,6 +55,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.mediumSpanStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.searchSectionTitleColor
 import com.nudge.core.ui.theme.smallTextStyle
@@ -263,33 +262,18 @@ fun SearchScreens(
                     itemsIndexed(viewModel.filteredComplexSearchStateList) { index, item ->
                         Text(text = buildAnnotatedString {
                             withStyle(
-                                style = SpanStyle(
-                                    color = searchSectionTitleColor,
-                                    fontFamily = NotoSans,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp
-                                )
+                                style = mediumSpanStyle.copy(color = searchSectionTitleColor)
                             ) {
                                 append(item.sectionName)
                             }
                             if (!item.isSectionSearchOnly) {
                                 withStyle(
-                                    style = SpanStyle(
-                                        textColorDark,
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 14.sp
-                                    )
+                                    style = mediumSpanStyle.copy(color = textColorDark)
                                 ) {
                                     append(" >> ")
                                 }
                                 withStyle(
-                                    style = SpanStyle(
-                                        textColorDark,
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 14.sp
-                                    )
+                                    style = mediumSpanStyle.copy(color = textColorDark)
                                 ) {
                                     append(item.questionTitle)
                                 }
@@ -321,11 +305,5 @@ fun SearchScreens(
         }
     }
 
-
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun SearchScreensPreview() {
 
 }
