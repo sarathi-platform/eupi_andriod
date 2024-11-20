@@ -9,6 +9,7 @@ import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
 
 const val AUDIT_TRAIL_DATABASE_VERSION = 1
+const val AUDIT_TRAIL_DATABASE_NAME = "auditTrail"
 
 @Database(
     entities = [
@@ -19,7 +20,7 @@ const val AUDIT_TRAIL_DATABASE_VERSION = 1
     exportSchema = false
 )
 @TypeConverters(DateConverter::class, ListConvertor::class)
-abstract class CoreDatabase : RoomDatabase() {
+abstract class AuditTrailDatabase : RoomDatabase() {
     abstract  fun auditTrailDao():AuditTrailDao
 }
 

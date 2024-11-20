@@ -6,20 +6,15 @@ import com.nudge.auditTrail.APP_BUILD_NUMBER
 import com.nudge.auditTrail.APP_VERSION
 import com.nudge.auditTrail.BRAND
 import com.nudge.auditTrail.DEVICE_ID
-import com.nudge.auditTrail.DISTINCT_ID
 import com.nudge.auditTrail.MODEL
 import com.nudge.auditTrail.OS_VERSION
 import com.nudge.auditTrail.domain.repository.AuditTrailRepository
-import com.nudge.core.BLANK_STRING
-import com.nudge.core.Core
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.preference.CoreSharedPrefs
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class AuditTrailUseCase@Inject constructor(
     private val repository: AuditTrailRepository,
-    private val coreSharedPrefs: CoreSharedPrefs,
     @ApplicationContext private val context: Context
 ) {
 

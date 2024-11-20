@@ -1,4 +1,4 @@
-package com.nudge.syncmanager.workers
+package com.nudge.auditTrail.workers
 
 object WorkerKeys {
     const val ERROR_MSG = "errorMsg"
