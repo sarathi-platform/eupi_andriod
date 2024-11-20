@@ -905,6 +905,14 @@ fun String?.value(defaultValue: String): String {
     return this ?: defaultValue
 }
 
+fun String?.value(ignoreCase: Boolean): String {
+    return (this ?: BLANK_STRING).toLowerCase()
+}
+
+fun String?.value(defaultValue: String, ignoreCase: Boolean): String {
+    return (this ?: defaultValue).toLowerCase()
+}
+
 fun String?.toSafeInt(defaultValue: String = "0"): Int {
     return try {
         this.value(defaultValue).toInt()

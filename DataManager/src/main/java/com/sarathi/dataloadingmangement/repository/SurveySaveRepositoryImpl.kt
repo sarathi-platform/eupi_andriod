@@ -342,4 +342,25 @@ class SurveySaveRepositoryImpl @Inject constructor(
         )
 
     }
+
+    override suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String,
+        grantId: Int,
+        grantType: String
+    ) {
+        surveyAnswersDao.checkAndUpdateNonVisibleQuestionResponseInDb(
+            SurveyAnswerEntity.getSurveyAnswerEntity(
+                question = question,
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                subjectId = subjectId,
+                referenceId = referenceId,
+                taskId = taskId,
+                grantId = grantId,
+                grantType = grantType
+            )
+        )
+    }
 }

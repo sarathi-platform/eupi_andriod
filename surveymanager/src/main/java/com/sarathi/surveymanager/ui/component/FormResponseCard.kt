@@ -45,6 +45,7 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
@@ -257,29 +258,50 @@ private fun getSavedAnswerValueForSummaryField(
     }
 
     if (optionsUiModelList.size == 1) {
-        val firstItem = optionsUiModelList.firstOrNull()
-        if (QuestionType.singleResponseQuestionTypeQuestions.contains(
-                question.questionType.value().toLowerCase()
-            ) && !QuestionType.userInputQuestionTypeList.contains(
-                question.questionType.value().toLowerCase()
-            )
-        ) {
-            response = firstItem?.description.value()
-        }
-
-        if (QuestionType.userInputQuestionTypeList.contains(
-                question.questionType.value().toLowerCase()
-            ) && QuestionType.userInputQuestionTypeList.contains(
-                question.questionType.value().toLowerCase()
-            )
-        ) {
-            response = firstItem?.selectedValue.value()
-        }
+        response = getResponseForSingleOptions(optionsUiModelList, question)
     } else {
         response = optionsUiModelList.map { it.description }.value().joinToString(PIPE_DELIMITER)
 
     }
 
+    return response
+}
+
+private fun getResponseForSingleOptions(
+    optionsUiModelList: List<OptionsUiModel>,
+    question: SurveyAnswerFormSummaryUiModel,
+): String {
+    var response = BLANK_STRING
+    val firstItem = optionsUiModelList.firstOrNull()
+    if (QuestionType.singleResponseQuestionTypeQuestions.contains(
+            question.questionType.value(true)
+        ) && !QuestionType.userInputQuestionTypeList.contains(
+            question.questionType.value(true)
+        )
+    ) {
+        response = firstItem?.description.value()
+    }
+
+    if (QuestionType.userInputQuestionTypeList.contains(
+            question.questionType.value(true)
+        ) && QuestionType.userInputQuestionTypeList.contains(
+            question.questionType.value(true)
+        )
+    ) {
+        response = firstItem?.selectedValue.value()
+    }
+
+    if (QuestionType.multipleResponseQuestionTypeQuestions.contains(question.questionType.value(true))) {
+
+        response =
+            if (question.questionType.equals(QuestionType.IncrementDecrementList.name, true)) {
+                optionsUiModelList.filter { it.isSelected == true }.map { it.selectedValue }
+                    .joinToString(PIPE_DELIMITER).value()
+            } else {
+                optionsUiModelList.map { it.description }.value().joinToString(PIPE_DELIMITER)
+            }
+
+    }
     return response
 }
 

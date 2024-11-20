@@ -10,6 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.formatToIndianRupee
@@ -21,7 +23,11 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 @Composable
 fun SubContainerView(
     surveyCard: SurveyCardModel?,
-    isNumberFormattingRequired: Boolean = false
+    isNumberFormattingRequired: Boolean = false,
+    labelStyle: TextStyle = newMediumTextStyle,
+    valueStyle: TextStyle = newMediumTextStyle,
+    labelColor: Color = blueDark,
+    valueColor: Color = blueDark
 ) {
     Row(
         modifier = Modifier
@@ -32,15 +38,15 @@ fun SubContainerView(
         if (!TextUtils.isEmpty(surveyCard?.label)) {
             Text(
                 text = surveyCard?.label!! + ": ",
-                color = blueDark,
-                style = newMediumTextStyle
+                color = labelColor,
+                style = labelStyle
             )
         }
         if (!TextUtils.isEmpty(surveyCard?.value)) {
             Text(
                 text = if (isNumberFormattingRequired) formatToIndianRupee(surveyCard?.value!!) else surveyCard?.value!!,
-                color = blueDark,
-                style = newMediumTextStyle
+                color = valueColor,
+                style = valueStyle
             )
         }
     }

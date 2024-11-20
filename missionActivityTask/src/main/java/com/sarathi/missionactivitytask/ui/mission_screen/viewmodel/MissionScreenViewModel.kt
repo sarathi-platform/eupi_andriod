@@ -5,10 +5,8 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreObserverManager
-import com.nudge.core.enums.AppConfigKeysEnum
-import com.nudge.core.parseStringToList
+import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -35,6 +33,7 @@ class MissionScreenViewModel @Inject constructor(
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val baselineV1CheckUseCase: BaselineV1CheckUseCase,
     private val syncMigrationUseCase: SyncMigrationUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
@@ -156,16 +155,10 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     fun getStateId() = fetchAllDataUseCase.getStateId()
-    fun isBaselineV1Mission(missionName: String): Boolean {
-        var baseline_v1_ids =
-            fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
-        if (TextUtils.isEmpty(baseline_v1_ids)) {
-            baseline_v1_ids = "[4,31]"
-        }
 
-        return baseline_v1_ids.parseStringToList().contains(getStateId()) && missionName.contains(
-            BASELINE_MISSION_NAME,
-            true
-        )
+    fun isBaselineV1Mission(missionName: String): Boolean {
+
+        return baselineV1CheckUseCase.invoke(missionName)
+
     }
 }
