@@ -126,7 +126,7 @@ const val ROTATION_DEGREE_TRANSITION = "rotationDegreeTransition"
 const val MAXIMUM_RANGE = 999999
 const val MAXIMUM_RANGE_LENGTH = 10
 
-const val NO_SG_FILTER_VALUE = "null"
+const val NO_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
 const val BATCH_DEFAULT_LIMIT = 5
 const val RETRY_DEFAULT_COUNT = 3
@@ -184,6 +184,7 @@ const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
 
 const val NOT_DECIDED_LIVELIHOOD_ID = -1
 const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
+const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
 const val CORE_DB_VERSION = 1
