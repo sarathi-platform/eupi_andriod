@@ -5,12 +5,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.AUDIT_TRAIL_TABLE
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.json
 import com.nudge.core.toDate
 import java.util.Date
-import java.util.Objects
 import java.util.UUID
 
 @Entity(tableName = AUDIT_TRAIL_TABLE)
