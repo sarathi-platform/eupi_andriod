@@ -23,26 +23,3 @@ const val AUDIT_TRAIL_DATABASE_NAME = "auditTrail"
 abstract class AuditTrailDatabase : RoomDatabase() {
     abstract  fun auditTrailDao():AuditTrailDao
 }
-
-
-
-/////
-//@Database(
-//    entities = [
-//        AuditTrailEntity::class,
-//        EventDependencyEntity::class,
-//        ApiStatusEntity::class
-//    ],
-//    version = AUDIT_TRAIL_DATABASE_VERSION,
-//    exportSchema = false
-//)
-//@TypeConverters(DateConverter::class, ListConvertor::class)
-//abstract class AuditTrailDatabase : RoomDatabase() {
-//
-//    abstract fun eventsDao(): EventsDao
-//
-//    abstract fun eventsDependencyDao(): EventDependencyDao
-//
-//    abstract fun apiStatusDao(): ApiStatusDao
-//
-//}

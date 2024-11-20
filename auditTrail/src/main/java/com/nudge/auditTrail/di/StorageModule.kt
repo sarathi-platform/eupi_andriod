@@ -13,14 +13,13 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class DaoModule {
+class StorageModule {
     @Provides
     @Singleton
     fun provideAuditTrailDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, AuditTrailDatabase::class.java, AUDIT_TRAIL_DATABASE_NAME)
             .fallbackToDestructiveMigration()
             .build()
-
 
     @Provides
     @Singleton
