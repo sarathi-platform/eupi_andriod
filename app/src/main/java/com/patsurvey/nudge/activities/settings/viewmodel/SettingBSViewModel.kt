@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.IMAGE
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
@@ -102,7 +103,9 @@ class SettingBSViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
+    val auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel() {
+
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)

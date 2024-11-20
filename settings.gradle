@@ -23,3 +23,5 @@ include ':surveymanager'
 include ':smallGroupModule'
 
 include ':incomeexpensemodule'
+include ':auditTrail'
+include ':auditTrail'
