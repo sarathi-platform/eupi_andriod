@@ -42,12 +42,20 @@
 //}
 
 
+//plugins {
+//    id("com.android.library")
+//    id("org.jetbrains.kotlin.android")
+//    id("dagger.hilt.android.plugin")
+//    id ("kotlin-kapt")
+////    kotlin("kapt")
+//}
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("dagger.hilt.android.plugin")
-    id ("kotlin-kapt")
-//    kotlin("kapt")
+    kotlin("kapt")
+
 }
 
 android {
@@ -55,7 +63,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles("consumer-rules.pro")
 
@@ -84,7 +92,7 @@ android {
 
 dependencies {
     val retrofit = "2.9.0"
-    val room_version = "2.5.2"
+    val room_version = "2.6.1"
     implementation(project(":core"))
     implementation(project(":internetSpeedChecker"))
     implementation ("com.squareup.retrofit2:retrofit:$retrofit")
@@ -101,7 +109,7 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.0.0")
     //work
     implementation ("androidx.hilt:hilt-work:1.0.0")
-//    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

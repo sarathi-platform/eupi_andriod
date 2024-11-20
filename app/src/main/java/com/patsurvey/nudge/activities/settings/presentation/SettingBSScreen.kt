@@ -58,8 +58,7 @@ fun SettingBSScreen(
 
 
     if (viewModel.showLogoutDialog.value) {
-        if (viewModel.syncWorkerRunning().value())
-        {
+        if (viewModel.syncWorkerRunning().value()) {
             showCustomDialog(
                 title = context.getString(R.string.logout),
                 message = context.getString(R.string.sync_running),
@@ -69,7 +68,7 @@ fun SettingBSScreen(
                 },
                 onNegativeButtonClick = {}
             )
-        }else {
+        } else {
             showCustomDialog(
                 title = context.getString(com.patsurvey.nudge.R.string.logout),
                 message = context.getString(R.string.logout_confirmation),
@@ -83,13 +82,10 @@ fun SettingBSScreen(
                     viewModel.showLoader.value = true
                     viewModel.performLogout(context) {
                         var auditTrailDetail = hashMapOf<String, Any>(
-                            "ActioType" to "Login",
-
-                        )
-CoroutineScope(Dispatchers.IO).launch {
-    viewModel.auditTrailUseCase.invoke(auditTrailDetail)
-
-}
+                            "ActioType" to "Logout")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.auditTrailUseCase.invoke(auditTrailDetail)
+                        }
                         if (it) {
                             if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
                                 navController.navigate(AuthScreen.LOGIN.route)
@@ -140,7 +136,6 @@ CoroutineScope(Dispatchers.IO).launch {
                     }
 
 
-
                     SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name -> {
                         navController.navigate(SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route)
 
@@ -154,7 +149,8 @@ CoroutineScope(Dispatchers.IO).launch {
                     SettingTagEnum.BACKUP_RECOVERY.name -> {
                         navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
                     }
-                    SettingTagEnum.EXPORT_BACKUP_FILE.name ->{
+
+                    SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
                         viewModel.compressEventData(context.getString(R.string.share_export_file))
                     }
 
@@ -170,6 +166,7 @@ CoroutineScope(Dispatchers.IO).launch {
                             context.getString(R.string.data_is_not_available_for_sync_please_perform_some_action)
                         )
                     }
+
                     SettingTagEnum.APP_CONFIG.name -> {
                         if (isOnline(context)) {
                             viewModel.fetchhAppConfig()

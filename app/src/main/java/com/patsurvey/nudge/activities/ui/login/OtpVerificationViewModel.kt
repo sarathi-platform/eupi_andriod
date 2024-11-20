@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -22,6 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
+    val auditTrailUseCase: AuditTrailUseCase
+
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")

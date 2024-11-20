@@ -66,6 +66,9 @@ import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.UPCM_USER
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -285,6 +288,11 @@ fun OtpVerificationScreen(
                                             inclusive = true
                                         }
                                     }
+                                }
+                                var auditTrailDetail = hashMapOf<String, Any>(
+                                    "ActioType" to "Login")
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    viewModel.auditTrailUseCase.invoke(auditTrailDetail)
                                 }
                             }
                             RetryHelper.autoReadOtp.value = ""
