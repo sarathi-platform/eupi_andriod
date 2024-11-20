@@ -103,46 +103,47 @@ fun SingleImageComponent(
             QuestionComponent(
                 title = title,
                 isRequiredField = isMandatory,
-                subTitle = subtitle ?: "Signed & Sealed Physical Format D"
+                subTitle = BLANK_STRING
             )
         }
 
         BoxWithConstraints(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .height(dimen_300_dp)
         ) {
             Box(
                 modifier =
-                        boxModifier
-                            .clickable(
-                                enabled = isEditable
-                            ) {
+                boxModifier
+                    .clickable(
+                        enabled = isEditable
+                    ) {
 
-                                requestCameraPermission(context as Activity) {
-                                    shouldRequestPermission.value = it
+                        requestCameraPermission(context as Activity) {
+                            shouldRequestPermission.value = it
 
-                                    if (!it) {
-                                        currentImageUri = getSingleImageUri(
-                                            context, "${fileNamePrefix}${
-                                                System.currentTimeMillis()
-                                            }.png",
-                                            true
-                                        )
+                            if (!it) {
+                                currentImageUri = getSingleImageUri(
+                                    context, "${fileNamePrefix}${
+                                        System.currentTimeMillis()
+                                    }.png",
+                                    true
+                                )
 
-                                        cameraLauncher.launch(
-                                            currentImageUri
-                                        )
-                                    }
-                                }
-
-
+                                cameraLauncher.launch(
+                                    currentImageUri
+                                )
                             }
-                            .background(white)
-                            .dottedBorder(
-                                dotSpacing = 16f,
-                                dotRadius = 6f,
-                                dotColor = dotedBorderColor
-                            ),
+                        }
+
+
+                    }
+                    .background(white)
+                    .dottedBorder(
+                        dotSpacing = 16f,
+                        dotRadius = 6f,
+                        dotColor = dotedBorderColor
+                    ),
                         contentAlignment = Alignment.Center
                     ) {
 
