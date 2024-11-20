@@ -187,7 +187,7 @@ fun MiscQuestionBoxComponent(
                                                     onInfoButtonClicked = {},
                                                     additionalValidation = { text, question -> true }
                                                 ) { inputValue ->
-                                                    if (questionStatusModel.isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem.optionItemEntity,
@@ -212,7 +212,7 @@ fun MiscQuestionBoxComponent(
                                                     currentValue = selectedOptionMapForNumericInputTypeQuestions[optionsItem.optionId]?.inputValue,
                                                     onInfoButtonClicked = {},
                                                     onAnswerSelection = { inputValue ->
-                                                        if (questionStatusModel.isEditAllowed) {
+                                                        if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                             onAnswerSelection(
                                                                 questionIndex,
                                                                 optionsItem.optionItemEntity,
@@ -243,7 +243,7 @@ fun MiscQuestionBoxComponent(
                                                     selectOptionText = selectedOption?.selectedValueId!!,
                                                     onInfoButtonClicked = {}
                                                 ) { selectedValue ->
-                                                    if (questionStatusModel.isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem.optionItemEntity,
@@ -273,7 +273,7 @@ fun MiscQuestionBoxComponent(
                                                     showQuestionState = optionsItem,
                                                     onInfoButtonClicked = {},
                                                     onAnswerSelection = { value, id ->
-                                                        if (questionStatusModel.isEditAllowed) {
+                                                        if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                             onAnswerSelection(
                                                                 questionIndex,
                                                                 optionsItem.optionItemEntity,
@@ -400,7 +400,11 @@ fun InputQuestionBoxComponentPreview() {
             },
             onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
-            }
+            },
+            questionStatusModel = QuestionStatusModel(
+                isEditAllowed = true,
+                isDidiReassigned = false
+            )
         ) {}
     }
 }

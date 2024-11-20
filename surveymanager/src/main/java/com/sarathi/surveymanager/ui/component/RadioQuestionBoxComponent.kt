@@ -36,8 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.activityCompleteOrDidiReassignedToast
 import com.nudge.core.getQuestionNumber
-import com.nudge.core.showCustomToast
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -49,7 +50,6 @@ import com.nudge.core.ui.theme.dimen_64_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
-import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -63,7 +63,7 @@ fun RadioQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     isQuestionTypeToggle: Boolean = false,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
@@ -151,16 +151,15 @@ fun RadioQuestionBoxComponent(
                                             isIconRequired = !isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
-                                            if (isEditAllowed) {
+                                            if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                 selectedIndex = _index
                                                 onAnswerSelection(
                                                     questionIndex,
                                                     selectedIndex
                                                 )
                                             } else {
-                                                showCustomToast(
-                                                    context,
-                                                    context.getString(R.string.edit_disable_message)
+                                                context.activityCompleteOrDidiReassignedToast(
+                                                    questionStatusModel
                                                 )
                                             }
                                         }
@@ -200,7 +199,7 @@ fun ToggleQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     showCardView: Boolean = false,
     maxCustomHeight: Dp,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
     RadioQuestionBoxComponent(
@@ -213,7 +212,7 @@ fun ToggleQuestionBoxComponent(
         isQuestionTypeToggle = true,
         showCardView = showCardView,
         optionUiModelList = optionUiModelList,
-        isEditAllowed = isEditAllowed,
+        questionStatusModel = questionStatusModel,
         onAnswerSelection = onAnswerSelection
     )
 }

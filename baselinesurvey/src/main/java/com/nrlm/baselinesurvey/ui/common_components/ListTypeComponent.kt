@@ -187,7 +187,7 @@ fun ListTypeQuestion(
                                             index = _index,
                                             selectedIndex = selectedIndex.value,
                                         ) {
-                                            if (questionStatusModel.isEditAllowed) {
+                                            if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                 selectedIndex.value = it
                                                 onAnswerSelection(questionIndex, optionsItem)
                                             } else {

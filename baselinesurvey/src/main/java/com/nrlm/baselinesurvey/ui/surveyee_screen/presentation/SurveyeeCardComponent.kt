@@ -70,6 +70,9 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nrlm.baselinesurvey.utils.toCamelCase
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.utils.SubjectStatus
 
 @Composable
@@ -97,7 +100,7 @@ fun SurveyeeCardComponent(
             .fillMaxWidth()
             .alpha(
                 if (surveyeeState.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal)
-                    .4f else 1f
+                    .5f else 1f
             )
             .clickable {
                 //Handle Click if any
@@ -122,19 +125,6 @@ fun SurveyeeCardComponent(
                                 bottomStart = dimen_6_dp
                             )
                         ) {
-
-//                            IconButton(
-//                                onClick = {
-//                                    moveDidiToThisWeek(surveyeeState, true)
-//                                },
-//                                modifier = Modifier
-//                                    .background(Color.White)
-//                            ) {
-//                                Image(
-//                                    painter = painterResource(id = R.drawable.convert_check_box),
-//                                    contentDescription = ""
-//                                )
-//                            }
                         }
                     } else {
                         Surface(
@@ -244,10 +234,6 @@ fun SurveyeeCardComponent(
                     }
                 }
 
-                /*didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
-                        didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
-                        didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
-                        didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal*/
 
                 if (surveyeeState.surveyState == SurveyState.INPROGRESS
                     || surveyeeState.surveyState == SurveyState.NOT_STARTED
@@ -265,11 +251,19 @@ fun SurveyeeCardComponent(
 
                             Button(
                                 onClick = {
-                                    surveyeeMarkedNotAvailable.value = true
-                                    buttonClicked(
-                                        ButtonName.NOT_AVAILABLE,
-                                        surveyeeState.surveyeeDetails.didiId ?: 0
-                                    )
+                                    if (surveyeeState.isActive != SubjectStatus.SUBJECT_REASSIGN.ordinal) {
+
+                                        surveyeeMarkedNotAvailable.value = true
+                                        buttonClicked(
+                                            ButtonName.NOT_AVAILABLE,
+                                            surveyeeState.surveyeeDetails.didiId ?: 0
+                                        )
+                                    } else {
+                                        CoreAppDetails.getApplicationContext()
+                                            .activityCompleteOrDidiReassignedToast(
+                                                QuestionStatusModel(isDidiReassigned = true)
+                                            )
+                                    }
                                 },
                                 enabled = true,
                                 shape = RoundedCornerShape(roundedCornerRadiusDefault),

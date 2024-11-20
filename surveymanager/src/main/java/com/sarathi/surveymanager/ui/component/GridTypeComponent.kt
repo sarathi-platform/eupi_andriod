@@ -48,7 +48,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.activityCompleteOrDidiReassignedToast
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -79,7 +81,7 @@ fun GridTypeComponent(
     maxCustomHeight: Dp,
     showCardView: Boolean = true,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     isQuestionDisplay: Boolean = true,
     optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf(),
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
@@ -180,7 +182,8 @@ fun GridTypeComponent(
                                                 )
                                             }.entries.firstOrNull(),
                                             isOptionSelected = optionItem.isSelected.value(),
-                                            isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
+                                            isTaskMarkedNotAvailable = isTaskMarkedNotAvailable,
+                                            questionStatusModel = questionStatusModel
                                         ) { selectedOptionId, isSelected ->
 
                                             onAnswerSelection(_index, isSelected)
@@ -198,32 +201,7 @@ fun GridTypeComponent(
                                     .fillMaxWidth()
                                     .padding(bottom = 10.dp)
                             )
-                            //TODO Add content box when content is available from server
-                            /*if (contests?.isNotEmpty() == true) {
-                                Divider(
-                                    thickness = dimen_1_dp,
-                                    color = lightGray2,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                ExpandableDescriptionContentComponent(
-                                    questionDetailExpanded,
-                                    questionIndex,
-                                    contents = contests,
-                                    subTitle = BLANK_STRING,
-                                    imageClickListener = { imageTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                            imageTypeDescriptionContent
-                                        )
-                                    },
-                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                            videoTypeDescriptionContent
-                                        )
-                                    }
-                                )
-                            }*/
+
                         }
                     }
 
@@ -241,9 +219,10 @@ fun GridOptionCard(
     isTaskMarkedNotAvailable: MutableState<Boolean>,
     isEnabled: Map.Entry<Pair<Int, Int>, Boolean>?,
     isOptionSelected: Boolean = false,
+    questionStatusModel: QuestionStatusModel,
     onOptionSelected: (Int, isSelected: Boolean) -> Unit
 ) {
-
+    val context = LocalContext.current
     val isSelected = remember(optionItem.description, isEnabled?.key, isEnabled?.value) {
         mutableStateOf(isOptionSelected)
     }
@@ -264,9 +243,14 @@ fun GridOptionCard(
                 )
             )
             .clickable {
-                if (isOptionEnabled.value) {
+                if (isOptionEnabled.value
+                    && !questionStatusModel.isDidiReassigned
+                    && questionStatusModel.isEditAllowed
+                ) {
                     isSelected.value = !isSelected.value
                     onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                } else {
+                    context.activityCompleteOrDidiReassignedToast(questionStatusModel)
                 }
             }
             .then(modifier)) {

@@ -104,7 +104,7 @@ fun InputComponent(
                     .height(dimen_60_dp),
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
-                enabled = questionStatusModel.isEditAllowed,
+                enabled = questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned,
                 onValueChange = { value ->
                     if (value.length <= maxLength) {
                         if (isOnlyNumber && onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {

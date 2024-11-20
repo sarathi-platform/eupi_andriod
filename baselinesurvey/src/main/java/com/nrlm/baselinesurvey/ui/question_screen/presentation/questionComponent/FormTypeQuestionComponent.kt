@@ -172,7 +172,7 @@ fun FormTypeQuestionComponent(
                                     )
                                     OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
-                                        isActive = questionStatusModel.isEditAllowed,
+                                        isActive = questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(weight_60_percent)
@@ -181,13 +181,13 @@ fun FormTypeQuestionComponent(
                                                 sectionId = question?.sectionId ?: 0,
                                                 surveyId = question?.surveyId ?: 0,
                                                 questionId = question?.questionId ?: 0
-                                            )) && questionStatusModel.isEditAllowed
+                                            )) && (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned)
                                         ) {
                                             showCustomToast(
                                                 context,
                                                 context.getString(R.string.only_one_entry_can_be_added)
                                             )
-                                        } else if (questionStatusModel.isEditAllowed) {
+                                        } else if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                             onAnswerSelection(questionIndex)
                                         } else {
                                             context.activityCompleteOrDidiReassignedToast(

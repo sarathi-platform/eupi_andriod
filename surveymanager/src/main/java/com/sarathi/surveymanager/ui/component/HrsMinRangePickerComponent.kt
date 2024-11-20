@@ -98,6 +98,7 @@ fun HrsMinRangePickerComponent(
                     title = getSecondTitle(typePicker),
                     hintText = secondInputValue.value,
                     sources = getSources(typePicker),
+                    questionStatusModel = QuestionStatusModel(isEditAllowed = isEditAllowed),
                 ) { selectedValue ->
                     secondInputValue.value =
                         getSources(typePicker).find { it.id == selectedValue.id }?.value

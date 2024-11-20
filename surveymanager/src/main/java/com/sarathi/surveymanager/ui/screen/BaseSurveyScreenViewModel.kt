@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
@@ -90,7 +91,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
     val isActivityCompleted = mutableStateOf<Boolean>(false)
-    val isTaskActive = mutableStateOf<Boolean>(false)
+    val isDidiReassigned = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
@@ -154,7 +155,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             taskEntity?.let { task ->
                 activityConfig =
                     getActivityUiConfigUseCase.getActivityConfig(task.activityId, task.missionId)
-                isTaskActive.value = task.isActive != SubjectStatus.SUBJECT_REASSIGN.ordinal
+                isDidiReassigned.value = task.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal
             }
 
             val sectionList = getSectionListUseCase.invoke(surveyId = surveyId)
@@ -482,7 +483,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
         }
 
-        return !isActivityCompleted.value && isFormEntryAllowed && isTaskActive.value
+        return !isActivityCompleted.value && isFormEntryAllowed && !isDidiReassigned.value
     }
 
     fun getSurveyModelWithValue(
@@ -518,7 +519,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     }
     fun isQuestionEditable(): Boolean {
-        return (!isActivityCompleted.value && isTaskActive.value)
+        return (!isActivityCompleted.value && !isDidiReassigned.value)
     }
+
+    fun questionEditStatus(): QuestionStatusModel = QuestionStatusModel(
+        isEditAllowed = !isActivityCompleted.value,
+        isDidiReassigned = isDidiReassigned.value
+    )
 
 }

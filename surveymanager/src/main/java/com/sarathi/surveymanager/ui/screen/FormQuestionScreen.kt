@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -181,7 +182,10 @@ fun FormScreenQuestionUiContent(
                         sanctionedAmount = 0,
                         remainingAmount = 0,
                         isMandatory = question.isMandatory,
-                        isEditable = viewModel.isActivityNotCompleted.value,
+                        questionStatusModel = QuestionStatusModel(
+                            isDidiReassigned = viewModel.isDidiReassigned.value,
+                            isEditAllowed = viewModel.isActivityNotCompleted.value
+                        ),
                         showCardView = false,
                         defaultValue = question.options?.firstOrNull()?.selectedValue
                             ?: BLANK_STRING,
@@ -248,7 +252,10 @@ fun FormScreenQuestionUiContent(
                 QuestionType.DropDown.name -> {
                     DropDownTypeComponent(
                         questionIndex = index,
-                        isEditAllowed = viewModel.isActivityNotCompleted.value,
+                        questionStatusModel = QuestionStatusModel(
+                            isEditAllowed = viewModel.isActivityNotCompleted.value,
+                            isDidiReassigned = viewModel.isDidiReassigned.value
+                        ),
                         title = question.questionDisplay,
                         isMandatory = question.isMandatory,
                         showQuestionInCard = false,
@@ -310,6 +317,10 @@ fun FormScreenQuestionUiContent(
                         maxCustomHeight = maxHeight,
                         isQuestionTypeToggle = false,
                         showCardView = false,
+                        questionStatusModel = QuestionStatusModel(
+                            isDidiReassigned = viewModel.isDidiReassigned.value,
+                            isEditAllowed = viewModel.isActivityNotCompleted.value
+                        ),
                         optionUiModelList = question.options.value(),
                         onAnswerSelection = { questionIndex, optionItemIndex ->
                             question.options?.forEachIndexed { index, _ ->
@@ -333,6 +344,10 @@ fun FormScreenQuestionUiContent(
                         isRequiredField = question.isMandatory,
                         maxCustomHeight = maxHeight,
                         optionUiModelList = question.options.value(),
+                        questionStatusModel = QuestionStatusModel(
+                            isEditAllowed = !viewModel.isActivityNotCompleted.value,
+                            isDidiReassigned = viewModel.isDidiReassigned.value
+                        ),
                         onAnswerSelection = { selectedOptionIndex, isSelected ->
 
                             question.options?.get(selectedOptionIndex)?.isSelected = isSelected
@@ -355,6 +370,10 @@ fun FormScreenQuestionUiContent(
                         isRequiredField = question.isMandatory,
                         maxCustomHeight = maxHeight,
                         showCardView = false,
+                        questionStatusModel = QuestionStatusModel(
+                            isDidiReassigned = viewModel.isDidiReassigned.value,
+                            isEditAllowed = viewModel.isActivityNotCompleted.value
+                        ),
                         optionUiModelList = question.options.value(),
                         onAnswerSelection = { questionIndex, optionItemIndex ->
                             question.options?.forEachIndexed { index, _ ->

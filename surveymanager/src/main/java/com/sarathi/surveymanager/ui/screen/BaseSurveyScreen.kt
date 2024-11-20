@@ -33,10 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.activityCompleteOrDidiReassignedToast
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.model.QuestionStatusModel
-import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -281,7 +281,7 @@ fun QuestionUiContent(
                     showCardView = showCardView,
                     questionStatusModel = QuestionStatusModel(
                         isEditAllowed = !viewModel.isActivityCompleted.value,
-                        isDidiReassigned = viewModel.isTaskActive.value
+                        isDidiReassigned = viewModel.isDidiReassigned.value
                     ),
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
@@ -374,7 +374,7 @@ fun QuestionUiContent(
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
                     questionIndex = index,
-                    isEditAllowed = viewModel.isQuestionEditable(),
+                    questionStatusModel = viewModel.questionEditStatus(),
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
@@ -439,7 +439,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
-                    isEditAllowed = viewModel.isQuestionEditable(),
+                    questionStatusModel = viewModel.questionEditStatus(),
                     optionUiModelList = question.options.value(),
                     onAnswerSelection = { questionIndex, optionItemIndex ->
                         question.options?.forEachIndexed { index, _ ->
@@ -464,7 +464,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
-                    isEditAllowed = viewModel.isQuestionEditable(),
+                    questionStatusModel = viewModel.questionEditStatus(),
                     optionStateMap = viewModel.optionStateMap,
                     onAnswerSelection = { selectedOptionIndex, isSelected ->
                         question.options?.get(selectedOptionIndex)?.isSelected =
@@ -501,7 +501,7 @@ fun QuestionUiContent(
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
-                    isEditAllowed = viewModel.isQuestionEditable(),
+                    questionStatusModel = viewModel.questionEditStatus(),
                     optionUiModelList = question.options.value(),
                     onAnswerSelection = { questionIndex, optionItemIndex ->
                         question.options?.forEachIndexed { index, _ ->
@@ -609,9 +609,11 @@ fun FormQuestionUiContent(
                             ) {
                                 onClick()
                             } else {
-                                showCustomToast(
-                                    context = context,
-                                    context.getString(R.string.edit_disable_message)
+                                context.activityCompleteOrDidiReassignedToast(
+                                    QuestionStatusModel(
+                                        isDidiReassigned = viewModel.isDidiReassigned.value,
+                                        isEditAllowed = viewModel.isActivityCompleted.value
+                                    )
                                 )
                             }
                         }

@@ -22,8 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
+import com.nudge.core.activityCompleteOrDidiReassignedToast
 import com.nudge.core.getQuestionNumber
-import com.nudge.core.showCustomToast
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -42,7 +43,7 @@ fun TypeDropDownComponent(
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     diableItem: Int = -1,
     questionNumber: String = BLANK_STRING,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
@@ -71,13 +72,10 @@ fun TypeDropDownComponent(
         isMandatory = isMandatory,
         selectedItem = selectedOptionText,
         onExpandedChange = {
-            if (isEditAllowed) {
+            if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                 expanded = !it
             } else {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.edit_disable_message)
-                )
+                context.activityCompleteOrDidiReassignedToast(questionStatusModel)
             }
 
         },
@@ -105,7 +103,7 @@ fun TypeDropDownWithCardComponent(
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     questionNumber: String = BLANK_STRING,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
@@ -140,7 +138,7 @@ fun TypeDropDownWithCardComponent(
                     hintText = hintText,
                     sources = sources,
                     isMandatory = isMandatory,
-                    isEditAllowed = isEditAllowed,
+                    questionStatusModel = questionStatusModel,
                     questionNumber = questionNumber,
                     onAnswerSelection = { selectedValuesDto ->
                         onAnswerSelection(selectedValuesDto)
@@ -163,7 +161,7 @@ fun DropDownTypeComponent(
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     showQuestionInCard: Boolean = false,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -173,7 +171,7 @@ fun DropDownTypeComponent(
             hintText = hintText,
             sources = sources,
             isMandatory = isMandatory,
-            isEditAllowed = isEditAllowed,
+            questionStatusModel = questionStatusModel,
             questionNumber = getQuestionNumber(questionIndex),
             onAnswerSelection = { selectedValuesDto ->
                 onAnswerSelection(selectedValuesDto)
@@ -188,7 +186,7 @@ fun DropDownTypeComponent(
                 hintText = hintText,
                 sources = sources,
                 isMandatory = isMandatory,
-                isEditAllowed = isEditAllowed,
+                questionStatusModel = questionStatusModel,
                 questionNumber = BLANK_STRING,
                 onAnswerSelection = { selectedValuesDto ->
                     onAnswerSelection(selectedValuesDto)

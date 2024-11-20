@@ -259,36 +259,6 @@ fun NestedLazyList(
                     )
                 }
             }
-
-
-            // TODO Commenting this until it is fixed.
-            /*item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(dimen_8_dp)
-                            .padding(top = 1.dp)
-                            .clip(RoundedCornerShape(14.dp)),
-                        color = progressIndicatorColor,
-                        trackColor = trackColor,
-                        progress = curPercentage.value
-                    )
-                    Spacer(modifier = Modifier.width(dimen_8_dp))
-                    Text(
-                        text = "${questionScreenViewModel.answeredQuestionCount.size}/${questionScreenViewModel.totalQuestionCount.intValue}",
-                        color = textColorDark,
-                        style = smallTextStyle
-                    )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimen_8_dp)
-                )
-            }*/
             item {
                 LazyColumn(
                     state = innerState,
@@ -301,7 +271,6 @@ fun NestedLazyList(
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
 
-//                    if (sectionDetails.sectionName.equals(context.getString(R.string.didi_info), true) && questionScreenViewModel.didiInfoObjectLive.value?.isEmpty() == true) {
                     itemsIndexed(
                         items = mQuestionEntity.sortedBy { it.questionEntity?.order }
                     ) { index, question ->

@@ -46,6 +46,7 @@ import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.ROTATION_DEGREE_TRANSITION
 import com.nudge.core.TRANSITION
 import com.nudge.core.customGridHeight
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CardArrow
@@ -547,6 +548,9 @@ private fun OptionsUI(
                         maxCustomHeight = customGridHeight(it.size),
                         isQuestionDisplay = false,
                         showCardView = false,
+                        questionStatusModel = QuestionStatusModel(
+                            isEditAllowed = !isActivityCompleted
+                        ),
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         onAnswerSelection = { selectedOptionIndex, isSelected ->
                             if (!isActivityCompleted) {

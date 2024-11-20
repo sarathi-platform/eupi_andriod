@@ -253,7 +253,7 @@ fun FormWithNoneTypeQuestionComponent(
                                                         ),
                                                     onOptionSelected = {
 
-                                                        if (questionStatusModel.isEditAllowed) {
+                                                        if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                             if (it.display?.equals(optionList.last().value) == true) { //when marked NO
                                                                 isNoneMarked.value = true
                                                                 isNoneQuestionAnswered.value =
@@ -417,7 +417,7 @@ fun FormWithNoneTypeQuestionComponent(
                                                         .fillMaxWidth()
                                                         .weight(weight_60_percent)
                                                 ) {
-                                                    if (questionStatusModel.isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             false,

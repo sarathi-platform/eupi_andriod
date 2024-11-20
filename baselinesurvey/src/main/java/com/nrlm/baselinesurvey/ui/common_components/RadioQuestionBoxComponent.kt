@@ -185,7 +185,7 @@ fun RadioQuestionBoxComponent(
                                                     optionsItem = optionsItem,
                                                     selectedIndex = selectedIndex
                                                 ) {
-                                                    if (questionStatusModel.isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                         selectedIndex = _index
                                                         onAnswerSelection(
                                                             questionIndex,

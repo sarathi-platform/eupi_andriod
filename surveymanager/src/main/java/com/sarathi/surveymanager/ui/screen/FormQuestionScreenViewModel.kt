@@ -11,6 +11,7 @@ import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
@@ -65,6 +66,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var taskEntity: ActivityTaskEntity? = null
 
     var isActivityNotCompleted = mutableStateOf(true)
+    val isDidiReassigned = mutableStateOf(false)
+
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
 
@@ -111,6 +114,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 )
 
             taskEntity?.let {
+                isDidiReassigned.value = it.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal
+
                 getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                     .also { surveyConfigEntityList ->
                         val taskAttributes = getTaskUseCase.getSubjectAttributes(it.taskId)

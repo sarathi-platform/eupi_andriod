@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -49,7 +48,6 @@ import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
-import com.nudge.core.json
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
@@ -494,7 +492,6 @@ fun TaskRowView(
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
-    Log.d("TAG", "TaskRowViewValue: ${task.value.json()}")
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {

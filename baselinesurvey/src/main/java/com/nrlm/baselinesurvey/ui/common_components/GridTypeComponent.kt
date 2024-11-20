@@ -222,7 +222,7 @@ fun GridTypeComponent(
                                                     isEnabled = areOptionsEnabled,
                                                     selectedIndex = selectedIndices.value.toList()
                                                 ) { selectedOptionId ->
-                                                    if (questionStatusModel.isEditAllowed) {
+                                                    if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                         if (areOptionsEnabled) {
                                                             try {
                                                                 if (optionItemEntityList.find { it.optionId == selectedOptionId }
