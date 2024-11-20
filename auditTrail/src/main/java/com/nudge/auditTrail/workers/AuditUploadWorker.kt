@@ -8,26 +8,19 @@ import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
-import com.nudge.auditTrail.domain.usecase.AuditManagerUseCase
 import com.nudge.core.BATCH_DEFAULT_LIMIT
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.getBatchSize
-import com.nudge.core.getSizeInLong
-import com.nudge.core.json
 import com.nudge.core.utils.CoreLogger
-import com.nudge.syncmanager.workers.WorkerKeys
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-
 
 
 @HiltWorker
 class AuditUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
-    private val auditManagerUseCase: AuditManagerUseCase,
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG = AuditUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT

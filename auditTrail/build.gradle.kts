@@ -93,7 +93,7 @@ dependencies {
     //Room
     implementation ("androidx.room:room-runtime:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
-    kapt ("androidx.room:room-compiler:$room_version")
+    //  kapt ("androidx.room:room-compiler:$room_version")
     androidTestImplementation ("androidx.room:room-testing:$room_version")
    //hilt
     implementation("com.google.dagger:hilt-android:2.43.2")
@@ -101,7 +101,7 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.0.0")
     //work
     implementation ("androidx.hilt:hilt-work:1.0.0")
-//    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
