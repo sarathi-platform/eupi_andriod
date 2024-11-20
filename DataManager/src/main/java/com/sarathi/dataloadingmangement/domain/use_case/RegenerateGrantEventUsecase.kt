@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.util.Log
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
@@ -142,7 +143,9 @@ class RegenerateGrantEventUsecase @Inject constructor(
             subjectId = surveyAnswer.subjectId,
             referenceId = surveyAnswer.referenceId,
             activityConfigId = taskEntity?.activityId ?: -1,
-            grantId = surveyAnswer.grantId
+            grantId = surveyAnswer.grantId,
+            activityId = taskEntity?.activityId.value(DEFAULT_ID),
+            missionId = taskEntity?.missionId.value(DEFAULT_ID)
         )
         val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
             activityId = taskEntity?.activityId ?: -1,

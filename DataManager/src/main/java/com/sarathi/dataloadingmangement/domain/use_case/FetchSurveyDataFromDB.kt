@@ -13,7 +13,9 @@ class FetchSurveyDataFromDB @Inject constructor(
         sectionId: Int,
         referenceId: String,
         activityConfigId: Int,
-        grantId: Int
+        grantId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
         return repository.getQuestion(
             surveyId = surveyId,
@@ -21,7 +23,9 @@ class FetchSurveyDataFromDB @Inject constructor(
             subjectId = subjectId,
             referenceId = referenceId,
             activityConfigId = activityConfigId,
-            grantId = grantId
+            grantId = grantId,
+            missionId = missionId,
+            activityId = activityId
         )
     }
 
@@ -32,7 +36,9 @@ class FetchSurveyDataFromDB @Inject constructor(
         referenceId: String,
         activityConfigId: Int,
         grantId: Int,
-        formId: Int
+        formId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
         return repository.getFormQuestion(
             surveyId = surveyId,
@@ -41,7 +47,9 @@ class FetchSurveyDataFromDB @Inject constructor(
             referenceId = referenceId,
             activityConfigId = activityConfigId,
             grantId = grantId,
-            formId = formId
+            formId = formId,
+            missionId = missionId,
+            activityId = activityId
         )
     }
 }

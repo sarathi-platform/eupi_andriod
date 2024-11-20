@@ -22,7 +22,8 @@ class QuestionUiModel(
     var subjectType: String = BLANK_STRING,
     var isConditional: Boolean = false,
     var showQuestion: Boolean = false,
-    var sectionName: String
+    var sectionName: String,
+    var formDescriptionInEnglish: String?
 ) {
 
 

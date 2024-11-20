@@ -99,7 +99,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = referenceId,
-                grantId = 0
+                grantId = 0,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
             )
             _questionUiModel.value = question.filter { it.formId == formId }
 

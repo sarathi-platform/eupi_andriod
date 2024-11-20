@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -13,6 +14,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
@@ -28,6 +30,7 @@ class SurveyRepositoryImpl @Inject constructor(
     private val surveyEntityDao: SurveyEntityDao,
     private val grantConfigDao: GrantConfigDao,
     private val sectionEntityDao: SectionEntityDao,
+    private val surveyConfigDao: SurveyConfigEntityDao,
     val coreSharedPrefs: CoreSharedPrefs
 ) : ISurveyRepository {
     override suspend fun getQuestion(
@@ -36,7 +39,9 @@ class SurveyRepositoryImpl @Inject constructor(
         sectionId: Int,
         referenceId: String,
         activityConfigId: Int,
-        grantId: Int
+        grantId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
 
 
@@ -71,7 +76,15 @@ class SurveyRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             referenceType = LanguageAttributeReferenceType.QUESTION.name
         )
+        val surveyConfigList = surveyConfigDao.getSurveyConfigForSurvey(
+            surveyId = surveyId,
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId,
+            missionId = missionId,
+            language = DEFAULT_LANGUAGE_CODE
+        )
         questionList.forEach {
+
 
             val questionUiModel = QuestionUiModel(
                 questionId = it.questionId ?: DEFAULT_ID,
@@ -91,7 +104,9 @@ class SurveyRepositoryImpl @Inject constructor(
                 formId = it.formId ?: DEFAULT_ID,
                 order = it.order.value(0),
                 isConditional = it.isConditional,
-                sectionName = sectionEntity.sectionName
+                sectionName = sectionEntity.sectionName,
+                formDescriptionInEnglish = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
+                    .find { surveyConfigFormId -> surveyConfigFormId.formId == it.formId }?.value
             )
             questionUiList.add(questionUiModel)
 
@@ -107,7 +122,9 @@ class SurveyRepositoryImpl @Inject constructor(
         referenceId: String,
         activityConfigId: Int,
         grantId: Int,
-        formId: Int
+        formId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
         return getQuestion(
             surveyId = surveyId,
@@ -115,7 +132,9 @@ class SurveyRepositoryImpl @Inject constructor(
             subjectId = subjectId,
             referenceId = referenceId,
             activityConfigId = activityConfigId,
-            grantId = grantId
+            grantId = grantId,
+            missionId = missionId,
+            activityId = activityId
         ).filter { it.formId == formId }
     }
 

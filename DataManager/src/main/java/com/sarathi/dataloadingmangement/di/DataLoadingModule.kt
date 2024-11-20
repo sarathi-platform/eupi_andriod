@@ -835,7 +835,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         surveyDao: SurveyEntityDao,
         grantConfigDao: GrantConfigDao,
-        sectionEntityDao: SectionEntityDao
+        sectionEntityDao: SectionEntityDao,
+        surveyConfigEntityDao: SurveyConfigEntityDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao,
@@ -844,7 +845,8 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             surveyEntityDao = surveyDao,
             grantConfigDao = grantConfigDao,
-            sectionEntityDao = sectionEntityDao
+            sectionEntityDao = sectionEntityDao,
+            surveyConfigDao = surveyConfigEntityDao
 
         )
     }
