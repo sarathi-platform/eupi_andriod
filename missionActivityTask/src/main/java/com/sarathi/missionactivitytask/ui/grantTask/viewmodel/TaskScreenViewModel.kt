@@ -291,8 +291,6 @@ open class TaskScreenViewModel @Inject constructor(
                     ) {
                         isFilterEnabled.value = true
                         filterLabel = uiComponent[TaskCardSlots.FILTER_BY.name]?.label.value()
-                        /*context?.getString(CoreRes.string.small_group_filter_label)
-                        .value()*/
                     }
                     val progressUiComponent = getUiComponentValues(
                         taskId = it.taskId,
