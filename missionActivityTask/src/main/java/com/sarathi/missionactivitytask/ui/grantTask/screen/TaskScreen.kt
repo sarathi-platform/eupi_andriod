@@ -163,7 +163,7 @@ fun TaskScreen(
 
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-        defaultValue = getDefaultValueFor(context, viewModel.filterLabel),
+        defaultValue = getDefaultValueForNoFilterItem(context, viewModel.filterLabel),
         headerTitle = getFilterLabel(context, viewModel.filterLabel),
         bottomSheetContentItemList = viewModel.filterByList,
         selectedIndex = FilterCore.getFilterValueForActivity(activityId),
@@ -526,7 +526,7 @@ fun TaskScreen(
 
 }
 
-fun getDefaultValueFor(context: Context, filterLabel: String): String {
+fun getDefaultValueForNoFilterItem(context: Context, filterLabel: String): String {
     var result = BLANK_STRING
     result = when (filterLabel) {
         FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(R.string.no_small_group_assgned_label)
