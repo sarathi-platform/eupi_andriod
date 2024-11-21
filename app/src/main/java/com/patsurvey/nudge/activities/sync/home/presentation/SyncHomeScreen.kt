@@ -279,6 +279,7 @@ fun SyncHomeContent(
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
             BottomContent(
+                isWorkerInfoState = viewModel.workerState.value,
                 context = context,
                 viewModel = viewModel,
                 isNetworkAvailable = isNetworkAvailable
@@ -359,6 +360,7 @@ fun SyncHomeContent(
 
 @Composable
 fun BottomContent(
+    isWorkerInfoState: String,
     context: Context,
     viewModel: SyncHomeViewModel,
     isNetworkAvailable: MutableState<Boolean>
@@ -415,7 +417,7 @@ fun BottomContent(
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.sync_all_data),
                 isArrowRequired = false,
-                isActive = isSyncAllDataActive
+                isActive = isSyncAllDataActive && isWorkerInfoState != WorkInfo.State.RUNNING.name,
             ) {
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
                 CoreLogger.d(
