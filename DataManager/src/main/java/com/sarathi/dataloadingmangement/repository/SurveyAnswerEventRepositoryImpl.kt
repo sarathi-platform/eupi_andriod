@@ -190,8 +190,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                         optionId = optionItem.optionId ?: 0,
                         selectedValue = optionItem.originalValue,
                         optionDesc = optionItem.originalValue ?: BLANK_STRING,
-                        referenceId = referenceId
-
+                        referenceId = referenceId,
+                        order = optionItem.order
                     )
                     )
                 } else {

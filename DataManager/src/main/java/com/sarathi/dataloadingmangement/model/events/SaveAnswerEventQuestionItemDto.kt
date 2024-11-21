@@ -28,7 +28,7 @@ data class SaveAnswerEventQuestionItemDto(
     @SerializedName("formDescription")
     @Expose
     val formDescription: String,
-    @Transient
+
     @SerializedName("order")
     @Expose
     val order: Int? = 0

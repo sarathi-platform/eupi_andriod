@@ -170,10 +170,12 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 val taskEntity =
                     regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
                 taskEntity?.let { task ->
-                    val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
+                    var (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
                         surveyAnswer,
                         taskEntity
                     )
+                    questionUiModel =
+                        questionUiModel.filter { it.options?.any { it.isSelected == true } == true }
 
                     val eventList = arrayListOf<BaseSaveAnswerEventDto>()
                     questionUiModel.find { it.questionId == surveyAnswer.questionId && it.sectionId == surveyAnswer.sectionId && it.surveyId == surveyAnswer.surveyId }
