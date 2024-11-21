@@ -25,7 +25,7 @@ import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.newMediumTextStyle
@@ -152,7 +152,7 @@ fun FormQuestionScreen(
                         )
                     }
 
-                    customVerticalSpacer(size = dimen_56_dp)
+                    customVerticalSpacer(size = dimen_60_dp)
                 }
             }
 

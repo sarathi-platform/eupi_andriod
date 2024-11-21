@@ -234,3 +234,6 @@ const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
 const val ALL_TAB = "All"
 const val QUESTION_DATA_TAB = "Questions"
 const val SECTION_INFORMATION_TAB = "Sections"
+
+const val ACTIVITY_COMPLETED_ERROR = "ACTIVITY_COMPLETED_ERROR"
+const val FORM_RESPONSE_LIMIT_ERROR = "FORM_RESPONSE_LIMIT_ERROR"

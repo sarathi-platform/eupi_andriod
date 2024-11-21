@@ -33,5 +33,6 @@
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
     <string name="village_filter_label">"Filter by Village: "</string>
+    <string name="details_have_already_been_added">Details have already been added!</string>
 
 </resources>
