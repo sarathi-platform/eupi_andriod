@@ -45,5 +45,5 @@
     <string name="questions_data_tab_title">প্রশ্ন</string>
     <string name="section_information_tab_title">বিভাগসমূহ</string>
     <string name="village_filter_label">"গ্রাম অনুসারে ফিল্টার করুন: "</string>
-    <string name="empty_task_list_placeholder">No Task found for this activity!</string>
+    <string name="empty_task_list_placeholder">এই কার্যকলাপের জন্য কোন টাস্ক পাওয়া যায়নি!</string>
 </resources>
