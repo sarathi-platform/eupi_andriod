@@ -1097,7 +1097,11 @@ fun NavGraphBuilder.MatNavigation(
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
-                navController.popBackStack()
+                navController.popBackStack(
+                    route = MATHomeScreens.SurveyScreen.route,
+                    inclusive = false,
+                    saveState = false
+                )
             }
         )
     }
