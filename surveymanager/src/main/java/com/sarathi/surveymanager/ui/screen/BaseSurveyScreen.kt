@@ -453,6 +453,7 @@ fun QuestionUiContent(
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name -> {
                 GridTypeComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,

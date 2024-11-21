@@ -63,6 +63,7 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
@@ -70,6 +71,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun GridTypeComponent(
+    contests: List<Content?>? = listOf(),
     modifier: Modifier = Modifier,
     questionDisplay: String,
     optionUiModelList: List<OptionsUiModel>,
@@ -193,37 +195,14 @@ fun GridTypeComponent(
                             }
                         }
                         item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
+                            ContentBottomViewComponent(
+                                contents = contests,
+                                questionIndex = questionIndex,
+                                showCardView = showCardView,
+                                questionDetailExpanded = {},
+                                imageClickListener = {},
+                                videoLinkClicked = {}
                             )
-                            //TODO Add content box when content is available from server
-                            /*if (contests?.isNotEmpty() == true) {
-                                Divider(
-                                    thickness = dimen_1_dp,
-                                    color = lightGray2,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                ExpandableDescriptionContentComponent(
-                                    questionDetailExpanded,
-                                    questionIndex,
-                                    contents = contests,
-                                    subTitle = BLANK_STRING,
-                                    imageClickListener = { imageTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                            imageTypeDescriptionContent
-                                        )
-                                    },
-                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                            videoTypeDescriptionContent
-                                        )
-                                    }
-                                )
-                            }*/
                         }
                     }
 
