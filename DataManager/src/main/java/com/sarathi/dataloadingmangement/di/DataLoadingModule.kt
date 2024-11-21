@@ -3,10 +3,13 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -72,10 +75,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMapp
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SearchScreenUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
@@ -1598,5 +1603,36 @@ class DataLoadingModule {
             activityConfigDao = activityConfigDao,
             taskDao = taskDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesBaselineV1CheckUseCase(
+        baselineV1CheckRepository: BaselineV1CheckRepository
+    ): BaselineV1CheckUseCase {
+        return BaselineV1CheckUseCase(baselineV1CheckRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesBaselineV1CheckRepository(
+        coreSharedPrefs: CoreSharedPrefs
+    ): BaselineV1CheckRepository {
+        return BaselineV1CheckRepositoryImpl(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSearchScreenUseCase(
+        getTaskUseCase: GetTaskUseCase,
+        getSectionListUseCase: GetSectionListUseCase,
+        fetchSurveyDataFromDB: FetchSurveyDataFromDB
+    ): SearchScreenUseCase {
+        return SearchScreenUseCase(
+            getTaskUseCase = getTaskUseCase,
+            getSectionListUseCase = getSectionListUseCase,
+            fetchSurveyDataUseCase = fetchSurveyDataFromDB
+        )
+
     }
 }
