@@ -29,7 +29,6 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
@@ -48,9 +47,11 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
+import com.nudge.core.FILTER_BY_VILLAGE_NAME_LABEL
 import com.nudge.core.FilterCore
+import com.nudge.core.NO_FILTER_VALUE
 import com.nudge.core.NO_SG_FILTER_LABEL
-import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
@@ -162,7 +163,8 @@ fun TaskScreen(
 
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-        defaultValue = stringResource(R.string.no_small_group_assgned_label),
+        defaultValue = getDefaultValueForNoFilterItem(context, viewModel.filterLabel),
+        headerTitle = getFilterLabel(context, viewModel.filterLabel),
         bottomSheetContentItemList = viewModel.filterByList,
         selectedIndex = FilterCore.getFilterValueForActivity(activityId),
         onBottomSheetItemSelected = {
@@ -524,6 +526,18 @@ fun TaskScreen(
 
 }
 
+fun getDefaultValueForNoFilterItem(context: Context, filterLabel: String): String {
+    var result = BLANK_STRING
+    result = when (filterLabel) {
+        FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(R.string.no_small_group_assgned_label)
+            .value()
+
+        else -> BLANK_STRING
+    }
+    return result
+
+}
+
 @Composable
 private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewModel): String {
 
@@ -536,9 +550,9 @@ private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewMod
     } else {
         viewModel.filterList.value.size.toString()
     }
-    val filterByKey = viewModel.getFilterByValueKeyWithoutLabel(context)
+    val filterByKey = viewModel.getFilterByValueKeyWithoutLabel(context, viewModel.filterLabel)
     val filterValue = if (filterByKey.equals(
-            NO_SG_FILTER_VALUE,
+            NO_FILTER_VALUE,
             true
         )
     ) NO_SG_FILTER_LABEL else filterByKey
@@ -755,4 +769,18 @@ fun TaskRowView(
             "true"
         ),
     )
+}
+
+fun getFilterLabel(context: Context?, filterLabel: String?): String {
+    var result = BLANK_STRING
+    result = when (filterLabel) {
+        FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(CoreRes.string.small_group_filter_label)
+            .value()
+
+        FILTER_BY_VILLAGE_NAME_LABEL -> context?.getString(CoreRes.string.village_filter_label)
+            .value()
+
+        else -> BLANK_STRING
+    }
+    return result
 }

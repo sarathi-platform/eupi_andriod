@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +70,10 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val _formQuestionResponseMap =
         mutableStateMapOf<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>>()
     val formQuestionResponseMap: SnapshotStateMap<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>> get() = _formQuestionResponseMap
+
+    val sortedEntries = derivedStateOf {
+        formQuestionResponseMap.entries.sortedBy { it.value.firstOrNull()?.createdDate.value(Long.MAX_VALUE) }
+    }
 
     val referenceIdsList = mutableStateListOf<Pair<String, Int>>()
 
@@ -150,12 +155,17 @@ class FormResponseSummaryViewModel @Inject constructor(
             )
 
             _formQuestionResponseMap.clear()
-            _formQuestionResponseMap.putAll(savedAnswers.filter { savedAnswer ->
-                savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
-                    savedAnswer.questionId
-                )
-            }.groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
-                .filter { it.key.second == formId })
+            _formQuestionResponseMap.putAll(
+                savedAnswers
+                    .filter { savedAnswer ->
+                        savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
+                            savedAnswer.questionId
+                        )
+                    }
+                    .groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
+                    .filter { it.key.second == formId }
+            )
+
 
             referenceIdsList.clear()
             referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
