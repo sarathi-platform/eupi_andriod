@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.network.interfaces
 
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
-import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
@@ -30,7 +29,6 @@ import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
 import com.nrlm.baselinesurvey.network.SUBPATH_CONTENT_MANAGER
 import com.nrlm.baselinesurvey.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
-import com.nrlm.baselinesurvey.network.SUBPATH_GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_DIDI_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_SAVED_SURVEY
@@ -83,9 +81,6 @@ interface BaseLineApiService {
     @POST(SUBPATH_GET_MISSION)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
-
-    @GET(SUBPATH_GET_CASTE_LIST)
-    suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
 
     @POST(GET_SECTION_STATUS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

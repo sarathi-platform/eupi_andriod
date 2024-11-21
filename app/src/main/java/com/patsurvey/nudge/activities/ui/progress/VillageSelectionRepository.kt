@@ -4094,46 +4094,6 @@ class VillageSelectionRepository @Inject constructor(
     public fun fetchCastList(isRefresh: Boolean) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchCasteConfigNetworkUseCase.invoke()
-//            val languageList = languageListDao.getAllLanguages()
-//            val casteEntityList = arrayListOf<CasteEntity>()
-//         //   languageList.forEach { language ->
-//                //var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-//               // if (localCasteList.isEmpty() || isRefresh) {
-//                if ( isRefresh) {
-//                    try {
-//                        val casteResponse = apiService.getCasteList()
-//                        if (casteResponse.status.equals(SUCCESS, true)) {
-//                            casteListDao.deleteCasteTable()
-//                            casteResponse.data?.let { casteList ->
-////                                if (isRefresh) {
-////                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
-////                                }
-//                                casteResponse?.data?.forEach { casteModel ->
-//                                    casteEntityList.add(CasteEntity.getCasteEntity(casteModel))
-//                                }
-//                                casteListDao.insertAll(casteEntityList)
-//
-//                            }
-//                        } else {
-//                            val ex = ApiResponseFailException(casteResponse.message)
-//                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-//                                retryApiList.add(ApiType.CAST_LIST_API)
-//                               // crpPatQuestionApiLanguageId.add(language.id)
-//                            }
-//                            onCatchError(ex, ApiType.CAST_LIST_API)
-//                        }
-//                    } catch (ex: Exception) {
-//                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-//                            retryApiList.add(ApiType.CAST_LIST_API)
-//                            //crpPatQuestionApiLanguageId.add(language.id)
-//                        }
-//                        onCatchError(ex, ApiType.CAST_LIST_API)
-//                    } finally {
-//                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
-//                            ApiType.CAST_LIST_API
-//                        )
-//                    }
-//              //  }
-            }
         }
     }
+}

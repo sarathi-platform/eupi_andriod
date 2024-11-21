@@ -192,18 +192,17 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     fun refreshData(
-        fetchDataUseCase: FetchDataUseCase,
-        fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
+        fetchDataUseCase: FetchDataUseCase
     ) {
         currentApiCount = 0
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-                callSurveyApi(fetchDataUseCase)
-                fetchMissionData(fetchDataUseCase)
-            fetchCastes(fetchCasteConfigNetworkUseCase)
-                fetchUserDetail(fetchDataUseCase)
-                fetchSurveyeeList(fetchDataUseCase)
-                fetchContentData(fetchDataUseCase)
+            callSurveyApi(fetchDataUseCase)
+            fetchMissionData(fetchDataUseCase)
+            fetchCastes(fetchDataUseCase.casteConfigNetworkUseCase)
+            fetchUserDetail(fetchDataUseCase)
+            fetchSurveyeeList(fetchDataUseCase)
+            fetchContentData(fetchDataUseCase)
 
 
         }

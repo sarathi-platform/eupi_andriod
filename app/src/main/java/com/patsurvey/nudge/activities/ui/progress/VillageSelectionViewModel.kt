@@ -991,58 +991,6 @@ class VillageSelectionViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchCasteConfigNetworkUseCase.invoke()
-//            val languageList = languageListDao.getAllLanguages()
-//            val casteEntityList = arrayListOf<CasteEntity>()
-//            languageList.forEach { language ->
-//                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-//                if (localCasteList.isEmpty() || isRefresh) {
-//                    try {
-//                        val casteResponse = apiService.getCasteList()
-//                        if (casteResponse.status.equals(SUCCESS, true)) {
-//                            casteListDao.deleteCasteTable()
-//                            casteResponse.data?.let { casteList ->
-////                                if (isRefresh) {
-////                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
-////                                }
-//                                casteResponse.data?.forEach { casteModel ->
-//                                    casteEntityList.add(CasteEntity.getCasteEntity(casteModel))
-//                                }
-//                                casteListDao.insertAll(casteEntityList)
-//                                AnalyticsHelper.logEvent(
-//                                    Events.CASTE_LIST_WRITE,
-//                                    mapOf(
-//                                        EventParams.LANGUAGE_ID to language.id,
-//                                        EventParams.CASTE_LIST to "$casteList",
-//                                        EventParams.FROM_SCREEN to "VillageSelectionScreen"
-//                                    )
-//                                )
-//                            }
-//                        } else {
-//                            val ex = ApiResponseFailException(casteResponse.message)
-//                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-//                                retryApiList.add(ApiType.CAST_LIST_API)
-//                                crpPatQuestionApiLanguageId.add(language.id)
-//                            }
-//                            onCatchError(ex, ApiType.CAST_LIST_API)
-//                        }
-//                    } catch (ex: Exception) {
-//                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-//                            retryApiList.add(ApiType.CAST_LIST_API)
-//                            crpPatQuestionApiLanguageId.add(language.id)
-//                        }
-//                        onCatchError(ex, ApiType.CAST_LIST_API)
-//                    } finally {
-//                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
-//                            ApiType.CAST_LIST_API
-//                        )
-//                    }
-//                } /*else {
-//                    withContext(Dispatchers.Main) {
-//                        delay(250)
-//                        showLoader.value = false
-//                    }
-//                }*/
-//            }
         }
     }
 
