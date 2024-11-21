@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -41,7 +42,8 @@ class SurveyRepositoryImpl @Inject constructor(
         activityConfigId: Int,
         grantId: Int,
         missionId: Int,
-        activityId: Int
+        activityId: Int,
+        isFromRegenerate: Boolean
     ): List<QuestionUiModel> {
 
 
@@ -51,7 +53,7 @@ class SurveyRepositoryImpl @Inject constructor(
             surveyId,
         )?.surveyName
         val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             referenceType = LanguageAttributeReferenceType.OPTION.name,
@@ -70,7 +72,7 @@ class SurveyRepositoryImpl @Inject constructor(
         )
 
         val questionList = questionDao.getSurveySectionQuestionForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -134,7 +136,8 @@ class SurveyRepositoryImpl @Inject constructor(
             activityConfigId = activityConfigId,
             grantId = grantId,
             missionId = missionId,
-            activityId = activityId
+            activityId = activityId,
+            isFromRegenerate = false
         ).filter { it.formId == formId }
     }
 

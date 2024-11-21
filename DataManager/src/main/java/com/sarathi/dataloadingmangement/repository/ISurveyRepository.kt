@@ -12,7 +12,8 @@ interface ISurveyRepository {
         activityConfigId: Int,
         grantId: Int,
         missionId: Int,
-        activityId: Int
+        activityId: Int,
+        isFromRegenerate: Boolean
 
     ): List<QuestionUiModel>
 

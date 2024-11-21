@@ -15,7 +15,8 @@ class FetchSurveyDataFromDB @Inject constructor(
         activityConfigId: Int,
         grantId: Int,
         missionId: Int,
-        activityId: Int
+        activityId: Int,
+        isFromRegenerate: Boolean = false
     ): List<QuestionUiModel> {
         return repository.getQuestion(
             surveyId = surveyId,
@@ -25,7 +26,8 @@ class FetchSurveyDataFromDB @Inject constructor(
             activityConfigId = activityConfigId,
             grantId = grantId,
             missionId = missionId,
-            activityId = activityId
+            activityId = activityId,
+            isFromRegenerate = isFromRegenerate
         )
     }
 

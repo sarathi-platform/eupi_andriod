@@ -145,7 +145,8 @@ class RegenerateGrantEventUsecase @Inject constructor(
             activityConfigId = taskEntity?.activityId ?: -1,
             grantId = surveyAnswer.grantId,
             activityId = taskEntity?.activityId.value(DEFAULT_ID),
-            missionId = taskEntity?.missionId.value(DEFAULT_ID)
+            missionId = taskEntity?.missionId.value(DEFAULT_ID),
+            isFromRegenerate = true
         )
         val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
             activityId = taskEntity?.activityId ?: -1,
