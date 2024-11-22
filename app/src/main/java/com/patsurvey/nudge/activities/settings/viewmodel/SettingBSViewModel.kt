@@ -232,6 +232,14 @@ class SettingBSViewModel @Inject constructor(
                 )
             )
         }
+        list.add(
+            SettingOptionModel(
+                8,
+                context.getString(appRes.string.audit_trail),
+                BLANK_STRING,
+                SettingTagEnum.AUDIT_TRAIL.name
+            )
+        )
 
 
         _optionList.value=list

@@ -289,11 +289,7 @@ fun OtpVerificationScreen(
                                         }
                                     }
                                 }
-                                var auditTrailDetail = hashMapOf<String, Any>(
-                                    "ActioType" to "Login")
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    viewModel.auditTrailUseCase.invoke(auditTrailDetail)
-                                }
+
                             }
                             RetryHelper.autoReadOtp.value = ""
                         }

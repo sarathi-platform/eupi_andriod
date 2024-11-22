@@ -528,6 +528,7 @@
     <string name="select_activity_for">এর জন্য কার্যকলাপ নির্বাচন করুন </string>
     <string name="select_all">সব নির্বাচন করুন</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">সিঙ্কের জন্য ডেটা উপলব্ধ নয়৷ অনুগ্রহ করে সিঙ্ক করার আগে কিছু ক্রিয়া সম্পাদন করুন৷</string>
+    <string name="audit_trail">Audit Trail</string>
 
 
 </resources>

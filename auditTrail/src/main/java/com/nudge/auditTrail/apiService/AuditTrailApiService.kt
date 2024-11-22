@@ -8,7 +8,7 @@ import retrofit2.http.POST
 interface AuditTrailApiService {
 
     @POST("audit-trail-service/audit-trail/add")
-    suspend fun audit(@Body auditRequest: List<AuditRequest>
+    suspend fun auditTrail(@Body auditRequest: List<AuditRequest>
     ): ApiResponseModel<String>
 
 }

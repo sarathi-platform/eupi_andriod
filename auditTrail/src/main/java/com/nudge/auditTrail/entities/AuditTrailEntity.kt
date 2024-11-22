@@ -30,9 +30,10 @@ data class AuditTrailEntity(
     val mobileNumber: String,
 
     @ColumnInfo("auditData")
-    val auditData: String,
+    val auditData: String?,
 )
 {
+
     companion object {
         fun getAuditDetailEvent(map:Map<String,Any>,mobileNo:String): AuditTrailEntity {
             return AuditTrailEntity(

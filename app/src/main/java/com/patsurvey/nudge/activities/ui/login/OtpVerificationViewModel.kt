@@ -47,6 +47,11 @@ class OtpVerificationViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onOtpResponse(it.typeName?: CRP_USER_TYPE,true,response.message)
                     }
+                    var auditTrailDetail = hashMapOf<String, Any>(
+                        "ActioType" to "Login")
+                    CoroutineScope(Dispatchers.IO).launch {
+                      auditTrailUseCase.invoke(auditTrailDetail)
+                    }
                 }
 
             } else {

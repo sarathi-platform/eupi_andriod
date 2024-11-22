@@ -177,6 +177,9 @@ fun SettingBSScreen(
                             )
                         }
                     }
+                    SettingTagEnum.AUDIT_TRAIL.name ->{
+
+                    }
                 }
             },
             onLogoutClick = {

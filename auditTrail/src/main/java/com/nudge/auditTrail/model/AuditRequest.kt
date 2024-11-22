@@ -1,32 +1,32 @@
 package com.nudge.auditTrail.model
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.auditTrail.entities.AuditTrailEntity
 
 data class AuditRequest(
-    @SerializedName("mobileNumber") var mobileNumber: String,
-    @SerializedName("deviceType") var deviceType: String?,
-    @SerializedName("deviceId") var deviceId: String?,
-    @SerializedName("actionStatusType") var actionStatusType: String?,
-    @SerializedName("message") var message: String?,
-    @SerializedName("dataChangeDetails") var dataChangeDetails: List<DataChangeDetail>?,
-    @SerializedName("created_date") val createdDate: String?,
-    @SerializedName("modified_date") val modifiedDate: String?,
+    @SerializedName("mobileNumber") val mobileNumber: String,
+    @SerializedName("deviceType") val deviceType: String,
+    @SerializedName("deviceId") val deviceId: String,
+    @SerializedName("actionStatusType") val actionStatusType: String,
+    @SerializedName("message") val message: String,
+    @SerializedName("dataChangeDetails") val dataChangeDetails: List<DataChangeDetail>,
+    @SerializedName("created_date") val createdDate: String,
+    @SerializedName("modified_date") val modifiedDate: String,
 )
 data class DataChangeDetail(
-    @SerializedName("entityId") var entityId: Int,
-    @SerializedName("entityName") var entityName: String,
-    @SerializedName("fieldName") var fieldName: String,
-    @SerializedName("oldValue")var oldValue: String,
-    @SerializedName("newValue") var newValue: String
+    @SerializedName("entityId") val entityId: Int,
+    @SerializedName("entityName") val entityName: String,
+    @SerializedName("fieldName") val fieldName: String,
+    @SerializedName("oldValue")val oldValue: String,
+    @SerializedName("newValue") val newValue: String
 )
-fun AuditRequest.toEventRequest() =
+fun AuditTrailEntity.toEventRequest() =
     AuditRequest(
-        this.mobileNumber,
-        this.deviceType,
-        this.actionStatusType,
-        this.deviceId,
-        this.message,
-        this.dataChangeDetails,
+        this.id,
         this.createdDate.toString(),
-        this.modifiedDate.toString()
-    )
+        this.modifiedDate.toString(),
+        this.mobileNumber,
+        this.auditData
+        )
+
+

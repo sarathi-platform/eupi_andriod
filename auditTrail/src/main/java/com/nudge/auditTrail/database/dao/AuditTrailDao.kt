@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nudge.auditTrail.entities.AuditTrailEntity
 import com.nudge.core.AUDIT_TRAIL_TABLE
-
 @Dao
 interface AuditTrailDao {
 
@@ -15,6 +14,11 @@ interface AuditTrailDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(events: List<AuditTrailEntity>)
+
+    @Query("SELECT * from $AUDIT_TRAIL_TABLE")
+    fun getAllEvent(): List<AuditTrailEntity>
+
+
 
     @Query("DELETE FROM $AUDIT_TRAIL_TABLE where id=:userId")
     fun deleteContent(userId: String)
