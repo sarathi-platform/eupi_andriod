@@ -68,7 +68,8 @@ fun FormQuestionScreen(
     missionId: Int,
     referenceId: String,
     subjectType: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(key1 = Unit) {
@@ -106,7 +107,9 @@ fun FormQuestionScreen(
                 )
             }
         },
-        onSettingClick = {},
+        onSettingClick = {
+            onSettingClick()
+        },
         onContentUI = {
 
             BoxWithConstraints(
