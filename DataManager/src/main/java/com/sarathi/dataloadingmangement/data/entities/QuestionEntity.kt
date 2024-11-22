@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
@@ -105,7 +106,7 @@ data class QuestionEntity(
                 order = question.order,
                 type = question.type,
                 isConditional = isCondition,
-                contentEntities = question.contentList,
+                contentEntities = question.contentList.value(),
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
                 formId = question.formId ?: DEFAULT_ID,

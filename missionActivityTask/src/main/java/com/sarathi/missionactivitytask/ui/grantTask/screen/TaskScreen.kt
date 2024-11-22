@@ -103,6 +103,7 @@ import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
+import com.nudge.core.R as CoreRes
 
 const val TAG = "TaskScreen"
 
