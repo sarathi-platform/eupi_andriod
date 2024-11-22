@@ -6,14 +6,29 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -22,10 +37,16 @@ import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.eventTextColor
+import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -49,8 +70,14 @@ import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
+import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.utils.getMaxInputLength
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormQuestionScreen(
     modifier: Modifier = Modifier,
@@ -65,9 +92,19 @@ fun FormQuestionScreen(
     missionId: Int,
     referenceId: String,
     subjectType: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToMediaScreen: (
+        navController: NavController, contentKey: String,
+        contentType: String,
+        contentTitle: String
+    ) -> Unit,
 ) {
-
+    val sheetState =
+        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
+    val selectedSectionDescription = remember {
+        mutableStateOf(DescriptionContentState())
+    }
+    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = Unit) {
         viewModel.setPreviousScreenData(
             taskId,
@@ -83,90 +120,173 @@ fun FormQuestionScreen(
         viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
 
     }
-
-    ToolBarWithMenuComponent(
-        title = viewModel.formTitle.value,
-        modifier = modifier,
-        onBackIconClick = { navController.navigateUp() },
-        onSearchValueChange = {},
-        onBottomUI = {
-            Box(modifier = Modifier
-                .background(white)
-                .fillMaxWidth()) {
-                SubmitButtonBottomUi(
-                    isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
-                    buttonTitle = stringResource(R.string.submit),
-                    onSubmitButtonClick = {
-                        viewModel.saveAllAnswers()
-                        onNavigateBack()
+    ModelBottomSheetDescriptionContentComponent(
+        modifier = Modifier
+            .fillMaxSize(),
+        sheetContent = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        sheetState.hide()
                     }
+                }) {
+                    androidx.compose.material3.Icon(
+                        painter = painterResource(id = R.drawable.info_icon),
+                        contentDescription = "question info button",
+                        Modifier.size(dimen_18_dp),
+                        tint = blueDark
+                    )
+                }
+                if (sheetState.isVisible) {
+                    Divider(
+                        thickness = dimen_1_dp,
+                        color = lightGray2,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                com.sarathi.surveymanager.ui.component.DescriptionContentComponent(
+                    buttonClickListener = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                        }
+                    },
+                    imageClickListener = {
+                    },
+                    videoLinkClicked = {
+                        //navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/${it}")
+                    },
+                    descriptionContentState = selectedSectionDescription.value
                 )
             }
         },
-        onSettingClick = {},
-        onContentUI = {
-
-            BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxHeight()
-            ) {
-                LazyColumn(
-                    /*verticalArrangement = Arrangement.spacedBy(dimen_10_dp),*/ modifier = Modifier
+        sheetState = sheetState,
+        sheetElevation = dimen_20_dp,
+        sheetBackgroundColor = Color.White,
+        sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp)
+    ) {
+        ToolBarWithMenuComponent(
+            title = viewModel.formTitle.value,
+            modifier = modifier,
+            onBackIconClick = { navController.navigateUp() },
+            onSearchValueChange = {},
+            onBottomUI = {
+                Box(
+                    modifier = Modifier
+                        .background(white)
                         .fillMaxWidth()
-                        .padding(horizontal = dimen_16_dp)
                 ) {
-                    viewModel.surveyConfig
-                        .filter {
-                            it.value.type.equals(UiConfigAttributeType.DYNAMIC.name, true)
-                                    && it.value.componentType.equals(
-                                CONFIG_SLOT_TYPE_PREPOPULATED,
-                                true
-                            )
-                        }.forEach { mapEntry ->
-                            item {
-                                SubContainerView(
-                                    mapEntry.value,
-                                    isNumberFormattingRequired = false,
-                                    labelStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
-                                    valueStyle = defaultTextStyle
+                    SubmitButtonBottomUi(
+                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                        buttonTitle = stringResource(R.string.submit),
+                        onSubmitButtonClick = {
+                            viewModel.saveAllAnswers()
+                            onNavigateBack()
+                        }
+                    )
+                }
+            },
+            onSettingClick = {},
+            onContentUI = {
+
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                ) {
+                    LazyColumn(
+                        /*verticalArrangement = Arrangement.spacedBy(dimen_10_dp),*/ modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimen_16_dp)
+                    ) {
+                        viewModel.surveyConfig
+                            .filter {
+                                it.value.type.equals(UiConfigAttributeType.DYNAMIC.name, true)
+                                        && it.value.componentType.equals(
+                                    CONFIG_SLOT_TYPE_PREPOPULATED,
+                                    true
                                 )
+                            }.forEach { mapEntry ->
+                                item {
+                                    SubContainerView(
+                                        mapEntry.value,
+                                        isNumberFormattingRequired = false,
+                                        labelStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
+                                        valueStyle = defaultTextStyle
+                                    )
+                                }
                             }
+
+                        itemsIndexed(viewModel.questionUiModel.value.sortedBy { it.order }) { index, question ->
+
+                            FormScreenQuestionUiContent(
+                                bottomSheetState = sheetState,
+                                coroutineScope = coroutineScope,
+                                index = index,
+                                question = question,
+                                viewModel = viewModel,
+
+                                maxHeight,
+                                onDetailIconClicked = {
+                                    coroutineScope.launch {
+                                        selectedSectionDescription.value =
+                                            selectedSectionDescription.value.copy(
+                                                textTypeDescriptionContent = viewModel.getContentData(
+                                                    question.contentEntities,
+                                                    "text"
+                                                )?.contentValue
+                                                    ?: BLANK_STRING,
+                                                imageTypeDescriptionContent = viewModel.getContentData(
+                                                    question.contentEntities,
+                                                    "image"
+                                                )?.contentValue
+                                                    ?: BLANK_STRING,
+                                                videoTypeDescriptionContent = viewModel.getContentData(
+                                                    question.contentEntities,
+                                                    "video"
+                                                )?.contentValue
+                                                    ?: BLANK_STRING,
+                                            )
+
+                                        delay(100)
+                                        if (!sheetState.isVisible) {
+                                            sheetState.show()
+                                        } else {
+                                            sheetState.hide()
+                                        }
+                                    }
+
+                                },
+                                onAnswerSelect = {
+                                    viewModel.updateQuestionResponseMap(question)
+                                    viewModel.runConditionCheck(question)
+                                }
+                            )
                         }
 
-                    itemsIndexed(viewModel.questionUiModel.value.sortedBy { it.order }) { index, question ->
-
-                        FormScreenQuestionUiContent(
-                            index = index,
-                            question = question,
-                            viewModel = viewModel,
-
-                            maxHeight,
-                            onAnswerSelect = {
-                                viewModel.updateQuestionResponseMap(question)
-                                viewModel.runConditionCheck(question)
-                            }
-                        )
+                        customVerticalSpacer(size = dimen_56_dp)
                     }
-
-                    customVerticalSpacer(size = dimen_56_dp)
                 }
+
+
             }
+        )
+    }
 
-
-        }
-    )
 
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormScreenQuestionUiContent(
+    bottomSheetState: ModalBottomSheetState,
+    coroutineScope: CoroutineScope,
     index: Int,
     question: QuestionUiModel,
     viewModel: FormQuestionScreenViewModel,
     maxHeight: Dp,
     onAnswerSelect: (QuestionUiModel) -> Unit,
-) {
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
 
+) {
     if (viewModel.visibilityMap[question.questionId].value()) {
         Column {
             when (question.type) {
@@ -175,6 +295,8 @@ fun FormScreenQuestionUiContent(
                 QuestionType.NumericField.name,
                 QuestionType.InputText.name -> {
                     InputComponent(
+                        contests = question.contentEntities,
+                        isFromTypeQuestion = true,
                         questionIndex = index,
                         maxLength = getMaxInputLength(
                             questionId = question.questionId,
@@ -193,7 +315,8 @@ fun FormScreenQuestionUiContent(
                         title = question.questionDisplay,
                         isOnlyNumber = question.type == QuestionType.NumericField.name || question.type == QuestionType.InputNumber.name,
                         hintText = question.options?.firstOrNull()?.description
-                            ?: BLANK_STRING
+                            ?: BLANK_STRING,
+                        onDetailIconClicked = { onDetailIconClicked() }
                     ) { selectedValue, remainingAmout ->
                         saveInputTypeAnswer(selectedValue, question, viewModel)
                         onAnswerSelect(question)
@@ -207,11 +330,14 @@ fun FormScreenQuestionUiContent(
                 QuestionType.DateType.name -> {
 
                     DatePickerComponent(
+                        contests = question.contentEntities,
+                        isFromTypeQuestion = true,
                         questionIndex = index,
                         isMandatory = question.isMandatory,
                         defaultValue = question.options?.firstOrNull()?.selectedValue
                             ?: BLANK_STRING,
                         title = question.questionDisplay,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         isEditable = viewModel.isActivityNotCompleted.value,
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING
@@ -228,18 +354,20 @@ fun FormScreenQuestionUiContent(
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
                     SingleImageComponent(
+                        contests = question.contentEntities,
+                        isFromTypeQuestion = true,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         fileNamePrefix = viewModel.getPrefixFileName(question),
                         filePaths =
-                            question.options?.firstOrNull()?.selectedValue
-                                ?: BLANK_STRING
-                        ,
+                        question.options?.firstOrNull()?.selectedValue
+                            ?: BLANK_STRING,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditable = viewModel.isActivityNotCompleted.value,
                         maxCustomHeight = maxHeight,
                         subtitle = question.display,
 
-                    ) { selectedValue, isDeleted ->
+                        ) { selectedValue, isDeleted ->
                         saveSingleImage(isDeleted, question.options, selectedValue)
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(question.questionId) { isValid, message ->
@@ -252,12 +380,15 @@ fun FormScreenQuestionUiContent(
                 QuestionType.SingleSelectDropDown.name,
                 QuestionType.DropDown.name -> {
                     DropDownTypeComponent(
+                        isFromTypeQuestion = true,
+                        contests = question.contentEntities,
                         questionIndex = index,
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         title = question.questionDisplay,
                         isMandatory = question.isMandatory,
                         showQuestionInCard = false,
                         sources = getOptionsValueDto(question.options ?: listOf()),
+                        onDetailIconClicked = { onDetailIconClicked() },
                         onAnswerSelection = { selectedValue ->
                             question.options?.forEach { option ->
                                 option.isSelected = selectedValue.id == option.optionId
@@ -274,6 +405,8 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiSelectDropDown.name -> {
                     TypeMultiSelectedDropDownComponent(
+                        contests = question.contentEntities,
+                        isFromTypeQuestion = true,
                         questionIndex = index,
                         title = question.questionDisplay,
                         isMandatory = question.isMandatory,
@@ -281,6 +414,7 @@ fun FormScreenQuestionUiContent(
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         showCardView = false,
                         maxCustomHeight = maxHeight,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         onAnswerSelection = { selectedItems ->
                             val selectedOptions =
                                 selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
@@ -309,12 +443,15 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.RadioButton.name -> {
                     RadioQuestionBoxComponent(
+                        isFromTypeQuestion = true,
+                        contests = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
                         maxCustomHeight = maxHeight,
                         isQuestionTypeToggle = false,
                         showCardView = false,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         optionUiModelList = question.options.value(),
                         onAnswerSelection = { questionIndex, optionItemIndex ->
                             question.options?.forEachIndexed { index, _ ->
@@ -333,10 +470,13 @@ fun FormScreenQuestionUiContent(
                 QuestionType.MultiSelect.name,
                 QuestionType.Grid.name -> {
                     GridTypeComponent(
+                        isFromTypeQuestion = true,
+                        contests = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
                         maxCustomHeight = maxHeight,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         optionUiModelList = question.options.value(),
                         onAnswerSelection = { selectedOptionIndex, isSelected ->
 
@@ -355,11 +495,14 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.Toggle.name -> {
                     ToggleQuestionBoxComponent(
+                        isFromTypeQuestion = true,
+                        contests = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
                         maxCustomHeight = maxHeight,
                         showCardView = false,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         optionUiModelList = question.options.value(),
                         onAnswerSelection = { questionIndex, optionItemIndex ->
                             question.options?.forEachIndexed { index, _ ->
@@ -377,10 +520,13 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                     HrsMinRangePickerComponent(
+                        isFromTypeQuestion = true,
+                        contests = question.contentEntities,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         typePicker = question.type,
+                        onDetailIconClicked = { onDetailIconClicked() },
                         defaultValue = question.options?.firstOrNull()?.selectedValue
                             ?: com.sarathi.dataloadingmangement.BLANK_STRING
                     ) { selectValue, selectedValueId ->

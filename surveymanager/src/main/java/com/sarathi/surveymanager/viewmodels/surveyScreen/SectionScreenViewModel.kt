@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -125,6 +126,19 @@ class SectionScreenViewModel @Inject constructor(
             sectionList.value.size == sectionStatusMap.value.size && sectionStatusMap.value.values.toList()
                 .all { it == SurveyStatusEnum.COMPLETED.name }
 
+    }
+    fun getContentData(
+        contents: List<ContentList?>?,
+        contentType: String
+    ): ContentList? {
+        contents?.let { contentsData ->
+            for (content in contentsData) {
+                if (content?.contentType.equals(contentType, true)) {
+                    return content!!
+                }
+            }
+        }
+        return null
     }
 
 }

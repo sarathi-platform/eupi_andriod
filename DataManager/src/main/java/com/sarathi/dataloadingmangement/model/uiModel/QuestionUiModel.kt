@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
 import com.nudge.core.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 
 class QuestionUiModel(
     var questionId: Int,
@@ -24,7 +24,7 @@ class QuestionUiModel(
     var isConditional: Boolean = false,
     var showQuestion: Boolean = false,
     var sectionName: String,
-    val contentEntities: List<Content> = listOf(),
+    val contentEntities: List<ContentList> = listOf(),
 ) {
 
 

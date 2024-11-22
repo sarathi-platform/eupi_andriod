@@ -56,6 +56,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -71,6 +72,7 @@ import com.nudge.core.ui.theme.redDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.surveymanager.R
 import java.io.File
 
@@ -78,6 +80,8 @@ import java.io.File
 @SuppressLint("UnrememberedMutableState", "UnusedBoxWithConstraintsScope")
 @Composable
 fun AddImageComponent(
+    contests: List<ContentList?>? = listOf(),
+    showCardView: Boolean = false,
     isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
@@ -193,6 +197,17 @@ fun AddImageComponent(
                     }
                 }
             }
+        }
+        if (showCardView) {
+            CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = contests,
+                questionIndex = 0,
+                showCardView = showCardView,
+                questionDetailExpanded = {},
+                imageClickListener = {},
+                videoLinkClicked = {}
+            )
         }
     }
     if (shouldRequestPermission.value) {

@@ -81,7 +81,7 @@ data class QuestionEntity(
     @ColumnInfo(name = "formId")
     var formId: Int = 0,
     @TypeConverters(ContentListConverter::class)
-    val contentEntities: List<ContentList> = listOf(),
+    val contentEntities: List<ContentList>? = listOf(),
 
     @ColumnInfo(name = "parentQuestionId")
     val parentQuestionId: Int? = 0
@@ -105,7 +105,7 @@ data class QuestionEntity(
                 order = question.order,
                 type = question.type,
                 isConditional = isCondition,
-                contentEntities = question.contentList,
+                contentEntities = question.contentList ?: listOf(),
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
                 formId = question.formId ?: DEFAULT_ID,

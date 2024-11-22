@@ -33,18 +33,23 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
 @Composable
 fun TypeDropDownComponent(
+    contests: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
+    showCardView: Boolean = false,
     questionNumber: String = BLANK_STRING,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -62,6 +67,9 @@ fun TypeDropDownComponent(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     DropDownComponent(items = defaultSourceList,
+        isFromTypeQuestion = isFromTypeQuestion,
+        contests = contests,
+        showCardView = showCardView,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -70,6 +78,7 @@ fun TypeDropDownComponent(
         questionNumber = questionNumber,
         isMandatory = isMandatory,
         selectedItem = selectedOptionText,
+        onDetailIconClicked = { onDetailIconClicked() },
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it
@@ -101,12 +110,16 @@ fun TypeDropDownComponent(
 
 @Composable
 fun TypeDropDownWithCardComponent(
+    contests: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
+    showCardView: Boolean = false,
     questionNumber: String = BLANK_STRING,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -136,15 +149,31 @@ fun TypeDropDownWithCardComponent(
                     .clip(RoundedCornerShape(roundedCornerRadiusDefault))
             ) {
                 TypeDropDownComponent(
+                    isFromTypeQuestion = isFromTypeQuestion,
+                    showCardView = showCardView,
+                    contests = contests,
                     title = title,
                     hintText = hintText,
                     sources = sources,
                     isMandatory = isMandatory,
                     isEditAllowed = isEditAllowed,
                     questionNumber = questionNumber,
+                    onDetailIconClicked = {
+                        onDetailIconClicked()
+                    },
                     onAnswerSelection = { selectedValuesDto ->
                         onAnswerSelection(selectedValuesDto)
                     }
+                )
+            }
+            if (showCardView && contests?.isNotEmpty() == true) {
+                ContentBottomViewComponent(
+                    contents = contests,
+                    questionIndex = 0,
+                    showCardView = showCardView,
+                    questionDetailExpanded = {},
+                    imageClickListener = {},
+                    videoLinkClicked = {}
                 )
             }
 
@@ -157,6 +186,7 @@ fun TypeDropDownWithCardComponent(
 
 @Composable
 fun DropDownTypeComponent(
+    contests: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
@@ -164,11 +194,16 @@ fun DropDownTypeComponent(
     isMandatory: Boolean = false,
     showQuestionInCard: Boolean = false,
     isEditAllowed: Boolean = true,
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
     if (showQuestionInCard) {
         TypeDropDownWithCardComponent(
+            onDetailIconClicked = { onDetailIconClicked() },
+            contests = contests,
+            showCardView = showQuestionInCard,
             title = title,
             hintText = hintText,
             sources = sources,
@@ -185,11 +220,14 @@ fun DropDownTypeComponent(
         ) {
             TypeDropDownComponent(
                 title = title,
+                isFromTypeQuestion = isFromTypeQuestion,
+                contests = contests,
                 hintText = hintText,
                 sources = sources,
                 isMandatory = isMandatory,
                 isEditAllowed = isEditAllowed,
                 questionNumber = BLANK_STRING,
+                onDetailIconClicked = { onDetailIconClicked() },
                 onAnswerSelection = { selectedValuesDto ->
                     onAnswerSelection(selectedValuesDto)
                 }

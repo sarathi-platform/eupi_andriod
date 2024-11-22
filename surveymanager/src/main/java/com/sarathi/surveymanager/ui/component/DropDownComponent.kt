@@ -34,20 +34,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.surveymanager.R
 
 @Composable
 fun <T> DropDownComponent(
+    contests: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     hint: String = stringResource(R.string.select),
     items: List<T>,
     title: String = BLANK_STRING,
@@ -62,6 +67,8 @@ fun <T> DropDownComponent(
     diableItem: Int = DEFAULT_LIVELIHOOD_ID,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
+    showCardView: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
     onItemSelected: (T) -> Unit,
 ) {
@@ -77,9 +84,11 @@ fun <T> DropDownComponent(
     ) {
         if (title.isNotBlank()) {
             QuestionComponent(
+                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
                 title = title,
                 questionNumber = questionNumber,
-                isRequiredField = isMandatory
+                isRequiredField = isMandatory,
+                onDetailIconClicked = { onDetailIconClicked() }
             )
         }
         CustomOutlineTextField(
@@ -160,6 +169,18 @@ fun <T> DropDownComponent(
                     )
                 }
             }
+        }
+
+        if (showCardView && contests?.isNotEmpty() == true) {
+            CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = contests,
+                questionIndex = 0,
+                showCardView = showCardView,
+                questionDetailExpanded = {},
+                imageClickListener = {},
+                videoLinkClicked = {}
+            )
         }
     }
 }

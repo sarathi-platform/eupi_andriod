@@ -38,6 +38,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -46,8 +47,10 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_64_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -55,6 +58,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun RadioQuestionBoxComponent(
+    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
     questionDisplay: String,
@@ -65,6 +69,8 @@ fun RadioQuestionBoxComponent(
     showCardView: Boolean = false,
     isEditAllowed: Boolean = true,
     isQuestionTypeToggle: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    isFromTypeQuestion: Boolean = false,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
 
@@ -134,6 +140,8 @@ fun RadioQuestionBoxComponent(
                                     )
                             ) {
                                 QuestionComponent(
+                                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                    onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
                                     questionNumber = if (showCardView) getQuestionNumber(
                                         questionIndex
@@ -180,6 +188,19 @@ fun RadioQuestionBoxComponent(
                                 )
                             }
                         }
+                        item {
+                            if (showCardView && contests?.isNotEmpty() == true) {
+                                CustomVerticalSpacer(size = dimen_6_dp)
+                                ContentBottomViewComponent(
+                                    contents = contests,
+                                    questionIndex = questionIndex,
+                                    showCardView = showCardView,
+                                    questionDetailExpanded = {},
+                                    imageClickListener = {},
+                                    videoLinkClicked = {}
+                                )
+                            }
+                        }
                         if (!isQuestionTypeToggle) {
                             item {
                                 Spacer(
@@ -198,6 +219,8 @@ fun RadioQuestionBoxComponent(
 
 @Composable
 fun ToggleQuestionBoxComponent(
+    isFromTypeQuestion: Boolean = true,
+    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
     questionDisplay: String,
@@ -207,9 +230,13 @@ fun ToggleQuestionBoxComponent(
     showCardView: Boolean = false,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
     RadioQuestionBoxComponent(
+        isFromTypeQuestion = isFromTypeQuestion,
+        contests = contests,
+        onDetailIconClicked = onDetailIconClicked,
         modifier = modifier,
         questionIndex = questionIndex,
         questionDisplay = questionDisplay,

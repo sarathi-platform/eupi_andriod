@@ -259,6 +259,7 @@ fun QuestionUiContent(
             QuestionType.NumericField.name,
             QuestionType.InputText.name -> {
                 InputComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     maxLength = getMaxInputLength(
                         questionId = question.questionId,
@@ -299,6 +300,7 @@ fun QuestionUiContent(
             QuestionType.DateType.name -> {
 
                 DatePickerComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     isMandatory = question.isMandatory,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
@@ -321,6 +323,7 @@ fun QuestionUiContent(
 
             QuestionType.MultiImage.name -> {
                 AddImageComponent(
+                    contests = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths = commaSeparatedStringToList(
                         question.options?.firstOrNull()?.selectedValue
@@ -347,6 +350,7 @@ fun QuestionUiContent(
             }
             QuestionType.SingleImage.name -> {
                 SingleImageComponent(
+                    contests = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths =
                     question.options?.firstOrNull()?.selectedValue
@@ -369,6 +373,7 @@ fun QuestionUiContent(
             QuestionType.SingleSelectDropDown.name,
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     title = question.questionDisplay,
@@ -391,6 +396,7 @@ fun QuestionUiContent(
 
             QuestionType.MultiSelectDropDown.name -> {
                 TypeMultiSelectedDropDownComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
@@ -429,6 +435,7 @@ fun QuestionUiContent(
 
             QuestionType.RadioButton.name -> {
                 RadioQuestionBoxComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -491,6 +498,7 @@ fun QuestionUiContent(
 
             QuestionType.Toggle.name -> {
                 ToggleQuestionBoxComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -513,6 +521,7 @@ fun QuestionUiContent(
 
             QuestionType.IncrementDecrementList.name -> {
                 IncrementDecrementCounterList(
+                    contests = question.contentEntities,
                     title = question.questionDisplay,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
@@ -535,7 +544,9 @@ fun QuestionUiContent(
 
             QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                 HrsMinRangePickerComponent(
+                    contests = question.contentEntities,
                     isMandatory = question.isMandatory,
+                    showCardView = showCardView,
                     title = question.questionDisplay,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     typePicker = question.type,

@@ -22,7 +22,7 @@ import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.utils.DescriptionContentState
 
@@ -30,7 +30,7 @@ import com.sarathi.surveymanager.utils.DescriptionContentState
 fun ExpandableDescriptionContentComponent(
     questionDetailExpanded: (index: Int) -> Unit,
     index: Int,
-    contents: List<Content?>? = emptyList(),
+    contents: List<ContentList?>? = emptyList(),
     subTitle: String = BLANK_STRING,
     imageClickListener: (imageTypeDescriptionContent: String) -> Unit = {},
     videoLinkClicked: (videoTypeDescriptionContent: String) -> Unit = {}
@@ -102,7 +102,7 @@ fun ExpandableDescriptionContentComponent(
     }
 }
 
-fun getContentData(contents: List<Content?>?, type: String): Content? {
+fun getContentData(contents: List<ContentList?>?, type: String): ContentList? {
     return contents?.find { it?.contentType == type }
 }
 

@@ -39,6 +39,7 @@ import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomDatePickerComponent
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomDatePickerDialogProperties
 import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
 import com.nudge.core.ui.commonUi.rememberDatePickerProperties
@@ -47,6 +48,7 @@ import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
@@ -54,6 +56,7 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -61,6 +64,9 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerComponent(
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    contests: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     hintText: String = BLANK_STRING,
@@ -112,6 +118,8 @@ fun DatePickerComponent(
         ) {
             if (title.isNotBlank()) {
                 QuestionComponent(
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                    onDetailIconClicked = { onDetailIconClicked() },
                     title = title,
                     questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
                     isRequiredField = isMandatory
@@ -187,6 +195,18 @@ fun DatePickerComponent(
                     }
                 )
             }
+            if (showCardView) {
+                CustomVerticalSpacer(size = dimen_6_dp)
+                ContentBottomViewComponent(
+                    contents = contests,
+                    questionIndex = questionIndex,
+                    showCardView = showCardView,
+                    questionDetailExpanded = {},
+                    imageClickListener = {},
+                    videoLinkClicked = {}
+                )
+            }
+
         }
     }
 

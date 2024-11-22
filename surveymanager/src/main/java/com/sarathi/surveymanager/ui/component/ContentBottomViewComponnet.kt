@@ -12,11 +12,12 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 
 @Composable
 fun ContentBottomViewComponent(
     questionIndex: Int,
-    contents: List<Content?>? = emptyList(),
+    contents: List<ContentList?>? = emptyList(),
     showCardView: Boolean = false,
     questionDetailExpanded: (index: Int) -> Unit,
     imageClickListener: (Content) -> Unit = {},
@@ -29,7 +30,7 @@ fun ContentBottomViewComponent(
                 .padding(bottom = 10.dp)
         )
 
-        if (contents?.isNotEmpty() == true && !showCardView) {
+        if (contents?.isNotEmpty() == true && showCardView) {
             Divider(
                 thickness = dimen_1_dp,
                 color = lightGray2,

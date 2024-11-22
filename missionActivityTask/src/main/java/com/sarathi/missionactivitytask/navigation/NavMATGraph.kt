@@ -1082,6 +1082,9 @@ fun NavGraphBuilder.MatNavigation(
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
                 navController.popBackStack()
+            },
+            onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
+
             }
         )
     }

@@ -51,7 +51,7 @@ data class SectionEntity(
     val sectionIcon: String = BLANK_STRING,
     val questionSize: Int = 0,
     @TypeConverters(ContentListConverter::class)
-    val contentEntities: List<ContentList>
+    val contentEntities: List<ContentList>?
 ) {
     companion object {
         fun getSectionEntity(
