@@ -55,6 +55,7 @@ import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -152,6 +153,8 @@ fun NestedLazyListForFormQuestions(
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
                             QuestionType.SingleSelectDropDown.name -> {
+
+                                // This code is for Livelihood Baseline question where none option is coming in single select dropdown
                                 val isEditAllowed =
                                     if (tagList.findTagForId(option.optionItemEntity.optionTag)
                                             .contains(LIVELIHOOD_SOURCE_TAG, true)
@@ -173,7 +176,10 @@ fun NestedLazyListForFormQuestions(
                                     showQuestionState = option,
                                     isContent = option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER }.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
-                                    isEditAllowed = isEditAllowed,
+                                    questionStatusModel = QuestionStatusModel(
+                                        isEditAllowed = isEditAllowed,
+                                        isDidiReassigned = questionTypeScreenViewModel.isDidiReassigned.value
+                                    ),
                                     selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
 
                                         option.optionItemEntity.values?.find { valueDto ->
@@ -191,11 +197,7 @@ fun NestedLazyListForFormQuestions(
                                             )?.selectedValueId)?.first()
                                         }?.id
                                             ?: 0 //TODO change from checking text to check only for id
-                                    }
-
-                                    /*viewModel.storeCacheForResponse.getResponseForOptionId(
-                                        optionId = option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING*/,
+                                    },
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities.filter { it.contentType!=BANNER })
                                     }
@@ -447,6 +449,9 @@ fun NestedLazyListForFormQuestions(
                                             optionId = option.optionId ?: -1
                                         )?.selectedValue ?: BLANK_STRING,
                                     showQuestionState = option,
+                                    questionStatusModel = QuestionStatusModel(
+                                        isDidiReassigned = viewModel.isDidiReassigned.value
+                                    ),
                                     onInfoButtonClicked = {}) { value, id ->
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(

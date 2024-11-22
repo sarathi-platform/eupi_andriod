@@ -17,6 +17,7 @@ import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -47,6 +48,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
+import com.nudge.core.utils.SubjectStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -95,9 +97,11 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     val totalOptionSize = mutableIntStateOf(0)
     val answeredOptionCount = mutableIntStateOf(0)
+    val isDidiReassigned = mutableStateOf(false)
 
     var question = mutableStateOf<QuestionEntity?>(null)
     var contents = mutableListOf<List<ContentEntity>>()
+    val surveyeeDetails = mutableStateOf<SurveyeeEntity?>(null)
     private var didiId = -1
 
     val calculatedResult = mutableStateOf("")
@@ -143,6 +147,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 _formQuestionResponseEntity.value =
                     getFormResponseForReferenceId(referenceId = referenceId)
                 _storeCacheForResponse.addAll(formQuestionResponseEntity.value.toMutableList())
+            }
+
+            surveyeeDetails.value =
+                formQuestionScreenUseCase.getSurveyeeDetailsUserCase.invoke(didiId)
+            surveyeeDetails.value?.let {
+                isDidiReassigned.value = it.isActive == SubjectStatus.SUBJECT_REASSIGN.ordinal
             }
 
             getOptionItemEntityState(

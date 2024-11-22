@@ -59,6 +59,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nudge.core.model.QuestionStatusModel
 import kotlinx.coroutines.launch
 
 
@@ -360,6 +361,7 @@ private fun DropDownType(optionsItem: OptionItemEntity) {
         optionsItem.display,
         optionsItem.selectedValue ?: "Select",
         optionsItem.values,
+        questionStatusModel = QuestionStatusModel(),
         onInfoButtonClicked = {}
     ) {
         //onAnswerSelection(optionsItem.optionId?:0,it)

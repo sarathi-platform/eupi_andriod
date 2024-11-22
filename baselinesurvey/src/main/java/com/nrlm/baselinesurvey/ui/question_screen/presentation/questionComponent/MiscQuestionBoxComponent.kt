@@ -241,6 +241,7 @@ fun MiscQuestionBoxComponent(
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
                                                     selectOptionText = selectedOption?.selectedValueId!!,
+                                                    questionStatusModel = questionStatusModel,
                                                     onInfoButtonClicked = {}
                                                 ) { selectedValue ->
                                                     if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
@@ -272,6 +273,7 @@ fun MiscQuestionBoxComponent(
                                                         ?: BLANK_STRING,
                                                     showQuestionState = optionsItem,
                                                     onInfoButtonClicked = {},
+                                                    questionStatusModel = questionStatusModel,
                                                     onAnswerSelection = { value, id ->
                                                         if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                                                             onAnswerSelection(

@@ -937,15 +937,6 @@ fun NestedLazyList(
                                                         )
 
                                                     }
-
-                                                /*questionScreenViewModel.onEvent(
-                                                    QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
-                                                        question,
-                                                        mOptionItem,
-                                                        questionScreenViewModel.inputNumberQuestionMap[question.questionId]
-                                                            ?: emptyList()
-                                                    )
-                                                )*/
                                             }
                                         }
 

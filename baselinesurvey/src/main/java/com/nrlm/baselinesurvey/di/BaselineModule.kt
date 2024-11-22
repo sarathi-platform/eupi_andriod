@@ -586,7 +586,8 @@ object BaselineModule {
     fun providesQuestionTypeScreenUseCase(
         formQuestionResponse: FormQuestionResponseRepository,
         eventsWriterRepository: EventsWriterRepository,
-        questionScreenRepository: QuestionScreenRepository
+        questionScreenRepository: QuestionScreenRepository,
+        startScreenRepository: StartScreenRepository
     ): FormQuestionScreenUseCase {
         return FormQuestionScreenUseCase(
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(
@@ -603,7 +604,8 @@ object BaselineModule {
                 formQuestionResponse
             ),
             updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
-            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository),
+            getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository)
         )
     }
 

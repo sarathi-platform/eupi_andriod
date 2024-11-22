@@ -11,23 +11,22 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.model.datamodel.contains
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
-import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.activityCompleteOrDidiReassignedToast
+import com.nudge.core.model.QuestionStatusModel
 
 @Composable
 fun TypeDropDownComponent(
     title: String?,
     hintText: String = "Select",
     sources: List<ValuesDto>?,
-    isEditAllowed: Boolean = true,
+    questionStatusModel: QuestionStatusModel,
     isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     selectOptionText: Int = 0,
-    isDidiReassigned: Boolean = false,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: Int) -> Unit
 ) {
@@ -69,19 +68,14 @@ fun TypeDropDownComponent(
                 textFieldSize = coordinates.size.toSize()
             },
             onItemSelected = {
-                if (isEditAllowed) {
+                if (questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned) {
                     selectedOptionText =
                         defaultSourceList?.get(defaultSourceList.indexOf(it))?.value ?: ""
                     onAnswerSelection(it.id)
                     expanded = false
                 } else {
-                    showCustomToast(
-                        context,
-                        context.getString(
-                            if (isDidiReassigned)
-                                R.string.beneficiary_is_reassigned_to_another_upcm
-                            else R.string.edit_disable_message
-                        )
+                    context.activityCompleteOrDidiReassignedToast(
+                        questionStatusModel
                     )
                 }
             },

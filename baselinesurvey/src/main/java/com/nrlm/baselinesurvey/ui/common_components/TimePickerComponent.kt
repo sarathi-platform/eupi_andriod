@@ -35,6 +35,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Ty
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nudge.core.model.QuestionStatusModel
 
 @Composable
 fun RangePickerComponent(
@@ -44,6 +45,7 @@ fun RangePickerComponent(
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     isContent: Boolean = false,
     typePicker: String,
+    questionStatusModel: QuestionStatusModel,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String, selectedValueId: Int) -> Unit,
 ) {
@@ -128,6 +130,7 @@ fun RangePickerComponent(
                         title = getSecondTitle(typePicker),
                         hintText = secondInputValue.value,
                         sources = getSources(typePicker),
+                        questionStatusModel = questionStatusModel,
                         onInfoButtonClicked = {}
                     ) { selectedValue ->
                         secondInputValue.value =
@@ -327,6 +330,7 @@ fun PreviewTimePickerComponent() {
         defaultValue = ":15",
         typePicker = "HrsMinPicker",
         showQuestionState = getEmptyStateObject(),
+        questionStatusModel = QuestionStatusModel(),
         onInfoButtonClicked = { /*TODO*/ }) { value, id ->
     }
 }

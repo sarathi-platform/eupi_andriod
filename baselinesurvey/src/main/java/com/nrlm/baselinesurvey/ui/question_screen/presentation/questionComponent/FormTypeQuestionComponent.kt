@@ -172,7 +172,7 @@ fun FormTypeQuestionComponent(
                                     )
                                     OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
-                                        isActive = questionStatusModel.isEditAllowed && !questionStatusModel.isDidiReassigned,
+                                        isActive = questionStatusModel.isEditAllowed,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(weight_60_percent)
