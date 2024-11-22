@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.AuditTrailEnum
 import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
@@ -50,7 +51,11 @@ class OtpVerificationViewModel @Inject constructor(
                     var auditTrailDetail = hashMapOf<String, Any>(
                         "ActioType" to "Login")
                     CoroutineScope(Dispatchers.IO).launch {
-                      auditTrailUseCase.invoke(auditTrailDetail)
+                        auditTrailUseCase.invoke(
+                            auditTrailDetail,
+                            AuditTrailEnum.LOGIN.name,
+                            "Success"
+                        )
                     }
                 }
 

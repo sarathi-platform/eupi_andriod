@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.nudge.auditTrail.AuditTrailEventSyncStatus
 import com.nudge.core.AUDIT_TRAIL_TABLE
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.json
@@ -31,16 +32,34 @@ data class AuditTrailEntity(
 
     @ColumnInfo("auditData")
     val auditData: String?,
-)
+
+    @ColumnInfo("actionStatus")
+    val actionStatus: String?,
+
+    @ColumnInfo("actionType")
+    val actionType: String?,
+
+    @ColumnInfo("syncStatus")
+    val syncStatus: String = AuditTrailEventSyncStatus.NOT_STARTED.name,
+
+
+    )
 {
 
     companion object {
-        fun getAuditDetailEvent(map:Map<String,Any>,mobileNo:String): AuditTrailEntity {
+        fun getAuditDetailEvent(
+            map: Map<String, Any>,
+            mobileNo: String,
+            actionType: String,
+            actionStatusType: String
+        ): AuditTrailEntity {
             return AuditTrailEntity(
                 id = UUID.randomUUID().toString(),
                 mobileNumber =mobileNo ,
                 modifiedDate = System.currentTimeMillis().toDate(),
                 auditData = map.json(),
+                actionType = actionType,
+                actionStatus = actionStatusType
             )
         }
     }

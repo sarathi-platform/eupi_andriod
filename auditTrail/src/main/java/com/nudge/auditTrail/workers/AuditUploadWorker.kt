@@ -9,7 +9,6 @@ import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.auditTrail.domain.usecase.AuditTrailNetworkUseCase
-import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BATCH_DEFAULT_LIMIT
 import com.nudge.core.RETRY_DEFAULT_COUNT
 import com.nudge.core.database.entities.Events
@@ -23,7 +22,6 @@ import dagger.assisted.AssistedInject
 class AuditUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
-    private val auditTrailUseCase: AuditTrailUseCase,
     private  val auditTrailNetworkUseCase:AuditTrailNetworkUseCase
 
     ) : CoroutineWorker(appContext, workerParams) {
@@ -43,7 +41,19 @@ class AuditUploadWorker @AssistedInject constructor(
         if (runAttemptCount > 0) {
             batchLimit = getBatchSize(connectionQuality).batchSize
         }
+        val auditEventList = auditTrailNetworkUseCase.getAuditTrailEventFromDb()
+        try {
 
+
+            val response = auditTrailNetworkUseCase.auditTrailEventToServer(auditEventList)
+
+        } catch (exception: Exception) {
+            CoreLogger.e(
+                applicationContext,
+                TAG,
+                "exception", exception
+            )
+        }
         auditTrailDataEvent()
         CoreLogger.d(
             applicationContext,

@@ -1,6 +1,6 @@
 package com.nudge.auditTrail
 
-enum class AuditTrailEvent (){
+enum class AuditTrailEnum {
     LOGIN,
     LOGOUT,
     SYNC,

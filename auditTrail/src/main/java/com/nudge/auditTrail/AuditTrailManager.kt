@@ -1,79 +1,36 @@
-//package com.nudge.auditTrail
-//
-//import android.content.Context
-//import androidx.work.BackoffPolicy
-//import androidx.work.Constraints
-//import androidx.work.Data
-//import androidx.work.ExistingPeriodicWorkPolicy
-//import androidx.work.NetworkType
-//import androidx.work.PeriodicWorkRequest
-//import androidx.work.PeriodicWorkRequestBuilder
-//import com.nudge.auditTrail.workers.AuditUploadWorker
-//import com.nudge.core.enums.NetworkSpeed
-//import java.util.concurrent.TimeUnit
-//
-//class AuditTrailManager (
-//    val periodicTime: Int?,
-//    val batchCount: Int?,
-//
-//)
-//class Builder {
-//    private var periodicTime: Int? = null
-//    private var batchCount: Int? = null
-//
-//
-//    fun setMake(make: String) = apply { this.periodicTime = periodicTime }
-//    fun setModel(model: String) = apply { this.batchCount = model }
-//
-//    fun build(): AuditTrailManager {
-//        return AuditTrailManager(periodicTime,batchCount)
-//    }
-//     suspend fun auditEventEvent(
-//        context: Context,
-//        networkSpeed: NetworkSpeed,
-//        auditTrailType: Int
-//    ) {
-//
-//        val constraints = Constraints.Builder()
-//            .setRequiredNetworkType(NetworkType.CONNECTED)
-//            .setRequiresBatteryNotLow(true)
-//            .build()
-//        val data = Data.Builder()
-//        data.putInt(WORKER_ARG_BATCH_COUNT, getBatchSize(networkSpeed))
-//        data.putInt(WORKER_ARG_SYNC_TYPE, auditTrailType)
-//        val uploadWorkRequest: PeriodicWorkRequest =
-//            PeriodicWorkRequestBuilder<AuditUploadWorker>(
-//                repeatInterval = periodicTime,
-//                repeatIntervalTimeUnit = TimeUnit.MINUTES
-//            )
-//                .setConstraints(
-//                    constraints
-//                )
-//                .setBackoffCriteria(
-//                    backoffPolicy = BackoffPolicy.LINEAR,
-//                    backoffDelay = 90000,
-//                    TimeUnit.MILLISECONDS
-//                ).setInputData(data.build())
-//                .build()
-//
-//        workManager.enqueueUniquePeriodicWork(
-//            SYNC_UNIQUE_NAME,
-//            ExistingPeriodicWorkPolicy.UPDATE, uploadWorkRequest
-//        )
-//    }
-//
-//
-//}
-//
-//
-//// Usage:
-//fun main() {
-//    val car = AuditTrailManager.Builder()
-//        .setMake("Toyota")
-//        .setModel("Corolla")
-//        .setYear(2023)
-//        .setColor("Red")
-//        .setEngineCapacity(1.8)
-//        .build()
-//
-//}
+package com.nudge.auditTrail
+
+import android.content.Context
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.WorkManager
+import com.nudge.auditTrail.workers.AuditUploadWorker
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+
+
+class AuditTrailSyncEventUseCase @Inject constructor(@ApplicationContext private val context: Context) {
+
+
+    fun syncAuditEvents() {
+        val workManagerBuilder = AuditTrailWorkManagerBuilder.Companion.Builder(context)
+            .setWorkerClass(AuditUploadWorker::class.java)
+            .setWorkerTag("batch_worker")
+            .setBatchCount(10)
+            .setRepeatInterval(30) // Repeat every 30 minutes
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .setRequiresBatteryNotLow(true)
+                    .build()
+            )
+            .build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "com.nudge.AuditTrailWorker",
+            ExistingPeriodicWorkPolicy.UPDATE, workManagerBuilder.build()
+        )
+
+
+    }
+}

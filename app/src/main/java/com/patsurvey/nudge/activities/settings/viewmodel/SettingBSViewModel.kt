@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.auditTrail.AuditTrailSyncEventUseCase
 import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.IMAGE
@@ -103,7 +104,8 @@ class SettingBSViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
-    val auditTrailUseCase: AuditTrailUseCase
+    val auditTrailUseCase: AuditTrailUseCase,
+    val auditManager: AuditTrailSyncEventUseCase
 ) : BaseViewModel() {
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -745,5 +747,9 @@ class SettingBSViewModel @Inject constructor(
             showLoader.value = false
 
         }
+    }
+
+    fun syncAuditLogs() {
+        auditManager.syncAuditEvents()
     }
 }

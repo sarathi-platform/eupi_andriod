@@ -15,6 +15,7 @@ class AuditTrailNetworkUseCase@Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     suspend fun auditTrailEventToServer(events: List<AuditTrailEntity>): ApiResponseModel<String> {
+
         val eventRequest: List<AuditRequest> = events.map {
             it.toEventRequest()
         }

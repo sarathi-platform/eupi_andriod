@@ -9,10 +9,6 @@ import com.nudge.auditTrail.DEVICE_ID
 import com.nudge.auditTrail.MODEL
 import com.nudge.auditTrail.OS_VERSION
 import com.nudge.auditTrail.domain.repository.AuditTrailRepository
-import com.nudge.auditTrail.entities.AuditTrailEntity
-import com.nudge.auditTrail.model.AuditRequest
-import com.nudge.auditTrail.model.toEventRequest
-import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -34,17 +30,14 @@ class AuditTrailUseCase@Inject constructor(
         )
         return  metaDataMap
     }
-    suspend fun invoke(auditDetailProperties: HashMap<String,Any>) {
+    suspend fun invoke(
+        auditDetailProperties: HashMap<String, Any>,
+        actionType: String,
+        actionStatusType: String
+    ) {
         auditDetailProperties.putAll(getDefaultPropertyOfDevice())
-        repository.insertEvent(auditDetailProperties)
+        repository.insertEvent(auditDetailProperties, actionType, actionStatusType)
 
-    }
-
-    suspend fun auditTrailEventToServer(events: List<AuditTrailEntity>): ApiResponseModel<String> {
-        val eventRequest: List<AuditRequest> = events.map {
-            it.toEventRequest()
-        }
-        return repository.auditTrailEventToServer(eventRequest)
     }
 
 

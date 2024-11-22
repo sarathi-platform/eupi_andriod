@@ -14,8 +14,19 @@ class AuditTrailRepositoryImpl @Inject constructor(
     val auditDao :AuditTrailDao
 ) : AuditTrailRepository {
 
-    override suspend fun insertEvent(auditDetail: Map<String, Any>) {
-        return  auditDao.insert(AuditTrailEntity.getAuditDetailEvent(auditDetail,coreSharedPrefs.getMobileNo()))
+    override suspend fun insertEvent(
+        auditDetail: Map<String, Any>,
+        actionType: String,
+        actionStatusType: String
+    ) {
+        return auditDao.insert(
+            AuditTrailEntity.getAuditDetailEvent(
+                auditDetail,
+                coreSharedPrefs.getMobileNo(),
+                actionType,
+                actionStatusType
+            )
+        )
     }
     override suspend fun auditTrailEventToServer(auditRequest: List<AuditRequest>): ApiResponseModel<String> {
         return auditTrailApiService.auditTrail(auditRequest)

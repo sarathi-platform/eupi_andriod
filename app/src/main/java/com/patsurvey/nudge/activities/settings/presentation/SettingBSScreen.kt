@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.settings.presentation
 
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -11,16 +10,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.nudge.auditTrail.APP_BUILD_NUMBER
-import com.nudge.auditTrail.APP_VERSION
-import com.nudge.auditTrail.BRAND
-import com.nudge.auditTrail.DEVICE_ID
-import com.nudge.auditTrail.MODEL
-import com.nudge.auditTrail.OS_VERSION
+import com.nudge.auditTrail.AuditTrailEnum
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.UPCM_USER
 import com.nudge.core.isOnline
-import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -82,9 +75,14 @@ fun SettingBSScreen(
                     viewModel.showLoader.value = true
                     viewModel.performLogout(context) {
                         var auditTrailDetail = hashMapOf<String, Any>(
-                            "ActioType" to "Logout")
+                            "ActionType" to "Logout"
+                        )
                         CoroutineScope(Dispatchers.IO).launch {
-                            viewModel.auditTrailUseCase.invoke(auditTrailDetail)
+                            viewModel.auditTrailUseCase.invoke(
+                                auditTrailDetail,
+                                AuditTrailEnum.LOGOUT.name,
+                                "SUCCESS"
+                            )
                         }
                         if (it) {
                             if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
@@ -178,7 +176,9 @@ fun SettingBSScreen(
                         }
                     }
                     SettingTagEnum.AUDIT_TRAIL.name ->{
-
+                        if (isOnline(context)) {
+                            viewModel.syncAuditLogs()
+                        }
                     }
                 }
             },
