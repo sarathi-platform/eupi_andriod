@@ -32,22 +32,17 @@ fun ExpandableDescriptionContentComponent(
     index: Int,
     contents: List<ContentList?>? = emptyList(),
     subTitle: String = BLANK_STRING,
-    imageClickListener: (imageTypeDescriptionContent: String) -> Unit = {},
-    videoLinkClicked: (videoTypeDescriptionContent: String) -> Unit = {}
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
 ) {
     val questionDetailVisibilityState = remember { mutableStateOf(false) }
 
     val descriptionContentState = remember {
         mutableStateOf(
-            DescriptionContentState(
-                textTypeDescriptionContent = getContentData(contents, "text")?.contentValue
-                    ?: BLANK_STRING,
-                imageTypeDescriptionContent = getContentData(contents, "image")?.contentValue
-                    ?: BLANK_STRING,
-                videoTypeDescriptionContent = getContentData(contents, "video")?.contentValue
-                    ?: BLANK_STRING,
-                subTextTypeDescriptionContent = subTitle
-            )
+            contents?.let {
+                DescriptionContentState(
+                    contentDescription = it
+                )
+            }
         )
     }
 
@@ -83,26 +78,20 @@ fun ExpandableDescriptionContentComponent(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    DescriptionContentComponent(
-                        buttonClickListener = {
-                            questionDetailVisibilityState.value =
-                                !questionDetailVisibilityState.value
-                        },
-                        imageClickListener = { imageTypeDescriptionContent ->
-                            imageClickListener(imageTypeDescriptionContent)
-                        },
-                        videoLinkClicked = { videoTypeDescriptionContent ->
-                            videoLinkClicked(videoTypeDescriptionContent)
-                        },
-                        descriptionContentState = descriptionContentState.value
-                    )
+                    descriptionContentState.value?.let {
+                        DescriptionContentComponent(
+                            buttonClickListener = {
+                                questionDetailVisibilityState.value =
+                                    !questionDetailVisibilityState.value
+                            },
+                            navigateToMediaPlayerScreen = { contentList ->
+                                navigateToMediaPlayerScreen(contentList)
+                            },
+                            descriptionContentState = it
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-fun getContentData(contents: List<ContentList?>?, type: String): ContentList? {
-    return contents?.find { it?.contentType == type }
-}
-

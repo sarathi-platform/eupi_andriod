@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.lightGray2
-import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 
 @Composable
@@ -20,8 +19,7 @@ fun ContentBottomViewComponent(
     contents: List<ContentList?>? = emptyList(),
     showCardView: Boolean = false,
     questionDetailExpanded: (index: Int) -> Unit,
-    imageClickListener: (Content) -> Unit = {},
-    videoLinkClicked: (Content) -> Unit = {}
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
 ) {
     Column {
         Spacer(
@@ -42,11 +40,8 @@ fun ContentBottomViewComponent(
                 index = questionIndex,
                 contents = contents,
                 subTitle = BLANK_STRING,
-                imageClickListener = { imageClickListener ->
-
-                },
-                videoLinkClicked = { videoLinkClicked ->
-
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(content)
                 }
             )
         }

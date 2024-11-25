@@ -1387,12 +1387,12 @@ class DataLoadingModule {
     @Singleton
     fun provideGetSectionListUseCase(
         sectionListRepository: SectionListRepository,
-        contentDao: ContentDao,
+        contentRepositoryImpl: ContentRepositoryImpl,
         coreSharedPrefs: CoreSharedPrefs
     ): GetSectionListUseCase {
         return GetSectionListUseCase(
             sectionListRepository,
-            contentDao = contentDao,
+            contentRepositoryImpl = contentRepositoryImpl,
             coreSharedPrefs = coreSharedPrefs
         )
     }

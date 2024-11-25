@@ -49,7 +49,8 @@ fun TypeDropDownComponent(
     diableItem: Int = -1,
     showCardView: Boolean = false,
     questionNumber: String = BLANK_STRING,
-    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -78,6 +79,9 @@ fun TypeDropDownComponent(
         questionNumber = questionNumber,
         isMandatory = isMandatory,
         selectedItem = selectedOptionText,
+        navigateToMediaPlayerScreen = { contentList ->
+            navigateToMediaPlayerScreen(contentList)
+        },
         onDetailIconClicked = { onDetailIconClicked() },
         onExpandedChange = {
             if (isEditAllowed) {
@@ -119,7 +123,8 @@ fun TypeDropDownWithCardComponent(
     isEditAllowed: Boolean = true,
     showCardView: Boolean = false,
     questionNumber: String = BLANK_STRING,
-    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -135,7 +140,6 @@ fun TypeDropDownWithCardComponent(
                 .fillMaxWidth()
                 .background(white)
                 .clickable {
-
                 }
         ) {
 
@@ -158,6 +162,9 @@ fun TypeDropDownWithCardComponent(
                     isMandatory = isMandatory,
                     isEditAllowed = isEditAllowed,
                     questionNumber = questionNumber,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    },
                     onDetailIconClicked = {
                         onDetailIconClicked()
                     },
@@ -166,17 +173,6 @@ fun TypeDropDownWithCardComponent(
                     }
                 )
             }
-            if (showCardView && contests?.isNotEmpty() == true) {
-                ContentBottomViewComponent(
-                    contents = contests,
-                    questionIndex = 0,
-                    showCardView = showCardView,
-                    questionDetailExpanded = {},
-                    imageClickListener = {},
-                    videoLinkClicked = {}
-                )
-            }
-
         }
         CustomVerticalSpacer()
     }
@@ -186,7 +182,7 @@ fun TypeDropDownWithCardComponent(
 
 @Composable
 fun DropDownTypeComponent(
-    contests: List<ContentList?>? = listOf(),
+    contents: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
@@ -195,14 +191,15 @@ fun DropDownTypeComponent(
     showQuestionInCard: Boolean = false,
     isEditAllowed: Boolean = true,
     isFromTypeQuestion: Boolean = false,
-    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
     if (showQuestionInCard) {
         TypeDropDownWithCardComponent(
             onDetailIconClicked = { onDetailIconClicked() },
-            contests = contests,
+            contests = contents,
             showCardView = showQuestionInCard,
             title = title,
             hintText = hintText,
@@ -210,6 +207,9 @@ fun DropDownTypeComponent(
             isMandatory = isMandatory,
             isEditAllowed = isEditAllowed,
             questionNumber = getQuestionNumber(questionIndex),
+            navigateToMediaPlayerScreen = { imageContent ->
+                navigateToMediaPlayerScreen(imageContent)
+            },
             onAnswerSelection = { selectedValuesDto ->
                 onAnswerSelection(selectedValuesDto)
             }
@@ -221,13 +221,16 @@ fun DropDownTypeComponent(
             TypeDropDownComponent(
                 title = title,
                 isFromTypeQuestion = isFromTypeQuestion,
-                contests = contests,
+                contests = contents,
                 hintText = hintText,
                 sources = sources,
                 isMandatory = isMandatory,
                 isEditAllowed = isEditAllowed,
                 questionNumber = BLANK_STRING,
                 onDetailIconClicked = { onDetailIconClicked() },
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                },
                 onAnswerSelection = { selectedValuesDto ->
                     onAnswerSelection(selectedValuesDto)
                 }

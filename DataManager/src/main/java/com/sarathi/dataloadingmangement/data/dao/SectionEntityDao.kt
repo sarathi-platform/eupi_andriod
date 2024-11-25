@@ -49,7 +49,4 @@ interface SectionEntityDao {
     fun deleteSurveySectionsForUser(
         userId: String,
     )
-
-    @Query("select *  from $SECTION_TABLE where userId=:userId")
-    fun getSectionsForUser(userId: String): List<SectionEntity>
 }

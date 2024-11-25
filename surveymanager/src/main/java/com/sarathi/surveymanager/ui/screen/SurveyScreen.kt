@@ -12,6 +12,7 @@ import com.nudge.core.FORM_RESPONSE_LIMIT_ERROR
 import com.nudge.core.showCustomToast
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.surveymanager.R
@@ -32,6 +33,7 @@ fun SurveyScreen(
     activityType: String,
     sanctionedAmount: Int,
     totalSubmittedAmount: Int,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {},
     onSettingClick: () -> Unit,
     onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit,
     onViewFormSummaryClicked: (taskId: Int, surveyId: Int, sectionId: Int, formId: Int, activityConfigId: Int) -> Unit
@@ -51,6 +53,9 @@ fun SurveyScreen(
         sanctionedAmount = sanctionedAmount,
         totalSubmittedAmount = totalSubmittedAmount,
         onSettingClick = onSettingClick,
+        navigateToMediaPlayerScreen = { content ->
+            navigateToMediaPlayerScreen(content)
+        },
         onBackClicked = {
             if (viewModel.isNoSection.value) {
                 navController.popBackStack()
@@ -97,6 +102,9 @@ fun SurveyScreen(
                 viewModel = viewModel,
                 sanctionedAmount = sanctionedAmount,
                 totalSubmittedAmount = totalSubmittedAmount,
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(content)
+                },
                 grantType = activityType,
                 maxHeight = maxHeight,
                 onAnswerSelect = { questionUiModel ->
@@ -142,6 +150,7 @@ fun LazyListScope.SurveyScreenContent(
     grantType: String,
     maxHeight: Dp,
     onAnswerSelect: (QuestionUiModel) -> Unit,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {},
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
     onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, referenceId: String) -> Unit,
 ) {
@@ -160,7 +169,10 @@ fun LazyListScope.SurveyScreenContent(
                         onAnswerSelect,
                         maxHeight,
                         grantType,
-                        index
+                        index,
+                        navigateToMediaPlayerScreen = { content ->
+                            navigateToMediaPlayerScreen(content)
+                        }
                     )
                 }
             }

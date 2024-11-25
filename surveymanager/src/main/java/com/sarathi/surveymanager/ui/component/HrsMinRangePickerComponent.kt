@@ -40,6 +40,7 @@ fun HrsMinRangePickerComponent(
     showCardView: Boolean = false,
     isFromTypeQuestion: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, selectedValueId: Int) -> Unit,
 ) {
     val context = LocalContext.current
@@ -78,6 +79,9 @@ fun HrsMinRangePickerComponent(
                     isMandatory = false,
                     maxLength = 3,
                     title = getFirstTitle(typePicker),
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    },
                     isEditable = isEditAllowed,
                 ) { selectedValue, remainingAmout ->
                     firstInputValue.value = selectedValue
@@ -105,6 +109,9 @@ fun HrsMinRangePickerComponent(
                 TypeDropDownComponent(
                     title = getSecondTitle(typePicker),
                     hintText = secondInputValue.value,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    },
                     sources = getSources(typePicker),
                 ) { selectedValue ->
                     secondInputValue.value =
@@ -130,8 +137,9 @@ fun HrsMinRangePickerComponent(
                 questionIndex = 0,
                 showCardView = showCardView,
                 questionDetailExpanded = {},
-                imageClickListener = {},
-                videoLinkClicked = {}
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                }
             )
         }
 
@@ -310,5 +318,6 @@ fun PreviewTimePickerComponent() {
         typePicker = "HrsMinPicker",
         onAnswerSelection = { selectValue, selectedValueId ->
 
-        })
+        },
+        navigateToMediaPlayerScreen = {})
 }

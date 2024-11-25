@@ -86,7 +86,8 @@ fun GridTypeComponent(
     optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf(),
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
     isFromTypeQuestion: Boolean = false,
-    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {}, // Default empty lambda
     questionDetailExpanded: (index: Int) -> Unit,
 ) {
 
@@ -205,8 +206,9 @@ fun GridTypeComponent(
                                 questionIndex = questionIndex,
                                 showCardView = showCardView,
                                 questionDetailExpanded = {},
-                                imageClickListener = {},
-                                videoLinkClicked = {}
+                                navigateToMediaPlayerScreen = { contentList ->
+                                    navigateToMediaPlayerScreen(contentList)
+                                }
                             )
                         }
                     }

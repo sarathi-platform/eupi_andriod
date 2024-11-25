@@ -48,8 +48,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.ARG_FROM_SECTION_SCREEN
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
@@ -69,6 +69,7 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -110,11 +111,7 @@ fun SectionScreen(
     ) -> Unit,
     onNavigateSuccessScreen: (msg: String) -> Unit,
     onSettingClick: () -> Unit,
-    onNavigateToMediaScreen: (
-        navController: NavController, contentKey: String,
-        contentType: String,
-        contentTitle: String
-    ) -> Unit,
+    onNavigateToMediaScreen: (contentList: ContentList) -> Unit,
     onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String, surveyFlow: SurveyFlow) -> Unit,
     onNavigateToComplexSearchScreen: (surveyId: Int, sectionId: Int, taskId: Int, activityConfigIs: Int, fromScreen: String, subjectType: String, activityType: String) -> Unit
 ) {
@@ -244,7 +241,6 @@ fun SectionScreen(
     ModelBottomSheetDescriptionContentComponent(
         modifier = Modifier
             .fillMaxSize(),
-        // .padding(paddingValues),
         sheetContent = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 IconButton(onClick = {
@@ -272,10 +268,19 @@ fun SectionScreen(
                             sheetState.hide()
                         }
                     },
-                    imageClickListener = {
-                    },
-                    videoLinkClicked = {
-                        //navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/${it}")
+                    navigateToMediaPlayerScreen = { contentList ->
+                        if (sectionScreenViewModel.isFilePathExists(
+                                contentList.contentValue ?: BLANK_STRING
+                            )
+                        ) {
+                            onNavigateToMediaScreen(contentList)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.file_not_exists),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     },
                     descriptionContentState = selectedSectionDescription.value
                 )
@@ -366,24 +371,9 @@ fun SectionScreen(
                                         ?: SurveyStatusEnum.INPROGRESS.name,
                                     onDetailIconClicked = { sectionId ->
                                         coroutineScope.launch {
-                                            //TODO Modify code to handle contentList.
                                             selectedSectionDescription.value =
                                                 selectedSectionDescription.value.copy(
-                                                    textTypeDescriptionContent = sectionScreenViewModel.getContentData(
-                                                        section.contentEntities,
-                                                        "text"
-                                                    )?.contentValue
-                                                        ?: BLANK_STRING,
-                                                    imageTypeDescriptionContent = sectionScreenViewModel.getContentData(
-                                                        section.contentEntities,
-                                                        "image"
-                                                    )?.contentValue
-                                                        ?: BLANK_STRING,
-                                                    videoTypeDescriptionContent = sectionScreenViewModel.getContentData(
-                                                        section.contentEntities,
-                                                        "video"
-                                                    )?.contentValue
-                                                        ?: BLANK_STRING,
+                                                    contentDescription = section.contentEntities
                                                 )
 
                                             delay(100)

@@ -46,7 +46,6 @@ android {
 
 dependencies {
     implementation(project(":DataManager"))
-    implementation("androidx.compose.ui:ui-text-android:1.5.3")
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"

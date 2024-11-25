@@ -80,7 +80,7 @@ import java.io.File
 @SuppressLint("UnrememberedMutableState", "UnusedBoxWithConstraintsScope")
 @Composable
 fun AddImageComponent(
-    contests: List<ContentList?>? = listOf(),
+    contents: List<ContentList?>? = listOf(),
     showCardView: Boolean = false,
     isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
@@ -90,6 +90,7 @@ fun AddImageComponent(
     fileNamePrefix: String,
     subtitle: String? = null,
     areMultipleImagesAllowed: Boolean = true,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {},
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -201,12 +202,13 @@ fun AddImageComponent(
         if (showCardView) {
             CustomVerticalSpacer(size = dimen_6_dp)
             ContentBottomViewComponent(
-                contents = contests,
+                contents = contents,
                 questionIndex = 0,
                 showCardView = showCardView,
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(content)
+                },
                 questionDetailExpanded = {},
-                imageClickListener = {},
-                videoLinkClicked = {}
             )
         }
     }

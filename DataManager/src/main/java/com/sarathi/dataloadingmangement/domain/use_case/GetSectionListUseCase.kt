@@ -2,17 +2,16 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
-import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
+import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionListRepository
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
 class GetSectionListUseCase @Inject constructor(
     private val sectionListRepository: SectionListRepository,
-    private val contentDao: ContentDao,
+    private val contentRepositoryImpl: ContentRepositoryImpl,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -27,15 +26,11 @@ class GetSectionListUseCase @Inject constructor(
                 val languageCode = coreSharedPrefs.getSelectedLanguageCode()
 
                 // Fetch content data from the DAO
-                contentDao.getContentFromIds(contentKey, languageCode)?.let { contentDBData ->
-                    ContentList(
-                        contentKey = contentKey,
-                        contentValue = contentDBData.contentValue,
-                        contentType = contentDBData.contentType
-                    )
-                }
+                contentRepositoryImpl.getContentList(
+                    contentKey = contentKey,
+                    languageCode = languageCode
+                )
             }
-
             // Return a copy of the section with updated content entities
             section.copy(contentEntities = contentList)
         }

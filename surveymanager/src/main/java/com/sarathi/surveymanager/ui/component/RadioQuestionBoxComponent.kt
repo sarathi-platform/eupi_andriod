@@ -71,6 +71,7 @@ fun RadioQuestionBoxComponent(
     isQuestionTypeToggle: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     isFromTypeQuestion: Boolean = false,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
 
@@ -196,8 +197,9 @@ fun RadioQuestionBoxComponent(
                                     questionIndex = questionIndex,
                                     showCardView = showCardView,
                                     questionDetailExpanded = {},
-                                    imageClickListener = {},
-                                    videoLinkClicked = {}
+                                    navigateToMediaPlayerScreen = { contentList ->
+                                        navigateToMediaPlayerScreen(contentList)
+                                    }
                                 )
                             }
                         }
@@ -231,6 +233,7 @@ fun ToggleQuestionBoxComponent(
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
     RadioQuestionBoxComponent(
@@ -247,7 +250,10 @@ fun ToggleQuestionBoxComponent(
         showCardView = showCardView,
         optionUiModelList = optionUiModelList,
         isEditAllowed = isEditAllowed,
-        onAnswerSelection = onAnswerSelection
+        onAnswerSelection = onAnswerSelection,
+        navigateToMediaPlayerScreen = { contentList ->
+            navigateToMediaPlayerScreen(contentList)
+        }
     )
 }
 

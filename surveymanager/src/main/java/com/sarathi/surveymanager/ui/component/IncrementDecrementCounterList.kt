@@ -35,6 +35,7 @@ fun IncrementDecrementCounterList(
     editNotAllowedMsg: String = BLANK_STRING,
     isMandatory: Boolean = false,
     showCardView: Boolean = false,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (optionId: Int?, selectValue: String) -> Unit,
 ) {
 
@@ -79,8 +80,9 @@ fun IncrementDecrementCounterList(
                     questionIndex = 0,
                     showCardView = showCardView,
                     questionDetailExpanded = {},
-                    imageClickListener = {},
-                    videoLinkClicked = {}
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    }
                 )
             }
 

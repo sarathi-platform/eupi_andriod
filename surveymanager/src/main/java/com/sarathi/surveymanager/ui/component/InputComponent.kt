@@ -67,6 +67,7 @@ fun InputComponent(
     showCardView: Boolean = false,
     isFromTypeQuestion: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
     val txt = remember {
@@ -181,8 +182,9 @@ fun InputComponent(
                 questionIndex = questionIndex,
                 showCardView = showCardView,
                 questionDetailExpanded = {},
-                imageClickListener = {},
-                videoLinkClicked = {}
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                }
             )
         }
 
@@ -198,5 +200,5 @@ private fun getRemainingValue(remainValue: Int, sanctionedAmount: Int, existValu
 @Composable
 fun NumberTextComponentPreview() {
     InputComponent(onAnswerSelection = { _, _ ->
-    }, isOnlyNumber = true, questionIndex = 0)
+    }, isOnlyNumber = true, questionIndex = 0, navigateToMediaPlayerScreen = {})
 }

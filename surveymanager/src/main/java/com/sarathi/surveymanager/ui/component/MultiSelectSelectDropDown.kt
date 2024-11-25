@@ -85,6 +85,7 @@ fun MultiSelectSelectDropDown(
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
     mTextFieldSize: Size,
 ) {
@@ -230,8 +231,9 @@ fun MultiSelectSelectDropDown(
                         questionIndex = questionIndex,
                         showCardView = showCardView,
                         questionDetailExpanded = {},
-                        imageClickListener = {},
-                        videoLinkClicked = {}
+                        navigateToMediaPlayerScreen = { contentList ->
+                            navigateToMediaPlayerScreen(contentList)
+                        }
                     )
                 }
             }

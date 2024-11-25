@@ -12,6 +12,7 @@ import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.value
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
@@ -49,7 +50,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val fetchContentUseCase: FetchContentUseCase
+
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -373,4 +376,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
         }
         return null
     }
+
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
 }

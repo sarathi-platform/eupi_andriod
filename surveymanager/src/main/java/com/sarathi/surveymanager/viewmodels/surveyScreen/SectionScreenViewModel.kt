@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.viewmodels.surveyScreen
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
@@ -23,6 +24,7 @@ class SectionScreenViewModel @Inject constructor(
     private val getSectionListUseCase: GetSectionListUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
+    private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
 
     private var missionId: Int = 0
@@ -140,5 +142,9 @@ class SectionScreenViewModel @Inject constructor(
         }
         return null
     }
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
 
 }

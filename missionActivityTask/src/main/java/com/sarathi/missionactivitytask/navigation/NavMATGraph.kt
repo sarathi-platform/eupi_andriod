@@ -599,6 +599,14 @@ fun NavGraphBuilder.MatNavigation(
                         formId,
                         activityConfigId
                     )
+                },
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(
+                        navController = navController,
+                        contentKey = content.contentKey ?: BLANK_STRING,
+                        contentType = content.contentType ?: BLANK_STRING,
+                        contentTitle = content.contentKey ?: BLANK_STRING
+                    )
                 }
             )
         }
@@ -853,8 +861,13 @@ fun NavGraphBuilder.MatNavigation(
                         msg
                     )
                 },
-                onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
-
+                onNavigateToMediaScreen = { contentList ->
+                    navigateToMediaPlayerScreen(
+                        navController = navController,
+                        contentKey = contentList.contentKey ?: BLANK_STRING,
+                        contentType = contentList.contentType ?: BLANK_STRING,
+                        contentTitle = contentList.contentKey ?: BLANK_STRING
+                    )
                 },
                 onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId, activityType, surveyFlow ->
 
@@ -1106,8 +1119,13 @@ fun NavGraphBuilder.MatNavigation(
             onSettingClick = {
                 onSettingIconClick()
             },
-            onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
-
+            onNavigateToMediaScreen = { contentList ->
+                navigateToMediaPlayerScreen(
+                    navController = navController,
+                    contentKey = contentList.contentKey ?: BLANK_STRING,
+                    contentType = contentList.contentType ?: BLANK_STRING,
+                    contentTitle = contentList.contentKey ?: BLANK_STRING
+                )
             }
         )
     }
@@ -1450,3 +1468,5 @@ fun navigateToComplexSearchScreen(
 ) {
     navController.navigate("$COMPLEX_SEARCH_SCREEN_ROUTE_NAME/$surveyId/$sectionId/$taskId/$activityConfigId/$fromScreen/$subjectType/$activityType")
 }
+
+

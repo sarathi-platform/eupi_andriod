@@ -1,6 +1,8 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.content.Context
 import android.text.TextUtils
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -28,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,17 +48,16 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
-import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_PREPOPULATED
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
@@ -100,9 +102,7 @@ fun FormQuestionScreen(
     onNavigateBack: () -> Unit,
     onSettingClick: () -> Unit,
     onNavigateToMediaScreen: (
-        navController: NavController, contentKey: String,
-        contentType: String,
-        contentTitle: String
+        contentData: ContentList
     ) -> Unit,
 ) {
     val sheetState =
@@ -156,10 +156,8 @@ fun FormQuestionScreen(
                             sheetState.hide()
                         }
                     },
-                    imageClickListener = {
-                    },
-                    videoLinkClicked = {
-                        //navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/${it}")
+                    navigateToMediaPlayerScreen = { contentList ->
+                        onNavigateToMediaScreen(contentList)
                     },
                     descriptionContentState = selectedSectionDescription.value
                 )
@@ -231,28 +229,16 @@ fun FormQuestionScreen(
                                 coroutineScope = coroutineScope,
                                 index = index,
                                 question = question,
+                                navigateToMediaPlayerScreen = { contentList ->
+                                    onNavigateToMediaScreen(contentList)
+                                },
                                 viewModel = viewModel,
-
-                                maxHeight,
+                                maxHeight = maxHeight,
                                 onDetailIconClicked = {
                                     coroutineScope.launch {
                                         selectedSectionDescription.value =
                                             selectedSectionDescription.value.copy(
-                                                textTypeDescriptionContent = viewModel.getContentData(
-                                                    question.contentEntities,
-                                                    "text"
-                                                )?.contentValue
-                                                    ?: BLANK_STRING,
-                                                imageTypeDescriptionContent = viewModel.getContentData(
-                                                    question.contentEntities,
-                                                    "image"
-                                                )?.contentValue
-                                                    ?: BLANK_STRING,
-                                                videoTypeDescriptionContent = viewModel.getContentData(
-                                                    question.contentEntities,
-                                                    "video"
-                                                )?.contentValue
-                                                    ?: BLANK_STRING,
+                                                contentDescription = question.contentEntities
                                             )
 
                                         delay(100)
@@ -293,9 +279,11 @@ fun FormScreenQuestionUiContent(
     viewModel: FormQuestionScreenViewModel,
     maxHeight: Dp,
     onAnswerSelect: (QuestionUiModel) -> Unit,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
 
 ) {
+    val context = LocalContext.current
     if (viewModel.visibilityMap[question.questionId].value()) {
         Column {
             when (question.type) {
@@ -325,6 +313,14 @@ fun FormScreenQuestionUiContent(
                         isOnlyNumber = question.type == QuestionType.NumericField.name || question.type == QuestionType.InputNumber.name,
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING,
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         onDetailIconClicked = { onDetailIconClicked() }
                     ) { selectedValue, remainingAmout ->
                         saveInputTypeAnswer(selectedValue, question, viewModel)
@@ -339,7 +335,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.DateType.name -> {
 
                     DatePickerComponent(
-                        contests = question.contentEntities,
+                        contents = question.contentEntities,
                         isFromTypeQuestion = true,
                         questionIndex = index,
                         isMandatory = question.isMandatory,
@@ -348,6 +344,14 @@ fun FormScreenQuestionUiContent(
                         title = question.questionDisplay,
                         onDetailIconClicked = { onDetailIconClicked() },
                         isEditable = viewModel.isActivityNotCompleted.value,
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING
                     ) { selectedValue ->
@@ -390,7 +394,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.DropDown.name -> {
                     DropDownTypeComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        contents = question.contentEntities,
                         questionIndex = index,
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         title = question.questionDisplay,
@@ -398,6 +402,14 @@ fun FormScreenQuestionUiContent(
                         showQuestionInCard = false,
                         sources = getOptionsValueDto(question.options ?: listOf()),
                         onDetailIconClicked = { onDetailIconClicked() },
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         onAnswerSelection = { selectedValue ->
                             question.options?.forEach { option ->
                                 option.isSelected = selectedValue.id == option.optionId
@@ -423,6 +435,14 @@ fun FormScreenQuestionUiContent(
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         showCardView = false,
                         maxCustomHeight = maxHeight,
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         onDetailIconClicked = { onDetailIconClicked() },
                         onAnswerSelection = { selectedItems ->
                             val selectedOptions =
@@ -462,6 +482,14 @@ fun FormScreenQuestionUiContent(
                         showCardView = false,
                         onDetailIconClicked = { onDetailIconClicked() },
                         optionUiModelList = question.options.value(),
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         onAnswerSelection = { questionIndex, optionItemIndex ->
                             question.options?.forEachIndexed { index, _ ->
                                 question.options?.get(index)?.isSelected = false
@@ -487,6 +515,14 @@ fun FormScreenQuestionUiContent(
                         maxCustomHeight = maxHeight,
                         onDetailIconClicked = { onDetailIconClicked() },
                         optionUiModelList = question.options.value(),
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         onAnswerSelection = { selectedOptionIndex, isSelected ->
 
                             question.options?.get(selectedOptionIndex)?.isSelected = isSelected
@@ -513,6 +549,14 @@ fun FormScreenQuestionUiContent(
                         showCardView = false,
                         onDetailIconClicked = { onDetailIconClicked() },
                         optionUiModelList = question.options.value(),
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         onAnswerSelection = { questionIndex, optionItemIndex ->
                             question.options?.forEachIndexed { index, _ ->
                                 question.options?.get(index)?.isSelected = false
@@ -536,6 +580,14 @@ fun FormScreenQuestionUiContent(
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         typePicker = question.type,
                         onDetailIconClicked = { onDetailIconClicked() },
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
                         defaultValue = question.options?.firstOrNull()?.selectedValue
                             ?: com.sarathi.dataloadingmangement.BLANK_STRING
                     ) { selectValue, selectedValueId ->
@@ -578,4 +630,24 @@ fun saveInputTypeAnswer(
         question.options?.firstOrNull()?.isSelected = true
     }
     question.options?.firstOrNull()?.selectedValue = selectedValue
+}
+
+fun handleContentClick(
+    viewModel: FormQuestionScreenViewModel,
+    context: Context,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
+    contentList: ContentList
+) {
+    if (viewModel.isFilePathExists(
+            contentList.contentValue ?: com.sarathi.dataloadingmangement.BLANK_STRING
+        )
+    ) {
+        navigateToMediaPlayerScreen(contentList)
+    } else {
+        Toast.makeText(
+            context,
+            context.getString(R.string.file_not_exists),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 }

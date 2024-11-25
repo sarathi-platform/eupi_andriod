@@ -70,6 +70,8 @@ fun <T> DropDownComponent(
     showCardView: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {},
+
     onItemSelected: (T) -> Unit,
 ) {
     // Up Icon when expanded and down icon when collapsed
@@ -178,8 +180,9 @@ fun <T> DropDownComponent(
                 questionIndex = 0,
                 showCardView = showCardView,
                 questionDetailExpanded = {},
-                imageClickListener = {},
-                videoLinkClicked = {}
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(content)
+                }
             )
         }
     }
@@ -219,5 +222,6 @@ fun DropDownWithTittleCompoentPerview() {
         onDismissRequest = { },
         onGlobalPositioned = {},
         onItemSelected = {},
+        navigateToMediaPlayerScreen = {}
     )
 }

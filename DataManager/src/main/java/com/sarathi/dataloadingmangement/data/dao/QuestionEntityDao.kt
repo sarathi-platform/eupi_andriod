@@ -146,8 +146,4 @@ interface QuestionEntityDao {
         sectionId: Int,
         questionId: Int
     ): Int?
-
-    @Query("select *  from $QUESTION_TABLE where userId=:userId")
-    fun getQuestionsForUser(userId: String): List<QuestionEntity>
-
 }

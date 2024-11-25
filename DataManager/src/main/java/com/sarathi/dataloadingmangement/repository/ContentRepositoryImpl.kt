@@ -17,6 +17,7 @@ import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
@@ -105,16 +106,16 @@ class ContentRepositoryImpl @Inject constructor(
         }
 
         // Handle sectionEntityDao content
-        sectionEntityDao.getSectionsForUser(userIdentifier)?.map {
-            it.contentEntities?.forEach { content ->
-                addContentRequest(DEFAULT_LANGUAGE_CODE, content.contentKey)
+        sectionEntityDao.getSections(userIdentifier)?.map {
+            it?.contentEntities?.forEach { content ->
+                addContentRequest(coreSharedPrefs.getSelectedLanguageCode(), content.contentKey)
             }
         }
 
         // Handle questionEntityDao content
-        questionEntityDao.getQuestionsForUser(userIdentifier)?.map {
-            it.contentEntities?.forEach { content ->
-                addContentRequest(DEFAULT_LANGUAGE_CODE, content.contentKey)
+        questionEntityDao.getQuestions(userIdentifier)?.map {
+            it?.contentEntities?.forEach { content ->
+                addContentRequest(coreSharedPrefs.getSelectedLanguageCode(), content.contentKey)
             }
         }
         return contentRequests
@@ -123,6 +124,16 @@ class ContentRepositoryImpl @Inject constructor(
 
     override suspend fun getSelectedAppLanguage(): String {
         return coreSharedPrefs.getAppLanguage()
+    }
+
+    override suspend fun getContentList(contentKey: String, languageCode: String): ContentList? {
+        return contentDao.getContentFromIds(contentKey, languageCode)?.let { contentDBData ->
+            ContentList(
+                contentKey = contentKey,
+                contentValue = contentDBData.contentValue,
+                contentType = contentDBData.contentType
+            )
+        }
     }
 
 }

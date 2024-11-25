@@ -66,7 +66,7 @@ import java.util.Locale
 fun DatePickerComponent(
     isFromTypeQuestion: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
-    contests: List<ContentList?>? = listOf(),
+    contents: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     hintText: String = BLANK_STRING,
@@ -75,6 +75,7 @@ fun DatePickerComponent(
     isMandatory: Boolean = false,
     isEditable: Boolean = true,
     isFutureDateDisable: Boolean = false,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     var text by remember { mutableStateOf(defaultValue) }
@@ -118,7 +119,7 @@ fun DatePickerComponent(
         ) {
             if (title.isNotBlank()) {
                 QuestionComponent(
-                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contents?.isNotEmpty() == true,
                     onDetailIconClicked = { onDetailIconClicked() },
                     title = title,
                     questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
@@ -198,12 +199,13 @@ fun DatePickerComponent(
             if (showCardView) {
                 CustomVerticalSpacer(size = dimen_6_dp)
                 ContentBottomViewComponent(
-                    contents = contests,
+                    contents = contents,
                     questionIndex = questionIndex,
                     showCardView = showCardView,
                     questionDetailExpanded = {},
-                    imageClickListener = {},
-                    videoLinkClicked = {}
+                    navigateToMediaPlayerScreen = { content ->
+                        navigateToMediaPlayerScreen(content)
+                    }
                 )
             }
 
