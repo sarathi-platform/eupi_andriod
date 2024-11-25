@@ -33,6 +33,7 @@ fun TypeMultiSelectedDropDownComponent(
     sources: List<ValuesDto>,
     optionStateMap: Map<Pair<Int, Int>, Boolean> = emptyMap(),
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -58,6 +59,9 @@ fun TypeMultiSelectedDropDownComponent(
         maxCustomHeight = maxCustomHeight,
         showCardView = showCardView,
         onDetailIconClicked = { onDetailIconClicked() },
+        navigateToMediaPlayerScreen = { contentList ->
+            navigateToMediaPlayerScreen(contentList)
+        },
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it
