@@ -12,10 +12,13 @@ import com.sarathi.dataloadingmangement.DELEGATE_DOT
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
@@ -30,7 +33,9 @@ class ContentRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
     val surveyAnswersDao: SurveyAnswersDao,
     val activityConfigDao: ActivityConfigDao,
-    val livelihoodDao: LivelihoodDao
+    val livelihoodDao: LivelihoodDao,
+    val sectionEntityDao: SectionEntityDao,
+    val questionEntityDao: QuestionEntityDao
 ) : IContentRepository {
     override suspend fun fetchContentsFromServer(contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>> {
         return apiInterface.fetchContentData(contentMangerRequest)
@@ -50,68 +55,86 @@ class ContentRepositoryImpl @Inject constructor(
 
     override suspend fun getAllContentRequest(): List<ContentRequest> {
         val contentRequests = ArrayList<ContentRequest>()
-        contentConfigDao.getAllContentKey(
-            coreSharedPrefs.getUniqueUserIdentifier(),
-        ).forEach {
-            contentRequests.add(ContentRequest(languageCode = it.languageCode, contentKey = it.key))
+        val userIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
+
+        // Helper function to add ContentRequest
+        fun addContentRequest(languageCode: String, contentKey: String?) {
+            contentKey?.let {
+                contentRequests.add(ContentRequest(languageCode = languageCode, contentKey = it))
+            }
         }
 
+        // Handle content from contentConfigDao
+        contentConfigDao.getAllContentKey(userIdentifier).forEach {
+            addContentRequest(it.languageCode, it.key)
+        }
+
+        // Handle content from uiConfigDao
         uiConfigDao.getAllIconsKey().forEach {
-            contentRequests.add(
-                ContentRequest(
-                    languageCode = DEFAULT_LANGUAGE_CODE,
-                    contentKey = it
-                )
-            )
+            addContentRequest(DEFAULT_LANGUAGE_CODE, it)
         }
-        activityConfigDao.getAllActivityIconsKey(coreSharedPrefs.getUniqueUserIdentifier())?.forEach {
-            contentRequests.add(
-                ContentRequest(
-                    languageCode = coreSharedPrefs.getAppLanguage(),
-                    contentKey = it
-                )
-            )
+
+        // Handle content from activityConfigDao
+        activityConfigDao.getAllActivityIconsKey(userIdentifier)?.forEach {
+            addContentRequest(coreSharedPrefs.getAppLanguage(), it)
         }
-        val surveyyAnswers = surveyAnswersDao.getSurveyAnswerImageKeys(
-            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+
+        // Handle survey answers
+        val surveyAnswers = surveyAnswersDao.getSurveyAnswerImageKeys(
+            uniqueUserIdentifier = userIdentifier,
             questionType = QuestionType.MultiImage.name
         )
-        surveyyAnswers?.forEach { survey ->
+        surveyAnswers?.forEach { survey ->
             survey.optionItems.forEach { optionsUiModel ->
-                val imageKeys =
-                    checkStringNullOrEmpty(optionsUiModel.selectedValue).split(DELEGATE_COMM)
-                imageKeys.forEach { key ->
-                    contentRequests.add(
-                        ContentRequest(
-                            languageCode = DEFAULT_LANGUAGE_CODE,
-                            contentKey = getFileNameFromURL(key).split(DELEGATE_DOT).firstOrNull()
-                                ?: BLANK_STRING
+                checkStringNullOrEmpty(optionsUiModel.selectedValue).split(DELEGATE_COMM)
+                    .forEach { key ->
+                        addContentRequest(
+                            DEFAULT_LANGUAGE_CODE,
+                            getFileNameFromURL(key).split(DELEGATE_DOT).firstOrNull()
                         )
-                    )
-                }
+                    }
             }
         }
-        livelihoodDao.getLivelihoodForUser(coreSharedPrefs.getUniqueUserIdentifier())
-            .forEach { livelihoodData ->
-                livelihoodData.image?.let { imagae ->
-                    contentRequests.add(
-                        ContentRequest(
-                            languageCode = DEFAULT_LANGUAGE_CODE,
-                            contentKey = getFileNameFromURL(imagae.removeExtension()).split(
-                                DELEGATE_DOT
-                            )
-                                .firstOrNull()
-                                ?: BLANK_STRING
-                        )
-                    )
-                }
+
+        // Handle livelihood data
+        livelihoodDao.getLivelihoodForUser(userIdentifier).forEach { livelihoodData ->
+            livelihoodData.image?.let { image ->
+                addContentRequest(
+                    DEFAULT_LANGUAGE_CODE,
+                    getFileNameFromURL(image.removeExtension()).split(DELEGATE_DOT).firstOrNull()
+                )
             }
+        }
+
+        // Handle sectionEntityDao content
+        sectionEntityDao.getSections(userIdentifier)?.map {
+            it?.contentEntities?.forEach { content ->
+                addContentRequest(BLANK_STRING, content.contentKey)
+            }
+        }
+
+        // Handle questionEntityDao content
+        questionEntityDao.getQuestions(userIdentifier)?.map {
+            it?.contentEntities?.forEach { content ->
+                addContentRequest(BLANK_STRING, content.contentKey)
+            }
+        }
         return contentRequests
     }
 
 
     override suspend fun getSelectedAppLanguage(): String {
         return coreSharedPrefs.getAppLanguage()
+    }
+
+    override suspend fun getContentList(contentKey: String, languageCode: String): ContentList? {
+        return contentDao.getContentFromIds(contentKey, languageCode)?.let { contentDBData ->
+            ContentList(
+                contentKey = contentKey,
+                contentValue = contentDBData.contentValue,
+                contentType = contentDBData.contentType
+            )
+        }
     }
 
 }

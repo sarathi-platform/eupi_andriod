@@ -8,6 +8,7 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.MODE_TAG
 import com.sarathi.dataloadingmangement.NATURE_TAG
+import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
@@ -15,6 +16,7 @@ import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiEntity
@@ -28,7 +30,8 @@ class SurveyRepositoryImpl @Inject constructor(
     private val surveyEntityDao: SurveyEntityDao,
     private val grantConfigDao: GrantConfigDao,
     private val sectionEntityDao: SectionEntityDao,
-    val coreSharedPrefs: CoreSharedPrefs
+    val coreSharedPrefs: CoreSharedPrefs,
+    val contentDao: ContentDao
 ) : ISurveyRepository {
     override suspend fun getQuestion(
         surveyId: Int,
@@ -91,7 +94,8 @@ class SurveyRepositoryImpl @Inject constructor(
                 formId = it.formId ?: DEFAULT_ID,
                 order = it.order.value(0),
                 isConditional = it.isConditional,
-                sectionName = sectionEntity.sectionName
+                sectionName = sectionEntity.sectionName,
+                contentEntities = setQuestionContentData(questionEntity = it)
             )
             questionUiList.add(questionUiModel)
 
@@ -99,6 +103,33 @@ class SurveyRepositoryImpl @Inject constructor(
 
         return questionUiList.sortedBy { it.order }
     }
+
+    suspend fun setQuestionContentData(questionEntity: QuestionUiEntity): List<ContentList> {
+        val contentList = mutableListOf<ContentList>()
+        questionEntity.contentEntities?.forEach { data ->
+            // Fetch content from database based on content key and language ID
+            val contentKey = data.contentKey ?: BLANK_STRING
+            val languageId = coreSharedPrefs.getSelectedLanguageCode()
+
+            val contentData = contentDao.getContentFromIds(
+                contentkey = contentKey,
+                languageId = languageId
+            )
+
+            // Add to the content list if contentData is not null
+            if (contentData != null) {
+                contentList.add(
+                    ContentList(
+                        contentValue = contentData.contentValue ?: "",
+                        contentType = contentData.contentType ?: "",
+                        contentKey = contentKey
+                    )
+                )
+            }
+        }
+        return contentList
+    }
+
 
     override suspend fun getFormQuestion(
         surveyId: Int,

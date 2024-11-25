@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.ui.screen
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
@@ -43,7 +44,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase
+    private val validationUseCase: SurveyValidationUseCase,
+    private val fetchContentUseCase: FetchContentUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -60,7 +62,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     getConditionQuestionMappingsUseCase,
     getSurveyConfigFromDbUseCase,
     getSurveyValidationsFromDbUseCase,
-    validationUseCase
+    validationUseCase,
+    fetchContentUseCase = fetchContentUseCase
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {

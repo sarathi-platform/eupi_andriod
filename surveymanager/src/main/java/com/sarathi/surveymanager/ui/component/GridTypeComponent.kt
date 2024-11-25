@@ -63,6 +63,7 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
@@ -70,6 +71,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun GridTypeComponent(
+    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionDisplay: String,
     optionUiModelList: List<OptionsUiModel>,
@@ -77,12 +79,15 @@ fun GridTypeComponent(
     isRequiredField: Boolean = true,
     questionIndex: Int,
     maxCustomHeight: Dp,
-    showCardView: Boolean = true,
+    showCardView: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
     optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf(),
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {}, // Default empty lambda
     questionDetailExpanded: (index: Int) -> Unit,
 ) {
 
@@ -139,6 +144,8 @@ fun GridTypeComponent(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
                                     QuestionComponent(
+                                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                        onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
                                         questionNumber = if (showCardView) getQuestionNumber(
                                             questionIndex
@@ -193,37 +200,16 @@ fun GridTypeComponent(
                             }
                         }
                         item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
+                            if (showCardView && contests?.isNotEmpty() == true)
+                            ContentBottomViewComponent(
+                                contents = contests,
+                                questionIndex = questionIndex,
+                                showCardView = showCardView,
+                                questionDetailExpanded = {},
+                                navigateToMediaPlayerScreen = { contentList ->
+                                    navigateToMediaPlayerScreen(contentList)
+                                }
                             )
-                            //TODO Add content box when content is available from server
-                            /*if (contests?.isNotEmpty() == true) {
-                                Divider(
-                                    thickness = dimen_1_dp,
-                                    color = lightGray2,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                ExpandableDescriptionContentComponent(
-                                    questionDetailExpanded,
-                                    questionIndex,
-                                    contents = contests,
-                                    subTitle = BLANK_STRING,
-                                    imageClickListener = { imageTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                            imageTypeDescriptionContent
-                                        )
-                                    },
-                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                            videoTypeDescriptionContent
-                                        )
-                                    }
-                                )
-                            }*/
                         }
                     }
 
