@@ -77,10 +77,10 @@ import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
-import com.nudge.core.json
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
+import com.nudge.core.utils.SubjectStatus
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -307,7 +307,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     gotoQuestionId = question.gotoQuestionId,
                     order = question.order,
                     type = question.type,
-                    //  options = question.options,
                     languageId = languageId,
                     isConditional = isSubQuestionList,
                     tag = question.attributeTag ?: 0,
@@ -551,7 +550,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 )
             } else {
-                activityTaskDao.updateActiveTaskStatus(1, task.id ?: 0, getBaseLineUserId())
+                activityTaskDao.updateActiveTaskStatus(
+                    task.status ?: SubjectStatus.SUBJECT_ACTIVE.ordinal,
+                    task.id ?: 0,
+                    getBaseLineUserId()
+                )
             }
 
         }

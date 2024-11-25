@@ -14,12 +14,14 @@ data class MissionTaskModel(
     @SerializedName("language")
     val language: String?,
     @SerializedName("taskStatus")
-    val status: String?,
+    val taskStatus: String?,
     @SerializedName("subjectId")
     val subjectId: Int?,
     @SerializedName("completedDate")
     val completedDate: String?,
     @SerializedName("localTaskId")
-    val localTaskId: String?
+    val localTaskId: String?,
+    @SerializedName("status")
+    val status: Int?,
 
 )

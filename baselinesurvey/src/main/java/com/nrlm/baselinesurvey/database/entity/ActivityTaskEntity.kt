@@ -54,12 +54,13 @@ data class ActivityTaskEntity(
                 didiId = task.subjectId ?: -1,
                 taskDate = task.taskDate,
                 taskName = task.taskName,
-                status = getStatusForTask(task.status ?: SurveyState.NOT_STARTED.name),
+                status = getStatusForTask(task.taskStatus ?: SurveyState.NOT_STARTED.name),
                 activityName = activityName,
                 activityState = 0,
                 subjectId = task.subjectId ?: -1,
                 language = task.language ?: DEFAULT_LANGUAGE_CODE,
                 localTaskId = task.localTaskId ?: getUniqueIdForEntity(),
+                isActive = task.status ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
             )
         }
 

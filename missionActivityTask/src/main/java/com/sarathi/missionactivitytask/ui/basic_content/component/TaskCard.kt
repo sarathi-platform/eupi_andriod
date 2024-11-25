@@ -37,8 +37,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.activityCompleteOrDidiReassignedToast
 import com.nudge.core.formatToIndianRupee
-import com.nudge.core.showCustomToast
+import com.nudge.core.model.QuestionStatusModel
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
@@ -258,8 +259,9 @@ fun TaskCard(
                         onPrimaryButtonClick,
                         title?.value ?: BLANK_STRING,
                         isActivityCompleted,
+                        isDidiReassigned = activeStatus == SubjectStatus.SUBJECT_REASSIGN.ordinal,
                         taskStatus,
-                        isNotAvailableButtonEnable
+                        isNotAvailableButtonEnable,
                     )
                 }
             } else {
@@ -312,6 +314,7 @@ fun TaskCard(
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,
+                            isDidiReassigned = activeStatus == SubjectStatus.SUBJECT_REASSIGN.ordinal,
                             taskStatus,
                             isNotAvailableButtonEnable
                         )
@@ -375,6 +378,7 @@ fun PrimarySecondaryButtonView(
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     title: String,
     isActivityCompleted: Boolean,
+    isDidiReassigned: Boolean = false,
     taskStatus: MutableState<String?>,
     isNotAvailableButtonEnable: Boolean
 
@@ -386,14 +390,13 @@ fun PrimarySecondaryButtonView(
             enabled = isNotAvailableButtonEnable,
             isIcon = false,
             onClick = {
-                if (!isActivityCompleted) {
+                if (!isActivityCompleted && !isDidiReassigned) {
                     taskMarkedNotAvailable.value = true
                     taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
                     onNotAvailable()
                 } else {
-                    showCustomToast(
-                        context,
-                        context.getString(R.string.activity_completed_unable_to_edit)
+                    context.activityCompleteOrDidiReassignedToast(
+                        QuestionStatusModel(isDidiReassigned = isDidiReassigned)
                     )
                 }
             },

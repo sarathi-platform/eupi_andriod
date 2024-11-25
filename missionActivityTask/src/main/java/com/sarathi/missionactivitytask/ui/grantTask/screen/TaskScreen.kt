@@ -559,66 +559,6 @@ fun TaskRowView(
 
                 }
 
-                /*when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
-                    ActivityTypeEnum.GRANT -> {
-                        viewModel.activityConfigUiModel?.let {
-                            if (subjectName.isNotBlank()) {
-                                navigateToGrantSurveySummaryScreen(
-                                    navController,
-                                    taskId = task.key,
-                                    surveyId = it.surveyId,
-                                    sectionId = it.sectionId,
-                                    subjectType = it.subject,
-                                    subjectName = subjectName,
-                                    activityConfigId = it.activityConfigId,
-                                    sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
-                                        ?: DEFAULT_ID,
-                                )
-                            }
-                        }
-                    }
-
-                    ActivityTypeEnum.LIVELIHOOD -> {
-                        navigateToLivelihoodDropDownScreen(
-                            navController,
-                            taskId = task.key,
-                            activityId = viewModel.activityId,
-                            missionId = viewModel.missionId,
-                            subjectName = subjectName
-                        )
-                    }
-
-                    else -> {
-                        viewModel.activityConfigUiModel?.let {
-                            if (subjectName.isNotBlank()) {
-                                val sanctionedAmount = try {
-                                    task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
-                                        ?: DEFAULT_ID
-                                } catch (ex: Exception) {
-                                    CoreLogger.e(
-                                        tag = TAG,
-                                        msg = "TaskRowView: exception -> ${ex.message}",
-                                        ex = ex,
-                                        stackTrace = true
-                                    )
-                                    DEFAULT_ID
-                                }
-                                navigateToSectionScreen(
-                                    navController,
-                                    missionId = viewModel.missionId,
-                                    activityId = viewModel.activityId,
-                                    taskId = task.key,
-                                    surveyId = it.surveyId,
-                                    subjectType = it.subject,
-                                    subjectName = subjectName,
-                                    activityType = viewModel.activityType,
-                                    activityConfigId = it.activityConfigId,
-                                    sanctionedAmount = sanctionedAmount,
-                                )
-                            }
-                        }
-                    }
-                }*/
             }
         },
         onNotAvailable = {

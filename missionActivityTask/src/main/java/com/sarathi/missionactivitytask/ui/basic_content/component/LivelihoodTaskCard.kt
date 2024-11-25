@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import android.net.Uri
-import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -230,15 +228,15 @@ fun LivelihoodTaskCard(
 
                     PrimarySecondaryButtonView(
                         modifier = Modifier.weight(1.0f),
-                        secondaryButtonText?.value ?: BLANK_STRING,
-                        taskMarkedNotAvailable,
-                        onNotAvailable,
-                        primaryButtonText?.value ?: BLANK_STRING,
-                        onPrimaryButtonClick,
-                        title?.value ?: BLANK_STRING,
-                        isActivityCompleted,
-                        taskStatus,
-                        isNotAvailableButtonEnable
+                        secondaryButtonText = secondaryButtonText?.value ?: BLANK_STRING,
+                        taskMarkedNotAvailable = taskMarkedNotAvailable,
+                        onNotAvailable = onNotAvailable,
+                        primaryButtonText = primaryButtonText?.value ?: BLANK_STRING,
+                        onPrimaryButtonClick = onPrimaryButtonClick,
+                        title = title?.value ?: BLANK_STRING,
+                        isActivityCompleted = isActivityCompleted,
+                        taskStatus = taskStatus,
+                        isNotAvailableButtonEnable = isNotAvailableButtonEnable
                     )
                 }
             } else {
@@ -287,15 +285,15 @@ fun LivelihoodTaskCard(
                     else {
                         PrimarySecondaryButtonView(
                             modifier = Modifier.weight(1.0f),
-                            secondaryButtonText?.value ?: BLANK_STRING,
-                            taskMarkedNotAvailable,
-                            onNotAvailable,
+                            secondaryButtonText = secondaryButtonText?.value ?: BLANK_STRING,
+                            taskMarkedNotAvailable = taskMarkedNotAvailable,
+                            onNotAvailable = onNotAvailable,
                             primaryButtonText = stringResource(R.string.continue_text),
-                            onPrimaryButtonClick,
-                            title?.value ?: BLANK_STRING,
-                            isActivityCompleted,
-                            taskStatus,
-                            isNotAvailableButtonEnable
+                            onPrimaryButtonClick = onPrimaryButtonClick,
+                            title = title?.value ?: BLANK_STRING,
+                            isActivityCompleted = isActivityCompleted,
+                            taskStatus = taskStatus,
+                            isNotAvailableButtonEnable = isNotAvailableButtonEnable
                         )
                     }
                 }
