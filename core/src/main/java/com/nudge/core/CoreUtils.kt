@@ -927,6 +927,8 @@ fun Int?.value(defaultValue: Int) = this ?: defaultValue
 
 fun Long?.value() = this ?: -1
 
+fun Long?.value(defaultValue: Long = -1) = this ?: defaultValue
+
 fun Boolean?.value() = this ?: false
 
 fun Boolean?.value(defaultValue: Boolean) = this ?: defaultValue

@@ -41,6 +41,12 @@ class GetSectionListUseCase @Inject constructor(
         }
     }
 
+    suspend operator fun invoke(surveyId: Int, sectionId: Int): SectionUiModel? {
+
+        return invoke(surveyId).find { it.sectionId == sectionId }
+
+    }
+
     suspend fun getSectionStatusMap(missionId: Int, surveyId: Int, taskId: Int): Map<Int, String> {
         val statusMap: MutableMap<Int, String> = HashMap<Int, String>()
         sectionListRepository.getSectionStatusForTask(missionId, surveyId, taskId).forEach {

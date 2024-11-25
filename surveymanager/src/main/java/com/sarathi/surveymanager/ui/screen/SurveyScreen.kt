@@ -7,10 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ACTIVITY_COMPLETED_ERROR
+import com.nudge.core.FORM_RESPONSE_LIMIT_ERROR
+import com.nudge.core.showCustomToast
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.surveymanager.R
 
 @Composable
 fun SurveyScreen(
@@ -182,6 +186,23 @@ fun LazyListScope.SurveyScreenContent(
                             },
                             onViewSummaryClicked = { questionUiModel ->
                                 onViewSummaryClicked(questionUiModel)
+                            },
+                            showEditErrorToast = { context, errorType ->
+                                if (errorType == ACTIVITY_COMPLETED_ERROR) {
+                                    showCustomToast(
+                                        context = context,
+                                        context.getString(R.string.edit_disable_message)
+                                    )
+                                    return@FormQuestionUiContent
+                                }
+
+                                if (errorType == FORM_RESPONSE_LIMIT_ERROR) {
+                                    showCustomToast(
+                                        context = context,
+                                        context.getString(R.string.details_have_already_been_added)
+                                    )
+                                    return@FormQuestionUiContent
+                                }
                             }
                         )
                     }

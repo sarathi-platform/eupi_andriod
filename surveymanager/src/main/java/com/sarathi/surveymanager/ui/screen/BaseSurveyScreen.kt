@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.content.Context
 import android.text.TextUtils
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -32,10 +33,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
+import com.nudge.core.ACTIVITY_COMPLETED_ERROR
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.FORM_RESPONSE_LIMIT_ERROR
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
-import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -583,6 +585,7 @@ fun FormQuestionUiContent(
     onClick: () -> Unit,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
+    showEditErrorToast: (context: Context, editErrorType: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -608,16 +611,14 @@ fun FormQuestionUiContent(
 
                     Row(modifier = Modifier
                         .clickable(enabled = true) {
-                            if (viewModel.isFormEntryAllowed(
-                                    question.formId
-                                )
-                            ) {
-                                onClick()
-                            } else {
-                                showCustomToast(
-                                    context = context,
-                                    context.getString(R.string.edit_disable_message)
-                                )
+                            runEditCheck(
+                                viewModel.isActivityCompleted.value,
+                                viewModel.isFormEntryAllowed(question.formId)
+                            ) { isEditAllowed: Boolean, errorType: String ->
+                                if (isEditAllowed)
+                                    onClick()
+                                else
+                                    showEditErrorToast(context, errorType)
                             }
                         }
                         .fillMaxWidth()
@@ -687,6 +688,27 @@ fun FormQuestionUiContent(
         }
         CustomVerticalSpacer()
     }
+}
+
+fun runEditCheck(
+    isActivityCompleted: Boolean,
+    formEntryAllowed: Boolean,
+    editCheckResult: (Boolean, String) -> Unit
+) {
+
+    if (isActivityCompleted) {
+        editCheckResult(false, ACTIVITY_COMPLETED_ERROR)
+        return
+    }
+
+    if (!formEntryAllowed) {
+        editCheckResult(false, FORM_RESPONSE_LIMIT_ERROR)
+        return
+    }
+
+    editCheckResult(true, BLANK_STRING)
+    return
+
 }
 
 @Composable

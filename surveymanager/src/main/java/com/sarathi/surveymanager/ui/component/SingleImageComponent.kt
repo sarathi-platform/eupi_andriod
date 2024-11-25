@@ -109,7 +109,7 @@ fun SingleImageComponent(
                 onDetailIconClicked = { onDetailIconClicked() },
                 title = title,
                 isRequiredField = isMandatory,
-                subTitle = subtitle ?: "Signed & Sealed Physical Format D"
+                subTitle = BLANK_STRING
             )
         }
 

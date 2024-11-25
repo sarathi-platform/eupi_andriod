@@ -126,7 +126,7 @@ const val ROTATION_DEGREE_TRANSITION = "rotationDegreeTransition"
 const val MAXIMUM_RANGE = 999999
 const val MAXIMUM_RANGE_LENGTH = 10
 
-const val NO_SG_FILTER_VALUE = "null"
+const val NO_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
 const val BATCH_DEFAULT_LIMIT = 5
 const val RETRY_DEFAULT_COUNT = 3
@@ -184,6 +184,7 @@ const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
 
 const val NOT_DECIDED_LIVELIHOOD_ID = -1
 const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
+const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
 const val CORE_DB_VERSION = 1
@@ -226,3 +227,13 @@ const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
 
 const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
+
+const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
+const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
+
+const val ALL_TAB = "All"
+const val QUESTION_DATA_TAB = "Questions"
+const val SECTION_INFORMATION_TAB = "Sections"
+
+const val ACTIVITY_COMPLETED_ERROR = "ACTIVITY_COMPLETED_ERROR"
+const val FORM_RESPONSE_LIMIT_ERROR = "FORM_RESPONSE_LIMIT_ERROR"

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -45,7 +46,11 @@ import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
+import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.white
@@ -93,6 +98,7 @@ fun FormQuestionScreen(
     referenceId: String,
     subjectType: String,
     onNavigateBack: () -> Unit,
+    onSettingClick: () -> Unit,
     onNavigateToMediaScreen: (
         navController: NavController, contentKey: String,
         contentType: String,
@@ -185,35 +191,38 @@ fun FormQuestionScreen(
                     )
                 }
             },
-            onSettingClick = {},
+            onSettingClick = {
+                onSettingClick()
+            },
             onContentUI = {
 
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxHeight()
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxHeight()
+            ) {
+                LazyColumn(
+                    /*verticalArrangement = Arrangement.spacedBy(dimen_10_dp),*/ modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_16_dp)
                 ) {
-                    LazyColumn(
-                        /*verticalArrangement = Arrangement.spacedBy(dimen_10_dp),*/ modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimen_16_dp)
-                    ) {
-                        viewModel.surveyConfig
-                            .filter {
-                                it.value.type.equals(UiConfigAttributeType.DYNAMIC.name, true)
-                                        && it.value.componentType.equals(
-                                    CONFIG_SLOT_TYPE_PREPOPULATED,
-                                    true
+                    viewModel.surveyConfig
+                        .filter {
+                            it.value.type.equals(UiConfigAttributeType.DYNAMIC.name, true)
+                                    && it.value.componentType.equals(
+                                CONFIG_SLOT_TYPE_PREPOPULATED,
+                                true
+                            )
+                        }.forEach { mapEntry ->
+                            item {
+                                SubContainerView(
+                                    mapEntry.value,
+                                    isNumberFormattingRequired = false,
+                                    labelStyle = newMediumTextStyle,
+                                    valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold)
                                 )
-                            }.forEach { mapEntry ->
-                                item {
-                                    SubContainerView(
-                                        mapEntry.value,
-                                        isNumberFormattingRequired = false,
-                                        labelStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
-                                        valueStyle = defaultTextStyle
-                                    )
-                                }
+                                CustomVerticalSpacer()
                             }
+                        }
 
                         itemsIndexed(viewModel.questionUiModel.value.sortedBy { it.order }) { index, question ->
 
@@ -262,9 +271,9 @@ fun FormQuestionScreen(
                             )
                         }
 
-                        customVerticalSpacer(size = dimen_56_dp)
-                    }
+                    customVerticalSpacer(size = dimen_60_dp)
                 }
+            }
 
 
             }
@@ -543,12 +552,15 @@ fun FormScreenQuestionUiContent(
                     }
                 }
             }
-            Text(
-                text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                modifier = Modifier.padding(horizontal = dimen_16_dp),
-                style = quesOptionTextStyle.copy(color = eventTextColor)
-            )
+            if (viewModel.fieldValidationAndMessageMap[question.questionId]?.second != BLANK_STRING) {
+                Text(
+                    text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
+                        ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                    modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
+                    style = quesOptionTextStyle.copy(color = eventTextColor)
+                )
+                CustomVerticalSpacer()
+            }
         }
 
     }

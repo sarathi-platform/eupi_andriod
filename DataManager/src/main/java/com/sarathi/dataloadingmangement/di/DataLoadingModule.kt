@@ -75,10 +75,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMapp
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SearchScreenUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
@@ -1628,5 +1630,20 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs
     ): BaselineV1CheckRepository {
         return BaselineV1CheckRepositoryImpl(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSearchScreenUseCase(
+        getTaskUseCase: GetTaskUseCase,
+        getSectionListUseCase: GetSectionListUseCase,
+        fetchSurveyDataFromDB: FetchSurveyDataFromDB
+    ): SearchScreenUseCase {
+        return SearchScreenUseCase(
+            getTaskUseCase = getTaskUseCase,
+            getSectionListUseCase = getSectionListUseCase,
+            fetchSurveyDataUseCase = fetchSurveyDataFromDB
+        )
+
     }
 }
