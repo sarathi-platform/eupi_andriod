@@ -118,12 +118,12 @@ class LivelihoodEventValidationUseCase @Inject constructor(
                 val assetType =
                     it.key.replace("{", "").replace("}", "").split("%").firstOrNull()
                 val assetIds =
-                    assetRepository.getAssetsForLivelihood(selectedLivelihood.livelihoodId)
+                    assetRepository.getAssetsForLivelihood(selectedLivelihood.programLivelihoodId)
                         .filter { it.type.equals(assetType, true) }.map { it.id }
 
                 map[it.key] =
                     assetJournalRepository.getTotalAssetCountForParticularAssetType(
-                        livelihoodId = selectedLivelihood.livelihoodId,
+                        livelihoodId = selectedLivelihood.programLivelihoodId,
                         subjectId = subjectId,
                         assetIds = assetIds,
                         transactionId = transactionId
@@ -133,7 +133,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
             it.key == ValidationExpressionEnum.TOTAL_ASSET_COUNT.originalValue -> {
                 map[it.key] =
                     assetJournalRepository.getTotalAssetCount(
-                        livelihoodId = selectedLivelihood.livelihoodId,
+                        livelihoodId = selectedLivelihood.programLivelihoodId,
                         subjectId = subjectId,
                         transactionId = transactionId
                     ).toString()
@@ -155,7 +155,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
             it.key == ValidationExpressionEnum.TOTAL_SELECTED_ASSET_COUNT.originalValue -> {
                 map[it.key] =
                     assetJournalRepository.getTotalAssetCount(
-                        livelihoodId = selectedLivelihood.livelihoodId,
+                        livelihoodId = selectedLivelihood.programLivelihoodId,
                         subjectId = subjectId,
                         assetId = selectedAsset?.id ?: -1,
                         transactionId = transactionId

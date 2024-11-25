@@ -19,14 +19,14 @@ interface LivelihoodDao {
     @Query("DELETE FROM $LIVELIHOOD_TABLE_NAME where userId=:userId ")
     fun deleteLivelihoodForUser(userId: String)
 
-    @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status,lt.validations ,lt.type from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType ")
+    @Query("SELECT lr.name,lt.name as originalName,lt.status,lt.validations ,lt.type, lt.programLivelihoodId from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType ")
     fun getLivelihoodList(
         userId: String,
         languageCode: String,
         referenceType: String = LivelihoodLanguageReferenceType.Livelihood.name
     ): List<LivelihoodModel>
 
-    @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status, lt.validations,lt.type  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.livelihoodId!=-1 ")
+    @Query("SELECT lr.name,lt.name as originalName,lt.status, lt.validations,lt.type, lt.programLivelihoodId  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.programLivelihoodId!=-1 ")
     fun getLivelihoodListWithoutNotDecided(
         userId: String,
         languageCode: String,
@@ -38,13 +38,13 @@ interface LivelihoodDao {
         userId: String,
     ): List<LivelihoodEntity>
 
-    @Query("SELECT* from $LIVELIHOOD_TABLE_NAME where userId=:userId  and livelihoodId=:livelihoodId")
+    @Query("SELECT* from $LIVELIHOOD_TABLE_NAME where userId=:userId  and programLivelihoodId=:livelihoodId")
     fun getLivelihoodImageForUser(
         userId: String,
         livelihoodId: Int
     ): LivelihoodEntity
 
-    @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status, lt.validations, lt.type  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.livelihoodId in(:ids)")
+    @Query("SELECT lr.name,lt.name as originalName,lt.status, lt.validations, lt.type, lt.programLivelihoodId  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.programLivelihoodId in(:ids)")
     fun getLivelihoodList(
         userId: String,
         languageCode: String,

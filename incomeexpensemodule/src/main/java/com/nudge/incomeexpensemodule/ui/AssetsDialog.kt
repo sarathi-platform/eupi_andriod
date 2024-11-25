@@ -57,9 +57,9 @@ fun AssetsDialog(
             Column {
                 livelihoodModel.forEach { livelihood ->
                     if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.containsKey(
-                            livelihood.livelihoodId
+                            livelihood.programLivelihoodId
                         ) == true
-                        && incomeExpenseSummaryUiModel.totalAssetCountForLivelihood[livelihood.livelihoodId] != 0
+                        && incomeExpenseSummaryUiModel.totalAssetCountForLivelihood[livelihood.programLivelihoodId] != 0
                     ) {
                         Text(
                             text = livelihood.name,
@@ -70,7 +70,7 @@ fun AssetsDialog(
                             incomeExpenseSummaryUiModel?.assetsCountWithValue?.distinctBy { it.assetId }
                                 ?.forEach { assetsCountWithValueItem ->
                                     val assets =
-                                        incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
+                                        incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.programLivelihoodId]
                                     val itemIndex = assets?.map { it.assetId }
                                         ?.indexOf(assetsCountWithValueItem.assetId).value()
                                     if (itemIndex != -1) {

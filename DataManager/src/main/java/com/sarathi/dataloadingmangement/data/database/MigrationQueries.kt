@@ -191,6 +191,7 @@ object MigrationQueries {
     val CREATE_NEW_LIVELIHOOD_TABLE = "CREATE TABLE IF NOT EXISTS  $LIVELIHOOD_TABLE_NAME (\n" +
             "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
             "    livelihoodId INTEGER NOT NULL,\n" +
+            "    programLivelihoodId INTEGER NOT NULL,\n" +
             "    userId TEXT NOT NULL,\n" +
             "    name TEXT NOT NULL,\n" +
             "    status INTEGER NOT NULL,\n" +

@@ -6,24 +6,25 @@ import com.nudge.core.database.converters.ValidationConverter
 import com.nudge.core.model.response.Validations
 
 data class LivelihoodModel(
-    var livelihoodId: Int,
+
     var name: String,
     var status: Int,
     var originalName: String,
     var type: String,
     @TypeConverters(ValidationConverter::class)
-    val validations: List<Validations>?
+    val validations: List<Validations>?,
+    var programLivelihoodId: Int
 ) {
 
     companion object {
         fun getAllFilter(): LivelihoodModel {
             return LivelihoodModel(
-                livelihoodId = 0,
-                "All",
+                programLivelihoodId = 0,
+                name = "All",
                 status = 1,
                 originalName = "",
                 validations = listOf(),
-                type = BLANK_STRING
+                type = BLANK_STRING,
             )
         }
     }

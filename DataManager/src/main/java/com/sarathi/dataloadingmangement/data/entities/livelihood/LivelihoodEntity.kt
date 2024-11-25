@@ -14,15 +14,14 @@ import com.sarathi.dataloadingmangement.model.response.Livelihood
 data class LivelihoodEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
+    var programLivelihoodId: Int,
     var livelihoodId: Int,
     var userId: String,
     var name: String,
     var status: Int,
-    //Todo Add column type for migration
     var type: String? = BLANK_STRING,
     var image: String?,
 
-    //Todo Add column in migration
     @TypeConverters(ValidationConverter::class)
     var validations: List<Validations>?
 
@@ -41,7 +40,8 @@ data class LivelihoodEntity(
                 status = livelihood.status ?: 0,
                 image = livelihood.image ?: BLANK_STRING,
                 validations = livelihood.validations,
-                type = livelihood.type ?: BLANK_STRING
+                type = livelihood.type ?: BLANK_STRING,
+                programLivelihoodId = livelihood.programLivelihoodId
             )
         }
 

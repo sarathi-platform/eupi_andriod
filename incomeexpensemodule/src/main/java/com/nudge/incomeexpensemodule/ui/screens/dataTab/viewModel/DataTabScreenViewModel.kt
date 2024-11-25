@@ -189,7 +189,7 @@ class DataTabScreenViewModel @Inject constructor(
 
             livelihoodModelList =
                 getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
-                    .distinctBy { it.livelihoodId }
+                    .distinctBy { it.programLivelihoodId }
 
             createFilterBottomSheetList(livelihoodModelList)
 

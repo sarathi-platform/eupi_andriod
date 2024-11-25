@@ -186,8 +186,18 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 )
             }
             val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
-            livelihoodTypeEventDto.add(LivelihoodTypeEventDto(primaryLivelihoodId.value,LivelihoodTypeEnum.PRIMARY.typeId))
-                    livelihoodTypeEventDto.add(LivelihoodTypeEventDto(secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId))
+            livelihoodTypeEventDto.add(
+                LivelihoodTypeEventDto(
+                    programLivelihoodId = primaryLivelihoodId.value,
+                    order = LivelihoodTypeEnum.PRIMARY.typeId,
+                )
+            )
+            livelihoodTypeEventDto.add(
+                LivelihoodTypeEventDto(
+                    programLivelihoodId = secondaryLivelihoodId.value,
+                    order = LivelihoodTypeEnum.SECONDARY.typeId
+                )
+            )
             val livelihoodPlanActivityDto =
                 LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(),
                     livelihoodTypeEventDto,

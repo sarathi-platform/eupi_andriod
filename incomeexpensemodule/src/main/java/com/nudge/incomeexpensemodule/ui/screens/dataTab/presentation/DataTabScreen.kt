@@ -118,7 +118,7 @@ fun DataTabScreen(
             dataTabScreenViewModel.incomeExpenseSummaryUiModel[dataTabScreenViewModel.showAssetDialog.value.second],
             dataTabScreenViewModel.livelihoodModelList.filter {
                 dataTabScreenViewModel.showAssetDialog.value.third.contains(
-                    it.livelihoodId
+                    it.programLivelihoodId
                 )
             },
             onDismissRequest = {
@@ -166,7 +166,7 @@ fun DataTabScreen(
             onBottomSheetItemSelected = {
                 dataTabScreenViewModel.onEvent(
                     DataTabEvents.LivelihoodFilterApplied(
-                        dataTabScreenViewModel.filters[it].livelihoodId
+                        dataTabScreenViewModel.filters[it].programLivelihoodId
                     )
                 )
             }
@@ -298,7 +298,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(
                                                         dataTabScreenViewModel.filters.toList()
-                                                            .find { it.livelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                            .find { it.programLivelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
                                                     )
                                                 }
                                             }

@@ -235,10 +235,10 @@ class AddEventViewModel @Inject constructor(
     private fun getLivelihooldDropValue(livelihoodForDidi: List<LivelihoodModel>): List<ValuesDto> {
         return livelihoodForDidi.map {
             ValuesDto(
-                id = it.livelihoodId,
+                id = it.programLivelihoodId,
                 value = it.name,
                 originalName = it.originalName,
-                isSelected = selectedLivelihoodId.value == it.livelihoodId
+                isSelected = selectedLivelihoodId.value == it.programLivelihoodId
             )
         }
     }
@@ -422,7 +422,7 @@ class AddEventViewModel @Inject constructor(
     ) {
         ioViewModelScope {
             val selectedLivelihood =
-                livelihoodList.find { it.livelihoodId == selectedLivelihoodId.value }
+                livelihoodList.find { it.programLivelihoodId == selectedLivelihoodId.value }
             val selectedEvent = eventList.find { it.id == selectedEventId.value }
             val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }

@@ -23,6 +23,7 @@ data class Livelihood(
     @Expose
     @SerializedName("languages") var languages: ArrayList<LanguageReference> = arrayListOf(),
     @Expose
-    @SerializedName("validations") var validations: List<Validations>?
-
+    @SerializedName("validations") var validations: List<Validations>?,
+    @Expose
+    @SerializedName("programLivelihoodId") var programLivelihoodId: Int
 )

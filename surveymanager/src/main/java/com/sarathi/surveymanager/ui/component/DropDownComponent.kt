@@ -167,7 +167,7 @@ fun <T> DropDownComponent(
 private fun <T> isDisable(item: T, disableItemId: Int): Boolean {
     return when (item) {
         is LivelihoodUiEntity -> {
-            item.livelihoodEntity.livelihoodId != disableItemId
+            item.livelihoodEntity.programLivelihoodId != disableItemId
         }
 
         else -> {

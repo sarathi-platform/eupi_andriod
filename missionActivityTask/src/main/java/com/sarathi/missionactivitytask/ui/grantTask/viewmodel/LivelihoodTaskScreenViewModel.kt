@@ -70,14 +70,19 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     }
     fun getPrimaryLivelihoodValue(key: Int):String {
           return livelihoodsEntityList.find {
-                it.livelihoodId == subjectLivelihoodMappingMap.get(
+              it.programLivelihoodId == subjectLivelihoodMappingMap.get(
                     taskUiModel?.find { it.taskId == key }?.subjectId
                 )
                     ?.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId && it.status == 1 }?.livelihoodId.valueAsMinusTwo()
             }?.name.value() }
 
     fun getSecondaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.SECONDARY.typeId && it.status==1  }?.livelihoodId.valueAsMinusTwo() }?.name.value()
+        return livelihoodsEntityList.find {
+            it.programLivelihoodId == subjectLivelihoodMappingMap.get(
+                taskUiModel?.find { it.taskId == key }?.subjectId
+            )
+                ?.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId && it.status == 1 }?.livelihoodId.valueAsMinusTwo()
+        }?.name.value()
     }
      fun getActivityList(missionId: Int){
 

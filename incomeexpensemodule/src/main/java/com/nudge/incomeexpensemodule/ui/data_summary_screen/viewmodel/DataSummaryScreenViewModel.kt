@@ -358,7 +358,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     private suspend fun createLivelihoodDropDownList() {
         _livelihoodDropdownList.clear()
         livelihoodModel.forEach {
-            _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
+            _livelihoodDropdownList.add(ValuesDto(it.programLivelihoodId, it.name, false))
         }
         selectedLivelihood.value = livelihoodDropdownList.first().id
         selectedEventsSubFilter.value = eventsSubFilterList.first().id
