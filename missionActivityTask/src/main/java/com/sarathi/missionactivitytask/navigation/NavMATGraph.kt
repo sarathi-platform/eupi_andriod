@@ -1102,6 +1102,9 @@ fun NavGraphBuilder.MatNavigation(
                     inclusive = false,
                     saveState = false
                 )
+            },
+            onSettingClick = {
+                onSettingIconClick()
             }
         )
     }
