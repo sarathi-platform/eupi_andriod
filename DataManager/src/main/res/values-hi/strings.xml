@@ -122,7 +122,7 @@
     <string name="month">महीना</string>
     <string name="synced">सिंक कर लिया गया</string>
     <string name="sync_view_progress">प्रगति को देखें </string>
-    <string name="sync_worker_cancelled">Sync worker cancelled</string>
-    <string name="sync_already_cancelled">Sync is already Cancelled</string>
+    <string name="sync_worker_cancelled">सिंक कार्यकर्ता रद्द कर दिया गया</string>
+    <string name="sync_already_cancelled">"सिंक पहले से ही रद्ध कर दिया गया है "</string>
 
 </resources>

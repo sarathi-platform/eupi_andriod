@@ -122,7 +122,7 @@
     <string name="month">মাহ</string>
     <string name="synced">সংমিহলি কৰা হৈছে</string>
     <string name="sync_view_progress">প্ৰগতি দৰ্শন কৰক</string>
-    <string name="sync_worker_cancelled">Sync worker cancelled</string>
-    <string name="sync_already_cancelled">Sync is already Cancelled</string>
+    <string name="sync_worker_cancelled">চিংক কৰ্মী বাতিল কৰা হৈছে</string>
+    <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
 
 </resources>

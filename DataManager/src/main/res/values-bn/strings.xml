@@ -122,7 +122,7 @@
     <string name="month">মাস</string>
     <string name="synced">সিঙ্ক করা হয়েছে</string>
     <string name="sync_view_progress">প্রগ্রেস দেখুন</string>
-    <string name="sync_worker_cancelled">Sync worker cancelled</string>
-    <string name="sync_already_cancelled">Sync is already Cancelled</string>
+    <string name="sync_worker_cancelled">সিঙ্ক কর্মী বাতিল হয়েছে</string>
+    <string name="sync_already_cancelled">"সিঙ্ক আগে থেকে বাতিল করা রয়েছে "</string>
 
 </resources>
