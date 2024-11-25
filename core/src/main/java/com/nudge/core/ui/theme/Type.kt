@@ -186,3 +186,9 @@ val smallTextStyleWithUnderline = TextStyle(
     fontSize = 14.sp,
     textDecoration = TextDecoration.Underline
 )
+
+val mediumSpanStyle = SpanStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp
+)

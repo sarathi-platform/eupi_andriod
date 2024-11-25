@@ -906,6 +906,14 @@ fun String?.value(defaultValue: String): String {
     return this ?: defaultValue
 }
 
+fun String?.value(ignoreCase: Boolean): String {
+    return (this ?: BLANK_STRING).toLowerCase()
+}
+
+fun String?.value(defaultValue: String, ignoreCase: Boolean): String {
+    return (this ?: defaultValue).toLowerCase()
+}
+
 fun String?.toSafeInt(defaultValue: String = "0"): Int {
     return try {
         this.value(defaultValue).toInt()
@@ -926,6 +934,8 @@ fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
 fun Int?.value(defaultValue: Int) = this ?: defaultValue
 
 fun Long?.value() = this ?: -1
+
+fun Long?.value(defaultValue: Long = -1) = this ?: defaultValue
 
 fun Boolean?.value() = this ?: false
 

@@ -208,9 +208,13 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     private suspend fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
         saveQuestionAnswerIntoDb(currentQuestionUiModel)
+        saveSurveyAnswerEvent(currentQuestionUiModel)
 
+    }
+
+    suspend fun saveSurveyAnswerEvent(question: QuestionUiModel) {
         surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
-            questionUiModel = currentQuestionUiModel,
+            questionUiModel = question,
             subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
             subjectType = subjectType,
             taskLocalId = taskEntity?.localTaskId
@@ -227,6 +231,17 @@ open class FormQuestionScreenViewModel @Inject constructor(
         )
     }
 
+    private suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(question: QuestionUiModel) {
+        saveSurveyAnswerUseCase.checkAndUpdateNonVisibleQuestionResponseInDb(
+            question = question,
+            subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+            taskId = taskId,
+            referenceId = referenceId,
+            grantId = 0,
+            grantType = BLANK_STRING
+        )
+        saveSurveyAnswerEvent(question)
+    }
 
     protected suspend fun saveQuestionAnswerIntoDb(question: QuestionUiModel) {
         saveSurveyAnswerUseCase.saveSurveyAnswer(
@@ -315,6 +330,19 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 taskId = taskId,
                 isFromRegenerate = false
             )
+
+            val notVisibleQuestion = visibilityMap.filter { !it.value }
+            val nonVisibleQuestionUiModel =
+                questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
+            nonVisibleQuestionUiModel.forEach { it ->
+                it.options = it.options?.map {
+                    it.copy(
+                        isSelected = false,
+                        selectedValue = BLANK_STRING
+                    )
+                }
+                checkAndUpdateNonVisibleQuestionResponseInDb(question = it)
+            }
         }
     }
 

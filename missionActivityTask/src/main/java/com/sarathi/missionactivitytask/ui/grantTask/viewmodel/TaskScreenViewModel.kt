@@ -14,7 +14,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
-import com.nudge.core.NO_SG_FILTER_VALUE
+import com.nudge.core.NO_FILTER_VALUE
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
@@ -43,6 +43,7 @@ import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
+import com.sarathi.missionactivitytask.ui.grantTask.screen.getFilterLabel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -56,7 +57,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import com.nudge.core.R as CoreRes
 
 
 @HiltViewModel
@@ -221,13 +221,16 @@ open class TaskScreenViewModel @Inject constructor(
         context: Context?
     ): Boolean {
         return mapEntry.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
-            getFilterByValueKeyWithoutLabel(context), ignoreCase = true
+            getFilterByValueKeyWithoutLabel(
+                context,
+                mapEntry.value[TaskCardSlots.FILTER_BY.name]?.label
+            ), ignoreCase = true
         ).value()
     }
 
-    fun getFilterByValueKeyWithoutLabel(context: Context?): String {
+    fun getFilterByValueKeyWithoutLabel(context: Context?, filterLabel: String?): String {
         return filterByValueKey.value.replace(
-            context?.getString(CoreRes.string.small_group_filter_label).value(), BLANK_STRING
+            getFilterLabel(context, filterLabel), BLANK_STRING
         ).trim()
     }
 
@@ -290,8 +293,7 @@ open class TaskScreenViewModel @Inject constructor(
                             ?: BLANK_STRING).isNotBlank()
                     ) {
                         isFilterEnabled.value = true
-                        filterLabel = context?.getString(CoreRes.string.small_group_filter_label)
-                            .value()/*getFilterLabel(context, _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.label }.first())*/
+                        filterLabel = uiComponent[TaskCardSlots.FILTER_BY.name]?.label.value()
                     }
                     val progressUiComponent = getUiComponentValues(
                         taskId = it.taskId,
@@ -333,7 +335,7 @@ open class TaskScreenViewModel @Inject constructor(
 
             if (isFilterEnabled.value) {
 
-                createFilterByList(context)
+                createFilterByList(context, filterLabel)
                 updateFilterForActivity(activityId)
             }
 
@@ -361,31 +363,22 @@ open class TaskScreenViewModel @Inject constructor(
 
     }
 
-    private fun createFilterByList(context: Context?) {
+    private fun createFilterByList(context: Context?, filterLabel: String) {
         val allOption = context?.getString(R.string.all_filter_text)
 
         _filterByList.clear()
 
         _filterByList.add(allOption)
-        _filterByList.add(NO_SG_FILTER_VALUE)
+
+        if (filterLabel == FILTER_BY_SMALL_GROUP_LABEL)
+            _filterByList.add(NO_FILTER_VALUE)
 
         _taskList.value.entries.map { it.value[TaskCardSlots.FILTER_BY.name]?.value }
-            .filter { it != NO_SG_FILTER_VALUE }.let {
+            .filter { it != NO_FILTER_VALUE }.let {
             it.distinct().forEach { filterByItem ->
                 _filterByList.add(filterByItem)
             }
         }
-    }
-
-    private fun getFilterLabel(context: Context?, filterLabel: String?): String {
-        var result = BLANK_STRING
-        result = when (filterLabel) {
-            FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(CoreRes.string.small_group_filter_label)
-                .value()
-
-            else -> BLANK_STRING
-        }
-        return result
     }
 
     fun updateProgress() {

@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -39,6 +38,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.activityCompleteOrDidiReassignedToast
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.model.QuestionStatusModel
+import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -91,11 +92,11 @@ fun RadioQuestionBoxComponent(
                 maxCustomHeight
             )
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
+        BasicCardView(
+            cardElevation = CardDefaults.cardElevation(
                 defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
             ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            cardShape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minHeight, max = maxHeight)
@@ -125,7 +126,13 @@ fun RadioQuestionBoxComponent(
                             Row(
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
-                                    .padding(horizontal = dimen_16_dp)
+                                    .padding(
+                                        horizontal = if (showCardView) {
+                                            dimen_16_dp
+                                        } else {
+                                            dimen_0_dp
+                                        }
+                                    )
                             ) {
                                 QuestionComponent(
                                     title = questionDisplay,

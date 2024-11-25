@@ -15,16 +15,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.QuestionStatusModel
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -125,8 +130,11 @@ fun FormQuestionScreen(
                             item {
                                 SubContainerView(
                                     mapEntry.value,
-                                    isNumberFormattingRequired = false
+                                    isNumberFormattingRequired = false,
+                                    labelStyle = newMediumTextStyle,
+                                    valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold)
                                 )
+                                CustomVerticalSpacer()
                             }
                         }
 
@@ -136,6 +144,7 @@ fun FormQuestionScreen(
                             index = index,
                             question = question,
                             viewModel = viewModel,
+
                             maxHeight,
                             onAnswerSelect = {
                                 viewModel.updateQuestionResponseMap(question)
@@ -411,12 +420,15 @@ fun FormScreenQuestionUiContent(
                     }
                 }
             }
-            Text(
-                text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                    ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                modifier = Modifier.padding(horizontal = dimen_16_dp),
-                style = quesOptionTextStyle.copy(color = eventTextColor)
-            )
+            if (viewModel.fieldValidationAndMessageMap[question.questionId]?.second != BLANK_STRING) {
+                Text(
+                    text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
+                        ?: com.sarathi.dataloadingmangement.BLANK_STRING,
+                    modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
+                    style = quesOptionTextStyle.copy(color = eventTextColor)
+                )
+                CustomVerticalSpacer()
+            }
         }
 
     }

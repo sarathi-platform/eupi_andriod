@@ -47,6 +47,8 @@ class ConditionsUtils {
      * */
     val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf()
 
+    val inputTypeQuestionResponses = mutableMapOf<Int, List<Pair<Int, String>>>()
+
     private fun setConditionsUiModelList(conditionsUiModelList: List<ConditionsUiModel>) {
         this.conditionsUiModelList = conditionsUiModelList
     }
@@ -87,29 +89,37 @@ class ConditionsUtils {
                 }.value()
             }
             .forEach {
+                val selectedOptions = it.options?.filter { option -> option.isSelected.value() }
                 if (it.type != QuestionType.TextField.name && it.type != QuestionType.InputText.name && it.type != QuestionType.InputNumber.name && it.type != QuestionType.NumericField.name) {
-                    it.options?.filter { option -> option.isSelected.value() }
-                        ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
+                    selectedOptions?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
                 }
 
                 if (it.type == QuestionType.InputNumber.name || it.type == QuestionType.NumericField.name) {
-                    it.options?.filter { option -> option.isSelected.value() }
+                    selectedOptions
                         ?.map { opt -> opt.selectedValue?.toIntOrNull().value(NUMBER_ZERO) }
                         ?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
 
+
                 }
 
                 if (it.type == QuestionType.TextField.name || it.type == QuestionType.InputText.name) {
-                    it.options?.filter { option -> option.isSelected.value() }
-                        ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
+
+                    selectedOptions?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
                 }
-
+                if (QuestionType.userInputQuestionTypeList.contains(it.type.toLowerCase()) || QuestionType.numericUseInputQuestionTypeList.contains(
+                        it.type.toLowerCase()
+                    )
+                ) {
+                    inputTypeQuestionResponses[it.questionId] =
+                        selectedOptions?.map { Pair(it.optionId.value(), it.selectedValue.value()) }
+                            .value()
+                }
             }
         responseMap = map
     }
@@ -220,6 +230,15 @@ class ConditionsUtils {
                 }
             }
         }
+
+        if (QuestionType.userInputQuestionTypeList.contains(question.type.toLowerCase()) || QuestionType.numericUseInputQuestionTypeList.contains(
+                question.type.toLowerCase()
+            )
+        ) {
+            val selectedOptions = question.options?.filter { it.isSelected == true }
+            inputTypeQuestionResponses[question.questionId] =
+                selectedOptions?.map { Pair(it.optionId.value(), it.selectedValue.value()) }.value()
+        }
     }
 
     private fun updateResponseMap(questionId: Int, responseList: List<Int>) {
@@ -261,7 +280,7 @@ class ConditionsUtils {
             var condition = questionConditionMap.findConditionForQuestion(targetQuestionId)
 
             if (isFromForm)
-                condition = condition?.distinctBy { it.sourceQuestion }
+                condition = condition?.distinctBy { Pair(it.sourceQuestion, it.expression) }
 
             val response = responseMap[sourceQuestion.questionId]
 
@@ -286,7 +305,7 @@ class ConditionsUtils {
                 val targetQuestionUiModel =
                     questionUiModel.find { it.questionId == targetQuestionId } ?: continue
 
-                evaluateConditions(targetQuestionUiModel)
+                evaluateConditions(targetQuestionUiModel, isFromForm)
 
             }
 
@@ -299,21 +318,26 @@ class ConditionsUtils {
                     conditionsUiModelList.find { it.targetQuestionId == targetQuestionId }?.conditionOperator
                         ?: continue
 
+                val result = evaluateMultipleCondition(
+                    sourceQuestion = sourceQuestion,
+                    response = response,
+                    conditions = condition,
+                    conditionOperator = conditionOperator,
+                    sourceQuestionType = sourceQuestionType
+                )
                 questionVisibilityMap.put(
                     targetQuestionId,
-                    evaluateMultipleCondition(
-                        sourceQuestion = sourceQuestion,
-                        response = response,
-                        conditions = condition,
-                        conditionOperator = conditionOperator,
-                        sourceQuestionType = sourceQuestionType
-                    )
+                    result
                 )
+
+                if (!result) {
+                    responseMap.remove(targetQuestionId)
+                }
 
                 /**
                  * Evaluate conditions for child questions of current targetQuestion if their responses are present
                  * */
-                evaluateConditions(targetQuestionUiModel)
+                evaluateConditions(targetQuestionUiModel, isFromForm)
 
             }
 
@@ -356,10 +380,17 @@ class ConditionsUtils {
             QuestionType.Grid.name,
             QuestionType.ToggleGrid.name,
             QuestionType.MultiSelectDropDown.name,
-            QuestionType.IncrementDecrementList.name
-                -> {
+            QuestionType.IncrementDecrementList.name -> {
+                var conditionCheckResult = evaluateMultipleResponseConditions(response, conditions)
 
-                evaluateMultipleResponseConditions(response, conditions)
+                conditionCheckResult = checkIfInputValueIsNonZeroAndNotEmpty(
+                    sourceQuestion,
+                    conditionCheckResult,
+                    conditions,
+                    response
+                )
+
+                conditionCheckResult
             }
 
             else -> {
@@ -368,6 +399,33 @@ class ConditionsUtils {
         }
 
 
+    }
+
+    private fun checkIfInputValueIsNonZeroAndNotEmpty(
+        sourceQuestion: QuestionUiModel,
+        conditionCheckResult: Boolean,
+        conditions: Conditions,
+        response: List<Int>?
+    ): Boolean {
+        var valueCheckResult = conditionCheckResult
+        if (sourceQuestion.type == QuestionType.IncrementDecrementList.name && valueCheckResult) {
+            val userResponseValue = inputTypeQuestionResponses[sourceQuestion.questionId]
+
+            val operator = getOperatorForExpression(conditions.expression)
+
+            val operandVariables = getOperandVariables(conditions.expression, operator)
+            response?.firstOrNull()?.let {
+                val operand = getOperandsForExpression(
+                    operandVariables,
+                    it
+                ).second
+
+                val value = userResponseValue?.find { it.first == operand }?.second.value()
+                if (value == NUMBER_ZERO.toString() || value == BLANK_STRING)
+                    valueCheckResult = false
+            }
+        }
+        return valueCheckResult
     }
 
     /**
@@ -556,7 +614,7 @@ class ConditionsUtils {
             if (opVar.equals(OPERAND_DELIMITER)) {
                 first = response
             } else {
-                second = opVar.toInt()
+                second = opVar.toIntOrNull() ?: 0
             }
         }
         operands = Pair(first, second)

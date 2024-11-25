@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.101"
+def version = "2.0.105"
 def prodVersion = version
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 34
-        versionCode 104
+        versionCode 108
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -250,7 +250,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-auth:19.0.0"
     implementation "com.google.android.gms:play-services-auth-api-phone:17.5.0"
 
-    implementation "com.github.barteksc:android-pdf-viewer:3.2.0-beta.1"
+    implementation "com.github.mhiew:android-pdf-viewer:3.2.0-beta.3"
     implementation "com.airbnb.android:lottie-compose:6.1.0"
 
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
