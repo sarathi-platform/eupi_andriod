@@ -6,6 +6,7 @@ import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.removeExtension
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.DELEGATE_DOT
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -108,14 +109,14 @@ class ContentRepositoryImpl @Inject constructor(
         // Handle sectionEntityDao content
         sectionEntityDao.getSections(userIdentifier)?.map {
             it?.contentEntities?.forEach { content ->
-                addContentRequest(coreSharedPrefs.getSelectedLanguageCode(), content.contentKey)
+                addContentRequest(BLANK_STRING, content.contentKey)
             }
         }
 
         // Handle questionEntityDao content
         questionEntityDao.getQuestions(userIdentifier)?.map {
             it?.contentEntities?.forEach { content ->
-                addContentRequest(coreSharedPrefs.getSelectedLanguageCode(), content.contentKey)
+                addContentRequest(BLANK_STRING, content.contentKey)
             }
         }
         return contentRequests
