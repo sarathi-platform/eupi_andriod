@@ -31,7 +31,7 @@ class GetLivelihoodSaveEventRepositoryImpl @Inject constructor(
                         amount = it.amount,
                         date = it.date,
                         assetCount = it.assetCount,
-                        livelihoodId = it.livelihoodId,
+                        livelihoodId = it.programLivelihoodId,
                         productValue = it.productValue ?: BLANK_STRING,
                         assetTypeValue = it.assetTypeValue ?: BLANK_STRING,
                         eventId = it.eventId,

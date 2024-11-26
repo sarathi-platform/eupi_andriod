@@ -11,8 +11,8 @@ data class SaveLivelihoodEventDto(
     val date: Long,
     @SerializedName("assetCount")
     val assetCount: Int,
-    @SerializedName("livelihoodId")
-    val livelihoodId: Int,
+    @SerializedName("programLivelihoodId")
+    val programLivelihoodId: Int,
     @SerializedName("livelihoodValue")
     val livelihoodValue: String,
     @SerializedName("eventId")
