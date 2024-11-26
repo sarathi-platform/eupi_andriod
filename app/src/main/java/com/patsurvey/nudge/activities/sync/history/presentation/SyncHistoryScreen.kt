@@ -1,14 +1,11 @@
 package com.patsurvey.nudge.activities.sync.history.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -33,13 +30,11 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nudge.core.SYNC_DATA
-import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
+import com.patsurvey.nudge.activities.sync.home.presentation.LastSyncTime
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.syncMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import java.text.SimpleDateFormat
 
 @Composable
 fun SyncHistoryScreen(
@@ -68,58 +63,16 @@ fun SyncHistoryScreen(
                 .fillMaxWidth()
 
         ) {
-            LastSyncTime(viewModel)
+            LastSyncTime(
+                lastSyncTime = viewModel.lastSyncTime.longValue,
+                mobileNumber = viewModel.getUserMobileNumber()
+            ) {}
             CreateEventUIList(viewModel, screenHeight)
         }
     }
 
 }
 
-@Composable
-fun LastSyncTime(viewModel: SyncHistoryViewModel) {
-    if (viewModel.lastSyncTime.longValue != 0L) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.last_sync_date_time),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-
-                Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.profile_phone),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-
-                Text(
-                    text = viewModel.getUserMobileNumber(),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-            }
-        }
-
-    }
-}
 @Composable
 private fun CreateEventUIList(
     viewModel: SyncHistoryViewModel,

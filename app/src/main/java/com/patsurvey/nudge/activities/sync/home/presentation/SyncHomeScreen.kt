@@ -308,14 +308,17 @@ fun SyncHomeContent(
                         .fillMaxSize()
                 ) {
                     item {
-                        LastSyncTime(viewModel) {
-                            CoreLogger.d(
-                                context,
-                                "SyncHomeScreen",
-                                "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
-                            )
-                            if (viewModel.isSyncStarted.value)
-                                viewModel.cancelSyncUploadWorker()
+                        LastSyncTime(
+                            viewModel.lastSyncTime.longValue,
+                            viewModel.getUserPhoneNumber()
+                        ) {
+                            viewModel.onLastSyncTimeClick {
+                                showCustomToast(
+                                    context = context,
+                                    msg = context.getString(it)
+                                )
+                            }
+
                         }
                     }
                     item {
@@ -432,21 +435,15 @@ fun BottomContent(
 }
 
 @Composable
-fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
-    val context = LocalContext.current
-    if (viewModel.lastSyncTime.longValue != 0L) {
+fun LastSyncTime(lastSyncTime: Long, mobileNumber: String, onCancelWorker: () -> Unit) {
+    if (lastSyncTime != 0L) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
                     .clickable {
-                        viewModel.onLastSyncTimeClick {
-                            showCustomToast(
-                                context = context,
-                                msg = context.getString(it)
-                            )
-                        }
+                        onCancelWorker()
                     },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -457,7 +454,7 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
                 )
 
                 Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(lastSyncTime),
                     style = syncMediumTextStyle,
                     color = textColorDark
                 )
@@ -465,15 +462,7 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_10_dp)
-                    .clickable {
-                        viewModel.onLastSyncTimeClick {
-                            showCustomToast(
-                                context = context,
-                                msg = context.getString(it)
-                            )
-                        }
-                    },
+                    .padding(dimen_10_dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -483,7 +472,7 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
                 )
 
                 Text(
-                    text = viewModel.getUserPhoneNumber(),
+                    text = mobileNumber,
                     style = syncMediumTextStyle,
                     color = textColorDark
                 )
