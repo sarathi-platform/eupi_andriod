@@ -503,7 +503,9 @@ class DataLoadingModule {
         uiConfigDao: UiConfigDao,
         surveyAnswersDao: SurveyAnswersDao,
         activityConfigDao: ActivityConfigDao,
-        livelihoodDao: LivelihoodDao
+        livelihoodDao: LivelihoodDao,
+        sectionEntityDao: SectionEntityDao,
+        questionEntityDao: QuestionEntityDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
@@ -513,7 +515,9 @@ class DataLoadingModule {
             uiConfigDao = uiConfigDao,
             surveyAnswersDao = surveyAnswersDao,
             activityConfigDao = activityConfigDao,
-            livelihoodDao = livelihoodDao
+            livelihoodDao = livelihoodDao,
+            sectionEntityDao = sectionEntityDao,
+            questionEntityDao = questionEntityDao
         )
     }
 
@@ -836,7 +840,8 @@ class DataLoadingModule {
         surveyDao: SurveyEntityDao,
         grantConfigDao: GrantConfigDao,
         sectionEntityDao: SectionEntityDao,
-        surveyConfigEntityDao: SurveyConfigEntityDao
+        surveyConfigEntityDao: SurveyConfigEntityDao,
+        contentDao: ContentDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao,
@@ -846,8 +851,8 @@ class DataLoadingModule {
             surveyEntityDao = surveyDao,
             grantConfigDao = grantConfigDao,
             sectionEntityDao = sectionEntityDao,
-            surveyConfigDao = surveyConfigEntityDao
-
+            surveyConfigDao = surveyConfigEntityDao,
+            contentDao = contentDao
         )
     }
 
@@ -1383,9 +1388,15 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideGetSectionListUseCase(
-        sectionListRepository: SectionListRepository
+        sectionListRepository: SectionListRepository,
+        contentRepositoryImpl: ContentRepositoryImpl,
+        coreSharedPrefs: CoreSharedPrefs
     ): GetSectionListUseCase {
-        return GetSectionListUseCase(sectionListRepository)
+        return GetSectionListUseCase(
+            sectionListRepository,
+            contentRepositoryImpl = contentRepositoryImpl,
+            coreSharedPrefs = coreSharedPrefs
+        )
     }
 
     @Provides

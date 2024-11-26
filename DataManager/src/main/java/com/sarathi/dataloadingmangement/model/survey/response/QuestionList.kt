@@ -37,7 +37,7 @@ data class QuestionList(
 
     @SerializedName("contents")
     @Expose
-    var contentList: List<ContentList> = listOf(),
+    var contentList: List<ContentList>? = listOf(),
 
     @SerializedName("imageIcon")
     @Expose

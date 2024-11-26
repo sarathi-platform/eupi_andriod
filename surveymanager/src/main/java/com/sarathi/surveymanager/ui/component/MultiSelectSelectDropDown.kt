@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.Dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -55,10 +56,12 @@ import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_64_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -66,6 +69,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MultiSelectSelectDropDown(
+    isFromTypeQuestion: Boolean = false,
+    contests: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     isMandatory: Boolean = false,
@@ -77,8 +82,10 @@ fun MultiSelectSelectDropDown(
     hint: String = stringResource(R.string.select),
     expanded: Boolean = false,
     showCardView: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
     mTextFieldSize: Size,
 ) {
@@ -127,9 +134,11 @@ fun MultiSelectSelectDropDown(
                 }
                 if (title.isNotBlank()) {
                     QuestionComponent(
+                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
                         title = title,
                         questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
-                        isRequiredField = isMandatory
+                        isRequiredField = isMandatory,
+                        onDetailIconClicked = { onDetailIconClicked() }
                     )
                 }
                 CustomOutlineTextField(
@@ -213,6 +222,19 @@ fun MultiSelectSelectDropDown(
                             )
                         }
                     }
+                }
+
+                if (showCardView && contests?.isNotEmpty() == true) {
+                    CustomVerticalSpacer(size = dimen_6_dp)
+                    ContentBottomViewComponent(
+                        contents = contests,
+                        questionIndex = questionIndex,
+                        showCardView = showCardView,
+                        questionDetailExpanded = {},
+                        navigateToMediaPlayerScreen = { contentList ->
+                            navigateToMediaPlayerScreen(contentList)
+                        }
+                    )
                 }
             }
         }

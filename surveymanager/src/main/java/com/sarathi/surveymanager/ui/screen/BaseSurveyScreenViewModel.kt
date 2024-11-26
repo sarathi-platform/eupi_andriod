@@ -12,6 +12,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
@@ -69,7 +70,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase
+    private val validationUseCase: SurveyValidationUseCase,
+    private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
 
     private val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
@@ -524,6 +526,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
         return updatedModel
 
+    }
+
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
     }
 
 }
