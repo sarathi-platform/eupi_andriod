@@ -115,7 +115,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                     activityConfigId = activityConfigId,
                     referenceId = BLANK_STRING,
                     grantId = NUMBER_ZERO,
-                    formId = formId
+                    formId = formId,
+                    missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                    activityId = taskEntity?.activityId.value(DEFAULT_ID)
                 )
             }
 
@@ -138,7 +140,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = BLANK_STRING,
-                grantId = NUMBER_ZERO
+                grantId = NUMBER_ZERO,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
             ).filter { it.formId != NUMBER_ZERO }.map { it.questionId }
 
             val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
@@ -150,15 +154,30 @@ class FormResponseSummaryViewModel @Inject constructor(
             )
 
             _formQuestionResponseMap.clear()
-            _formQuestionResponseMap.putAll(savedAnswers.filter { savedAnswer ->
-                savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
-                    savedAnswer.questionId
-                )
-            }.groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
-                .filter { it.key.second == formId })
+            _formQuestionResponseMap.putAll(
+                savedAnswers
+                    .filter { savedAnswer ->
+                        savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
+                            savedAnswer.questionId
+                        )
+                    }
+                    .groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
+                    .filter { it.key.second == formId }
+            )
+
 
             referenceIdsList.clear()
-            referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
+            referenceIdsList.addAll(
+                formQuestionResponseMap.entries
+                    .map { mapEntry -> // map formQuestionResponseMap Entries to a pair with map key as first and created data from map value.first()
+                        Pair(
+                            mapEntry.key,
+                            mapEntry.value.firstOrNull()?.createdDate.value(Long.MAX_VALUE)
+                        )
+                    }
+                    .sortedBy { pair: Pair<Pair<String, Int>, Long> -> pair.second } // sort the map of Pair on created date
+                    .map { it.first } // convert the sorted list back to the list of formQuestionResponseMap keys.
+            )
 
             getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                 .also { surveyConfigEntityList ->

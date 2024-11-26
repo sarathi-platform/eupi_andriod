@@ -163,7 +163,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 questionDesc = questionUiModel.questionSummary ?: BLANK_STRING,
                 options = options,
                 formId = questionUiModel.formId,
-                order = questionUiModel.order
+                order = questionUiModel.order,
+                formDescription = questionUiModel.formDescriptionInEnglish ?: BLANK_STRING
             )
 
         return saveAnswerEventQuestionItemDto1
@@ -189,8 +190,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                         optionId = optionItem.optionId ?: 0,
                         selectedValue = optionItem.originalValue,
                         optionDesc = optionItem.originalValue ?: BLANK_STRING,
-                        referenceId = referenceId
-
+                        referenceId = referenceId,
+                        order = optionItem.order
                     )
                     )
                 } else {

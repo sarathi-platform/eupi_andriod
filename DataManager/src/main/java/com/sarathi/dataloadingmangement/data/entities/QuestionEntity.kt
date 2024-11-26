@@ -105,7 +105,7 @@ data class QuestionEntity(
                 order = question.order,
                 type = question.type,
                 isConditional = isCondition,
-                contentEntities = question.contentList,
+                contentEntities = question.contentList ?: listOf(),
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
                 formId = question.formId ?: DEFAULT_ID,

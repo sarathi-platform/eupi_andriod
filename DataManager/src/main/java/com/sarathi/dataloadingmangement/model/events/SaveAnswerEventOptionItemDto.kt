@@ -22,4 +22,7 @@ data class SaveAnswerEventOptionItemDto(
     @SerializedName("selectedValueWithIds")
     @Expose
     val selectedValueWithIds: List<ValuesDto> = emptyList(),
+    @SerializedName("order")
+    @Expose
+    val order: Int? = 0
 )
