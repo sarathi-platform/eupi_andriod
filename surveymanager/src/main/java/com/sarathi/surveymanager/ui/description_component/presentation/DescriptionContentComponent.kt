@@ -32,8 +32,9 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.download_manager.FileType
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
 import com.sarathi.surveymanager.R
@@ -41,7 +42,7 @@ import com.sarathi.surveymanager.R
 @Composable
 fun DescriptionContentComponent(
     modifier: Modifier = Modifier,
-    contentList: List<Content>,
+    contentList: List<ContentList>,
     onMediaContentClick: (contentKey: String) -> Unit,
     onCloseListener: () -> Unit
 ) {
@@ -68,11 +69,11 @@ fun DescriptionContentComponent(
         Column {
 
             contentList.forEach { content ->
-                when (content.contentType.toLowerCase()) {
+                when (content.contentType?.toLowerCase()) {
 
                     FileType.TEXT.name.toLowerCase() -> {
                         TextWithReadMoreComponent(
-                            contentData = content.contentValue,
+                            contentData = content.contentValue ?: BLANK_STRING,
                             textStyle = largeTextStyle
                         )
                     }
@@ -81,11 +82,11 @@ fun DescriptionContentComponent(
                         LinkTextButtonWithIcon(
                             modifier = Modifier
                                 .align(Alignment.Start),
-                            title = content.contentKey,
+                            title = content.contentKey ?: BLANK_STRING,
                             textColor = summaryCardViewBlue,
                             iconTint = summaryCardViewBlue
                         ) {
-                            onMediaContentClick(content.contentKey)
+                            onMediaContentClick(content.contentKey ?: BLANK_STRING)
                         }
                     }
                 }

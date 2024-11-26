@@ -84,7 +84,9 @@ class SearchScreenViewModel @Inject constructor(
             subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
             activityConfigId = activityConfigId,
             referenceId = BLANK_STRING,
-            grantId = NUMBER_ZERO
+            grantId = NUMBER_ZERO,
+            missionId = taskEntity?.missionId.value(DEFAULT_ID),
+            activityId = taskEntity?.activityId.value(DEFAULT_ID)
         )
         _complexSearchStateList.value.addAll(questionUiModel.convertToComplexSearchState(section))
     }

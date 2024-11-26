@@ -44,6 +44,7 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
@@ -51,6 +52,7 @@ import com.sarathi.surveymanager.utils.onlyNumberField
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputComponent(
+    contests: List<ContentList?>? = listOf(),
     title: String? = "select",
     defaultValue: String = BLANK_STRING,
     questionIndex: Int,
@@ -63,6 +65,9 @@ fun InputComponent(
     remainingAmount: Int = 0,
     isZeroNotAllowed: Boolean = false,
     showCardView: Boolean = false,
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
     val txt = remember {
@@ -90,9 +95,13 @@ fun InputComponent(
         ) {
             if (title?.isNotBlank() == true) {
                 QuestionComponent(
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
                     title = title,
                     questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
-                    isRequiredField = isMandatory
+                    isRequiredField = isMandatory,
+                    onDetailIconClicked = {
+                        onDetailIconClicked()
+                    }
                 )
             }
             OutlinedTextField(
@@ -166,9 +175,19 @@ fun InputComponent(
                 )
             }
         }
-        if (showCardView) {
+        if (showCardView && contests?.isNotEmpty() == true) {
             CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = contests,
+                questionIndex = questionIndex,
+                showCardView = showCardView,
+                questionDetailExpanded = {},
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                }
+            )
         }
+
     }
 }
 
@@ -181,5 +200,5 @@ private fun getRemainingValue(remainValue: Int, sanctionedAmount: Int, existValu
 @Composable
 fun NumberTextComponentPreview() {
     InputComponent(onAnswerSelection = { _, _ ->
-    }, isOnlyNumber = true, questionIndex = 0)
+    }, isOnlyNumber = true, questionIndex = 0, navigateToMediaPlayerScreen = {})
 }
