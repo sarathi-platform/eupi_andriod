@@ -230,7 +230,12 @@ fun FormQuestionScreen(
                                 index = index,
                                 question = question,
                                 navigateToMediaPlayerScreen = { contentList ->
+                                    coroutineScope.launch {
+                                        if (sheetState.isVisible)
+                                            sheetState.hide()
+                                    }
                                     onNavigateToMediaScreen(contentList)
+
                                 },
                                 viewModel = viewModel,
                                 maxHeight = maxHeight,

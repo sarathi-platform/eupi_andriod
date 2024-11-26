@@ -1425,3 +1425,14 @@ fun findUserTypeForMetadata(userType: String): String {
         }
     }
 }
+
+fun formatProgressNumber(value: Float): Float {
+    try {
+        return value
+    } catch (ex: Exception) {
+        CoreAppDetails.getContext()
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatProgressNumber:${ex.message}", ex, false) }
+        return 0F
+
+    }
+}
