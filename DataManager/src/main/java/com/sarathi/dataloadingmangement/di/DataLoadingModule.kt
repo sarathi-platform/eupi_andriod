@@ -840,6 +840,7 @@ class DataLoadingModule {
         surveyDao: SurveyEntityDao,
         grantConfigDao: GrantConfigDao,
         sectionEntityDao: SectionEntityDao,
+        surveyConfigEntityDao: SurveyConfigEntityDao,
         contentDao: ContentDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
@@ -850,6 +851,7 @@ class DataLoadingModule {
             surveyEntityDao = surveyDao,
             grantConfigDao = grantConfigDao,
             sectionEntityDao = sectionEntityDao,
+            surveyConfigDao = surveyConfigEntityDao,
             contentDao = contentDao
         )
     }

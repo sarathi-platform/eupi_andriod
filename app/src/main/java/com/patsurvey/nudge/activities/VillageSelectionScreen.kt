@@ -41,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -90,6 +91,7 @@ import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -160,6 +162,7 @@ fun VillageSelectionScreen(
     val showRetryLoader = remember {
         mutableStateOf(false)
     }
+    val coroutineScope = rememberCoroutineScope()
 
     val pullRefreshState = rememberPullRefreshState(
         viewModel.showLoader.value,
@@ -334,7 +337,10 @@ fun VillageSelectionScreen(
                                     },
                                     onSearchValueChange = {
                                         viewModel.performQuery(it)
+                                    },
+                                    onSortedSelected = {
                                     }
+
                                 )
                             }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")

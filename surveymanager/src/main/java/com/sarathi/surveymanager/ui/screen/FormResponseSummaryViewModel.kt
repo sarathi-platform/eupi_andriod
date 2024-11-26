@@ -115,7 +115,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                     activityConfigId = activityConfigId,
                     referenceId = BLANK_STRING,
                     grantId = NUMBER_ZERO,
-                    formId = formId
+                    formId = formId,
+                    missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                    activityId = taskEntity?.activityId.value(DEFAULT_ID)
                 )
             }
 
@@ -138,7 +140,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = BLANK_STRING,
-                grantId = NUMBER_ZERO
+                grantId = NUMBER_ZERO,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
             ).filter { it.formId != NUMBER_ZERO }.map { it.questionId }
 
             val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
