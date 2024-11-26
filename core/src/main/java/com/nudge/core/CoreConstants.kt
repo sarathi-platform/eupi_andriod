@@ -77,6 +77,9 @@ const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val KOKBOROK_LANGUAGE_CODE="ky"
 const val IMAGE_EVENT_STRING = "IMAGE"
 
+const val  AUDIT_TRAIL_SUCCESS= "SUCCESS"
+const val  AUDIT_TRAIL_FAILED= "FAILED"
+
 // Header Constant
 const val KEY_HEADER_AUTH = "authorization"
 const val AUTH_TOKEN_PREFIX = "Bearer"

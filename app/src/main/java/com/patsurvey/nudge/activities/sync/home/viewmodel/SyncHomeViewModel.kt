@@ -17,6 +17,7 @@ import com.facebook.network.connectionclass.ConnectionClassManager
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BASELINE
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
@@ -64,6 +65,7 @@ class SyncHomeViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val corePrefRepo: CorePrefRepo,
     val connectionMonitor: ConnectionMonitorV2,
+    val  auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel()  {
     val isOnline = connectionMonitor.isConnected.asLiveData()
     val selectedSyncType = mutableIntStateOf(SyncType.SYNC_ALL.ordinal)

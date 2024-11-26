@@ -620,6 +620,7 @@ private fun SyncDataCard(
         },
         isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
         isWorkerInfoState = viewModel.workerState.value,
+        auditTrailUseCase= viewModel.auditTrailUseCase,
         onViewProcessClick = {
             onViewProcessClick()
         }
@@ -637,10 +638,14 @@ private fun SyncImageCard(
     if (totalImageEventCount.value > 0) {
         EventTypeCard(
             title = stringResource(id = R.string.sync_images),
+            syncButtonTitle = stringResource(id = R.string.sync_only_images),
             progress = viewModel.imageEventProgress.floatValue,
             producerProgress = viewModel.imageProducerEventProgress.floatValue,
             isProgressBarVisible = viewModel.isImagePBVisible.value,
             isImageSyncCard = true,
+            isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
+            onCardClick = {
+            },
             onSyncButtonClick = {
                 if (viewModel.isSyncImageActive.value) {
 
@@ -656,14 +661,11 @@ private fun SyncImageCard(
                     showCustomToast(context, context.getString(R.string.sync_data_first_message))
                 }
             },
-            syncButtonTitle = stringResource(id = R.string.sync_only_images),
-            isWorkerInfoState =viewModel.workerState.value ,
-            onCardClick = {
-            },
-            isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
             onViewProcessClick = {
                 onViewProcessClick()
-            }
+            },
+            isWorkerInfoState =viewModel.workerState.value,
+            auditTrailUseCase = viewModel.auditTrailUseCase
         )
     }
 }

@@ -17,19 +17,16 @@ import com.nudge.core.utils.CoreLogger
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
-
 @HiltWorker
 class AuditUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
     private  val auditTrailNetworkUseCase:AuditTrailNetworkUseCase
-
-    ) : CoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
     private val TAG = AuditUploadWorker::class.java.simpleName
     private var batchLimit = BATCH_DEFAULT_LIMIT
     private var retryCount = RETRY_DEFAULT_COUNT
     private var connectionQuality = ConnectionQuality.UNKNOWN
-
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
         connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
@@ -54,7 +51,7 @@ class AuditUploadWorker @AssistedInject constructor(
                 "exception", exception
             )
         }
-        auditTrailDataEvent()
+
         CoreLogger.d(
             applicationContext,
             TAG,
@@ -75,6 +72,5 @@ class AuditUploadWorker @AssistedInject constructor(
             auditTrailEventList
         )
     }
-
 }
 

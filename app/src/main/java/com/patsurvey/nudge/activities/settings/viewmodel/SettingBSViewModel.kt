@@ -20,6 +20,7 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.auditTrail.AuditTrailSyncEventUseCase
 import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
+import com.nudge.auditTrail.workers.WorkerKeys.AUDIT_TRAIL_WORKER_TAG
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.IMAGE
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
@@ -751,5 +752,15 @@ class SettingBSViewModel @Inject constructor(
 
     fun syncAuditLogs() {
         auditManager.syncAuditEvents()
+        CoroutineScope(CoreDispatchers.mainDispatcher).launch {
+            delay(5000)
+            workManager.cancelAllWorkByTag(AUDIT_TRAIL_WORKER_TAG)
+            CoreLogger.d(
+                CoreAppDetails.getApplicationContext(),
+                "SettingBSViewModel",
+                "CancelAuditUploadWorker :: Worker Cancelled with TAG : $AUDIT_TRAIL_WORKER_TAG"
+            )
+        }
+
     }
 }

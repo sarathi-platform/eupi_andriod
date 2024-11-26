@@ -1,10 +1,10 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
 import android.content.Context
-import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -34,7 +34,8 @@ class MissionScreenViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val baselineV1CheckUseCase: BaselineV1CheckUseCase,
-    private val syncMigrationUseCase: SyncMigrationUseCase
+    private val syncMigrationUseCase: SyncMigrationUseCase,
+    val auditTrailUseCase :AuditTrailUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList

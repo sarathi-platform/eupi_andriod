@@ -28,11 +28,11 @@ fun AuditTrailEntity.toEventRequest() =
         mobileNumber = this.mobileNumber,
         createdDate = this.createdDate.toString(),
         modifiedDate = this.modifiedDate.toString(),
-        deviceType = "Android",
+        deviceType = "MOBILE",
         deviceId = UUID.randomUUID().toString(),
         actionStatusType = this.actionStatus ?: BLANK_STRING,
         actionType = this.actionType ?: BLANK_STRING,
-        message = "Success",
+        message = "SUCCESS",
         dataChangeDetails = listOf(),
 
 

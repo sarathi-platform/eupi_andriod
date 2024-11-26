@@ -6,6 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.WorkManager
 import com.nudge.auditTrail.workers.AuditUploadWorker
+import com.nudge.auditTrail.workers.WorkerKeys.AUDIT_TRAIL_WORKER_TAG
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -16,7 +17,7 @@ class AuditTrailSyncEventUseCase @Inject constructor(@ApplicationContext private
     fun syncAuditEvents() {
         val workManagerBuilder = AuditTrailWorkManagerBuilder.Companion.Builder(context)
             .setWorkerClass(AuditUploadWorker::class.java)
-            .setWorkerTag("batch_worker")
+            .setWorkerTag(AUDIT_TRAIL_WORKER_TAG)
             .setBatchCount(10)
             .setRepeatInterval(30) // Repeat every 30 minutes
             .setConstraints(
