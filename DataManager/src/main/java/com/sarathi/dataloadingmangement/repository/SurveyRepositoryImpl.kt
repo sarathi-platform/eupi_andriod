@@ -19,6 +19,7 @@ import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -110,8 +111,7 @@ class SurveyRepositoryImpl @Inject constructor(
                 order = it.order.value(0),
                 isConditional = it.isConditional,
                 sectionName = sectionEntity.sectionName,
-                formDescriptionInEnglish = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
-                    .find { surveyConfigFormId -> surveyConfigFormId.formId == it.formId }?.value,
+                formDescriptionInEnglish = getFormDescription(surveyConfigList, it),
                 contentEntities = setQuestionContentData(questionEntity = it)
             )
             questionUiList.add(questionUiModel)
@@ -120,6 +120,12 @@ class SurveyRepositoryImpl @Inject constructor(
 
         return questionUiList.sortedBy { it.order }
     }
+
+    private fun getFormDescription(
+        surveyConfigList: List<SurveyConfigEntity>,
+        it: QuestionUiEntity
+    ) = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
+        .find { surveyConfigFormId -> surveyConfigFormId.formId == it.formId }?.value
 
     suspend fun setQuestionContentData(questionEntity: QuestionUiEntity): List<ContentList> {
         val contentList = mutableListOf<ContentList>()
