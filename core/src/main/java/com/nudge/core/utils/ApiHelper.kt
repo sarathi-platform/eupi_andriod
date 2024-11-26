@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.network
+package com.nudge.core.utils
 
 const val SUB_PATH_CONTENT_MANAGER = "/content-manager/content/getV2Content"
 const val SUB_PATH_GET_ACTIVITY_DETAILS = "/mission-service/activity/get/activity-details"

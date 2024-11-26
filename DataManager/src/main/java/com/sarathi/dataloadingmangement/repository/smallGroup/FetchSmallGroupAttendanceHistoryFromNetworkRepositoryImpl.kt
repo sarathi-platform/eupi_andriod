@@ -15,6 +15,9 @@ import com.nudge.core.enums.ValueTypes.Companion.convertToDataType
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
+import com.nudge.core.utils.SUBPATH_GET_DIDI_LIST
+import com.nudge.core.utils.SUBPATH_GET_SMALL_GROUP_MAPPING
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
@@ -25,9 +28,6 @@ import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEnt
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_DIDI_LIST
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_SMALL_GROUP_MAPPING
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail

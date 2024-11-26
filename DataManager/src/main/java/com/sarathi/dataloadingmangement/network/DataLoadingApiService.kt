@@ -1,6 +1,23 @@
 package com.sarathi.dataloadingmangement.network
 
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.utils.GET_SECTION_STATUS
+import com.nudge.core.utils.SUBPATH_CONFIG_GET_LANGUAGE
+import com.nudge.core.utils.SUBPATH_FETCH_LIVELIHOOD_OPTION
+import com.nudge.core.utils.SUBPATH_FETCH_SURVEY_FROM_NETWORK
+import com.nudge.core.utils.SUBPATH_GET_ASSETS_JOURNAL_DETAILS
+import com.nudge.core.utils.SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
+import com.nudge.core.utils.SUBPATH_GET_DIDI_LIST
+import com.nudge.core.utils.SUBPATH_GET_FORM_DETAILS
+import com.nudge.core.utils.SUBPATH_GET_LIVELIHOOD_CONFIG
+import com.nudge.core.utils.SUBPATH_GET_LIVELIHOOD_SAVE_EVENT
+import com.nudge.core.utils.SUBPATH_GET_MONEY_JOURNAL_DETAILS
+import com.nudge.core.utils.SUBPATH_GET_SMALL_GROUP_MAPPING
+import com.nudge.core.utils.SUBPATH_SURVEY_ANSWERS
+import com.nudge.core.utils.SUBPATH_USER_VIEW
+import com.nudge.core.utils.SUB_PATH_CONTENT_MANAGER
+import com.nudge.core.utils.SUB_PATH_GET_ACTIVITY_DETAILS
+import com.nudge.core.utils.SUB_PATH_GET_MISSION_DETAILS
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.ActivityRequest

@@ -1,11 +1,12 @@
 package com.sarathi.dataloadingmangement.repository.smallGroup
 
 import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.model.ApiResponseStatusModel
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 
 interface FetchSmallGroupDetailsFromNetworkRepository {
 
-    suspend fun fetchSmallGroupDetails()
+    suspend fun fetchSmallGroupDetails(onResult: (ApiResponseStatusModel) -> Unit)
 
     suspend fun saveSmallGroupMapping(smallGroupMapping: List<SmallGroupMappingResponseModel>)
     fun updateApiStatus(

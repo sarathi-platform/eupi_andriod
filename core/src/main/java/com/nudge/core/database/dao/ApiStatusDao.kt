@@ -24,6 +24,12 @@ interface ApiStatusDao {
         errorCode: Int
     )
 
+    @Query("UPDATE $ApiStatusTable SET call_screen = :callScreen WHERE api_end_point = :apiEndpoint")
+    fun updateCallScreenForApiEndpoint(apiEndpoint: String, callScreen: List<String>)
+
+    @Query("SELECT COUNT(*) FROM $ApiStatusTable WHERE api_end_point = :apiEndpoint")
+    fun isApiStatusEntryAvailable(apiEndpoint: String): Int
+
     @Query("DELETE FROM $ApiStatusTable")
     fun deleteApiStatus()
 }

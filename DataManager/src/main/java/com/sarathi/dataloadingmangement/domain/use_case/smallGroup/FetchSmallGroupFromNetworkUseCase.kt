@@ -9,7 +9,7 @@ class FetchSmallGroupFromNetworkUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke() {
-        fetchSmallGroupDetailsFromNetworkRepository.fetchSmallGroupDetails()
+        fetchSmallGroupDetailsFromNetworkRepository.fetchSmallGroupDetails() {}
     }
     suspend fun isFetchSmallGroupDetailsAPIFailed(): Boolean {
         return fetchSmallGroupDetailsFromNetworkRepository.isFetchSmallGroupDetailsAPIStatus()?.status != DEFAULT_SUCCESS_CODE

@@ -9,11 +9,11 @@ import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.SUBPATH_GET_DIDI_LIST
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_DIDI_LIST
 import javax.inject.Inject
 
 class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(

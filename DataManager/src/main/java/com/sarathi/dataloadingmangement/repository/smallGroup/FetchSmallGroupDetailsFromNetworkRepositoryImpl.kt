@@ -8,17 +8,18 @@ import com.nudge.core.SUCCESS_CODE
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.model.ApiResponseStatusModel
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.SUBPATH_GET_DIDI_LIST
+import com.nudge.core.utils.SUBPATH_GET_SMALL_GROUP_MAPPING
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_DIDI_LIST
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_SMALL_GROUP_MAPPING
 import javax.inject.Inject
 
 class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
@@ -30,7 +31,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     private val TAG = FetchSmallGroupDetailsFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchSmallGroupDetails() {
+    override suspend fun fetchSmallGroupDetails(onResult: (ApiResponseStatusModel) -> Unit) {
         try {
             val userId = coreSharedPrefs.getUserName().toInt()
             val smallGroupApiRequest = SmallGroupApiRequest(userList = listOf(userId))
@@ -41,29 +42,35 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
             if (response.status.equals(SUCCESS_CODE)) {
 
                 response.data?.let { sgMapping ->
-                    updateApiStatus(
-                        apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
-                        status = ApiStatus.SUCCESS.ordinal,
-                        errorMessage = BLANK_STRING,
-                        errorCode = DEFAULT_SUCCESS_CODE
+                    onResult(
+                        ApiResponseStatusModel(
+                            apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
+                            status = ApiStatus.SUCCESS.ordinal,
+                            errorMessage = BLANK_STRING,
+                            errorCode = DEFAULT_SUCCESS_CODE
+                        )
                     )
                     saveSmallGroupMapping(sgMapping)
                 } ?: throw NullPointerException("Data is null")
 
             } else {
-                updateApiStatus(
-                    apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
-                    status = ApiStatus.FAILED.ordinal,
-                    errorMessage = response.message,
-                    errorCode = DEFAULT_ERROR_CODE
+                onResult(
+                    ApiResponseStatusModel(
+                        apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
+                        status = ApiStatus.FAILED.ordinal,
+                        errorMessage = response.message,
+                        errorCode = DEFAULT_ERROR_CODE
+                    )
                 )
             }
         } catch (ex: Exception) {
-            updateApiStatus(
-                apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
-                status = ApiStatus.FAILED.ordinal,
-                errorMessage = ex.message ?: BLANK_STRING,
-                errorCode = DEFAULT_ERROR_CODE
+            onResult(
+                ApiResponseStatusModel(
+                    apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
+                    status = ApiStatus.FAILED.ordinal,
+                    errorMessage = ex.message ?: BLANK_STRING,
+                    errorCode = DEFAULT_ERROR_CODE
+                )
             )
             CoreLogger.e(
                 CoreAppDetails.getContext()!!,
