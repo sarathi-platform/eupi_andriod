@@ -348,6 +348,7 @@ class ExportImportViewModel @Inject constructor(
                 val baseLineQnATableCSV: ArrayList<BaseLineQnATableCSV> = arrayListOf()
 
                 val quesAnswerList = regenerateGrantEventUsecase.fetchSurveyAnswerEvents()
+                    ?.filter { it.question.questionType != QuestionTypeNew.MultiImage.name && it.question.questionType != QuestionTypeNew.SingleImage.name }
 
                 quesAnswerList?.let { quesList ->
                     quesList.forEach { survey ->
