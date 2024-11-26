@@ -7,6 +7,7 @@ import javax.inject.Inject
 class FetchSurveyDataFromDB @Inject constructor(
     private val repository: ISurveyRepository
 ) {
+
     suspend fun invoke(
         surveyId: Int,
         subjectId: Int,
