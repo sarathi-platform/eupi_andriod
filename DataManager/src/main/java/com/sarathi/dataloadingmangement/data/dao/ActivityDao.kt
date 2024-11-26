@@ -41,22 +41,34 @@ interface ActivityDao {
     suspend fun getActivityCount(userId: String, missionId: Int, activityId: Int): Int
 
     @Query(
-        "select activity_table.missionId,activity_table.activityId," +
-                "activity_language_attribute_table.description, " +
-                "activity_table.status , \n" +
-                "activity_config_table.activityType , \n" +
-                "activity_config_table.activityTypeId , \n" +
-                "activity_config_table.icon , \n" +
-                "count(task_table.taskId) as taskCount,\n" +
-                " SUM(CASE WHEN task_table.status  in(:surveyStatus)  THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
-                " from activity_table\n" +
-                "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
-                "left join task_table on activity_table.activityId = task_table.activityId \n" +
-                "left join activity_config_table on activity_table.activityId = activity_config_table.activityId \n" +
-                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 " +
-                "and activity_table.userId =:userId and activity_table.missionId=:missionId  " +
-                "and activity_language_attribute_table.userId=:userId and task_table.userId=:userId and activity_config_table.userId=:userId group by task_table.activityId "
+        "SELECT \n" +
+                "    activity_table.missionId,\n" +
+                "    activity_table.activityId,\n" +
+                "    activity_language_attribute_table.description, \n" +
+                "    activity_table.status, \n" +
+                "    activity_config_table.activityType, \n" +
+                "    activity_config_table.activityTypeId, \n" +
+                "    activity_config_table.icon, \n" +
+                "    COUNT(task_table.taskId) AS taskCount,\n" +
+                "    SUM(CASE WHEN task_table.status IN (:surveyStatus) THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
+                "FROM activity_table\n" +
+                "INNER JOIN activity_language_attribute_table \n" +
+                "    ON activity_table.activityId = activity_language_attribute_table.activityId  \n" +
+                "LEFT JOIN task_table \n" +
+                "    ON activity_table.activityId = task_table.activityId \n" +
+                "    AND task_table.isActive = 1 \n" +
+                "    AND task_table.userId = :userId \n" +
+                "LEFT JOIN activity_config_table \n" +
+                "    ON activity_table.activityId = activity_config_table.activityId \n" +
+                "    AND activity_config_table.userId =:userId \n" +
+                "WHERE activity_language_attribute_table.languageCode = :languageCode \n" +
+                "  AND activity_table.isActive = 1 \n" +
+                "  AND activity_table.userId = :userId \n" +
+                "  AND activity_table.missionId = :missionId\n" +
+                "  AND activity_language_attribute_table.userId = :userId \n" +
+                "GROUP BY activity_table.activityId\n"
     )
+
     suspend fun getActivities(
         userId: String,
         languageCode: String,
