@@ -71,6 +71,7 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
@@ -352,8 +353,9 @@ class ExportImportViewModel @Inject constructor(
                 quesAnswerList?.let { quesList ->
                     quesList.forEach { survey ->
                         val task = getTaskUseCase.getSubjectAttributes(survey.taskId)
+                        //This method need to print the multiple options in seperate row in  CSV
                         val responsePair = findResponseAndSubQuestion(survey.question)
-
+                        responsePair.forEach { pair ->
                         baseLineQnATableCSV.add(
                             BaseLineQnATableCSV(
                                 id = survey.question.questionId.toString(),
@@ -365,14 +367,15 @@ class ExportImportViewModel @Inject constructor(
                                 section = survey.sectionName,
                                 dadaName = task.find { it.key == SUBJECT_DADA_NAME }?.value.value(),
                                 didiName = task.find { it.key == SUBJECT_NAME }?.value.value(),
-                                question = survey.question.questionDesc,
-                                response = responsePair.first,
+                                question = if (survey.question.formId != NUMBER_ZERO) survey.question.formDescription else survey.question.questionDesc,
+                                response = pair.first,
                                 cohortName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
-                                subQuestion = responsePair.second,
+                                subQuestion = if (survey.question.formId != NUMBER_ZERO) survey.question.questionDesc else pair.second,
                                 villageName = task.find { it.key == VILLAGE_NAME }?.value.value(),
                                 referenceId = survey.referenceId
                             )
                         )
+                    }
                     }
                 }
 
@@ -400,20 +403,19 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
-    private suspend fun findResponseAndSubQuestion(question: SaveAnswerEventQuestionItemDto): Pair<String, String> {
-        var response = BLANK_STRING
-        var optionDesc = BLANK_STRING
-        val optionDescList = arrayListOf<String>()
-        val responseList = arrayListOf<String>()
-        question.options.forEach { option ->
-            if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase()))
-                optionDescList.add(option.optionDesc)
-            responseList.add(option.selectedValue ?: BLANK_STRING)
-
+    private suspend fun findResponseAndSubQuestion(question: SaveAnswerEventQuestionItemDto): List<Pair<String, String>> {
+        val responsePairList = ArrayList<Pair<String, String>>()
+        //sorting the options using order by key
+        question.options.sortedBy { it.order }.forEach { option ->
+            var response = BLANK_STRING
+            var optionDesc = BLANK_STRING
+            if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase())) {
+                optionDesc = option.optionDesc
+            }
+            response = option.selectedValue.value()
+            responsePairList.add(Pair(response, optionDesc))
         }
-        optionDesc = optionDescList.joinToString("\n")
-        response = responseList.joinToString("\n")
-        return Pair(response, optionDesc)
+        return responsePairList
     }
     private suspend fun getSaveAnswerEvents(): List<SaveAnswerEventDto> {
         val eventsList = eventWriterHelperImpl.generateResponseEvent()

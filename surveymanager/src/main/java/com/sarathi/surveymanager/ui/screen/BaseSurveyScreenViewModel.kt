@@ -147,7 +147,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                     activityConfigId = activityConfigId,
                     referenceId = referenceId,
-                    grantId = grantID
+                    grantId = grantID,
+                    missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                    activityId = taskEntity?.activityId.value(DEFAULT_ID)
                 )
             }
 

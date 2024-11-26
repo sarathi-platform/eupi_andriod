@@ -24,6 +24,7 @@ class QuestionUiModel(
     var isConditional: Boolean = false,
     var showQuestion: Boolean = false,
     var sectionName: String,
+    var formDescriptionInEnglish: String?,
     val contentEntities: List<ContentList> = listOf(),
 ) {
 

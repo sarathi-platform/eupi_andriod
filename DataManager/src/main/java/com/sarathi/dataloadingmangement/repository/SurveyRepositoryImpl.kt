@@ -3,6 +3,8 @@ package com.sarathi.dataloadingmangement.repository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -14,8 +16,10 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
@@ -31,7 +35,8 @@ class SurveyRepositoryImpl @Inject constructor(
     private val grantConfigDao: GrantConfigDao,
     private val sectionEntityDao: SectionEntityDao,
     val coreSharedPrefs: CoreSharedPrefs,
-    val contentDao: ContentDao
+    val contentDao: ContentDao,
+    private val surveyConfigDao: SurveyConfigEntityDao,
 ) : ISurveyRepository {
     override suspend fun getQuestion(
         surveyId: Int,
@@ -39,7 +44,10 @@ class SurveyRepositoryImpl @Inject constructor(
         sectionId: Int,
         referenceId: String,
         activityConfigId: Int,
-        grantId: Int
+        grantId: Int,
+        missionId: Int,
+        activityId: Int,
+        isFromRegenerate: Boolean
     ): List<QuestionUiModel> {
 
 
@@ -49,7 +57,7 @@ class SurveyRepositoryImpl @Inject constructor(
             surveyId,
         )?.surveyName
         val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             referenceType = LanguageAttributeReferenceType.OPTION.name,
@@ -68,13 +76,21 @@ class SurveyRepositoryImpl @Inject constructor(
         )
 
         val questionList = questionDao.getSurveySectionQuestionForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             referenceType = LanguageAttributeReferenceType.QUESTION.name
         )
+        val surveyConfigList = surveyConfigDao.getSurveyConfigForSurvey(
+            surveyId = surveyId,
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId,
+            missionId = missionId,
+            language = DEFAULT_LANGUAGE_CODE
+        )
         questionList.forEach {
+
 
             val questionUiModel = QuestionUiModel(
                 questionId = it.questionId ?: DEFAULT_ID,
@@ -95,6 +111,7 @@ class SurveyRepositoryImpl @Inject constructor(
                 order = it.order.value(0),
                 isConditional = it.isConditional,
                 sectionName = sectionEntity.sectionName,
+                formDescriptionInEnglish = getFormDescription(surveyConfigList, it),
                 contentEntities = setQuestionContentData(questionEntity = it)
             )
             questionUiList.add(questionUiModel)
@@ -103,6 +120,12 @@ class SurveyRepositoryImpl @Inject constructor(
 
         return questionUiList.sortedBy { it.order }
     }
+
+    private fun getFormDescription(
+        surveyConfigList: List<SurveyConfigEntity>,
+        it: QuestionUiEntity
+    ) = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
+        .find { surveyConfigFormId -> surveyConfigFormId.formId == it.formId }?.value
 
     suspend fun setQuestionContentData(questionEntity: QuestionUiEntity): List<ContentList> {
         val contentList = mutableListOf<ContentList>()
@@ -138,7 +161,9 @@ class SurveyRepositoryImpl @Inject constructor(
         referenceId: String,
         activityConfigId: Int,
         grantId: Int,
-        formId: Int
+        formId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
         return getQuestion(
             surveyId = surveyId,
@@ -146,7 +171,10 @@ class SurveyRepositoryImpl @Inject constructor(
             subjectId = subjectId,
             referenceId = referenceId,
             activityConfigId = activityConfigId,
-            grantId = grantId
+            grantId = grantId,
+            missionId = missionId,
+            activityId = activityId,
+            isFromRegenerate = false
         ).filter { it.formId == formId }
     }
 
