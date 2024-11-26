@@ -42,6 +42,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
@@ -77,6 +78,8 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
+import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
+import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
@@ -103,7 +106,10 @@ import com.patsurvey.nudge.utils.POOR_STRING
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showDidiImageDialog
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun WealthRankingScreen(
@@ -115,6 +121,7 @@ fun WealthRankingScreen(
 ) {
     val didis by viewModel.didiList.collectAsState()
     val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     val newFilteredTolaDidiList = viewModel.filterTolaMapList
     val newFilteredDidiList = viewModel.filterDidiList.collectAsState()
@@ -126,7 +133,6 @@ fun WealthRankingScreen(
     val localDensity = LocalDensity.current
 
     val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = true) {
         viewModel.getWealthRankingStepStatus(stepId) {
             if (it)
@@ -141,10 +147,13 @@ fun WealthRankingScreen(
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
+    var context = LocalContext.current
 
     var filterSelected by remember {
         mutableStateOf(false)
     }
+    val customBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties()
+
 
     if(viewModel.showDidiImageDialog.value){
         viewModel.dialogDidiEntity.value?.let {
@@ -153,187 +162,204 @@ fun WealthRankingScreen(
             }
         }
     }
+    BottomSheetScaffoldComponent(
+            bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
 
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .then(modifier)
-    ) {
-        val (bottomActionBox, mainBox) = createRefs()
-
-        Box(modifier = Modifier
-            .constrainAs(mainBox) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(bottomActionBox.top)
-                height = Dimension.fillToConstraints
-            }
-            .padding(top = 14.dp)
-            .padding(horizontal = 16.dp)
+    bottomSheetContentItemList = context.resources.getStringArray(R.array.didi_sorted_array).toList(),
+    selectedIndex =viewModel.selectedSortIndex.value,
+    onBottomSheetItemSelected = {
+        viewModel. selectedSortIndex.value=it
+        viewModel.didiSortedList(it,filterSelected)
+    }
+    )
+    {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .then(modifier)
         ) {
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-            ) {
-                VillageDetailView(
-                    villageName = viewModel.prefRepo.getSelectedVillage().name ?: "",
-                    voName = (viewModel.prefRepo.getSelectedVillage().federationName) ?: "",
-                    modifier = Modifier,
-                    stateId = viewModel.getStateId()
-                )
-                LazyColumn(
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .background(color = white)
-                        .padding(horizontal = 4.dp)
-                        .weight(1f),
-                    state = listState,
-                    contentPadding = PaddingValues(vertical = 10.dp),
-                ) {
-                    item {
-                        Text(
-                            text = stringResource(id = R.string.particaptory_wealth_ranking_text),
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                        )
+            val (bottomActionBox, mainBox) = createRefs()
 
-                    }
-                    item {
-                        SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
-                            modifier = Modifier,
-                            filterSelected = filterSelected,
-                            onFilterSelected = {
-                                if (didis.isNotEmpty()) {
-                                    filterSelected = !it
-                                    viewModel.filterList()
-                                }
-                            }, onSearchValueChange = {
-                                viewModel.performQuery(it, filterSelected)
-                            }
-                        )
-                    }
-                    item {
-                        Log.d(
-                            "WealthRankingScreen",
-                            "pendingDidiCount.value: ${_pendingDidiCount.value}"
-                        )
-                        val count = newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }.size
-                        Text(
-                            text = if (count <= 1) stringResource(id = R.string.count_didis_pending_singular, count) else stringResource(
-                                id = R.string.count_didis_pending_plural, count
-                            ),
-                            color = Color.Black,
-                            fontSize = 12.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                                .padding(start = 8.dp)
-                        )
-                    }
-                    if (filterSelected) {
-                        itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList()
-                        ) { index, item ->
-                             ShowDidisFromTola(
-                                didiTola = item,
-                                 didiList = newFilteredTolaDidiList[item] ?: emptyList(),
-                                viewModel = viewModel,
-                                expandedIds = expandedCardIds,
-                                modifier = Modifier,
-                                 parentIndex = index,
-                                 coroutineScope = coroutineScope,
-                                 listState = listState
-                            )
-                            if (index < newFilteredTolaDidiList.keys.size - 1) {
-                                Divider(
-                                    color = borderGreyLight,
-                                    thickness = 1.dp,
-                                    modifier = Modifier.padding(
-                                        top = 22.dp,
-                                        bottom = 1.dp
-                                    )
-                                )
-                            }
-                        }
-                    } else {
-                        itemsIndexed(newFilteredDidiList.value) { index, didi ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                            ) {
-                                ExpandableCard(
-                                    didiEntity = didi,
-                                    viewModel = viewModel,
-                                    onCardArrowClick = {
-                                        if (it)
-                                            viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
-                                        else {
-                                            viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
-                                            val nextIndex = index + 1
-                                            if (nextIndex < didis.size) {
-                                                viewModel.onCardArrowClicked(didis[nextIndex].id,coroutineScope, listState,nextIndex)
-                                            } else if (nextIndex == didis.size){
-                                                viewModel.closeLastCard(didi.id)
-                                            }
-                                            _pendingDidiCount.value = newFilteredDidiList.value.size - index
-                                            if (!didis.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
-                                                viewModel.shouldShowBottomButton.value = true
-                                            Log.d(
-                                                "WealthRankingScreen",
-                                                "pendingDidiCount.value: ${_pendingDidiCount.value}"
-                                            )
-                                        }
-                                    },
-                                    expanded = expandedCardIds.contains(didi.id),
-                                    onCircularImageClick = { didi->
-                                        viewModel.dialogDidiEntity.value = didi
-                                        viewModel.showDidiImageDialog.value = true
-                                    }
-                                )
-                            }
-                        }
-                    }
+            Box(modifier = Modifier
+                .constrainAs(mainBox) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(bottomActionBox.top)
+                    height = Dimension.fillToConstraints
                 }
+                .padding(top = 14.dp)
+                .padding(horizontal = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                ) {
+                    VillageDetailView(
+                        villageName = viewModel.prefRepo.getSelectedVillage().name ?: "",
+                        voName = (viewModel.prefRepo.getSelectedVillage().federationName) ?: "",
+                        modifier = Modifier,
+                        stateId = viewModel.getStateId()
+                    )
+                    LazyColumn(
+                        modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .background(color = white)
+                            .padding(horizontal = 4.dp)
+                            .weight(1f),
+                        state = listState,
+                        contentPadding = PaddingValues(vertical = 10.dp),
+                    ) {
+                        item {
+                            Text(
+                                text = stringResource(id = R.string.particaptory_wealth_ranking_text),
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                            )
 
-            }
-        }
-
-        if (viewModel.shouldShowBottomButton.value || didis.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }.isEmpty()) {
-            DoubleButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
                         }
-                    },
+                        item {
+                            SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
+                                modifier = Modifier,
+                                filterSelected = filterSelected,
+                                onFilterSelected = {
+                                    if (didis.isNotEmpty()) {
+                                        filterSelected = !it
+                                        viewModel.filterList()
+                                    }
+                                }, onSearchValueChange = {
+                                    viewModel.performQuery(it, filterSelected)
+                                },
+                                onSortedSelected = {
+                               coroutineScope.launch {
+                  customBottomSheetScaffoldProperties.sheetState.show()
+                                }
+                                }
+                            )
+                        }
+                        item {
+                            Log.d(
+                                "WealthRankingScreen",
+                                "pendingDidiCount.value: ${_pendingDidiCount.value}"
+                            )
+                            val count = newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }.size
+                            Text(
+                                text = if (count <= 1) stringResource(id = R.string.count_didis_pending_singular, count) else stringResource(
+                                    id = R.string.count_didis_pending_plural, count
+                                ),
+                                color = Color.Black,
+                                fontSize = 12.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                    .padding(start = 8.dp)
+                            )
+                        }
+                        if (filterSelected) {
+                            itemsIndexed(
+                                newFilteredTolaDidiList.keys.toList()
+                            ) { index, item ->
+                                ShowDidisFromTola(
+                                    didiTola = item,
+                                    didiList = newFilteredTolaDidiList[item] ?: emptyList(),
+                                    viewModel = viewModel,
+                                    expandedIds = expandedCardIds,
+                                    modifier = Modifier,
+                                    parentIndex = index,
+                                    coroutineScope = coroutineScope,
+                                    listState = listState
+                                )
+                                if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                    Divider(
+                                        color = borderGreyLight,
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(
+                                            top = 22.dp,
+                                            bottom = 1.dp
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            itemsIndexed(newFilteredDidiList.value) { index, didi ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                ) {
+                                    ExpandableCard(
+                                        didiEntity = didi,
+                                        viewModel = viewModel,
+                                        onCardArrowClick = {
+                                            if (it)
+                                                viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
+                                            else {
+                                                viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
+                                                val nextIndex = index + 1
+                                                if (nextIndex < didis.size) {
+                                                    viewModel.onCardArrowClicked(didis[nextIndex].id,coroutineScope, listState,nextIndex)
+                                                } else if (nextIndex == didis.size){
+                                                    viewModel.closeLastCard(didi.id)
+                                                }
+                                                _pendingDidiCount.value = newFilteredDidiList.value.size - index
+                                                if (!didis.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
+                                                    viewModel.shouldShowBottomButton.value = true
+                                                Log.d(
+                                                    "WealthRankingScreen",
+                                                    "pendingDidiCount.value: ${_pendingDidiCount.value}"
+                                                )
+                                            }
+                                        },
+                                        expanded = expandedCardIds.contains(didi.id),
+                                        onCircularImageClick = { didi->
+                                            viewModel.dialogDidiEntity.value = didi
+                                            viewModel.showDidiImageDialog.value = true
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
 
-                positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
-                negativeButtonRequired = false,
-                positiveButtonOnClick = {
-                    val stepStatus = false
-                    navController.navigate("wealth_ranking_survey/$stepId/$stepStatus")
-                },
-                negativeButtonOnClick = {/*Nothing to do here*/ }
-            )
+                }
+            }
+
+            if (viewModel.shouldShowBottomButton.value || didis.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }.isEmpty()) {
+                DoubleButtonBox(
+                    modifier = Modifier
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
+
+                    positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
+                    negativeButtonRequired = false,
+                    positiveButtonOnClick = {
+                        val stepStatus = false
+                        navController.navigate("wealth_ranking_survey/$stepId/$stepStatus")
+                    },
+                    negativeButtonOnClick = {/*Nothing to do here*/ }
+                )
+            }
         }
     }
+
 }
 
-@SuppressLint("UnusedTransitionTargetStateParameter")
+@SuppressLint("UnusedTransitionTargetStateParameter", "UnusedBoxWithConstraintsScope")
 @Composable
 fun ExpandableCard(
     didiEntity: DidiEntity,
