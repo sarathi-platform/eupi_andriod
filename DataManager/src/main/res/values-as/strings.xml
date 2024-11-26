@@ -117,4 +117,8 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
+    <string name="hours">ঘণ্টা</string>
+    <string name="years">বছৰ</string>
+    <string name="minute">মিনিট</string>
+    <string name="month">মাহ</string>
 </resources>

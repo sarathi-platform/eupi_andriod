@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -38,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -46,8 +47,10 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_64_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
@@ -55,6 +58,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun RadioQuestionBoxComponent(
+    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
     questionDisplay: String,
@@ -65,6 +69,9 @@ fun RadioQuestionBoxComponent(
     showCardView: Boolean = false,
     isEditAllowed: Boolean = true,
     isQuestionTypeToggle: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    isFromTypeQuestion: Boolean = false,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
 
@@ -91,11 +98,11 @@ fun RadioQuestionBoxComponent(
                 maxCustomHeight
             )
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
+        BasicCardView(
+            cardElevation = CardDefaults.cardElevation(
                 defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
             ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            cardShape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minHeight, max = maxHeight)
@@ -125,9 +132,17 @@ fun RadioQuestionBoxComponent(
                             Row(
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
-                                    .padding(horizontal = dimen_16_dp)
+                                    .padding(
+                                        horizontal = if (showCardView) {
+                                            dimen_16_dp
+                                        } else {
+                                            dimen_0_dp
+                                        }
+                                    )
                             ) {
                                 QuestionComponent(
+                                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                    onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
                                     questionNumber = if (showCardView) getQuestionNumber(
                                         questionIndex
@@ -174,6 +189,20 @@ fun RadioQuestionBoxComponent(
                                 )
                             }
                         }
+                        item {
+                            if (showCardView && contests?.isNotEmpty() == true) {
+                                CustomVerticalSpacer(size = dimen_6_dp)
+                                ContentBottomViewComponent(
+                                    contents = contests,
+                                    questionIndex = questionIndex,
+                                    showCardView = showCardView,
+                                    questionDetailExpanded = {},
+                                    navigateToMediaPlayerScreen = { contentList ->
+                                        navigateToMediaPlayerScreen(contentList)
+                                    }
+                                )
+                            }
+                        }
                         if (!isQuestionTypeToggle) {
                             item {
                                 Spacer(
@@ -192,6 +221,8 @@ fun RadioQuestionBoxComponent(
 
 @Composable
 fun ToggleQuestionBoxComponent(
+    isFromTypeQuestion: Boolean = true,
+    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
     questionDisplay: String,
@@ -201,9 +232,14 @@ fun ToggleQuestionBoxComponent(
     showCardView: Boolean = false,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
     RadioQuestionBoxComponent(
+        isFromTypeQuestion = isFromTypeQuestion,
+        contests = contests,
+        onDetailIconClicked = onDetailIconClicked,
         modifier = modifier,
         questionIndex = questionIndex,
         questionDisplay = questionDisplay,
@@ -214,7 +250,10 @@ fun ToggleQuestionBoxComponent(
         showCardView = showCardView,
         optionUiModelList = optionUiModelList,
         isEditAllowed = isEditAllowed,
-        onAnswerSelection = onAnswerSelection
+        onAnswerSelection = onAnswerSelection,
+        navigateToMediaPlayerScreen = { contentList ->
+            navigateToMediaPlayerScreen(contentList)
+        }
     )
 }
 

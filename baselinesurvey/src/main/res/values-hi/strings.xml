@@ -472,5 +472,5 @@
     <string name="all_activities_marked_as_in_progress">सभी गतिविधियाँ प्रगति पर चिह्नित हैं</string>
     <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
     <string name="form_e">फॉर्म E</string>
-
+    <string name="export_data">Export Data</string>
 </resources>

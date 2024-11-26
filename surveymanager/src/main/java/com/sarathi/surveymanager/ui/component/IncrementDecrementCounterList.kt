@@ -11,19 +11,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.IncrementDecrementCounter
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.ui.commonUi.QuestionComponent
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 
 @Composable
 fun IncrementDecrementCounterList(
+    contests: List<ContentList?>? = listOf(),
     title: String = BLANK_STRING,
     optionList: List<OptionsUiModel>?,
     isEditAllowed: Boolean = true,
@@ -31,6 +35,7 @@ fun IncrementDecrementCounterList(
     editNotAllowedMsg: String = BLANK_STRING,
     isMandatory: Boolean = false,
     showCardView: Boolean = false,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (optionId: Int?, selectValue: String) -> Unit,
 ) {
 
@@ -65,6 +70,18 @@ fun IncrementDecrementCounterList(
                         if (selectValue != BLANK_STRING) {
                             onAnswerSelection(it.optionId, selectValue)
                         }
+                    }
+                )
+            }
+            if (showCardView) {
+                CustomVerticalSpacer(size = dimen_6_dp)
+                ContentBottomViewComponent(
+                    contents = contests,
+                    questionIndex = 0,
+                    showCardView = showCardView,
+                    questionDetailExpanded = {},
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
                     }
                 )
             }

@@ -80,7 +80,7 @@ interface QuestionEntityDao {
                 "    AND question_table.sectionId = :sectionId \n" +
                 "    AND question_table.surveyId = :surveyId \n" +
                 "GROUP BY \n" +
-                "    question_table.questionId \n" +
+                "     question_table.questionId, question_table.formId \n" +
                 "ORDER BY \n" +
                 "    question_table.`order` ASC;\n"
     )
@@ -146,6 +146,4 @@ interface QuestionEntityDao {
         sectionId: Int,
         questionId: Int
     ): Int?
-
-
 }

@@ -63,6 +63,9 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUM
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
@@ -294,7 +297,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         CREATE_NEW_LIVELIHOOD_ASSET_TABLE,
                         CREATE_NEW_LIVELIHOOD_PRODUCT_TABLE,
                         CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE,
-                        ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+                        ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION,
                     )
                 )
                 migration(
@@ -306,7 +309,11 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE,
                         CREATE_CONDITIONS_TABLE,
                         CREATE_SURVEY_CONFIG_TABLE,
-                        ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
+                        ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION,
+                        ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID,
+
+                        ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE,
+                        ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
                     )
                 )
             }

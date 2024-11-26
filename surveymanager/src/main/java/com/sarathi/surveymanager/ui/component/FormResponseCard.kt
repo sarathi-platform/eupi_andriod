@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.component
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.showCustomToast
@@ -37,15 +39,20 @@ import com.nudge.core.ui.commonUi.CircularImageViewComponent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_PREPOPULATED
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_TAG
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
@@ -54,13 +61,13 @@ import com.sarathi.surveymanager.constants.PIPE_DELIMITER
 @Composable
 fun FormResponseCard(
     modifier: Modifier = Modifier,
-    referenceId: String,
+    referenceId: Pair<String, Int>,
     surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>,
-    surveyConfig: Map<String, SurveyCardModel>,
+    surveyConfig: Map<String, List<SurveyCardModel>>,
     isPictureRequired: Boolean = true,
     isEditAllowed: Boolean = true,
-    onDelete: (referenceId: String) -> Unit,
-    onUpdate: (referenceId: String) -> Unit
+    onDelete: (referenceId: Pair<String, Int>) -> Unit,
+    onUpdate: (referenceId: Pair<String, Int>) -> Unit
 ) {
 
 
@@ -98,31 +105,57 @@ fun FormResponseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(dimen_14_dp))
-                if (isPictureRequired) {
-                    Box(modifier = Modifier.padding(start = 16.dp)) {
-                        CircularImageViewComponent(
-                            modifier = Modifier
-                                .height(45.dp)
-                                .width(45.dp),
-                            imagePath = Uri.EMPTY
-                        )
+                if (surveyConfig.containsKey(SurveyConfigCardSlots.FORM_SUMMARY_CARD_IMAGE.name)) {
+                    val imagePath = getFormSummaryCardImageUri(
+                        context,
+                        surveyConfig[SurveyConfigCardSlots.FORM_SUMMARY_CARD_IMAGE.name],
+                        surveyAnswerFormSummaryUiModelList
+                    )
+                    if (imagePath != Uri.EMPTY) {
+                        Box(modifier = Modifier.padding(start = 16.dp)) {
+                            CircularImageViewComponent(
+                                modifier = Modifier
+                                    .height(45.dp)
+                                    .width(45.dp),
+                                imagePath = imagePath
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
-                    surveyConfig
-                        .filter { it.value.type.equals(CONFIG_SLOT_TYPE_TAG, true) }
-                        .forEach { mapEntry ->
-                            val response =
-                                getSavedAnswerValueForSummaryField(
-                                    surveyAnswerFormSummaryUiModelList,
-                                    mapEntry
-                                )
+                    surveyConfig.forEach {
+                        it.value.filter {
+                            it.componentType.equals(
+                                CONFIG_SLOT_TYPE_PREPOPULATED,
+                                true
+                            )
+                        }.forEach { surveyCardModel ->
                             SubContainerView(
-                                mapEntry.value.copy(value = response),
+                                surveyCardModel,
+                                labelStyle = newMediumTextStyle.copy(fontWeight = FontWeight.Medium),
+                                valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
                                 isNumberFormattingRequired = false
                             )
                         }
+                        it.value.filter { it.type.equals(CONFIG_SLOT_TYPE_TAG, true) }
+                            .forEach { surveyCardModel ->
+                                val map = mapOf(it.key to surveyCardModel)
+                            val response =
+                                getSavedAnswerValueForSummaryField(
+                                    surveyAnswerFormSummaryUiModelList,
+                                    map.entries.firstOrNull()!!
+                                )
+                                if (response != BLANK_STRING) {
+                                    SubContainerView(
+                                        surveyCardModel.copy(value = response),
+                                        labelStyle = newMediumTextStyle.copy(fontWeight = FontWeight.Medium),
+                                        valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
+                                        isNumberFormattingRequired = false
+                                    )
+                                }
+                        }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(dimen_16_dp))
@@ -135,63 +168,84 @@ fun FormResponseCard(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                TextButton(
-                    onClick = {
-                        if (isEditAllowed) {
-                            onUpdate(referenceId)
-                        } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.edit_disable_message)
-                            )
-                        }
-                    }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = blueDark
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit Button",
-                        tint = blueDark
-                    )
+                if (surveyConfig.containsKey(SurveyConfigCardSlots.FORM_SUMMARY_CARD_EDIT_BUTTON.name)) {
+                    TextButton(
+                        onClick = {
+                            if (isEditAllowed) {
+                                onUpdate(referenceId)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    context.getString(R.string.edit_disable_message)
+                                )
+                            }
+                        }, modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = blueDark
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = "Edit Button",
+                            tint = blueDark
+                        )
+                    }
                 }
-                Divider(
-                    color = borderGreyLight,
-                    modifier = Modifier
-                        .fillMaxHeight()  //fill the max height
-                        .width(1.dp)
-                )
-                TextButton(
-                    onClick = {
-                        if (isEditAllowed) {
-                            onDelete(referenceId)
-                        } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.edit_disable_message)
-                            )
-                        }
-                    }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = blueDark
+                if (surveyConfig.containsKey(SurveyConfigCardSlots.FORM_SUMMARY_CARD_DELETE_BUTTON.name)) {
+                    Divider(
+                        color = borderGreyLight,
+                        modifier = Modifier
+                            .fillMaxHeight()  //fill the max height
+                            .width(1.dp)
                     )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Delete Button",
-                        tint = blueDark
-                    )
+                    TextButton(
+                        onClick = {
+                            if (isEditAllowed) {
+                                onDelete(referenceId)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    context.getString(R.string.edit_disable_message)
+                                )
+                            }
+                        }, modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = blueDark
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete Button",
+                            tint = blueDark
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+fun getFormSummaryCardImageUri(
+    context: Context,
+    surveyCardModels: List<SurveyCardModel>?,
+    surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>
+): Uri {
+    val surveyCardModel = surveyCardModels?.firstOrNull()
+    return surveyCardModel?.let {
+        val filePath =
+            surveyAnswerFormSummaryUiModelList.find { it.tagId.contains(surveyCardModel.tagId) }?.optionItems?.firstOrNull()?.selectedValue
+                ?: BLANK_STRING
+
+        getSavedImageUri(context, listOf(filePath)).firstOrNull() ?: Uri.EMPTY
+
+    } ?: Uri.EMPTY
+
 }
 
 @Composable
@@ -200,9 +254,10 @@ private fun getSavedAnswerValueForSummaryField(
     mapEntry: Map.Entry<String, SurveyCardModel>
 ): String {
     var response = BLANK_STRING
+    val question = surveyAnswerFormSummaryUiModelList
+        .find { it.tagId.contains(mapEntry.value.tagId) }
     val optionsUiModelList =
-        surveyAnswerFormSummaryUiModelList
-            .find { it.tagId.contains(mapEntry.value.tagId) }?.optionItems
+        question?.optionItems
             ?.filter { it.isSelected == true }
 
     if (optionsUiModelList.isNullOrEmpty()) {
@@ -210,30 +265,50 @@ private fun getSavedAnswerValueForSummaryField(
     }
 
     if (optionsUiModelList.size == 1) {
-        val firstItem = optionsUiModelList.firstOrNull()
-        if (QuestionType.singleResponseQuestionTypeQuestions.contains(
-                firstItem?.optionType.value().toLowerCase()
-            ) && !QuestionType.userInputQuestionTypeList.contains(
-                firstItem?.optionType.value().toLowerCase()
-            )
-        ) {
-            response = firstItem?.description.value()
-        }
-
-        if (QuestionType.userInputQuestionTypeList.contains(
-                firstItem?.optionType.value().toLowerCase()
-            ) && QuestionType.userInputQuestionTypeList.contains(
-                firstItem?.optionType.value().toLowerCase()
-            )
-        ) {
-            response = firstItem?.selectedValue.value()
-        }
+        response = getResponseForSingleOptions(optionsUiModelList, question)
     } else {
-
         response = optionsUiModelList.map { it.description }.value().joinToString(PIPE_DELIMITER)
 
     }
 
+    return response
+}
+
+private fun getResponseForSingleOptions(
+    optionsUiModelList: List<OptionsUiModel>,
+    question: SurveyAnswerFormSummaryUiModel,
+): String {
+    var response = BLANK_STRING
+    val firstItem = optionsUiModelList.firstOrNull()
+    if (QuestionType.singleResponseQuestionTypeQuestions.contains(
+            question.questionType.value(true)
+        ) && !QuestionType.userInputQuestionTypeList.contains(
+            question.questionType.value(true)
+        )
+    ) {
+        response = firstItem?.description.value()
+    }
+
+    if (QuestionType.userInputQuestionTypeList.contains(
+            question.questionType.value(true)
+        ) && QuestionType.userInputQuestionTypeList.contains(
+            question.questionType.value(true)
+        )
+    ) {
+        response = firstItem?.selectedValue.value()
+    }
+
+    if (QuestionType.multipleResponseQuestionTypeQuestions.contains(question.questionType.value(true))) {
+
+        response =
+            if (question.questionType.equals(QuestionType.IncrementDecrementList.name, true)) {
+                optionsUiModelList.filter { it.isSelected == true }.map { it.selectedValue }
+                    .joinToString(PIPE_DELIMITER).value()
+            } else {
+                optionsUiModelList.map { it.description }.value().joinToString(PIPE_DELIMITER)
+            }
+
+    }
     return response
 }
 

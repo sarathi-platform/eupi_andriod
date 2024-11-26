@@ -218,13 +218,16 @@ class SurveySaveRepositoryImpl @Inject constructor(
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
-        questionIds: List<Int>
+        questionIds: List<Int>,
+        formId: Int
     ): List<String> {
         return surveyAnswersDao.getTotalSavedFormResponsesCount(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,
             taskId = taskId,
             sectionId = sectionId,
-            questionIds = questionIds
+            questionIds = questionIds,
+            formId = formId
         )
     }
 
@@ -296,5 +299,68 @@ class SurveySaveRepositoryImpl @Inject constructor(
 
         return modeOrNatureOptions
 
+    }
+
+    override fun isAnswerAvailableInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean {
+        val surveyAnswerEntity = SurveyAnswerEntity.getSurveyAnswerEntity(
+            question = question,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId,
+            referenceId = referenceId,
+            taskId = taskId,
+            grantId = grantId,
+            grantType = grantType
+        )
+        return surveyAnswersDao.getSurveyAnswers(
+            surveyAnswerEntity.userId ?: BLANK_STRING,
+            surveyAnswerEntity.subjectId,
+            surveyAnswerEntity.sectionId,
+            surveyAnswerEntity.questionId,
+            surveyAnswerEntity.referenceId
+        ) > 0
+    }
+
+    override fun getFormResponseMap(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity> {
+        return surveyAnswersDao.getSurveyAnswersForQuestionIds(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            surveyId = surveyId,
+            taskId = taskId,
+            sectionId = sectionId,
+            questionIds = questionIds
+        )
+
+    }
+
+    override suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String,
+        grantId: Int,
+        grantType: String
+    ) {
+        surveyAnswersDao.checkAndUpdateNonVisibleQuestionResponseInDb(
+            SurveyAnswerEntity.getSurveyAnswerEntity(
+                question = question,
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                subjectId = subjectId,
+                referenceId = referenceId,
+                taskId = taskId,
+                grantId = grantId,
+                grantType = grantType
+            )
+        )
     }
 }

@@ -1,6 +1,8 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.content.Context
 import android.text.TextUtils
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,10 +34,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
+import com.nudge.core.ACTIVITY_COMPLETED_ERROR
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.FORM_RESPONSE_LIMIT_ERROR
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
-import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -56,10 +59,13 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -71,10 +77,12 @@ import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
+import com.sarathi.surveymanager.ui.component.HrsMinRangePickerComponent
 import com.sarathi.surveymanager.ui.component.IncrementDecrementCounterList
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
+import com.sarathi.surveymanager.ui.component.SingleImageComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -101,6 +109,7 @@ fun BaseSurveyScreen(
     totalSubmittedAmount: Int,
     onSubmitButtonClick: () -> Unit,
     onSettingClick: () -> Unit,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {},
     onBackClicked: () -> Unit = {
         navController.popBackStack()
         navController.popBackStack()
@@ -112,7 +121,10 @@ fun BaseSurveyScreen(
             totalSubmittedAmount,
             onAnswerSelect,
             grantType,
-            maxHeight
+            maxHeight,
+            navigateToMediaPlayerScreen = { content ->
+                navigateToMediaPlayerScreen(content)
+            }
         )
     }
 ) {
@@ -159,7 +171,7 @@ fun BaseSurveyScreen(
         },
         onBottomUI = {
             SubmitButtonBottomUi(
-                isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                isButtonActive = viewModel.isButtonEnable.value && !viewModel.isActivityCompleted.value,
                 buttonTitle = stringResource(R.string.submit),
                 onSubmitButtonClick = onSubmitButtonClick
             )
@@ -211,7 +223,9 @@ fun LazyListScope.BaseSurveyQuestionContent(
     totalSubmittedAmount: Int,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     grantType: String,
-    maxHeight: Dp
+    maxHeight: Dp,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {}
+
 ) {
 
     itemsIndexed(
@@ -226,7 +240,10 @@ fun LazyListScope.BaseSurveyQuestionContent(
             onAnswerSelect,
             maxHeight,
             grantType,
-            index
+            index,
+            navigateToMediaPlayerScreen = { content ->
+                navigateToMediaPlayerScreen(content)
+            }
         )
     }
 
@@ -241,9 +258,10 @@ fun QuestionUiContent(
     onAnswerSelect: (QuestionUiModel) -> Unit,
     maxHeight: Dp,
     grantType: String,
-    index: Int
+    index: Int,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {}
 ) {
-
+    val context = LocalContext.current
     Column {
         val showCardView = grantType.equals(
             ActivityTypeEnum.SURVEY.name,
@@ -255,6 +273,7 @@ fun QuestionUiContent(
             QuestionType.NumericField.name,
             QuestionType.InputText.name -> {
                 InputComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     maxLength = getMaxInputLength(
                         questionId = question.questionId,
@@ -274,11 +293,19 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING
                 ) { selectedValue, remainingAmout ->
@@ -295,13 +322,22 @@ fun QuestionUiContent(
             QuestionType.DateType.name -> {
 
                 DatePickerComponent(
+                    contents = question.contentEntities,
                     questionIndex = index,
                     isMandatory = question.isMandatory,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
                     title = question.questionDisplay,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING,
                     isFutureDateDisable = true
@@ -317,6 +353,7 @@ fun QuestionUiContent(
 
             QuestionType.MultiImage.name -> {
                 AddImageComponent(
+                    contents = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths = commaSeparatedStringToList(
                         question.options?.firstOrNull()?.selectedValue
@@ -324,8 +361,16 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     title = question.questionDisplay,
-                    isEditable = viewModel.isActivityNotCompleted.value,
+                    isEditable = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     subtitle = question.display
                 ) { selectedValue, isDeleted ->
                     saveMultiImageTypeAnswer(
@@ -341,16 +386,46 @@ fun QuestionUiContent(
 
                 }
             }
+            QuestionType.SingleImage.name -> {
+                SingleImageComponent(
+                    contests = question.contentEntities,
+                    fileNamePrefix = viewModel.getPrefixFileName(question),
+                    filePaths =
+                    question.options?.firstOrNull()?.selectedValue
+                        ?: com.nudge.core.BLANK_STRING,
+                    isMandatory = question.isMandatory,
+                    title = question.questionDisplay,
+                    isEditable = !viewModel.isActivityCompleted.value,
+                    maxCustomHeight = maxHeight,
+                    subtitle = question.display,
+                ) { selectedValue, isDeleted ->
+                    saveSingleImage(isDeleted, question.options, selectedValue)
+                    onAnswerSelect(question)
+                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                            Pair(isValid, message)
+                    }
 
+                }
+            }
             QuestionType.SingleSelectDropDown.name,
             QuestionType.DropDown.name -> {
                 DropDownTypeComponent(
+                    contents = question.contentEntities,
                     questionIndex = index,
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
                     sources = getOptionsValueDto(question.options ?: listOf()),
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     onAnswerSelection = { selectedValue ->
                         question.options?.forEach { option ->
                             option.isSelected = selectedValue.id == option.optionId
@@ -367,13 +442,23 @@ fun QuestionUiContent(
 
             QuestionType.MultiSelectDropDown.name -> {
                 TypeMultiSelectedDropDownComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     sources = getOptionsValueDto(question.options ?: listOf()),
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    optionStateMap = viewModel.optionStateMap,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     onAnswerSelection = { selectedItems ->
                         val selectedOptions =
                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
@@ -397,11 +482,14 @@ fun QuestionUiContent(
             QuestionType.AutoCalculation.name -> {
                 CalculationResultComponent(
                     title = question.questionDisplay,
+                    defaultValue = viewModel.autoCalculateQuestionResultMap[question.questionId].value(),
+                    showCardView = showCardView
                 )
             }
 
             QuestionType.RadioButton.name -> {
                 RadioQuestionBoxComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -409,6 +497,14 @@ fun QuestionUiContent(
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
                     optionUiModelList = question.options.value(),
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     onAnswerSelection = { questionIndex, optionItemIndex ->
                         question.options?.forEachIndexed { index, _ ->
                             question.options?.get(index)?.isSelected = false
@@ -426,16 +522,37 @@ fun QuestionUiContent(
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name -> {
                 GridTypeComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
+                    optionStateMap = viewModel.optionStateMap,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     onAnswerSelection = { selectedOptionIndex, isSelected ->
-
                         question.options?.get(selectedOptionIndex)?.isSelected =
                             isSelected
+
+                        val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                        if (noneOptionCheckResult) {
+                            question.options?.forEach {
+                                it.isSelected = false
+                                it.selectedValue = BLANK_STRING
+                            }
+
+                            question.options?.get(selectedOptionIndex)?.isSelected =
+                                isSelected
+                        }
+
 
                         onAnswerSelect(question)
                         viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
@@ -451,12 +568,21 @@ fun QuestionUiContent(
 
             QuestionType.Toggle.name -> {
                 ToggleQuestionBoxComponent(
+                    contests = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
                     optionUiModelList = question.options.value(),
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     onAnswerSelection = { questionIndex, optionItemIndex ->
                         question.options?.forEachIndexed { index, _ ->
                             question.options?.get(index)?.isSelected = false
@@ -473,11 +599,20 @@ fun QuestionUiContent(
 
             QuestionType.IncrementDecrementList.name -> {
                 IncrementDecrementCounterList(
+                    contests = question.contentEntities,
                     title = question.questionDisplay,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
-                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
                     onAnswerSelection = { optionId, mSelectedValue ->
 
                         question.options?.find { it.optionId == optionId }?.apply {
@@ -491,6 +626,35 @@ fun QuestionUiContent(
                         }
                     }
                 )
+            }
+
+            QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
+                HrsMinRangePickerComponent(
+                    contests = question.contentEntities,
+                    isMandatory = question.isMandatory,
+                    showCardView = showCardView,
+                    title = question.questionDisplay,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    typePicker = question.type,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
+                    defaultValue = question.options?.firstOrNull()?.selectedValue
+                        ?: BLANK_STRING
+                ) { selectValue, selectedValueId ->
+                    question.options?.firstOrNull()?.selectedValue = selectValue
+                    question.options?.firstOrNull()?.isSelected = true
+                    onAnswerSelect(question)
+                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                            Pair(isValid, message)
+                    }
+                }
             }
 
         }
@@ -513,6 +677,7 @@ fun FormQuestionUiContent(
     onClick: () -> Unit,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
+    showEditErrorToast: (context: Context, editErrorType: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -530,24 +695,26 @@ fun FormQuestionUiContent(
             ) {
                 Column {
                     QuestionComponent(
-                        title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)?.value.value(),
+                        title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)
+                            ?.firstOrNull()?.value.value(),
                         questionNumber = getQuestionNumber(index),
                         isRequiredField = question.isMandatory
                     )
 
                     Row(modifier = Modifier
                         .clickable(enabled = true) {
-                            if (viewModel.isActivityNotCompleted.value) { // TODO: change this check to use isFormEntryAllowed Method and test it to limit number of form responses.
-                                onClick()
-                            } else {
-                                showCustomToast(
-                                    context = context,
-                                    context.getString(R.string.edit_disable_message)
-                                )
+                            runEditCheck(
+                                viewModel.isActivityCompleted.value,
+                                viewModel.isFormEntryAllowed(question.formId)
+                            ) { isEditAllowed: Boolean, errorType: String ->
+                                if (isEditAllowed)
+                                    onClick()
+                                else
+                                    showEditErrorToast(context, errorType)
                             }
                         }
                         .fillMaxWidth()
-                        .background(if (true) blueDark else languageItemActiveBg)
+                        .background(if (viewModel.isFormEntryAllowed(question.formId)) blueDark else languageItemActiveBg)
                         .padding(dimen_10_dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -556,33 +723,55 @@ fun FormQuestionUiContent(
                         Text(
                             text = viewModel.surveyConfig[question.formId]?.get(
                                 SurveyConfigCardSlots.FORM_QUESTION_CARD_BUTTON.name
-                            )?.value.value(),
-                            style = defaultTextStyle.copy(color = if (true) white else greyColor)
+                            )?.firstOrNull()?.value.value(),
+                            style = defaultTextStyle.copy(
+                                color = if (viewModel.isFormEntryAllowed(
+                                        question.formId
+                                    )
+                                ) white else greyColor
+                            )
                         )
                     }
 
                     if (viewModel.showSummaryView.get(question.formId)
                             .value() > NUMBER_ZERO
                     ) {
-                        viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TOTAL_COUNT.name)
-                            ?.let {
-                                CustomVerticalSpacer()
-                                val updatedTotalCountText =
-                                    it.value + ": " + viewModel.showSummaryView[question.formId].value()
-                                val updatedModel = it.copy(value = updatedTotalCountText)
-                                SubContainerView(updatedModel, isNumberFormattingRequired = false)
-                                CustomVerticalSpacer()
-                                LinkTextButtonWithIcon(
-                                    modifier = Modifier
-                                        .align(Alignment.Start),
-                                    title = stringResource(CoreRes.string.view_summary),
-                                    isIconRequired = true,
-                                    textColor = summaryCardViewBlue,
-                                    iconTint = summaryCardViewBlue
-                                ) {
-                                    onViewSummaryClicked(question)
+                        val surveyConfigForForm = viewModel.surveyConfig[question.formId]
+                        surveyConfigForForm?.forEach { mapEntry ->
+                            mapEntry.value.filter {
+                                it.componentType.equals(
+                                    CONFIG_SLOT_TYPE_QUESTION_CARD,
+                                    true
+                                )
+                            }.forEach {
+                                val mMapEntry = mapOf(mapEntry.key to it)
+                                val updatedModel = viewModel.getSurveyModelWithValue(
+                                    mMapEntry.entries.firstOrNull()!!,
+                                    question,
+                                    surveyConfigForForm
+                                )
+
+                                if (!it.type.equals(CALCULATION_TYPE, true)) {
+                                    CustomVerticalSpacer()
+
+                                    SubContainerView(
+                                        updatedModel,
+                                        isNumberFormattingRequired = false
+                                    )
                                 }
                             }
+                        }
+                        CustomVerticalSpacer()
+                        LinkTextButtonWithIcon(
+                            modifier = Modifier
+                                .align(Alignment.Start),
+                            title = stringResource(CoreRes.string.view_summary),
+                            isIconRequired = true,
+                            textColor = summaryCardViewBlue,
+                            iconTint = summaryCardViewBlue
+                        ) {
+                            onViewSummaryClicked(question)
+                        }
 
                     }
                 }
@@ -591,6 +780,27 @@ fun FormQuestionUiContent(
         }
         CustomVerticalSpacer()
     }
+}
+
+fun runEditCheck(
+    isActivityCompleted: Boolean,
+    formEntryAllowed: Boolean,
+    editCheckResult: (Boolean, String) -> Unit
+) {
+
+    if (isActivityCompleted) {
+        editCheckResult(false, ACTIVITY_COMPLETED_ERROR)
+        return
+    }
+
+    if (!formEntryAllowed) {
+        editCheckResult(false, FORM_RESPONSE_LIMIT_ERROR)
+        return
+    }
+
+    editCheckResult(true, BLANK_STRING)
+    return
+
 }
 
 @Composable
@@ -656,6 +866,18 @@ fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, i
 
 }
 
+fun saveSingleImage(isDeleted:Boolean, options: List<OptionsUiModel>?,filePath: String)
+{
+    if (isDeleted)
+    {
+        options?.firstOrNull()?.isSelected = false
+        options?.firstOrNull()?.selectedValue =BLANK_STRING
+
+    }else {
+        options?.firstOrNull()?.isSelected = true
+        options?.firstOrNull()?.selectedValue = filePath
+    }
+}
 
 fun listToCommaSeparatedString(list: List<String>): String {
     return list.joinToString(",")
@@ -687,7 +909,26 @@ fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
 }
 
 fun getSelectedValueInInt(selectedValue: String, sanctionedAmount: Int): Int {
-    return if (selectedValue.isNotBlank()) selectedValue.toInt() else sanctionedAmount
+    return if (selectedValue.isNotBlank()) selectedValue.toIntOrNull()
+        .value(NUMBER_ZERO) else sanctionedAmount
 }
+
+fun handleContentClick(
+    viewModel: BaseSurveyScreenViewModel,
+    context: Context,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
+    contentList: ContentList
+) {
+    if (viewModel.isFilePathExists(contentList.contentValue ?: BLANK_STRING)) {
+        navigateToMediaPlayerScreen(contentList)
+    } else {
+        Toast.makeText(
+            context,
+            context.getString(R.string.file_not_exists),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+}
+
 
 

@@ -10,8 +10,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nudge.core.ARG_FROM_SECTION_SCREEN
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CLEAN_ROUTE_DELIMITER
+import com.nudge.core.FORWARD_SLASH_DELIMITER
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
@@ -35,6 +39,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FORM_PATH
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_FROM_SCREEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_IS_FROM_ACTIVITY
@@ -54,6 +59,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TA
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID_LIST
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOOLBAR_TITLE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.COMPLEX_SEARCH_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.FORM_QUESTION_SCREEN_ROUTE_NAME
@@ -80,6 +86,7 @@ import com.sarathi.missionactivitytask.ui.mission_screen.screen.MissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 import com.sarathi.missionactivitytask.ui.surveyTask.SurveyTaskScreen
+import com.sarathi.surveymanager.search.presentation.SearchScreens
 import com.sarathi.surveymanager.ui.screen.BaseSurveyScreen
 import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.FormQuestionScreen
@@ -550,9 +557,9 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
-                toolbarTitle = it.arguments?.getString(
+                toolbarTitle = (it.arguments?.getString(
                     ARG_TOOLBAR_TITLE
-                ) ?: BLANK_STRING,
+                ) ?: BLANK_STRING).replace(CLEAN_ROUTE_DELIMITER, FORWARD_SLASH_DELIMITER),
 
                 activityConfigId = it.arguments?.getInt(
                     ARG_ACTIVITY_CONFIG_ID
@@ -591,6 +598,14 @@ fun NavGraphBuilder.MatNavigation(
                         sectionId,
                         formId,
                         activityConfigId
+                    )
+                },
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(
+                        navController = navController,
+                        contentKey = content.contentKey ?: BLANK_STRING,
+                        contentType = content.contentType ?: BLANK_STRING,
+                        contentTitle = content.contentKey ?: BLANK_STRING
                     )
                 }
             )
@@ -694,12 +709,15 @@ fun NavGraphBuilder.MatNavigation(
                             MATHomeScreens.LivelihoodTaskScreen.route,
                             inclusive = isFromActivity
                         )
-                    }
-                    else{
+                    } else if (activityRoutePath.toLowerCase()
+                            .contains(ActivityTypeEnum.GRANT.name.toLowerCase())
+                    ) {
                         navController.popBackStack(
                             MATHomeScreens.GrantTaskScreen.route,
                             inclusive = isFromActivity
                         )
+                    } else {
+                        navController.popBackStack()
                     }
                 },
                 navController = navController, message = it.arguments?.getString(
@@ -763,6 +781,11 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.StringType
                 defaultValue = BLANK_STRING
                 nullable = true
+            },
+            navArgument(ARG_ACTIVITY_TYPE) {
+                type = NavType.StringType
+                defaultValue = BLANK_STRING
+                nullable = true
             }
         )) {
             SubmitPhysicalFormScreen(
@@ -770,7 +793,8 @@ fun NavGraphBuilder.MatNavigation(
                 navController = navController,
                 activityId = it.arguments?.getInt(ARG_ACTIVITY_ID) ?: 0,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
-                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING
+                taskIdList = it.arguments?.getString(ARG_TASK_ID_LIST) ?: BLANK_STRING,
+                activityType = it.arguments?.getString(ARG_ACTIVITY_TYPE).value()
             )
         }
 
@@ -837,8 +861,13 @@ fun NavGraphBuilder.MatNavigation(
                         msg
                     )
                 },
-                onNavigateToMediaScreen = { navController, contentKey, contentType, contentTitle ->
-
+                onNavigateToMediaScreen = { contentList ->
+                    navigateToMediaPlayerScreen(
+                        navController = navController,
+                        contentKey = contentList.contentKey ?: BLANK_STRING,
+                        contentType = contentList.contentType ?: BLANK_STRING,
+                        contentTitle = contentList.contentKey ?: BLANK_STRING
+                    )
                 },
                 onNavigateToQuestionScreen = { surveyId, sectionId, taskId, sectionName, subjectType, activityConfigId, missionId, activityId, activityType, surveyFlow ->
 
@@ -875,6 +904,18 @@ fun NavGraphBuilder.MatNavigation(
                             totalSubmittedAmount = 0
                         )
                     }
+                },
+                onNavigateToComplexSearchScreen = { surveyId, sectionId, taskId, activityConfigI, fromScreen, subjectType, activityType ->
+                    navigateToComplexSearchScreen(
+                        navController = navController,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        taskId = taskId,
+                        activityConfigId = activityConfigI,
+                        fromScreen = fromScreen,
+                        subjectType = subjectType,
+                        activityType = activityType
+                    )
                 }
             )
         }
@@ -1069,7 +1110,22 @@ fun NavGraphBuilder.MatNavigation(
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
-                navController.popBackStack()
+                navController.popBackStack(
+                    route = MATHomeScreens.SurveyScreen.route,
+                    inclusive = false,
+                    saveState = false
+                )
+            },
+            onSettingClick = {
+                onSettingIconClick()
+            },
+            onNavigateToMediaScreen = { contentList ->
+                navigateToMediaPlayerScreen(
+                    navController = navController,
+                    contentKey = contentList.contentKey ?: BLANK_STRING,
+                    contentType = contentList.contentType ?: BLANK_STRING,
+                    contentTitle = contentList.contentKey ?: BLANK_STRING
+                )
             }
         )
     }
@@ -1115,6 +1171,59 @@ fun NavGraphBuilder.MatNavigation(
         )
     }
 
+    composable(route = MATHomeScreens.ComplexSearchScreen.route, arguments = listOf(
+        navArgument(ARG_SURVEY_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_SECTION_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_TASK_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_ACTIVITY_CONFIG_ID) {
+            type = NavType.IntType
+        },
+        navArgument(ARG_FROM_SCREEN) {
+            type = NavType.StringType
+        },
+        navArgument(ARG_SUBJECT_TYPE) {
+            type = NavType.StringType
+        },
+        navArgument(ARG_ACTIVITY_TYPE) {
+            type = NavType.StringType
+        }
+    )
+
+    ) {
+        SearchScreens(
+            navController = navController,
+            surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
+            sectionId = it.arguments?.getInt(ARG_SECTION_ID).value(),
+            taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
+            activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value(),
+            fromScreen = it.arguments?.getString(ARG_FROM_SCREEN).value(),
+            subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
+            activityType = it.arguments?.getString(ARG_ACTIVITY_TYPE).value()
+        ) { surveyId, activityConfigId, subjectType, activityType, complexSearchState, taskEntity ->
+            navigateToSurveyScreen(
+                navController = navController,
+                missionId = taskEntity.missionId,
+                activityId = taskEntity.activityId,
+                surveyId = surveyId,
+                sectionId = if (complexSearchState.isSectionSearchOnly) complexSearchState.itemId else complexSearchState.itemParentId,
+                taskId = taskEntity.taskId,
+                subjectType = subjectType,
+                toolbarName = complexSearchState.sectionName,
+                activityConfigId = activityConfigId,
+                grantId = 0,
+                activityType = activityType,
+                sanctionedAmount = 0,
+                totalSubmittedAmount = 0
+            )
+        }
+    }
+
 }
 
 
@@ -1153,7 +1262,8 @@ fun navigateToSurveyScreen(
     sanctionedAmount: Int?,
     totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$toolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
+    val cleanToolbarName = toolbarName.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$cleanToolbarName/$activityConfigId/$grantId/$activityType/$sanctionedAmount/$totalSubmittedAmount/$missionId/$activityId")
 }
 
 fun navigateToGrantSurveyScreen(
@@ -1271,11 +1381,12 @@ fun navigateToAddImageScreen(
     navController: NavController,
     activityId: Int,
     taskIdList: String,
-    missionId: Int
+    missionId: Int,
+    activityType: String
 ) {
     var taskIdListWithNullable = if (!TextUtils.isEmpty(taskIdList)) taskIdList else null
-
-    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable")
+    var activityTypeWithNullable = if (!TextUtils.isEmpty(activityType)) activityType else null
+    navController.navigate("$ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME/$activityId/$missionId/$taskIdListWithNullable/$activityTypeWithNullable")
 }
 
 fun navigateToGrantTaskScreen(
@@ -1344,3 +1455,18 @@ fun navigateToFormSummaryScreen(
 ) {
     navController.navigate("$FORM_SUMMARY_SCREEN_ROUTE_NAME/$taskId/$surveyId/$sectionId/$formId/$activityConfigId")
 }
+
+fun navigateToComplexSearchScreen(
+    navController: NavController,
+    surveyId: Int,
+    sectionId: Int,
+    taskId: Int,
+    activityConfigId: Int,
+    fromScreen: String = ARG_FROM_SECTION_SCREEN,
+    subjectType: String,
+    activityType: String
+) {
+    navController.navigate("$COMPLEX_SEARCH_SCREEN_ROUTE_NAME/$surveyId/$sectionId/$taskId/$activityConfigId/$fromScreen/$subjectType/$activityType")
+}
+
+

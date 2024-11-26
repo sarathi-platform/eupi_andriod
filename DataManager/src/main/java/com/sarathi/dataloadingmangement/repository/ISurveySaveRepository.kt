@@ -47,6 +47,31 @@ interface ISurveySaveRepository {
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
-        questionIds: List<Int>
+        questionIds: List<Int>,
+        formId: Int
     ): List<String>
+
+    fun isAnswerAvailableInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean
+
+    fun getFormResponseMap(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity>
+
+    suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int, referenceId: String,
+        grantId: Int,
+        grantType: String
+    )
 }

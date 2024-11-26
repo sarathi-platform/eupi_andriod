@@ -117,4 +117,9 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
+    <string name="hours">घंटे</string>
+    <string name="years">साल</string>
+    <string name="minute">मिनट</string>
+    <string name="month">महीना</string>
+
 </resources>

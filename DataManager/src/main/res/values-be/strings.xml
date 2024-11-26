@@ -117,4 +117,8 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
+    <string name="hours">घन्टाफोर</string>
+    <string name="years">बोसोरफोर</string>
+    <string name="minute">मिनिट</string>
+    <string name="month">दान</string>
 </resources>

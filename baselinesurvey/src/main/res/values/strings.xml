@@ -491,6 +491,7 @@
     <string name="export_backup_file">Export BackUp File</string>
     <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">Backup/Recovery</string>
+    <string name="export_data">Export Data</string>
     <string name="export_event_file">Export Event File</string>
     <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
@@ -527,5 +528,4 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form E</string>
-
 </resources>

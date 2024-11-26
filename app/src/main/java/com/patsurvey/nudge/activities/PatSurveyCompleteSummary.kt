@@ -221,7 +221,7 @@ fun PatSurveyCompleteSummary(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            if (isArrowFlagVisible(
+                                            if (isArrowVisible(
                                                     patSectionSummaryViewModel,
                                                     didi
                                                 )
@@ -249,7 +249,7 @@ fun PatSurveyCompleteSummary(
                                             if (shgFlagValue == 1) greenOnline else redNoAnswer
                                         )
                                     )
-                                    if (isArrowFlagVisible(patSectionSummaryViewModel, didi)) {
+                                    if (isArrowVisible(patSectionSummaryViewModel, didi)) {
                                         Icon(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "Forward Arrow",
@@ -274,7 +274,7 @@ fun PatSurveyCompleteSummary(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            if (isArrowFlagVisible(
+                                            if (isArrowVisible(
                                                     patSectionSummaryViewModel,
                                                     didi
                                                 )
@@ -303,7 +303,7 @@ fun PatSurveyCompleteSummary(
                                             if (ableBodiedFlagValue == 1) greenOnline else redNoAnswer
                                         )
                                     )
-                                    if (isArrowFlagVisible(patSectionSummaryViewModel, didi)) {
+                                    if (isArrowVisible(patSectionSummaryViewModel, didi)) {
                                         Icon(
                                             imageVector = Icons.Default.ArrowForward,
                                             contentDescription = "Forward Arrow",

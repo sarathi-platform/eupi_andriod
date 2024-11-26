@@ -31,4 +31,14 @@
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="view_summary">View Summary</string>
+    <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Since you have completed all the tasks please complete the activity</string>
+    <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*On completing the activity, you will not be able to edit the details</string>
+
+    <string name="all_tab_title">All</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
+    <string name="village_filter_label">"Filter by Village: "</string>
+    <string name="empty_task_list_placeholder">No Task found for this activity!</string>
+    <string name="details_have_already_been_added">Details have already been added!</string>
+
 </resources>

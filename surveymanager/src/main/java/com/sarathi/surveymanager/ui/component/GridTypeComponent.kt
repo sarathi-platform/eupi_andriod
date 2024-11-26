@@ -30,9 +30,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +63,7 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
@@ -68,6 +71,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun GridTypeComponent(
+    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionDisplay: String,
     optionUiModelList: List<OptionsUiModel>,
@@ -75,12 +79,16 @@ fun GridTypeComponent(
     isRequiredField: Boolean = true,
     questionIndex: Int,
     maxCustomHeight: Dp,
-    showCardView: Boolean = true,
+    showCardView: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
+    optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf(),
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
-    questionDetailExpanded: (index: Int) -> Unit
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {}, // Default empty lambda
+    questionDetailExpanded: (index: Int) -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()
@@ -136,6 +144,8 @@ fun GridTypeComponent(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
                                     QuestionComponent(
+                                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                        onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
                                         questionNumber = if (showCardView) getQuestionNumber(
                                             questionIndex
@@ -170,7 +180,12 @@ fun GridTypeComponent(
                                     ) { _index, optionItem ->
                                         GridOptionCard(
                                             optionItem = optionItem,
-                                            isEnabled = areOptionsEnabled,
+                                            isEnabled = optionStateMap.filter {
+                                                it.key == Pair(
+                                                    optionItem.questionId,
+                                                    optionItem.optionId
+                                                )
+                                            }.entries.firstOrNull(),
                                             isOptionSelected = optionItem.isSelected.value(),
                                             isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
                                         ) { selectedOptionId, isSelected ->
@@ -185,37 +200,16 @@ fun GridTypeComponent(
                             }
                         }
                         item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
+                            if (showCardView && contests?.isNotEmpty() == true)
+                            ContentBottomViewComponent(
+                                contents = contests,
+                                questionIndex = questionIndex,
+                                showCardView = showCardView,
+                                questionDetailExpanded = {},
+                                navigateToMediaPlayerScreen = { contentList ->
+                                    navigateToMediaPlayerScreen(contentList)
+                                }
                             )
-                            //TODO Add content box when content is available from server
-                            /*if (contests?.isNotEmpty() == true) {
-                                Divider(
-                                    thickness = dimen_1_dp,
-                                    color = lightGray2,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                ExpandableDescriptionContentComponent(
-                                    questionDetailExpanded,
-                                    questionIndex,
-                                    contents = contests,
-                                    subTitle = BLANK_STRING,
-                                    imageClickListener = { imageTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                            imageTypeDescriptionContent
-                                        )
-                                    },
-                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                            videoTypeDescriptionContent
-                                        )
-                                    }
-                                )
-                            }*/
                         }
                     }
 
@@ -231,13 +225,17 @@ fun GridOptionCard(
     modifier: Modifier = Modifier,
     optionItem: OptionsUiModel,
     isTaskMarkedNotAvailable: MutableState<Boolean>,
-    isEnabled: Boolean = true,
+    isEnabled: Map.Entry<Pair<Int, Int>, Boolean>?,
     isOptionSelected: Boolean = false,
     onOptionSelected: (Int, isSelected: Boolean) -> Unit
 ) {
 
-    val isSelected = remember(optionItem.description) {
+    val isSelected = remember(optionItem.description, isEnabled?.key, isEnabled?.value) {
         mutableStateOf(isOptionSelected)
+    }
+
+    val isOptionEnabled = remember(isEnabled?.key, isEnabled?.value) {
+        mutableStateOf(isEnabled?.value.value(defaultValue = true))
     }
 
     Column(
@@ -252,7 +250,7 @@ fun GridOptionCard(
                 )
             )
             .clickable {
-                if (isEnabled) {
+                if (isOptionEnabled.value) {
                     isSelected.value = !isSelected.value
                     onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
                 }
@@ -277,7 +275,7 @@ fun GridOptionCard(
                     color = selectTextColor(
                         selectedValueState = isSelected.value,
                         isTaskMarkedNotAvailable = isTaskMarkedNotAvailable,
-                        isEnabled = isEnabled
+                        isEnabled = isOptionEnabled.value
                     )
                 )
             }
