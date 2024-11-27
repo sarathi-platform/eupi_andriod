@@ -403,7 +403,7 @@ fun SectionScreen(
 
                             }
 
-                            customVerticalSpacer()
+                            customVerticalSpacer(size = dimen_50_dp)
                         }
                     }
 
