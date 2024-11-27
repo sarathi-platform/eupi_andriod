@@ -76,6 +76,7 @@ fun HrsMinRangePickerComponent(
                 InputComponent(
                     questionIndex = 0,
                     isOnlyNumber = true,
+                    defaultValue = firstInputValue.value,
                     isMandatory = false,
                     maxLength = 3,
                     title = getFirstTitle(typePicker),
