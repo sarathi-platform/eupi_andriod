@@ -47,4 +47,5 @@
     <string name="village_filter_label">"গ্রাম অনুসারে ফিল্টার করুন: "</string>
     <string name="empty_task_list_placeholder">এই কার্যকলাপের জন্য কোন টাস্ক পাওয়া যায়নি!</string>
     <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
+    <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
 </resources>

@@ -398,7 +398,7 @@ fun TaskScreen(
                             Spacer(modifier = Modifier.height(dimen_10_dp))
                             if (viewModel.filterList.value.isEmpty()) {
                                 Text(
-                                    text = if (viewModel.isSearchActive.value) stringResource(R.string.no_result_found) else stringResource(
+                                    text = stringResource(
                                         com.sarathi.missionactivitytask.R.string.empty_task_list_placeholder
                                     ),
                                     style = defaultTextStyle,
@@ -406,16 +406,14 @@ fun TaskScreen(
                                     modifier = Modifier
                                         .align(Alignment.Center)
                                 )
-                            } else if (viewModel.isSearchActive.value) {
-                                if (viewModel.filterList.value.isEmpty() || (viewModel.isGroupingApplied.value && viewModel.filterTaskMap.isEmpty())) {
-                                    Text(
-                                        text = stringResource(R.string.no_result_found),
-                                        style = defaultTextStyle,
-                                        color = textColorDark,
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                    )
-                                }
+                            } else if (viewModel.filterList.value.isEmpty() || (viewModel.isGroupingApplied.value && viewModel.filterTaskMap.isEmpty())) {
+                                Text(
+                                    text = stringResource(R.string.no_result_found),
+                                    style = defaultTextStyle,
+                                    color = textColorDark,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                )
                             } else {
                                 LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
 

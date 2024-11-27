@@ -117,7 +117,6 @@ open class TaskScreenViewModel @Inject constructor(
     var filterLabel = BLANK_STRING
 
     var isActivityCompleted = mutableStateOf(false)
-    var isSearchActive = mutableStateOf(false)
 
     /**
      * Handles the visibility of progress bar
@@ -482,7 +481,6 @@ open class TaskScreenViewModel @Inject constructor(
         queryTerm: String, isGroupingApplied: Boolean, isFilterApplied: Boolean
     ) {
 
-        isSearchActive.value = queryTerm.isNotEmpty()
         val sortedList = taskList.value
 
         val taskListForAppliedFilter = if (isFilterApplied) {
