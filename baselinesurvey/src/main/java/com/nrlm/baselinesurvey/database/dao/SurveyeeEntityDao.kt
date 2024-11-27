@@ -18,11 +18,11 @@ interface SurveyeeEntityDao {
     @Query("SELECT * FROM $SURVEYEE_TABLE where villageId = :villageId  ORDER BY didiId DESC")
     fun getAllDidisForVillage(villageId: Int): List<SurveyeeEntity>
 
-    @Query("Select * FROM $SURVEYEE_TABLE where didiId = :didiId")
-    fun getDidi(didiId: Int): SurveyeeEntity
+    @Query("Select * FROM $SURVEYEE_TABLE where didiId = :didiId AND userId= :userId")
+    fun getDidi(didiId: Int, userId: String): SurveyeeEntity
 
-    @Query("Select * FROM $SURVEYEE_TABLE where didiId in(:didiId)")
-    fun isDidiExist(didiId: Int): Boolean
+    @Query("Select * FROM $SURVEYEE_TABLE where didiId in(:didiId) AND userId= :userId")
+    fun isDidiExist(didiId: Int, userId: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDidi(didi: SurveyeeEntity)
@@ -52,8 +52,8 @@ interface SurveyeeEntityDao {
     fun saveLocalImagePath(path: String, didiId: Int)
 
     @Transaction
-    fun updateDidiSurveyStatusAfterCheck(didiId: Int, didiSurveyStatus: Int) {
-        val didi = getDidi(didiId)
+    fun updateDidiSurveyStatusAfterCheck(didiId: Int, didiSurveyStatus: Int, userId: String) {
+        val didi = getDidi(didiId, userId)
         if (didi.surveyStatus != SurveyState.COMPLETED.ordinal) {
             updateDidiSurveyStatus(didiSurveyStatus, didiId)
         }
@@ -63,4 +63,7 @@ interface SurveyeeEntityDao {
     suspend fun getAllDidiForQNA(
         userId: String
     ): List<SurveyeeEntity>
+
+    @Query("UPDATE $SURVEYEE_TABLE SET isActive = :isActive where didiId = :didiId AND userId= :userId ")
+    suspend fun updateSurveyeeActiveStatus(isActive: Int, didiId: Int, userId: String)
 }

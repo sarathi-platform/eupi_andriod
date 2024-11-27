@@ -31,7 +31,6 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.enums.EventType
-import com.nudge.core.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -138,47 +137,12 @@ class SurveyeeScreenViewModel @Inject constructor(
 
             filterList(pageFrom.value)
 
-
-            /*if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
-                _thisWeekSurveyeeListState.value.clear()
-            }
-            surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
-                val surveyeeState = SurveyeeCardState(
-                    surveyeeDetails = surveyeeEntity,
-                    imagePath = surveyeeEntity.crpImageName,
-                    subtitle = surveyeeEntity.dadaName,
-                    address = getSurveyeeAddress(surveyeeEntity),
-                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                )
-                _thisWeekSurveyeeListState.value.add(surveyeeState)
-            }
-//            }
-            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value*/
-
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    /*fun getThisWeekSurveyeeList() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, "")
-            surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
-                val surveyeeState = SurveyeeCardState(
-                    surveyeeDetails = surveyeeEntity,
-                    imagePath = surveyeeEntity.crpImageName,
-                    subtitle = surveyeeEntity.dadaName,
-                    address = getSurveyeeAddress(surveyeeEntity),
-                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                )
-                if (!_thisWeekSurveyeeListState.value.map { it.surveyeeDetails.didiId }.contains(surveyeeEntity.didiId))
-                    _thisWeekSurveyeeListState.value.add(surveyeeState)
-            }
-            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
-        }
-
-    }*/
 
 
     override fun <T> onEvent(event: T) {

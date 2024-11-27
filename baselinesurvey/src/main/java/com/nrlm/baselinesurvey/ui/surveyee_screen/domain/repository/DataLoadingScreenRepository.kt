@@ -87,4 +87,8 @@ interface DataLoadingScreenRepository {
         activityName: String,
         activities: List<MissionTaskModel>
     )
+    suspend fun updateSurveyeeActiveStatus(
+        isDidiActive: Int,
+        didiId: Int
+    )
 }

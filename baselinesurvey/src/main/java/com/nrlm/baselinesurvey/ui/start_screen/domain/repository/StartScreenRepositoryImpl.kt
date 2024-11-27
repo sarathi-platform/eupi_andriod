@@ -16,7 +16,7 @@ class StartScreenRepositoryImpl @Inject constructor(
     val didiInfoDao: DidiInfoDao
 ): StartScreenRepository {
     override suspend fun getSurveyeeDetails(didiId: Int): SurveyeeEntity {
-        return surveyeeEntityDao.getDidi(didiId)
+        return surveyeeEntityDao.getDidi(didiId, prefBSRepo.getUniqueUserIdentifier())
     }
 
     override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity? {

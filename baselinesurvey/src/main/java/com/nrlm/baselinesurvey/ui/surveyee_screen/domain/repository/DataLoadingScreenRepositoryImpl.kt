@@ -560,6 +560,13 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateSurveyeeActiveStatus(isDidiActive: Int, didiId: Int) {
+        surveyeeEntityDao.updateSurveyeeActiveStatus(
+            isActive = isDidiActive,
+            didiId = didiId,
+            userId = getBaseLineUserId()
+        )
+    }
 
 
     override suspend fun deleteMissionsFromDB() {
@@ -862,7 +869,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         if (map.value.any { it.sectionStatus == SectionStatus.INPROGRESS.ordinal || it.sectionStatus == SectionStatus.COMPLETED.ordinal }) {
                             surveyeeEntityDao.updateDidiSurveyStatusAfterCheck(
                                 map.key,
-                                SectionStatus.INPROGRESS.ordinal
+                                SectionStatus.INPROGRESS.ordinal,
+                                prefBSRepo.getUniqueUserIdentifier()
                             )
                         }
                     }

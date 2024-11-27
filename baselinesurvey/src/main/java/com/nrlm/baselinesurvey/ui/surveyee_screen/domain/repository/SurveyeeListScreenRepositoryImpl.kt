@@ -49,9 +49,10 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         val didiList = mutableListOf<SurveyeeEntity>()
         //TODO FIx logic here
         getActivityTasks(missionId = missionId, activityId).forEach { task ->
-            if (surveyeeEntityDao.isDidiExist(task.didiId)) {
+            if (surveyeeEntityDao.isDidiExist(task.didiId, prefBSRepo.getUniqueUserIdentifier())) {
                 didiList.add(
-                    surveyeeEntityDao.getDidi(task.didiId).copy(
+                    surveyeeEntityDao.getDidi(task.didiId, prefBSRepo.getUniqueUserIdentifier())
+                        .copy(
                         surveyStatus = SurveyState.toInt(
                             task.status ?: SurveyState.NOT_STARTED.name
                         )

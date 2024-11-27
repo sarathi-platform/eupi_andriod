@@ -860,7 +860,8 @@ class EventWriterHelperImpl @Inject constructor(
         )
             .find { it.optionType == QuestionType.Image.name }
         didiInfoEntityList.forEach { didiInfoEntity ->
-            val surveyeeEntity = baselineDatabase.didiDao().getDidi(didiInfoEntity.didiId ?: 0)
+            val surveyeeEntity = baselineDatabase.didiDao()
+                .getDidi(didiInfoEntity.didiId ?: 0, prefBSRepo.getUniqueUserIdentifier())
 
             val event = createImageUploadEvent(
                 didi = surveyeeEntity,

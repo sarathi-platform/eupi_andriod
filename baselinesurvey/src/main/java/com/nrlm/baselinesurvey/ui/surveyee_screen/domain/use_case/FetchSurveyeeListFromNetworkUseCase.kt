@@ -40,7 +40,18 @@ class FetchSurveyeeListFromNetworkUseCase(
                     DEFAULT_SUCCESS_CODE
                 )
                 apiResponse?.data?.didiList.forEach {
-                    if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.didiId)) { //TODO Modify this if to keep backend changes as well
+                    if (!localSurveyeeEntityList.map { surveyeeEntity ->
+                            Pair(
+                                surveyeeEntity.userId,
+                                surveyeeEntity.didiId
+                            )
+                        }.contains(
+                            Pair(
+                                repository.getBaseLineUserId(),
+                                it.didiId
+                            )
+                        )
+                    ) { //TODO Modify this if to keep backend changes as well
                         val taskForSubject = repository.getTaskForSubjectId(it.didiId)
                         val surveyeeEntity = SurveyeeEntity(
                             id = 0,
@@ -62,6 +73,11 @@ class FetchSurveyeeListFromNetworkUseCase(
                             isActive = it.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal
                         )
                         repository.saveSurveyeeList(surveyeeEntity)
+                    } else {
+                        repository.updateSurveyeeActiveStatus(
+                            isDidiActive = it.subjectStatus ?: SubjectStatus.SUBJECT_ACTIVE.ordinal,
+                            didiId = it.didiId ?: -1
+                        )
                     }
 
                 }

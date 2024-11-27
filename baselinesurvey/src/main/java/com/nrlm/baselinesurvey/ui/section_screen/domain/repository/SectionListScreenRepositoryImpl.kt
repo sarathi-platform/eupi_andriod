@@ -219,7 +219,7 @@ class SectionListScreenRepositoryImpl(
     }
 
     override fun getSurveyeDetails(didiId: Int): SurveyeeEntity {
-        return surveyeeEntityDao.getDidi(didiId)
+        return surveyeeEntityDao.getDidi(didiId, prefBSRepo.getUniqueUserIdentifier())
     }
 
     override suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState) {
