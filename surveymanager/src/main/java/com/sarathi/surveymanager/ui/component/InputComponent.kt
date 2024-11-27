@@ -114,7 +114,11 @@ fun InputComponent(
                 onValueChange = { value ->
                     if (value.length <= maxLength) {
                         if (isOnlyNumber) {
-                            if (onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
+                            if (onlyNumberField(value) && value.length <= maxOf(
+                                    maxLength,
+                                    MAXIMUM_RANGE_LENGTH
+                                )
+                            ) {
                                 if (isZeroNotAllowed) {
                                     if (!value.all { it == '0' }) {
                                         txt.value = value
