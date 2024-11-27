@@ -137,7 +137,7 @@ fun FormQuestionSummaryScreen(
             itemsIndexed(formResponseSummaryScreenViewModel.referenceIdsList) { index: Int, key: Pair<String, Int> ->
                 FormResponseCard(
                     referenceId = key,
-                    surveyAnswerFormSummaryUiModelList = formResponseSummaryScreenViewModel.sortedEntries.value.find { it.key == key }?.value.value(),
+                    surveyAnswerFormSummaryUiModelList = formResponseSummaryScreenViewModel.formQuestionResponseMap[key].value(),
                     isEditAllowed = !formResponseSummaryScreenViewModel.isActivityCompleted,
                     surveyConfig = formResponseSummaryScreenViewModel.surveyConfig,
                     isPictureRequired = formResponseSummaryScreenViewModel.surveyConfig.containsKey(
