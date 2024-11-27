@@ -554,11 +554,11 @@
     <!--    <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>-->
     <!--    <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>-->
     <!--    <string name="change_language">भाषा बदलें</string>-->
-    <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
+    <string name="sync_failed_message">"Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin."</string>
     <string name="sync_only_data">Sync Only Data</string>
     <string name="sync_data_first_message">Data sync is required before image sync</string>
     <string name="sync_only_images">Sync Only Images</string>
-    <string name="sync_started">Sync Started. Please wait...</string>
+    <string name="sync_started">Sync Started. Please wait…</string>
     <string name="sync_data_history">Sync Data History</string>
 
 </resources>

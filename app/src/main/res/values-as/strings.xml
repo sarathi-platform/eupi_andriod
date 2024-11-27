@@ -534,11 +534,11 @@
     <string name="sync_images">ছবিসমূহ</string>
     <string name="last_sync_date_time">অন্তিম চিংক সময়:</string>
     <string name="sync_all_data">সকলো তথ্য চিংক কৰক</string>
-    <string name="sync_failed_message">কিছুমান ডাটা বা ছবি চিংক কৰা হোৱা নাই। অনুগ্ৰহ কৰি \'বিফল কাৰ্য্য" ফাইল ৰপ্তানি কৰক / প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।.</string>
+    <string name="sync_failed_message">ক"িছুমান ডাটা বা ছবি চিংক কৰা হোৱা নাই। অনুগ্ৰহ কৰি \'বিফল কাৰ্য্য" ফাইল ৰপ্তানি কৰক / প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।."</string>
     <string name="sync_only_data">কেৱল তথ্য চিংক কৰক</string>
     <string name="sync_data_first_message">ছবি চিংক কৰাৰ আগতে ডাটা চিংক ৰ প্ৰয়োজন</string>
     <string name="sync_only_images">কেৱল ছবিসমূহ চিংক কৰক</string>
-    <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।...</string>
+    <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।…</string>
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
 
 

@@ -512,11 +512,11 @@
     <string name="select_activity_for">हाबाफारिफोरनि थाखाय सायख\'</string>
     <string name="select_all">गासैखौबो सायख\'</string>
     <string name="sync_all_data">Sync गासैबो data</string>
-    <string name="sync_failed_message">माखासे data एबा सावगारि फोरा synced जायाखै। अन्नानै \'Failed Events' फाइलखौ एक्सपर्ट खालाम / admin जों सोमोन्दो लाखि।</string>
+    <string name="sync_failed_message">"माखासे data एबा सावगारि फोरा synced जायाखै। अन्नानै \'Failed Events' फाइलखौ एक्सपर्ट खालाम / admin जों सोमोन्दो लाखि।"</string>
     <string name="sync_only_data">Sync खालि खारिखौल</string>
     <string name="sync_data_first_message">सावगारि sync नि सिगां Data sync नि गोनांथि जायो</string>
-    <string name="sync_only_images">Sync सावगारिफोरखौल'</string>
-    <string name="sync_started">Sync आ जागायबाय। अननानै नेथ'....</string>
+    <string name="sync_only_images">Sync सावगारिफोरखौल\'</string>
+    <string name="sync_started">Sync आ जागायबाय। अननानै नेथ\'....</string>
     <string name="sync_data_history">Sync Data History</string>
 
 </resources>
