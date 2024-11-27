@@ -127,11 +127,16 @@
     <string name="assets">"সম্পদ "</string>
     <string name="last_updated_days_ago">"অন্তিম আপডেট:  %1$s দিন আগতে "</string>
     <string name="last_1_month">Last 1 Month</string>
-    <string name="auto_sync">Auto Sync -  %s</string>
-    <string name="sync_on">Auto Sync - On</string>
-    <string name="sync_off">Auto Sync - Off</string>
+    <string name="auto_sync">স্বয়ং-চিংক -  %s</string>
+    <string name="sync_on">স্বয়ং-চিংক : সক্ৰিয়</string>
+    <string name="sync_off">স্বয়ং-চিংক: বন্ধ</string>
     <string name="hours">ঘণ্টা</string>
     <string name="years">বছৰ</string>
     <string name="minute">মিনিট</string>
     <string name="month">মাহ</string>
+    <string name="synced">সংমিহলি কৰা হৈছে</string>
+    <string name="sync_view_progress">প্ৰগতি দৰ্শন কৰক</string>
+    <string name="sync_worker_cancelled">চিংক কৰ্মী বাতিল কৰা হৈছে</string>
+    <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
+
 </resources>
