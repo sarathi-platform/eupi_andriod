@@ -157,6 +157,10 @@ fun FormQuestionScreen(
                         }
                     },
                     navigateToMediaPlayerScreen = { contentList ->
+                        coroutineScope.launch {
+                            if (sheetState.isVisible)
+                                sheetState.hide()
+                        }
                         onNavigateToMediaScreen(contentList)
                     },
                     descriptionContentState = selectedSectionDescription.value
@@ -235,7 +239,6 @@ fun FormQuestionScreen(
                                             sheetState.hide()
                                     }
                                     onNavigateToMediaScreen(contentList)
-
                                 },
                                 viewModel = viewModel,
                                 maxHeight = maxHeight,
