@@ -33,10 +33,11 @@ class AuditTrailUseCase@Inject constructor(
     suspend fun invoke(
         auditDetailProperties: HashMap<String, Any>,
         actionType: String,
-        actionStatusType: String
+        actionStatusType: String,
+        message:String
     ) {
         auditDetailProperties.putAll(getDefaultPropertyOfDevice())
-        repository.insertEvent(auditDetailProperties, actionType, actionStatusType)
+        repository.insertEvent(auditDetailProperties, actionType, actionStatusType, message)
 
     }
 

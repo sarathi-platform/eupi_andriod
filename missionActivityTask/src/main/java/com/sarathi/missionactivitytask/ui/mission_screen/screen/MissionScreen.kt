@@ -232,7 +232,8 @@ fun MissionScreen(
             auditTrailUseCase.invoke(
                 auditTrailDetail,
                 AuditTrailEnum.CREATE.name,
-                AUDIT_TRAIL_SUCCESS
+                AUDIT_TRAIL_SUCCESS,
+                "the action of click the Baseline Start button"
             )
         }
     }

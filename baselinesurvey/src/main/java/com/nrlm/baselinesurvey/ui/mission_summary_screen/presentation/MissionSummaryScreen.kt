@@ -135,7 +135,8 @@ fun MissionSummaryScreen(
                                         surveyId =activity.activityId,
                                         missionId =missionId
                                     )
-                                })
+                                }
+                            )
                         }
 
                     }

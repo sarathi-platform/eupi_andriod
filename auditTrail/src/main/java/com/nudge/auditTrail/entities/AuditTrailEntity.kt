@@ -39,27 +39,28 @@ data class AuditTrailEntity(
     @ColumnInfo("actionType")
     val actionType: String?,
 
+    @ColumnInfo("message")
+    val message: String?,
+
     @ColumnInfo("syncStatus")
-    val syncStatus: String = AuditTrailEventSyncStatus.NOT_STARTED.name,
-
-
-    )
-{
-
+    val syncStatus: String = AuditTrailEventSyncStatus.NOT_STARTED.name
+) {
     companion object {
         fun getAuditDetailEvent(
             map: Map<String, Any>,
             mobileNo: String,
             actionType: String,
-            actionStatusType: String
+            actionStatusType: String,
+            message:String
         ): AuditTrailEntity {
             return AuditTrailEntity(
                 id = UUID.randomUUID().toString(),
-                mobileNumber =mobileNo ,
+                mobileNumber = mobileNo,
                 modifiedDate = System.currentTimeMillis().toDate(),
                 auditData = map.json(),
                 actionType = actionType,
-                actionStatus = actionStatusType
+                actionStatus = actionStatusType,
+                message = message
             )
         }
     }

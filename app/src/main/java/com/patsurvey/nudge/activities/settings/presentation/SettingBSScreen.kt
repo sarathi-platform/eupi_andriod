@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.auditTrail.AuditTrailEnum
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.SUCCESS
 import com.nudge.core.UPCM_USER
 import com.nudge.core.isOnline
 import com.nudge.core.value
@@ -81,7 +82,8 @@ fun SettingBSScreen(
                             viewModel.auditTrailUseCase.invoke(
                                 auditTrailDetail,
                                 AuditTrailEnum.LOGOUT.name,
-                                "SUCCESS"
+                                SUCCESS,
+                                " the action of click the Logout button "
                             )
                         }
                         if (it) {

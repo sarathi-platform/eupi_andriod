@@ -53,7 +53,8 @@ class OtpVerificationViewModel @Inject constructor(
                         auditTrailUseCase.invoke(
                             auditTrailDetail,
                             AuditTrailEnum.LOGIN.name,
-                            "SUCCESS"
+                           SUCCESS,
+                            "the action of click the Login button "
                         )
                     }
                 }

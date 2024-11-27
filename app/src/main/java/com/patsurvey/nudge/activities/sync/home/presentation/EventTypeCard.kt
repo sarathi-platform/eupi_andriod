@@ -300,16 +300,7 @@ fun EventTypeCard(
         }
     }
 }
-    fun  auditTailDetail(auditTrailUseCase: AuditTrailUseCase){
-        var auditTrailDetail = hashMapOf<String, Any>()
-        CoroutineScope(Dispatchers.IO).launch {
-            auditTrailUseCase.invoke(
-                auditTrailDetail,
-                AuditTrailEnum.SYNC.name,
-                AUDIT_TRAIL_SUCCESS
-            )
-        }
-    }
+
 
 
 

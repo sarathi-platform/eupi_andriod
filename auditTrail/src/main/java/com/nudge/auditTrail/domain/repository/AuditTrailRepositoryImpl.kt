@@ -17,27 +17,23 @@ class AuditTrailRepositoryImpl @Inject constructor(
     override suspend fun insertEvent(
         auditDetail: Map<String, Any>,
         actionType: String,
-        actionStatusType: String
+        actionStatusType: String,
+        message:String
     ) {
         return auditDao.insert(
             AuditTrailEntity.getAuditDetailEvent(
-                auditDetail,
-                coreSharedPrefs.getMobileNo(),
-                actionType,
-                actionStatusType
+            auditDetail,
+              mobileNo =   coreSharedPrefs.getMobileNo(),
+               actionType =  actionType,
+               actionStatusType =  actionStatusType,
+                message = message
             )
         )
     }
     override suspend fun auditTrailEventToServer(auditRequest: List<AuditRequest>): ApiResponseModel<String> {
         return auditTrailApiService.auditTrail(auditRequest)
     }
-    override suspend fun getAuditTrailEventFromDb(
-
-    ): List<AuditTrailEntity> {
-        return auditDao.getAllEvent(
-
-        )
+    override suspend fun getAuditTrailEventFromDb(): List<AuditTrailEntity> {
+        return auditDao.getAllEvent()
     }
-
-
 }

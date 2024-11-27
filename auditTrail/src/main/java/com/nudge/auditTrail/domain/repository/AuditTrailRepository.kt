@@ -8,7 +8,8 @@ interface AuditTrailRepository {
      suspend fun insertEvent(
           auditDetail: Map<String, Any>,
           actionType: String,
-          actionStatusType: String
+          actionStatusType: String,
+          message:String
      )
      suspend fun auditTrailEventToServer(auditRequest: List<AuditRequest>): ApiResponseModel<String>
      suspend fun getAuditTrailEventFromDb(): List<AuditTrailEntity>
