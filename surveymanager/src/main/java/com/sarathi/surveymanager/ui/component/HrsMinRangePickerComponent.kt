@@ -23,17 +23,25 @@ import com.nudge.core.MINUTE
 import com.nudge.core.MONTHS
 import com.nudge.core.YEAR
 import com.nudge.core.model.QuestionStatusModel
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
 
 @Composable
 fun HrsMinRangePickerComponent(
+    contests: List<ContentList?>? = listOf(),
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     title: String? = BLANK_STRING,
     defaultValue: String = BLANK_STRING,
     typePicker: String,
+    showCardView: Boolean = false,
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, selectedValueId: Int) -> Unit,
 ) {
     val context = LocalContext.current
@@ -51,6 +59,8 @@ fun HrsMinRangePickerComponent(
         if (title != null) {
             if (title.isNotBlank()) {
                 QuestionComponent(
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                    onDetailIconClicked = { onDetailIconClicked() },
                     title = title,
                     isRequiredField = isMandatory
                 )
@@ -67,10 +77,15 @@ fun HrsMinRangePickerComponent(
                 InputComponent(
                     questionIndex = 0,
                     isOnlyNumber = true,
+                    defaultValue = firstInputValue.value,
                     isMandatory = false,
                     maxLength = 3,
                     title = getFirstTitle(typePicker),
                     questionStatusModel = QuestionStatusModel()
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    },
+                    isEditable = isEditAllowed,
                 ) { selectedValue, remainingAmout ->
                     firstInputValue.value = selectedValue
                     val secondValue =
@@ -97,6 +112,9 @@ fun HrsMinRangePickerComponent(
                 TypeDropDownComponent(
                     title = getSecondTitle(typePicker),
                     hintText = secondInputValue.value,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    },
                     sources = getSources(typePicker),
                     questionStatusModel = QuestionStatusModel(isEditAllowed = isEditAllowed),
                 ) { selectedValue ->
@@ -116,6 +134,19 @@ fun HrsMinRangePickerComponent(
                 }
             }
         }
+        if (showCardView && contests?.isNotEmpty() == true) {
+            CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = contests,
+                questionIndex = 0,
+                showCardView = showCardView,
+                questionDetailExpanded = {},
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                }
+            )
+        }
+
     }
 }
 
@@ -291,5 +322,6 @@ fun PreviewTimePickerComponent() {
         typePicker = "HrsMinPicker",
         onAnswerSelection = { selectValue, selectedValueId ->
 
-        })
+        },
+        navigateToMediaPlayerScreen = {})
 }

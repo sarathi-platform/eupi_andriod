@@ -74,6 +74,7 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.CoreLogger
@@ -381,114 +382,128 @@ fun TaskScreen(
                             }
                         }
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .pullRefresh(pullRefreshState)
-                    ) {
-                        PullRefreshIndicator(
-                            refreshing = viewModel.loaderState.value.isLoaderVisible,
-                            state = pullRefreshState,
+                        Box(
                             modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .zIndex(1f),
-                            contentColor = blueDark,
-                        )
-                        Spacer(modifier = Modifier.height(dimen_10_dp))
-                        LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+                                .fillMaxSize()
+                                .pullRefresh(pullRefreshState)
+                        ) {
+                            PullRefreshIndicator(
+                                refreshing = viewModel.loaderState.value.isLoaderVisible,
+                                state = pullRefreshState,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .zIndex(1f),
+                                contentColor = blueDark,
+                            )
+                            Spacer(modifier = Modifier.height(dimen_10_dp))
+                            if (viewModel.filterList.value.isEmpty()) {
+                                Text(
+                                    text = stringResource(com.sarathi.missionactivitytask.R.string.empty_task_list_placeholder),
+                                    style = defaultTextStyle,
+                                    color = textColorDark,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                )
+                            } else {
+                                LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
 
-                            stickyHeader {
-                                if (viewModel.isProgressEnable.value) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .background(white)
-                                    ) {
-                                        CustomLinearProgressIndicator(
-                                            modifier = Modifier
-                                                .padding(dimen_10_dp)
-                                                .padding(horizontal = dimen_6_dp),
-                                            progressState = viewModel.progressState,
-                                            color = greenOnline
-                                        )
-                                    }
-                                }
-
-                                if (ActivityTypeEnum.showSurveyQuestionOnTaskScreen(viewModel.activityType)) {
-                                    if (viewModel.filterList.value.isNotEmpty() && viewModel.questionUiModel.value.isNotEmpty()) {
-                                        viewModel.filterList.value.keys.let {
-                                            val questionTitle =
-                                                viewModel.questionUiModel.value[it.first()]?.questionDisplay.value()
+                                    stickyHeader {
+                                        if (viewModel.isProgressEnable.value) {
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .background(white)
                                             ) {
-                                                CustomTextView(title = questionTitle)
+                                                CustomLinearProgressIndicator(
+                                                    modifier = Modifier
+                                                        .padding(dimen_10_dp)
+                                                        .padding(horizontal = dimen_6_dp),
+                                                    progressState = viewModel.progressState,
+                                                    color = greenOnline
+                                                )
+                                            }
+                                        }
+
+                                        if (ActivityTypeEnum.showSurveyQuestionOnTaskScreen(
+                                                viewModel.activityType
+                                            )
+                                        ) {
+                                            if (viewModel.filterList.value.isNotEmpty() && viewModel.questionUiModel.value.isNotEmpty()) {
+                                                viewModel.filterList.value.keys.let {
+                                                    val questionTitle =
+                                                        viewModel.questionUiModel.value[it.first()]?.questionDisplay.value()
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .background(white)
+                                                    ) {
+                                                        CustomTextView(title = questionTitle)
+                                                    }
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            }
 
-                            if (viewModel.isFilterApplied.value) {
-                                customVerticalSpacer()
-                                item {
-                                    HtmlText(
-                                        text = getFilterAppliedText(context, viewModel),
-                                        modifier = Modifier.padding(horizontal = dimen_16_dp),
-                                        style = defaultTextStyle,
-                                        fontSize = dimen_16_sp
-                                    )
-                                }
-                                customVerticalSpacer()
-                            }
-
-                                if (viewModel.isGroupingApplied.value && viewModel.isGroupByEnable.value) {
-                                    viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
+                                    if (viewModel.isFilterApplied.value) {
+                                        customVerticalSpacer()
                                         item {
-                                            Row(
-                                                horizontalArrangement = Arrangement.Start,
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(horizontal = dimen_6_dp)
-                                            ) {
-                                                Image(
-                                                    painter = painterResource(id = R.drawable.ic_vo_name_icon),
-                                                    contentDescription = null,
-                                                    modifier = Modifier
-                                                        .padding(horizontal = dimen_10_dp)
-                                                        .size(25.dp),
-                                                    colorFilter = ColorFilter.tint(blueDark)
-                                                )
-
-                                                Text(
-                                                    text = category ?: BLANK_STRING,
-                                                    style = defaultTextStyle.copy(color = blueDark)
-                                                )
-                                            }
-                                        }
-                                        item {
-                                            CustomVerticalSpacer()
-                                        }
-
-                                        if (category != null) {
-                                            taskScreenContentForGroup(
-                                                category,
-                                                viewModel,
-                                                navController
+                                            HtmlText(
+                                                text = getFilterAppliedText(context, viewModel),
+                                                modifier = Modifier.padding(horizontal = dimen_16_dp),
+                                                style = defaultTextStyle,
+                                                fontSize = dimen_16_sp
                                             )
                                         }
+                                        customVerticalSpacer()
                                     }
 
-                                } else {
-                                    if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
-                                        taskScreenContent(viewModel, navController)
+                                    if (viewModel.isGroupingApplied.value && viewModel.isGroupByEnable.value) {
+                                        viewModel.filterTaskMap.forEach { (category, itemsInCategory) ->
+                                            item {
+                                                Row(
+                                                    horizontalArrangement = Arrangement.Start,
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(horizontal = dimen_6_dp)
+                                                ) {
+                                                    Image(
+                                                        painter = painterResource(id = R.drawable.ic_vo_name_icon),
+                                                        contentDescription = null,
+                                                        modifier = Modifier
+                                                            .padding(horizontal = dimen_10_dp)
+                                                            .size(25.dp),
+                                                        colorFilter = ColorFilter.tint(blueDark)
+                                                    )
 
+                                                    Text(
+                                                        text = category ?: BLANK_STRING,
+                                                        style = defaultTextStyle.copy(color = blueDark)
+                                                    )
+                                                }
+                                            }
+                                            item {
+                                                CustomVerticalSpacer()
+                                            }
+
+                                            if (category != null) {
+                                                taskScreenContentForGroup(
+                                                    category,
+                                                    viewModel,
+                                                    navController
+                                                )
+                                            }
+                                        }
+
+                                    } else {
+                                        if (viewModel.filterList.value.isNotEmpty() && !viewModel.loaderState.value.isLoaderVisible) {
+                                            taskScreenContent(viewModel, navController)
+
+                                        }
                                     }
                                 }
                             }
+
                         }
                     }
                     if (viewModel.showDialog.value) {
@@ -502,23 +517,23 @@ fun TaskScreen(
                             onPositiveButtonClick = {
                                 viewModel.markActivityCompleteStatus()
 
-                        navigateToActivityCompletionScreen(
-                            isFromActivity = true,
-                            navController = navController,
-                            activityMsg = context.getString(
-                                R.string.activity_completion_message,
-                                activityName
-                            ),
-                            activityRoutePath = viewModel.activityConfigUiModelWithoutSurvey?.activityType.value()
+                                navigateToActivityCompletionScreen(
+                                    isFromActivity = true,
+                                    navController = navController,
+                                    activityMsg = context.getString(
+                                        R.string.activity_completion_message,
+                                        activityName
+                                    ),
+                                    activityRoutePath = viewModel.activityConfigUiModelWithoutSurvey?.activityType.value()
+                                )
+                                viewModel.showDialog.value = false
+                            }
                         )
-                        viewModel.showDialog.value = false
                     }
-                )
-            }
-        },
-        onSettingClick = onSettingClick
-    )
-}
+                },
+                onSettingClick = onSettingClick
+            )
+        }
 
 
     }

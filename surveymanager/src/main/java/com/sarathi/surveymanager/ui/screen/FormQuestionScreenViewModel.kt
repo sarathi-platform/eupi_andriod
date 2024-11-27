@@ -13,7 +13,9 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.utils.SubjectStatus
 import com.nudge.core.value
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
@@ -23,6 +25,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
@@ -48,7 +51,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val fetchContentUseCase: FetchContentUseCase
+
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -84,7 +89,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
     val formTitle = mutableStateOf(BLANK_STRING)
-
+    private val _contentList = mutableStateOf<List<Content>>(emptyList())
+    val contentList: State<List<Content>> get() = _contentList
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
@@ -102,7 +108,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = referenceId,
-                grantId = 0
+                grantId = 0,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
             )
             _questionUiModel.value = question.filter { it.formId == formId }
 
@@ -348,6 +356,36 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun getPrefixFileName(question: QuestionUiModel): String {
         return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
+    }
+
+    fun handleMediaContentClick(
+        contentKey: String, callNavigation: (
+            contentType: String,
+            contentTitle: String
+        ) -> Unit
+    ) {
+        val content = contentList.value.find { it.contentKey == contentKey }
+        content?.let {
+            callNavigation(content.contentType, content.contentValue)
+        }
+    }
+
+    fun getContentData(
+        contents: List<ContentList?>?,
+        contentType: String
+    ): ContentList? {
+        contents?.let { contentsData ->
+            for (content in contentsData) {
+                if (content?.contentType.equals(contentType, true)) {
+                    return content!!
+                }
+            }
+        }
+        return null
+    }
+
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
     }
 
 }

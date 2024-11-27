@@ -527,7 +527,7 @@ open class TaskScreenViewModel @Inject constructor(
         var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId
-        ) && !isActivityCompleted.value
+        ) && !isActivityCompleted.value && filterList.value.isNotEmpty()
         updateValueInMainThread(isButtonEnable, isButtonEnablee)
     }
 

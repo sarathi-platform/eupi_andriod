@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
 fun <T> BottomSheetScaffoldComponent(
     bottomSheetScaffoldProperties: CustomBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties(),
     defaultValue: String = BLANK_STRING,
-    headerTitle: String? = BLANK_STRING,
+    headerTitle: String?=BLANK_STRING,
     bottomSheetContentItemList: List<T>,
     selectedIndex: Int = 0,
     onBottomSheetItemSelected: (selectedItemIndex: Int) -> Unit,

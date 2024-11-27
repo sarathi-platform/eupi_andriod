@@ -1,7 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -71,10 +70,6 @@ class FormResponseSummaryViewModel @Inject constructor(
         mutableStateMapOf<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>>()
     val formQuestionResponseMap: SnapshotStateMap<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>> get() = _formQuestionResponseMap
 
-    val sortedEntries = derivedStateOf {
-        formQuestionResponseMap.entries.sortedBy { it.value.firstOrNull()?.createdDate.value(Long.MAX_VALUE) }
-    }
-
     val referenceIdsList = mutableStateListOf<Pair<String, Int>>()
 
     var surveyConfig =
@@ -120,7 +115,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                     activityConfigId = activityConfigId,
                     referenceId = BLANK_STRING,
                     grantId = NUMBER_ZERO,
-                    formId = formId
+                    formId = formId,
+                    missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                    activityId = taskEntity?.activityId.value(DEFAULT_ID)
                 )
             }
 
@@ -143,7 +140,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = BLANK_STRING,
-                grantId = NUMBER_ZERO
+                grantId = NUMBER_ZERO,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
             ).filter { it.formId != NUMBER_ZERO }.map { it.questionId }
 
             val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
@@ -168,7 +167,17 @@ class FormResponseSummaryViewModel @Inject constructor(
 
 
             referenceIdsList.clear()
-            referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
+            referenceIdsList.addAll(
+                formQuestionResponseMap.entries
+                    .map { mapEntry -> // map formQuestionResponseMap Entries to a pair with map key as first and created data from map value.first()
+                        Pair(
+                            mapEntry.key,
+                            mapEntry.value.firstOrNull()?.createdDate.value(Long.MAX_VALUE)
+                        )
+                    }
+                    .sortedBy { pair: Pair<Pair<String, Int>, Long> -> pair.second } // sort the map of Pair on created date
+                    .map { it.first } // convert the sorted list back to the list of formQuestionResponseMap keys.
+            )
 
             getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                 .also { surveyConfigEntityList ->
