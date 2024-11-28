@@ -179,3 +179,9 @@ val h6 = TextStyle(
 val h6Bold = h6.copy(
     fontWeight = FontWeight.SemiBold
 )
+
+val mediumSpanStyle = SpanStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp
+)

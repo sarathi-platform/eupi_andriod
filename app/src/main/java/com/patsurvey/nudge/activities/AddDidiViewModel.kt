@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -51,6 +52,8 @@ import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.getPatScoreEventName
+import com.patsurvey.nudge.utils.getSortedList
+import com.patsurvey.nudge.utils.getSortedMap
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -94,6 +97,7 @@ class AddDidiViewModel @Inject constructor(
 
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
+    val selectedSortIndex : MutableState<Int> = mutableStateOf(0)
 
     private lateinit var castList : List<CasteEntity>
 
@@ -161,6 +165,17 @@ class AddDidiViewModel @Inject constructor(
             isTolaSynced.value = it
         }
 
+    }
+
+    fun didiSortedList(didiSortIndex: Int,tolaFilterSelected:Boolean) {
+
+        if (tolaFilterSelected)
+        {
+            filterTolaMapList= getSortedMap(didiSortIndex,tolaMapList)
+        }
+        else{
+            filterDidiList= getSortedList(didiSortIndex,filterDidiList)
+        }
     }
 
     fun getValidDidisFromDB(isComingFromSocialPage: Boolean = false) {

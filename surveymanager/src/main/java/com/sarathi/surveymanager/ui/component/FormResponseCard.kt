@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.showCustomToast
@@ -38,10 +39,12 @@ import com.nudge.core.ui.commonUi.CircularImageViewComponent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -130,6 +133,8 @@ fun FormResponseCard(
                         }.forEach { surveyCardModel ->
                             SubContainerView(
                                 surveyCardModel,
+                                labelStyle = newMediumTextStyle.copy(fontWeight = FontWeight.Medium),
+                                valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
                                 isNumberFormattingRequired = false
                             )
                         }
@@ -144,6 +149,8 @@ fun FormResponseCard(
                                 if (response != BLANK_STRING) {
                                     SubContainerView(
                                         surveyCardModel.copy(value = response),
+                                        labelStyle = newMediumTextStyle.copy(fontWeight = FontWeight.Medium),
+                                        valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
                                         isNumberFormattingRequired = false
                                     )
                                 }
