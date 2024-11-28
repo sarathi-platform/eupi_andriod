@@ -112,7 +112,10 @@ fun InputComponent(
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
                 onValueChange = { value ->
-                    if (value.length <= maxLength) {
+                    if (value.isEmpty()) {
+                        // Allow clearing the field
+                        txt.value = value
+                    } else if (value.length <= maxLength) {
                         if (isOnlyNumber) {
                             if (onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
                                 if (isZeroNotAllowed) {
