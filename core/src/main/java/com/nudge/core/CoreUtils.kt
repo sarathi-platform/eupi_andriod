@@ -1146,7 +1146,7 @@ fun formatToIndianRupee(amount: String): String {
         }
     } catch (ex: Exception) {
         CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1237,21 +1237,6 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
         filePath = _uri!!.path
     }
     Log.d("", "Chosen path = $filePath")
-}
-
-fun getImageUri(context: Context, fileName: String): Uri? {
-    var file =
-        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
-    if (!file.exists()) {
-        file =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
-    }
-    return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
-        uriFromFile(
-            context, file,
-            it
-        )
-    }
 }
 
 fun onlyNumberField(value: String): Boolean {
@@ -1364,5 +1349,21 @@ fun findUserTypeForMetadata(userType: String): String {
         else -> {
             UPCM
         }
+    }
+}
+
+fun calculateProgress(pendingCount: Int, totalCount: Int): Float {
+    return if (totalCount <= 0)
+        0F
+    else {
+        pendingCount.intToFloat() / totalCount.intToFloat()
+    }
+}
+
+fun Int.intToFloat(): Float {
+    return try {
+        this.toFloat()
+    } catch (e: Exception) {
+        0F
     }
 }
