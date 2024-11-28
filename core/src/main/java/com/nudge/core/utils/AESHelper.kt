@@ -1,7 +1,9 @@
 package com.nudge.core.utils
 
+import android.text.TextUtils
 import android.util.Base64
 import com.nudge.core.AES_SALT
+import com.nudge.core.BLANK_STRING
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
@@ -31,6 +33,10 @@ object AESHelper {
         secretKeyPass: String
 
         ): String {
+        if (TextUtils.isEmpty(encryptedText) || TextUtils.equals(encryptedText, "0")) {
+            return BLANK_STRING
+        }
+
         val textToDecrypt = Base64.decode(encryptedText, Base64.DEFAULT)
 
         val cipher = Cipher.getInstance("AES")

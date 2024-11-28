@@ -255,6 +255,10 @@ fun FormQuestionScreen(
                                 onAnswerSelect = {
                                     viewModel.updateQuestionResponseMap(question)
                                     viewModel.runConditionCheck(question)
+                                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
+                                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                                            Pair(isValid, message)
+                                    }
                                 }
                             )
                         }
@@ -327,10 +331,6 @@ fun FormScreenQuestionUiContent(
                     ) { selectedValue, remainingAmout ->
                         saveInputTypeAnswer(selectedValue, question, viewModel)
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 }
 
@@ -359,10 +359,7 @@ fun FormScreenQuestionUiContent(
                     ) { selectedValue ->
                         saveInputTypeAnswer(selectedValue, question, viewModel)
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
+
                     }
                 }
 
@@ -385,10 +382,7 @@ fun FormScreenQuestionUiContent(
                         ) { selectedValue, isDeleted ->
                         saveSingleImage(isDeleted, question.options, selectedValue)
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
+
 
                     }
                 }
@@ -417,10 +411,6 @@ fun FormScreenQuestionUiContent(
                                 option.isSelected = selectedValue.id == option.optionId
                             }
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
 
                         }
                     )
@@ -457,11 +447,6 @@ fun FormScreenQuestionUiContent(
                                 }
                             }
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
-
                         }
                     )
                 }
@@ -498,10 +483,6 @@ fun FormScreenQuestionUiContent(
                             }
                             question.options?.get(optionItemIndex)?.isSelected = true
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
                         }
                     )
                 }
@@ -529,10 +510,6 @@ fun FormScreenQuestionUiContent(
 
                             question.options?.get(selectedOptionIndex)?.isSelected = isSelected
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
                         },
                         questionDetailExpanded = {
 
@@ -565,10 +542,6 @@ fun FormScreenQuestionUiContent(
                             }
                             question.options?.get(optionItemIndex)?.isSelected = true
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
                         }
                     )
                 }
@@ -597,12 +570,6 @@ fun FormScreenQuestionUiContent(
                         question.options?.firstOrNull()?.isSelected = true
 
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
-
-
                     }
                 }
             }
