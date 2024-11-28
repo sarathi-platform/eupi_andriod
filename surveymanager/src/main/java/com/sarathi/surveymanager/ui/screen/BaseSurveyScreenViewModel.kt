@@ -11,7 +11,6 @@ import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
-import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -121,7 +120,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                intiQuestions()
+                CoroutineScope(ioDispatcher).launch {
+                    intiQuestions()
+                }
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -139,8 +140,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
-    open fun intiQuestions() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+    open suspend fun intiQuestions() {
             taskEntity = getTaskUseCase.getTask(taskId)
             if (_questionUiModel.value.isEmpty()) {
                 _questionUiModel.value = fetchDataUseCase.invoke(
@@ -232,7 +232,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
-        }
+
     }
 
     private fun getSurveyConfig(
@@ -509,10 +509,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun isFilePathExists(filePath: String): Boolean {
         return fetchContentUseCase.isFilePathExists(filePath)
-    }
-
-    fun getAESSecretKey(): String {
-        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
 }

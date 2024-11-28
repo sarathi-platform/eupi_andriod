@@ -37,7 +37,6 @@ import androidx.navigation.NavController
 import com.nudge.core.ACTIVITY_COMPLETED_ERROR
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.FORM_RESPONSE_LIMIT_ERROR
-import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -56,7 +55,6 @@ import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
-import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -296,13 +294,7 @@ fun QuestionUiContent(
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
                     isEditable = !viewModel.isActivityCompleted.value,
-                    defaultValue = if (question.tagId.contains(SENSITIVE_INFO_TAG_ID) && !TextUtils.isEmpty(
-                            question.options?.firstOrNull()?.selectedValue
-                        )
-                    ) AESHelper.decrypt(
-                        question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
-                        viewModel.getAESSecretKey()
-                    ) else question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                    defaultValue = question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
                     optionsItem = question.options?.firstOrNull(),
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
