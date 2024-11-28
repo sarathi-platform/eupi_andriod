@@ -38,6 +38,7 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.SUBJECT_ADDRESS
 import com.nudge.core.SUBJECT_COHORT_NAME
 import com.nudge.core.SUBJECT_DADA_NAME
@@ -64,6 +65,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
@@ -413,7 +415,10 @@ class ExportImportViewModel @Inject constructor(
             if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase())) {
                 optionDesc = option.optionDesc
             }
-            response = option.selectedValue.value()
+            response = if (question.tag.contains(SENSITIVE_INFO_TAG_ID)) AESHelper.decrypt(
+                option.selectedValue.value(),
+                fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
+            ) else option.selectedValue.value()
             responsePairList.add(Pair(response, optionDesc))
         }
         return responsePairList

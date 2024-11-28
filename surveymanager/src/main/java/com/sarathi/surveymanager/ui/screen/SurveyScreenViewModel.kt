@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -52,7 +53,8 @@ class SurveyScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
@@ -71,7 +73,8 @@ class SurveyScreenViewModel @Inject constructor(
     getSurveyConfigFromDbUseCase,
     getSurveyValidationsFromDbUseCase,
     validationUseCase,
-    fetchContentUseCase = fetchContentUseCase
+    fetchContentUseCase = fetchContentUseCase,
+    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
 ) {
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {

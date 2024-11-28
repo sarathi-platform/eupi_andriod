@@ -299,8 +299,9 @@ fun QuestionUiContent(
                     defaultValue = if (question.tagId.contains(SENSITIVE_INFO_TAG_ID) && !TextUtils.isEmpty(
                             question.options?.firstOrNull()?.selectedValue
                         )
-                    ) AESHelper().decrypt(
-                        question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING
+                    ) AESHelper.decrypt(
+                        question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                        viewModel.getAESSecretKey()
                     ) else question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
@@ -843,7 +844,10 @@ fun saveInputTypeAnswer(
         question.options?.firstOrNull()?.isSelected = true
     }
     question.options?.firstOrNull()?.selectedValue =
-        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper().encrypt(selectedValue) else selectedValue
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper.encrypt(
+            selectedValue,
+            viewModel.getAESSecretKey()
+        ) else selectedValue
     viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
 
     }

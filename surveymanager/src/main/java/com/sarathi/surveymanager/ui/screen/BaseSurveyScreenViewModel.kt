@@ -10,6 +10,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
@@ -71,7 +72,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
 
     private val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
@@ -530,6 +532,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun isFilePathExists(filePath: String): Boolean {
         return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
+    fun getAESSecretKey(): String {
+        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
 }
