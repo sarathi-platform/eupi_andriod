@@ -302,6 +302,7 @@ fun QuestionUiContent(
                     ) AESHelper().decrypt(
                         question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING
                     ) else question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                    optionsItem = question.options?.firstOrNull(),
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -318,10 +319,6 @@ fun QuestionUiContent(
                     viewModel.totalRemainingAmount = remainingAmout
                     saveInputTypeAnswer(selectedValue, question, viewModel)
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                 }
             }
 
@@ -350,10 +347,6 @@ fun QuestionUiContent(
                 ) { selectedValue ->
                     saveInputTypeAnswer(selectedValue, question, viewModel)
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                 }
             }
 
@@ -384,10 +377,6 @@ fun QuestionUiContent(
                         question.options,
                         isDeleted
                     )
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                     onAnswerSelect(question)
 
                 }
@@ -407,11 +396,6 @@ fun QuestionUiContent(
                 ) { selectedValue, isDeleted ->
                     saveSingleImage(isDeleted, question.options, selectedValue)
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
-
                 }
             }
             QuestionType.SingleSelectDropDown.name,
@@ -435,10 +419,6 @@ fun QuestionUiContent(
                     onAnswerSelection = { selectedValue ->
                         question.options?.forEach { option ->
                             option.isSelected = selectedValue.id == option.optionId
-                        }
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
                         }
                         onAnswerSelect(question)
 
@@ -474,10 +454,6 @@ fun QuestionUiContent(
                             } else {
                                 options.isSelected = false
                             }
-                        }
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
                         }
                         onAnswerSelect(question)
 
@@ -517,10 +493,6 @@ fun QuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 )
             }
@@ -561,10 +533,6 @@ fun QuestionUiContent(
 
 
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     },
                     questionDetailExpanded = {
 
@@ -595,10 +563,6 @@ fun QuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 )
             }
@@ -626,10 +590,6 @@ fun QuestionUiContent(
                             isSelected = true
                         }
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 )
             }
@@ -656,10 +616,6 @@ fun QuestionUiContent(
                     question.options?.firstOrNull()?.selectedValue = selectValue
                     question.options?.firstOrNull()?.isSelected = true
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                 }
             }
 
@@ -844,10 +800,8 @@ fun saveInputTypeAnswer(
     }
     question.options?.firstOrNull()?.selectedValue =
         if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper().encrypt(selectedValue) else selectedValue
-    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-
-    }
 }
+
 
 fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, isDeleted: Boolean) {
     val savedOptions =

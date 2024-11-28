@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -117,6 +118,35 @@ class SurveyScreenViewModel @Inject constructor(
             withContext(mainDispatcher) {
                 callBack()
             }
+        }
+    }
+
+    override fun intiQuestions() {
+        super.intiQuestions()
+
+        questionUiModel.value.filterForValidations(visibilityMap).apply {
+
+            //If the filtered list is empty run button check to enable or disable submit button.
+            if (this.isEmpty()) {
+                isButtonEnable.value = isButtonEnabled(true)
+                return@apply
+            }
+
+            this.forEach {
+                runValidationCheck(it.questionId) { isValid, message ->
+                    try {
+                        fieldValidationAndMessageMap[it.questionId] =
+                            Pair(isValid, message)
+                    } catch (ex: Exception) {
+                        CoreLogger.e(
+                            tag = LOGGER_TAG,
+                            msg = "Exception: intiQuestions -> runValidationCheck@lambda: ${ex.message}",
+                            ex = ex
+                        )
+                    }
+                }
+            }
+
         }
     }
 }
