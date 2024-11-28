@@ -318,7 +318,7 @@ fun QuestionUiContent(
                         ?: BLANK_STRING
                 ) { selectedValue, remainingAmout ->
                     viewModel.totalRemainingAmount = remainingAmout
-                    saveInputTypeAnswer(selectedValue, question, viewModel)
+                    saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
                 }
             }
@@ -346,7 +346,7 @@ fun QuestionUiContent(
                         ?: BLANK_STRING,
                     isFutureDateDisable = true
                 ) { selectedValue ->
-                    saveInputTypeAnswer(selectedValue, question, viewModel)
+                    saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
                 }
             }
@@ -799,11 +799,8 @@ fun saveInputTypeAnswer(
     } else {
         question.options?.firstOrNull()?.isSelected = true
     }
-    question.options?.firstOrNull()?.selectedValue =
-        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper.encrypt(
-            selectedValue,
-            viewModel.getAESSecretKey()
-        ) else selectedValue
+    question.options?.firstOrNull()?.selectedValue = selectedValue
+
 }
 
 fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, isDeleted: Boolean) {

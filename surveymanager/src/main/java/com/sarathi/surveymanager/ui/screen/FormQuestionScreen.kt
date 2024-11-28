@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -56,7 +55,6 @@ import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.white
-import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
@@ -329,7 +327,7 @@ fun FormScreenQuestionUiContent(
                         },
                         onDetailIconClicked = { onDetailIconClicked() }
                     ) { selectedValue, remainingAmout ->
-                        saveInputTypeAnswer(selectedValue, question, viewModel)
+                        saveInputTypeAnswer(selectedValue, question)
                         onAnswerSelect(question)
                     }
                 }
@@ -357,7 +355,7 @@ fun FormScreenQuestionUiContent(
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING
                     ) { selectedValue ->
-                        saveInputTypeAnswer(selectedValue, question, viewModel)
+                        saveInputTypeAnswer(selectedValue, question)
                         onAnswerSelect(question)
 
                     }
@@ -591,20 +589,13 @@ fun FormScreenQuestionUiContent(
 fun saveInputTypeAnswer(
     selectedValue: String,
     question: QuestionUiModel,
-    viewModel: FormQuestionScreenViewModel
 ) {
     if (TextUtils.isEmpty(selectedValue)) {
         question.options?.firstOrNull()?.isSelected = false
     } else {
         question.options?.firstOrNull()?.isSelected = true
     }
-    question.options?.firstOrNull()?.selectedValue = if (question.tagId.contains(
-            SENSITIVE_INFO_TAG_ID
-        )
-    ) AESHelper.encrypt(
-        selectedValue,
-        viewModel.getAESSecretKey()
-    ) else selectedValue
+    question.options?.firstOrNull()?.selectedValue = selectedValue
 }
 
 fun handleContentClick(
