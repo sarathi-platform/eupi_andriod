@@ -11,6 +11,7 @@ import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -51,7 +52,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 
 ) : BaseViewModel() {
 
@@ -381,6 +383,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun isFilePathExists(filePath: String): Boolean {
         return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
+    fun getAESSecretKey(): String {
+        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
 }
