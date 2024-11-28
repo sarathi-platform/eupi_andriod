@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import com.nudge.core.ACTIVITY_COMPLETED_ERROR
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.FORM_RESPONSE_LIMIT_ERROR
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -55,6 +56,7 @@ import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -294,8 +296,12 @@ fun QuestionUiContent(
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
                     isEditable = !viewModel.isActivityCompleted.value,
-                    defaultValue = question.options?.firstOrNull()?.selectedValue
-                        ?: BLANK_STRING,
+                    defaultValue = if (question.tagId.contains(SENSITIVE_INFO_TAG_ID) && !TextUtils.isEmpty(
+                            question.options?.firstOrNull()?.selectedValue
+                        )
+                    ) AESHelper().decrypt(
+                        question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING
+                    ) else question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -836,7 +842,8 @@ fun saveInputTypeAnswer(
     } else {
         question.options?.firstOrNull()?.isSelected = true
     }
-    question.options?.firstOrNull()?.selectedValue = selectedValue
+    question.options?.firstOrNull()?.selectedValue =
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper().encrypt(selectedValue) else selectedValue
     viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
 
     }
