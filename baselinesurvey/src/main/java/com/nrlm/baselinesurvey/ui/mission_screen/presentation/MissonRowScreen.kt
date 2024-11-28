@@ -50,7 +50,6 @@ import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.calculateProgress
-import com.nudge.core.formatProgressNumber
 
 
 @Composable
@@ -133,7 +132,7 @@ fun MissionRowScreen(
                     .padding(start = 16.dp)
             )
             LinearProgressIndicator(
-                progress = formatProgressNumber(curPercentage.value),
+                progress = curPercentage.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp),

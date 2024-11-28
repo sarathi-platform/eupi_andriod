@@ -1239,19 +1239,6 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     Log.d("", "Chosen path = $filePath")
 }
 
-fun getImageUri(context: Context, fileName: String): Uri? {
-    val file =
-        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
-    return if (file.exists() && file.isFile) {
-        CoreAppDetails.getApplicationDetails()?.applicationID?.let {
-            uriFromFile(
-                context, file,
-                it
-            )
-        }
-    } else Uri.EMPTY
-}
-
 fun onlyNumberField(value: String): Boolean {
     if (value.isDigitsOnly() && value != "_" && value != "N") {
         return true
@@ -1362,17 +1349,6 @@ fun findUserTypeForMetadata(userType: String): String {
         else -> {
             UPCM
         }
-    }
-}
-
-fun formatProgressNumber(value: Float): Float {
-    try {
-        return value
-    } catch (ex: Exception) {
-        CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatProgressNumber:${ex.message}", ex, false) }
-        return 0F
-
     }
 }
 

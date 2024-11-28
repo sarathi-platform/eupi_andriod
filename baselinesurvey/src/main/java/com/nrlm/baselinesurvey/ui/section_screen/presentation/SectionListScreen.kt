@@ -92,7 +92,6 @@ import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nudge.core.calculateProgress
-import com.nudge.core.formatProgressNumber
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.navigateToQuestionScreen
 import com.nudge.navigationmanager.graphs.navigateToSearchScreen
@@ -405,7 +404,7 @@ fun SectionListScreen(
                                     totalCount = sectionsList.size
                                 )
                                 LinearProgressIndicator(
-                                    progress = formatProgressNumber(linearProgress.value),
+                                    progress = linearProgress.value,
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(dimen_8_dp)
