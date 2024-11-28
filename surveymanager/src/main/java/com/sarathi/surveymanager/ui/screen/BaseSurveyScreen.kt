@@ -299,8 +299,9 @@ fun QuestionUiContent(
                     defaultValue = if (question.tagId.contains(SENSITIVE_INFO_TAG_ID) && !TextUtils.isEmpty(
                             question.options?.firstOrNull()?.selectedValue
                         )
-                    ) AESHelper().decrypt(
-                        question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING
+                    ) AESHelper.decrypt(
+                        question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                        viewModel.getAESSecretKey()
                     ) else question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
                     optionsItem = question.options?.firstOrNull(),
                     title = question.questionDisplay,
@@ -799,9 +800,11 @@ fun saveInputTypeAnswer(
         question.options?.firstOrNull()?.isSelected = true
     }
     question.options?.firstOrNull()?.selectedValue =
-        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper().encrypt(selectedValue) else selectedValue
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) AESHelper.encrypt(
+            selectedValue,
+            viewModel.getAESSecretKey()
+        ) else selectedValue
 }
-
 
 fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, isDeleted: Boolean) {
     val savedOptions =
