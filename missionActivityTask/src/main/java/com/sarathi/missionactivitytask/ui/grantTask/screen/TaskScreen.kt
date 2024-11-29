@@ -397,16 +397,20 @@ fun TaskScreen(
                             )
                             Spacer(modifier = Modifier.height(dimen_10_dp))
                             val message = when {
-                                viewModel.filterList.value.isEmpty() ->
-                                    stringResource(com.sarathi.missionactivitytask.R.string.empty_task_list_placeholder)
+                                // When search is disabled and the filter list is empty
+                                !viewModel.isSearchEnable.value && viewModel.filterList.value.isEmpty() ->
+                                    stringResource(R.string.empty_task_list_placeholder)
 
+                                // When search is enabled but no results are found
                                 viewModel.isSearchEnable.value &&
                                         (viewModel.filterList.value.isEmpty() ||
                                                 (viewModel.isGroupingApplied.value && viewModel.filterTaskMap.isEmpty())) ->
                                     stringResource(R.string.no_result_found)
 
+                                // No message in other cases
                                 else -> null
                             }
+
                             message?.let {
                                 // Display message when applicable
                                 Text(
