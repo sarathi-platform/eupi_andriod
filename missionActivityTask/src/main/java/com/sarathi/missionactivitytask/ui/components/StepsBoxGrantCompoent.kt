@@ -42,7 +42,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.formatProgressNumber
+import com.nudge.core.calculateProgress
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -87,7 +87,7 @@ fun StepsBoxGrantComponent(
     onclick: (Int) -> Unit
 ) {
     val curPercentage = animateFloatAsState(
-        targetValue = formatProgressNumber((pendingCount.toFloat()) / (totalCount.toFloat())),
+        targetValue = calculateProgress(pendingCount = pendingCount, totalCount = totalCount),
         label = BLANK_STRING,
         animationSpec = tween()
     )

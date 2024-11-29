@@ -11,6 +11,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.casteMap
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -51,7 +52,8 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -260,5 +262,10 @@ class FormResponseSummaryViewModel @Inject constructor(
 
         }
     }
+
+    fun getAESSecretKey(): String {
+        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
+    }
+
 
 }

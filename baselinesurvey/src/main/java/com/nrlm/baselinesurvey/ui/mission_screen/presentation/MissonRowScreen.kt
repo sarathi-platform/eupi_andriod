@@ -49,6 +49,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.calculateProgress
 
 
 @Composable
@@ -67,10 +68,12 @@ fun MissionRowScreen(
 
     val curPercentage = animateFloatAsState(
         targetValue = if (viewModel.missionActivityCountMap.value[mission.missionId] == null || viewModel.missionActivityCountMap.value[mission.missionId] == 0)
-            0.toFloat()
-        else
-            (completedProgress).toFloat() / (viewModel.missionActivityCountMap.value[mission.missionId]
-                ?: 0).toFloat(),
+            0F
+        else calculateProgress(
+            pendingCount = completedProgress,
+            totalCount = (viewModel.missionActivityCountMap.value[mission.missionId]
+                ?: 0)
+        ),
         label = "",
         animationSpec = tween()
     )
@@ -95,23 +98,6 @@ fun MissionRowScreen(
                 .fillMaxWidth()
                 .background(if (mission.status == SectionStatus.COMPLETED.name) greenLight else white)
         ) {
-            //TODO in future in uncomment whenever get correct data from backend
-//            Box(
-//                Modifier
-//                    .fillMaxWidth()
-//                    .background(if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor)
-//                    .padding(horizontal = 16.dp, vertical = 5.dp)
-//            ) {
-//                Text(
-//                    text = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) "Completed"
-//                    else stringResource(
-//                        id = R.string.start_by_x_date,
-//                        missionDueDate
-//                    ),
-//                    style = smallerTextStyle,
-//                    color = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) white else black100Percent,
-//                )
-//            }
 
             Row(
                 modifier = Modifier
@@ -147,13 +133,14 @@ fun MissionRowScreen(
             )
             LinearProgressIndicator(
                 progress = curPercentage.value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
                 color = greenOnline,
                 trackColor = trackColor,
                 strokeCap = StrokeCap.Round,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            )
+
+                )
 
             Row(
                 modifier = Modifier

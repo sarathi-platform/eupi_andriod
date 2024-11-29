@@ -10,7 +10,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
-import com.nudge.core.utils.CoreLogger
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -71,10 +71,11 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
 
-    private val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
+    val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
 
     var surveyId: Int = 0
     var sectionId: Int = 0
@@ -119,7 +120,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                intiQuestions()
+                CoroutineScope(ioDispatcher + exceptionHandler).launch {
+                    intiQuestions()
+                }
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -137,8 +140,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
-    private fun intiQuestions() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+    open suspend fun intiQuestions() {
             taskEntity = getTaskUseCase.getTask(taskId)
             if (_questionUiModel.value.isEmpty()) {
                 _questionUiModel.value = fetchDataUseCase.invoke(
@@ -225,35 +227,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             }
 
             isTaskStatusCompleted()
-            questionUiModel.value.filterForValidations(visibilityMap).apply {
 
-                //If the filtered list is empty run button check to enable or disable submit button.
-                if (this.isEmpty()) {
-                    isButtonEnable.value = isButtonEnabled(true)
-                    return@apply
-                }
-
-                this.forEach {
-                    runValidationCheck(it.questionId) { isValid, message ->
-                        try {
-                            fieldValidationAndMessageMap[it.questionId] =
-                                Pair(isValid, message)
-                        } catch (ex: Exception) {
-                            CoreLogger.e(
-                                tag = LOGGER_TAG,
-                                msg = "Exception: intiQuestions -> runValidationCheck@lambda: ${ex.message}",
-                                ex = ex
-                            )
-                        }
-                    }
-                }
-
-            }
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
-        }
+
     }
 
     private fun getSurveyConfig(
@@ -292,7 +271,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         )
     }
 
-    fun runValidationCheck(questionId: Int, onValidationComplete: (Boolean, String) -> Unit) {
+    open fun runValidationCheck(questionId: Int, onValidationComplete: (Boolean, String) -> Unit) {
 
         validationUseCase.validateExpressionEvaluator(
             validations = validations,
@@ -312,7 +291,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     }
 
-    private fun isButtonEnabled(isQuestionValidationFromConfig: Boolean): Boolean {
+    fun isButtonEnabled(isQuestionValidationFromConfig: Boolean): Boolean {
         // Start with the base result based on question validation
         var result = isQuestionValidationFromConfig && checkButtonValidation()
 
@@ -344,7 +323,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         return result
     }
 
-    fun checkButtonValidation(): Boolean {
+    open fun checkButtonValidation(): Boolean {
 
         questionUiModel.value.filterForValidations(visibilityMap)
             .forEach { questionUiModel ->
