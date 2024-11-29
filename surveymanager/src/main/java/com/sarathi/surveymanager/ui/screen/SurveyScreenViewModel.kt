@@ -2,8 +2,8 @@ package com.sarathi.surveymanager.ui.screen
 
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.utils.CoreLogger
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -124,7 +124,7 @@ class SurveyScreenViewModel @Inject constructor(
         }
     }
 
-    override fun intiQuestions() {
+    override suspend fun intiQuestions() {
         super.intiQuestions()
 
         questionUiModel.value.filterForValidations(visibilityMap).apply {
