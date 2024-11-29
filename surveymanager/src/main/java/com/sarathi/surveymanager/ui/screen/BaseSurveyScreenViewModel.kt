@@ -120,7 +120,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                CoroutineScope(ioDispatcher).launch {
+                CoroutineScope(ioDispatcher + exceptionHandler).launch {
                     intiQuestions()
                 }
             }

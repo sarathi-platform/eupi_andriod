@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.MASKED_CHAR
 import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
@@ -147,7 +148,7 @@ fun FormResponseCard(
                             val response =
                                 getSavedAnswerValueForSummaryField(
                                     surveyAnswerFormSummaryUiModelList,
-                                    map.entries.firstOrNull()!!,
+                                    map.entries.firstOrNull(),
                                     secretKeyPass
                                 )
                                 if (response != BLANK_STRING) {
@@ -255,12 +256,12 @@ fun getFormSummaryCardImageUri(
 @Composable
 private fun getSavedAnswerValueForSummaryField(
     surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>,
-    mapEntry: Map.Entry<String, SurveyCardModel>,
+    mapEntry: Map.Entry<String, SurveyCardModel>?,
     secretKeyPass: String
 ): String {
     var response = BLANK_STRING
     val question = surveyAnswerFormSummaryUiModelList
-        .find { it.tagId.contains(mapEntry.value.tagId) }
+        .find { it.tagId.contains(mapEntry?.value?.tagId) }
     val optionsUiModelList =
         question?.optionItems
             ?.filter { it.isSelected == true }
@@ -332,7 +333,7 @@ fun checkAndGetMaskedResponseForEncryptedValue(
             var responseValue = this
             responseValue = AESHelper.decrypt(this, secretKeyPass)
             if (responseValue.length > 4)
-                ("*".repeat(responseValue.length - 4) + responseValue.takeLast(4)) ?: BLANK_STRING
+                (MASKED_CHAR.repeat(responseValue.length - 4) + responseValue.takeLast(4))
             else
                 responseValue
         }

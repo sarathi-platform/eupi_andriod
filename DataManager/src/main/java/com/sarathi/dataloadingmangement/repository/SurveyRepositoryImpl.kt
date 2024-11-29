@@ -80,7 +80,7 @@ class SurveyRepositoryImpl @Inject constructor(
         )
 
         val questionList = questionDao.getSurveySectionQuestionForLanguage(
-            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_CODE.toString() else coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_CODE else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
