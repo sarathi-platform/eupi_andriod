@@ -320,7 +320,6 @@ fun SectionScreen(
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState)
                 ) {
-
                     PullRefreshIndicator(
                         refreshing = sectionScreenViewModel.loaderState.value.isLoaderVisible,
                         state = pullRefreshState,

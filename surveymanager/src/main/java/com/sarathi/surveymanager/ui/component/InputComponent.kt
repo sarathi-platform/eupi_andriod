@@ -115,20 +115,20 @@ fun InputComponent(
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
                 onValueChange = { value ->
-                    if (value.length <= maxLength) {
+                    if (value.isEmpty()) {
+                        // Allow clearing the field
+                        txt.value = value
+                    } else if (value.length <= maxLength) {
+                        val isValidNumber =
+                            isOnlyNumber && onlyNumberField(value) && value.length <=  maxOf(
+                                maxLength,
+                                MAXIMUM_RANGE_LENGTH
+                            )
+                        val isNotZero = !isZeroNotAllowed || value.any { it != '0' }
+
                         if (isOnlyNumber) {
-                            if (onlyNumberField(value) && value.length <= maxOf(
-                                    maxLength,
-                                    MAXIMUM_RANGE_LENGTH
-                                )
-                            ) {
-                                if (isZeroNotAllowed) {
-                                    if (!value.all { it == '0' } || value == BLANK_STRING) {
-                                        txt.value = value
-                                    }
-                                } else {
-                                    txt.value = value
-                                }
+                            if (isValidNumber && isNotZero) {
+                                txt.value = value
                             }
                         } else {
                             txt.value = value
