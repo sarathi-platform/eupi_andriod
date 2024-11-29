@@ -80,7 +80,7 @@ class SurveyRepositoryImpl @Inject constructor(
         )
 
         val questionList = questionDao.getSurveySectionQuestionForLanguage(
-            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_CODE.toString() else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -128,9 +128,9 @@ class SurveyRepositoryImpl @Inject constructor(
 
     private fun getFormDescription(
         surveyConfigList: List<SurveyConfigEntity>,
-        it: QuestionUiEntity
+        questionUiEntity: QuestionUiEntity
     ) = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
-        .find { surveyConfigFormId -> surveyConfigFormId.formId == it.formId }?.value
+        .find { surveyConfigFormId -> surveyConfigFormId.formId == questionUiEntity.formId }?.value
 
     suspend fun setQuestionContentData(questionEntity: QuestionUiEntity): List<ContentList> {
         val contentList = mutableListOf<ContentList>()

@@ -19,32 +19,45 @@ object AESHelper {
         textToEncrypt: String,
         secretKeyPass: String,
     ): String {
-        val plainText = textToEncrypt.toByteArray()
+        try {
 
-        val cipher = Cipher.getInstance("AES")
-        cipher.init(Cipher.ENCRYPT_MODE, generateSecretKey(secretKeyPass))
+            val plainText = textToEncrypt.toByteArray()
 
-        val encrypt = cipher.doFinal(plainText)
-        return Base64.encodeToString(encrypt, Base64.DEFAULT)
+            val cipher = Cipher.getInstance("AES")
+            cipher.init(Cipher.ENCRYPT_MODE, generateSecretKey(secretKeyPass))
+
+            val encrypt = cipher.doFinal(plainText)
+            return Base64.encodeToString(encrypt, Base64.DEFAULT)
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "AES", msg = exception.stackTraceToString(), ex = exception)
+            return textToEncrypt
+        }
     }
 
     fun decrypt(
         encryptedText: String,
         secretKeyPass: String
 
-        ): String {
+    ): String {
         if (TextUtils.isEmpty(encryptedText) || TextUtils.equals(encryptedText, "0")) {
             return BLANK_STRING
         }
+        try {
 
-        val textToDecrypt = Base64.decode(encryptedText, Base64.DEFAULT)
 
-        val cipher = Cipher.getInstance("AES")
+            val textToDecrypt = Base64.decode(encryptedText, Base64.DEFAULT)
 
-        cipher.init(Cipher.DECRYPT_MODE, generateSecretKey(secretKeyPass))
+            val cipher = Cipher.getInstance("AES")
 
-        val decrypt = cipher.doFinal(textToDecrypt)
-        return String(decrypt)
+            cipher.init(Cipher.DECRYPT_MODE, generateSecretKey(secretKeyPass))
+
+            val decrypt = cipher.doFinal(textToDecrypt)
+            return String(decrypt)
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "AES", msg = exception.stackTraceToString(), ex = exception)
+
+            return encryptedText
+        }
     }
 
 }
