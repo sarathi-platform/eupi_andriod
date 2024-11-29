@@ -1153,7 +1153,7 @@ fun formatToIndianRupee(amount: String): String {
         }
     } catch (ex: Exception) {
         CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1434,5 +1434,21 @@ fun formatProgressNumber(value: Float): Float {
             ?.let { CoreLogger.e(it, "CoreUtils", "formatProgressNumber:${ex.message}", ex, false) }
         return 0F
 
+    }
+}
+
+fun calculateProgress(pendingCount: Int, totalCount: Int): Float {
+    return if (totalCount <= 0)
+        0F
+    else {
+        pendingCount.intToFloat() / totalCount.intToFloat()
+    }
+}
+
+fun Int.intToFloat(): Float {
+    return try {
+        this.toFloat()
+    } catch (e: Exception) {
+        0F
     }
 }

@@ -46,5 +46,6 @@
     <string name="village_filter_label">"Filter by Village: "</string>
     <string name="empty_task_list_placeholder">No Task found for this activity!</string>
     <string name="details_have_already_been_added">Details have already been added!</string>
+    <string name="no_result_found">No result found</string>
 
 </resources>
