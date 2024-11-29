@@ -1,5 +1,6 @@
 package com.nudge.core.data.repository
 
+import android.util.Base64
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
@@ -53,7 +54,15 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 data[AppConfigKeysEnum.MIX_PANEL_KEY.name].toString()
             )
         }
-
+        if (data.containsKey(AppConfigKeysEnum.SENSITIVE_INFO_KEY.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                Base64.encodeToString(
+                    data[AppConfigKeysEnum.SENSITIVE_INFO_KEY.name].toString().toByteArray(),
+                    Base64.DEFAULT
+                )
+            )
+        }
         // TODO Uncomment code after navigation is fixed.
         /*if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {
             data[AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {
