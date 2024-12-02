@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
-import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -58,6 +57,7 @@ import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
@@ -129,7 +129,10 @@ fun GridTypeComponent(
         ) {
             Column(modifier = Modifier.background(white)) {
                 Column(
-                    Modifier.padding(top = dimen_16_dp),
+                    Modifier.padding(
+                        top = dimen_16_dp,
+                        bottom = if (showCardView) dimen_16_dp else dimen_2_dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(
                         dimen_18_dp
                     )
@@ -211,8 +214,6 @@ fun GridTypeComponent(
                                         navigateToMediaPlayerScreen(contentList)
                                     }
                                 )
-                            } else {
-                                CustomVerticalSpacer()
                             }
                         }
                     }
