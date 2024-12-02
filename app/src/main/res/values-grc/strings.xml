@@ -525,6 +525,7 @@
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">"Select Activity for "</string>
     <string name="select_all">Select All</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
     <string name="sync_all_data">Sync All Data</string>
 

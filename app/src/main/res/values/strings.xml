@@ -566,6 +566,7 @@
     <string name="select_activity_for">Select Activity for </string>
     <string name="select_all">Select All</string>
     <string name="refresh_config">Refresh app config</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
 
     <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="sync_failed_message">"Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin."</string>
