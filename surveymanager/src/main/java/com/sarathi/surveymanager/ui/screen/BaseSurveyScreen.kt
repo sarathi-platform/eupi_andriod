@@ -471,6 +471,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
@@ -501,6 +502,7 @@ fun QuestionUiContent(
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
                     optionStateMap = viewModel.optionStateMap,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -541,6 +543,7 @@ fun QuestionUiContent(
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
