@@ -19,5 +19,7 @@ data class ActivityResponse(
     @SerializedName("startOffset")
     val startOffset: Int?,
     @SerializedName("tasks")
-    val taskResponses: List<TaskResponse>?
+    val taskResponses: List<TaskResponse>?,
+    @SerializedName("order")
+    val order: Int?,
 )

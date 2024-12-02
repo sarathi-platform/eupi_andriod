@@ -31,8 +31,14 @@ interface ActivityDao {
     @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = 0 where  userId=:userId and missionId = :missionId")
     fun softDeleteActivity(missionId: Int, userId: String)
 
-    @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = :isActive where  userId=:userId and missionId = :missionId and activityId= :activityId")
-    fun updateActivityActiveStatus(missionId: Int, userId: String, isActive: Int, activityId: Int)
+    @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = :isActive, activityOrder =:order where  userId=:userId and missionId = :missionId and activityId= :activityId")
+    fun updateActivityActiveStatus(
+        missionId: Int,
+        userId: String,
+        isActive: Int,
+        activityId: Int,
+        order: Int
+    )
 
     @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId ")
     suspend fun getActivityCount(userId: String, activityId: Int): Int

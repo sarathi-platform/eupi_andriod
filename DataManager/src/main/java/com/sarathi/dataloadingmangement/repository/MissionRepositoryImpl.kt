@@ -188,7 +188,8 @@ class MissionRepositoryImpl @Inject constructor(
                         missionId = missionId,
                         userId = sharedPrefs.getUniqueUserIdentifier(),
                         isActive = 1,
-                        activityId = missionActivityModel.id
+                        activityId = missionActivityModel.id,
+                        order = missionActivityModel.order ?: 1
                     )
                 }
 
