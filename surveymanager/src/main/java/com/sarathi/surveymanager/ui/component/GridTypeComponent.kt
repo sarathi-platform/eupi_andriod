@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -66,6 +67,7 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -183,6 +185,7 @@ fun GridTypeComponent(
                                             ?: emptyList()
                                     ) { _index, optionItem ->
                                         GridOptionCard(
+                                            isEditAllowed = isEditAllowed,
                                             optionItem = optionItem,
                                             isEnabled = optionStateMap.filter {
                                                 it.key == Pair(
@@ -232,8 +235,10 @@ fun GridOptionCard(
     isTaskMarkedNotAvailable: MutableState<Boolean>,
     isEnabled: Map.Entry<Pair<Int, Int>, Boolean>?,
     isOptionSelected: Boolean = false,
-    onOptionSelected: (Int, isSelected: Boolean) -> Unit
+    isEditAllowed: Boolean,
+    onOptionSelected: (Int, isSelected: Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
 
     val isSelected = remember(optionItem.description, isEnabled?.key, isEnabled?.value) {
         mutableStateOf(isOptionSelected)
@@ -256,8 +261,16 @@ fun GridOptionCard(
             )
             .clickable {
                 if (isOptionEnabled.value) {
-                    isSelected.value = !isSelected.value
-                    onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                    if (isEditAllowed) {
+                        isSelected.value = !isSelected.value
+                        onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                    } else {
+                        showCustomToast(
+                            context,
+                            context.getString(R.string.edit_disable_message)
+                        )
+                    }
+
                 }
             }
             .then(modifier)) {
