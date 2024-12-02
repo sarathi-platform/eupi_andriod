@@ -39,11 +39,11 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.SENSITIVE_INFO_TAG_ID
-import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.SUBJECT_ADDRESS
 import com.nudge.core.SUBJECT_COHORT_NAME
 import com.nudge.core.SUBJECT_DADA_NAME
 import com.nudge.core.SUBJECT_NAME
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.VILLAGE_NAME
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
@@ -51,8 +51,6 @@ import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.exportDatabase
-import com.nudge.core.exportOldData
-import com.nudge.core.exportLogFile
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
@@ -486,12 +484,31 @@ class ExportImportViewModel @Inject constructor(
         surveyId: Int
     ): List<BaseLineQnATableCSV> {
         val filteredList = baseLineQnATableCSV.filter { it.surveyId == surveyId }
-        val groupedAndSorted = filteredList
+        /*val groupedAndSorted = filteredList
             .groupBy { Pair(it.referenceId, it.sectionId) }
             .toList()
             .sortedBy { it.first.second }
             .flatMap { it.second.sortedBy { it.orderId } }
-        return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }
+        return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }*/
+
+        val groupedAndSortedList = filteredList
+            .groupBy { it.subjectId } // Group by subjectId
+            .flatMap { (_, subjectGroup) ->
+                subjectGroup
+                    .groupBy { it.sectionId } // Group by sectionId
+                    .toList()
+                    .sortedBy { it.first } // Sort sections by sectionId
+                    .flatMap { (_, sectionGroup) ->
+                        sectionGroup
+                            .groupBy { it.referenceId } // Group by referenceId
+                            .toList()
+                            .sortedBy { it.first } // Sort by referenceId if needed
+                            .flatMap { (_, questions) ->
+                                questions.sortedBy { it.orderId } // Sort questions by orderId
+                            }
+                    }
+            }
+        return groupedAndSortedList
     }
 
     private fun generateTitle(): String {
