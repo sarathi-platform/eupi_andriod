@@ -68,6 +68,8 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_250_dp
+import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
@@ -176,14 +178,14 @@ fun TaskScreen(
             sheetContent = {
                 Box(
                     modifier = Modifier
-                        .height(250.dp)
+                        .height(dimen_250_dp)
                         .fillMaxWidth()
                 ) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = dimen_10_dp)
-                            .padding(bottom = 10.dp)
+                            .padding(bottom = dimen_10_dp)
                     ) {
                         item {
                             Column(
@@ -205,7 +207,7 @@ fun TaskScreen(
                                         scope.launch {
                                             scaffoldState.hide()
                                         }
-                                    }, modifier = Modifier.size(48.dp)) {
+                                    }, modifier = Modifier.size(dimen_48_dp)) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.icon_close),
                                             contentDescription = "Close",
@@ -213,7 +215,7 @@ fun TaskScreen(
                                         )
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(dimen_10_dp))
                                 Text(
                                     text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
                                     style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
@@ -255,7 +257,7 @@ fun TaskScreen(
                 }
             },
             sheetState = scaffoldState,
-            sheetElevation = 20.dp,
+            sheetElevation = dimen_20_dp,
             sheetBackgroundColor = Color.White,
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
