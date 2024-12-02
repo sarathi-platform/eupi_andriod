@@ -455,7 +455,7 @@ fun LastSyncTime(lastSyncTime: Long, mobileNumber: String, onCancelWorker: () ->
                 )
 
                 Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.US).format(
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
                         lastSyncTime
                     ),
                     style = syncMediumTextStyle,
