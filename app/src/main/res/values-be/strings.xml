@@ -505,5 +505,6 @@
     <string name="select_mission">मिसनखौ सायख\'</string>
     <string name="select_activity_for">हाबाफारिफोरनि थाखाय सायख\'</string>
     <string name="select_all">गासैखौबो सायख\'</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
 
 </resources>
