@@ -548,5 +548,5 @@
     <string name="select_activity_for">Select Activity for </string>
     <string name="select_all">Select All</string>
     <string name="refresh_config">Refresh app config</string>
-
+    <string name="activity_inprogress">Activities marked In Progress</string>
 </resources>

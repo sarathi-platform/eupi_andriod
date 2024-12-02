@@ -526,6 +526,7 @@
     <string name="select_mission">মিছন বাছক</string>
     <string name="select_activity_for">ইয়াৰ বাবে কাৰ্যকলাপ সমূহ বাছক</string>
     <string name="select_all">সকলো বাছক</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
 
 
 </resources>
