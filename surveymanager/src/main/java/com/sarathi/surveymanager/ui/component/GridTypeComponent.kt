@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -200,16 +201,19 @@ fun GridTypeComponent(
                             }
                         }
                         item {
-                            if (showCardView && contests?.isNotEmpty() == true)
-                            ContentBottomViewComponent(
-                                contents = contests,
-                                questionIndex = questionIndex,
-                                showCardView = showCardView,
-                                questionDetailExpanded = {},
-                                navigateToMediaPlayerScreen = { contentList ->
-                                    navigateToMediaPlayerScreen(contentList)
-                                }
-                            )
+                            if (showCardView && contests?.isNotEmpty() == true) {
+                                ContentBottomViewComponent(
+                                    contents = contests,
+                                    questionIndex = questionIndex,
+                                    showCardView = showCardView,
+                                    questionDetailExpanded = {},
+                                    navigateToMediaPlayerScreen = { contentList ->
+                                        navigateToMediaPlayerScreen(contentList)
+                                    }
+                                )
+                            } else {
+                                CustomVerticalSpacer()
+                            }
                         }
                     }
 
