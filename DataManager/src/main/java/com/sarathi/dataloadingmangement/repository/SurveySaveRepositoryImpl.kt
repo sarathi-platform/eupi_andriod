@@ -197,26 +197,50 @@ class SurveySaveRepositoryImpl @Inject constructor(
                                 optionItem.description
                         }
                     }
+                } else {
+                    getSelectedOptionForLanguage(
+                        sectionId,
+                        surveyId,
+                        surveyAnswerData,
+                        surveyAnswers,
+                        index
+                    )
                 }
             } else {
-                val questionOptions = getSurveySectionQuestionOptionsForLanguage(
-                    sectionId = sectionId,
-                    surveyId = surveyId,
-                    referenceType = LanguageAttributeReferenceType.OPTION.name
+                getSelectedOptionForLanguage(
+                    sectionId,
+                    surveyId,
+                    surveyAnswerData,
+                    surveyAnswers,
+                    index
                 )
-                surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
-                    val optionItem =
-                        questionOptions.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
-                    if (optionItem != null) {
-                        surveyAnswers[index].optionItems[optionIndex].description =
-                            optionItem.description
-                    }
-                    option.optionType = surveyAnswerData.questionType
-                }
             }
 
         }
         return surveyAnswers
+    }
+
+    private fun getSelectedOptionForLanguage(
+        sectionId: Int,
+        surveyId: Int,
+        surveyAnswerData: SurveyAnswerFormSummaryUiModel,
+        surveyAnswers: List<SurveyAnswerFormSummaryUiModel>,
+        index: Int
+    ) {
+        val questionOptions = getSurveySectionQuestionOptionsForLanguage(
+            sectionId = sectionId,
+            surveyId = surveyId,
+            referenceType = LanguageAttributeReferenceType.OPTION.name
+        )
+        surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
+            val optionItem =
+                questionOptions.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
+            if (optionItem != null) {
+                surveyAnswers[index].optionItems[optionIndex].description =
+                    optionItem.description
+            }
+            option.optionType = surveyAnswerData.questionType
+        }
     }
 
     override fun getTotalSavedFormResponsesCount(
@@ -246,7 +270,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
             sectionId = sectionId,
             surveyId = surveyId,
             referenceType = referenceType,
-            languageId = coreSharedPrefs.getSelectedLanguageCode()
+            languageId = coreSharedPrefs.getAppLanguage()
         )
     }
 
