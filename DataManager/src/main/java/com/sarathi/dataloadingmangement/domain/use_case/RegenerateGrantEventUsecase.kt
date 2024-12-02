@@ -179,7 +179,7 @@ class RegenerateGrantEventUsecase @Inject constructor(
                         questionUiModel.filter { it.options?.any { it.isSelected == true } == true }
 
                     val eventList = arrayListOf<BaseSaveAnswerEventDto>()
-                    questionUiModel.find { it.questionId == surveyAnswer.questionId && it.sectionId == surveyAnswer.sectionId && it.surveyId == surveyAnswer.surveyId }
+                    findQuestionFromSurveySectionQuestionAndFormId(questionUiModel, surveyAnswer)
                         ?.let {
                             val event = surveyAnswerEventWriterUseCase.fetchQuestionAnswerEventList(
                                 questionUiModel = it,
@@ -208,6 +208,16 @@ class RegenerateGrantEventUsecase @Inject constructor(
             exception.printStackTrace()
         }
         return null
+    }
+
+    private fun findQuestionFromSurveySectionQuestionAndFormId(
+        questionUiModel: List<QuestionUiModel>,
+        surveyAnswer: SurveyAnswerEntity
+    ) = questionUiModel.find {
+        it.questionId == surveyAnswer.questionId
+                && it.sectionId == surveyAnswer.sectionId
+                && it.surveyId == surveyAnswer.surveyId
+                && it.formId == surveyAnswer.formId
     }
 
     private suspend fun writeFormUpdateEvent() {
