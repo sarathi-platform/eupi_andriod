@@ -53,6 +53,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomButtonVisibilityState
 import com.nudge.core.ui.theme.blueDark
@@ -334,25 +335,29 @@ fun SectionScreen(
                             verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
                             modifier = Modifier
                                 .padding(
+                                    top = dimen_16_dp,
                                     start = dimen_16_dp,
                                     end = dimen_16_dp,
                                     bottom = dimen_50_dp
                                 )
                         ) {
 
-                                item {
-                                    ComplexSearchComponent {
-                                        onNavigateToComplexSearchScreen(
-                                            surveyId,
-                                            NUMBER_ZERO,
-                                            taskId,
-                                            activityConfigId,
-                                            ARG_FROM_SECTION_SCREEN,
-                                            subjectType,
-                                            activityType
-                                        )
-                                    }
+                            item {
+                                CustomVerticalSpacer(size = dimen_50_dp)
+                            }
+                            item {
+                                ComplexSearchComponent {
+                                    onNavigateToComplexSearchScreen(
+                                        surveyId,
+                                        NUMBER_ZERO,
+                                        taskId,
+                                        activityConfigId,
+                                        ARG_FROM_SECTION_SCREEN,
+                                        subjectType,
+                                        activityType
+                                    )
                                 }
+                            }
 
                             // TODO handle progress correctly.
                             /*item {

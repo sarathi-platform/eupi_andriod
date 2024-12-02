@@ -1,11 +1,14 @@
 package com.sarathi.surveymanager.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,8 +25,16 @@ import com.nudge.core.HOURS
 import com.nudge.core.MINUTE
 import com.nudge.core.MONTHS
 import com.nudge.core.YEAR
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
@@ -50,101 +61,112 @@ fun HrsMinRangePickerComponent(
     val secondInputValue = remember {
         mutableStateOf(getSecondValue(typePicker, defaultValue))
     }
-    Column(
+    BasicCardView(
+        cardElevation = CardDefaults.cardElevation(
+            defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
+        ),
+        cardShape = RoundedCornerShape(roundedCornerRadiusDefault),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 2.dp)
+            .background(white)
     ) {
-        if (title != null) {
-            if (title.isNotBlank()) {
-                QuestionComponent(
-                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
-                    onDetailIconClicked = { onDetailIconClicked() },
-                    title = title,
-                    isRequiredField = isMandatory
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = if (showCardView) dimen_16_dp else dimen_2_dp)
+                .padding(top = if (showCardView) dimen_10_dp else dimen_2_dp)
+        ) {
+            if (title != null) {
+                if (title.isNotBlank()) {
+                    QuestionComponent(
+                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                        onDetailIconClicked = { onDetailIconClicked() },
+                        title = title,
+                        isRequiredField = isMandatory
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+
+                    InputComponent(
+                        questionIndex = 0,
+                        isOnlyNumber = true,
+                        defaultValue = firstInputValue.value,
+                        isMandatory = false,
+                        maxLength = 3,
+                        title = getFirstTitle(typePicker),
+                        navigateToMediaPlayerScreen = { contentList ->
+                            navigateToMediaPlayerScreen(contentList)
+                        },
+                        isEditable = isEditAllowed,
+                    ) { selectedValue, remainingAmout ->
+                        firstInputValue.value = selectedValue
+                        val secondValue =
+                            if (secondInputValue.value.equals(
+                                    context.getString(R.string.select),
+                                    true
+                                )
+                            ) getSecondDefaultValue(typePicker) else secondInputValue.value
+                        onAnswerSelection(
+                            getPickerValue(
+                                typePicker = typePicker,
+                                firstValue = firstInputValue.value,
+                                secondValue = secondValue
+                            ),
+                            0
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 10.dp)
+                ) {
+                    TypeDropDownComponent(
+                        title = getSecondTitle(typePicker),
+                        hintText = secondInputValue.value,
+                        navigateToMediaPlayerScreen = { contentList ->
+                            navigateToMediaPlayerScreen(contentList)
+                        },
+                        sources = getSources(typePicker),
+                    ) { selectedValue ->
+                        secondInputValue.value =
+                            getSources(typePicker).find { it.id == selectedValue.id }?.value
+                                ?: BLANK_STRING/* selectedValue*/
+                        onAnswerSelection(
+                            getPickerValue(
+                                typePicker = typePicker,
+                                firstValue = firstInputValue.value,
+                                secondValue = getSources(typePicker).find { it.id == selectedValue.id }?.value
+                                    ?: BLANK_STRING
+                            ),
+                            selectedValue.id
+                        )
+
+                    }
+                }
+            }
+            if (showCardView && contests?.isNotEmpty() == true) {
+                CustomVerticalSpacer(size = dimen_6_dp)
+                ContentBottomViewComponent(
+                    contents = contests,
+                    questionIndex = 0,
+                    showCardView = showCardView,
+                    questionDetailExpanded = {},
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    }
                 )
             }
         }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
-
-                InputComponent(
-                    questionIndex = 0,
-                    isOnlyNumber = true,
-                    defaultValue = firstInputValue.value,
-                    isMandatory = false,
-                    maxLength = 3,
-                    title = getFirstTitle(typePicker),
-                    navigateToMediaPlayerScreen = { contentList ->
-                        navigateToMediaPlayerScreen(contentList)
-                    },
-                    isEditable = isEditAllowed,
-                ) { selectedValue, remainingAmout ->
-                    firstInputValue.value = selectedValue
-                    val secondValue =
-                        if (secondInputValue.value.equals(
-                                context.getString(R.string.select),
-                                true
-                            )
-                        ) getSecondDefaultValue(typePicker) else secondInputValue.value
-                    onAnswerSelection(
-                        getPickerValue(
-                            typePicker = typePicker,
-                            firstValue = firstInputValue.value,
-                            secondValue = secondValue
-                        ),
-                        0
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 10.dp)
-            ) {
-                TypeDropDownComponent(
-                    title = getSecondTitle(typePicker),
-                    hintText = secondInputValue.value,
-                    navigateToMediaPlayerScreen = { contentList ->
-                        navigateToMediaPlayerScreen(contentList)
-                    },
-                    sources = getSources(typePicker),
-                ) { selectedValue ->
-                    secondInputValue.value =
-                        getSources(typePicker).find { it.id == selectedValue.id }?.value
-                            ?: BLANK_STRING/* selectedValue*/
-                    onAnswerSelection(
-                        getPickerValue(
-                            typePicker = typePicker,
-                            firstValue = firstInputValue.value,
-                            secondValue = getSources(typePicker).find { it.id == selectedValue.id }?.value
-                                ?: BLANK_STRING
-                        ),
-                        selectedValue.id
-                    )
-
-                }
-            }
-        }
-        if (showCardView && contests?.isNotEmpty() == true) {
-            CustomVerticalSpacer(size = dimen_6_dp)
-            ContentBottomViewComponent(
-                contents = contests,
-                questionIndex = 0,
-                showCardView = showCardView,
-                questionDetailExpanded = {},
-                navigateToMediaPlayerScreen = { contentList ->
-                    navigateToMediaPlayerScreen(contentList)
-                }
-            )
-        }
-
     }
+
 }
 
 @Composable
