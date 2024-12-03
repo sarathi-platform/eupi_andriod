@@ -65,6 +65,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
+import com.nudge.core.calculateProgress
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -199,9 +200,10 @@ fun AllSurveyeeListTab(
                                 .observeAsState().value ?: 0
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 linearProgress.value =
-                                    ((if (surveyeeList.isNotEmpty()) (surveyeeList.size - pendingTasks).toFloat() else 0.0F)
-                                            /*.coerceIn(0.0F, 1.0F)*/ / (if (surveyeeList.isNotEmpty()) surveyeeList.size.toFloat() else 0.0F)
-                                            /*.coerceIn(0.0F, 1.0F)*/)
+                                    calculateProgress(
+                                        pendingCount = (if (surveyeeList.isNotEmpty()) (surveyeeList.size - pendingTasks) else 0),
+                                        totalCount = surveyeeList.size
+                                    )
                                 LinearProgressIndicator(
                                     modifier = Modifier
                                         .weight(1f)
