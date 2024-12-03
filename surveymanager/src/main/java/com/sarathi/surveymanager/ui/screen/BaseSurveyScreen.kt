@@ -49,6 +49,7 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -616,7 +617,9 @@ fun QuestionUiContent(
         Text(
             text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
                 ?: BLANK_STRING,
-            modifier = Modifier.padding(horizontal = dimen_5_dp),
+            modifier = Modifier
+                .padding(horizontal = dimen_5_dp)
+                .padding(top = dimen_8_dp, bottom = dimen_10_dp),
             style = quesOptionTextStyle.copy(color = eventTextColor)
         )
     }
