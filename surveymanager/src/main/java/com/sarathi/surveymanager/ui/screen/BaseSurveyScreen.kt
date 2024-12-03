@@ -64,8 +64,6 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
-import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
-import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -694,30 +692,12 @@ fun FormQuestionUiContent(
                     if (viewModel.showSummaryView.get(question.formId)
                             .value() > NUMBER_ZERO
                     ) {
-                        val surveyConfigForForm = viewModel.surveyConfig[question.formId]
-                        surveyConfigForForm?.forEach { mapEntry ->
-                            mapEntry.value.filter {
-                                it.componentType.equals(
-                                    CONFIG_SLOT_TYPE_QUESTION_CARD,
-                                    true
-                                )
-                            }.forEach {
-                                val mMapEntry = mapOf(mapEntry.key to it)
-                                val updatedModel = viewModel.getSurveyModelWithValue(
-                                    mMapEntry.entries.firstOrNull()!!,
-                                    question,
-                                    surveyConfigForForm
-                                )
-
-                                if (!it.type.equals(CALCULATION_TYPE, true)) {
-                                    CustomVerticalSpacer()
-
-                                    SubContainerView(
-                                        updatedModel,
-                                        isNumberFormattingRequired = false
-                                    )
-                                }
-                            }
+                        viewModel.filteredSurveyModels[question.formId]?.forEach { model ->
+                            CustomVerticalSpacer()
+                            SubContainerView(
+                                model,
+                                isNumberFormattingRequired = false
+                            )
                         }
                         CustomVerticalSpacer()
                         LinkTextButtonWithIcon(
@@ -730,8 +710,46 @@ fun FormQuestionUiContent(
                         ) {
                             onViewSummaryClicked(question)
                         }
-
                     }
+//                    ) {
+//                        val surveyConfigForForm = viewModel.surveyConfig[question.formId]
+//                        surveyConfigForForm?.forEach { mapEntry ->
+//                            mapEntry.value.filter {
+//                                it.componentType.equals(
+//                                    CONFIG_SLOT_TYPE_QUESTION_CARD,
+//                                    true
+//                                )
+//                            }.forEach {
+//                                val mMapEntry = mapOf(mapEntry.key to it)
+//                                val updatedModel = viewModel.getSurveyModelWithValue(
+//                                    mMapEntry.entries.firstOrNull()!!,
+//                                    question,
+//                                    surveyConfigForForm
+//                                )
+//
+//                                if (!it.type.equals(CALCULATION_TYPE, true)) {
+//                                    CustomVerticalSpacer()
+//
+//                                    SubContainerView(
+//                                        updatedModel,
+//                                        isNumberFormattingRequired = false
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        CustomVerticalSpacer()
+//                        LinkTextButtonWithIcon(
+//                            modifier = Modifier
+//                                .align(Alignment.Start),
+//                            title = stringResource(CoreRes.string.view_summary),
+//                            isIconRequired = true,
+//                            textColor = summaryCardViewBlue,
+//                            iconTint = summaryCardViewBlue
+//                        ) {
+//                            onViewSummaryClicked(question)
+//                        }
+//
+//                    }
                 }
             }
 

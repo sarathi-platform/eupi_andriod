@@ -38,6 +38,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
@@ -312,7 +313,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAllAnswers() {
+    fun saveAllAnswers(onSaveComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
@@ -347,6 +348,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
                     )
                 }
                 checkAndUpdateNonVisibleQuestionResponseInDb(question = it)
+            }
+            withContext(Dispatchers.Main)
+            {
+                onSaveComplete()
             }
         }
     }
