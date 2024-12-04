@@ -55,16 +55,15 @@ fun ExpandableDescriptionContentComponent(
                     descriptionBoxBackgroundLightBlue
                 else
                     white
-            ),
+            )
+            .clickable {
+                questionDetailVisibilityState.value = !questionDetailVisibilityState.value
+                questionDetailExpanded(index)
+            },
         contentAlignment = Alignment.Center
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .clickable {
-                    questionDetailVisibilityState.value = !questionDetailVisibilityState.value
-                    questionDetailExpanded(index)
-                }
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             IconButton(onClick = {
                 questionDetailVisibilityState.value = !questionDetailVisibilityState.value
