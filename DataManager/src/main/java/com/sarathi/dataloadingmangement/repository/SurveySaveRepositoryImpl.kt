@@ -356,7 +356,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
         ) > 0
     }
 
-    override fun getFormResponseMap(
+    override suspend fun getFormResponseMap(
         surveyId: Int,
         taskId: Int,
         sectionId: Int,
