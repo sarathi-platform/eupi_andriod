@@ -41,6 +41,8 @@ var subjectId : Int? = 0,
 
 var sectionId: Int? = 0,
 var orderId: Int? = 0,
+var sortKey: Int? = 0,
+var formOder: Int? = 0,
 var referenceId: String? = BLANK_STRING
 
 ) : Exportable
@@ -73,6 +75,7 @@ data class HamletQnATableCSV(
 
     var sectionId: Int? = 0,
     var orderId: Int? = 0,
+    var formOrder: Int? = 0,
     var referenceId: String? = BLANK_STRING
 
     ) : Exportable

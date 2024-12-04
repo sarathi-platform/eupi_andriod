@@ -63,6 +63,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUM
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
@@ -130,7 +131,7 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLiveliho
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 4
+const val NUDGE_GRANT_DATABASE_VERSION = 5
 
 @Database(
     entities = [
@@ -318,7 +319,15 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                 )
             }
         }
-
+        val NUDGE_GRANT_DATABASE_MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_2_3")
+                migration(
+                    db,
+                    listOf(ALTER_QUESTION_ENTITY_ADD_FORM_ORDER)
+                )
+            }
+        }
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
             for (sql in execSqls) {
                 try {
