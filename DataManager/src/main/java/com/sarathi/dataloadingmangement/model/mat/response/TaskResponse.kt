@@ -21,5 +21,7 @@ data class TaskResponse(
     @SerializedName("taskStatus")
     val taskStatus: String,
     @SerializedName("localTaskId")
-    val localTaskId: String?
+    val localTaskId: String?,
+    @SerializedName("order")
+    val order: Int? = 1,
 )
