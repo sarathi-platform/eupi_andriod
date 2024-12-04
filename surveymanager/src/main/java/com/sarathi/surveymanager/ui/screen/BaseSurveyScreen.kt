@@ -711,45 +711,6 @@ fun FormQuestionUiContent(
                             onViewSummaryClicked(question)
                         }
                     }
-//                    ) {
-//                        val surveyConfigForForm = viewModel.surveyConfig[question.formId]
-//                        surveyConfigForForm?.forEach { mapEntry ->
-//                            mapEntry.value.filter {
-//                                it.componentType.equals(
-//                                    CONFIG_SLOT_TYPE_QUESTION_CARD,
-//                                    true
-//                                )
-//                            }.forEach {
-//                                val mMapEntry = mapOf(mapEntry.key to it)
-//                                val updatedModel = viewModel.getSurveyModelWithValue(
-//                                    mMapEntry.entries.firstOrNull()!!,
-//                                    question,
-//                                    surveyConfigForForm
-//                                )
-//
-//                                if (!it.type.equals(CALCULATION_TYPE, true)) {
-//                                    CustomVerticalSpacer()
-//
-//                                    SubContainerView(
-//                                        updatedModel,
-//                                        isNumberFormattingRequired = false
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        CustomVerticalSpacer()
-//                        LinkTextButtonWithIcon(
-//                            modifier = Modifier
-//                                .align(Alignment.Start),
-//                            title = stringResource(CoreRes.string.view_summary),
-//                            isIconRequired = true,
-//                            textColor = summaryCardViewBlue,
-//                            iconTint = summaryCardViewBlue
-//                        ) {
-//                            onViewSummaryClicked(question)
-//                        }
-//
-//                    }
                 }
             }
 
