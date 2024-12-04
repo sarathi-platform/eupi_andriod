@@ -39,6 +39,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -116,6 +118,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         mutableStateMapOf<Int, String>()
 
     val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> get() = conditionsUtils.optionStateMap
+    private val _filteredSurveyModels = mutableStateMapOf<Int, List<SurveyCardModel>>()
+    val filteredSurveyModels: SnapshotStateMap<Int, List<SurveyCardModel>> get() = _filteredSurveyModels
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -141,97 +145,97 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     open suspend fun intiQuestions() {
-            taskEntity = getTaskUseCase.getTask(taskId)
-            if (_questionUiModel.value.isEmpty()) {
-                _questionUiModel.value = fetchDataUseCase.invoke(
-                    surveyId = surveyId,
-                    sectionId = sectionId,
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                    activityConfigId = activityConfigId,
-                    referenceId = referenceId,
-                    grantId = grantID,
-                    missionId = taskEntity?.missionId.value(DEFAULT_ID),
-                    activityId = taskEntity?.activityId.value(DEFAULT_ID)
-                )
-            }
+        taskEntity = getTaskUseCase.getTask(taskId)
+        if (_questionUiModel.value.isEmpty()) {
+            _questionUiModel.value = fetchDataUseCase.invoke(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                activityConfigId = activityConfigId,
+                referenceId = referenceId,
+                grantId = grantID,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
+            )
+        }
 
-            taskEntity?.let { task ->
-                activityConfig =
-                    getActivityUiConfigUseCase.getActivityConfig(task.activityId, task.missionId)
-            }
+        taskEntity?.let { task ->
+            activityConfig =
+                getActivityUiConfigUseCase.getActivityConfig(task.activityId, task.missionId)
+        }
 
-            val sectionList = getSectionListUseCase.invoke(surveyId = surveyId)
+        val sectionList = getSectionListUseCase.invoke(surveyId = surveyId)
 
-            isNoSection.value = sectionList.size == 1
+        isNoSection.value = sectionList.size == 1
 
-            questionUiModel.value
-                .filter { it.formId != 0 }
-                .groupBy { it.formId }
-                .also { it ->
-                    val formQuestionMap = mutableMapOf<Int, List<Int>>()
-                    it.forEach { mapEntry ->
-                        val questionIds = mapEntry.value.map { it.questionId }
-                        formQuestionMap.put(mapEntry.key, questionIds)
-                    }
-                    val totalSavedFormResponseCount =
-                        saveSurveyAnswerUseCase.getTotalSavedFormResponsesCount(
-                            surveyId = surveyId,
-                            sectionId = sectionId,
-                            taskId = taskId,
-                            formQuestionMap = formQuestionMap
-                        )
-                    totalSavedFormResponseCount.forEach { mapEntry ->
-                        showSummaryView[mapEntry.key] = mapEntry.value
-                    }
-
-                    formResponseMap = saveSurveyAnswerUseCase.getFormResponseMap(
+        questionUiModel.value
+            .filter { it.formId != 0 }
+            .groupBy { it.formId }
+            .also { it ->
+                val formQuestionMap = mutableMapOf<Int, List<Int>>()
+                it.forEach { mapEntry ->
+                    val questionIds = mapEntry.value.map { it.questionId }
+                    formQuestionMap.put(mapEntry.key, questionIds)
+                }
+                val totalSavedFormResponseCount =
+                    saveSurveyAnswerUseCase.getTotalSavedFormResponsesCount(
                         surveyId = surveyId,
                         sectionId = sectionId,
                         taskId = taskId,
                         formQuestionMap = formQuestionMap
                     )
+                totalSavedFormResponseCount.forEach { mapEntry ->
+                    showSummaryView[mapEntry.key] = mapEntry.value
                 }
 
-
-            activityConfig?.let {
-                getSurveyConfigFromDbUseCase.invoke(
-                    missionId = it.missionId,
-                    it.activityId,
-                    surveyId
-                )?.also { surveyConfigMap ->
-                    val taskAttributes = getTaskUseCase.getSubjectAttributes(taskId)
-                    surveyConfig = getSurveyConfig(surveyConfigMap, taskAttributes)
-                }
-                validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
-            }
-
-            val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
-                .invoke(
+                formResponseMap = saveSurveyAnswerUseCase.getFormResponseMap(
                     surveyId = surveyId,
                     sectionId = sectionId,
-                    questionIdList = questionUiModel.value.map { it.questionId }
-                )
-
-            conditionsUtils.apply {
-                init(questionUiModel.value, sourceTargetQuestionMapping)
-                initQuestionVisibilityMap(questionUiModel.value)
-                initOptionsStateMap(questionUiModel.value)
-                questionUiModel.value.forEach {
-                    runConditionCheck(it)
-                }
-                updateAutoCalculateQuestionValue(
-                    questionUiModel.value,
-                    surveyConfig[DEFAULT_FORM_ID],
-                    autoCalculateQuestionResultMap
+                    taskId = taskId,
+                    formQuestionMap = formQuestionMap
                 )
             }
 
-            isTaskStatusCompleted()
 
-
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
+        activityConfig?.let {
+            getSurveyConfigFromDbUseCase.invoke(
+                missionId = it.missionId,
+                it.activityId,
+                surveyId
+            )?.also { surveyConfigMap ->
+                val taskAttributes = getTaskUseCase.getSubjectAttributes(taskId)
+                surveyConfig = getSurveyConfig(surveyConfigMap, taskAttributes)
             }
+            validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
+        }
+
+        val sourceTargetQuestionMapping = getConditionQuestionMappingsUseCase
+            .invoke(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                questionIdList = questionUiModel.value.map { it.questionId }
+            )
+
+        conditionsUtils.apply {
+            init(questionUiModel.value, sourceTargetQuestionMapping)
+            initQuestionVisibilityMap(questionUiModel.value)
+            initOptionsStateMap(questionUiModel.value)
+            questionUiModel.value.forEach {
+                runConditionCheck(it)
+            }
+            updateAutoCalculateQuestionValue(
+                questionUiModel.value,
+                surveyConfig[DEFAULT_FORM_ID],
+                autoCalculateQuestionResultMap
+            )
+        }
+        fetchFilteredSurveyModels()
+        isTaskStatusCompleted()
+
+
+        withContext(Dispatchers.Main) {
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+        }
 
     }
 
@@ -425,13 +429,13 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     taskStatusUseCase.markTaskInProgress(taskId)
                 }
                 if (oldTaskStatus != newTaskStatus)
-                taskEntity?.let { task ->
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        task,
-                        survey.surveyName,
-                        subjectType
-                    )
-                }
+                    taskEntity?.let { task ->
+                        matStatusEventWriterUseCase.updateTaskStatus(
+                            task,
+                            survey.surveyName,
+                            subjectType
+                        )
+                    }
             }
         }
     }
@@ -530,8 +534,35 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         return fetchContentUseCase.isFilePathExists(filePath)
     }
 
-}
 
-fun List<QuestionUiModel>.filterForValidations(visibilityMap: Map<Int, Boolean>): List<QuestionUiModel> {
-    return this.filter { it.isMandatory && it.formId == NUMBER_ZERO && visibilityMap.get(it.questionId) == true }
+    fun List<QuestionUiModel>.filterForValidations(visibilityMap: Map<Int, Boolean>): List<QuestionUiModel> {
+        return this.filter { it.isMandatory && it.formId == NUMBER_ZERO && visibilityMap.get(it.questionId) == true }
+    }
+
+    fun fetchFilteredSurveyModels() {
+        _filteredSurveyModels.clear()
+        questionUiModel.value.forEach {
+            val surveyConfigForForm = surveyConfig[it.formId]
+            val filteredModels = mutableListOf<SurveyCardModel>()
+
+            surveyConfigForForm?.forEach { mapEntry ->
+                mapEntry.value.filter {
+                    it.componentType.equals(CONFIG_SLOT_TYPE_QUESTION_CARD, true)
+                }.forEach { component ->
+                    val mMapEntry = mapOf(mapEntry.key to component)
+                    val updatedModel = getSurveyModelWithValue(
+                        mMapEntry.entries.firstOrNull()!!,
+                        it,
+                        surveyConfigForForm
+                    )
+                    if (!component.type.equals(CALCULATION_TYPE, true)) {
+                        filteredModels.add(updatedModel)
+                    }
+                }
+            }
+            _filteredSurveyModels[it.formId] = filteredModels
+
+        }
+    }
+
 }

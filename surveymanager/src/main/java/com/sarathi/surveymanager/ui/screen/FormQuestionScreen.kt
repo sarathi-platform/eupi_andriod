@@ -187,8 +187,9 @@ fun FormQuestionScreen(
                         isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                         buttonTitle = stringResource(R.string.submit),
                         onSubmitButtonClick = {
-                            viewModel.saveAllAnswers()
+                            viewModel.saveAllAnswers {
                             onNavigateBack()
+                            }
                         }
                     )
                 }
