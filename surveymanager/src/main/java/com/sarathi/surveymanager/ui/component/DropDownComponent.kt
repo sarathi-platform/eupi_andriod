@@ -51,7 +51,7 @@ import com.sarathi.surveymanager.R
 
 @Composable
 fun <T> DropDownComponent(
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     isFromTypeQuestion: Boolean = false,
     hint: String = stringResource(R.string.select),
     items: List<T>,
@@ -86,7 +86,7 @@ fun <T> DropDownComponent(
     ) {
         if (title.isNotBlank()) {
             QuestionComponent(
-                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                 title = title,
                 questionNumber = questionNumber,
                 isRequiredField = isMandatory,
@@ -173,10 +173,10 @@ fun <T> DropDownComponent(
             }
         }
 
-        if (showCardView && contests?.isNotEmpty() == true) {
+        if (showCardView && content?.isNotEmpty() == true) {
             CustomVerticalSpacer(size = dimen_6_dp)
             ContentBottomViewComponent(
-                contents = contests,
+                contents = content,
                 questionIndex = 0,
                 showCardView = showCardView,
                 questionDetailExpanded = {},

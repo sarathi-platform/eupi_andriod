@@ -53,7 +53,7 @@ import com.sarathi.surveymanager.utils.onlyNumberField
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputComponent(
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     title: String? = "select",
     defaultValue: String = BLANK_STRING,
     questionIndex: Int,
@@ -98,7 +98,7 @@ fun InputComponent(
         ) {
             if (title?.isNotBlank() == true) {
                 QuestionComponent(
-                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                     title = title,
                     questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
                     isRequiredField = isMandatory,
@@ -182,10 +182,10 @@ fun InputComponent(
                 )
             }
         }
-        if (showCardView && contests?.isNotEmpty() == true) {
+        if (showCardView && content?.isNotEmpty() == true) {
             CustomVerticalSpacer(size = dimen_6_dp)
             ContentBottomViewComponent(
-                contents = contests,
+                contents = content,
                 questionIndex = questionIndex,
                 showCardView = showCardView,
                 questionDetailExpanded = {},

@@ -49,6 +49,7 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -74,6 +75,7 @@ import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
+import com.sarathi.surveymanager.ui.component.ContentBottomViewComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
@@ -273,7 +275,7 @@ fun QuestionUiContent(
             QuestionType.NumericField.name,
             QuestionType.InputText.name -> {
                 InputComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     maxLength = getMaxInputLength(
                         questionId = question.questionId,
@@ -376,7 +378,7 @@ fun QuestionUiContent(
             }
             QuestionType.SingleImage.name -> {
                 SingleImageComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths =
                     question.options?.firstOrNull()?.selectedValue
@@ -421,7 +423,7 @@ fun QuestionUiContent(
 
             QuestionType.MultiSelectDropDown.name -> {
                 TypeMultiSelectedDropDownComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
@@ -464,7 +466,7 @@ fun QuestionUiContent(
 
             QuestionType.RadioButton.name -> {
                 RadioQuestionBoxComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -493,7 +495,7 @@ fun QuestionUiContent(
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name -> {
                 GridTypeComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -535,7 +537,7 @@ fun QuestionUiContent(
 
             QuestionType.Toggle.name -> {
                 ToggleQuestionBoxComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -562,7 +564,7 @@ fun QuestionUiContent(
 
             QuestionType.IncrementDecrementList.name -> {
                 IncrementDecrementCounterList(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     title = question.questionDisplay,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
@@ -589,7 +591,7 @@ fun QuestionUiContent(
 
             QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                 HrsMinRangePickerComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
                     title = question.questionDisplay,
@@ -632,7 +634,8 @@ fun FormQuestionUiContent(
     onClick: () -> Unit,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
-    showEditErrorToast: (context: Context, editErrorType: String) -> Unit
+    showEditErrorToast: (context: Context, editErrorType: String) -> Unit,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -728,6 +731,24 @@ fun FormQuestionUiContent(
                             onViewSummaryClicked(question)
                         }
 
+                    }
+
+                    if (question.formContent?.isNotEmpty() == true) {
+                        CustomVerticalSpacer(size = dimen_6_dp)
+                        ContentBottomViewComponent(
+                            contents = question.formContent,
+                            questionIndex = 0,
+                            showCardView = true,
+                            questionDetailExpanded = {},
+                            navigateToMediaPlayerScreen = { contentList ->
+                                handleContentClick(
+                                    viewModel = viewModel,
+                                    context = context,
+                                    navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                    contentList = contentList
+                                )
+                            }
+                        )
                     }
                 }
             }

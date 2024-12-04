@@ -70,7 +70,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MultiSelectSelectDropDown(
     isFromTypeQuestion: Boolean = false,
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     isMandatory: Boolean = false,
@@ -134,7 +134,7 @@ fun MultiSelectSelectDropDown(
                 }
                 if (title.isNotBlank()) {
                     QuestionComponent(
-                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                         title = title,
                         questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
                         isRequiredField = isMandatory,
@@ -224,10 +224,10 @@ fun MultiSelectSelectDropDown(
                     }
                 }
 
-                if (showCardView && contests?.isNotEmpty() == true) {
+                if (showCardView && content?.isNotEmpty() == true) {
                     CustomVerticalSpacer(size = dimen_6_dp)
                     ContentBottomViewComponent(
-                        contents = contests,
+                        contents = content,
                         questionIndex = questionIndex,
                         showCardView = showCardView,
                         questionDetailExpanded = {},

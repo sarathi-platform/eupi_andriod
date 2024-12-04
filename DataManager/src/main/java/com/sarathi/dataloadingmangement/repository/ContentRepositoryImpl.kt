@@ -114,11 +114,21 @@ class ContentRepositoryImpl @Inject constructor(
         }
 
         // Handle questionEntityDao content
-        questionEntityDao.getQuestions(userIdentifier)?.map {
-            it?.contentEntities?.forEach { content ->
-                addContentRequest(BLANK_STRING, content.contentKey)
+        with(questionEntityDao.getQuestions(userIdentifier)) {
+            this?.let { questions ->
+                questions.map {
+                    it?.contentEntities?.forEach { content ->
+                        addContentRequest(BLANK_STRING, content.contentKey)
+                    }
+                }
+                questions.map {
+                    it?.formContents?.forEach { formContent ->
+                        addContentRequest(BLANK_STRING, formContent.contentKey)
+                    }
+                }
             }
         }
+
         return contentRequests
     }
 

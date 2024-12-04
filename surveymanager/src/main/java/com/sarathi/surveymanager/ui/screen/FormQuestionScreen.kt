@@ -296,7 +296,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.NumericField.name,
                 QuestionType.InputText.name -> {
                     InputComponent(
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isFromTypeQuestion = true,
                         questionIndex = index,
                         maxLength = getMaxInputLength(
@@ -364,7 +364,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
                     SingleImageComponent(
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isFromTypeQuestion = true,
                         onDetailIconClicked = { onDetailIconClicked() },
                         fileNamePrefix = viewModel.getPrefixFileName(question),
@@ -416,7 +416,7 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiSelectDropDown.name -> {
                     TypeMultiSelectedDropDownComponent(
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isFromTypeQuestion = true,
                         questionIndex = index,
                         title = question.questionDisplay,
@@ -458,7 +458,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.RadioButton.name -> {
                     RadioQuestionBoxComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
@@ -489,7 +489,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.Grid.name -> {
                     GridTypeComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
@@ -518,7 +518,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.Toggle.name -> {
                     ToggleQuestionBoxComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
@@ -547,7 +547,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                     HrsMinRangePickerComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
