@@ -39,6 +39,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -603,7 +605,6 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
-}
 
     fun List<QuestionUiModel>.filterForValidations(visibilityMap: Map<Int, Boolean>): List<QuestionUiModel> {
         return this.filter { it.isMandatory && it.formId == NUMBER_ZERO && visibilityMap.get(it.questionId) == true }
