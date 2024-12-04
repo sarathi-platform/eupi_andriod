@@ -299,7 +299,7 @@
     <string name="finish">फोजोबनाय</string>
     <string name="no_internet">फोनांजाबनाय जायाखै</string>
     <string name="connected">फोनांजाबनाय जाबाय</string>
-    <string name="sync_your_data">Sync Data Now</string>
+    <string name="sync_your_data">नोंनि डाटाखौ Sync खालाम</string>
     <string name="your_data_already_synced">नोंथांनि डाटाया बावैनो Sync जाबाय</string>
     <string name="data_synced_successfully">जाफुंसारै डाटा Sync खालामनाय जाबाय</string>
     <string name="sync">Sync</string>
@@ -511,6 +511,7 @@
     <string name="select_mission">मिसनखौ सायख\'</string>
     <string name="select_activity_for">हाबाफारिफोरनि थाखाय सायख\'</string>
     <string name="select_all">गासैखौबो सायख\'</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
     <string name="sync_all_data">Sync गासैबो data</string>
     <string name="sync_failed_message">"माखासे data एबा सावगारि फोरा synced जायाखै। अन्नानै \'Failed Events' फाइलखौ एक्सपर्ट खालाम / admin जों सोमोन्दो लाखि।"</string>
     <string name="sync_only_data">Sync खालि खारिखौल</string>

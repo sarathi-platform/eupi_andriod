@@ -87,6 +87,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -454,7 +455,9 @@ fun LastSyncTime(lastSyncTime: Long, mobileNumber: String, onCancelWorker: () ->
                 )
 
                 Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(lastSyncTime),
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+                        lastSyncTime
+                    ),
                     style = syncMediumTextStyle,
                     color = textColorDark
                 )

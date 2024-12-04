@@ -271,6 +271,24 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         )
     }
 
+    protected suspend fun saveSurveyAnswerEvent(question: QuestionUiModel) {
+        surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
+            questionUiModel = question,
+            subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+            subjectType = subjectType,
+            taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+            referenceId = referenceId,
+            grantId = grantID,
+            grantType = granType,
+            taskId = taskId,
+            uriList = ArrayList(),
+            isFromRegenerate = false,
+            activityId = activityConfig?.activityId.value(),
+            activityReferenceId = activityConfig?.referenceId,
+            activityReferenceType = activityConfig?.referenceType
+        )
+    }
+
     open fun runValidationCheck(questionId: Int, onValidationComplete: (Boolean, String) -> Unit) {
 
         validationUseCase.validateExpressionEvaluator(
@@ -458,6 +476,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     ) && it.formId == NUMBER_ZERO
                 ) {
                     saveQuestionAnswerIntoDb(it)
+                    saveSurveyAnswerEvent(it.copy(options = emptyList()))
                 }
             }
     }

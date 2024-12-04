@@ -68,6 +68,8 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_250_dp
+import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_72_dp
@@ -173,53 +175,65 @@ fun TaskScreen(
         }
     ) {
         ModelBottomSheetDescriptionContentComponent(
-            modifier = Modifier
-                .fillMaxSize(),
             sheetContent = {
-                Column(
-                    modifier = Modifier.padding(dimen_10_dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Box(
+                    modifier = Modifier
+                        .height(dimen_250_dp)
+                        .fillMaxWidth()
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = dimen_10_dp)
+                            .padding(bottom = dimen_10_dp)
                     ) {
-                        Text(
-                            modifier = Modifier
-                                .weight(1f),
-                            text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
-                            style = newMediumTextStyle.copy(color = blueDark)
-                        )
-                        IconButton(onClick = {
-                            scope.launch {
-                                scaffoldState.hide()
+                        item {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
+                                        style = newMediumTextStyle.copy(color = blueDark)
+                                    )
+
+                                    IconButton(onClick = {
+                                        scope.launch {
+                                            scaffoldState.hide()
+                                        }
+                                    }, modifier = Modifier.size(dimen_48_dp)) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.icon_close),
+                                            contentDescription = "Close",
+                                            tint = blueDark
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(dimen_10_dp))
+                                Text(
+                                    text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
+                                    style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
+                                )
                             }
-                        }, modifier = Modifier.size(48.dp)) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.icon_close),
-                                contentDescription = "Close",
-                                tint = blueDark
-                            )
                         }
+                        customVerticalSpacer()
                     }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
-                        style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimen_10_dp),
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = dimen_10_dp)
+                            .background(Color.White) // Optional: add background to prevent content from showing through
+                            .padding(vertical = 16.dp)
                     ) {
                         ButtonPositive(
-                            modifier = Modifier.weight(0.5f),
+                            modifier = Modifier.fillMaxWidth(), // Changed from weight to fill width
                             buttonTitle = stringResource(R.string.complete_activity),
                             isActive = viewModel.isButtonEnable.value,
                             isArrowRequired = false,
@@ -243,7 +257,7 @@ fun TaskScreen(
                 }
             },
             sheetState = scaffoldState,
-            sheetElevation = 20.dp,
+            sheetElevation = dimen_20_dp,
             sheetBackgroundColor = Color.White,
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
@@ -397,16 +411,20 @@ fun TaskScreen(
                             )
                             Spacer(modifier = Modifier.height(dimen_10_dp))
                             val message = when {
-                                viewModel.filterList.value.isEmpty() ->
-                                    stringResource(com.sarathi.missionactivitytask.R.string.empty_task_list_placeholder)
+                                // When search is disabled and the filter list is empty
+                                !viewModel.isSearchEnable.value && viewModel.filterList.value.isEmpty() ->
+                                    stringResource(R.string.empty_task_list_placeholder)
 
+                                // When search is enabled but no results are found
                                 viewModel.isSearchEnable.value &&
                                         (viewModel.filterList.value.isEmpty() ||
                                                 (viewModel.isGroupingApplied.value && viewModel.filterTaskMap.isEmpty())) ->
                                     stringResource(R.string.no_result_found)
 
+                                // No message in other cases
                                 else -> null
                             }
+
                             message?.let {
                                 // Display message when applicable
                                 Text(
