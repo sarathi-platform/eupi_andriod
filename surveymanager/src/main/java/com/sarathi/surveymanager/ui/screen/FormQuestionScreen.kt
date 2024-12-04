@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.ui.screen
 import android.content.Context
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -111,6 +113,9 @@ fun FormQuestionScreen(
         mutableStateOf(DescriptionContentState())
     }
     val coroutineScope = rememberCoroutineScope()
+
+    val showAlertDialog = remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = Unit) {
         viewModel.setPreviousScreenData(
             taskId,
@@ -126,6 +131,25 @@ fun FormQuestionScreen(
         viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
 
     }
+
+    BackHandler {
+        showAlertDialog.value = true
+    }
+
+    if (showAlertDialog.value) {
+        AlertDialogComponent(
+            onDismissRequest = { showAlertDialog.value = false },
+            onConfirmation = {
+                showAlertDialog.value = false
+                navController.navigateUp()
+            },
+            dialogTitle = stringResource(R.string.alert_dialog_title_text),
+            dialogText = stringResource(R.string.form_alert_dialog_message),
+            confirmButtonText = stringResource(R.string.proceed),
+            dismissButtonText = stringResource(R.string.cancel_text)
+        )
+    }
+
     ModelBottomSheetDescriptionContentComponent(
         modifier = Modifier
             .fillMaxSize(),
@@ -171,7 +195,7 @@ fun FormQuestionScreen(
         ToolBarWithMenuComponent(
             title = viewModel.formTitle.value,
             modifier = modifier,
-            onBackIconClick = { navController.navigateUp() },
+            onBackIconClick = { showAlertDialog.value = true },
             onSearchValueChange = {},
             onBottomUI = {
                 Box(

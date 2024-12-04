@@ -48,4 +48,6 @@
     <string name="empty_task_list_placeholder">এই কার্যকলাপের জন্য কোন টাস্ক পাওয়া যায়নি!</string>
     <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
     <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
+    <string name="proceed">এগিয়ে যান</string>
+    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
 </resources>
