@@ -322,7 +322,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
         }
         val NUDGE_GRANT_DATABASE_MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_2_3")
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_4_5")
                 migration(
                     db,
                     listOf(
