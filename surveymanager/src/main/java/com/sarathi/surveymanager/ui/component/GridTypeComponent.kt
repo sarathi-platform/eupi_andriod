@@ -71,8 +71,8 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun GridTypeComponent(
-    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
+    content: List<ContentList?>? = listOf(),
     questionDisplay: String,
     optionUiModelList: List<OptionsUiModel>,
     areOptionsEnabled: Boolean = true,
@@ -144,7 +144,7 @@ fun GridTypeComponent(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
                                     QuestionComponent(
-                                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                         onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
                                         questionNumber = if (showCardView) getQuestionNumber(
@@ -200,9 +200,9 @@ fun GridTypeComponent(
                             }
                         }
                         item {
-                            if (showCardView && contests?.isNotEmpty() == true)
+                            if (showCardView && content?.isNotEmpty() == true)
                             ContentBottomViewComponent(
-                                contents = contests,
+                                contents = content,
                                 questionIndex = questionIndex,
                                 showCardView = showCardView,
                                 questionDetailExpanded = {},

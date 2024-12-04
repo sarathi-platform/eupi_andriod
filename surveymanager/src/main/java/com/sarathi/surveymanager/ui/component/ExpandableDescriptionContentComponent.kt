@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,7 +58,14 @@ fun ExpandableDescriptionContentComponent(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .clickable {
+                    questionDetailVisibilityState.value = !questionDetailVisibilityState.value
+                    questionDetailExpanded(index)
+                }
+        ) {
             IconButton(onClick = {
                 questionDetailVisibilityState.value = !questionDetailVisibilityState.value
                 questionDetailExpanded(index)

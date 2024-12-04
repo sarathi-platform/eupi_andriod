@@ -39,6 +39,10 @@ data class QuestionList(
     @Expose
     var contentList: List<ContentList>? = listOf(),
 
+    @SerializedName("formContents")
+    @Expose
+    var formContents: List<ContentList>? = listOf(),
+
     @SerializedName("imageIcon")
     @Expose
     val imageIcon: String = BLANK_STRING,

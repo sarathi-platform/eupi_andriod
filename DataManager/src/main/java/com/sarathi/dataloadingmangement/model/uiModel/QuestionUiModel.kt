@@ -26,6 +26,7 @@ class QuestionUiModel(
     var sectionName: String,
     var formDescriptionInEnglish: String?,
     val contentEntities: List<ContentList> = listOf(),
+    val formContent: List<ContentList> = listOf()
 ) {
 
 
