@@ -30,6 +30,12 @@ data class SaveAnswerEventQuestionItemDto(
     val formDescription: String,
     @SerializedName("order")
     @Expose
-    val order: Int? = 0
+    val order: Int? = 0,
+    @SerializedName("formOrder")
+    @Expose
+    val formOder: Int? = 0,
+
+    @Transient
+    val sortKey: Int? = 0
 
 )

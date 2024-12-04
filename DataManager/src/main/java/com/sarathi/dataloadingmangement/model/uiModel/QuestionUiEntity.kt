@@ -48,5 +48,6 @@ class QuestionUiEntity(
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf(),
 
-    val parentQuestionId: Int? = 0
+    val parentQuestionId: Int? = 0,
+    val formOrder: Int
 )

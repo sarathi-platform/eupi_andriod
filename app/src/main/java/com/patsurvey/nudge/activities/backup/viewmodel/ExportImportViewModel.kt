@@ -365,7 +365,9 @@ class ExportImportViewModel @Inject constructor(
                                 cohortName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
                                 subQuestion = if (survey.question.formId != NUMBER_ZERO) survey.question.questionDesc else pair.second,
                                 villageName = task.find { it.key == VILLAGE_NAME }?.value.value(),
-                                referenceId = survey.referenceId
+                                referenceId = survey.referenceId,
+                                formOder = survey.question.formOder,
+                                sortKey = survey.question.sortKey
                             )
                         )
                     }
@@ -484,31 +486,15 @@ class ExportImportViewModel @Inject constructor(
         surveyId: Int
     ): List<BaseLineQnATableCSV> {
         val filteredList = baseLineQnATableCSV.filter { it.surveyId == surveyId }
-        /*val groupedAndSorted = filteredList
-            .groupBy { Pair(it.referenceId, it.sectionId) }
-            .toList()
-            .sortedBy { it.first.second }
-            .flatMap { it.second.sortedBy { it.orderId } }
-        return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }*/
-
-        val groupedAndSortedList = filteredList
-            .groupBy { it.subjectId } // Group by subjectId
-            .flatMap { (_, subjectGroup) ->
-                subjectGroup
-                    .groupBy { it.sectionId } // Group by sectionId
-                    .toList()
-                    .sortedBy { it.first } // Sort sections by sectionId
-                    .flatMap { (_, sectionGroup) ->
-                        sectionGroup
-                            .groupBy { it.referenceId } // Group by referenceId
-                            .toList()
-                            .sortedBy { it.first } // Sort by referenceId if needed
-                            .flatMap { (_, questions) ->
-                                questions.sortedBy { it.orderId } // Sort questions by orderId
-                            }
-                    }
-            }
-        return groupedAndSortedList
+        return filteredList
+            .sortedWith(
+                compareBy(
+                    { it.subjectId },   // First, sort by subjectId
+                    { it.sectionId },   // Then, sort by sectionId
+                    { it.formOder },
+                    { it.orderId }// Finally, sort by sortKey
+                )
+            )
     }
 
     private fun generateTitle(): String {

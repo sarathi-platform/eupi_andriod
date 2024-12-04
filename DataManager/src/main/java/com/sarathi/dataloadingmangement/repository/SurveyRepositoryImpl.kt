@@ -116,7 +116,9 @@ class SurveyRepositoryImpl @Inject constructor(
                 isConditional = it.isConditional,
                 sectionName = sectionEntity.sectionName,
                 formDescriptionInEnglish = getFormDescription(surveyConfigList, it),
-                contentEntities = setQuestionContentData(questionEntity = it)
+                contentEntities = setQuestionContentData(questionEntity = it),
+                formOrder = it.formOrder,
+                sortingKey = it.formOrder + it.order!!
             )
 
             questionUiList.add(checkAndGetResponseForEncryptedValue(questionUiModel))

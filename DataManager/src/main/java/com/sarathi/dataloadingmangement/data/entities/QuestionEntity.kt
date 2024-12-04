@@ -84,7 +84,9 @@ data class QuestionEntity(
     val contentEntities: List<ContentList> = listOf(),
 
     @ColumnInfo(name = "parentQuestionId")
-    val parentQuestionId: Int? = 0
+    val parentQuestionId: Int? = 0,
+    @ColumnInfo(name = "formOrder")
+    val formOrder: Int = 0
 ) {
     companion object {
         fun getQuestionEntity(
@@ -109,7 +111,8 @@ data class QuestionEntity(
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
                 formId = question.formId ?: DEFAULT_ID,
-                originalValue = question.originalValue
+                originalValue = question.originalValue,
+                formOrder = question.formOrder ?: DEFAULT_ID
             )
         }
 
