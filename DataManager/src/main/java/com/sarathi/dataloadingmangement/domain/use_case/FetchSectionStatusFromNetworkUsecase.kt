@@ -10,20 +10,17 @@ class FetchSectionStatusFromNetworkUsecase @Inject constructor(val sectionReposi
     suspend fun invoke(missionId: Int): Boolean {
         try {
             sectionRepository.getActivityConfigForMission(missionId = missionId)
-                ?.distinctBy { it.surveyId }?.forEach {
-                val apiResponse = sectionRepository.fetchSectionStatusFromNetwork(it)
-                if (apiResponse.message.equals(SUCCESS, true)) {
-                    apiResponse.data?.let {
-                        sectionRepository.saveSectionStatusIntoDb(
-                            missionId = missionId,
-                            sectionStatus = apiResponse.data!!
-                        )
-                    }
-
-
-                    return true
-                } else {
-                    return false
+                ?.let { activityConfigList ->
+                    for (config in activityConfigList) {
+                        val apiResponse = sectionRepository.fetchSectionStatusFromNetwork(config)
+                        if (apiResponse.message.equals(SUCCESS, true)) {
+                            apiResponse.data?.let {
+                                sectionRepository.saveSectionStatusIntoDb(
+                                    missionId = missionId,
+                                    sectionStatus = apiResponse.data!!
+                                )
+                            }
+                        }
                 }
             }
         } catch (apiException: ApiException) {
