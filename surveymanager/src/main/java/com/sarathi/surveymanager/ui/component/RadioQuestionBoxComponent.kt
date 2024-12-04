@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun RadioQuestionBoxComponent(
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
     questionDisplay: String,
@@ -141,7 +141,7 @@ fun RadioQuestionBoxComponent(
                                     )
                             ) {
                                 QuestionComponent(
-                                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                     onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
                                     questionNumber = if (showCardView) getQuestionNumber(
@@ -190,10 +190,10 @@ fun RadioQuestionBoxComponent(
                             }
                         }
                         item {
-                            if (showCardView && contests?.isNotEmpty() == true) {
+                            if (showCardView && content?.isNotEmpty() == true) {
                                 CustomVerticalSpacer(size = dimen_6_dp)
                                 ContentBottomViewComponent(
-                                    contents = contests,
+                                    contents = content,
                                     questionIndex = questionIndex,
                                     showCardView = showCardView,
                                     questionDetailExpanded = {},
@@ -222,7 +222,7 @@ fun RadioQuestionBoxComponent(
 @Composable
 fun ToggleQuestionBoxComponent(
     isFromTypeQuestion: Boolean = true,
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
     questionDisplay: String,
@@ -238,7 +238,7 @@ fun ToggleQuestionBoxComponent(
 ) {
     RadioQuestionBoxComponent(
         isFromTypeQuestion = isFromTypeQuestion,
-        contests = contests,
+        content = content,
         onDetailIconClicked = onDetailIconClicked,
         modifier = modifier,
         questionIndex = questionIndex,
