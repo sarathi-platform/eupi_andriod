@@ -1448,13 +1448,15 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         taskDao: TaskDao,
         sectionStatusEntityDao: SectionStatusEntityDao,
-        surveyEntityDao: SurveyEntityDao
+        surveyEntityDao: SurveyEntityDao,
+        activityConfigDao: ActivityConfigDao
     ): SectionStatusEventWriterRepository {
         return SectionStatusEventWriterRepositoryImpl(
             coreSharedPrefs,
             taskDao,
             sectionStatusEntityDao,
-            surveyEntityDao
+            surveyEntityDao,
+            activityConfigDao
         )
     }
 

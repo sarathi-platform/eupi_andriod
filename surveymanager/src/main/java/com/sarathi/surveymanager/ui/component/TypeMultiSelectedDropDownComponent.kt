@@ -27,7 +27,7 @@ fun TypeMultiSelectedDropDownComponent(
     isEditAllowed: Boolean = true,
     showCardView: Boolean = false,
     maxCustomHeight: Dp,
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     isFromTypeQuestion: Boolean = false,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>,
@@ -45,7 +45,7 @@ fun TypeMultiSelectedDropDownComponent(
     }
 
     MultiSelectSelectDropDown(
-        contests = contests,
+        content = content,
         isFromTypeQuestion = isFromTypeQuestion,
         questionIndex = questionIndex,
         title = title,

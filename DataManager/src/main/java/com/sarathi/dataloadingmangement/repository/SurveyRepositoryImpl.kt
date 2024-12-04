@@ -118,7 +118,8 @@ class SurveyRepositoryImpl @Inject constructor(
                 formDescriptionInEnglish = getFormDescription(surveyConfigList, it),
                 contentEntities = setQuestionContentData(questionEntity = it),
                 formOrder = it.formOrder,
-                sortingKey = it.formOrder + it.order!!
+                sortingKey = it.formOrder + it.order!!,
+                formContent = setFormContentData(questionEntity = it)
             )
 
             questionUiList.add(checkAndGetResponseForEncryptedValue(questionUiModel))
@@ -157,6 +158,33 @@ class SurveyRepositoryImpl @Inject constructor(
                 )
             }
         }
+        return contentList
+    }
+
+    fun setFormContentData(questionEntity: QuestionUiEntity): List<ContentList> {
+        val contentList = ArrayList<ContentList>()
+        questionEntity.formContents.forEach { data ->
+            // Fetch content from database based on content key and language ID
+            val contentKey = data.contentKey ?: BLANK_STRING
+            val languageId = coreSharedPrefs.getSelectedLanguageCode()
+
+            val contentData = contentDao.getContentFromIds(
+                contentkey = contentKey,
+                languageId = languageId
+            )
+
+            // Add to the content list if contentData is not null
+            if (contentData != null) {
+                contentList.add(
+                    ContentList(
+                        contentValue = contentData.contentValue ?: "",
+                        contentType = contentData.contentType ?: "",
+                        contentKey = contentKey
+                    )
+                )
+            }
+        }
+
         return contentList
     }
 

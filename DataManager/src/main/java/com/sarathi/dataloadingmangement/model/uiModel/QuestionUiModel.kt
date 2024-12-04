@@ -27,7 +27,8 @@ data class QuestionUiModel(
     var formDescriptionInEnglish: String?,
     val contentEntities: List<ContentList> = listOf(),
     val formOrder: Int,
-    val sortingKey: Int
+    val sortingKey: Int,
+    val formContent: List<ContentList> = listOf()
 ) {
 
 

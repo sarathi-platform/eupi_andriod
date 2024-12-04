@@ -459,7 +459,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private suspend fun updateNonVisibleQuestionsResponse() {
         val notVisibleQuestion = visibilityMap.filter { !it.value }
         questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
-            .forEach { it ->
+            .let { questionUiModelList ->
+                questionUiModelList.forEach { it ->
                 it.options = it.options?.map {
                     it.copy(
                         isSelected = false,
@@ -478,7 +479,49 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                     saveQuestionAnswerIntoDb(it)
                     saveSurveyAnswerEvent(it.copy(options = emptyList()))
                 }
+                    removeFormResponses(questionUiModelList)
+                }
             }
+        /*formResponseMap.flatMap { it.value }.let { surveyAnswerEntityList ->
+            surveyAnswerEntityList
+                .groupBy { it.referenceId }
+                .forEach { (refId, surveyAnswerEntity) ->
+                    surveyAnswerEntity.forEach { answer ->
+                        val questionUiModel = questionUiModel.value.find { it.questionId == answer.questionId }
+                        questionUiModel?.let {
+                            removeAnswersFromDb(it, refId)
+                        }
+                    }
+                }
+        }*/
+    }
+
+    private suspend fun removeFormResponses(
+        questionUiModelList: List<QuestionUiModel>
+    ) {
+        val formQuestions = questionUiModelList.filter { it.formId != NUMBER_ZERO }
+        if (formQuestions.isNotEmpty()) {
+            val formIdMap = formQuestions.map { it.formId }
+            formIdMap.forEach { formId ->
+                formResponseMap[formId]?.let { responses ->
+                    responses
+                        .groupBy { it.referenceId }
+                        .forEach { (refId, surveyAnswerEntity) ->
+                            if (refId != BLANK_STRING) {
+                                surveyAnswerEntity.forEach { answer ->
+                                    val question =
+                                        formQuestions.find { it.questionId == answer.questionId }
+
+                                    question?.let {
+                                        removeAnswersFromDb(it, refId)
+                                    }
+                                }
+                            }
+                        }
+                    showSummaryView[formId] = NUMBER_ZERO
+                }
+            }
+        }
     }
 
     fun isFormEntryAllowed(formId: Int): Boolean {
@@ -528,6 +571,33 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun isFilePathExists(filePath: String): Boolean {
         return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
+    private suspend fun removeAnswersFromDb(question: QuestionUiModel, referenceId: String) {
+
+        val deleteCount = saveSurveyAnswerUseCase.deleteSurveyAnswer(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            taskId = taskId,
+            referenceId = referenceId,
+        )
+
+        if (deleteCount > 0) {
+            surveyAnswerEventWriterUseCase.deleteSavedAnswerEvent(
+                surveyID = surveyId,
+                sectionId = sectionId,
+                surveyName = com.nudge.core.BLANK_STRING,
+                grantId = NUMBER_ZERO,
+                grantType = com.nudge.core.BLANK_STRING,
+                referenceId = referenceId,
+                taskId = taskEntity?.taskId ?: DEFAULT_ID,
+                uriList = emptyList(),
+                taskLocalId = taskEntity?.localTaskId ?: com.nudge.core.BLANK_STRING,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = activityConfig?.subject.value(),
+                isFromRegenerate = false
+            )
+        }
     }
 
 }
