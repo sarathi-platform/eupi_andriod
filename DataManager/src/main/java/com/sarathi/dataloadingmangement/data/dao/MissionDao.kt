@@ -41,8 +41,8 @@ interface MissionDao {
     @Query("Update $MISSION_TABLE_NAME set isActive=0 where userId=:userId ")
     fun softDeleteMission(userId: String)
 
-    @Query("Update $MISSION_TABLE_NAME set isActive=1 where userId=:userId  and missionId=:missionId")
-    fun updateMissionActiveStatus(missionId: Int, userId: String)
+    @Query("Update $MISSION_TABLE_NAME set isActive=1,missionOrder =:missionOrder where userId=:userId  and missionId=:missionId")
+    fun updateMissionActiveStatus(missionId: Int, userId: String, missionOrder: Int)
 
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
     suspend fun getMissionCount(userId: String, missionId: Int): Int
