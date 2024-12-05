@@ -555,6 +555,16 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun saveActivityOrderStatus(missionId: Int, activityId: Int, order: Int) {
+        missionActivityDao.updateActivityActiveStatus(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            isActive = 1,
+            activityId = activityId,
+            order = order
+        )
+    }
+
     private fun saveSurveyConfig(
         activityId: Int,
         missionId: Int,
