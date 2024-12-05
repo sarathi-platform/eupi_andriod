@@ -62,7 +62,9 @@ import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappin
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_TABLE_ADD_MISSION_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
@@ -327,11 +329,14 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                     db,
                     listOf(
                         ALTER_QUESTION_ENTITY_ADD_FORM_ORDER,
-                        ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
+                        ALTER_QUESTION_TABLE_ADD_FORM_CONTENT,
+                        ALTER_MISSION_TABLE_ADD_MISSION_ORDER,
+                        ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
                     )
                 )
             }
         }
+
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
             for (sql in execSqls) {
                 try {
