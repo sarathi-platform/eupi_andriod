@@ -21,5 +21,5 @@ data class ActivityResponse(
     @SerializedName("tasks")
     val taskResponses: List<TaskResponse>?,
     @SerializedName("order")
-    val order: Int?,
+    val order: Int? = 1
 )

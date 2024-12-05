@@ -106,7 +106,7 @@ class MissionRepositoryImpl @Inject constructor(
                 missionDao.updateMissionActiveStatus(
                     missionId = mission.id,
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    missionOrder = mission.order
+                    missionOrder = mission.order ?: 1
                 )
             }
             deleteContentConfig(mission.id, ContentCategoryEnum.MISSION.ordinal)

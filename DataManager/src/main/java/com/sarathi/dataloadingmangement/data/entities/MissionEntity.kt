@@ -58,7 +58,7 @@ data class MissionEntity(
                 endOffset = mission.endOffset,
                 programmeId = programmeId,
                 isDataLoaded = 0,
-                missionOrder = mission.order
+                missionOrder = mission.order ?: 1
             )
         }
 
