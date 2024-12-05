@@ -515,10 +515,7 @@ class SurveyeeScreenViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        refreshData(
-            fetchDataUseCase,
-            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
-        )
+        refreshData(fetchDataUseCase)
     }
 
     fun getPendingDidiCountLive(activityId: Int): LiveData<Int> {

@@ -9,9 +9,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
-import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.json
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.patsurvey.nudge.MyApplication
@@ -171,7 +171,7 @@ class VillageSelectionRepository @Inject constructor(
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
     val androidDownloader: AndroidDownloader,
-    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
+    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     val analyticsManager: AnalyticsManager
 ): BaseRepository() {
 

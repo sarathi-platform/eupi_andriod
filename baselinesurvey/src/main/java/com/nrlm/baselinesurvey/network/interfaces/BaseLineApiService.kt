@@ -1,8 +1,5 @@
 package com.nrlm.baselinesurvey.network.interfaces
 
-import com.nrlm.baselinesurvey.model.datamodel.CasteModel
-import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
-import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest

@@ -225,10 +225,7 @@ class SectionListScreenViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        refreshData(
-            fetchDataUseCase,
-            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
-        )
+        refreshData(fetchDataUseCase)
     }
 
     fun close() {
