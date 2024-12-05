@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
@@ -84,7 +85,10 @@ data class QuestionEntity(
     val contentEntities: List<ContentList> = listOf(),
 
     @ColumnInfo(name = "parentQuestionId")
-    val parentQuestionId: Int? = 0
+    val parentQuestionId: Int? = 0,
+
+    @TypeConverters(ContentListConverter::class)
+    val formContents: List<ContentList> = listOf()
 ) {
     companion object {
         fun getQuestionEntity(
@@ -109,7 +113,8 @@ data class QuestionEntity(
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
                 formId = question.formId ?: DEFAULT_ID,
-                originalValue = question.originalValue
+                originalValue = question.originalValue,
+                formContents = question.formContents.value()
             )
         }
 

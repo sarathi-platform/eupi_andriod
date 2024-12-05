@@ -717,8 +717,10 @@ class ConditionsUtils {
         questionUiModel.filter { QuestionType.autoCalculateQuestionType.contains(it.type.toLowerCase()) }
             .forEach { question ->
                 val config = surveyConfig?.get(SurveyConfigCardSlots.CONFIG_AUTO_CALCULATE.name)
-                    ?.find { question.tagId.contains(it.tagId) }
-                questionUiModel.find { it.questionId == config?.value.toSafeInt() }?.apply {
+                    ?.filter { question.tagId.contains(it.tagId) }
+                questionUiModel.find {
+                    config?.map { it.value.toSafeInt() }?.contains(it.questionId) == true
+                }?.apply {
                     var resultMap = this.options?.map { it.selectedValue }
                     resultMap = resultMap?.filter { it != BLANK_STRING }
                     val result =

@@ -522,4 +522,6 @@
     <string name="select_mission">মিশন নির্বাচন করুন</string>
     <string name="select_activity_for">এর জন্য কার্যকলাপ নির্বাচন করুন </string>
     <string name="select_all">সব নির্বাচন করুন</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
+
 </resources>

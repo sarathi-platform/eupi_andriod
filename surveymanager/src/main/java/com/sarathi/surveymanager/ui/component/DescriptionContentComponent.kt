@@ -65,7 +65,8 @@ fun DescriptionContentComponent(
                                     textStyle = TextStyle(
                                         fontFamily = NotoSans,
                                         fontSize = 12.sp
-                                    )
+                                    ),
+                                    maxLines = 2
                                 )
                             } else {
                                 Text(
