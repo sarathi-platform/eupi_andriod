@@ -68,6 +68,12 @@
     <string name="update_didi">दीदी की जानकारी अपडेट करे</string>
     <string name="house_number">घर नम्बर</string>
     <string name="didi_name">दीदी का नाम</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="export_images">Export Only Images</string>
+    <string name="export_database">Export Only Database</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
     <string name="dada_name_txt">दादा का नाम</string>
     <string name="adhar_card_txt">आधार कार्ड</string>
     <string name="voterId_card_txt">वोटर कार्ड</string>
@@ -439,6 +445,7 @@
     <string name="edit_disable_message">गतिविधि पूर्ण होने के बाद संपादन की अनुमति नहीं है</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
+    <string name="import_data">Import Data</string>
     <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
@@ -473,4 +480,5 @@
     <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
     <string name="form_e">फॉर्म E</string>
     <string name="export_data">Export Data</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
 </resources>

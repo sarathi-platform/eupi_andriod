@@ -512,5 +512,9 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form E</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
     <string name="export_data">Export Data</string>
 </resources>

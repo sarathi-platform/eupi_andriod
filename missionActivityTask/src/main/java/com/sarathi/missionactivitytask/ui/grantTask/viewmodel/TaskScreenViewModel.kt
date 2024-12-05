@@ -16,7 +16,6 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_FILTER_VALUE
-import com.nudge.core.NO_SG_FILTER_VALUE
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState

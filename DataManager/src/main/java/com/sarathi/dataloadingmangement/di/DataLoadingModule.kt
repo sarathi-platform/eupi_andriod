@@ -632,7 +632,7 @@ class DataLoadingModule {
         analyticsManager: AnalyticsManager,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
         fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
-        languageConfigUseCase: LanguageConfigUseCase
+        languageConfigUseCase: LanguageConfigUseCase,
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(

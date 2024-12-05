@@ -437,6 +437,7 @@
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
     <string name="edit_disable_message">কার্যকলাপ সম্পূর্ণ হওয়ার পরে সম্পাদনা অনুমোদিত নয়।</string>
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
+    <string name="import_data">Import Data</string>
     <string name="export_backup_file">ব্যাকআপ ফাইল রপ্তানি করুন</string>
     <string name="backup_recovery">ব্যাকআপ/পুনরুদ্ধার</string>
     <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
@@ -472,6 +473,17 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form C</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="export_images">Export Only Images</string>
+    <string name="export_database">Export Only Database</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
     <string name="export_data">Export Data</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
 
 </resources>

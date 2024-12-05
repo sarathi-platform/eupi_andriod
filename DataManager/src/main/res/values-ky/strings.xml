@@ -131,12 +131,6 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
-    <string name="edit_event">Edit Event</string>
-    <string name="showing">showing</string>
-    <string name="results_for">" results for "</string>
-    <string name="assets">"Rwbai "</string>
-    <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
-    <string name="last_1_month">Last 1 Month</string>
     <string name="auto_sync">Saknisak Sync -  %s</string>
     <string name="sync_on">Saknisak sync: On</string>
     <string name="sync_off">Saknisak sync: Off</string>

@@ -154,7 +154,7 @@
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
-    <string name="question">Questions</string>
+    <string name="question" translatable="false">Questions</string>
     <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
@@ -242,7 +242,6 @@
     <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
     <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>
-    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
 
     <string name="step_1">Step 1</string>
     <string name="sync_status">BPC Verification</string>
@@ -493,7 +492,6 @@
 
     <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">Backup/Recovery</string>
-    <string name="export_data">Export Data</string>
     <string name="export_event_file">Export Event File</string>
     <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
@@ -517,7 +515,7 @@
     <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
-    <string name="export_baseline_qna">Export Baseline QnA</string>
+    <string name="export_baseline_qna" translatable="false">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Start Baseline</string>
@@ -530,4 +528,5 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form E</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
 </resources>
