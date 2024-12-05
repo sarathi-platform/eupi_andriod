@@ -142,6 +142,7 @@
     <string name="pat_survey_complete">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="result_summary">সারাংশের পরিনাম</string>
     <string name="summary_text">সারাংশ</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">ভাগ 1 সম্পূর্ণ করুন</string>
     <string name="logout">লগআউট করুন</string>
     <string name="this_section_is_in_progress">এই বিভাগটি প্রগতিশীল অবস্থায় রয়েছে</string>
@@ -218,6 +219,7 @@
     <string name="pat_completed_status_text">PAT সমীক্ষা সম্পন্ন হয়েছে</string>
     <string name="vo_endorsement_status_text">VO অনুমোদন সম্পন্ন হয়েছে</string>
     <string name="no_didis_availble_for_vo_endorsement">গ্রাম সংগঠনের (VO) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">পর্যায় 1</string>
     <string name="sync_status">BPC প্রমাণীকরণ</string>
     <string name="step_2">পর্যায় 2</string>
@@ -410,10 +412,12 @@
     <string name="to_the_nearest_government_school_comparision">কাছের সরকারি স্কুলে</string>
     <string name="to_the_nearest_permanent_market_comparision">কাছের স্থায়ী বাজারে</string>
     <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
-    <string name="to_the_replacement_string">""</string>
+    <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">গড় ভ্রমণ খরচ</string>
     <string name="questions_data_tab_title">প্রশ্ন</string>
     <string name="section_information_tab_title">বিভাগসমূহ</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">হ্যামলেট অনুসন্ধান করুন</string>
     <string name="mission_completed_text">মিশন সম্পন্ন</string>
     <string name="aadhar_card_titile_assam">আপনার কি আধার কার্ড আছে?</string>
@@ -437,8 +441,13 @@
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
     <string name="edit_disable_message">কার্যকলাপ সম্পূর্ণ হওয়ার পরে সম্পাদনা অনুমোদিত নয়।</string>
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_images">Export Only Images</string>
     <string name="export_backup_file">ব্যাকআপ ফাইল রপ্তানি করুন</string>
+    <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">ব্যাকআপ/পুনরুদ্ধার</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
     <string name="view_label">বিস্তারিত</string>
     <string name="task_completed_label">"কার্যক্রম সম্পন্ন হয়েছে- "</string>
@@ -459,7 +468,10 @@
     <string name="activity_completed_message">আপনি সফলভাবে "%1$s" কার্যক্রম সম্পন্ন করেছেন</string>
     <string name="total_addelabel">"মোট যোগ করা হয়েছে: "</string>
     <string name="view_summary_label">সারাংশ দেখুন</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
+    <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">আপনি কি সার্ভার থেকে নতুন ডেটা পুনরায় লোড করার বিষয়ে নিশ্চিত যা সিঙ্ক না করা ডেটা হারাতে পারে?</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
     <string name="no_data_available_at_the_moment">এই মুহূর্তে কোনও তথ্য উপলব্ধ নেই</string>
     <string name="start_baseline">বেসলাইন শুরু করুন</string>

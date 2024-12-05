@@ -29,7 +29,6 @@ import com.sarathi.dataloadingmangement.data.dao.DocumentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
-import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -66,7 +65,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
@@ -135,7 +133,6 @@ import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.IFormEventRepository
-import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISectionStatusRepository
@@ -145,8 +142,6 @@ import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
-import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
-import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
@@ -664,7 +659,6 @@ class DataLoadingModule {
             fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
             fetchTranslationConfigUseCase = fetchTranslationConfigUseCase,
             languageConfigUseCase = languageConfigUseCase,
-            fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
             fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase
         )
     }

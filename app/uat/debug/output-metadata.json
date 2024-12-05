@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 85,
-      "versionName": "2.0.82",
+      "versionCode": 114,
+      "versionName": "2.0.111",
       "outputFile": "app-uat-debug.apk"
     }
   ],

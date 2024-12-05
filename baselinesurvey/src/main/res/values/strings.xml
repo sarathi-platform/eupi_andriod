@@ -66,10 +66,10 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
-    <string name="dada_name_txt">Dada Name</string>
-    <string name="adhar_card_txt">Aadhar Card</string>
-    <string name="voterId_card_txt">VoterId Card</string>
-    <string name="phone_number_txt">Phone Number</string>
+    <string name="dada_name_txt" translatable="false">Dada Name</string>
+    <string name="adhar_card_txt" translatable="false">Aadhar Card</string>
+    <string name="voterId_card_txt" translatable="false">VoterId Card</string>
+    <string name="phone_number_txt" translatable="false">Phone Number</string>
 
     <string name="dada_name">Husband / Father\'s Name</string>
     <string name="dada">Husband / Father</string>
@@ -458,8 +458,8 @@
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
 
-    <string name="share_export_file" translatable="false">Share exported file</string>
-    <string name="share_export_image" translatable="false">Share exported image</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
@@ -489,7 +489,6 @@
     <string name="import_data">Import Data</string>
     <string name="export_images">Export Only Images</string>
     <string name="export_backup_file">Export BackUp File</string>
-    <string name="export_data">Export Data</string>
 
     <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">Backup/Recovery</string>

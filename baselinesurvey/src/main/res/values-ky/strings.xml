@@ -147,6 +147,7 @@
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
@@ -470,7 +471,9 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
+    <string name="share_export_file">Share exported file</string>
     <string name="share_export_image">আৰম্ভ কৰক</string>
+    <string name="retry">Retry</string>
     <string name="regenerate_all_events">Regenerate all events</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
@@ -501,6 +504,7 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">Summary Khulok di</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Baseline chengdi</string>

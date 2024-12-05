@@ -146,6 +146,7 @@
     <string name="pat_survey_complete">PAT सर्वे</string>
     <string name="result_summary">सारांश</string>
     <string name="summary_text">सारांशविवरण</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">अनुभाग 1 पूरा करें</string>
     <string name="logout">लॉगआउट</string>
     <string name="this_section_is_in_progress">अनुभाग प्रगतिशील स्थिति मे है</string>
@@ -222,6 +223,7 @@
     <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ</string>
     <string name="vo_endorsement_status_text">VO अनुमोदन पूर्ण हुआ</string>
     <string name="no_didis_availble_for_vo_endorsement">VO अनुमोदन के लिए दीदी मौजूद नहीं है</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">चरण 1</string>
     <string name="sync_status">बी.पी.सी. द्वारा सत्यापन</string>
     <string name="step_2">चरण 2</string>
@@ -411,10 +413,12 @@
     <string name="to_the_nearest_government_school_comparision">नजदीकी सरकारी स्कूल</string>
     <string name="to_the_nearest_permanent_market_comparision">निकटतम स्थायी बाज़ार तक</string>
     <string name="to_the_nearest_bank_comparsion">निकटतम बैंक तक</string>
-    <string name="to_the_replacement_string">""</string>
+    <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">औसत यात्रा लागत</string>
     <string name="questions_data_tab_title">सवाल </string>
     <string name="section_information_tab_title">धारा</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">हेमलेट खोजें</string>
     <string name="mission_completed_text">मिशन पूरा किया</string>
     <string name="aadhar_card_titile_assam">क्या आपके पास आधार कार्ड है?</string>
@@ -439,8 +443,13 @@
     <string name="edit_disable_message">गतिविधि पूर्ण होने के बाद संपादन की अनुमति नहीं है</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_images">Export Only Images</string>
     <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
+    <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">विवरण</string>
     <string name="task_completed_label">"गतिविधि पूर्ण हुई - "</string>
@@ -460,7 +469,10 @@
     <string name="activity_completed_message">आपने %1$s गतिविधि सफलतापूर्वक पूरी कर ली है</string>
     <string name="total_addelabel">"कुल जोड़ा गया: "</string>
     <string name="view_summary_label">सारांश देखें</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
+    <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">क्या आप सर्वर से नया डेटा पुनः लोड करने के बारे में सुनिश्चित हैं, जिससे असमन्वित डेटा नष्ट हो सकता है?</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">यदि आप फॉर्म जमा किए बिना आगे बढ़ते हैं तो ये परिवर्तन खो जाएंगे। \n\nक्या आप जारी रखना चाहते हैं?</string>
     <string name="no_data_available_at_the_moment">फिलहाल कोई डेटा उपलब्ध नहीं है</string>
     <string name="start_baseline">बेसलाइन शुरू करें </string>

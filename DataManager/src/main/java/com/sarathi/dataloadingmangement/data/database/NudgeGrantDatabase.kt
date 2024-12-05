@@ -325,7 +325,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                     listOf(
                         ALTER_QUESTION_ENTITY_ADD_FORM_ORDER,
                         ALTER_QUESTION_TABLE_ADD_FORM_CONTENT,
-                        migration(db, listOf(DROP_LANGUAGE_TABLE))
+                        DROP_LANGUAGE_TABLE
                     )
                 )
             }

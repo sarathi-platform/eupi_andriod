@@ -129,12 +129,6 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
-    <string name="edit_event">"पिछला संपादन (एडिट ) "</string>
-    <string name="showing">showing</string>
-    <string name="results_for">" results for "</string>
-    <string name="assets">"संपत्ति "</string>
-    <string name="last_updated_days_ago">"अंतिम अपडेट  %1$s दिन पहले किया गया  "</string>
-    <string name="last_1_month">"पिछला एक महिना "</string>
     <string name="auto_sync">स्वतः सिंक  -  %s</string>
     <string name="sync_on">स्वतः सिंक ओंन करें </string>
     <string name="sync_off">स्वतः सिंक ऑफ  करें </string>

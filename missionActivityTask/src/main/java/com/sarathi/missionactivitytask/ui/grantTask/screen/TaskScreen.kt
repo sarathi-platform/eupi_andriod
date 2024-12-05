@@ -31,8 +31,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,8 +79,6 @@ import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.unmatchedOrangeColor
-import com.nudge.core.ui.theme.newMediumTextStyle
-import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
@@ -110,6 +106,7 @@ import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
+import com.nudge.core.R as CoreRes
 
 const val TAG = "TaskScreen"
 

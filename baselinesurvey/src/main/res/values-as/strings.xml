@@ -143,6 +143,7 @@
     <string name="pat_survey_complete">PAT সমীক্ষা</string>
     <string name="result_summary">সাৰাংশৰ ফলাফল</string>
     <string name="summary_text">সাৰাংশ</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">শাখা 1 সম্পূৰ্ণ কৰক</string>
     <string name="logout">লগ আউট</string>
     <string name="this_section_is_in_progress">এই শাখাটো প্ৰগতিশীল অৱস্থাত আছে</string>
@@ -219,6 +220,7 @@
     <string name="pat_completed_status_text">PAT সমীক্ষা সম্পূৰ্ণ হল</string>
     <string name="vo_endorsement_status_text">VO অনুমোদন সম্পূৰ্ণ হল</string>
     <string name="no_didis_availble_for_vo_endorsement">VO অনুমোদনৰ বাবে বাইদেউ সকল উপলব্ধ নাই</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">পৰ্যায় 1</string>
     <string name="sync_status">BPC প্ৰমাণীকৰণ</string>
     <string name="step_2">পৰ্যায় 2</string>
@@ -413,6 +415,8 @@
     <string name="average_travel_cost_comparision">গড় ভ্ৰমণ ব্যয়</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">হেমলেট সন্ধান কৰক</string>
     <string name="mission_completed_text">মিছন সম্পূৰ্ণ</string>
     <string name="aadhar_card_titile_assam">আপোনাৰ আধাৰ কাৰ্ড আছে নে?</string>
@@ -437,8 +441,12 @@
     <string name="start">"আৰম্ভ কৰক "</string>
     <string name="retry">" পুনৰ চেষ্টা কৰক"</string>
     <string name="import_data">Import Data</string>
+    <string name="export_images">Export Only Images</string>
     <string name="export_backup_file">বেকআপ ফাইল ৰপ্তানি কৰক</string>
+    <string name="export_database">Export Only Database</string>
     <string name="backup_recovery">বেকআপ/পুনৰুদ্ধাৰ</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">সকলো বাধ্যতামূলক প্ৰশ্নৰ উত্তৰ দিয়া হোৱা নাই, অনুগ্ৰহ কৰি সকলো প্ৰশ্নৰ উত্তৰ দিয়ক!</string>
     <string name="view_label">View</string>
     <string name="purpose_comparision">আপোনাৰ কৃষিৰ উদ্দেশ্য কি?</string>
@@ -459,7 +467,10 @@
     <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
+    <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">আপুনি প্ৰ-পত্ৰ জমা নিদিয়াকৈ আগবাঢ়িলে এই পৰিৱৰ্তনসমূহ হেৰাই যাব। \n\nআগবাঢ়ি যাব বিচাৰে নেকি?</string>
     <string name="no_data_available_at_the_moment">এই মুহূৰ্তত কোনো ডাটা উপলব্ধ নাই</string>
     <string name="start_baseline">Start Baseline</string>
