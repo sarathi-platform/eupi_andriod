@@ -5,6 +5,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
@@ -12,6 +13,8 @@ import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import javax.inject.Inject
 
 class ExportImportRepositoryImpl @Inject constructor(
@@ -19,7 +22,8 @@ class ExportImportRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
     val nudgeBaselineDatabase:NudgeBaselineDatabase,
     val nudgeDatabase: NudgeDatabase,
-    val syncManagerDatabase: SyncManagerDatabase
+    val syncManagerDatabase: SyncManagerDatabase,
+    val missionDao: MissionDao
 ):ExportImportRepository {
     override fun clearLocalData() {
         try {
@@ -75,6 +79,17 @@ class ExportImportRepositoryImpl @Inject constructor(
 
     override fun getLoggedInUserType(): String {
         return prefBSRepo.getPref(PREF_KEY_TYPE_NAME, CRP_USER_TYPE) ?: CRP_USER_TYPE
+    }
+
+    override fun getStateId(): Int {
+        return coreSharedPrefs.getStateId()
+    }
+
+    override suspend fun fetchMissionsForUser(): List<MissionUiModel> {
+        return missionDao.getMissions(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            languageCode = DEFAULT_LANGUAGE_CODE
+        )
     }
 
     override fun clearSelectionLocalDB() {

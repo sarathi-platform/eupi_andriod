@@ -26,6 +26,7 @@ class FetchAllDataUseCase @Inject constructor(
     val livelihoodUseCase: LivelihoodUseCase,
     val fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
     val fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
     val languageConfigUseCase: LanguageConfigUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
@@ -70,7 +71,9 @@ class FetchAllDataUseCase @Inject constructor(
 
             fetchMissionDataUseCase.invoke(missionId, programId)
             fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
             val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
+            fetchContentDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
                 if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
@@ -82,12 +85,14 @@ class FetchAllDataUseCase @Inject constructor(
                     moneyJournalUseCase.invoke()
                 }
             }
+
             if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
                 livelihoodUseCase.invoke()
             }
 
             CoroutineScope(Dispatchers.IO).launch {
+                contentDownloaderUseCase.contentDownloader()
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
             }
             fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)

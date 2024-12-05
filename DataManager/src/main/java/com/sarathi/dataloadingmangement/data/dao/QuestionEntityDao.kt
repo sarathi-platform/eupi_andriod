@@ -63,7 +63,9 @@ interface QuestionEntityDao {
                 "    question_table.isMandatory,\n" +
                 "    question_table.contentEntities, \n" +
                 "    survey_language_attribute_table.languageCode, \n" +
+                "    question_table.formContents, \n" +
                 "    question_table.parentQuestionId,\n" +
+                "    question_table.formOrder,\n" +
                 "    GROUP_CONCAT(tag_reference_table.value, ',') AS tag \n" +
                 "FROM \n" +
                 "    question_table \n" +
@@ -80,7 +82,7 @@ interface QuestionEntityDao {
                 "    AND question_table.sectionId = :sectionId \n" +
                 "    AND question_table.surveyId = :surveyId \n" +
                 "GROUP BY \n" +
-                "    question_table.questionId \n" +
+                "     question_table.questionId, question_table.formId \n" +
                 "ORDER BY \n" +
                 "    question_table.`order` ASC;\n"
     )
@@ -146,6 +148,4 @@ interface QuestionEntityDao {
         sectionId: Int,
         questionId: Int
     ): Int?
-
-
 }

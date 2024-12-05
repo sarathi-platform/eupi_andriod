@@ -1,8 +1,14 @@
 package com.nudge.syncmanager.workers
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.ServiceInfo
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
@@ -55,6 +61,7 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.core.value
+import com.nudge.syncmanager.R
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
@@ -91,6 +98,7 @@ class SyncUploadWorker @AssistedInject constructor(
         var mPendingEventList = listOf<Events>()
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
         return try {
+            setForeground(createForegroundInfo())
             connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             batchLimit =
                 syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_BATCH_SIZE.name)
@@ -894,7 +902,47 @@ class SyncUploadWorker @AssistedInject constructor(
         )
         return null
     }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return createForegroundInfo()
+    }
+
+    private fun createForegroundInfo(): ForegroundInfo {
+        val channelId = "sync_worker_notification"
+        val notificationId = 1
+
+        // Create the NotificationChannel if necessary (for Android O and above)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Sync Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val notificationManager =
+                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Build the notification
+        val notification: Notification = NotificationCompat.Builder(applicationContext, channelId)
+            .setContentTitle("Sarathi")
+            .setContentText("Syncing is in progress.....")
+            .setSmallIcon(R.drawable.ic_sarathi_logo)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+
+            .build()
+
+        // Return the ForegroundInfo object
+        val foreGroundInfo =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) ForegroundInfo(
+                notificationId,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            ) else ForegroundInfo(notificationId, notification)
+        return foreGroundInfo
+    }
 }
+
 
 fun createEventResponseList(
     eventList: List<Events>,
@@ -920,4 +968,5 @@ fun createEventResponseList(
         )
     }
     return failedEventList
+
 }

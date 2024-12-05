@@ -2,7 +2,7 @@ package com.sarathi.missionactivitytask.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +25,7 @@ fun LinearProgressBarComponent(
             .fillMaxWidth()
             .height(7.dp),
         color = activeColor,
-        trackColor = trackColor,
+        backgroundColor = trackColor,
         strokeCap = StrokeCap.Round,
     )
 }

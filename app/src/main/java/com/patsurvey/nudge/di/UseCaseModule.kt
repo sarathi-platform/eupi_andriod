@@ -84,6 +84,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -147,14 +148,16 @@ object UseCaseModule {
         prefRepo: PrefBSRepo,
         nudgeDatabase: NudgeDatabase,
         coreSharedPrefs: CoreSharedPrefs,
-        syncManagerDatabase: SyncManagerDatabase
+        syncManagerDatabase: SyncManagerDatabase,
+        missionDao: MissionDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
             prefBSRepo = prefRepo,
             nudgeDatabase = nudgeDatabase,
             coreSharedPrefs = coreSharedPrefs,
-            syncManagerDatabase = syncManagerDatabase
+            syncManagerDatabase = syncManagerDatabase,
+            missionDao = missionDao
         )
     }
 

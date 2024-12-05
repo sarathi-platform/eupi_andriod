@@ -17,7 +17,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
-import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
@@ -30,25 +29,28 @@ import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.utils.BSLogWriter
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
+import com.nudge.core.SUBJECT_ADDRESS
+import com.nudge.core.SUBJECT_COHORT_NAME
+import com.nudge.core.SUBJECT_DADA_NAME
+import com.nudge.core.SUBJECT_NAME
 import com.nudge.core.SYNC_MANAGER_DATABASE
+import com.nudge.core.VILLAGE_NAME
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
-import com.nudge.core.enums.EventType
-import com.nudge.core.exportAllOldImages
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.exportDatabase
-import com.nudge.core.exportLogFile
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
@@ -58,18 +60,23 @@ import com.nudge.core.importDbFile
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
+import com.nudge.core.parseStringToList
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.utils.AESHelper
+import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
-import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
+import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
@@ -78,6 +85,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
+import com.sarathi.dataloadingmangement.util.constants.QuestionType as QuestionTypeNew
 
 @HiltViewModel
 class ExportImportViewModel @Inject constructor(
@@ -88,11 +96,11 @@ class ExportImportViewModel @Inject constructor(
     val prefBSRepo: PrefBSRepo,
     private val optionItemDao: OptionItemDao,
     private val questionEntityDao: QuestionEntityDao,
-    private val missionActivityDao: MissionActivityDao,
-    private val activityDao: ActivityDao,
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase
+    private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
+    private val getTaskUseCase: GetTaskUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -183,31 +191,6 @@ class ExportImportViewModel @Inject constructor(
             openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
         } else {
             onExportSuccess(it)
-        }
-    }
-
-
-    fun exportLocalImages() {
-        BaselineLogger.d("ExportImportViewModel", "exportLocalImages ----")
-        try {
-            CoroutineScope(CoreDispatchers.ioDispatcher).launch {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
-                val imageZipUri = exportAllOldImages(
-                    appContext = mAppContext,
-                    applicationID = applicationId.value,
-                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value),
-                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
-            )
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            if(imageZipUri != null){
-                BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
-                openShareSheet(convertURIAccToOS(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
-            }
-        }
-        }catch (e:Exception){
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel", "exportLocalImages :${e.message}", e)
         }
     }
 
@@ -310,27 +293,35 @@ class ExportImportViewModel @Inject constructor(
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-
                 val dtoList = getSaveAnswerEvents()
                 val dtoSaveFormList = generateDtoSaveFormList()
                 val sectionList = sectionEntityDao.getSectionsT(
                     prefBSRepo.getUniqueUserIdentifier(),
                     DEFAULT_LANGUAGE_ID
                 )
-                val surveeList =
+                val surveeyList =
                     surveyeeEntityDao.getAllDidiForQNA(prefBSRepo.getUniqueUserIdentifier())
 
                 val baseLineQnATableCSV =
-                    buildBaseLineQnATableCSV(dtoList, dtoSaveFormList, sectionList, surveeList)
+                    buildBaseLineQnATableCSV(dtoList, dtoSaveFormList, sectionList, surveeyList)
 
                 val baseLineListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 1)
+                if (baseLineListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "Old BaseLineListQnaList : ${baseLineListQna.size}"
+                    )
+                }
                 val hamletListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 2)
-
+                if (hamletListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "Old HamletListQnaList : ${hamletListQna.size}"
+                    )
+                }
                 val title = generateTitle()
                 val listPath = generateCsvFiles(baseLineListQna, hamletListQna, title, context)
-
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
-
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 handleError(exception, context)
@@ -338,6 +329,91 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
+    /**
+     * To export Survey Type Activity or New Baseline Questions Answers
+     * Create and share CSV file
+     */
+    fun exportBaseLineQnAForSurveyTypeActivity(context: Context) {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            try {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                val baseLineQnATableCSV: ArrayList<BaseLineQnATableCSV> = arrayListOf()
+
+                val quesAnswerList = regenerateGrantEventUsecase.fetchSurveyAnswerEvents()
+                    ?.filter { it.question.questionType != QuestionTypeNew.MultiImage.name && it.question.questionType != QuestionTypeNew.SingleImage.name }
+
+                quesAnswerList?.let { quesList ->
+                    quesList.forEach { survey ->
+                        val task = getTaskUseCase.getSubjectAttributes(survey.taskId)
+                        //This method need to print the multiple options in seperate row in  CSV
+                        val responsePair = findResponseAndSubQuestion(survey.question)
+                        responsePair.forEach { pair ->
+                        baseLineQnATableCSV.add(
+                            BaseLineQnATableCSV(
+                                id = survey.question.questionId.toString(),
+                                surveyId = survey.surveyId,
+                                sectionId = survey.sectionId,
+                                subjectId = survey.subjectId,
+                                house = task.find { it.key == SUBJECT_ADDRESS }?.value.value(),
+                                orderId = survey.question.order,
+                                section = survey.sectionName,
+                                dadaName = task.find { it.key == SUBJECT_DADA_NAME }?.value.value(),
+                                didiName = task.find { it.key == SUBJECT_NAME }?.value.value(),
+                                question = if (survey.question.formId != NUMBER_ZERO) survey.question.formDescription else survey.question.questionDesc,
+                                response = pair.first,
+                                cohortName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
+                                subQuestion = if (survey.question.formId != NUMBER_ZERO) survey.question.questionDesc else pair.second,
+                                villageName = task.find { it.key == VILLAGE_NAME }?.value.value(),
+                                referenceId = survey.referenceId,
+                                formOder = survey.question.formOder,
+                                sortKey = survey.question.sortKey
+                            )
+                        )
+                    }
+                    }
+                }
+
+                val baseLineListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 1)
+                if (baseLineListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "BaseLineListQnaList : ${baseLineListQna.size}"
+                    )
+                }
+                val hamletListQna = groupAndSortBySurveyId(baseLineQnATableCSV, 2)
+                if (hamletListQna.isNotEmpty()) {
+                    BaselineLogger.d(
+                        "ExportImportViewModel",
+                        "HamletListQnaList : ${hamletListQna.size}"
+                    )
+                }
+                val title = generateTitle()
+                val listPath = generateCsvFiles(baseLineListQna, hamletListQna, title, context)
+                openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            } catch (exception: Exception) {
+                handleError(exception, context)
+            }
+        }
+    }
+
+    private suspend fun findResponseAndSubQuestion(question: SaveAnswerEventQuestionItemDto): List<Pair<String, String>> {
+        val responsePairList = ArrayList<Pair<String, String>>()
+        //sorting the options using order by key
+        question.options.sortedBy { it.order }.forEach { option ->
+            var response = BLANK_STRING
+            var optionDesc = BLANK_STRING
+            if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase())) {
+                optionDesc = option.optionDesc
+            }
+            response = if (question.tag.contains(SENSITIVE_INFO_TAG_ID)) AESHelper.decrypt(
+                option.selectedValue.value(),
+                fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
+            ) else option.selectedValue.value()
+            responsePairList.add(Pair(response, optionDesc))
+        }
+        return responsePairList
+    }
     private suspend fun getSaveAnswerEvents(): List<SaveAnswerEventDto> {
         val eventsList = eventWriterHelperImpl.generateResponseEvent()
         val payloadList = eventsList.map { it.request_payload }
@@ -409,12 +485,15 @@ class ExportImportViewModel @Inject constructor(
         surveyId: Int
     ): List<BaseLineQnATableCSV> {
         val filteredList = baseLineQnATableCSV.filter { it.surveyId == surveyId }
-        val groupedAndSorted = filteredList
-            .groupBy { it.sectionId }
-            .toList()
-            .sortedBy { it.first }
-            .flatMap { it.second.sortedBy { it.orderId } }
-        return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }
+        return filteredList
+            .sortedWith(
+                compareBy(
+                    { it.subjectId },   // First, sort by subjectId
+                    { it.sectionId },   // Then, sort by sectionId
+                    { it.formOder },
+                    { it.orderId }// Finally, sort by sortKey
+                )
+            )
     }
 
     private fun generateTitle(): String {
@@ -522,49 +601,30 @@ class ExportImportViewModel @Inject constructor(
         return list ?: emptyList()
     }
 
+    /**
+     * To validate Baseline V1 or V2 for Export Baseline Questions and Answers
+     */
 
-    fun markAllActivityInProgress(context: Context) {
-        CoroutineScope(CoreDispatchers.ioDispatcher).launch {
-
-            val userId = prefBSRepo.getUniqueUserIdentifier()
-
-            val activities = missionActivityDao.getAllActivities(userId)
-
-            activities.forEach { activity ->
-
-                missionActivityDao.markActivityStart(
-                    userId,
-                    activity.missionId,
-                    activity.activityId,
-                    SectionStatus.INPROGRESS.name,
-                    System.currentTimeMillis().toDate().toString()
-                )
-
-                // Update Activity status in NudgeGrantDatabase for Grant and Baseline merge.
-                activityDao.updateActivityStatus(
-                    userId = userId,
-                    activityId = activity.activityId,
-                    missionId = activity.missionId,
-                    status = SectionStatus.INPROGRESS.name
-                )
-
-                val updateTaskStatusEvent =
-                    eventWriterHelperImpl.createActivityStatusUpdateEvent(
-                        missionId = activity.missionId,
-                        activityId = activity.activityId,
-                        status = SectionStatus.INPROGRESS
+    fun exportOldAndNewBaselineQnA(context: Context) {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            val baselineV1Ids =
+                fetchAppConfigFromCacheOrDbUsecase.invokeFromPref(AppConfigKeysEnum.USE_BASELINE_V1.name)
+                    .parseStringToList()
+            val missionList = exportImportUseCase.getExportOptionListUseCase.fetchMissionsForUser()
+            if (baselineV1Ids.contains(exportImportUseCase.getUserDetailsExportUseCase.getStateId())
+                && missionList.any {
+                    it.description.equals(
+                        BASELINE_MISSION_NAME,
+                        ignoreCase = true
                     )
-                exportImportUseCase.eventsWriterUseCase.invoke(
-                    events = updateTaskStatusEvent,
-                    eventType = EventType.STATEFUL
-                )
-            }
+                }
+            ) {
+                BaselineLogger.d("ExportImportViewModel", "Old Baseline Export")
+                exportBaseLineQnA(context)
+            } else {
+                exportBaseLineQnAForSurveyTypeActivity(context)
+                BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
-            withContext(CoreDispatchers.mainDispatcher) {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.all_activities_marked_as_in_progress)
-                )
             }
         }
     }

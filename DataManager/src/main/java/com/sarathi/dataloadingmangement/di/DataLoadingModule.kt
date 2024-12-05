@@ -5,12 +5,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
+import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
@@ -64,6 +67,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
@@ -75,10 +79,12 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMapp
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SearchScreenUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
@@ -129,6 +135,7 @@ import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.IFormEventRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
+import com.sarathi.dataloadingmangement.repository.ISectionStatusRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
@@ -144,6 +151,7 @@ import com.sarathi.dataloadingmangement.repository.SectionListRepository
 import com.sarathi.dataloadingmangement.repository.SectionListRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusEventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SectionStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepository
 import com.sarathi.dataloadingmangement.repository.SectionStatusUpdateRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SelectActivitySurveyRepositoryImpl
@@ -212,7 +220,8 @@ class DataLoadingModule {
             .addMigrations(
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_4_5
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -493,7 +502,9 @@ class DataLoadingModule {
         uiConfigDao: UiConfigDao,
         surveyAnswersDao: SurveyAnswersDao,
         activityConfigDao: ActivityConfigDao,
-        livelihoodDao: LivelihoodDao
+        livelihoodDao: LivelihoodDao,
+        sectionEntityDao: SectionEntityDao,
+        questionEntityDao: QuestionEntityDao
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService,
@@ -503,7 +514,9 @@ class DataLoadingModule {
             uiConfigDao = uiConfigDao,
             surveyAnswersDao = surveyAnswersDao,
             activityConfigDao = activityConfigDao,
-            livelihoodDao = livelihoodDao
+            livelihoodDao = livelihoodDao,
+            sectionEntityDao = sectionEntityDao,
+            questionEntityDao = questionEntityDao
         )
     }
 
@@ -620,6 +633,7 @@ class DataLoadingModule {
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
         fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
         languageConfigUseCase: LanguageConfigUseCase
+        fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -644,7 +658,9 @@ class DataLoadingModule {
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
             fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
             fetchTranslationConfigUseCase = fetchTranslationConfigUseCase,
-            languageConfigUseCase = languageConfigUseCase
+            languageConfigUseCase = languageConfigUseCase,
+            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase
+
         )
     }
 
@@ -805,7 +821,10 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         coreSharedPrefs: CoreSharedPrefs,
         surveyDao: SurveyEntityDao,
-        grantConfigDao: GrantConfigDao
+        grantConfigDao: GrantConfigDao,
+        sectionEntityDao: SectionEntityDao,
+        surveyConfigEntityDao: SurveyConfigEntityDao,
+        contentDao: ContentDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao,
@@ -813,8 +832,10 @@ class DataLoadingModule {
             optionItemDao = optionItemDao,
             coreSharedPrefs = coreSharedPrefs,
             surveyEntityDao = surveyDao,
-            grantConfigDao = grantConfigDao
-
+            grantConfigDao = grantConfigDao,
+            sectionEntityDao = sectionEntityDao,
+            surveyConfigDao = surveyConfigEntityDao,
+            contentDao = contentDao
         )
     }
 
@@ -835,7 +856,6 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             surveyEntityDao = surveyDao,
             grantConfigDao = grantConfigDao
-
         )
     }
 
@@ -1353,9 +1373,15 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideGetSectionListUseCase(
-        sectionListRepository: SectionListRepository
+        sectionListRepository: SectionListRepository,
+        contentRepositoryImpl: ContentRepositoryImpl,
+        coreSharedPrefs: CoreSharedPrefs
     ): GetSectionListUseCase {
-        return GetSectionListUseCase(sectionListRepository)
+        return GetSectionListUseCase(
+            sectionListRepository,
+            contentRepositoryImpl = contentRepositoryImpl,
+            coreSharedPrefs = coreSharedPrefs
+        )
     }
 
     @Provides
@@ -1395,13 +1421,15 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         taskDao: TaskDao,
         sectionStatusEntityDao: SectionStatusEntityDao,
-        surveyEntityDao: SurveyEntityDao
+        surveyEntityDao: SurveyEntityDao,
+        activityConfigDao: ActivityConfigDao
     ): SectionStatusEventWriterRepository {
         return SectionStatusEventWriterRepositoryImpl(
             coreSharedPrefs,
             taskDao,
             sectionStatusEntityDao,
-            surveyEntityDao
+            surveyEntityDao,
+            activityConfigDao
         )
     }
 
@@ -1558,5 +1586,64 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             surveyEntityDao = surveyEntityDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchSectionStatusFromNetworkUsecase(
+        sectionRepository: ISectionStatusRepository
+    ): FetchSectionStatusFromNetworkUsecase {
+        return FetchSectionStatusFromNetworkUsecase(
+            sectionRepository = sectionRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSectionStatusRepository(
+        sectionStatusDao: SectionStatusEntityDao,
+        dataLoadingApiService: DataLoadingApiService,
+        activityConfigDao: ActivityConfigDao,
+        taskDao: TaskDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): ISectionStatusRepository {
+        return SectionStatusRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            sectionStatusDao = sectionStatusDao,
+            dataLoadingApiService = dataLoadingApiService,
+            activityConfigDao = activityConfigDao,
+            taskDao = taskDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesBaselineV1CheckUseCase(
+        baselineV1CheckRepository: BaselineV1CheckRepository
+    ): BaselineV1CheckUseCase {
+        return BaselineV1CheckUseCase(baselineV1CheckRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesBaselineV1CheckRepository(
+        coreSharedPrefs: CoreSharedPrefs
+    ): BaselineV1CheckRepository {
+        return BaselineV1CheckRepositoryImpl(coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSearchScreenUseCase(
+        getTaskUseCase: GetTaskUseCase,
+        getSectionListUseCase: GetSectionListUseCase,
+        fetchSurveyDataFromDB: FetchSurveyDataFromDB
+    ): SearchScreenUseCase {
+        return SearchScreenUseCase(
+            getTaskUseCase = getTaskUseCase,
+            getSectionListUseCase = getSectionListUseCase,
+            fetchSurveyDataUseCase = fetchSurveyDataFromDB
+        )
+
     }
 }

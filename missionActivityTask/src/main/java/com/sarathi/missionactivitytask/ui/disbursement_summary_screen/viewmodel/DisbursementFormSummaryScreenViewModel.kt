@@ -16,8 +16,10 @@ import com.nudge.core.uriFromFile
 import com.nudge.core.utils.PdfGenerator
 import com.nudge.core.utils.PdfModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -45,6 +47,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
+    private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
 ) :
     BaseViewModel() {
     private val _disbursementFormList =
@@ -59,6 +62,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     val filterList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _filterList
     var activityConfigUiModel: ActivityConfigUiModel? = null
     var attachPhysicalFormButtonText = mutableStateOf(BLANK_STRING)
+    var activityConfigUiModelWithoutSurvey: ActivityConfigEntity? = null
     override fun <T> onEvent(event: T) {
         super.onEvent(event)
         when (event) {
@@ -105,6 +109,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                     )
                 }.groupBy { Pair(it.date, it.voName) }
             _filterList.value = _formList.value
+            activityConfigUiModelWithoutSurvey =
+                getActivityUiConfigUseCase.getActivityConfig(activityId, missionId)
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

@@ -22,25 +22,7 @@ fun ExportBackupScreen(
     viewModel: ExportBackupScreenViewModel = hiltViewModel(),
 
     navController: NavController) {
-        val context=LocalContext.current
-        val filePicker =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-            viewModel.showRestartAppDialog.value=false
-            it?.let { uri->
-                if(uri != Uri.EMPTY){
-
-                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-                    BaselineLogger.d("ExportImportScreen","Selected File :${uri.path}")
-                    viewModel.importSelectedDB(uri){
-                       viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                       viewModel.showRestartAppDialog.value=false
-                       viewModel.restartApp(context, MainActivity::class.java)
-                   }
-                }
-            }
-
-        }
-
+    val context=LocalContext.current
     CommonSettingScreen(
         userType = viewModel.loggedInUserType.value,
         title = stringResource(id = R.string.export_data),
@@ -51,18 +33,16 @@ fun ExportBackupScreen(
         onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
-
                 SettingTagEnum.EXPORT_DATABASE.name -> {
                     viewModel.exportLocalDatabase(true) {
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                     }
                 }
-
                 SettingTagEnum.EXPORT_IMAGES.name -> {
                     viewModel.exportLocalImages()
                 }
 
-                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
+                SettingTagEnum.EXPORT_EVENT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.export_event_file))
                 }
                 SettingTagEnum.EXPORT_LOG_FILE.name -> {

@@ -34,13 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.NO_SG_FILTER_VALUE
-import com.nudge.core.R
+import com.nudge.core.NO_FILTER_VALUE
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -63,7 +61,6 @@ fun <T> BottomSheetScaffoldComponent(
     selectedIndex: Int = 0,
     onBottomSheetItemSelected: (selectedItemIndex: Int) -> Unit,
     content: @Composable () -> Unit
-
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -122,8 +119,8 @@ fun <T> BottomSheetScaffoldComponent(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             val itemValue =
-                                                if (it.contains(NO_SG_FILTER_VALUE, true)) {
-                                                    it.replace(NO_SG_FILTER_VALUE, defaultValue)
+                                                if (it.contains(NO_FILTER_VALUE, true)) {
+                                                    it.replace(NO_FILTER_VALUE, defaultValue)
                                                 } else {
                                                     it
                                                 }

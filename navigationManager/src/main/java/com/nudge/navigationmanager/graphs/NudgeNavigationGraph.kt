@@ -222,6 +222,8 @@ sealed class SettingScreens(val route: String) {
     object ACTIVITY_REOPENING_SCREEN : SettingScreens(route = ACTIVITY_REOPENING_SCREEN_ROUTE_NAME)
     object SYNC_DATA_NOW_SCREEN : SettingScreens(route = SYNC_HOME_ROUTE_NAME)
     object SYNC_HISTORY_SCREEN : SettingScreens(route = "$SYNC_HISTORY_ROUTE_NAME/{${NavigationParams.ARG_SYNC_TYPE.value}}")
+    object EXPORT_BACKUP_FILE_SCREEN : SettingScreens(route = EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME)
+
 }
 
 sealed class LogoutScreens(val route: String){

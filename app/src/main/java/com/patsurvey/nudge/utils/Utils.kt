@@ -144,6 +144,7 @@ import kotlin.system.exitProcess
 
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
+
 private object Invisible : LayoutModifier {
     override fun MeasureScope.measure(
         measurable: Measurable,
@@ -1089,7 +1090,7 @@ private fun getRealPathFromURI(contentURI: String, activity: Context): String? {
     }
 }
 
-fun formatDateAndTime(page:String,lastSyncTime: String):String{
+fun formatDateAndTime(page: String, lastSyncTime: String): String {
     return try {
         val currentTime = if (lastSyncTime.isEmpty()) 0L else lastSyncTime.toLong()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
@@ -1131,17 +1132,18 @@ fun findImageLocationFromPath(uri: String): List<String> {
     return ArrayList()
 }
 
-fun findStepNameForSelectedLanguage(context: Context,stepId:Int,stateId:Int):String{
-   return when(stepId){
-       40-> context.getString(R.string.step_transect_walk)
-       41-> context.getString(R.string.step_social_mapping)
-       43-> context.getString(R.string.step_pat_survey)
-       44-> getVoNameForState(context,stateId,R.plurals.step_vo_endorsement)
-       45-> context.getString(R.string.step_bpc_verification)
-       46-> context.getString(R.string.step_participatory_wealth_ranking)
-       else -> {
-           BLANK_STRING}
-   }
+fun findStepNameForSelectedLanguage(context: Context, stepId: Int, stateId: Int): String {
+    return when (stepId) {
+        40 -> context.getString(R.string.step_transect_walk)
+        41 -> context.getString(R.string.step_social_mapping)
+        43 -> context.getString(R.string.step_pat_survey)
+        44 -> getVoNameForState(context, stateId, R.plurals.step_vo_endorsement)
+        45 -> context.getString(R.string.step_bpc_verification)
+        46 -> context.getString(R.string.step_participatory_wealth_ranking)
+        else -> {
+            BLANK_STRING
+        }
+    }
 }
 
 fun onlyNumberField(value: String): Boolean {
@@ -1219,9 +1221,11 @@ fun ShowLoadingDialog(
                         )
                     }
 
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(15.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(15.dp)
+                    )
 
                 }
             }
@@ -1441,7 +1445,9 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
             )
         }
 
-        EventName.ADD_DIDI -> {
+        EventName.ADD_DIDI,
+        EventName.SHG_FLAG_EVENT,
+        EventName.ABLE_BODIED_FLAG_EVENT -> {
             val didiEntity = (eventItem as DidiEntity)
             mapOf(
                 KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName,

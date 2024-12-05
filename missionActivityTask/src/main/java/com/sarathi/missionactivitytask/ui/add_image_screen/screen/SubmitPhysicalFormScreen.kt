@@ -44,7 +44,8 @@ fun SubmitPhysicalFormScreen(
     viewModel: SubmitPhysicalFormScreenViewModel,
     activityId: Int,
     missionId: Int,
-    taskIdList: String
+    taskIdList: String,
+    activityType: String
 ) {
     val outerState = rememberLazyListState()
     val context = LocalContext.current
@@ -59,11 +60,11 @@ fun SubmitPhysicalFormScreen(
             BottomAppBar(
                 backgroundColor = white, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_10_dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(dimen_10_dp)
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),
@@ -86,8 +87,11 @@ fun SubmitPhysicalFormScreen(
                                 onCompleted = { message ->
                                     navigateToActivityCompletionScreen(
                                         navController,
-                                        message.replace("%1s", viewModel.totalDidi.value.toString())
-
+                                        message.replace(
+                                            "%1s",
+                                            viewModel.totalDidi.value.toString()
+                                        ),
+                                        activityRoutePath = activityType
                                     )
                                 })
 

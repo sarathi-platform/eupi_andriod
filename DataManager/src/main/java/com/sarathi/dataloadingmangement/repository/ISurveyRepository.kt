@@ -10,7 +10,11 @@ interface ISurveyRepository {
         sectionId: Int,
         referenceId: String,
         activityConfigId: Int,
-        grantId: Int
+        grantId: Int,
+        missionId: Int,
+        activityId: Int,
+        isFromRegenerate: Boolean
+
     ): List<QuestionUiModel>
 
     suspend fun getFormQuestion(
@@ -20,6 +24,8 @@ interface ISurveyRepository {
         referenceId: String,
         activityConfigId: Int,
         grantId: Int,
-        formId: Int
+        formId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel>
 }

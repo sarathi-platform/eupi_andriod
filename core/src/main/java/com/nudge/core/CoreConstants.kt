@@ -62,6 +62,7 @@ const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
 const val CRP_USER_TYPE = "Community Resource Person"
+const val BPC_USER_TYPE = "Project Coordinator"
 const val SUFFIX_IMAGE_ZIP_FILE = "Image"
 const val SUFFIX_EVENT_ZIP_FILE = "file"
 const val BASELINE = "BASELINE_GRANT"
@@ -94,6 +95,7 @@ const val DEFAULT_LANGUAGE_CODE = "en"
 const val DEFAULT_LANGUAGE_ID = 2
 
 const val ATTENDANCE_TAG_ID = 94
+const val SENSITIVE_INFO_TAG_ID = 139
 const val DEFAULT_DATE_RANGE_DURATION: Long = 30
 const val WEEK_DURATION_RANGE: Long = 7
 const val ONE_YEAR_RANGE_DURATION: Long = 365
@@ -131,12 +133,12 @@ const val ROTATION_DEGREE_TRANSITION = "rotationDegreeTransition"
 const val MAXIMUM_RANGE = 999999
 const val MAXIMUM_RANGE_LENGTH = 10
 
-const val NO_SG_FILTER_VALUE = "null"
+const val NO_FILTER_VALUE = "null"
 const val NO_SG_FILTER_LABEL = "No Small Group Assigned"
 const val BATCH_DEFAULT_LIMIT = 5
 const val RETRY_DEFAULT_COUNT = 3
 const val SYNC_DATE_TIME_FORMAT = "yyyy-MM-dd"
-const val SYNC_VIEW_DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss a"
+const val SYNC_VIEW_DATE_TIME_FORMAT = "dd-MM-yy hh:mm:ss a"
 const val LAST_SYNC_TIME = "last_sync_time"
 const val FAILED_EVENTS_FILE = "Failed_Events_File"
 const val SYNC_SELECTION_DRIVE = "selection"
@@ -189,6 +191,7 @@ const val MAX_ROW_HEIGHT_VALUE_FOR_SELECT_ACTIVITY = 70
 
 const val NOT_DECIDED_LIVELIHOOD_ID = -1
 const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
+const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
 const val CORE_DB_VERSION = 1
@@ -208,3 +211,40 @@ const val MIGRATION_BACKUP = "MIGRATION_BACKUP"
 
 const val DEFAULT_NUMERIC_INPUT_MAX_LENGTH = 7
 const val DEFAULT_TEXT_INPUT_MAX_LENGTH = 150
+const val STATE_ID = "stateId"
+const val USER_TYPE = "userType"
+const val CRP = "CRP"
+const val BPC = "BPC"
+const val UPCM = "UPCM"
+const val APP_VERSION = "appVersion"
+
+const val CLEAN_ROUTE_DELIMITER = "~@"
+const val FORWARD_SLASH_DELIMITER = "/"
+
+const val DELIMITER_TIME = ":"
+const val DELIMITER_YEAR = "/"
+const val YEAR = "Years"
+const val MONTHS = "Months"
+const val HOURS = "Hours"
+const val MINUTE = "Minutes"
+
+const val DEFAULT_FORM_ID = -1
+const val SUBJECT_NAME = "subjectName"
+const val SUBJECT_DADA_NAME = "dadaName"
+const val SUBJECT_ADDRESS = "address"
+const val SUBJECT_COHORT_NAME = "cohortName"
+const val VILLAGE_NAME = "villageName"
+
+const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
+
+const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
+const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
+
+const val ALL_TAB = "All"
+const val QUESTION_DATA_TAB = "Questions"
+const val SECTION_INFORMATION_TAB = "Sections"
+
+const val ACTIVITY_COMPLETED_ERROR = "ACTIVITY_COMPLETED_ERROR"
+const val FORM_RESPONSE_LIMIT_ERROR = "FORM_RESPONSE_LIMIT_ERROR"
+const val AES_SALT = "T&CNu7Zs"
+const val MASKED_CHAR = "*"
